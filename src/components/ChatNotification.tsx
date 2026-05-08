@@ -50,7 +50,7 @@ export default function ChatNotification(props: { item: ChatNotice; showTimestam
   const color = () => NOTICE_COLORS[props.item.notice_type] ?? DEFAULT_COLOR;
   return (
     <div
-      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-[#1f1f23] border-l-4"
+      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-[#1f1f23] border-l-4 rounded-r-md"
       style={{ "border-left-color": color() }}
     >
       <Show when={props.showTimestamp}>

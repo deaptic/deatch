@@ -1,4 +1,5 @@
 import { createSignal, For, Show } from "solid-js";
+import { Portal } from "solid-js/web";
 import {
   COLORS,
   NOTIF_EVENTS,
@@ -14,6 +15,7 @@ import Stepper from "../ui/Stepper";
 
 type Props = {
   isMod: boolean;
+  panelMount?: () => HTMLElement | undefined;
   fontSize: () => number;
   onFontSizeChange: (delta: number) => void;
   showTimestamp: () => boolean;
@@ -53,10 +55,10 @@ export default function ChatSettings(props: Props) {
         </svg>
       </button>
       {open() && (
-        <>
+        <Portal mount={props.panelMount?.()}>
           <div class="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div class="absolute top-full right-0 mt-1 z-20 w-72 max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl p-3 flex flex-col gap-3">
-            <div class="flex flex-col gap-2">
+          <div class="absolute top-0 right-0 z-20 w-80 max-h-full overflow-y-auto bg-[#1f1f23] border border-[#2d2d35] rounded-bl-lg shadow-2xl p-3 flex flex-col gap-4">
+            <div class="flex flex-col gap-3">
               <span class="text-[#adadb8] text-xs font-medium">General</span>
               <div class="flex items-center justify-between">
                 <span class="text-[#efeff1] text-xs">Font size</span>
@@ -71,7 +73,7 @@ export default function ChatSettings(props: Props) {
                 <Toggle checked={props.showTimestamp()} onChange={props.onShowTimestampChange} />
               </div>
             </div>
-            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-2">
+            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-3">
               <span class="text-[#adadb8] text-xs font-medium">Users</span>
               <div class="flex items-center justify-between">
                 <span class="text-[#efeff1] text-xs">Show display name</span>
@@ -112,7 +114,7 @@ export default function ChatSettings(props: Props) {
                 </div>
               </Show>
             </div>
-            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-2">
+            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-3">
               <span class="text-[#adadb8] text-xs font-medium">Events</span>
               <For each={NOTIF_EVENTS}>
                 {(e) => (
@@ -126,7 +128,7 @@ export default function ChatSettings(props: Props) {
                 )}
               </For>
             </div>
-            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-2">
+            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-3">
               <span class="text-[#adadb8] text-xs font-medium">Badges</span>
               <For each={BADGE_CATEGORIES}>
                 {(c) => (
@@ -140,7 +142,7 @@ export default function ChatSettings(props: Props) {
                 )}
               </For>
             </div>
-            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-2">
+            <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-3">
               <span class="text-[#adadb8] text-xs font-medium">Tests</span>
               <div class="flex flex-col gap-1">
                 <span class="text-[#5c5c7a] text-[10px] uppercase tracking-wide">Toast notification</span>
@@ -192,7 +194,7 @@ export default function ChatSettings(props: Props) {
               </button>
             </div>
           </div>
-        </>
+        </Portal>
       )}
     </>
   );

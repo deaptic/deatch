@@ -8,8 +8,8 @@ type Props = {
   viewerCount?: number;
   isLive?: boolean;
   isSelected?: boolean;
-  collapsed?: boolean;
   onClick?: () => void;
+  onContextMenu?: (x: number, y: number) => void;
 };
 
 function formatViewers(n: number): string {
@@ -22,7 +22,6 @@ export default function ChannelListItem(props: Props) {
   const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
 
   function onEnter(e: MouseEvent) {
-    if (!props.collapsed) return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     setTip({ x: rect.right + 8, y: rect.top + rect.height / 2 });
   }
@@ -36,9 +35,15 @@ export default function ChannelListItem(props: Props) {
         onClick={props.onClick}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
-        class={`w-full flex items-center transition-colors cursor-pointer ${
-          props.collapsed ? "justify-center px-2 py-1.5" : "gap-3 px-4 py-2"
-        } ${props.isSelected ? "bg-[#3d3d4a]" : "hover:bg-[#2d2d35]"}`}
+        onContextMenu={(e) => {
+          if (!props.onContextMenu) return;
+          e.preventDefault();
+          setTip(null);
+          props.onContextMenu(e.clientX, e.clientY);
+        }}
+        class={`w-full flex items-center justify-center p-2 transition-colors cursor-pointer ${
+          props.isSelected ? "bg-[#3d3d4a]" : "hover:bg-[#2d2d35]"
+        }`}
       >
         <div class="relative shrink-0">
           <img
@@ -50,19 +55,8 @@ export default function ChannelListItem(props: Props) {
             <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1f1f23]" />
           </Show>
         </div>
-        <Show when={!props.collapsed}>
-          <div class="flex-1 text-left min-w-0">
-            <p class="text-white text-sm font-medium truncate leading-tight">{props.channel}</p>
-            <p class="text-[#adadb8] text-xs truncate leading-tight">{props.game}</p>
-          </div>
-          <Show when={props.viewerCount !== undefined}>
-            <span class="text-[#ff4040] text-xs font-medium shrink-0 group-hover:invisible">
-              {formatViewers(props.viewerCount!)}
-            </span>
-          </Show>
-        </Show>
       </button>
-      <Show when={props.collapsed && tip()}>
+      <Show when={tip()}>
         {(t) => (
           <Portal>
             <div

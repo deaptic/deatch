@@ -147,7 +147,7 @@ export default function EmotePicker(props: {
   return (
     <>
       <div class="fixed inset-0 z-10" onClick={props.onClose} />
-      <div class="absolute bottom-full right-0 mb-1 z-20 w-80 bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl flex flex-col h-96">
+      <div class="absolute bottom-full right-0 z-20 w-80 bg-[#1f1f23] border border-[#2d2d35] rounded-tl-lg shadow-2xl flex flex-col h-96">
         <div class="flex border-b border-[#2d2d35] shrink-0">
           <For each={TABS}>
             {(t) => (
@@ -176,7 +176,7 @@ export default function EmotePicker(props: {
           />
         </div>
 
-        <div class="overflow-y-auto flex-1 px-2 py-1 flex flex-col gap-2">
+        <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 [scrollbar-gutter:stable]">
           <Show when={!search() && favorites().length > 0}>
             <PickerSection label="Favorites">
               <EmoteGrid

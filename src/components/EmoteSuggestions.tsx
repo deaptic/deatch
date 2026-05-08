@@ -1,6 +1,6 @@
 import { For, onMount, createSignal, createEffect } from "solid-js";
 
-type Suggestion = { name: string; url: string };
+type Suggestion = { name: string; url: string; source: string };
 
 type Props = {
   suggestions: () => Suggestion[];
@@ -37,7 +37,7 @@ export default function EmoteSuggestions(props: Props) {
   });
 
   return (
-    <div ref={containerRef} class="absolute bottom-full left-0 right-0 z-30 bg-[#1f1f23] border border-[#2d2d35] rounded-t-lg shadow-2xl overflow-y-auto max-h-60">
+    <div ref={containerRef} class="absolute bottom-full left-3 right-3 mb-3 z-30 bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl overflow-y-auto max-h-60">
       <For each={props.suggestions()}>
         {(s, i) => (
           <button
@@ -47,7 +47,8 @@ export default function EmoteSuggestions(props: Props) {
             }`}
           >
             <img src={s.url} alt={s.name} class="w-6 h-6 object-contain shrink-0" />
-            <span class="text-[#efeff1]">{s.name}</span>
+            <span class="text-[#efeff1] flex-1 text-left truncate">{s.name}</span>
+            <span class="text-xs font-semibold shrink-0 text-[#5c5c7a]">{s.source}</span>
           </button>
         )}
       </For>
