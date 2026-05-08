@@ -20,6 +20,7 @@ export type Channel = {
 type Props = {
   onSelect: (ch: Channel) => void;
   selectedId: string | null;
+  collapsed?: boolean;
 };
 
 function loadPinned(): Channel[] {
@@ -76,6 +77,7 @@ export default function ChannelList(props: Props) {
         onReorder={reorder}
         onSelect={props.onSelect}
         selectedId={props.selectedId}
+        collapsed={props.collapsed}
       />
       <ChannelListOnline
         pinnedIds={pinnedIds()}
@@ -83,6 +85,7 @@ export default function ChannelList(props: Props) {
         onSelect={props.onSelect}
         selectedId={props.selectedId}
         onLiveUpdate={handleLiveUpdate}
+        collapsed={props.collapsed}
       />
     </div>
   );
