@@ -13,6 +13,7 @@ type Props = {
   onReorder: (from: number, to: number) => void;
   onSelect: (ch: Channel) => void;
   selectedId: string | null;
+  collapsed?: boolean;
 };
 
 export default function ChannelListPinned(props: Props) {
@@ -85,6 +86,7 @@ export default function ChannelListPinned(props: Props) {
       title="Pinned"
       count={props.pinned.length}
       class="border-b border-[#2d2d35]"
+      sidebarCollapsed={props.collapsed}
       action={
         <button onClick={() => setAdding(true)} class="text-[#5c5c7a] hover:text-white transition-colors cursor-pointer" title="Add channel">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
@@ -93,7 +95,7 @@ export default function ChannelListPinned(props: Props) {
         </button>
       }
     >
-      <Show when={adding()}>
+      <Show when={adding() && !props.collapsed}>
         <div class="px-4 pb-2 flex gap-2 items-center">
           <input
             ref={(el) => el.focus()}
@@ -117,36 +119,39 @@ export default function ChannelListPinned(props: Props) {
         </div>
       </Show>
 
-      <Show when={props.pinned.length > 0} fallback={<Show when={!adding()}><p class="text-[#5c5c7a] text-xs text-center px-4 pb-3">No pinned channels</p></Show>}>
-        <For each={props.pinned}>
-          {(p, index) => {
-            const ch = () => props.liveById.get(p.user_id) ?? p;
-            const isOver = () => overIndex() === index() && dragIndex() !== index();
-            return (
-              <div
-                data-pinned-index={index()}
-                class={`group relative border-t-2 transition-colors ${isOver() ? "border-[#9146ff]" : "border-transparent"}`}
-                style={{ opacity: dragIndex() === index() ? 0.4 : 1 }}
-                onMouseDown={(e) => startDrag(e, index())}
-              >
-                <ChannelListItem
-                  avatar={ch().profile_image_url}
-                  channel={ch().user_name}
-                  game={ch().game_name ?? "Offline"}
-                  viewerCount={ch().viewer_count}
-                  isLive={props.liveById.has(p.user_id)}
-                  isSelected={props.selectedId === p.user_id}
-                  onClick={() => props.onSelect(ch())}
-                />
-                <button onClick={() => props.onUnpin(p.user_id)} class="absolute right-2 top-1/2 -translate-y-1/2 text-[#5c5c7a] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1" title="Unpin">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3">
-                    <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z" />
-                  </svg>
-                </button>
-              </div>
-            );
-          }}
-        </For>
+      <Show when={props.pinned.length > 0} fallback={<Show when={!adding() && !props.collapsed}><p class="text-[#5c5c7a] text-xs text-center px-4 pb-3">No pinned channels</p></Show>}>
+        <div class={props.collapsed ? "py-2" : ""}>
+          <For each={props.pinned}>
+            {(p, index) => {
+              const ch = () => props.liveById.get(p.user_id) ?? p;
+              const isOver = () => overIndex() === index() && dragIndex() !== index();
+              return (
+                <div
+                  data-pinned-index={index()}
+                  class={`group relative border-t-2 transition-colors ${isOver() ? "border-[#9146ff]" : "border-transparent"}`}
+                  style={{ opacity: dragIndex() === index() ? 0.4 : 1 }}
+                  onMouseDown={(e) => startDrag(e, index())}
+                >
+                  <ChannelListItem
+                    avatar={ch().profile_image_url}
+                    channel={ch().user_name}
+                    game={ch().game_name ?? "Offline"}
+                    viewerCount={ch().viewer_count}
+                    isLive={props.liveById.has(p.user_id)}
+                    isSelected={props.selectedId === p.user_id}
+                    collapsed={props.collapsed}
+                    onClick={() => props.onSelect(ch())}
+                  />
+                  <button onClick={() => props.onUnpin(p.user_id)} class={`absolute right-2 top-1/2 -translate-y-1/2 text-[#5c5c7a] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1 ${props.collapsed ? "hidden" : ""}`} title="Unpin">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3">
+                      <path d="M5.28 4.22a.75.75 0 00-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 101.06 1.06L8 9.06l2.72 2.72a.75.75 0 101.06-1.06L9.06 8l2.72-2.72a.75.75 0 00-1.06-1.06L8 6.94 5.28 4.22z" />
+                    </svg>
+                  </button>
+                </div>
+              );
+            }}
+          </For>
+        </div>
       </Show>
     </ChannelListSection>
   );

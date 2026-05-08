@@ -16,6 +16,7 @@ import ChatNotification, { ChatNotice } from "./ChatNotification";
 import ChatInput from "./ChatInput";
 import ChatSettings from "./ChatSettings";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
+import ChatTitleBar from "./ChatTitleBar";
 import { getTimestamp } from "../utils";
 import type {
   ModeratedChannel,
@@ -97,6 +98,8 @@ type Props = {
   broadcasterLogin: string;
   userLogin: string;
   moderatedChannels: ModeratedChannel[];
+  sidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
 };
 
 
@@ -284,75 +287,75 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex flex-col h-full bg-[#0e0e10]">
-      <div class="px-4 py-2 border-b border-[#2d2d35] bg-[#1f1f23] shrink-0 flex items-center justify-between relative">
-        <div class="flex items-center">
-          <span class="text-white text-sm font-semibold">
-            {props.broadcasterName}
-          </span>
-        </div>
-        <div class="flex items-center gap-0.5">
-          <Show when={isMod()}>
-            <button class="w-6 h-6 flex items-center justify-center rounded hover:bg-[#2d2d35] transition-colors cursor-pointer">
-              <SwordIcon class="w-3.5 h-3.5 fill-[#00c8af]" />
-            </button>
-          </Show>
-          <ChatSettings
-          isMod={isMod()}
-          fontSize={fontSize}
-          onFontSizeChange={changeFontSize}
-          mutedUsers={mutedUsers}
-          onMutedUsersChange={persistMutedUsers}
-          notifPrefs={notifPrefs}
-          onNotifPrefChange={setNotifPref}
-          badgePrefs={badgePrefs}
-          onBadgePrefChange={setBadgePref}
-          onTestChatEvent={(key) => {
-            const event = NOTIF_EVENTS.find((e) => e.key === key);
-            if (!event || !("testMessage" in event)) return;
-            const timestamp = getTimestamp();
-            const item: ChatItem =
-              key === "message"
-                ? {
-                    kind: "message",
-                    message_id: `test-${Date.now()}`,
-                    chatter_user_id: "test",
-                    chatter_login: "testuser",
-                    chatter_name: "TestUser",
-                    color: "#9146ff",
-                    fragments: [{ type: "text", text: event.testMessage }],
-                    badges: [],
-                    timestamp,
-                  }
-                : {
-                    kind: "notice",
-                    notice_type: event.types[0] ?? event.key,
-                    system_message: event.testMessage,
-                    chatter_name: "TestUser",
-                    color: "#9146ff",
-                    timestamp,
-                  };
-            setMessages((prev) =>
-              paused() ? [...prev, item] : [...prev.slice(-499), item],
-            );
-          }}
-          useDisplayName={useDisplayName}
-          onUseDisplayNameChange={(v) => {
-            updatePrefs((p) => ({ ...p, feed: { ...p.feed, users: { ...p.feed.users, showDisplayName: v } } }));
-            setUseDisplayName(v);
-          }}
-          onResetDefaults={() => {
-            saveUserPreferences(DEFAULT_PREFERENCES);
-            localStorage.removeItem("auto_shoutout");
-            setFontSize(DEFAULT_PREFERENCES.feed.fontSize);
-            setAutoShoutout(false);
-            setMutedUsers(DEFAULT_PREFERENCES.feed.users.muted);
-            setUseDisplayName(DEFAULT_PREFERENCES.feed.users.showDisplayName);
-            setNotifPrefs(DEFAULT_PREFERENCES.feed.events as Record<NotifKey, EventPref>);
-            setBadgePrefs(DEFAULT_PREFERENCES.feed.badges as Record<BadgeCategoryKey, BadgePref>);
-          }}
-        />
-        </div>
-      </div>
+      <ChatTitleBar
+        broadcasterName={props.broadcasterName}
+        sidebarCollapsed={props.sidebarCollapsed}
+        onToggleSidebar={props.onToggleSidebar}
+        actions={
+          <>
+            <Show when={isMod()}>
+              <button class="w-6 h-6 flex items-center justify-center rounded hover:bg-[#2d2d35] transition-colors cursor-pointer">
+                <SwordIcon class="w-3.5 h-3.5 fill-[#00c8af]" />
+              </button>
+            </Show>
+            <ChatSettings
+              isMod={isMod()}
+              fontSize={fontSize}
+              onFontSizeChange={changeFontSize}
+              mutedUsers={mutedUsers}
+              onMutedUsersChange={persistMutedUsers}
+              notifPrefs={notifPrefs}
+              onNotifPrefChange={setNotifPref}
+              badgePrefs={badgePrefs}
+              onBadgePrefChange={setBadgePref}
+              onTestChatEvent={(key) => {
+                const event = NOTIF_EVENTS.find((e) => e.key === key);
+                if (!event || !("testMessage" in event)) return;
+                const timestamp = getTimestamp();
+                const item: ChatItem =
+                  key === "message"
+                    ? {
+                        kind: "message",
+                        message_id: `test-${Date.now()}`,
+                        chatter_user_id: "test",
+                        chatter_login: "testuser",
+                        chatter_name: "TestUser",
+                        color: "#9146ff",
+                        fragments: [{ type: "text", text: event.testMessage }],
+                        badges: [],
+                        timestamp,
+                      }
+                    : {
+                        kind: "notice",
+                        notice_type: event.types[0] ?? event.key,
+                        system_message: event.testMessage,
+                        chatter_name: "TestUser",
+                        color: "#9146ff",
+                        timestamp,
+                      };
+                setMessages((prev) =>
+                  paused() ? [...prev, item] : [...prev.slice(-499), item],
+                );
+              }}
+              useDisplayName={useDisplayName}
+              onUseDisplayNameChange={(v) => {
+                updatePrefs((p) => ({ ...p, feed: { ...p.feed, users: { ...p.feed.users, showDisplayName: v } } }));
+                setUseDisplayName(v);
+              }}
+              onResetDefaults={() => {
+                saveUserPreferences(DEFAULT_PREFERENCES);
+                localStorage.removeItem("auto_shoutout");
+                setFontSize(DEFAULT_PREFERENCES.feed.fontSize);
+                setAutoShoutout(false);
+                setMutedUsers(DEFAULT_PREFERENCES.feed.users.muted);
+                setUseDisplayName(DEFAULT_PREFERENCES.feed.users.showDisplayName);
+                setNotifPrefs(DEFAULT_PREFERENCES.feed.events as Record<NotifKey, EventPref>);
+                setBadgePrefs(DEFAULT_PREFERENCES.feed.badges as Record<BadgeCategoryKey, BadgePref>);
+              }}
+            />
+          </>
+        }
+      />
 
       <div class="flex-1 relative min-h-0">
         <Show when={paused()}>
