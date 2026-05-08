@@ -1,6 +1,7 @@
 {
   "feed": {
     "fontSize": 16,
+    "showTimestamp": false,
     "events": {
       "message": { "show": true },
       "follow": { "show": true },

@@ -46,6 +46,7 @@ type Props = {
   userLogin: string;
   broadcasterId: string;
   useDisplayName?: boolean;
+  showTimestamp?: boolean;
 };
 
 const INLINE_EMOTE =
@@ -149,9 +150,11 @@ export default function ChatMessage(props: Props) {
       }}
     >
       <ChatMessageToolbar item={item} broadcasterId={props.broadcasterId} />
-      <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
-        {item.timestamp}
-      </span>
+      <Show when={props.showTimestamp}>
+        <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
+          {item.timestamp}
+        </span>
+      </Show>
       <div class="break-words min-w-0">
         <Show when={item.reply}>
           <div
