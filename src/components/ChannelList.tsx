@@ -48,6 +48,7 @@ export default function ChannelList(props: Props) {
   const [addPopover, setAddPopover] = createSignal<{ x: number; y: number } | null>(null);
   const [addInput, setAddInput] = createSignal("");
   const [addLoading, setAddLoading] = createSignal(false);
+  const [pinnedLoading, setPinnedLoading] = createSignal(false);
   let addBtn: HTMLButtonElement | undefined;
   let refreshLive: () => Promise<void> = async () => {};
 
@@ -83,6 +84,31 @@ export default function ChannelList(props: Props) {
   function handleLiveUpdate(channels: Channel[]) {
     setLiveById(new Map(channels.map(ch => [ch.user_id, ch])));
     props.onLiveChange?.(channels);
+  }
+
+  async function refreshPinnedData() {
+    const ids = pinned.map(p => p.user_id);
+    if (ids.length === 0) return;
+    setPinnedLoading(true);
+    try {
+      const users = await invoke<TwitchUser[]>("get_users_by_id", { userIds: ids });
+      const userMap = new Map(users.map(u => [u.id, u]));
+      const updated = loadPinned().map(p => {
+        const u = userMap.get(p.user_id);
+        if (!u) return p;
+        return {
+          ...p,
+          user_login: u.login,
+          user_name: u.display_name,
+          profile_image_url: u.profile_image_url ?? p.profile_image_url,
+        };
+      });
+      commitPinned(updated);
+    } catch (e) {
+      toast(String(e), "error");
+    } finally {
+      setPinnedLoading(false);
+    }
   }
 
   function openMenu(ch: Channel, x: number, y: number) {
@@ -130,10 +156,11 @@ export default function ChannelList(props: Props) {
 
   return (
     <div class="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div class="border-b border-[#2d2d35] pb-2">
+      <div class="border-b border-[#2d2d35]">
         <ChannelListPinned
           pinned={pinned}
           liveById={liveById()}
+          loading={pinnedLoading()}
           onReorder={reorder}
           onSelect={props.onSelect}
           selectedId={props.selectedId}
@@ -179,7 +206,11 @@ export default function ChannelList(props: Props) {
             </Show>
             <ContextMenuItem
               label="Refresh"
-              onClick={() => { refreshLive(); setMenu(null); }}
+              onClick={() => {
+                refreshLive();
+                refreshPinnedData();
+                setMenu(null);
+              }}
             />
           </ContextMenu>
         )}

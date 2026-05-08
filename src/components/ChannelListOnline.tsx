@@ -71,7 +71,7 @@ export default function ChannelListOnline(props: Props) {
   });
 
   return (
-    <div class="py-2">
+    <div>
       <Show when={!loading()} fallback={
         <>
           {Array.from({ length: 4 }).map(() => (
