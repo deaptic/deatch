@@ -1,7 +1,12 @@
-import { createMemo, createSignal } from "solid-js";
+import { Show, createSignal } from "solid-js";
+import { Portal } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
+import { invoke } from "@tauri-apps/api/core";
+import { toast } from "../notifications";
 import ChannelListPinned from "./ChannelListPinned";
 import ChannelListOnline from "./ChannelListOnline";
+import ContextMenu from "../ui/ContextMenu";
+import ContextMenuItem from "../ui/ContextMenuItem";
 import type { TwitchStream, TwitchUser } from "../types";
 
 export type { TwitchStream, TwitchUser };
@@ -20,7 +25,6 @@ export type Channel = {
 type Props = {
   onSelect: (ch: Channel) => void;
   selectedId: string | null;
-  collapsed?: boolean;
 };
 
 function loadPinned(): Channel[] {
@@ -38,8 +42,14 @@ function savePinned(pins: Channel[]) {
 export default function ChannelList(props: Props) {
   const [pinned, setPinned] = createStore<Channel[]>(loadPinned());
   const [liveById, setLiveById] = createSignal<Map<string, Channel>>(new Map());
+  const [menu, setMenu] = createSignal<{ ch: Channel; x: number; y: number } | null>(null);
+  const [addPopover, setAddPopover] = createSignal<{ x: number; y: number } | null>(null);
+  const [addInput, setAddInput] = createSignal("");
+  const [addLoading, setAddLoading] = createSignal(false);
+  let addBtn: HTMLButtonElement | undefined;
+  let refreshLive: () => Promise<void> = async () => {};
 
-  const pinnedIds = createMemo(() => new Set(pinned.map(p => p.user_id)));
+  const pinnedIds = () => new Set(pinned.map(p => p.user_id));
 
   function pin(ch: Channel) {
     if (pinned.some(p => p.user_id === ch.user_id)) return;
@@ -67,26 +77,136 @@ export default function ChannelList(props: Props) {
     setLiveById(new Map(channels.map(ch => [ch.user_id, ch])));
   }
 
+  function openMenu(ch: Channel, x: number, y: number) {
+    setMenu({ ch, x, y });
+  }
+
+  function openAdd() {
+    if (!addBtn) return;
+    const rect = addBtn.getBoundingClientRect();
+    setAddInput("");
+    setAddPopover({ x: rect.right + 8, y: rect.top });
+  }
+
+  function closeAdd() {
+    setAddPopover(null);
+    setAddInput("");
+  }
+
+  async function submitAdd() {
+    const login = addInput().trim().toLowerCase();
+    if (!login) return;
+    if (pinned.some(p => p.user_login === login)) {
+      toast("Already pinned", "error");
+      closeAdd();
+      return;
+    }
+    setAddLoading(true);
+    try {
+      const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
+      const u = users[0];
+      if (!u) throw new Error("User not found");
+      pin({
+        user_id: u.id,
+        user_login: u.login,
+        user_name: u.display_name,
+        profile_image_url: u.profile_image_url ?? "",
+      });
+      closeAdd();
+    } catch (e) {
+      toast(String(e), "error");
+    } finally {
+      setAddLoading(false);
+    }
+  }
+
   return (
-    <div class="flex-1 overflow-y-auto">
-      <ChannelListPinned
-        pinned={pinned}
-        liveById={liveById()}
-        onPin={pin}
-        onUnpin={unpin}
-        onReorder={reorder}
-        onSelect={props.onSelect}
-        selectedId={props.selectedId}
-        collapsed={props.collapsed}
-      />
+    <div class="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div class="border-b border-[#2d2d35] pb-2">
+        <ChannelListPinned
+          pinned={pinned}
+          liveById={liveById()}
+          onReorder={reorder}
+          onSelect={props.onSelect}
+          selectedId={props.selectedId}
+          onContextMenu={openMenu}
+        />
+        <button
+          ref={addBtn}
+          onClick={openAdd}
+          title="Pin a channel"
+          class={`w-full flex items-center justify-center p-2 hover:bg-[#2d2d35] transition-colors cursor-pointer text-[#5c5c7a] hover:text-white ${pinned.length === 0 ? "pt-2" : ""}`}
+        >
+          <div class="w-8 h-8 rounded-lg border-2 border-dashed border-[#3d3d4a] flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+          </div>
+        </button>
+      </div>
       <ChannelListOnline
         pinnedIds={pinnedIds()}
-        onPin={pin}
         onSelect={props.onSelect}
         selectedId={props.selectedId}
         onLiveUpdate={handleLiveUpdate}
-        collapsed={props.collapsed}
+        onContextMenu={openMenu}
+        expose={(api) => { refreshLive = api.refresh; }}
       />
+      <Show when={menu()}>
+        {(m) => (
+          <ContextMenu x={m().x} y={m().y} onClose={() => setMenu(null)}>
+            <Show
+              when={pinnedIds().has(m().ch.user_id)}
+              fallback={
+                <ContextMenuItem
+                  label="Pin"
+                  onClick={() => { pin(m().ch); setMenu(null); }}
+                />
+              }
+            >
+              <ContextMenuItem
+                label="Unpin"
+                onClick={() => { unpin(m().ch.user_id); setMenu(null); }}
+              />
+            </Show>
+            <ContextMenuItem
+              label="Refresh"
+              onClick={() => { refreshLive(); setMenu(null); }}
+            />
+          </ContextMenu>
+        )}
+      </Show>
+      <Show when={addPopover()}>
+        {(p) => (
+          <Portal>
+            <div class="fixed inset-0 z-40" onClick={closeAdd} />
+            <div
+              style={{ position: "fixed", left: `${p().x}px`, top: `${p().y}px` }}
+              class="z-50 w-64 bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl p-3 flex gap-2 items-center"
+            >
+              <input
+                ref={(el) => setTimeout(() => el.focus())}
+                type="text"
+                placeholder="channel name"
+                value={addInput()}
+                onInput={(e) => setAddInput(e.currentTarget.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") submitAdd();
+                  if (e.key === "Escape") closeAdd();
+                }}
+                class="flex-1 bg-[#2d2d35] text-white text-xs rounded px-2 py-1.5 outline-none border border-[#3d3d4a] focus:border-[#9146ff] min-w-0"
+              />
+              <Show when={!addLoading()} fallback={<div class="w-4 h-4 rounded-full border-2 border-[#2d2d35] border-t-[#9146ff] animate-spin shrink-0" />}>
+                <button onClick={submitAdd} class="text-[#9146ff] hover:text-white transition-colors cursor-pointer shrink-0" title="Add">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </Show>
+            </div>
+          </Portal>
+        )}
+      </Show>
     </div>
   );
 }

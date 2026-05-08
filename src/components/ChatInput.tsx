@@ -1,6 +1,15 @@
 import { createSignal, createMemo, Show, onMount } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { globalEmotes, userEmotes, buildThirdPartyEmoteMap } from "../emotes";
+import {
+  globalEmotes,
+  userEmotes,
+  sevenTvGlobal,
+  bttvGlobal,
+  ffzGlobal,
+  sevenTvChannel,
+  bttvChannel,
+  ffzChannel,
+} from "../emotes";
 import EmotePicker from "./EmotePicker";
 import EmoteSuggestions from "./EmoteSuggestions";
 
@@ -25,14 +34,24 @@ export default function ChatInput(props: Props) {
     props.expose?.({ focus: () => inputRef?.focus() });
   });
 
-  const allEmotes = createMemo<Record<string, string>>(() => {
-    const map = buildThirdPartyEmoteMap();
+  type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
+  type EmoteEntry = { url: string; source: Source };
+
+  const allEmotes = createMemo<Record<string, EmoteEntry>>(() => {
+    const map: Record<string, EmoteEntry> = {};
+    const add = (name: string, url: string, source: Source) => {
+      if (!map[name]) map[name] = { url, source };
+    };
+    for (const e of sevenTvChannel()) add(e.name, e.url, "7TV");
+    for (const e of bttvChannel()) add(e.name, e.url, "BetterTTV");
+    for (const e of ffzChannel()) add(e.name, e.url, "FrankerFaceZ");
+    for (const e of sevenTvGlobal()) add(e.name, e.url, "7TV");
+    for (const e of bttvGlobal()) add(e.name, e.url, "BetterTTV");
+    for (const e of ffzGlobal()) add(e.name, e.url, "FrankerFaceZ");
     for (const e of userEmotes()) {
-      if (!map[e.name]) map[e.name] = `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`;
+      add(e.name, `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`, "Twitch");
     }
-    for (const e of globalEmotes()) {
-      if (!map[e.name]) map[e.name] = e.images.url_1x;
-    }
+    for (const e of globalEmotes()) add(e.name, e.images.url_1x, "Twitch");
     return map;
   });
 
@@ -40,12 +59,12 @@ export default function ChatInput(props: Props) {
     const q = acQuery();
     if (!q) return [];
     const lower = q.toLowerCase();
-    const starts: { name: string; url: string }[] = [];
-    const contains: { name: string; url: string }[] = [];
-    for (const [name, url] of Object.entries(allEmotes())) {
+    const starts: { name: string; url: string; source: Source }[] = [];
+    const contains: { name: string; url: string; source: Source }[] = [];
+    for (const [name, entry] of Object.entries(allEmotes())) {
       const n = name.toLowerCase();
-      if (n.startsWith(lower)) starts.push({ name, url });
-      else if (n.includes(lower)) contains.push({ name, url });
+      if (n.startsWith(lower)) starts.push({ name, url: entry.url, source: entry.source });
+      else if (n.includes(lower)) contains.push({ name, url: entry.url, source: entry.source });
     }
     starts.sort((a, b) => a.name.localeCompare(b.name));
     contains.sort((a, b) => a.name.localeCompare(b.name));
@@ -123,7 +142,7 @@ export default function ChatInput(props: Props) {
           </button>
         </div>
       </Show>
-      <div class="relative flex items-center">
+      <div class="relative flex items-center h-14">
         <Show when={acSuggestions().length > 0}>
           <EmoteSuggestions
             suggestions={acSuggestions}
@@ -139,7 +158,7 @@ export default function ChatInput(props: Props) {
           onKeyDown={onKeyDown}
           maxLength={500}
           placeholder="Send a message…"
-          class="flex-1 bg-transparent text-[#efeff1] text-sm placeholder-[#5c5c7a] px-4 py-3 outline-none"
+          class="flex-1 bg-transparent text-[#efeff1] text-base placeholder-[#5c5c7a] px-4 py-3 outline-none"
         />
         <button
           onClick={() => setPickerOpen((o) => !o)}

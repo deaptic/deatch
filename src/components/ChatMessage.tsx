@@ -134,7 +134,7 @@ export default function ChatMessage(props: Props) {
   return (
     <div
       data-message-id={item.message_id}
-      class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent hover:bg-white/[0.06] ${
+      class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/[0.06] ${
         mentioned
           ? "bg-[#9146ff1a] !border-[#9146ff] hover:bg-[#9146ff26]"
           : item.channel_points

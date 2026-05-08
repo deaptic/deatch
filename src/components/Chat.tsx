@@ -98,8 +98,6 @@ type Props = {
   broadcasterLogin: string;
   userLogin: string;
   moderatedChannels: ModeratedChannel[];
-  sidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
 };
 
 
@@ -155,6 +153,7 @@ export default function Chat(props: Props) {
   const [paused, setPaused] = createSignal(false);
   let bottomRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
+  let panelMount: HTMLDivElement | undefined;
   let isProgrammaticScroll = false;
 
   function scrollInstant() {
@@ -290,8 +289,6 @@ export default function Chat(props: Props) {
     <div class="flex flex-col h-full bg-[#0e0e10]">
       <ChatTitleBar
         broadcasterName={props.broadcasterName}
-        sidebarCollapsed={props.sidebarCollapsed}
-        onToggleSidebar={props.onToggleSidebar}
         actions={
           <>
             <Show when={isMod()}>
@@ -301,6 +298,7 @@ export default function Chat(props: Props) {
             </Show>
             <ChatSettings
               isMod={isMod()}
+              panelMount={() => panelMount}
               fontSize={fontSize}
               onFontSizeChange={changeFontSize}
               showTimestamp={showTimestamp}
@@ -364,7 +362,7 @@ export default function Chat(props: Props) {
         }
       />
 
-      <div class="flex-1 relative min-h-0">
+      <div class="flex-1 relative min-h-0" ref={(el) => panelMount = el}>
         <Show when={paused()}>
           <button
             onClick={scrollToBottom}
@@ -384,7 +382,7 @@ export default function Chat(props: Props) {
         <div
           ref={scrollRef}
           onScroll={onScrollChat}
-          class="h-full overflow-y-auto px-2 flex flex-col"
+          class="h-full overflow-y-auto pl-2 pr-3 flex flex-col [scrollbar-gutter:stable]"
           style={{ "font-size": `${fontSize()}px` }}
         >
           <For each={messages()}>

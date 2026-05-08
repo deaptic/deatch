@@ -4,8 +4,9 @@ import { listen } from "@tauri-apps/api/event";
 import { toast } from "./notifications";
 import Sidebar, { Channel } from "./Sidebar";
 import Chat from "./components/Chat";
-import ChatTitleBar from "./components/ChatTitleBar";
 import TwitchIcon from "./icons/TwitchIcon";
+import ContextMenu from "./ui/ContextMenu";
+import ContextMenuItem from "./ui/ContextMenuItem";
 import {
   setGlobalEmotes,
   setUserEmotes,
@@ -31,17 +32,7 @@ function App() {
   const [authChecked, setAuthChecked] = createSignal(false);
   const [selectedChannel, setSelectedChannel] = createSignal<Channel | null>(null);
   const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
-  const [sidebarCollapsed, setSidebarCollapsed] = createSignal(
-    localStorage.getItem("sidebar_collapsed") === "1"
-  );
-
-  function toggleSidebar() {
-    setSidebarCollapsed(c => {
-      const next = !c;
-      localStorage.setItem("sidebar_collapsed", next ? "1" : "0");
-      return next;
-    });
-  }
+  const [userMenu, setUserMenu] = createSignal<{ x: number; y: number } | null>(null);
 
   function fetchStartupData() {
     invoke<ModeratedChannel[]>("get_moderated_channels")
@@ -233,17 +224,21 @@ function App() {
     >
       {(u) => (
         <div class="flex h-screen bg-[#0e0e10] overflow-hidden">
-          <div class={`flex flex-col h-full shrink-0 ${sidebarCollapsed() ? "w-14" : "w-56"}`}>
-            <div class={`flex items-center border-b border-r border-[#2d2d35] bg-[#1f1f23] shrink-0 ${sidebarCollapsed() ? "flex-col gap-2 px-2 py-3" : "gap-3 px-4 py-3"}`}>
+          <div class="flex flex-col h-full shrink-0 w-14">
+            <div class="flex items-center justify-center border-b border-r border-[#2d2d35] bg-[#1f1f23] shrink-0 px-2 h-14">
               <button
-                class={`flex items-center cursor-pointer hover:opacity-80 transition-opacity text-left ${sidebarCollapsed() ? "" : "gap-3 min-w-0 flex-1"}`}
+                class="cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => handleChannelSelect({
                   user_id: u().user_id,
                   user_login: u().login,
                   user_name: u().display_name,
                   profile_image_url: u().profile_image_url,
                 })}
-                title={sidebarCollapsed() ? u().display_name : undefined}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  setUserMenu({ x: e.clientX, y: e.clientY });
+                }}
+                title={u().display_name}
               >
                 <div class="relative shrink-0">
                   <img
@@ -253,39 +248,30 @@ function App() {
                   />
                   <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
                 </div>
-                <Show when={!sidebarCollapsed()}>
-                  <div class="min-w-0 flex-1">
-                    <p class="text-white text-sm font-semibold truncate">{u().display_name}</p>
-                    <p class="text-[#9146ff] text-xs truncate">@{u().login}</p>
-                  </div>
-                </Show>
               </button>
-              <Show when={!sidebarCollapsed()}>
-                <button
-                  onClick={handleLogout}
-                  title="Log out"
-                  class="shrink-0 text-[#5c5c7a] hover:text-white transition-colors cursor-pointer"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                    <path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clip-rule="evenodd" />
-                    <path fill-rule="evenodd" d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-1.08a.75.75 0 10-1.004-1.114l-2.5 2.572a.75.75 0 000 1.044l2.5 2.572a.75.75 0 101.004-1.114l-1.048-1.08h9.546A.75.75 0 0019 10z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </Show>
             </div>
-            <Sidebar onSelect={handleChannelSelect} selectedId={selectedChannel()?.user_id ?? null} collapsed={sidebarCollapsed()} />
+            <Sidebar onSelect={handleChannelSelect} selectedId={selectedChannel()?.user_id ?? null} />
           </div>
+
+          <Show when={userMenu()}>
+            {(m) => (
+              <ContextMenu x={m().x} y={m().y} onClose={() => setUserMenu(null)}>
+                <ContextMenuItem
+                  label="Log out"
+                  danger
+                  onClick={() => { setUserMenu(null); handleLogout(); }}
+                />
+              </ContextMenu>
+            )}
+          </Show>
 
           <main class="flex-1 overflow-hidden flex flex-col">
             <Show
               when={selectedChannel()}
               fallback={
-                <>
-                  <ChatTitleBar onToggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed()} />
-                  <div class="flex items-center justify-center flex-1">
-                    <p class="text-[#5c5c7a] text-sm">Select a channel to view chat</p>
-                  </div>
-                </>
+                <div class="flex items-center justify-center flex-1">
+                  <p class="text-[#5c5c7a] text-sm">Select a channel to view chat</p>
+                </div>
               }
             >
               {(ch) => (
@@ -295,8 +281,6 @@ function App() {
                   broadcasterLogin={ch().user_login}
                   userLogin={u().login}
                   moderatedChannels={moderatedChannels()}
-                  sidebarCollapsed={sidebarCollapsed()}
-                  onToggleSidebar={toggleSidebar}
                 />
               )}
             </Show>
