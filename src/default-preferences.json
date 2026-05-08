@@ -1,0 +1,26 @@
+{
+  "feed": {
+    "fontSize": 16,
+    "events": {
+      "message": { "show": true },
+      "follow": { "show": true },
+      "sub": { "show": true },
+      "raid": { "show": true },
+      "announcement": { "show": true },
+      "charity_donation": { "show": true },
+      "bits_badge_tier": { "show": true },
+      "shoutout": { "show": true }
+    },
+    "badges": {
+      "authority": { "show": true },
+      "predictions": { "show": true },
+      "channel": { "show": true },
+      "subscriber": { "show": true },
+      "vanity": { "show": true }
+    },
+    "users": {
+      "muted": [],
+      "showDisplayName": true
+    }
+  }
+}
