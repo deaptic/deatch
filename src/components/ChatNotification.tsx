@@ -1,3 +1,5 @@
+import { Show } from "solid-js";
+
 export type ChatNotice = {
   kind: "notice";
   notice_type: string;
@@ -44,16 +46,18 @@ const NOTICE_COLORS: Record<string, string> = {
   bits_badge_tier: "#ffd700",
 };
 
-export default function ChatNotification(props: { item: ChatNotice }) {
+export default function ChatNotification(props: { item: ChatNotice; showTimestamp?: boolean }) {
   const color = () => NOTICE_COLORS[props.item.notice_type] ?? DEFAULT_COLOR;
   return (
     <div
       class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-[#1f1f23] border-l-4"
       style={{ "border-left-color": color() }}
     >
-      <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
-        {props.item.timestamp}
-      </span>
+      <Show when={props.showTimestamp}>
+        <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
+          {props.item.timestamp}
+        </span>
+      </Show>
       <span class="text-white font-semibold wrap-break-word min-w-0">
         {props.item.system_message}
       </span>

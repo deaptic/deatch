@@ -16,6 +16,8 @@ type Props = {
   isMod: boolean;
   fontSize: () => number;
   onFontSizeChange: (delta: number) => void;
+  showTimestamp: () => boolean;
+  onShowTimestampChange: (value: boolean) => void;
   mutedUsers: () => string[];
   onMutedUsersChange: (value: string[]) => void;
   notifPrefs: () => Record<NotifKey, EventPref>;
@@ -63,6 +65,10 @@ export default function ChatSettings(props: Props) {
                   onDecrement={() => props.onFontSizeChange(-1)}
                   onIncrement={() => props.onFontSizeChange(1)}
                 />
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[#efeff1] text-xs">Show timestamp</span>
+                <Toggle checked={props.showTimestamp()} onChange={props.onShowTimestampChange} />
               </div>
             </div>
             <div class="border-t border-[#2d2d35] pt-3 flex flex-col gap-2">

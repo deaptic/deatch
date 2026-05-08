@@ -7,6 +7,7 @@ export type BadgePref = { show: boolean };
 export type UserPreferences = {
   feed: {
     fontSize: number;
+    showTimestamp: boolean;
     events: Partial<Record<NotifKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
     users: {
@@ -26,6 +27,7 @@ export function loadUserPreferences(): UserPreferences {
     return {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
+        showTimestamp: stored.feed?.showTimestamp ?? DEFAULT_PREFERENCES.feed.showTimestamp,
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {

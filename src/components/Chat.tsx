@@ -114,6 +114,7 @@ export default function Chat(props: Props) {
     saveUserPreferences(update(loadUserPreferences()));
   }
   const [fontSize, setFontSize] = createSignal(_prefs.feed.fontSize);
+  const [showTimestamp, setShowTimestamp] = createSignal(_prefs.feed.showTimestamp);
   const [autoShoutout, setAutoShoutout] = createSignal(
     localStorage.getItem("auto_shoutout") === "true",
   );
@@ -302,6 +303,11 @@ export default function Chat(props: Props) {
               isMod={isMod()}
               fontSize={fontSize}
               onFontSizeChange={changeFontSize}
+              showTimestamp={showTimestamp}
+              onShowTimestampChange={(v) => {
+                updatePrefs((p) => ({ ...p, feed: { ...p.feed, showTimestamp: v } }));
+                setShowTimestamp(v);
+              }}
               mutedUsers={mutedUsers}
               onMutedUsersChange={persistMutedUsers}
               notifPrefs={notifPrefs}
@@ -346,6 +352,7 @@ export default function Chat(props: Props) {
                 saveUserPreferences(DEFAULT_PREFERENCES);
                 localStorage.removeItem("auto_shoutout");
                 setFontSize(DEFAULT_PREFERENCES.feed.fontSize);
+                setShowTimestamp(DEFAULT_PREFERENCES.feed.showTimestamp);
                 setAutoShoutout(false);
                 setMutedUsers(DEFAULT_PREFERENCES.feed.users.muted);
                 setUseDisplayName(DEFAULT_PREFERENCES.feed.users.showDisplayName);
@@ -384,7 +391,7 @@ export default function Chat(props: Props) {
             {(item) =>
               item.kind === "notice" ? (
                 <Show when={(() => { const k = NOTICE_TO_NOTIF[item.notice_type]; return !k || notifPrefs()[k]?.show !== false; })()}>
-                  <ChatNotification item={item} />
+                  <ChatNotification item={item} showTimestamp={showTimestamp()} />
                 </Show>
               ) : (
                 <Show when={notifPrefs().message?.show !== false}>
@@ -396,6 +403,7 @@ export default function Chat(props: Props) {
                     userLogin={props.userLogin}
                     broadcasterId={props.broadcasterId}
                     useDisplayName={useDisplayName()}
+                    showTimestamp={showTimestamp()}
                   />
                 </Show>
               )
