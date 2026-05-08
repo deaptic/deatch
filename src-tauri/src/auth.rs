@@ -218,8 +218,6 @@ pub async fn revoke_access_token(app: tauri::AppHandle) -> Result<(), String> {
     }
     *app.state::<AppState>().token.lock().unwrap() = None;
     *app.state::<AppState>().user_info.lock().unwrap() = None;
-    if let Some(tx) = app.state::<AppState>().chat_stop.lock().unwrap().take() {
-        let _ = tx.send(());
-    }
+    *app.state::<AppState>().chat_cmd_tx.lock().unwrap() = None;
     Ok(())
 }

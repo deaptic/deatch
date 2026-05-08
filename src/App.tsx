@@ -22,8 +22,46 @@ import {
   EmoteEntry,
 } from "./emotes";
 import { activeBroadcaster, setActiveBroadcaster } from "./broadcaster";
-import type { UserInfo, ModeratedChannel, GlobalEmote, DeviceCode, UserEmote, SevenTvChannelResult } from "./types";
+import type {
+  UserInfo,
+  ModeratedChannel,
+  GlobalEmote,
+  DeviceCode,
+  UserEmote,
+  SevenTvChannelResult,
+  RawChatMessage,
+  RawNotification,
+  RawShoutout,
+  RawFollow,
+  BadgeSet,
+} from "./types";
+import { appendItem, mutedUsers, setBadges, dropFeed, ensureFeed } from "./chat-feed";
+import {
+  mapChatMessage,
+  mapNotice,
+  mapShoutout,
+  mapFollow,
+} from "./chat-events";
+import { getTimestamp } from "./utils";
+import type { BadgeMap } from "./components/ChatMessage";
 import "./App.css";
+
+// Module-scope so HMR / remounts can't reset them.
+let globalBadgesPromise: Promise<BadgeSet[]> | null = null;
+let thirdPartyGlobalsFetched = false;
+let userScopedFetched = false;
+const badgesByChannel = new Map<string, Promise<BadgeMap>>();
+const sevenTvChannelCache = new Map<string, Promise<EmoteEntry[]>>();
+const bttvChannelCache = new Map<string, Promise<EmoteEntry[]>>();
+const ffzChannelCache = new Map<string, Promise<EmoteEntry[]>>();
+
+function resetUserScopedCaches() {
+  userScopedFetched = false;
+  badgesByChannel.clear();
+  sevenTvChannelCache.clear();
+  bttvChannelCache.clear();
+  ffzChannelCache.clear();
+}
 
 function App() {
   const [waiting, setWaiting] = createSignal(false);
@@ -33,16 +71,79 @@ function App() {
   const [selectedChannel, setSelectedChannel] = createSignal<Channel | null>(null);
   const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
   const [userMenu, setUserMenu] = createSignal<{ x: number; y: number } | null>(null);
+  const [pinnedChannels, setPinnedChannels] = createSignal<Channel[]>([]);
+  const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
 
-  function fetchStartupData() {
+  const joinedIds = new Set<string>();
+
+  function isModOf(broadcasterId: string): boolean {
+    const u = user();
+    if (!u) return false;
+    if (broadcasterId === u.user_id) return true;
+    return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
+  }
+
+  function getGlobalBadges(): Promise<BadgeSet[]> {
+    if (!globalBadgesPromise) {
+      globalBadgesPromise = invoke<BadgeSet[]>("get_global_chat_badges").catch(() => [] as BadgeSet[]);
+    }
+    return globalBadgesPromise;
+  }
+
+  function fetchBadgesFor(broadcasterId: string): Promise<BadgeMap> {
+    let cached = badgesByChannel.get(broadcasterId);
+    if (cached) {
+      cached.then((map) => setBadges(broadcasterId, map));
+      return cached;
+    }
+    cached = Promise.all([
+      getGlobalBadges(),
+      invoke<BadgeSet[]>("get_channel_chat_badges", { broadcasterId }).catch(() => [] as BadgeSet[]),
+    ]).then(([global, channel]) => {
+      const map: BadgeMap = {};
+      for (const set of global)
+        for (const v of set.versions) map[`${set.set_id}/${v.id}`] = v.image_url_1x;
+      for (const set of channel)
+        for (const v of set.versions) map[`${set.set_id}/${v.id}`] = v.image_url_1x;
+      setBadges(broadcasterId, map);
+      return map;
+    });
+    badgesByChannel.set(broadcasterId, cached);
+    return cached;
+  }
+
+  async function joinChannel(broadcasterId: string) {
+    if (joinedIds.has(broadcasterId)) return;
+    joinedIds.add(broadcasterId);
+    ensureFeed(broadcasterId);
+    fetchBadgesFor(broadcasterId);
+    try {
+      await invoke("add_chat_channel", { broadcasterId, isMod: isModOf(broadcasterId) });
+    } catch (e) {
+      joinedIds.delete(broadcasterId);
+      toast(String(e), "error");
+    }
+  }
+
+  async function leaveChannel(broadcasterId: string) {
+    if (!joinedIds.has(broadcasterId)) return;
+    joinedIds.delete(broadcasterId);
+    try {
+      await invoke("remove_chat_channel", { broadcasterId });
+    } catch (e) {
+      toast(String(e), "error");
+    }
+    dropFeed(broadcasterId);
+  }
+
+  function fetchUserScopedData() {
+    if (userScopedFetched) return;
+    userScopedFetched = true;
     invoke<ModeratedChannel[]>("get_moderated_channels")
       .then(setModeratedChannels)
       .catch(() => {});
     invoke<GlobalEmote[]>("get_global_emotes").then(setGlobalEmotes).catch(() => {});
     invoke<UserEmote[]>("get_user_emotes").then(setUserEmotes).catch(() => {});
-    fetchSevenTvGlobalEmotes().then(setSevenTvGlobal).catch(() => {});
-    fetchBttvGlobalEmotes().then(setBttvGlobal).catch(() => {});
-    fetchFfzGlobalEmotes().then(setFfzGlobal).catch(() => {});
   }
 
   createEffect(() => {
@@ -53,30 +154,114 @@ function App() {
       setFfzChannel([]);
       return;
     }
-    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId: broadcaster.id })
-      .then((r) => setSevenTvChannel(r.emotes))
-      .catch(() => setSevenTvChannel([]));
-    invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId: broadcaster.id })
-      .then(setBttvChannel)
-      .catch(() => setBttvChannel([]));
-    invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin: broadcaster.login })
-      .then(setFfzChannel)
-      .catch(() => setFfzChannel([]));
+    let sevenTv = sevenTvChannelCache.get(broadcaster.id);
+    if (!sevenTv) {
+      sevenTv = invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId: broadcaster.id })
+        .then((r) => r.emotes)
+        .catch(() => []);
+      sevenTvChannelCache.set(broadcaster.id, sevenTv);
+    }
+    sevenTv.then(setSevenTvChannel);
+
+    let bttv = bttvChannelCache.get(broadcaster.id);
+    if (!bttv) {
+      bttv = invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId: broadcaster.id })
+        .catch(() => [] as EmoteEntry[]);
+      bttvChannelCache.set(broadcaster.id, bttv);
+    }
+    bttv.then(setBttvChannel);
+
+    let ffz = ffzChannelCache.get(broadcaster.id);
+    if (!ffz) {
+      ffz = invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin: broadcaster.login })
+        .catch(() => [] as EmoteEntry[]);
+      ffzChannelCache.set(broadcaster.id, ffz);
+    }
+    ffz.then(setFfzChannel);
+  });
+
+  // Maintain the joined set: pinned ∪ live ∪ {selected} ∪ {self}.
+  createEffect(() => {
+    const u = user();
+    if (!u) return;
+    const desired = new Set<string>();
+    desired.add(u.user_id);
+    for (const ch of pinnedChannels()) desired.add(ch.user_id);
+    for (const ch of liveChannels()) desired.add(ch.user_id);
+    const sel = selectedChannel();
+    if (sel) desired.add(sel.user_id);
+
+    for (const id of desired) {
+      if (!joinedIds.has(id)) joinChannel(id);
+    }
+    for (const id of [...joinedIds]) {
+      if (!desired.has(id)) leaveChannel(id);
+    }
   });
 
   onMount(() => {
+    if (!thirdPartyGlobalsFetched) {
+      thirdPartyGlobalsFetched = true;
+      fetchSevenTvGlobalEmotes().then(setSevenTvGlobal).catch(() => {});
+      fetchBttvGlobalEmotes().then(setBttvGlobal).catch(() => {});
+      fetchFfzGlobalEmotes().then(setFfzGlobal).catch(() => {});
+    }
+
     let unlistenSuccess: (() => void) | undefined;
     let unlistenError: (() => void) | undefined;
+    const chatUnlistens: (() => void)[] = [];
     onCleanup(() => {
       unlistenSuccess?.();
       unlistenError?.();
+      chatUnlistens.forEach((fn) => fn());
     });
+
+    listen<RawChatMessage>("chat-message", (e) => {
+      const id = e.payload.broadcaster_user_id;
+      if (mutedUsers().some((u) => u.toLowerCase() === e.payload.chatter_user_login.toLowerCase())) return;
+      appendItem(id, mapChatMessage(e.payload, getTimestamp()));
+    }).then((fn) => chatUnlistens.push(fn));
+
+    listen<RawNotification>("chat-notification", (e) => {
+      const id = e.payload.broadcaster_user_id;
+      const item = mapNotice(e.payload, getTimestamp());
+      if (e.payload.notice_type === "sub_gift") {
+        setTimeout(() => appendItem(id, item), 600);
+      } else {
+        appendItem(id, item);
+      }
+
+      if (
+        e.payload.notice_type === "raid" &&
+        e.payload.chatter_user_id &&
+        isModOf(id) &&
+        localStorage.getItem("auto_shoutout") === "true" &&
+        selectedChannel()?.user_id === id
+      ) {
+        invoke("send_shoutout", {
+          fromBroadcasterId: id,
+          toBroadcasterId: e.payload.chatter_user_id,
+        });
+      }
+    }).then((fn) => chatUnlistens.push(fn));
+
+    listen<RawShoutout>("chat-shoutout-create", (e) => {
+      appendItem(e.payload.broadcaster_user_id, mapShoutout(e.payload, getTimestamp()));
+    }).then((fn) => chatUnlistens.push(fn));
+
+    listen<RawFollow>("channel-follow", (e) => {
+      appendItem(e.payload.broadcaster_user_id, mapFollow(e.payload, getTimestamp()));
+    }).then((fn) => chatUnlistens.push(fn));
+
+    listen<string>("chat-error", (e) => {
+      console.error("Chat error:", e.payload);
+    }).then((fn) => chatUnlistens.push(fn));
 
     (async () => {
       try {
         const u = await invoke<UserInfo>("try_restore_session");
         setUser(u);
-        fetchStartupData();
+        fetchUserScopedData();
       } catch {
         // No stored session — user will log in manually
       } finally {
@@ -87,7 +272,7 @@ function App() {
         setWaiting(false);
         setDeviceCode(null);
         setUser(e.payload);
-        fetchStartupData();
+        fetchUserScopedData();
         toast("Connected to Twitch!", "success");
       });
       unlistenError = await listen<string>("twitch-auth-error", (e) => {
@@ -117,6 +302,8 @@ function App() {
   async function handleLogout() {
     try {
       await invoke("revoke_access_token");
+      for (const id of [...joinedIds]) await leaveChannel(id);
+      resetUserScopedCaches();
       setUser(null);
       setSelectedChannel(null);
     } catch (e) {
@@ -124,17 +311,9 @@ function App() {
     }
   }
 
-  async function handleChannelSelect(ch: Channel) {
+  function handleChannelSelect(ch: Channel) {
     setSelectedChannel(ch);
     setActiveBroadcaster({ id: ch.user_id, login: ch.user_login, name: ch.user_name });
-    const isMod =
-      ch.user_id === user()?.user_id ||
-      moderatedChannels().some((m) => m.broadcaster_id === ch.user_id);
-    try {
-      await invoke("start_chat", { broadcasterId: ch.user_id, isMod });
-    } catch (e) {
-      toast(String(e), "error");
-    }
   }
 
   createEffect(() => {
@@ -250,7 +429,12 @@ function App() {
                 </div>
               </button>
             </div>
-            <Sidebar onSelect={handleChannelSelect} selectedId={selectedChannel()?.user_id ?? null} />
+            <Sidebar
+              onSelect={handleChannelSelect}
+              selectedId={selectedChannel()?.user_id ?? null}
+              onPinnedChange={setPinnedChannels}
+              onLiveChange={setLiveChannels}
+            />
           </div>
 
           <Show when={userMenu()}>

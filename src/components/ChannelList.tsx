@@ -1,4 +1,4 @@
-import { Show, createSignal } from "solid-js";
+import { Show, createSignal, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
 import { invoke } from "@tauri-apps/api/core";
@@ -25,6 +25,8 @@ export type Channel = {
 type Props = {
   onSelect: (ch: Channel) => void;
   selectedId: string | null;
+  onPinnedChange?: (pinned: Channel[]) => void;
+  onLiveChange?: (live: Channel[]) => void;
 };
 
 function loadPinned(): Channel[] {
@@ -51,17 +53,23 @@ export default function ChannelList(props: Props) {
 
   const pinnedIds = () => new Set(pinned.map(p => p.user_id));
 
-  function pin(ch: Channel) {
-    if (pinned.some(p => p.user_id === ch.user_id)) return;
-    const updated = [...loadPinned(), ch];
+  onMount(() => {
+    props.onPinnedChange?.(loadPinned());
+  });
+
+  function commitPinned(updated: Channel[]) {
     setPinned(reconcile(updated));
     savePinned(updated);
+    props.onPinnedChange?.(updated);
+  }
+
+  function pin(ch: Channel) {
+    if (pinned.some(p => p.user_id === ch.user_id)) return;
+    commitPinned([...loadPinned(), ch]);
   }
 
   function unpin(user_id: string) {
-    const updated = loadPinned().filter(p => p.user_id !== user_id);
-    setPinned(reconcile(updated));
-    savePinned(updated);
+    commitPinned(loadPinned().filter(p => p.user_id !== user_id));
   }
 
   function reorder(from: number, to: number) {
@@ -69,12 +77,12 @@ export default function ChannelList(props: Props) {
     const updated = loadPinned();
     const [item] = updated.splice(from, 1);
     updated.splice(from < to ? to - 1 : to, 0, item);
-    setPinned(reconcile(updated));
-    savePinned(updated);
+    commitPinned(updated);
   }
 
   function handleLiveUpdate(channels: Channel[]) {
     setLiveById(new Map(channels.map(ch => [ch.user_id, ch])));
+    props.onLiveChange?.(channels);
   }
 
   function openMenu(ch: Channel, x: number, y: number) {
