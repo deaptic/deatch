@@ -96,6 +96,7 @@ export type Badge = {
 };
 
 export type RawChatMessage = {
+  broadcaster_user_id: string;
   message_id: string;
   chatter_user_id: string;
   chatter_user_login: string;
@@ -110,6 +111,7 @@ export type RawChatMessage = {
 
 // ── EventSub: chat notification / shoutout / follow ────────────────────────
 export type RawNotification = {
+  broadcaster_user_id: string;
   notice_type: string;
   system_message: string;
   chatter_is_anonymous?: boolean;
@@ -119,11 +121,13 @@ export type RawNotification = {
 };
 
 export type RawShoutout = {
+  broadcaster_user_id: string;
   to_broadcaster_user_name: string;
   moderator_user_name: string;
 };
 
 export type RawFollow = {
+  broadcaster_user_id: string;
   user_id: string;
   user_name: string;
 };

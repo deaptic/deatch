@@ -1,5 +1,4 @@
 import {
-  createSignal,
   createEffect,
   createMemo,
   on,
@@ -7,39 +6,37 @@ import {
   Show,
   onCleanup,
   onMount,
+  createSignal,
 } from "solid-js";
-import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/core";
 import { buildThirdPartyEmoteMap } from "../emotes";
-import ChatMessage, { ChatMsg, BadgeMap, Fragment } from "./ChatMessage";
-import ChatNotification, { ChatNotice } from "./ChatNotification";
+import ChatMessage from "./ChatMessage";
+import ChatNotification from "./ChatNotification";
 import ChatInput from "./ChatInput";
 import ChatSettings from "./ChatSettings";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatTitleBar from "./ChatTitleBar";
 import { getTimestamp } from "../utils";
-import type {
-  ModeratedChannel,
-  RawChatMessage,
-  RawNotification,
-  RawShoutout,
-  RawFollow,
-  RawFragment,
-  BadgeSet,
-} from "../types";
+import type { ModeratedChannel } from "../types";
 import {
   contextMenu,
   replyTo,
   clearReply,
-  closeContextMenu,
   modAction,
   registerInputFocus,
 } from "../chat-state";
+import {
+  feeds,
+  appendItem,
+  setPaused as setFeedPaused,
+  trimToLatest,
+  mutedUsers,
+  setMutedUsers,
+  type ChatItem,
+} from "../chat-feed";
 import BanTimeoutModal from "./BanTimeoutModal";
 import {
   NOTIF_EVENTS,
   NOTICE_TO_NOTIF,
-  BADGE_CATEGORIES,
   type NotifKey,
   type BadgeCategoryKey,
 } from "../constants";
@@ -52,46 +49,6 @@ import {
 } from "../preferences";
 import SwordIcon from "../icons/SwordIcon";
 
-type ChatItem = ChatMsg | ChatNotice;
-
-const CHANNEL_POINT_TYPES = new Set([
-  "channel_points_highlighted",
-  "channel_points_sub_only",
-  "power_ups_message_effect",
-  "power_ups_gigantified_emote",
-]);
-
-function mapFragment(f: RawFragment): Fragment {
-  switch (f.type) {
-    case "emote":
-      return { type: "emote", text: f.text, id: f.emote.id };
-    case "mention":
-      return { type: "mention", text: f.text, user_login: f.mention.user_login };
-    case "cheermote":
-      return { type: "cheermote", text: f.text };
-    default:
-      return { type: "text", text: f.text };
-  }
-}
-
-function mapChatMessage(raw: RawChatMessage, timestamp: string): ChatMsg {
-  return {
-    kind: "message",
-    message_id: raw.message_id,
-    chatter_user_id: raw.chatter_user_id,
-    chatter_login: raw.chatter_user_login,
-    chatter_name: raw.chatter_user_name,
-    color: raw.color,
-    fragments: raw.message.fragments.map(mapFragment),
-    badges: raw.badges,
-    reply: raw.reply ?? undefined,
-    timestamp,
-    channel_points:
-      !!raw.channel_points_custom_reward_id || CHANNEL_POINT_TYPES.has(raw.message_type),
-    first_message: raw.message_type === "user_intro",
-  };
-}
-
 type Props = {
   broadcasterName: string;
   broadcasterId: string;
@@ -102,8 +59,9 @@ type Props = {
 
 
 export default function Chat(props: Props) {
-  const [messages, setMessages] = createSignal<ChatItem[]>([]);
-  const [badges, setBadges] = createSignal<BadgeMap>({});
+  const messages = createMemo<ChatItem[]>(() => feeds[props.broadcasterId]?.messages ?? []);
+  const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});
+  const paused = createMemo(() => feeds[props.broadcasterId]?.paused ?? false);
 
   const emoteMap = createMemo(buildThirdPartyEmoteMap);
 
@@ -113,14 +71,6 @@ export default function Chat(props: Props) {
   }
   const [fontSize, setFontSize] = createSignal(_prefs.feed.fontSize);
   const [showTimestamp, setShowTimestamp] = createSignal(_prefs.feed.showTimestamp);
-  const [autoShoutout, setAutoShoutout] = createSignal(
-    localStorage.getItem("auto_shoutout") === "true",
-  );
-  const [mutedUsers, setMutedUsers] = createSignal<string[]>(_prefs.feed.users.muted);
-  function persistMutedUsers(users: string[]) {
-    updatePrefs((p) => ({ ...p, feed: { ...p.feed, users: { muted: users } } }));
-    setMutedUsers(users);
-  }
   const [notifPrefs, setNotifPrefs] = createSignal<Record<NotifKey, EventPref>>(_prefs.feed.events as Record<NotifKey, EventPref>);
   function setNotifPref(key: NotifKey, value: boolean) {
     setNotifPrefs((p) => {
@@ -150,7 +100,6 @@ export default function Chat(props: Props) {
     props.moderatedChannels.some(
       (c) => c.broadcaster_id === props.broadcasterId,
     );
-  const [paused, setPaused] = createSignal(false);
   let bottomRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
   let panelMount: HTMLDivElement | undefined;
@@ -162,8 +111,7 @@ export default function Chat(props: Props) {
   }
 
   function scrollToBottom() {
-    setMessages((prev) => prev.slice(-500));
-    setPaused(false);
+    trimToLatest(props.broadcasterId);
     scrollInstant();
   }
 
@@ -174,100 +122,15 @@ export default function Chat(props: Props) {
     }
     const el = e.currentTarget as HTMLDivElement;
     const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-    setPaused(!atBottom);
+    setFeedPaused(props.broadcasterId, !atBottom);
   }
 
-  onMount(() => {
-    const unlistens: (() => void)[] = [];
-    onCleanup(() => unlistens.forEach((fn) => fn()));
-    const append = (item: ChatItem) =>
-      setMessages((prev) =>
-        paused() ? [...prev, item] : [...prev.slice(-499), item],
-      );
-    listen<RawChatMessage>("chat-message", (e) => {
-      if (
-        mutedUsers().some(
-          (u) => u.toLowerCase() === e.payload.chatter_user_login.toLowerCase(),
-        )
-      )
-        return;
-      append(mapChatMessage(e.payload, getTimestamp()));
-    }).then((fn) => unlistens.push(fn));
-    listen<RawNotification>("chat-notification", (e) => {
-      const item: ChatNotice = {
-        kind: "notice",
-        notice_type: e.payload.notice_type,
-        system_message: e.payload.system_message,
-        chatter_user_id: e.payload.chatter_is_anonymous ? undefined : e.payload.chatter_user_id,
-        chatter_name: e.payload.chatter_user_name ?? "anonymous",
-        color: e.payload.color ?? "",
-        timestamp: getTimestamp(),
-      };
-      if (e.payload.notice_type === "sub_gift") {
-        setTimeout(() => append(item), 600);
-      } else {
-        append(item);
-      }
-      if (
-        e.payload.notice_type === "raid" &&
-        e.payload.chatter_user_id &&
-        isMod() &&
-        autoShoutout()
-      ) {
-        invoke("send_shoutout", {
-          fromBroadcasterId: props.broadcasterId,
-          toBroadcasterId: e.payload.chatter_user_id,
-        });
-      }
-    }).then((fn) => unlistens.push(fn));
-    listen<RawShoutout>("chat-shoutout-create", (e) => {
-      append({
-        kind: "notice",
-        notice_type: "shoutout",
-        system_message: `Shoutout to ${e.payload.to_broadcaster_user_name}!`,
-        chatter_name: e.payload.moderator_user_name,
-        color: "",
-        timestamp: getTimestamp(),
-      });
-    }).then((fn) => unlistens.push(fn));
-    listen<RawFollow>("channel-follow", (e) => {
-      append({
-        kind: "notice",
-        notice_type: "follow",
-        system_message: `${e.payload.user_name} followed!`,
-        chatter_user_id: e.payload.user_id,
-        chatter_name: e.payload.user_name,
-        color: "",
-        timestamp: getTimestamp(),
-      });
-    }).then((fn) => unlistens.push(fn));
-    listen<string>("chat-error", (e) => {
-      console.error("Chat error:", e.payload);
-    }).then((fn) => unlistens.push(fn));
-  });
+  // On channel switch, pin to bottom if the feed is not paused.
+  createEffect(on(() => props.broadcasterId, () => {
+    queueMicrotask(() => { if (!paused()) scrollInstant(); });
+  }));
 
-  createEffect(() => {
-    const id = props.broadcasterId;
-    setMessages([]);
-    setBadges({});
-    closeContextMenu();
-    clearReply();
-
-    Promise.all([
-      invoke<BadgeSet[]>("get_global_chat_badges").catch(() => []),
-      invoke<BadgeSet[]>("get_channel_chat_badges", { broadcasterId: id }).catch(() => []),
-    ]).then(([global, channel]) => {
-      const map: BadgeMap = {};
-      for (const set of global)
-        for (const v of set.versions) map[`${set.set_id}/${v.id}`] = v.image_url_1x;
-      for (const set of channel)
-        for (const v of set.versions) map[`${set.set_id}/${v.id}`] = v.image_url_1x;
-      setBadges(map);
-    });
-
-  });
-
-  createEffect(on(messages, () => {
+  createEffect(on(() => messages().length, () => {
     if (!paused()) scrollInstant();
   }));
 
@@ -307,7 +170,7 @@ export default function Chat(props: Props) {
                 setShowTimestamp(v);
               }}
               mutedUsers={mutedUsers}
-              onMutedUsersChange={persistMutedUsers}
+              onMutedUsersChange={setMutedUsers}
               notifPrefs={notifPrefs}
               onNotifPrefChange={setNotifPref}
               badgePrefs={badgePrefs}
@@ -337,9 +200,7 @@ export default function Chat(props: Props) {
                         color: "#9146ff",
                         timestamp,
                       };
-                setMessages((prev) =>
-                  paused() ? [...prev, item] : [...prev.slice(-499), item],
-                );
+                appendItem(props.broadcasterId, item);
               }}
               useDisplayName={useDisplayName}
               onUseDisplayNameChange={(v) => {
@@ -351,7 +212,6 @@ export default function Chat(props: Props) {
                 localStorage.removeItem("auto_shoutout");
                 setFontSize(DEFAULT_PREFERENCES.feed.fontSize);
                 setShowTimestamp(DEFAULT_PREFERENCES.feed.showTimestamp);
-                setAutoShoutout(false);
                 setMutedUsers(DEFAULT_PREFERENCES.feed.users.muted);
                 setUseDisplayName(DEFAULT_PREFERENCES.feed.users.showDisplayName);
                 setNotifPrefs(DEFAULT_PREFERENCES.feed.events as Record<NotifKey, EventPref>);

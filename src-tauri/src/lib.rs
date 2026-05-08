@@ -1,6 +1,8 @@
 use futures_util::StreamExt;
+use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::{Emitter, Manager};
+use tokio::sync::mpsc;
 use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
 use twitch_api::eventsub::{
     channel::chat::{ChannelChatMessageV1, ChannelChatNotificationV1},
@@ -24,7 +26,12 @@ pub(crate) struct UserInfo {
 pub(crate) struct AppState {
     pub(crate) token: Mutex<Option<UserToken>>,
     pub(crate) user_info: Mutex<Option<UserInfo>>,
-    pub(crate) chat_stop: Mutex<Option<tokio::sync::oneshot::Sender<()>>>,
+    pub(crate) chat_cmd_tx: Mutex<Option<mpsc::UnboundedSender<ChatCmd>>>,
+}
+
+pub(crate) enum ChatCmd {
+    Add { broadcaster_id: String, is_mod: bool },
+    Remove { broadcaster_id: String },
 }
 
 pub(crate) fn get_token(app: &tauri::AppHandle) -> Result<UserToken, String> {
@@ -41,57 +48,120 @@ pub(crate) fn helix() -> twitch_api::HelixClient<'static, reqwest::Client> {
 }
 
 #[tauri::command]
-async fn start_chat(
+async fn add_chat_channel(
     app: tauri::AppHandle,
     broadcaster_id: String,
     is_mod: bool,
 ) -> Result<(), String> {
-    let old = app.state::<AppState>().chat_stop.lock().unwrap().take();
-    if let Some(tx) = old {
-        let _ = tx.send(());
+    ensure_chat_task(&app)?;
+    let state = app.state::<AppState>();
+    let tx_guard = state.chat_cmd_tx.lock().unwrap();
+    if let Some(tx) = tx_guard.as_ref() {
+        tx.send(ChatCmd::Add { broadcaster_id, is_mod })
+            .map_err(|e| e.to_string())?;
     }
-
-    let token = get_token(&app)?;
-
-    let (stop_tx, stop_rx) = tokio::sync::oneshot::channel();
-    *app.state::<AppState>().chat_stop.lock().unwrap() = Some(stop_tx);
-
-    tauri::async_runtime::spawn(async move {
-        if let Err(e) = run_chat(app.clone(), token, broadcaster_id, is_mod, stop_rx).await {
-            let _ = app.emit("chat-error", e);
-        }
-    });
-
     Ok(())
+}
+
+#[tauri::command]
+async fn remove_chat_channel(
+    app: tauri::AppHandle,
+    broadcaster_id: String,
+) -> Result<(), String> {
+    let state = app.state::<AppState>();
+    let tx_guard = state.chat_cmd_tx.lock().unwrap();
+    if let Some(tx) = tx_guard.as_ref() {
+        tx.send(ChatCmd::Remove { broadcaster_id })
+            .map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+fn ensure_chat_task(app: &tauri::AppHandle) -> Result<(), String> {
+    let state = app.state::<AppState>();
+    let mut guard = state.chat_cmd_tx.lock().unwrap();
+    if guard.is_some() {
+        return Ok(());
+    }
+    let token = get_token(app)?;
+    let (tx, rx) = mpsc::unbounded_channel();
+    *guard = Some(tx);
+    drop(guard);
+
+    let app_clone = app.clone();
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = run_chat(app_clone.clone(), token, rx).await {
+            let _ = app_clone.emit("chat-error", e);
+        }
+        // clear the cmd_tx so next add_chat_channel can respawn.
+        let state = app_clone.state::<AppState>();
+        *state.chat_cmd_tx.lock().unwrap() = None;
+    });
+    Ok(())
+}
+
+struct ChannelSub {
+    is_mod: bool,
+    sub_ids: Vec<String>,
 }
 
 async fn run_chat(
     app: tauri::AppHandle,
     token: UserToken,
-    broadcaster_id: String,
-    is_mod: bool,
-    mut stop: tokio::sync::oneshot::Receiver<()>,
+    mut cmd_rx: mpsc::UnboundedReceiver<ChatCmd>,
 ) -> Result<(), String> {
     let helix = helix();
     let mut url = "wss://eventsub.wss.twitch.tv/ws".to_string();
+    let mut subs: HashMap<String, ChannelSub> = HashMap::new();
 
     loop {
         let Ok((ws, _)) = connect_async(url.as_str()).await else {
             url = "wss://eventsub.wss.twitch.tv/ws".to_string();
-            tokio::select! { biased; _ = &mut stop => return Ok(()), _ = tokio::time::sleep(std::time::Duration::from_secs(5)) => {} }
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
             continue;
         };
 
         let (mut write, mut read) = ws.split();
         let mut next_url: Option<String> = None;
+        let mut session_id: Option<String> = None;
+        // sub IDs are tied to the previous session; clear for the new one.
+        for sub in subs.values_mut() {
+            sub.sub_ids.clear();
+        }
 
         loop {
             tokio::select! {
-                biased;
-                _ = &mut stop => return Ok(()),
+                cmd = cmd_rx.recv() => match cmd {
+                    Some(ChatCmd::Add { broadcaster_id, is_mod }) => {
+                        if subs.contains_key(&broadcaster_id) {
+                            // Already subscribed; update is_mod if it changed.
+                            if let Some(sub) = subs.get_mut(&broadcaster_id) {
+                                sub.is_mod = is_mod;
+                            }
+                        } else if let Some(sid) = &session_id {
+                            match subscribe_to_chat(&helix, &token, &broadcaster_id, is_mod, sid).await {
+                                Ok(sub_ids) => {
+                                    subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
+                                }
+                                Err(e) => { let _ = app.emit("chat-error", e); }
+                            }
+                        } else {
+                            // No session yet — record so we subscribe on Welcome.
+                            subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids: vec![] });
+                        }
+                    }
+                    Some(ChatCmd::Remove { broadcaster_id }) => {
+                        if let Some(sub) = subs.remove(&broadcaster_id) {
+                            for sid in sub.sub_ids {
+                                let _ = delete_subscription(&helix, &token, &sid).await;
+                            }
+                        }
+                    }
+                    None => return Ok(()),
+                },
                 msg = read.next() => match msg {
                     Some(Ok(WsMessage::Text(text))) => {
-                        match handle_ws_message(&app, &helix, &token, &broadcaster_id, is_mod, &text).await {
+                        match handle_ws_message(&app, &helix, &token, &mut subs, &mut session_id, &text).await {
                             Ok(Some(reconnect)) => { next_url = Some(reconnect); break; }
                             Err(e) => { let _ = app.emit("chat-error", e); }
                             _ => {}
@@ -107,7 +177,7 @@ async fn run_chat(
         let reconnecting = next_url.is_some();
         url = next_url.unwrap_or_else(|| "wss://eventsub.wss.twitch.tv/ws".to_string());
         if !reconnecting {
-            tokio::select! { biased; _ = &mut stop => return Ok(()), _ = tokio::time::sleep(std::time::Duration::from_secs(3)) => {} }
+            tokio::time::sleep(std::time::Duration::from_secs(3)).await;
         }
     }
 }
@@ -116,36 +186,52 @@ async fn handle_ws_message(
     app: &tauri::AppHandle,
     helix: &twitch_api::HelixClient<'_, reqwest::Client>,
     token: &UserToken,
-    broadcaster_id: &str,
-    is_mod: bool,
+    subs: &mut HashMap<String, ChannelSub>,
+    session_id: &mut Option<String>,
     text: &str,
 ) -> Result<Option<String>, String> {
     let event = Event::parse_websocket(text).map_err(|e| e.to_string())?;
     match event {
         EventsubWebsocketData::Welcome { payload, .. } => {
-            subscribe_to_chat(helix, token, broadcaster_id, is_mod, &payload.session.id).await?;
+            let sid = payload.session.id.to_string();
+            *session_id = Some(sid.clone());
+            // (Re)subscribe all known channels on this fresh session.
+            for (broadcaster_id, sub) in subs.iter_mut() {
+                match subscribe_to_chat(helix, token, broadcaster_id, sub.is_mod, &sid).await {
+                    Ok(ids) => sub.sub_ids = ids,
+                    Err(e) => { let _ = app.emit("chat-error", e); }
+                }
+            }
             Ok(None)
         }
         EventsubWebsocketData::Notification { payload, .. } => {
             match payload {
                 Event::ChannelChatMessageV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
-                        let _ = app.emit("chat-message", msg);
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("chat-message", msg);
+                        }
                     }
                 }
                 Event::ChannelChatNotificationV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
-                        let _ = app.emit("chat-notification", msg);
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("chat-notification", msg);
+                        }
                     }
                 }
                 Event::ChannelShoutoutCreateV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
-                        let _ = app.emit("chat-shoutout-create", msg);
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("chat-shoutout-create", msg);
+                        }
                     }
                 }
                 Event::ChannelFollowV2(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
-                        let _ = app.emit("channel-follow", msg);
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("channel-follow", msg);
+                        }
                     }
                 }
                 _ => {}
@@ -166,8 +252,10 @@ async fn subscribe_to_chat(
     broadcaster_id: &str,
     is_mod: bool,
     session_id: &str,
-) -> Result<(), String> {
-    helix
+) -> Result<Vec<String>, String> {
+    let mut ids: Vec<String> = Vec::new();
+
+    let resp = helix
         .req_post(
             twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelChatMessageV1>::new(),
             twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
@@ -178,7 +266,9 @@ async fn subscribe_to_chat(
         )
         .await
         .map_err(|e| e.to_string())?;
-    helix
+    ids.push(resp.data.id.to_string());
+
+    let resp = helix
         .req_post(
             twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
                 ChannelChatNotificationV1,
@@ -191,8 +281,10 @@ async fn subscribe_to_chat(
         )
         .await
         .map_err(|e| e.to_string())?;
+    ids.push(resp.data.id.to_string());
+
     if is_mod {
-        helix
+        let resp = helix
             .req_post(
                 twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelShoutoutCreateV1>::new(),
                 twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
@@ -203,7 +295,9 @@ async fn subscribe_to_chat(
             )
             .await
             .map_err(|e| e.to_string())?;
-        helix
+        ids.push(resp.data.id.to_string());
+
+        let resp = helix
             .req_post(
                 twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelFollowV2>::new(),
                 twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
@@ -214,7 +308,23 @@ async fn subscribe_to_chat(
             )
             .await
             .map_err(|e| e.to_string())?;
+        ids.push(resp.data.id.to_string());
     }
+    Ok(ids)
+}
+
+async fn delete_subscription(
+    helix: &twitch_api::HelixClient<'_, reqwest::Client>,
+    token: &UserToken,
+    subscription_id: &str,
+) -> Result<(), String> {
+    helix
+        .req_delete(
+            twitch_api::helix::eventsub::DeleteEventSubSubscriptionRequest::id(subscription_id),
+            token,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -225,13 +335,14 @@ pub fn run() {
         .manage(AppState {
             token: Mutex::new(None),
             user_info: Mutex::new(None),
-            chat_stop: Mutex::new(None),
+            chat_cmd_tx: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
             auth::start_dcf_auth,
             auth::try_restore_session,
             auth::revoke_access_token,
-            start_chat,
+            add_chat_channel,
+            remove_chat_channel,
             twitch::streams::get_followed_streams,
             twitch::streams::get_streams_by_user_id,
             twitch::users::get_users_by_id,
