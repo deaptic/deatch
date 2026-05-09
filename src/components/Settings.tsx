@@ -5,18 +5,26 @@ import {
   changeFontSize,
   useDisplayName,
   setUseDisplayName,
+  showTimestamp,
+  setShowTimestamp,
+  badgePrefs,
+  setBadgePref,
+  notifPrefs,
+  setNotifPref,
+  mutedUsers,
+  setMutedUsers,
   developerMode,
   setDeveloperMode,
 } from "../feed-prefs";
+import { BADGE_CATEGORIES, NOTIF_EVENTS } from "../constants";
 import Stepper from "../ui/Stepper";
 import Toggle from "../ui/Toggle";
 
-type SectionKey = "appearance" | "accessibility" | "notifications" | "advanced";
+type SectionKey = "feed" | "notifications" | "advanced";
 
 const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: "notifications", label: "Notifications" },
-  { key: "appearance", label: "Appearance" },
-  { key: "accessibility", label: "Accessibility" },
+  { key: "feed", label: "Feed" },
   { key: "advanced", label: "Advanced" },
 ];
 
@@ -73,39 +81,127 @@ export default function Settings() {
             </For>
           </nav>
           <div class="flex-1 overflow-y-auto p-6">
+            <Show when={section() === "feed"}>
+              <section class="flex flex-col gap-8">
+                <h2 class="text-white text-lg font-semibold">Feed</h2>
+                <div class="flex flex-col gap-3">
+                  <h3 class="text-[#adadb8] text-xs font-medium uppercase tracking-wider">General</h3>
+                  <div class="flex items-start justify-between gap-6">
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <span class="text-[#efeff1] text-sm">Text size in chat</span>
+                      <span class="text-[#adadb8] text-xs">Adjust how big chat messages appear.</span>
+                    </div>
+                    <Stepper
+                      size="md"
+                      label={String(fontSize())}
+                      onDecrement={() => changeFontSize(-1)}
+                      onIncrement={() => changeFontSize(1)}
+                    />
+                  </div>
+                  <div class="flex items-start justify-between gap-6">
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <span class="text-[#efeff1] text-sm">Show timestamps</span>
+                      <span class="text-[#adadb8] text-xs">Display the time next to each chat message.</span>
+                    </div>
+                    <Toggle size="md" checked={showTimestamp()} onChange={setShowTimestamp} />
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                  <h3 class="text-[#adadb8] text-xs font-medium uppercase tracking-wider">Users</h3>
+                  <div class="flex items-start justify-between gap-6">
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <span class="text-[#efeff1] text-sm">Show display names in chat</span>
+                      <span class="text-[#adadb8] text-xs">Show users' chosen display names instead of their login.</span>
+                    </div>
+                    <Toggle size="md" checked={useDisplayName()} onChange={setUseDisplayName} />
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="flex flex-col gap-1 min-w-0">
+                      <span class="text-[#efeff1] text-sm">Muted users</span>
+                      <span class="text-[#adadb8] text-xs">Hide messages from these users. Press Enter to add.</span>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Mute username..."
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter") return;
+                        const v = e.currentTarget.value.trim().toLowerCase();
+                        e.currentTarget.value = "";
+                        if (!v || mutedUsers().includes(v)) return;
+                        setMutedUsers([...mutedUsers(), v]);
+                      }}
+                      class="bg-[#2d2d35] text-[#efeff1] text-sm rounded px-2 py-1.5 border border-[#3d3d4a] focus:outline-none focus:border-[#9146ff]"
+                    />
+                    <Show when={mutedUsers().length > 0}>
+                      <div class="flex flex-wrap gap-1">
+                        <For each={mutedUsers()}>
+                          {(name) => (
+                            <span class="flex items-center gap-1 bg-[#2d2d35] border border-[#3d3d4a] rounded px-2 py-0.5 text-xs text-[#efeff1]">
+                              {name}
+                              <button
+                                onClick={() => setMutedUsers(mutedUsers().filter((n) => n !== name))}
+                                class="text-[#6e6e8f] hover:text-white cursor-pointer leading-none"
+                                title="Remove"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          )}
+                        </For>
+                      </div>
+                    </Show>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                  <h3 class="text-[#adadb8] text-xs font-medium uppercase tracking-wider">Events</h3>
+                  <For each={NOTIF_EVENTS}>
+                    {(e) => (
+                      <div class="flex items-start justify-between gap-6">
+                        <div class="flex flex-col gap-1 min-w-0">
+                          <span class="text-[#efeff1] text-sm">{e.label}</span>
+                          <span class="text-[#adadb8] text-xs">{e.description}</span>
+                        </div>
+                        <Toggle
+                          size="md"
+                          checked={notifPrefs()[e.key]?.show !== false}
+                          onChange={(v) => setNotifPref(e.key, v)}
+                        />
+                      </div>
+                    )}
+                  </For>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                  <h3 class="text-[#adadb8] text-xs font-medium uppercase tracking-wider">Badges</h3>
+                  <For each={BADGE_CATEGORIES}>
+                    {(c) => (
+                      <div class="flex items-start justify-between gap-6">
+                        <div class="flex flex-col gap-1 min-w-0">
+                          <span class="text-[#efeff1] text-sm">{c.label}</span>
+                          <span class="text-[#adadb8] text-xs">{c.description}</span>
+                        </div>
+                        <Toggle
+                          size="md"
+                          checked={badgePrefs()[c.key]?.show !== false}
+                          onChange={(v) => setBadgePref(c.key, v)}
+                        />
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </section>
+            </Show>
             <Show when={section() === "advanced"}>
-              <section class="flex flex-col gap-6">
+              <section class="flex flex-col gap-3">
                 <h2 class="text-white text-lg font-semibold">Advanced</h2>
                 <div class="flex items-start justify-between gap-6">
                   <div class="flex flex-col gap-1 min-w-0">
                     <span class="text-[#efeff1] text-sm">Developer mode</span>
-                    <span class="text-[#5c5c7a] text-xs">Show extra debug info and developer tools.</span>
+                    <span class="text-[#adadb8] text-xs">Show extra debug info and developer tools.</span>
                   </div>
                   <Toggle size="md" checked={developerMode()} onChange={setDeveloperMode} />
-                </div>
-              </section>
-            </Show>
-            <Show when={section() === "accessibility"}>
-              <section class="flex flex-col gap-6">
-                <h2 id="text-readability" class="text-white text-lg font-semibold scroll-mt-6">Text Readability</h2>
-                <div class="flex items-start justify-between gap-6">
-                  <div class="flex flex-col gap-1 min-w-0">
-                    <span class="text-[#efeff1] text-sm">Text size in chat</span>
-                    <span class="text-[#5c5c7a] text-xs">Adjust how big chat messages appear.</span>
-                  </div>
-                  <Stepper
-                    size="md"
-                    label={String(fontSize())}
-                    onDecrement={() => changeFontSize(-1)}
-                    onIncrement={() => changeFontSize(1)}
-                  />
-                </div>
-                <div class="flex items-start justify-between gap-6">
-                  <div class="flex flex-col gap-1 min-w-0">
-                    <span class="text-[#efeff1] text-sm">Show display names in chat</span>
-                    <span class="text-[#5c5c7a] text-xs">Show users' chosen display names instead of their login.</span>
-                  </div>
-                  <Toggle size="md" checked={useDisplayName()} onChange={setUseDisplayName} />
                 </div>
               </section>
             </Show>

@@ -6,17 +6,13 @@ import {
   Show,
   onCleanup,
   onMount,
-  createSignal,
 } from "solid-js";
 import { buildThirdPartyEmoteMap } from "../emotes";
 import ChatMessage from "./ChatMessage";
 import ChatNotification from "./ChatNotification";
 import ChatInput from "./ChatInput";
-import ChatSettings from "./ChatSettings";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatNotificationContextMenu from "./ChatNotificationContextMenu";
-import ChatTitleBar from "./ChatTitleBar";
-import { getTimestamp } from "../utils";
 import type { ModeratedChannel } from "../types";
 import {
   contextMenu,
@@ -31,32 +27,16 @@ import {
   appendItem,
   setPaused as setFeedPaused,
   trimToLatest,
-  mutedUsers,
-  setMutedUsers,
   markSeen,
   clearDivider,
   getItemId,
   type ChatItem,
 } from "../chat-feed";
 import BanTimeoutModal from "./BanTimeoutModal";
-import {
-  NOTIF_EVENTS,
-  NOTICE_TO_NOTIF,
-  type NotifKey,
-  type BadgeCategoryKey,
-} from "../constants";
-import {
-  loadUserPreferences,
-  saveUserPreferences,
-  DEFAULT_PREFERENCES,
-  type EventPref,
-  type BadgePref,
-} from "../preferences";
-import SwordIcon from "../icons/SwordIcon";
-import { fontSize, changeFontSize, setFontSize, useDisplayName, setUseDisplayName } from "../feed-prefs";
+import { NOTICE_TO_NOTIF } from "../constants";
+import { fontSize, useDisplayName, showTimestamp, badgePrefs, notifPrefs } from "../feed-prefs";
 
 type Props = {
-  broadcasterName: string;
   broadcasterId: string;
   broadcasterLogin: string;
   userLogin: string;
@@ -71,27 +51,6 @@ export default function Chat(props: Props) {
 
   const emoteMap = createMemo(buildThirdPartyEmoteMap);
 
-  const _prefs = loadUserPreferences();
-  function updatePrefs(update: (p: ReturnType<typeof loadUserPreferences>) => ReturnType<typeof loadUserPreferences>) {
-    saveUserPreferences(update(loadUserPreferences()));
-  }
-  const [showTimestamp, setShowTimestamp] = createSignal(_prefs.feed.showTimestamp);
-  const [notifPrefs, setNotifPrefs] = createSignal<Record<NotifKey, EventPref>>(_prefs.feed.events as Record<NotifKey, EventPref>);
-  function setNotifPref(key: NotifKey, value: boolean) {
-    setNotifPrefs((p) => {
-      const next = { ...p, [key]: { show: value } };
-      updatePrefs((p) => ({ ...p, feed: { ...p.feed, events: next } }));
-      return next;
-    });
-  }
-  const [badgePrefs, setBadgePrefs] = createSignal<Record<BadgeCategoryKey, BadgePref>>(_prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>);
-  function setBadgePref(key: BadgeCategoryKey, value: boolean) {
-    setBadgePrefs((p) => {
-      const next = { ...p, [key]: { show: value } };
-      updatePrefs((p) => ({ ...p, feed: { ...p.feed, badges: next } }));
-      return next;
-    });
-  }
   const isMod = () =>
     props.broadcasterLogin === props.userLogin ||
     props.moderatedChannels.some(
@@ -99,7 +58,6 @@ export default function Chat(props: Props) {
     );
   let bottomRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
-  let panelMount: HTMLDivElement | undefined;
   let isProgrammaticScroll = false;
 
   function scrollInstant() {
@@ -158,79 +116,7 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex flex-col h-full bg-[#0e0e10]">
-      <ChatTitleBar
-        broadcasterName={props.broadcasterName}
-        actions={
-          <>
-            <Show when={isMod()}>
-              <button class="w-6 h-6 flex items-center justify-center rounded hover:bg-[#2d2d35] transition-colors cursor-pointer">
-                <SwordIcon class="w-3.5 h-3.5 fill-[#00c8af]" />
-              </button>
-            </Show>
-            <ChatSettings
-              isMod={isMod()}
-              panelMount={() => panelMount}
-              fontSize={fontSize}
-              onFontSizeChange={changeFontSize}
-              showTimestamp={showTimestamp}
-              onShowTimestampChange={(v) => {
-                updatePrefs((p) => ({ ...p, feed: { ...p.feed, showTimestamp: v } }));
-                setShowTimestamp(v);
-              }}
-              mutedUsers={mutedUsers}
-              onMutedUsersChange={setMutedUsers}
-              notifPrefs={notifPrefs}
-              onNotifPrefChange={setNotifPref}
-              badgePrefs={badgePrefs}
-              onBadgePrefChange={setBadgePref}
-              onTestChatEvent={(key) => {
-                const event = NOTIF_EVENTS.find((e) => e.key === key);
-                if (!event || !("testMessage" in event)) return;
-                const timestamp = getTimestamp();
-                const item: ChatItem =
-                  key === "message"
-                    ? {
-                        kind: "message",
-                        message_id: `test-${Date.now()}`,
-                        chatter_user_id: "test",
-                        chatter_login: "testuser",
-                        chatter_name: "TestUser",
-                        color: "#9146ff",
-                        fragments: [{ type: "text", text: event.testMessage }],
-                        badges: [],
-                        timestamp,
-                      }
-                    : {
-                        kind: "notice",
-                        notice_type: event.types[0] ?? event.key,
-                        system_message: event.testMessage,
-                        chatter_name: "TestUser",
-                        color: "#9146ff",
-                        timestamp,
-                      };
-                appendItem(props.broadcasterId, item);
-              }}
-              useDisplayName={useDisplayName}
-              onUseDisplayNameChange={(v) => {
-                updatePrefs((p) => ({ ...p, feed: { ...p.feed, users: { ...p.feed.users, showDisplayName: v } } }));
-                setUseDisplayName(v);
-              }}
-              onResetDefaults={() => {
-                saveUserPreferences(DEFAULT_PREFERENCES);
-                localStorage.removeItem("auto_shoutout");
-                setFontSize(DEFAULT_PREFERENCES.feed.fontSize);
-                setShowTimestamp(DEFAULT_PREFERENCES.feed.showTimestamp);
-                setMutedUsers(DEFAULT_PREFERENCES.feed.users.muted);
-                setUseDisplayName(DEFAULT_PREFERENCES.feed.users.showDisplayName);
-                setNotifPrefs(DEFAULT_PREFERENCES.feed.events as Record<NotifKey, EventPref>);
-                setBadgePrefs(DEFAULT_PREFERENCES.feed.badges as Record<BadgeCategoryKey, BadgePref>);
-              }}
-            />
-          </>
-        }
-      />
-
-      <div class="flex-1 relative min-h-0" ref={(el) => panelMount = el}>
+      <div class="flex-1 relative min-h-0">
         <Show when={paused()}>
           <button
             onClick={scrollToBottom}
