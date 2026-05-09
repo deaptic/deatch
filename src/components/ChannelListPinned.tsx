@@ -11,6 +11,7 @@ type Props = {
   onSelect: (ch: Channel) => void;
   selectedId: string | null;
   onContextMenu: (ch: Channel, x: number, y: number) => void;
+  onMiddleClick?: (ch: Channel) => void;
 };
 
 export default function ChannelListPinned(props: Props) {
@@ -85,6 +86,7 @@ export default function ChannelListPinned(props: Props) {
                     isSelected={props.selectedId === p.user_id}
                     unread={unreadCount(p.user_id)}
                     onClick={() => props.onSelect(ch())}
+                    onMiddleClick={() => props.onMiddleClick?.(ch())}
                     onContextMenu={(x, y) => props.onContextMenu(ch(), x, y)}
                   />
                 </div>

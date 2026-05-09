@@ -2,6 +2,7 @@ import { Show, createSignal, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
 import { invoke } from "@tauri-apps/api/core";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { toast } from "../notifications";
 import ChannelListPinned from "./ChannelListPinned";
 import ChannelListOnline from "./ChannelListOnline";
@@ -118,6 +119,10 @@ export default function ChannelList(props: Props) {
     setMenu({ ch, x, y });
   }
 
+  function openInBrowser(ch: Channel) {
+    openUrl(`https://twitch.tv/${ch.user_login}`);
+  }
+
   function openAdd() {
     if (!addBtn) return;
     const rect = addBtn.getBoundingClientRect();
@@ -168,6 +173,7 @@ export default function ChannelList(props: Props) {
           onSelect={props.onSelect}
           selectedId={props.selectedId}
           onContextMenu={openMenu}
+          onMiddleClick={openInBrowser}
         />
         <button
           ref={addBtn}
@@ -188,11 +194,19 @@ export default function ChannelList(props: Props) {
         selectedId={props.selectedId}
         onLiveUpdate={handleLiveUpdate}
         onContextMenu={openMenu}
+        onMiddleClick={openInBrowser}
         expose={(api) => { refreshLive = api.refresh; }}
       />
       <Show when={menu()}>
         {(m) => (
           <ContextMenu x={m().x} y={m().y} onClose={() => setMenu(null)}>
+            <ContextMenuItem
+              label="Open in browser"
+              onClick={() => {
+                openInBrowser(m().ch);
+                setMenu(null);
+              }}
+            />
             <Show
               when={pinnedIds().has(m().ch.user_id)}
               fallback={
