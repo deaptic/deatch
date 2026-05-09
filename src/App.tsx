@@ -2,18 +2,25 @@ import { createSignal, createEffect, onCleanup, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { toast } from "./notifications";
-import Sidebar, { Channel } from "./Sidebar";
+import Menu, { type Channel } from "./components/menu/Menu";
 import Chat from "./components/Chat";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
 import { settingsOpen } from "./settings-state";
+import { pinnedChannels } from "./menu-prefs";
+import { user, setUser } from "./user-state";
+import {
+  waiting,
+  deviceCode,
+  authChecked,
+  setAuthChecked,
+  setWaiting,
+  setDeviceCode,
+  loginWithTwitch,
+  cancelAuth,
+} from "./auth";
 import TwitchIcon from "./icons/TwitchIcon";
-import ContextMenu from "./ui/ContextMenu";
-import ContextMenuItem from "./ui/ContextMenuItem";
-import ContextMenuDivider from "./ui/ContextMenuDivider";
-import CopyIcon from "./icons/CopyIcon";
-import { developerMode } from "./feed-prefs";
 import {
   setGlobalEmotes,
   setUserEmotes,
@@ -33,7 +40,6 @@ import type {
   UserInfo,
   ModeratedChannel,
   GlobalEmote,
-  DeviceCode,
   UserEmote,
   SevenTvChannelResult,
   RawChatMessage,
@@ -42,7 +48,7 @@ import type {
   RawFollow,
   BadgeSet,
 } from "./types";
-import { appendItem, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen, unreadCount } from "./chat-feed";
+import { appendItem, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen } from "./chat-feed";
 import {
   mapChatMessage,
   mapNotice,
@@ -71,14 +77,8 @@ function resetUserScopedCaches() {
 }
 
 function App() {
-  const [waiting, setWaiting] = createSignal(false);
-  const [deviceCode, setDeviceCode] = createSignal<DeviceCode | null>(null);
-  const [user, setUser] = createSignal<UserInfo | null>(null);
-  const [authChecked, setAuthChecked] = createSignal(false);
   const [selectedChannel, setSelectedChannel] = createSignal<Channel | null>(null);
   const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
-  const [userMenu, setUserMenu] = createSignal<{ x: number; y: number } | null>(null);
-  const [pinnedChannels, setPinnedChannels] = createSignal<Channel[]>([]);
   const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
 
   const joinedIds = new Set<string>();
@@ -292,33 +292,12 @@ function App() {
     })();
   });
 
-  async function loginWithTwitch() {
-    try {
-      setDeviceCode(null);
-      const code = await invoke<DeviceCode>("start_dcf_auth");
-      setDeviceCode(code);
-      setWaiting(true);
-    } catch (e) {
-      toast(String(e), "error");
-    }
-  }
-
-  function cancelAuth() {
-    setWaiting(false);
-    setDeviceCode(null);
-  }
-
-  async function handleLogout() {
-    try {
-      await invoke("revoke_access_token");
-      for (const id of [...joinedIds]) await leaveChannel(id);
-      resetUserScopedCaches();
-      setUser(null);
-      setSelectedChannel(null);
-    } catch (e) {
-      toast(String(e), "error");
-    }
-  }
+  createEffect(() => {
+    if (user() !== null) return;
+    for (const id of [...joinedIds]) leaveChannel(id);
+    resetUserScopedCaches();
+    setSelectedChannel(null);
+  });
 
   function handleChannelSelect(ch: Channel) {
     const prev = activeBroadcaster();
@@ -417,67 +396,11 @@ function App() {
     >
       {(u) => (
         <div class="flex flex-1 min-h-0 bg-[#0e0e10] overflow-hidden">
-          <div class="flex flex-col h-full shrink-0 w-14">
-            <button
-              class={`flex items-center justify-center border-b border-r border-[#2d2d35] shrink-0 px-2 h-14 transition-colors cursor-pointer ${selectedChannel()?.user_id === u().user_id ? "bg-[#3d3d4a]" : "bg-[#18181b] hover:bg-[#2d2d35]"}`}
-              onClick={() => handleChannelSelect({
-                user_id: u().user_id,
-                user_login: u().login,
-                user_name: u().display_name,
-                profile_image_url: u().profile_image_url,
-              })}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                setUserMenu({ x: e.clientX, y: e.clientY });
-              }}
-              title={u().display_name}
-            >
-              <div class="relative shrink-0">
-                <img
-                  src={u().profile_image_url}
-                  alt={u().display_name}
-                  class="w-8 h-8 rounded-lg"
-                />
-                <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
-                <Show when={unreadCount(u().user_id) > 0}>
-                  <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
-                    <span class="text-[9px] font-bold text-white leading-none tabular-nums">
-                      {unreadCount(u().user_id) > 99 ? "99+" : unreadCount(u().user_id)}
-                    </span>
-                  </div>
-                </Show>
-              </div>
-            </button>
-            <Sidebar
-              onSelect={handleChannelSelect}
-              selectedId={selectedChannel()?.user_id ?? null}
-              onPinnedChange={setPinnedChannels}
-              onLiveChange={setLiveChannels}
-            />
-          </div>
-
-          <Show when={userMenu()}>
-            {(m) => (
-              <ContextMenu x={m().x} y={m().y} onClose={() => setUserMenu(null)}>
-                <ContextMenuItem
-                  label="Log out"
-                  danger
-                  onClick={() => { setUserMenu(null); handleLogout(); }}
-                />
-                <Show when={developerMode()}>
-                  <ContextMenuDivider />
-                  <ContextMenuItem
-                    label="Copy Payload"
-                    icon={<CopyIcon class="w-3.5 h-3.5" />}
-                    onClick={() => {
-                      navigator.clipboard.writeText(JSON.stringify(u(), null, 2));
-                      setUserMenu(null);
-                    }}
-                  />
-                </Show>
-              </ContextMenu>
-            )}
-          </Show>
+          <Menu
+            onSelect={handleChannelSelect}
+            selectedId={selectedChannel()?.user_id ?? null}
+            onLiveChange={setLiveChannels}
+          />
 
           <main class="flex-1 overflow-hidden flex flex-col">
             <Show

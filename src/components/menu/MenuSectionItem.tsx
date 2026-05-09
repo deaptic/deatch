@@ -3,12 +3,14 @@ import { Portal } from "solid-js/web";
 
 type Props = {
   avatar: string;
-  channel: string;
-  game: string;
+  name: string;
+  game?: string;
   viewerCount?: number;
-  isLive?: boolean;
-  isSelected?: boolean;
+  status?: "live" | "self";
+  selected?: boolean;
   unread?: number;
+  dimmed?: boolean;
+  square?: boolean;
   onClick?: () => void;
   onMiddleClick?: () => void;
   onContextMenu?: (x: number, y: number) => void;
@@ -20,16 +22,8 @@ function formatViewers(n: number): string {
   return String(n);
 }
 
-export default function ChannelListItem(props: Props) {
+export default function MenuSectionItem(props: Props) {
   const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
-
-  function onEnter(e: MouseEvent) {
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    setTip({ x: rect.right + 8, y: rect.top + rect.height / 2 });
-  }
-  function onLeave() {
-    setTip(null);
-  }
 
   return (
     <>
@@ -44,26 +38,33 @@ export default function ChannelListItem(props: Props) {
         onMouseDown={(e) => {
           if (e.button === 1) e.preventDefault();
         }}
-        onMouseEnter={onEnter}
-        onMouseLeave={onLeave}
+        onMouseEnter={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          setTip({ x: r.right + 8, y: r.top + r.height / 2 });
+        }}
+        onMouseLeave={() => setTip(null)}
         onContextMenu={(e) => {
           if (!props.onContextMenu) return;
           e.preventDefault();
           setTip(null);
           props.onContextMenu(e.clientX, e.clientY);
         }}
-        class={`w-full flex items-center justify-center p-2 transition-colors cursor-pointer ${
-          props.isSelected ? "bg-[#3d3d4a]" : "hover:bg-[#2d2d35]"
-        }`}
+        style={{ opacity: props.dimmed ? 0.4 : 1 }}
+        class={`w-full flex items-center justify-center transition-colors cursor-pointer ${
+          props.square ? "px-2 py-3" : "p-2"
+        } ${props.selected ? "bg-[#3d3d4a]" : "hover:bg-[#2d2d35]"}`}
       >
         <div class="relative shrink-0">
           <img
             src={props.avatar || "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"}
-            alt={props.channel}
+            alt={props.name}
             class="w-8 h-8 rounded-lg"
           />
-          <Show when={props.isLive}>
+          <Show when={props.status === "live"}>
             <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1f1f23]" />
+          </Show>
+          <Show when={props.status === "self"}>
+            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
           </Show>
           <Show when={(props.unread ?? 0) > 0}>
             <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
@@ -81,7 +82,7 @@ export default function ChannelListItem(props: Props) {
               style={{ position: "fixed", left: `${t().x}px`, top: `${t().y}px`, transform: "translateY(-50%)" }}
               class="bg-[#0e0e10] border border-[#3d3d4a] rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-[160px] max-w-[260px]"
             >
-              <p class="text-white text-sm font-semibold truncate">{props.channel}</p>
+              <p class="text-white text-sm font-semibold truncate">{props.name}</p>
               <Show when={props.game}>
                 <p class="text-[#adadb8] text-xs truncate mt-0.5">{props.game}</p>
               </Show>
