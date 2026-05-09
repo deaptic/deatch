@@ -6,7 +6,7 @@ pub async fn delete_chat_messages(
     broadcaster_id: String,
     message_id: Option<String>,
 ) -> Result<(), String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let mut request = twitch_api::helix::moderation::delete_chat_messages::DeleteChatMessagesRequest::new(
         broadcaster_id.as_str(),
@@ -29,7 +29,7 @@ pub async fn ban_user(
     user_id: String,
     reason: String,
 ) -> Result<(), String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
     let request = twitch_api::helix::moderation::BanUserRequest::new(
         broadcaster_id.as_str(),
         token.user_id.as_str(),
@@ -54,7 +54,7 @@ pub async fn timeout_user(
     duration: u32,
     reason: String,
 ) -> Result<(), String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
     let request = twitch_api::helix::moderation::BanUserRequest::new(
         broadcaster_id.as_str(),
         token.user_id.as_str(),
@@ -76,7 +76,7 @@ pub async fn get_moderators(
     app: tauri::AppHandle,
     broadcaster_id: String,
 ) -> Result<Vec<twitch_api::helix::moderation::Moderator>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request =
         twitch_api::helix::moderation::GetModeratorsRequest::broadcaster_id(broadcaster_id.as_str());
@@ -93,7 +93,7 @@ pub async fn get_moderators(
 pub async fn get_moderated_channels(
     app: tauri::AppHandle,
 ) -> Result<Vec<twitch_api::helix::moderation::ModeratedChannel>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request =
         twitch_api::helix::moderation::GetModeratedChannelsRequest::user_id(token.user_id.as_str());

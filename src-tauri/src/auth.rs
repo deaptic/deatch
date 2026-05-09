@@ -56,21 +56,17 @@ pub async fn refresh_token_now(app: &tauri::AppHandle) -> bool {
 pub fn spawn_token_refresh(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
         loop {
-            let sleep_dur = {
+            tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+            let needs_refresh = {
                 let state = app.state::<AppState>();
                 let guard = state.token.lock().unwrap();
                 match guard.as_ref() {
-                    None => std::time::Duration::from_secs(60),
-                    Some(t) => t
-                        .expires_in()
-                        .saturating_sub(std::time::Duration::from_secs(300))
-                        .max(std::time::Duration::from_secs(60)),
+                    None => false,
+                    Some(t) => t.expires_in() < std::time::Duration::from_secs(600),
                 }
             };
-            tokio::time::sleep(sleep_dur).await;
-            if !refresh_token_now(&app).await {
-                // retry sooner on failure
-                tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+            if needs_refresh {
+                let _ = refresh_token_now(&app).await;
             }
         }
     });

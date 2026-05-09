@@ -15,6 +15,9 @@ export type UserPreferences = {
       showDisplayName: boolean;
     };
   };
+  advanced: {
+    developerMode: boolean;
+  };
 };
 
 export const DEFAULT_PREFERENCES = defaults as UserPreferences;
@@ -34,6 +37,9 @@ export function loadUserPreferences(): UserPreferences {
           muted: stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted,
           showDisplayName: stored.feed?.users?.showDisplayName ?? DEFAULT_PREFERENCES.feed.users.showDisplayName,
         },
+      },
+      advanced: {
+        developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
       },
     };
   } catch {

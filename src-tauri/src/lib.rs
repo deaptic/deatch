@@ -9,7 +9,7 @@ use twitch_api::eventsub::{
     channel::{ChannelFollowV2, ChannelShoutoutCreateV1},
     Event, EventsubWebsocketData, Transport,
 };
-use twitch_api::twitch_oauth2::UserToken;
+use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
 
 mod auth;
 mod external;
@@ -34,7 +34,18 @@ pub(crate) enum ChatCmd {
     Remove { broadcaster_id: String },
 }
 
-pub(crate) fn get_token(app: &tauri::AppHandle) -> Result<UserToken, String> {
+pub(crate) async fn get_token(app: &tauri::AppHandle) -> Result<UserToken, String> {
+    let needs_refresh = {
+        let state = app.state::<AppState>();
+        let guard = state.token.lock().unwrap();
+        match guard.as_ref() {
+            None => return Err("Not authenticated".to_string()),
+            Some(t) => t.expires_in() < std::time::Duration::from_secs(60),
+        }
+    };
+    if needs_refresh {
+        let _ = crate::auth::refresh_token_now(app).await;
+    }
     app.state::<AppState>()
         .token
         .lock()
@@ -53,7 +64,7 @@ async fn add_chat_channel(
     broadcaster_id: String,
     is_mod: bool,
 ) -> Result<(), String> {
-    ensure_chat_task(&app)?;
+    ensure_chat_task(&app).await?;
     let state = app.state::<AppState>();
     let tx_guard = state.chat_cmd_tx.lock().unwrap();
     if let Some(tx) = tx_guard.as_ref() {
@@ -77,13 +88,17 @@ async fn remove_chat_channel(
     Ok(())
 }
 
-fn ensure_chat_task(app: &tauri::AppHandle) -> Result<(), String> {
+async fn ensure_chat_task(app: &tauri::AppHandle) -> Result<(), String> {
+    {
+        let state = app.state::<AppState>();
+        let guard = state.chat_cmd_tx.lock().unwrap();
+        if guard.is_some() {
+            return Ok(());
+        }
+    }
+    let token = get_token(app).await?;
     let state = app.state::<AppState>();
     let mut guard = state.chat_cmd_tx.lock().unwrap();
-    if guard.is_some() {
-        return Ok(());
-    }
-    let token = get_token(app)?;
     let (tx, rx) = mpsc::unbounded_channel();
     *guard = Some(tx);
     drop(guard);

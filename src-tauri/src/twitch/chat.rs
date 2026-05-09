@@ -4,7 +4,7 @@ use crate::{get_token, helix};
 pub async fn get_global_emotes(
     app: tauri::AppHandle,
 ) -> Result<Vec<twitch_api::helix::chat::GlobalEmote>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request = twitch_api::helix::chat::GetGlobalEmotesRequest::new();
 
@@ -19,7 +19,7 @@ pub async fn get_global_emotes(
 pub async fn get_user_emotes(
     app: tauri::AppHandle,
 ) -> Result<Vec<twitch_api::helix::chat::UserEmote>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
     let client = helix();
     let request = twitch_api::helix::chat::GetUserEmotesRequest::user_id(token.user_id.as_str());
 
@@ -45,7 +45,7 @@ pub async fn get_user_emotes(
 pub async fn get_global_chat_badges(
     app: tauri::AppHandle,
 ) -> Result<Vec<twitch_api::helix::chat::BadgeSet>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request = twitch_api::helix::chat::GetGlobalChatBadgesRequest::new();
 
@@ -61,7 +61,7 @@ pub async fn get_channel_chat_badges(
     app: tauri::AppHandle,
     broadcaster_id: String,
 ) -> Result<Vec<twitch_api::helix::chat::BadgeSet>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request = twitch_api::helix::chat::GetChannelChatBadgesRequest::broadcaster_id(
         broadcaster_id.as_str(),
@@ -79,7 +79,7 @@ pub async fn get_channel_emotes(
     app: tauri::AppHandle,
     broadcaster_id: String,
 ) -> Result<Vec<twitch_api::helix::chat::ChannelEmote>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request =
         twitch_api::helix::chat::GetChannelEmotesRequest::broadcaster_id(broadcaster_id.as_str());
@@ -98,7 +98,7 @@ pub async fn send_shoutout(
     from_broadcaster_id: String,
     to_broadcaster_id: String,
 ) -> Result<(), String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request = twitch_api::helix::chat::send_a_shoutout::SendAShoutoutRequest::new(
         from_broadcaster_id.as_str(),
@@ -122,7 +122,7 @@ pub async fn send_chat_message(
     message: String,
     reply_parent_message_id: Option<String>,
 ) -> Result<(), String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let request = twitch_api::helix::chat::send_chat_message::SendChatMessageRequest::new();
 

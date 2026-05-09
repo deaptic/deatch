@@ -23,5 +23,8 @@
       "muted": [],
       "showDisplayName": true
     }
+  },
+  "advanced": {
+    "developerMode": false
   }
 }

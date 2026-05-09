@@ -10,6 +10,7 @@ import TrashIcon from "../icons/TrashIcon";
 import BanIcon from "../icons/BanIcon";
 import TimeoutIcon from "../icons/TimeoutIcon";
 import { contextMenu, closeContextMenu, openModAction, startReply } from "../chat-state";
+import { developerMode } from "../feed-prefs";
 
 type Props = {
   isMod: boolean;
@@ -55,6 +56,17 @@ export default function ChatMessageContextMenu(props: Props) {
           danger
           icon={<TrashIcon class="w-3.5 h-3.5" />}
           onClick={() => { invoke("delete_chat_messages", { broadcasterId: props.broadcasterId, messageId: cm().msg.message_id }); closeContextMenu(); }}
+        />
+      </Show>
+      <Show when={developerMode()}>
+        <ContextMenuDivider />
+        <ContextMenuItem
+          label="Copy Payload"
+          icon={<CopyIcon class="w-3.5 h-3.5" />}
+          onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(cm().msg, null, 2));
+            closeContextMenu();
+          }}
         />
       </Show>
     </ContextMenu>
