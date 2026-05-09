@@ -13,8 +13,8 @@ import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";
 import FeedInput from "./FeedInput";
-import MessageContextMenu from "./MessageContextMenu";
-import EventContextMenu from "./EventContextMenu";
+import MessageContextMenu from "../context-menus/MessageContextMenu";
+import EventContextMenu from "../context-menus/EventContextMenu";
 import BanTimeoutModal from "./BanTimeoutModal";
 import type { ModeratedChannel } from "../../types";
 import type { FeedMessage as Message, FeedItem } from "./types";
@@ -41,17 +41,17 @@ import {
   clearDivider,
   getItemId,
 } from "../../chat-feed";
-import { NOTICE_TO_NOTIF } from "../../constants";
+import { NOTICE_TO_EVENT } from "../../constants";
 import {
   fontSize,
   useDisplayName,
   showTimestamp,
   badgePrefs,
-  notifPrefs,
+  eventPrefs,
   mutedUsers,
   setMutedUsers,
   developerMode,
-} from "../../feed-prefs";
+} from "../../user-prefs";
 import CaretDownIcon from "../../icons/CaretDownIcon";
 
 type Props = {
@@ -132,11 +132,11 @@ export default function Feed(props: Props) {
 
   function isVisible(item: FeedItem): boolean {
     if (item.kind === "event") {
-      const k = NOTICE_TO_NOTIF[item.notice_type];
-      return !k || notifPrefs()[k]?.show !== false;
+      const k = NOTICE_TO_EVENT[item.notice_type];
+      return !k || eventPrefs()[k]?.show !== false;
     }
     return (
-      notifPrefs().message?.show !== false &&
+      eventPrefs().message?.show !== false &&
       !mutedUsers().includes(item.chatter_login.toLowerCase())
     );
   }

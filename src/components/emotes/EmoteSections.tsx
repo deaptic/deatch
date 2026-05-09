@@ -2,7 +2,7 @@ import { For } from "solid-js";
 import type { EmoteSection } from "../../emotes";
 import type { GridItem } from "./types";
 import EmoteGrid from "./EmoteGrid";
-import PickerSection from "./PickerSection";
+import EmotePickerSection from "./EmotePickerSection";
 
 type Props = {
   sections: EmoteSection[];
@@ -15,14 +15,14 @@ export default function EmoteSections(props: Props) {
   return (
     <For each={props.sections}>
       {(section) => (
-        <PickerSection label={section.label}>
+        <EmotePickerSection label={section.label}>
           <EmoteGrid
             items={section.emotes.map((e) => ({ value: e.name, url: e.url, label: e.name, accessible: e.accessible }))}
             onSelect={props.onSelect}
             isFavorite={props.isFavorite}
             onToggleFavorite={props.onToggleFavorite}
           />
-        </PickerSection>
+        </EmotePickerSection>
       )}
     </For>
   );

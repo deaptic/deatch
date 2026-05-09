@@ -1,4 +1,4 @@
-import type { NotifKey, BadgeCategoryKey } from "./constants";
+import type { EventKey, BadgeCategoryKey } from "./constants";
 import defaults from "./default-preferences.json";
 
 export type EventPref = { show: boolean };
@@ -14,7 +14,7 @@ export type UserPreferences = {
   feed: {
     fontSize: number;
     showTimestamp: boolean;
-    events: Partial<Record<NotifKey, EventPref>>;
+    events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
     users: {
       muted: string[];

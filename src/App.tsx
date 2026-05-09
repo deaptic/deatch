@@ -8,7 +8,7 @@ import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
 import { settingsOpen } from "./settings-state";
-import { pinnedChannels } from "./menu-prefs";
+import { pinnedChannels } from "./user-prefs";
 import { user, setUser } from "./user-state";
 import {
   waiting,

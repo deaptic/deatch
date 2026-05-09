@@ -53,7 +53,7 @@ export const TOASTER_ICONS: Record<ColorKey, Component<{ class?: string }>> = {
   log: LogIcon,
 };
 
-export const NOTIF_EVENTS = [
+export const EVENTS = [
   {
     key: "message",
     label: "Messages",
@@ -136,11 +136,11 @@ export const NOTIF_EVENTS = [
   },
 ] as const;
 
-export type NotifKey = (typeof NOTIF_EVENTS)[number]["key"];
+export type EventKey = (typeof EVENTS)[number]["key"];
 
-export const NOTICE_TO_NOTIF = Object.fromEntries(
-  NOTIF_EVENTS.flatMap((e) => e.types.map((t) => [t, e.key])),
-) as Record<string, NotifKey>;
+export const NOTICE_TO_EVENT = Object.fromEntries(
+  EVENTS.flatMap((e) => e.types.map((t) => [t, e.key])),
+) as Record<string, EventKey>;
 
 export const BADGE_CATEGORIES = [
   {

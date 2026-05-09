@@ -4,18 +4,14 @@ import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { toast } from "../../notifications";
 import { user } from "../../user-state";
-import { logout } from "../../auth";
-import { developerMode } from "../../feed-prefs";
-import { pinnedChannels, setPinnedChannels } from "../../menu-prefs";
+import { developerMode, pinnedChannels, setPinnedChannels } from "../../user-prefs";
 import { unreadCount } from "../../chat-feed";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
 import MenuAddPopover from "./MenuAddPopover";
-import ContextMenu from "../../ui/ContextMenu";
-import ContextMenuItem from "../../ui/ContextMenuItem";
-import ContextMenuDivider from "../../ui/ContextMenuDivider";
-import CopyIcon from "../../icons/CopyIcon";
+import ChannelContextMenu from "../context-menus/ChannelContextMenu";
+import AccountContextMenu from "../context-menus/AccountContextMenu";
 import type { TwitchStream, TwitchUser } from "../../types";
 
 export type { TwitchStream, TwitchUser };
@@ -330,69 +326,28 @@ export default function Menu(props: Props) {
 
       <Show when={chMenu()}>
         {(m) => (
-          <ContextMenu x={m().x} y={m().y} onClose={() => setChMenu(null)}>
-            <ContextMenuItem
-              label="Open in browser"
-              onClick={() => { openInBrowser(m().ch); setChMenu(null); }}
-            />
-            <Show
-              when={pinnedIds().has(m().ch.user_id)}
-              fallback={
-                <ContextMenuItem
-                  label="Pin"
-                  onClick={() => { pin(m().ch); setChMenu(null); }}
-                />
-              }
-            >
-              <ContextMenuItem
-                label="Unpin"
-                onClick={() => { unpin(m().ch.user_id); setChMenu(null); }}
-              />
-            </Show>
-            <ContextMenuItem
-              label="Refresh"
-              onClick={() => {
-                refreshLive();
-                refreshPinnedData();
-                setChMenu(null);
-              }}
-            />
-            <Show when={developerMode()}>
-              <ContextMenuDivider />
-              <ContextMenuItem
-                label="Copy Payload"
-                icon={<CopyIcon class="w-3.5 h-3.5" />}
-                onClick={() => {
-                  navigator.clipboard.writeText(JSON.stringify(m().ch, null, 2));
-                  setChMenu(null);
-                }}
-              />
-            </Show>
-          </ContextMenu>
+          <ChannelContextMenu
+            x={m().x}
+            y={m().y}
+            ch={m().ch}
+            isPinned={pinnedIds().has(m().ch.user_id)}
+            developerMode={developerMode()}
+            onClose={() => setChMenu(null)}
+            onOpenInBrowser={openInBrowser}
+            onPin={pin}
+            onUnpin={unpin}
+            onRefresh={() => { refreshLive(); refreshPinnedData(); }}
+          />
         )}
       </Show>
 
       <Show when={accMenu()}>
         {(m) => (
-          <ContextMenu x={m().x} y={m().y} onClose={() => setAccMenu(null)}>
-            <ContextMenuItem
-              label="Log out"
-              danger
-              onClick={() => { setAccMenu(null); logout(); }}
-            />
-            <Show when={developerMode()}>
-              <ContextMenuDivider />
-              <ContextMenuItem
-                label="Copy Payload"
-                icon={<CopyIcon class="w-3.5 h-3.5" />}
-                onClick={() => {
-                  const u = user();
-                  if (u) navigator.clipboard.writeText(JSON.stringify(u, null, 2));
-                  setAccMenu(null);
-                }}
-              />
-            </Show>
-          </ContextMenu>
+          <AccountContextMenu
+            x={m().x}
+            y={m().y}
+            onClose={() => setAccMenu(null)}
+          />
         )}
       </Show>
 

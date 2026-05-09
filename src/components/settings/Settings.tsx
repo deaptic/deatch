@@ -22,14 +22,14 @@ import {
   setShowTimestamp,
   badgePrefs,
   setBadgePref,
-  notifPrefs,
-  setNotifPref,
+  eventPrefs,
+  setEventPref,
   mutedUsers,
   setMutedUsers,
   developerMode,
   setDeveloperMode,
-} from "../../feed-prefs";
-import { BADGE_CATEGORIES, NOTIF_EVENTS } from "../../constants";
+} from "../../user-prefs";
+import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
 import Chip from "../../ui/Chip";
@@ -139,13 +139,13 @@ export default function Settings() {
               </SettingsContentSection>
 
               <SettingsContentSection title="Events">
-                <For each={NOTIF_EVENTS}>
+                <For each={EVENTS}>
                   {(e) => (
                     <SettingsContentSectionItem label={e.label} description={e.description}>
                       <Toggle
                         size="md"
-                        checked={notifPrefs()[e.key]?.show !== false}
-                        onChange={(v) => setNotifPref(e.key, v)}
+                        checked={eventPrefs()[e.key]?.show !== false}
+                        onChange={(v) => setEventPref(e.key, v)}
                       />
                     </SettingsContentSectionItem>
                   )}

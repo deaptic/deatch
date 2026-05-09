@@ -9,7 +9,7 @@ import ShoutoutIcon from "../../icons/ShoutoutIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import BanIcon from "../../icons/BanIcon";
 import TimeoutIcon from "../../icons/TimeoutIcon";
-import type { FeedMessage } from "./types";
+import type { FeedMessage } from "../feed/types";
 
 type Props = {
   x: number;

@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
-import { loadUserPreferences, saveUserPreferences, type BadgePref, type EventPref } from "./preferences";
-import type { BadgeCategoryKey, NotifKey } from "./constants";
+import { loadUserPreferences, saveUserPreferences, type BadgePref, type EventPref, type PinnedChannel } from "./preferences";
+import type { BadgeCategoryKey, EventKey } from "./constants";
 
 const initial = loadUserPreferences();
 const [fontSize, setFontSizeSignal] = createSignal(initial.feed.fontSize);
@@ -9,13 +9,23 @@ const [showTimestamp, setShowTimestampSignal] = createSignal(initial.feed.showTi
 const [badgePrefs, setBadgePrefsSignal] = createSignal<Record<BadgeCategoryKey, BadgePref>>(
   initial.feed.badges as Record<BadgeCategoryKey, BadgePref>,
 );
-const [notifPrefs, setNotifPrefsSignal] = createSignal<Record<NotifKey, EventPref>>(
-  initial.feed.events as Record<NotifKey, EventPref>,
+const [eventPrefs, setEventPrefsSignal] = createSignal<Record<EventKey, EventPref>>(
+  initial.feed.events as Record<EventKey, EventPref>,
 );
 const [mutedUsers, setMutedUsersSignal] = createSignal<string[]>(initial.feed.users.muted);
+const [pinnedChannels, setPinnedChannelsSignal] = createSignal<PinnedChannel[]>(initial.menu.channels.pinned);
 const [developerMode, setDeveloperModeSignal] = createSignal(initial.advanced.developerMode);
 
-export { fontSize, useDisplayName, showTimestamp, badgePrefs, notifPrefs, mutedUsers, developerMode };
+export {
+  fontSize,
+  useDisplayName,
+  showTimestamp,
+  badgePrefs,
+  eventPrefs,
+  mutedUsers,
+  pinnedChannels,
+  developerMode,
+};
 
 function clamp(v: number) {
   return Math.min(24, Math.max(11, v));
@@ -57,14 +67,14 @@ export function setBadgePref(key: BadgeCategoryKey, show: boolean) {
   setBadgePrefs({ ...badgePrefs(), [key]: { show } });
 }
 
-export function setNotifPrefs(value: Record<NotifKey, EventPref>) {
+export function setEventPrefs(value: Record<EventKey, EventPref>) {
   const prefs = loadUserPreferences();
   saveUserPreferences({ ...prefs, feed: { ...prefs.feed, events: value } });
-  setNotifPrefsSignal(value);
+  setEventPrefsSignal(value);
 }
 
-export function setNotifPref(key: NotifKey, show: boolean) {
-  setNotifPrefs({ ...notifPrefs(), [key]: { show } });
+export function setEventPref(key: EventKey, show: boolean) {
+  setEventPrefs({ ...eventPrefs(), [key]: { show } });
 }
 
 export function setMutedUsers(users: string[]) {
@@ -74,6 +84,18 @@ export function setMutedUsers(users: string[]) {
     feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: users } },
   });
   setMutedUsersSignal(users);
+}
+
+export function setPinnedChannels(value: PinnedChannel[]) {
+  const stripped = value.map(({ user_id, user_login, user_name, profile_image_url }) =>
+    ({ user_id, user_login, user_name, profile_image_url }),
+  );
+  const prefs = loadUserPreferences();
+  saveUserPreferences({
+    ...prefs,
+    menu: { ...prefs.menu, channels: { ...prefs.menu.channels, pinned: stripped } },
+  });
+  setPinnedChannelsSignal(stripped);
 }
 
 export function setDeveloperMode(value: boolean) {
