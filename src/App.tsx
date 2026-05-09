@@ -9,16 +9,13 @@ import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
 import { settingsOpen } from "./settings-state";
 import { menuChannelPinned } from "./preferences";
-import { user, setUser } from "./user-state";
+import { user } from "./user-state";
 import {
   waiting,
   deviceCode,
   authChecked,
-  setAuthChecked,
-  setWaiting,
-  setDeviceCode,
-  loginWithTwitch,
-  cancelAuth,
+  login,
+  cancel,
 } from "./auth";
 import TwitchIcon from "./icons/TwitchIcon";
 import {
@@ -37,7 +34,6 @@ import {
 } from "./emotes";
 import { activeBroadcaster, setActiveBroadcaster } from "./broadcaster";
 import type {
-  UserInfo,
   ModeratedChannel,
   GlobalEmote,
   UserEmote,
@@ -216,12 +212,8 @@ function App() {
       fetchFfzGlobalEmotes().then(setFfzGlobal).catch(() => {});
     }
 
-    let unlistenSuccess: (() => void) | undefined;
-    let unlistenError: (() => void) | undefined;
     const chatUnlistens: (() => void)[] = [];
     onCleanup(() => {
-      unlistenSuccess?.();
-      unlistenError?.();
       chatUnlistens.forEach((fn) => fn());
     });
 
@@ -266,34 +258,13 @@ function App() {
       console.error("Chat error:", e.payload);
     }).then((fn) => chatUnlistens.push(fn));
 
-    (async () => {
-      try {
-        const u = await invoke<UserInfo>("try_restore_session");
-        setUser(u);
-        fetchUserScopedData();
-      } catch {
-        // No stored session — user will log in manually
-      } finally {
-        setAuthChecked(true);
-      }
-
-      unlistenSuccess = await listen<UserInfo>("twitch-auth-success", (e) => {
-        setWaiting(false);
-        setDeviceCode(null);
-        setUser(e.payload);
-        fetchUserScopedData();
-        toast("Connected to Twitch!", "success");
-      });
-      unlistenError = await listen<string>("twitch-auth-error", (e) => {
-        setWaiting(false);
-        setDeviceCode(null);
-        toast(e.payload, "error");
-      });
-    })();
   });
 
   createEffect(() => {
-    if (user() !== null) return;
+    if (user() !== null) {
+      fetchUserScopedData();
+      return;
+    }
     for (const id of [...joinedIds]) leaveChannel(id);
     resetUserScopedCaches();
     setSelectedChannel(null);
@@ -365,7 +336,7 @@ function App() {
                     )}
                   </Show>
                   <button
-                    onClick={cancelAuth}
+                    onClick={cancel}
                     class="text-[#5c5c7a] hover:text-white text-sm transition-colors cursor-pointer"
                   >
                     Cancel
@@ -378,7 +349,7 @@ function App() {
                     <p class="text-[#adadb8] text-sm">Connect your Twitch account to get started</p>
                   </div>
                   <button
-                    onClick={loginWithTwitch}
+                    onClick={login}
                     class="w-full flex items-center justify-center gap-3 bg-[#9146ff] hover:bg-[#7d2df1] active:bg-[#6a1fd4] transition-colors duration-150 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer"
                   >
                     <TwitchIcon class="w-5 h-5 fill-white" />
