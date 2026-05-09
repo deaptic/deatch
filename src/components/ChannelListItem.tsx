@@ -10,6 +10,7 @@ type Props = {
   isSelected?: boolean;
   unread?: number;
   onClick?: () => void;
+  onMiddleClick?: () => void;
   onContextMenu?: (x: number, y: number) => void;
 };
 
@@ -34,6 +35,15 @@ export default function ChannelListItem(props: Props) {
     <>
       <button
         onClick={props.onClick}
+        onAuxClick={(e) => {
+          if (e.button !== 1 || !props.onMiddleClick) return;
+          e.preventDefault();
+          setTip(null);
+          props.onMiddleClick();
+        }}
+        onMouseDown={(e) => {
+          if (e.button === 1) e.preventDefault();
+        }}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
         onContextMenu={(e) => {

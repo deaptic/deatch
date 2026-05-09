@@ -12,6 +12,7 @@ type Props = {
   selectedId: string | null;
   onLiveUpdate: (channels: Channel[]) => void;
   onContextMenu: (ch: Channel, x: number, y: number) => void;
+  onMiddleClick?: (ch: Channel) => void;
   expose?: (api: { refresh: () => Promise<void> }) => void;
 };
 
@@ -93,6 +94,7 @@ export default function ChannelListOnline(props: Props) {
               isSelected={props.selectedId === ch.user_id}
               unread={unreadCount(ch.user_id)}
               onClick={() => props.onSelect(ch)}
+              onMiddleClick={() => props.onMiddleClick?.(ch)}
               onContextMenu={(x, y) => props.onContextMenu(ch, x, y)}
             />
           )}
