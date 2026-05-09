@@ -1,4 +1,8 @@
 import { Show, createSignal } from "solid-js";
+import ReplyIcon from "../icons/ReplyIcon";
+import DotsIcon from "../icons/DotsIcon";
+import CopyIcon from "../icons/CopyIcon";
+import TrashIcon from "../icons/TrashIcon";
 
 type Props = {
   onReply: () => void;
@@ -27,18 +31,14 @@ export default function MessageMenu(props: Props) {
           onClick={(e) => { e.stopPropagation(); props.onReply(); }}
           class="w-7 h-7 flex items-center justify-center rounded text-[#6e6e8f] hover:text-[#efeff1] hover:bg-[#2d2d35] transition-colors cursor-pointer"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
-          </svg>
+          <ReplyIcon class="w-3.5 h-3.5" />
         </button>
         <button
           title="More options"
           onClick={openMenu}
           class="w-7 h-7 flex items-center justify-center rounded text-[#6e6e8f] hover:text-[#efeff1] hover:bg-[#2d2d35] transition-colors cursor-pointer"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
-          </svg>
+          <DotsIcon class="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -52,32 +52,19 @@ export default function MessageMenu(props: Props) {
           <MenuItem
             label="Reply"
             onClick={() => { props.onReply(); closeMenu(); }}
-            icon={
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
-              </svg>
-            }
+            icon={<ReplyIcon class="w-3.5 h-3.5" />}
           />
           <MenuItem
             label="Copy Text"
             onClick={() => { props.onCopy(); closeMenu(); }}
-            icon={
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-              </svg>
-            }
+            icon={<CopyIcon class="w-3.5 h-3.5" />}
           />
           <div class="border-t border-[#2d2d35] my-1" />
           <MenuItem
             label="Delete Message"
             onClick={() => { props.onDelete(); closeMenu(); }}
             danger
-            icon={
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-                <path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-              </svg>
-            }
+            icon={<TrashIcon class="w-3.5 h-3.5" />}
           />
         </div>
       </Show>
