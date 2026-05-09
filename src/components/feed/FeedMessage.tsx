@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { EmoteMap } from "../../emotes";
 import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
-import MessageToolbar from "./MessageToolbar";
+import FeedMessageToolbar from "./FeedMessageToolbar";
 import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
 
 type Reaction = { label: string; value: string; url: string };
@@ -136,7 +136,7 @@ export default function FeedMessage(props: Props) {
         props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
-      <MessageToolbar
+      <FeedMessageToolbar
         item={props.item}
         reactions={props.reactions}
         onReact={props.onReact}
