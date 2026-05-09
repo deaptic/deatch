@@ -4,6 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { toast } from "./notifications";
 import Sidebar, { Channel } from "./Sidebar";
 import Chat from "./components/Chat";
+import TitleBar from "./components/TitleBar";
 import TwitchIcon from "./icons/TwitchIcon";
 import ContextMenu from "./ui/ContextMenu";
 import ContextMenuItem from "./ui/ContextMenuItem";
@@ -329,10 +330,12 @@ function App() {
   });
 
   return (
+    <div class="flex flex-col h-screen bg-[#0e0e10] relative">
+      <TitleBar />
     <Show
       when={user()}
-      fallback={<Show when={authChecked()} fallback={<main class="min-h-screen bg-[#0e0e10] flex items-center justify-center"><div class="w-6 h-6 border-2 border-[#9146ff] border-t-transparent rounded-full animate-spin" /></main>}>{
-        <main class="min-h-screen bg-[#0e0e10] flex items-center justify-center">
+      fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-[#0e0e10] flex items-center justify-center"><div class="w-6 h-6 border-2 border-[#9146ff] border-t-transparent rounded-full animate-spin" /></main>}>{
+        <main class="flex-1 bg-[#0e0e10] flex items-center justify-center">
           <div class="flex flex-col items-center gap-8">
             <div class="flex items-center gap-3">
               <TwitchIcon class="w-12 h-12 fill-[#9146ff]" />
@@ -402,7 +405,7 @@ function App() {
       }</Show>}
     >
       {(u) => (
-        <div class="flex h-screen bg-[#0e0e10] overflow-hidden">
+        <div class="flex flex-1 min-h-0 bg-[#0e0e10] overflow-hidden">
           <div class="flex flex-col h-full shrink-0 w-14">
             <div class="flex items-center justify-center border-b border-r border-[#2d2d35] bg-[#1f1f23] shrink-0 px-2 h-14">
               <button
@@ -472,6 +475,7 @@ function App() {
         </div>
       )}
     </Show>
+    </div>
   );
 }
 
