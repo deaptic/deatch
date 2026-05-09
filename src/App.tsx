@@ -234,6 +234,7 @@ function App() {
 
     listen<RawNotification>("chat-notification", (e) => {
       const id = e.payload.broadcaster_user_id;
+      if (!e.payload.system_message?.trim()) return;
       const item = mapNotice(e.payload, getTimestamp());
       if (e.payload.notice_type === "sub_gift") {
         setTimeout(() => appendItem(id, item), 600);
