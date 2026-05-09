@@ -3,6 +3,8 @@ import {
   globalEmotes,
   userEmotes,
   favorites,
+  isFavorite,
+  toggleFavorite,
   EmoteSection,
   sevenTvGlobal,
   bttvGlobal,
@@ -10,11 +12,13 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-} from "../emotes";
-import { activeBroadcaster } from "../broadcaster";
-import { userInfoCache, fetchUserInfo } from "../users";
-import { EmoteGrid, GridItem, PickerSection } from "./EmoteGrid";
+} from "../../emotes";
+import { activeBroadcaster } from "../../broadcaster";
+import { userInfoCache, fetchUserInfo } from "../../users";
+import EmoteGrid from "./EmoteGrid";
 import EmoteSections from "./EmoteSections";
+import PickerSection from "./PickerSection";
+import type { GridItem } from "./types";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
 type Tab = "channel" | "global" | "emoji";
@@ -34,10 +38,12 @@ function emojiUrl(emoji: string): string {
   return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${points.join("-")}.png`;
 }
 
-export default function EmotePicker(props: {
+type Props = {
   onSelect: (value: string) => void;
   onClose: () => void;
-}) {
+};
+
+export default function EmotePicker(props: Props) {
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
 
@@ -144,6 +150,9 @@ export default function EmotePicker(props: {
     );
   };
 
+  const onToggleFavorite = (item: GridItem) =>
+    toggleFavorite({ value: item.value, url: item.url, label: item.label });
+
   return (
     <>
       <div class="fixed inset-0 z-10" onClick={props.onClose} />
@@ -182,17 +191,34 @@ export default function EmotePicker(props: {
               <EmoteGrid
                 items={favorites().map((f) => ({ value: f.value, url: f.url, label: f.label }))}
                 onSelect={props.onSelect}
+                isFavorite={isFavorite}
+                onToggleFavorite={onToggleFavorite}
               />
             </PickerSection>
           </Show>
           <Show when={search()}>
-            <EmoteGrid items={searchResults()} onSelect={props.onSelect} />
+            <EmoteGrid
+              items={searchResults()}
+              onSelect={props.onSelect}
+              isFavorite={isFavorite}
+              onToggleFavorite={onToggleFavorite}
+            />
           </Show>
           <Show when={!search() && tab() === "channel"}>
-            <EmoteSections sections={channelSections()} onSelect={props.onSelect} />
+            <EmoteSections
+              sections={channelSections()}
+              onSelect={props.onSelect}
+              isFavorite={isFavorite}
+              onToggleFavorite={onToggleFavorite}
+            />
           </Show>
           <Show when={!search() && tab() === "global"}>
-            <EmoteSections sections={globalSections()} onSelect={props.onSelect} />
+            <EmoteSections
+              sections={globalSections()}
+              onSelect={props.onSelect}
+              isFavorite={isFavorite}
+              onToggleFavorite={onToggleFavorite}
+            />
           </Show>
           <Show when={!search() && tab() === "emoji"}>
             <For each={emojiGroups}>
@@ -201,6 +227,8 @@ export default function EmotePicker(props: {
                   <EmoteGrid
                     items={group.emojis.map((e) => ({ value: e.emoji, url: emojiUrl(e.emoji), label: e.name }))}
                     onSelect={props.onSelect}
+                    isFavorite={isFavorite}
+                    onToggleFavorite={onToggleFavorite}
                   />
                 </PickerSection>
               )}

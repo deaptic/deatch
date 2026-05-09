@@ -10,8 +10,8 @@ import {
   bttvChannel,
   ffzChannel,
 } from "../../emotes";
-import EmotePicker from "../EmotePicker";
-import EmoteSuggestions from "../EmoteSuggestions";
+import EmotePicker from "../emotes/EmotePicker";
+import EmoteSuggestions from "../emotes/EmoteSuggestions";
 import SmileIcon from "../../icons/SmileIcon";
 
 type ReplyTo = { messageId: string; name: string; text: string };
