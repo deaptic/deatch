@@ -1,5 +1,4 @@
-import type { ChatMsg, Fragment } from "./components/ChatMessage";
-import type { ChatNotice } from "./components/ChatNotification";
+import type { FeedMessage, FeedEvent, Fragment } from "./components/feed/types";
 import type { RawFragment, RawChatMessage, RawNotification, RawShoutout, RawFollow } from "./types";
 
 export const CHANNEL_POINT_TYPES = new Set([
@@ -22,7 +21,7 @@ export function mapFragment(f: RawFragment): Fragment {
   }
 }
 
-export function mapChatMessage(raw: RawChatMessage, timestamp: string): ChatMsg {
+export function mapChatMessage(raw: RawChatMessage, timestamp: string): FeedMessage {
   return {
     kind: "message",
     message_id: raw.message_id,
@@ -40,9 +39,9 @@ export function mapChatMessage(raw: RawChatMessage, timestamp: string): ChatMsg 
   };
 }
 
-export function mapNotice(raw: RawNotification, timestamp: string): ChatNotice {
+export function mapNotice(raw: RawNotification, timestamp: string): FeedEvent {
   return {
-    kind: "notice",
+    kind: "event",
     id: crypto.randomUUID(),
     notice_type: raw.notice_type,
     system_message: raw.system_message,
@@ -53,9 +52,9 @@ export function mapNotice(raw: RawNotification, timestamp: string): ChatNotice {
   };
 }
 
-export function mapShoutout(raw: RawShoutout, timestamp: string): ChatNotice {
+export function mapShoutout(raw: RawShoutout, timestamp: string): FeedEvent {
   return {
-    kind: "notice",
+    kind: "event",
     id: crypto.randomUUID(),
     notice_type: "shoutout",
     system_message: `Shoutout to ${raw.to_broadcaster_user_name}!`,
@@ -65,9 +64,9 @@ export function mapShoutout(raw: RawShoutout, timestamp: string): ChatNotice {
   };
 }
 
-export function mapFollow(raw: RawFollow, timestamp: string): ChatNotice {
+export function mapFollow(raw: RawFollow, timestamp: string): FeedEvent {
   return {
-    kind: "notice",
+    kind: "event",
     id: crypto.randomUUID(),
     notice_type: "follow",
     system_message: `${raw.user_name} followed!`,

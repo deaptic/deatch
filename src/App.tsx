@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { toast } from "./notifications";
 import Menu, { type Channel } from "./components/menu/Menu";
-import Chat from "./components/Chat";
+import Feed from "./components/feed/Feed";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
@@ -56,7 +56,7 @@ import {
   mapFollow,
 } from "./chat-events";
 import { getTimestamp } from "./utils";
-import type { BadgeMap } from "./components/ChatMessage";
+import type { BadgeMap } from "./components/feed/types";
 import "./App.css";
 
 // Module-scope so HMR / remounts can't reset them.
@@ -412,7 +412,7 @@ function App() {
               }
             >
               {(ch) => (
-                <Chat
+                <Feed
                   broadcasterId={ch().user_id}
                   broadcasterLogin={ch().user_login}
                   userLogin={u().login}

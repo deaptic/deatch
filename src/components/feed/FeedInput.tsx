@@ -9,10 +9,10 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-} from "../emotes";
-import EmotePicker from "./EmotePicker";
-import EmoteSuggestions from "./EmoteSuggestions";
-import SmileIcon from "../icons/SmileIcon";
+} from "../../emotes";
+import EmotePicker from "../EmotePicker";
+import EmoteSuggestions from "../EmoteSuggestions";
+import SmileIcon from "../../icons/SmileIcon";
 
 type ReplyTo = { messageId: string; name: string; text: string };
 
@@ -23,7 +23,7 @@ type Props = {
   expose?: (api: { focus: () => void }) => void;
 };
 
-export default function ChatInput(props: Props) {
+export default function FeedInput(props: Props) {
   const [input, setInput] = createSignal("");
   const [sending, setSending] = createSignal(false);
   const [pickerOpen, setPickerOpen] = createSignal(false);

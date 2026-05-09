@@ -1,25 +1,12 @@
 import { Show } from "solid-js";
-import { openNotifContextMenu } from "../chat-state";
-
-export type ChatNotice = {
-  kind: "notice";
-  id: string;
-  notice_type: string;
-  system_message: string;
-  chatter_user_id?: string;
-  chatter_name: string;
-  color: string;
-  timestamp: string;
-};
+import type { FeedEvent as Event } from "./types";
 
 const DEFAULT_COLOR = "#9146ff";
-
 const SUB_COLOR = "#9146ff";
 const RAID_COLOR = "#ff9900";
 const ANNOUNCE_COLOR = "#00c8af";
 
-const NOTICE_COLORS: Record<string, string> = {
-  // Sub family
+const COLORS: Record<string, string> = {
   sub: SUB_COLOR,
   resub: SUB_COLOR,
   sub_gift: SUB_COLOR,
@@ -34,22 +21,25 @@ const NOTICE_COLORS: Record<string, string> = {
   shared_chat_gift_paid_upgrade: SUB_COLOR,
   shared_chat_pay_it_forward: SUB_COLOR,
   shared_chat_prime_paid_upgrade: SUB_COLOR,
-  // Raid family
   raid: RAID_COLOR,
   unraid: RAID_COLOR,
   shared_chat_raid: RAID_COLOR,
-  // Announcement family
   announcement: ANNOUNCE_COLOR,
   shared_chat_announcement: ANNOUNCE_COLOR,
-  // Single types
   charity_donation: "#e91916",
   shoutout: "#00b5ff",
   follow: "#00ff7f",
   bits_badge_tier: "#ffd700",
 };
 
-export default function ChatNotification(props: { item: ChatNotice; showTimestamp?: boolean }) {
-  const color = () => NOTICE_COLORS[props.item.notice_type] ?? DEFAULT_COLOR;
+type Props = {
+  item: Event;
+  showTimestamp?: boolean;
+  onContextMenu: (x: number, y: number, item: Event) => void;
+};
+
+export default function FeedEvent(props: Props) {
+  const color = () => COLORS[props.item.notice_type] ?? DEFAULT_COLOR;
   return (
     <div
       data-item-id={props.item.id}
@@ -58,7 +48,7 @@ export default function ChatNotification(props: { item: ChatNotice; showTimestam
       onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        openNotifContextMenu(e.clientX, e.clientY, props.item);
+        props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
       <Show when={props.showTimestamp}>
