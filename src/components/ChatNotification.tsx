@@ -3,6 +3,7 @@ import { openNotifContextMenu } from "../chat-state";
 
 export type ChatNotice = {
   kind: "notice";
+  id: string;
   notice_type: string;
   system_message: string;
   chatter_user_id?: string;
@@ -51,6 +52,7 @@ export default function ChatNotification(props: { item: ChatNotice; showTimestam
   const color = () => NOTICE_COLORS[props.item.notice_type] ?? DEFAULT_COLOR;
   return (
     <div
+      data-item-id={props.item.id}
       class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-[#1f1f23] border-l-4 rounded-r-md"
       style={{ "border-left-color": color() }}
       onContextMenu={(e) => {

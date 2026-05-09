@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { toast } from "../notifications";
 import { Channel, TwitchStream, TwitchUser } from "./ChannelList";
 import ChannelListItem from "./ChannelListItem";
+import { unreadCount } from "../chat-feed";
 
 type Props = {
   pinnedIds: Set<string>;
@@ -90,6 +91,7 @@ export default function ChannelListOnline(props: Props) {
               viewerCount={ch.viewer_count}
               isLive={true}
               isSelected={props.selectedId === ch.user_id}
+              unread={unreadCount(ch.user_id)}
               onClick={() => props.onSelect(ch)}
               onContextMenu={(x, y) => props.onContextMenu(ch, x, y)}
             />

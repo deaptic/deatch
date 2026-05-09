@@ -33,6 +33,9 @@ import {
   trimToLatest,
   mutedUsers,
   setMutedUsers,
+  markSeen,
+  clearDivider,
+  getItemId,
   type ChatItem,
 } from "../chat-feed";
 import BanTimeoutModal from "./BanTimeoutModal";
@@ -117,6 +120,7 @@ export default function Chat(props: Props) {
     const el = e.currentTarget as HTMLDivElement;
     const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
     setFeedPaused(props.broadcasterId, !atBottom);
+    if (atBottom) markSeen(props.broadcasterId);
   }
 
   // On channel switch, pin to bottom if the feed is not paused.
@@ -140,6 +144,16 @@ export default function Chat(props: Props) {
     });
     observer.observe(scrollRef);
     onCleanup(() => observer.disconnect());
+  });
+
+  onMount(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (e.defaultPrevented) return;
+      clearDivider(props.broadcasterId);
+    };
+    window.addEventListener("keydown", onKey);
+    onCleanup(() => window.removeEventListener("keydown", onKey));
   });
 
   return (
@@ -240,26 +254,44 @@ export default function Chat(props: Props) {
           style={{ "font-size": `${fontSize()}px` }}
         >
           <For each={messages()}>
-            {(item) =>
-              item.kind === "notice" ? (
-                <Show when={(() => { const k = NOTICE_TO_NOTIF[item.notice_type]; return !k || notifPrefs()[k]?.show !== false; })()}>
-                  <ChatNotification item={item} showTimestamp={showTimestamp()} />
+            {(item, index) => (
+              <>
+                <Show
+                  when={
+                    index() > 0 &&
+                    feeds[props.broadcasterId]?.dividerAtItemId &&
+                    getItemId(messages()[index() - 1]) === feeds[props.broadcasterId]?.dividerAtItemId
+                  }
+                >
+                  <div class="flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent select-none pointer-events-none">
+                    <span class="shrink-0 inline-flex items-center bg-red-500/10 border border-red-500/40 rounded-md px-1.5 py-1 align-text-bottom">
+                      <span class="text-[0.65em] font-bold text-red-500 uppercase tracking-wider leading-none">
+                        New
+                      </span>
+                    </span>
+                    <div class="flex-1 self-center border-t border-red-500/60" />
+                  </div>
                 </Show>
-              ) : (
-                <Show when={notifPrefs().message?.show !== false}>
-                  <ChatMessage
-                    item={item}
-                    emotes={emoteMap()}
-                    badges={badges()}
-                    badgePrefs={badgePrefs()}
-                    userLogin={props.userLogin}
-                    broadcasterId={props.broadcasterId}
-                    useDisplayName={useDisplayName()}
-                    showTimestamp={showTimestamp()}
-                  />
-                </Show>
-              )
-            }
+                {item.kind === "notice" ? (
+                  <Show when={(() => { const k = NOTICE_TO_NOTIF[item.notice_type]; return !k || notifPrefs()[k]?.show !== false; })()}>
+                    <ChatNotification item={item} showTimestamp={showTimestamp()} />
+                  </Show>
+                ) : (
+                  <Show when={notifPrefs().message?.show !== false}>
+                    <ChatMessage
+                      item={item}
+                      emotes={emoteMap()}
+                      badges={badges()}
+                      badgePrefs={badgePrefs()}
+                      userLogin={props.userLogin}
+                      broadcasterId={props.broadcasterId}
+                      useDisplayName={useDisplayName()}
+                      showTimestamp={showTimestamp()}
+                    />
+                  </Show>
+                )}
+              </>
+            )}
           </For>
           <div ref={bottomRef} />
         </div>

@@ -42,7 +42,7 @@ import type {
   RawFollow,
   BadgeSet,
 } from "./types";
-import { appendItem, mutedUsers, setBadges, dropFeed, ensureFeed } from "./chat-feed";
+import { appendItem, mutedUsers, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen, unreadCount } from "./chat-feed";
 import {
   mapChatMessage,
   mapNotice,
@@ -321,8 +321,12 @@ function App() {
   }
 
   function handleChannelSelect(ch: Channel) {
+    const prev = activeBroadcaster();
+    if (prev && prev.id !== ch.user_id) snapshotDivider(prev.id);
     setSelectedChannel(ch);
     setActiveBroadcaster({ id: ch.user_id, login: ch.user_login, name: ch.user_name });
+    ensureFeed(ch.user_id);
+    markSeen(ch.user_id);
   }
 
   createEffect(() => {
@@ -435,7 +439,14 @@ function App() {
                     alt={u().display_name}
                     class="w-8 h-8 rounded-lg"
                   />
-                  <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
+                  <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
+                  <Show when={unreadCount(u().user_id) > 0}>
+                    <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
+                      <span class="text-[9px] font-bold text-white leading-none tabular-nums">
+                        {unreadCount(u().user_id) > 99 ? "99+" : unreadCount(u().user_id)}
+                      </span>
+                    </div>
+                  </Show>
                 </div>
               </button>
             </div>
