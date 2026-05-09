@@ -42,7 +42,8 @@ import type {
   RawFollow,
   BadgeSet,
 } from "./types";
-import { appendItem, mutedUsers, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen, unreadCount } from "./chat-feed";
+import { appendItem, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen, unreadCount } from "./chat-feed";
+import { mutedUsers } from "./feed-prefs";
 import {
   mapChatMessage,
   mapNotice,
@@ -418,38 +419,36 @@ function App() {
       {(u) => (
         <div class="flex flex-1 min-h-0 bg-[#0e0e10] overflow-hidden">
           <div class="flex flex-col h-full shrink-0 w-14">
-            <div class="flex items-center justify-center border-b border-r border-[#2d2d35] bg-[#1f1f23] shrink-0 px-2 h-14">
-              <button
-                class="cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() => handleChannelSelect({
-                  user_id: u().user_id,
-                  user_login: u().login,
-                  user_name: u().display_name,
-                  profile_image_url: u().profile_image_url,
-                })}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  setUserMenu({ x: e.clientX, y: e.clientY });
-                }}
-                title={u().display_name}
-              >
-                <div class="relative shrink-0">
-                  <img
-                    src={u().profile_image_url}
-                    alt={u().display_name}
-                    class="w-8 h-8 rounded-lg"
-                  />
-                  <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
-                  <Show when={unreadCount(u().user_id) > 0}>
-                    <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
-                      <span class="text-[9px] font-bold text-white leading-none tabular-nums">
-                        {unreadCount(u().user_id) > 99 ? "99+" : unreadCount(u().user_id)}
-                      </span>
-                    </div>
-                  </Show>
-                </div>
-              </button>
-            </div>
+            <button
+              class={`flex items-center justify-center border-b border-r border-[#2d2d35] shrink-0 px-2 h-14 transition-colors cursor-pointer ${selectedChannel()?.user_id === u().user_id ? "bg-[#3d3d4a]" : "bg-[#18181b] hover:bg-[#2d2d35]"}`}
+              onClick={() => handleChannelSelect({
+                user_id: u().user_id,
+                user_login: u().login,
+                user_name: u().display_name,
+                profile_image_url: u().profile_image_url,
+              })}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setUserMenu({ x: e.clientX, y: e.clientY });
+              }}
+              title={u().display_name}
+            >
+              <div class="relative shrink-0">
+                <img
+                  src={u().profile_image_url}
+                  alt={u().display_name}
+                  class="w-8 h-8 rounded-lg"
+                />
+                <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
+                <Show when={unreadCount(u().user_id) > 0}>
+                  <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
+                    <span class="text-[9px] font-bold text-white leading-none tabular-nums">
+                      {unreadCount(u().user_id) > 99 ? "99+" : unreadCount(u().user_id)}
+                    </span>
+                  </div>
+                </Show>
+              </div>
+            </button>
             <Sidebar
               onSelect={handleChannelSelect}
               selectedId={selectedChannel()?.user_id ?? null}
@@ -492,7 +491,6 @@ function App() {
             >
               {(ch) => (
                 <Chat
-                  broadcasterName={ch().user_name}
                   broadcasterId={ch().user_id}
                   broadcasterLogin={ch().user_login}
                   userLogin={u().login}

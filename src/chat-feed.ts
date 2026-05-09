@@ -1,8 +1,6 @@
-import { createSignal } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import type { ChatMsg, BadgeMap } from "./components/ChatMessage";
 import type { ChatNotice } from "./components/ChatNotification";
-import { loadUserPreferences, saveUserPreferences } from "./preferences";
 import { activeBroadcaster } from "./broadcaster";
 
 export type ChatItem = ChatMsg | ChatNotice;
@@ -116,15 +114,3 @@ export function dropFeed(id: string) {
 }
 
 export { feeds };
-
-const [mutedUsersSignal, setMutedUsersSignal] = createSignal<string[]>(
-  loadUserPreferences().feed.users.muted,
-);
-
-export const mutedUsers = mutedUsersSignal;
-
-export function setMutedUsers(users: string[]) {
-  const prefs = loadUserPreferences();
-  saveUserPreferences({ ...prefs, feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: users } } });
-  setMutedUsersSignal(users);
-}
