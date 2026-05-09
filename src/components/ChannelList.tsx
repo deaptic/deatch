@@ -10,6 +10,8 @@ import ContextMenu from "../ui/ContextMenu";
 import ContextMenuItem from "../ui/ContextMenuItem";
 import ContextMenuDivider from "../ui/ContextMenuDivider";
 import CopyIcon from "../icons/CopyIcon";
+import PlusIcon from "../icons/PlusIcon";
+import CheckIcon from "../icons/CheckIcon";
 import { developerMode } from "../feed-prefs";
 import type { TwitchStream, TwitchUser } from "../types";
 
@@ -182,9 +184,7 @@ export default function ChannelList(props: Props) {
           class={`w-full flex items-center justify-center p-2 hover:bg-[#2d2d35] transition-colors cursor-pointer text-[#5c5c7a] hover:text-white ${pinned.length === 0 ? "pt-2" : ""}`}
         >
           <div class="w-8 h-8 rounded-lg border-2 border-dashed border-[#3d3d4a] flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-            </svg>
+            <PlusIcon class="w-4 h-4" />
           </div>
         </button>
       </div>
@@ -265,9 +265,7 @@ export default function ChannelList(props: Props) {
               />
               <Show when={!addLoading()} fallback={<div class="w-4 h-4 rounded-full border-2 border-[#2d2d35] border-t-[#9146ff] animate-spin shrink-0" />}>
                 <button onClick={submitAdd} class="text-[#9146ff] hover:text-white transition-colors cursor-pointer shrink-0" title="Add">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                  </svg>
+                  <CheckIcon class="w-4 h-4" />
                 </button>
               </Show>
             </div>

@@ -12,6 +12,7 @@ import {
 } from "../emotes";
 import EmotePicker from "./EmotePicker";
 import EmoteSuggestions from "./EmoteSuggestions";
+import SmileIcon from "../icons/SmileIcon";
 
 type ReplyTo = { messageId: string; name: string; text: string };
 
@@ -165,9 +166,7 @@ export default function ChatInput(props: Props) {
           class={`px-3 py-3 transition-colors cursor-pointer ${pickerOpen() ? "text-[#9146ff]" : "text-[#5c5c7a] hover:text-white"}`}
           title="Emote picker"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 110-16 8 8 0 010 16zm-3.5-7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm7 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm-6.5 3.5c.828 1.165 2.05 1.5 3 1.5s2.172-.335 3-1.5H9z" />
-          </svg>
+          <SmileIcon class="w-5 h-5" />
         </button>
         <Show when={pickerOpen()}>
           <EmotePicker

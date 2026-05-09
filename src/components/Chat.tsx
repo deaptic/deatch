@@ -35,6 +35,7 @@ import {
 import BanTimeoutModal from "./BanTimeoutModal";
 import { NOTICE_TO_NOTIF } from "../constants";
 import { fontSize, useDisplayName, showTimestamp, badgePrefs, notifPrefs, mutedUsers } from "../feed-prefs";
+import CaretDownIcon from "../icons/CaretDownIcon";
 
 type Props = {
   broadcasterId: string;
@@ -122,14 +123,7 @@ export default function Chat(props: Props) {
             onClick={scrollToBottom}
             class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-[#9146ff] hover:bg-[#7c3aed] text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              class="w-3 h-3"
-            >
-              <path d="M8 12L2 6h12z" />
-            </svg>
+            <CaretDownIcon class="w-3 h-3" />
             Latest messages
           </button>
         </Show>

@@ -1,5 +1,6 @@
 import { For, Show, createSignal, onCleanup, onMount } from "solid-js";
 import { COLORS, TOASTER_ICONS } from "../constants";
+import CloseIcon from "../icons/CloseIcon";
 import type { Toast } from "../notifications";
 
 type Props = {
@@ -60,9 +61,7 @@ function ToastItem(props: { t: Toast; onDismiss: (id: number) => void }) {
           onClick={dismiss}
           class="shrink-0 w-6 h-6 flex items-center justify-center rounded text-[#adadb8] hover:text-[#efeff1] hover:bg-[#2d2d35] transition-colors cursor-pointer"
         >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
+          <CloseIcon class="w-2.5 h-2.5" />
         </button>
       </div>
       <div class="h-1 rounded-full bg-[#2d2d35] overflow-hidden">

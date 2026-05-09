@@ -35,6 +35,7 @@ import Toggle from "../../ui/Toggle";
 import Chip from "../../ui/Chip";
 import ChipList from "../../ui/ChipList";
 import TextInput from "../../ui/TextInput";
+import CloseIcon from "../../icons/CloseIcon";
 
 export default function Settings() {
   const [section, setSection] = createSignal<SectionKey>("notifications");
@@ -61,14 +62,7 @@ export default function Settings() {
           title="Close"
           aria-label="Close"
         >
-          <svg width="10" height="10" viewBox="0 0 10 10">
-            <path
-              d="M0 0 L10 10 M10 0 L0 10"
-              stroke="currentColor"
-              stroke-width="1"
-              fill="none"
-            />
-          </svg>
+          <CloseIcon class="w-2.5 h-2.5" />
         </button>
         <div class="flex items-center px-6 h-12 border-b border-[#2d2d35] shrink-0">
           <span class="text-white text-sm font-semibold">Settings</span>
