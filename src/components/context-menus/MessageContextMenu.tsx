@@ -9,7 +9,7 @@ import ShoutoutIcon from "../../icons/ShoutoutIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import BanIcon from "../../icons/BanIcon";
 import TimeoutIcon from "../../icons/TimeoutIcon";
-import { mutedUsers, muteUser, unmuteUser } from "../../user-prefs";
+import { feedUserMuted, muteUser, unmuteUser } from "../../preferences";
 import type { FeedMessage } from "../feed/types";
 
 type Props = {
@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default function MessageContextMenu(props: Props) {
-  const muted = () => mutedUsers().includes(props.msg.chatter_user_id);
+  const muted = () => feedUserMuted().includes(props.msg.chatter_user_id);
 
   return (
     <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>

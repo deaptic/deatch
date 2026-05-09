@@ -43,14 +43,14 @@ import {
 } from "../../chat-feed";
 import { NOTICE_TO_EVENT } from "../../constants";
 import {
-  fontSize,
-  useDisplayName,
-  showTimestamp,
-  badgePrefs,
-  eventPrefs,
-  mutedUsers,
-  developerMode,
-} from "../../user-prefs";
+  feedFontSize,
+  feedUserShowDisplayName,
+  feedShowTimestamp,
+  feedBadges,
+  feedEvents,
+  feedUserMuted,
+  advancedDeveloperMode,
+} from "../../preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
 
 type Props = {
@@ -107,7 +107,7 @@ export default function Feed(props: Props) {
   }));
 
   createEffect(() => {
-    fontSize();
+    feedFontSize();
     requestAnimationFrame(() => { if (!paused()) scrollInstant(); });
   });
 
@@ -132,11 +132,11 @@ export default function Feed(props: Props) {
   function isVisible(item: FeedItem): boolean {
     if (item.kind === "event") {
       const k = NOTICE_TO_EVENT[item.notice_type];
-      return !k || eventPrefs()[k]?.show !== false;
+      return !k || feedEvents()[k]?.show !== false;
     }
     return (
-      eventPrefs().message?.show !== false &&
-      !mutedUsers().includes(item.chatter_user_id)
+      feedEvents().message?.show !== false &&
+      !feedUserMuted().includes(item.chatter_user_id)
     );
   }
 
@@ -164,7 +164,7 @@ export default function Feed(props: Props) {
           ref={scrollRef}
           onScroll={onScroll}
           class="h-full overflow-y-auto pl-2 pr-3 flex flex-col [scrollbar-gutter:stable]"
-          style={{ "font-size": `${fontSize()}px` }}
+          style={{ "font-size": `${feedFontSize()}px` }}
         >
           <For each={items()}>
             {(item, index) => (
@@ -182,7 +182,7 @@ export default function Feed(props: Props) {
                   {item.kind === "event" ? (
                     <FeedEvent
                       item={item}
-                      showTimestamp={showTimestamp()}
+                      showTimestamp={feedShowTimestamp()}
                       onContextMenu={openEventContextMenu}
                     />
                   ) : (
@@ -190,10 +190,10 @@ export default function Feed(props: Props) {
                       item={item}
                       emotes={emoteMap()}
                       badges={badges()}
-                      badgePrefs={badgePrefs()}
+                      badgePrefs={feedBadges()}
                       userLogin={props.userLogin}
-                      useDisplayName={useDisplayName()}
-                      showTimestamp={showTimestamp()}
+                      useDisplayName={feedUserShowDisplayName()}
+                      showTimestamp={feedShowTimestamp()}
                       reactions={reactions()}
                       onContextMenu={openContextMenu}
                       onReply={startReply}
@@ -223,7 +223,7 @@ export default function Feed(props: Props) {
             msg={cm().msg}
             isMod={isMod()}
             broadcasterId={props.broadcasterId}
-            developerMode={developerMode()}
+            developerMode={advancedDeveloperMode()}
             onClose={closeContextMenu}
             onReply={startReply}
             onModAction={openModAction}
@@ -236,7 +236,7 @@ export default function Feed(props: Props) {
             x={cm().x}
             y={cm().y}
             item={cm().item}
-            developerMode={developerMode()}
+            developerMode={advancedDeveloperMode()}
             onClose={closeEventContextMenu}
           />
         )}
