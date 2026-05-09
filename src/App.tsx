@@ -195,7 +195,7 @@ function App() {
     if (!u) return;
     const desired = new Set<string>();
     desired.add(u.user_id);
-    for (const ch of pinnedChannels()) desired.add(ch.user_id);
+    for (const id of pinnedChannels()) desired.add(id);
     for (const ch of liveChannels()) desired.add(ch.user_id);
     const sel = selectedChannel();
     if (sel) desired.add(sel.user_id);

@@ -3,12 +3,6 @@ import defaults from "./default-preferences.json";
 
 export type EventPref = { show: boolean };
 export type BadgePref = { show: boolean };
-export type PinnedChannel = {
-  user_id: string;
-  user_login: string;
-  user_name: string;
-  profile_image_url: string;
-};
 
 export type UserPreferences = {
   feed: {
@@ -26,20 +20,26 @@ export type UserPreferences = {
   };
   menu: {
     channels: {
-      pinned: PinnedChannel[];
+      pinned: string[];
     };
   };
 };
 
 export const DEFAULT_PREFERENCES = defaults as UserPreferences;
 
-function migrateLegacyPinned(): PinnedChannel[] | null {
+function normalizePinned(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((p) => (typeof p === "string" ? p : (p && typeof p === "object" && "user_id" in p ? String((p as { user_id: unknown }).user_id) : null)))
+    .filter((id): id is string => !!id);
+}
+
+function migrateLegacyPinned(): string[] | null {
   try {
     const legacy = localStorage.getItem("pinned_channels");
     if (!legacy) return null;
     localStorage.removeItem("pinned_channels");
-    const parsed = JSON.parse(legacy);
-    return Array.isArray(parsed) ? parsed : null;
+    return normalizePinned(JSON.parse(legacy));
   } catch {
     return null;
   }
@@ -49,7 +49,8 @@ export function loadUserPreferences(): UserPreferences {
   try {
     const raw = localStorage.getItem("user_preferences");
     const stored = raw ? (JSON.parse(raw) as Partial<UserPreferences>) : {};
-    const pinned = stored.menu?.channels?.pinned ?? migrateLegacyPinned() ?? DEFAULT_PREFERENCES.menu.channels.pinned;
+    const rawPinned = stored.menu?.channels?.pinned;
+    const pinned = rawPinned !== undefined ? normalizePinned(rawPinned) : (migrateLegacyPinned() ?? DEFAULT_PREFERENCES.menu.channels.pinned);
     return {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
@@ -57,7 +58,7 @@ export function loadUserPreferences(): UserPreferences {
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {
-          muted: stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted,
+          muted: (stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted).filter((s) => /^\d+$/.test(s)),
           showDisplayName: stored.feed?.users?.showDisplayName ?? DEFAULT_PREFERENCES.feed.users.showDisplayName,
         },
       },

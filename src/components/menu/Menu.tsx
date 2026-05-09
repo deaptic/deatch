@@ -1,10 +1,10 @@
-import { Show, For, createSignal, onMount, onCleanup } from "solid-js";
+import { Show, For, createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { toast } from "../../notifications";
 import { user } from "../../user-state";
-import { developerMode, pinnedChannels, setPinnedChannels } from "../../user-prefs";
+import { developerMode, pinnedChannels, pinChannel, unpinChannel, reorderPinnedChannels } from "../../user-prefs";
 import { unreadCount } from "../../chat-feed";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
@@ -33,10 +33,20 @@ type Props = {
   onLiveChange?: (live: Channel[]) => void;
 };
 
+function userToChannel(u: TwitchUser): Channel {
+  return {
+    user_id: u.id,
+    user_login: u.login,
+    user_name: u.display_name,
+    profile_image_url: u.profile_image_url ?? "",
+  };
+}
+
 export default function Menu(props: Props) {
   const [live, setLive] = createStore<Channel[]>([]);
+  const [pinnedMeta, setPinnedMeta] = createStore<Record<string, Channel>>({});
+  const [loadingPinned, setLoadingPinned] = createSignal(true);
   const [loadingLive, setLoadingLive] = createSignal(true);
-  const [loadingPinned, setLoadingPinned] = createSignal(false);
 
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
@@ -50,31 +60,33 @@ export default function Menu(props: Props) {
   let addBtn: HTMLButtonElement | undefined;
 
   const liveById = () => new Map(live.map((ch) => [ch.user_id, ch]));
-  const pinnedIds = () => new Set(pinnedChannels().map((p) => p.user_id));
-  const onlineList = () => live.filter((ch) => !pinnedIds().has(ch.user_id));
+  const pinnedIdSet = () => new Set(pinnedChannels());
+  const onlineList = () => live.filter((ch) => !pinnedIdSet().has(ch.user_id));
+  const resolveChannel = (id: string): Channel | undefined => liveById().get(id) ?? pinnedMeta[id];
 
-  function pin(ch: Channel) {
-    if (pinnedChannels().some((p) => p.user_id === ch.user_id)) return;
-    setPinnedChannels([...pinnedChannels(), ch]);
-  }
-
-  function unpin(user_id: string) {
-    setPinnedChannels(pinnedChannels().filter((p) => p.user_id !== user_id));
-  }
-
-  function reorder(from: number, to: number) {
-    if (from === to) return;
-    const next = [...pinnedChannels()];
-    const [item] = next.splice(from, 1);
-    next.splice(from < to ? to - 1 : to, 0, item);
-    setPinnedChannels(next);
+  async function fetchPinnedMeta() {
+    const ids = pinnedChannels();
+    if (ids.length === 0) {
+      setLoadingPinned(false);
+      return;
+    }
+    try {
+      const users = await invoke<TwitchUser[]>("get_users_by_id", { userIds: ids });
+      const next: Record<string, Channel> = {};
+      for (const u of users) next[u.id] = userToChannel(u);
+      setPinnedMeta(reconcile(next));
+    } catch (e) {
+      toast(String(e), "error");
+    } finally {
+      setLoadingPinned(false);
+    }
   }
 
   async function fetchLive() {
     try {
       const followed = await invoke<TwitchStream[]>("get_followed_streams");
       const followedIds = new Set(followed.map((s) => s.user_id));
-      const unfollowedPinnedIds = pinnedChannels().map((p) => p.user_id).filter((id) => !followedIds.has(id));
+      const unfollowedPinnedIds = pinnedChannels().filter((id) => !followedIds.has(id));
       const pinnedStreams = unfollowedPinnedIds.length > 0
         ? await invoke<TwitchStream[]>("get_streams_by_user_id", { userIds: unfollowedPinnedIds })
         : [];
@@ -106,35 +118,23 @@ export default function Menu(props: Props) {
     }
   }
 
-  async function refreshLive() {
+  async function refresh() {
     setLoadingLive(true);
-    await fetchLive();
+    await Promise.all([fetchPinnedMeta(), fetchLive()]);
   }
 
-  async function refreshPinnedData() {
-    const ids = pinnedChannels().map((p) => p.user_id);
-    if (ids.length === 0) return;
-    setLoadingPinned(true);
-    try {
-      const users = await invoke<TwitchUser[]>("get_users_by_id", { userIds: ids });
-      const userMap = new Map(users.map((u) => [u.id, u]));
-      const updated = pinnedChannels().map((p) => {
-        const u = userMap.get(p.user_id);
-        if (!u) return p;
-        return {
-          ...p,
-          user_login: u.login,
-          user_name: u.display_name,
-          profile_image_url: u.profile_image_url ?? p.profile_image_url,
-        };
-      });
-      setPinnedChannels(updated);
-    } catch (e) {
-      toast(String(e), "error");
-    } finally {
-      setLoadingPinned(false);
-    }
-  }
+  // Fetch metadata for any newly-pinned channels we don't yet have data for.
+  createEffect(() => {
+    const missing = pinnedChannels().filter((id) => !pinnedMeta[id] && !liveById().get(id));
+    if (missing.length === 0) return;
+    invoke<TwitchUser[]>("get_users_by_id", { userIds: missing })
+      .then((users) => {
+        const updates: Record<string, Channel> = {};
+        for (const u of users) updates[u.id] = userToChannel(u);
+        setPinnedMeta(updates);
+      })
+      .catch(() => {});
+  });
 
   function startDrag(e: MouseEvent, idx: number) {
     if (e.button !== 0) return;
@@ -152,7 +152,7 @@ export default function Menu(props: Props) {
     };
     const onUp = () => {
       const over = overIdx();
-      if (over !== null && over !== idx) reorder(idx, over);
+      if (over !== null && over !== idx) reorderPinnedChannels(idx, over);
       setDragIdx(null);
       setOverIdx(null);
       document.body.style.cursor = "";
@@ -183,22 +183,18 @@ export default function Menu(props: Props) {
   async function submitAdd() {
     const login = addInput().trim().toLowerCase();
     if (!login) return;
-    if (pinnedChannels().some((p) => p.user_login === login)) {
-      toast("Already pinned", "error");
-      closeAdd();
-      return;
-    }
     setAddLoading(true);
     try {
       const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
       const u = users[0];
       if (!u) throw new Error("User not found");
-      pin({
-        user_id: u.id,
-        user_login: u.login,
-        user_name: u.display_name,
-        profile_image_url: u.profile_image_url ?? "",
-      });
+      if (pinnedChannels().includes(u.id)) {
+        toast("Already pinned", "error");
+        closeAdd();
+        return;
+      }
+      setPinnedMeta(u.id, userToChannel(u));
+      pinChannel(u.id);
       closeAdd();
     } catch (e) {
       toast(String(e), "error");
@@ -219,6 +215,7 @@ export default function Menu(props: Props) {
   }
 
   onMount(() => {
+    fetchPinnedMeta();
     fetchLive();
     const id = setInterval(fetchLive, 60_000);
     onCleanup(() => clearInterval(id));
@@ -241,32 +238,36 @@ export default function Menu(props: Props) {
             }
           >
             <For each={pinnedChannels()}>
-              {(p, index) => {
-                const ch = (): Channel => liveById().get(p.user_id) ?? p;
+              {(id, index) => {
+                const ch = () => resolveChannel(id);
                 const isOver = () => overIdx() === index() && dragIdx() !== index();
                 return (
-                  <div
-                    data-pinned-index={index()}
-                    class="relative"
-                    onMouseDown={(e) => startDrag(e, index())}
-                  >
-                    <Show when={isOver()}>
-                      <div class="pointer-events-none absolute left-1 right-1 -top-px h-0.5 bg-[#9146ff] rounded-full z-10" />
-                    </Show>
-                    <MenuSectionItem
-                      avatar={ch().profile_image_url}
-                      name={ch().user_name}
-                      game={ch().game_name ?? "Offline"}
-                      viewerCount={ch().viewer_count}
-                      status={liveById().has(p.user_id) ? "live" : undefined}
-                      selected={props.selectedId === p.user_id}
-                      unread={unreadCount(p.user_id)}
-                      dimmed={dragIdx() === index()}
-                      onClick={() => props.onSelect(ch())}
-                      onMiddleClick={() => openInBrowser(ch())}
-                      onContextMenu={(x, y) => setChMenu({ ch: ch(), x, y })}
-                    />
-                  </div>
+                  <Show when={ch()}>
+                    {(c) => (
+                      <div
+                        data-pinned-index={index()}
+                        class="relative"
+                        onMouseDown={(e) => startDrag(e, index())}
+                      >
+                        <Show when={isOver()}>
+                          <div class="pointer-events-none absolute left-1 right-1 -top-px h-0.5 bg-[#9146ff] rounded-full z-10" />
+                        </Show>
+                        <MenuSectionItem
+                          avatar={c().profile_image_url}
+                          name={c().user_name}
+                          game={c().game_name ?? "Offline"}
+                          viewerCount={c().viewer_count}
+                          status={liveById().has(id) ? "live" : undefined}
+                          selected={props.selectedId === id}
+                          unread={unreadCount(id)}
+                          dimmed={dragIdx() === index()}
+                          onClick={() => props.onSelect(c())}
+                          onMiddleClick={() => openInBrowser(c())}
+                          onContextMenu={(x, y) => setChMenu({ ch: c(), x, y })}
+                        />
+                      </div>
+                    )}
+                  </Show>
                 );
               }}
             </For>
@@ -330,13 +331,13 @@ export default function Menu(props: Props) {
             x={m().x}
             y={m().y}
             ch={m().ch}
-            isPinned={pinnedIds().has(m().ch.user_id)}
+            isPinned={pinnedIdSet().has(m().ch.user_id)}
             developerMode={developerMode()}
             onClose={() => setChMenu(null)}
             onOpenInBrowser={openInBrowser}
-            onPin={pin}
-            onUnpin={unpin}
-            onRefresh={() => { refreshLive(); refreshPinnedData(); }}
+            onPin={(ch) => pinChannel(ch.user_id)}
+            onUnpin={unpinChannel}
+            onRefresh={refresh}
           />
         )}
       </Show>

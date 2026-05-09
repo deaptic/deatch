@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { loadUserPreferences, saveUserPreferences, type BadgePref, type EventPref, type PinnedChannel } from "./preferences";
+import { loadUserPreferences, saveUserPreferences, type BadgePref, type EventPref } from "./preferences";
 import type { BadgeCategoryKey, EventKey } from "./constants";
 
 const initial = loadUserPreferences();
@@ -13,7 +13,7 @@ const [eventPrefs, setEventPrefsSignal] = createSignal<Record<EventKey, EventPre
   initial.feed.events as Record<EventKey, EventPref>,
 );
 const [mutedUsers, setMutedUsersSignal] = createSignal<string[]>(initial.feed.users.muted);
-const [pinnedChannels, setPinnedChannelsSignal] = createSignal<PinnedChannel[]>(initial.menu.channels.pinned);
+const [pinnedChannels, setPinnedChannelsSignal] = createSignal<string[]>(initial.menu.channels.pinned);
 const [developerMode, setDeveloperModeSignal] = createSignal(initial.advanced.developerMode);
 
 export {
@@ -27,16 +27,8 @@ export {
   developerMode,
 };
 
-function clamp(v: number) {
-  return Math.min(24, Math.max(11, v));
-}
-
-export function changeFontSize(delta: number) {
-  setFontSize(fontSize() + delta);
-}
-
 export function setFontSize(value: number) {
-  const next = clamp(value);
+  const next = Math.min(24, Math.max(11, value));
   const prefs = loadUserPreferences();
   saveUserPreferences({ ...prefs, feed: { ...prefs.feed, fontSize: next } });
   setFontSizeSignal(next);
@@ -57,45 +49,65 @@ export function setShowTimestamp(value: boolean) {
   setShowTimestampSignal(value);
 }
 
-export function setBadgePrefs(value: Record<BadgeCategoryKey, BadgePref>) {
-  const prefs = loadUserPreferences();
-  saveUserPreferences({ ...prefs, feed: { ...prefs.feed, badges: value } });
-  setBadgePrefsSignal(value);
-}
-
 export function setBadgePref(key: BadgeCategoryKey, show: boolean) {
-  setBadgePrefs({ ...badgePrefs(), [key]: { show } });
-}
-
-export function setEventPrefs(value: Record<EventKey, EventPref>) {
+  const next = { ...badgePrefs(), [key]: { show } };
   const prefs = loadUserPreferences();
-  saveUserPreferences({ ...prefs, feed: { ...prefs.feed, events: value } });
-  setEventPrefsSignal(value);
+  saveUserPreferences({ ...prefs, feed: { ...prefs.feed, badges: next } });
+  setBadgePrefsSignal(next);
 }
 
 export function setEventPref(key: EventKey, show: boolean) {
-  setEventPrefs({ ...eventPrefs(), [key]: { show } });
+  const next = { ...eventPrefs(), [key]: { show } };
+  const prefs = loadUserPreferences();
+  saveUserPreferences({ ...prefs, feed: { ...prefs.feed, events: next } });
+  setEventPrefsSignal(next);
 }
 
-export function setMutedUsers(users: string[]) {
+export function muteUser(login: string) {
+  if (mutedUsers().includes(login)) return;
+  const next = [...mutedUsers(), login];
   const prefs = loadUserPreferences();
   saveUserPreferences({
     ...prefs,
-    feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: users } },
+    feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: next } },
   });
-  setMutedUsersSignal(users);
+  setMutedUsersSignal(next);
 }
 
-export function setPinnedChannels(value: PinnedChannel[]) {
-  const stripped = value.map(({ user_id, user_login, user_name, profile_image_url }) =>
-    ({ user_id, user_login, user_name, profile_image_url }),
-  );
+export function unmuteUser(login: string) {
+  const next = mutedUsers().filter((n) => n !== login);
   const prefs = loadUserPreferences();
   saveUserPreferences({
     ...prefs,
-    menu: { ...prefs.menu, channels: { ...prefs.menu.channels, pinned: stripped } },
+    feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: next } },
   });
-  setPinnedChannelsSignal(stripped);
+  setMutedUsersSignal(next);
+}
+
+function savePinned(value: string[]) {
+  const prefs = loadUserPreferences();
+  saveUserPreferences({
+    ...prefs,
+    menu: { ...prefs.menu, channels: { ...prefs.menu.channels, pinned: value } },
+  });
+  setPinnedChannelsSignal(value);
+}
+
+export function pinChannel(user_id: string) {
+  if (pinnedChannels().includes(user_id)) return;
+  savePinned([...pinnedChannels(), user_id]);
+}
+
+export function unpinChannel(user_id: string) {
+  savePinned(pinnedChannels().filter((id) => id !== user_id));
+}
+
+export function reorderPinnedChannels(from: number, to: number) {
+  if (from === to) return;
+  const next = [...pinnedChannels()];
+  const [item] = next.splice(from, 1);
+  next.splice(from < to ? to - 1 : to, 0, item);
+  savePinned(next);
 }
 
 export function setDeveloperMode(value: boolean) {
