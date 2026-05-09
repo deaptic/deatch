@@ -8,6 +8,7 @@ type Props = {
   viewerCount?: number;
   isLive?: boolean;
   isSelected?: boolean;
+  unread?: number;
   onClick?: () => void;
   onContextMenu?: (x: number, y: number) => void;
 };
@@ -53,6 +54,13 @@ export default function ChannelListItem(props: Props) {
           />
           <Show when={props.isLive}>
             <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1f1f23]" />
+          </Show>
+          <Show when={(props.unread ?? 0) > 0}>
+            <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
+              <span class="text-[9px] font-bold text-white leading-none tabular-nums">
+                {props.unread! > 99 ? "99+" : props.unread}
+              </span>
+            </div>
           </Show>
         </div>
       </button>

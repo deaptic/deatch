@@ -1,6 +1,7 @@
 import { createSignal, For, Show } from "solid-js";
 import { Channel } from "./ChannelList";
 import ChannelListItem from "./ChannelListItem";
+import { unreadCount } from "../chat-feed";
 
 type Props = {
   pinned: Channel[];
@@ -82,6 +83,7 @@ export default function ChannelListPinned(props: Props) {
                     viewerCount={ch().viewer_count}
                     isLive={props.liveById.has(p.user_id)}
                     isSelected={props.selectedId === p.user_id}
+                    unread={unreadCount(p.user_id)}
                     onClick={() => props.onSelect(ch())}
                     onContextMenu={(x, y) => props.onContextMenu(ch(), x, y)}
                   />

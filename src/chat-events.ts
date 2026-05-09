@@ -43,6 +43,7 @@ export function mapChatMessage(raw: RawChatMessage, timestamp: string): ChatMsg 
 export function mapNotice(raw: RawNotification, timestamp: string): ChatNotice {
   return {
     kind: "notice",
+    id: crypto.randomUUID(),
     notice_type: raw.notice_type,
     system_message: raw.system_message,
     chatter_user_id: raw.chatter_is_anonymous ? undefined : raw.chatter_user_id,
@@ -55,6 +56,7 @@ export function mapNotice(raw: RawNotification, timestamp: string): ChatNotice {
 export function mapShoutout(raw: RawShoutout, timestamp: string): ChatNotice {
   return {
     kind: "notice",
+    id: crypto.randomUUID(),
     notice_type: "shoutout",
     system_message: `Shoutout to ${raw.to_broadcaster_user_name}!`,
     chatter_name: raw.moderator_user_name,
@@ -66,6 +68,7 @@ export function mapShoutout(raw: RawShoutout, timestamp: string): ChatNotice {
 export function mapFollow(raw: RawFollow, timestamp: string): ChatNotice {
   return {
     kind: "notice",
+    id: crypto.randomUUID(),
     notice_type: "follow",
     system_message: `${raw.user_name} followed!`,
     chatter_user_id: raw.user_id,
