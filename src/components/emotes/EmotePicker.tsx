@@ -17,7 +17,7 @@ import { activeBroadcaster } from "../../broadcaster";
 import { userInfoCache, fetchUserInfo } from "../../users";
 import EmoteGrid from "./EmoteGrid";
 import EmoteSections from "./EmoteSections";
-import PickerSection from "./PickerSection";
+import EmotePickerSection from "./EmotePickerSection";
 import type { GridItem } from "./types";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
@@ -187,14 +187,14 @@ export default function EmotePicker(props: Props) {
 
         <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 [scrollbar-gutter:stable]">
           <Show when={!search() && favorites().length > 0}>
-            <PickerSection label="Favorites">
+            <EmotePickerSection label="Favorites">
               <EmoteGrid
                 items={favorites().map((f) => ({ value: f.value, url: f.url, label: f.label }))}
                 onSelect={props.onSelect}
                 isFavorite={isFavorite}
                 onToggleFavorite={onToggleFavorite}
               />
-            </PickerSection>
+            </EmotePickerSection>
           </Show>
           <Show when={search()}>
             <EmoteGrid
@@ -223,14 +223,14 @@ export default function EmotePicker(props: Props) {
           <Show when={!search() && tab() === "emoji"}>
             <For each={emojiGroups}>
               {(group) => (
-                <PickerSection label={group.name}>
+                <EmotePickerSection label={group.name}>
                   <EmoteGrid
                     items={group.emojis.map((e) => ({ value: e.emoji, url: emojiUrl(e.emoji), label: e.name }))}
                     onSelect={props.onSelect}
                     isFavorite={isFavorite}
                     onToggleFavorite={onToggleFavorite}
                   />
-                </PickerSection>
+                </EmotePickerSection>
               )}
             </For>
           </Show>
