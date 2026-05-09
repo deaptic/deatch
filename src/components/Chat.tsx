@@ -34,7 +34,7 @@ import {
 } from "../chat-feed";
 import BanTimeoutModal from "./BanTimeoutModal";
 import { NOTICE_TO_NOTIF } from "../constants";
-import { fontSize, useDisplayName, showTimestamp, badgePrefs, notifPrefs } from "../feed-prefs";
+import { fontSize, useDisplayName, showTimestamp, badgePrefs, notifPrefs, mutedUsers } from "../feed-prefs";
 
 type Props = {
   broadcasterId: string;
@@ -162,7 +162,12 @@ export default function Chat(props: Props) {
                     <ChatNotification item={item} showTimestamp={showTimestamp()} />
                   </Show>
                 ) : (
-                  <Show when={notifPrefs().message?.show !== false}>
+                  <Show
+                    when={
+                      notifPrefs().message?.show !== false &&
+                      !mutedUsers().includes(item.chatter_login.toLowerCase())
+                    }
+                  >
                     <ChatMessage
                       item={item}
                       emotes={emoteMap()}

@@ -10,7 +10,7 @@ import TrashIcon from "../icons/TrashIcon";
 import BanIcon from "../icons/BanIcon";
 import TimeoutIcon from "../icons/TimeoutIcon";
 import { contextMenu, closeContextMenu, openModAction, startReply } from "../chat-state";
-import { developerMode } from "../feed-prefs";
+import { developerMode, mutedUsers, setMutedUsers } from "../feed-prefs";
 
 type Props = {
   isMod: boolean;
@@ -31,6 +31,21 @@ export default function ChatMessageContextMenu(props: Props) {
         icon={<CopyIcon class="w-3.5 h-3.5" />}
         onClick={() => { navigator.clipboard.writeText(cm().msg.fragments.map((f) => f.text).join("")); closeContextMenu(); }}
       />
+      {(() => {
+        const login = cm().msg.chatter_login.toLowerCase();
+        const muted = mutedUsers().includes(login);
+        return (
+          <ContextMenuItem
+            label={muted ? `Unmute ${cm().msg.chatter_name}` : `Mute ${cm().msg.chatter_name}`}
+            danger={!muted}
+            onClick={() => {
+              if (muted) setMutedUsers(mutedUsers().filter((n) => n !== login));
+              else setMutedUsers([...mutedUsers(), login]);
+              closeContextMenu();
+            }}
+          />
+        );
+      })()}
       <Show when={props.isMod}>
         <ContextMenuDivider />
         <ContextMenuItem
