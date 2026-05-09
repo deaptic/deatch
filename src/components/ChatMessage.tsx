@@ -100,7 +100,21 @@ function renderFragment(frag: Fragment, emotes: EmoteMap) {
         />
       );
     case "mention":
-      return <span class="text-[#9146ff] font-medium">{frag.text}</span>;
+      return (
+        <span
+          class="text-[#9146ff] font-medium cursor-pointer hover:underline"
+          onAuxClick={(e) => {
+            if (e.button !== 1) return;
+            e.preventDefault();
+            openUrl(`https://twitch.tv/${frag.user_login}`);
+          }}
+          onMouseDown={(e) => {
+            if (e.button === 1) e.preventDefault();
+          }}
+        >
+          {frag.text}
+        </span>
+      );
     default:
       return <TextWithEmotes text={frag.text} emotes={emotes} />;
   }
@@ -135,13 +149,13 @@ export default function ChatMessage(props: Props) {
     <div
       data-message-id={item.message_id}
       data-item-id={item.message_id}
-      class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/[0.06] ${
+      class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
         mentioned
-          ? "bg-[#9146ff1a] !border-[#9146ff] hover:bg-[#9146ff26]"
+          ? "bg-[#9146ff1a] border-[#9146ff]! hover:bg-[#9146ff26]"
           : item.channel_points
-            ? "bg-[#ff66cc1a] !border-[#ff66cc] hover:bg-[#ff66cc26]"
+            ? "bg-[#ff66cc1a] border-[#ff66cc]! hover:bg-[#ff66cc26]"
             : item.first_message
-              ? "bg-[#3d3d4a40] !border-[#6e6e8f] hover:bg-[#3d3d4a66]"
+              ? "bg-[#3d3d4a40] border-[#6e6e8f]! hover:bg-[#3d3d4a66]"
               : ""
       }`}
       onContextMenu={(e) => {
@@ -156,7 +170,7 @@ export default function ChatMessage(props: Props) {
           {item.timestamp}
         </span>
       </Show>
-      <div class="break-words min-w-0">
+      <div class="wrap-break-word min-w-0">
         <Show when={item.reply}>
           <div
             class="text-[#6e6e8f] leading-[1.6em] truncate cursor-pointer hover:text-[#adadb8] transition-colors"
@@ -189,7 +203,7 @@ export default function ChatMessage(props: Props) {
             (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
           )}
         >
-          <span class="inline-flex items-center gap-1.5 bg-white/[0.08] border border-white/[0.12] rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
+          <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
             <For
               each={item.badges.filter(
                 (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
@@ -209,7 +223,18 @@ export default function ChatMessage(props: Props) {
             </For>
           </span>
         </Show>
-        <span class="font-semibold" style={{ color: item.color || "#9146ff" }}>
+        <span
+          class="font-semibold cursor-pointer hover:underline"
+          style={{ color: item.color || "#9146ff" }}
+          onAuxClick={(e) => {
+            if (e.button !== 1) return;
+            e.preventDefault();
+            openUrl(`https://twitch.tv/${item.chatter_login}`);
+          }}
+          onMouseDown={(e) => {
+            if (e.button === 1) e.preventDefault();
+          }}
+        >
           {props.useDisplayName === false ? item.chatter_login : item.chatter_name}
         </span>
         <span class="text-[#adadb8]">: </span>

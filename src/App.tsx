@@ -5,7 +5,7 @@ import { toast } from "./notifications";
 import Sidebar, { Channel } from "./Sidebar";
 import Chat from "./components/Chat";
 import TitleBar from "./components/TitleBar";
-import Settings from "./components/Settings";
+import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
 import { settingsOpen } from "./settings-state";
 import TwitchIcon from "./icons/TwitchIcon";
@@ -43,7 +43,6 @@ import type {
   BadgeSet,
 } from "./types";
 import { appendItem, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen, unreadCount } from "./chat-feed";
-import { mutedUsers } from "./feed-prefs";
 import {
   mapChatMessage,
   mapNotice,
@@ -228,7 +227,6 @@ function App() {
 
     listen<RawChatMessage>("chat-message", (e) => {
       const id = e.payload.broadcaster_user_id;
-      if (mutedUsers().some((u) => u.toLowerCase() === e.payload.chatter_user_login.toLowerCase())) return;
       appendItem(id, mapChatMessage(e.payload, getTimestamp()));
     }).then((fn) => chatUnlistens.push(fn));
 
