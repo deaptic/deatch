@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { modAction, closeModAction } from "../chat-state";
+import type { FeedMessage } from "./types";
 
 const DURATIONS = [
   { label: "1 minute", value: 60 },
@@ -11,11 +11,13 @@ const DURATIONS = [
 ];
 
 type Props = {
+  action: "timeout" | "ban";
+  msg: FeedMessage;
   broadcasterId: string;
+  onClose: () => void;
 };
 
 export default function BanTimeoutModal(props: Props) {
-  const ma = () => modAction()!;
   const [reason, setReason] = createSignal("");
   const [duration, setDuration] = createSignal(600);
   const [loading, setLoading] = createSignal(false);
@@ -23,33 +25,33 @@ export default function BanTimeoutModal(props: Props) {
   async function confirm() {
     setLoading(true);
     try {
-      if (ma().action === "ban") {
+      if (props.action === "ban") {
         await invoke("ban_user", {
           broadcasterId: props.broadcasterId,
-          userId: ma().msg.chatter_user_id,
+          userId: props.msg.chatter_user_id,
           reason: reason(),
         });
       } else {
         await invoke("timeout_user", {
           broadcasterId: props.broadcasterId,
-          userId: ma().msg.chatter_user_id,
+          userId: props.msg.chatter_user_id,
           duration: duration(),
           reason: reason(),
         });
       }
-      closeModAction();
+      props.onClose();
     } finally {
       setLoading(false);
     }
   }
 
-  const isBan = () => ma().action === "ban";
-  const title = () => isBan() ? `Ban ${ma().msg.chatter_name}` : `Timeout ${ma().msg.chatter_name}`;
+  const isBan = () => props.action === "ban";
+  const title = () => isBan() ? `Ban ${props.msg.chatter_name}` : `Timeout ${props.msg.chatter_name}`;
 
   return (
     <div
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={(e) => { if (e.target === e.currentTarget) closeModAction(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}
     >
       <div class="bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl w-80 p-4 flex flex-col gap-4">
         <div class="flex flex-col gap-1">
@@ -84,13 +86,13 @@ export default function BanTimeoutModal(props: Props) {
           placeholder="Reason (optional)"
           value={reason()}
           onInput={(e) => setReason(e.currentTarget.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") confirm(); if (e.key === "Escape") closeModAction(); }}
+          onKeyDown={(e) => { if (e.key === "Enter") confirm(); if (e.key === "Escape") props.onClose(); }}
           autofocus
           class="bg-[#2d2d35] text-[#efeff1] text-xs rounded px-2 py-1.5 border border-[#3d3d4a] focus:outline-none focus:border-[#9146ff]"
         />
         <div class="flex gap-2 justify-end">
           <button
-            onClick={closeModAction}
+            onClick={props.onClose}
             class="text-xs text-[#adadb8] hover:text-white bg-[#2d2d35] hover:bg-[#3d3d4a] border border-[#3d3d4a] rounded px-3 py-1.5 cursor-pointer transition-colors"
           >
             Cancel

@@ -7,35 +7,52 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import { buildThirdPartyEmoteMap } from "../emotes";
-import ChatMessage from "./ChatMessage";
-import ChatNotification from "./ChatNotification";
-import ChatInput from "./ChatInput";
-import ChatMessageContextMenu from "./ChatMessageContextMenu";
-import ChatNotificationContextMenu from "./ChatNotificationContextMenu";
-import type { ModeratedChannel } from "../types";
+import { invoke } from "@tauri-apps/api/core";
+import { buildThirdPartyEmoteMap, favorites } from "../../emotes";
+import FeedMessage from "./FeedMessage";
+import FeedEvent from "./FeedEvent";
+import FeedDivider from "./FeedDivider";
+import FeedInput from "./FeedInput";
+import MessageContextMenu from "./MessageContextMenu";
+import EventContextMenu from "./EventContextMenu";
+import BanTimeoutModal from "./BanTimeoutModal";
+import type { ModeratedChannel } from "../../types";
+import type { FeedMessage as Message, FeedItem } from "./types";
 import {
   contextMenu,
-  notifContextMenu,
+  closeContextMenu,
+  openContextMenu,
+  eventContextMenu,
+  closeEventContextMenu,
+  openEventContextMenu,
   replyTo,
   clearReply,
+  startReply,
   modAction,
+  openModAction,
+  closeModAction,
   registerInputFocus,
-} from "../chat-state";
+} from "../../chat-state";
 import {
   feeds,
-  appendItem,
   setPaused as setFeedPaused,
   trimToLatest,
   markSeen,
   clearDivider,
   getItemId,
-  type ChatItem,
-} from "../chat-feed";
-import BanTimeoutModal from "./BanTimeoutModal";
-import { NOTICE_TO_NOTIF } from "../constants";
-import { fontSize, useDisplayName, showTimestamp, badgePrefs, notifPrefs, mutedUsers } from "../feed-prefs";
-import CaretDownIcon from "../icons/CaretDownIcon";
+} from "../../chat-feed";
+import { NOTICE_TO_NOTIF } from "../../constants";
+import {
+  fontSize,
+  useDisplayName,
+  showTimestamp,
+  badgePrefs,
+  notifPrefs,
+  mutedUsers,
+  setMutedUsers,
+  developerMode,
+} from "../../feed-prefs";
+import CaretDownIcon from "../../icons/CaretDownIcon";
 
 type Props = {
   broadcasterId: string;
@@ -44,19 +61,19 @@ type Props = {
   moderatedChannels: ModeratedChannel[];
 };
 
-
-export default function Chat(props: Props) {
-  const messages = createMemo<ChatItem[]>(() => feeds[props.broadcasterId]?.messages ?? []);
+export default function Feed(props: Props) {
+  const items = createMemo<FeedItem[]>(() => feeds[props.broadcasterId]?.messages ?? []);
   const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});
   const paused = createMemo(() => feeds[props.broadcasterId]?.paused ?? false);
+  const dividerAt = () => feeds[props.broadcasterId]?.dividerAtItemId ?? null;
 
   const emoteMap = createMemo(buildThirdPartyEmoteMap);
+  const reactions = () => favorites().slice(0, 3);
 
   const isMod = () =>
     props.broadcasterLogin === props.userLogin ||
-    props.moderatedChannels.some(
-      (c) => c.broadcaster_id === props.broadcasterId,
-    );
+    props.moderatedChannels.some((c) => c.broadcaster_id === props.broadcasterId);
+
   let bottomRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
   let isProgrammaticScroll = false;
@@ -71,7 +88,7 @@ export default function Chat(props: Props) {
     scrollInstant();
   }
 
-  function onScrollChat(e: Event) {
+  function onScroll(e: Event) {
     if (isProgrammaticScroll) {
       isProgrammaticScroll = false;
       return;
@@ -82,12 +99,11 @@ export default function Chat(props: Props) {
     if (atBottom) markSeen(props.broadcasterId);
   }
 
-  // On channel switch, pin to bottom if the feed is not paused.
   createEffect(on(() => props.broadcasterId, () => {
     queueMicrotask(() => { if (!paused()) scrollInstant(); });
   }));
 
-  createEffect(on(() => messages().length, () => {
+  createEffect(on(() => items().length, () => {
     if (!paused()) scrollInstant();
   }));
 
@@ -107,13 +123,31 @@ export default function Chat(props: Props) {
 
   onMount(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      if (e.defaultPrevented) return;
+      if (e.key !== "Escape" || e.defaultPrevented) return;
       clearDivider(props.broadcasterId);
     };
     window.addEventListener("keydown", onKey);
     onCleanup(() => window.removeEventListener("keydown", onKey));
   });
+
+  function isVisible(item: FeedItem): boolean {
+    if (item.kind === "event") {
+      const k = NOTICE_TO_NOTIF[item.notice_type];
+      return !k || notifPrefs()[k]?.show !== false;
+    }
+    return (
+      notifPrefs().message?.show !== false &&
+      !mutedUsers().includes(item.chatter_login.toLowerCase())
+    );
+  }
+
+  function react(msg: Message, value: string) {
+    invoke("send_chat_message", {
+      broadcasterId: props.broadcasterId,
+      message: value,
+      replyParentMessageId: msg.message_id,
+    });
+  }
 
   return (
     <div class="flex flex-col h-full bg-[#0e0e10]">
@@ -129,51 +163,45 @@ export default function Chat(props: Props) {
         </Show>
         <div
           ref={scrollRef}
-          onScroll={onScrollChat}
+          onScroll={onScroll}
           class="h-full overflow-y-auto pl-2 pr-3 flex flex-col [scrollbar-gutter:stable]"
           style={{ "font-size": `${fontSize()}px` }}
         >
-          <For each={messages()}>
+          <For each={items()}>
             {(item, index) => (
               <>
                 <Show
                   when={
                     index() > 0 &&
-                    feeds[props.broadcasterId]?.dividerAtItemId &&
-                    getItemId(messages()[index() - 1]) === feeds[props.broadcasterId]?.dividerAtItemId
+                    dividerAt() &&
+                    getItemId(items()[index() - 1]) === dividerAt()
                   }
                 >
-                  <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent select-none pointer-events-none">
-                    <div class="h-[1em] flex items-center"><div class="w-full border-t border-red-500/60" /></div>
-                    <span class="text-[0.65em] font-bold text-red-500 uppercase tracking-wider leading-none">
-                      New
-                    </span>
-                    <div class="h-[1em] flex items-center"><div class="w-full border-t border-red-500/60" /></div>
-                  </div>
+                  <FeedDivider />
                 </Show>
-                {item.kind === "notice" ? (
-                  <Show when={(() => { const k = NOTICE_TO_NOTIF[item.notice_type]; return !k || notifPrefs()[k]?.show !== false; })()}>
-                    <ChatNotification item={item} showTimestamp={showTimestamp()} />
-                  </Show>
-                ) : (
-                  <Show
-                    when={
-                      notifPrefs().message?.show !== false &&
-                      !mutedUsers().includes(item.chatter_login.toLowerCase())
-                    }
-                  >
-                    <ChatMessage
+                <Show when={isVisible(item)}>
+                  {item.kind === "event" ? (
+                    <FeedEvent
+                      item={item}
+                      showTimestamp={showTimestamp()}
+                      onContextMenu={openEventContextMenu}
+                    />
+                  ) : (
+                    <FeedMessage
                       item={item}
                       emotes={emoteMap()}
                       badges={badges()}
                       badgePrefs={badgePrefs()}
                       userLogin={props.userLogin}
-                      broadcasterId={props.broadcasterId}
                       useDisplayName={useDisplayName()}
                       showTimestamp={showTimestamp()}
+                      reactions={reactions()}
+                      onContextMenu={openContextMenu}
+                      onReply={startReply}
+                      onReact={react}
                     />
-                  </Show>
-                )}
+                  )}
+                </Show>
               </>
             )}
           </For>
@@ -181,7 +209,7 @@ export default function Chat(props: Props) {
         </div>
       </div>
 
-      <ChatInput
+      <FeedInput
         broadcasterId={props.broadcasterId}
         replyTo={replyTo}
         onClearReply={clearReply}
@@ -189,16 +217,42 @@ export default function Chat(props: Props) {
       />
 
       <Show when={contextMenu()}>
-        <ChatMessageContextMenu
-          isMod={isMod()}
-          broadcasterId={props.broadcasterId}
-        />
+        {(cm) => (
+          <MessageContextMenu
+            x={cm().x}
+            y={cm().y}
+            msg={cm().msg}
+            isMod={isMod()}
+            broadcasterId={props.broadcasterId}
+            developerMode={developerMode()}
+            mutedUsers={mutedUsers()}
+            setMutedUsers={setMutedUsers}
+            onClose={closeContextMenu}
+            onReply={startReply}
+            onModAction={openModAction}
+          />
+        )}
       </Show>
-      <Show when={notifContextMenu()}>
-        <ChatNotificationContextMenu />
+      <Show when={eventContextMenu()}>
+        {(cm) => (
+          <EventContextMenu
+            x={cm().x}
+            y={cm().y}
+            item={cm().item}
+            developerMode={developerMode()}
+            onClose={closeEventContextMenu}
+          />
+        )}
       </Show>
       <Show when={modAction()}>
-        <BanTimeoutModal broadcasterId={props.broadcasterId} />
+        {(ma) => (
+          <BanTimeoutModal
+            action={ma().action}
+            msg={ma().msg}
+            broadcasterId={props.broadcasterId}
+            onClose={closeModAction}
+          />
+        )}
       </Show>
     </div>
   );

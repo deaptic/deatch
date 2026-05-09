@@ -1,52 +1,24 @@
 import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { EmoteMap } from "../emotes";
-import type { Badge } from "../types";
-import { badgeCategoryFor, type BadgeCategoryKey } from "../constants";
-import ChatMessageToolbar from "./ChatMessageToolbar";
-import { openContextMenu } from "../chat-state";
+import { EmoteMap } from "../../emotes";
+import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
+import MessageToolbar from "./MessageToolbar";
+import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
 
-export type { Badge };
-
-export type Fragment =
-  | { type: "text"; text: string }
-  | { type: "emote"; text: string; id: string }
-  | { type: "mention"; text: string; user_login: string }
-  | { type: "cheermote"; text: string };
-
-export type ChatReply = {
-  parent_message_id: string;
-  parent_message_body: string;
-  parent_user_name: string;
-  parent_user_login: string;
-};
-
-export type BadgeMap = Record<string, { url: string; title: string }>;
-
-export type ChatMsg = {
-  kind: "message";
-  message_id: string;
-  chatter_user_id: string;
-  chatter_login: string;
-  chatter_name: string;
-  color: string;
-  fragments: Fragment[];
-  badges: Badge[];
-  reply?: ChatReply;
-  timestamp: string;
-  channel_points?: boolean;
-  first_message?: boolean;
-};
+type Reaction = { label: string; value: string; url: string };
 
 type Props = {
-  item: ChatMsg;
+  item: Message;
   emotes: EmoteMap;
   badges: BadgeMap;
   badgePrefs: Record<BadgeCategoryKey, { show: boolean }>;
   userLogin: string;
-  broadcasterId: string;
   useDisplayName?: boolean;
   showTimestamp?: boolean;
+  reactions: Reaction[];
+  onContextMenu: (x: number, y: number, msg: Message) => void;
+  onReply: (msg: Message) => void;
+  onReact: (msg: Message, value: string) => void;
 };
 
 const INLINE_EMOTE =
@@ -120,19 +92,19 @@ function renderFragment(frag: Fragment, emotes: EmoteMap) {
   }
 }
 
-export default function ChatMessage(props: Props) {
-  const { item, emotes, userLogin } = props;
-
-  const mentioned = item.fragments.some(
-    (f) => f.type === "mention" && f.user_login === userLogin,
-  );
+export default function FeedMessage(props: Props) {
+  const mentioned = () =>
+    props.item.fragments.some(
+      (f) => f.type === "mention" && f.user_login === props.userLogin,
+    );
 
   const visibleFragments = () => {
+    const item = props.item;
     if (!item.reply) return item.fragments;
     const [first, ...rest] = item.fragments;
     if (
       first?.type === "mention" &&
-      first.user_login === item.reply!.parent_user_login
+      first.user_login === item.reply.parent_user_login
     ) {
       if (rest[0]?.type === "text") {
         const trimmed = rest[0].text.trimStart();
@@ -147,36 +119,42 @@ export default function ChatMessage(props: Props) {
 
   return (
     <div
-      data-message-id={item.message_id}
-      data-item-id={item.message_id}
+      data-message-id={props.item.message_id}
+      data-item-id={props.item.message_id}
       class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
-        mentioned
+        mentioned()
           ? "bg-[#9146ff1a] border-[#9146ff]! hover:bg-[#9146ff26]"
-          : item.channel_points
+          : props.item.channel_points
             ? "bg-[#ff66cc1a] border-[#ff66cc]! hover:bg-[#ff66cc26]"
-            : item.first_message
+            : props.item.first_message
               ? "bg-[#3d3d4a40] border-[#6e6e8f]! hover:bg-[#3d3d4a66]"
               : ""
       }`}
       onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        openContextMenu(e.clientX, e.clientY, item);
+        props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
-      <ChatMessageToolbar item={item} broadcasterId={props.broadcasterId} />
+      <MessageToolbar
+        item={props.item}
+        reactions={props.reactions}
+        onReact={props.onReact}
+        onReply={props.onReply}
+        onMore={props.onContextMenu}
+      />
       <Show when={props.showTimestamp}>
         <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
-          {item.timestamp}
+          {props.item.timestamp}
         </span>
       </Show>
       <div class="wrap-break-word min-w-0">
-        <Show when={item.reply}>
+        <Show when={props.item.reply}>
           <div
             class="text-[#6e6e8f] leading-[1.6em] truncate cursor-pointer hover:text-[#adadb8] transition-colors"
             onClick={() => {
               const el = document.querySelector(
-                `[data-message-id="${item.reply!.parent_message_id}"]`,
+                `[data-message-id="${props.item.reply!.parent_message_id}"]`,
               ) as HTMLElement | null;
               if (!el) return;
               el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -191,21 +169,21 @@ export default function ChatMessage(props: Props) {
           >
             <span class="text-[0.78em]">⌐ Replying to </span>
             <span class="text-[0.78em] font-semibold text-[#9146ff]">
-              @{item.reply!.parent_user_name}
+              @{props.item.reply!.parent_user_name}
             </span>
             <span class="text-[0.78em]">
-              : {item.reply!.parent_message_body}
+              : {props.item.reply!.parent_message_body}
             </span>
           </div>
         </Show>
         <Show
-          when={item.badges.some(
+          when={props.item.badges.some(
             (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
           )}
         >
           <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
             <For
-              each={item.badges.filter(
+              each={props.item.badges.filter(
                 (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
               )}
             >
@@ -225,21 +203,21 @@ export default function ChatMessage(props: Props) {
         </Show>
         <span
           class="font-semibold cursor-pointer hover:underline"
-          style={{ color: item.color || "#9146ff" }}
+          style={{ color: props.item.color || "#9146ff" }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
-            openUrl(`https://twitch.tv/${item.chatter_login}`);
+            openUrl(`https://twitch.tv/${props.item.chatter_login}`);
           }}
           onMouseDown={(e) => {
             if (e.button === 1) e.preventDefault();
           }}
         >
-          {props.useDisplayName === false ? item.chatter_login : item.chatter_name}
+          {props.useDisplayName === false ? props.item.chatter_login : props.item.chatter_name}
         </span>
         <span class="text-[#adadb8]">: </span>
         <For each={visibleFragments()}>
-          {(frag) => renderFragment(frag, emotes)}
+          {(frag) => renderFragment(frag, props.emotes)}
         </For>
       </div>
     </div>

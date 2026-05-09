@@ -1,12 +1,11 @@
 import { createStore, produce } from "solid-js/store";
-import type { ChatMsg, BadgeMap } from "./components/ChatMessage";
-import type { ChatNotice } from "./components/ChatNotification";
+import type { FeedItem, BadgeMap } from "./components/feed/types";
 import { activeBroadcaster } from "./broadcaster";
 
-export type ChatItem = ChatMsg | ChatNotice;
+export type { FeedItem };
 
 export type ChannelFeed = {
-  messages: ChatItem[];
+  messages: FeedItem[];
   badges: BadgeMap;
   paused: boolean;
   lastSeenItemId: string | null;
@@ -26,7 +25,7 @@ const emptyFeed = (): ChannelFeed => ({
   dividerAtItemId: null,
 });
 
-export function getItemId(item: ChatItem): string {
+export function getItemId(item: FeedItem): string {
   return item.kind === "message" ? item.message_id : item.id;
 }
 
@@ -62,7 +61,7 @@ export function ensureFeed(id: string) {
   if (!feeds[id]) setFeeds(id, emptyFeed());
 }
 
-export function appendItem(id: string, item: ChatItem) {
+export function appendItem(id: string, item: FeedItem) {
   ensureFeed(id);
   const isActive = activeBroadcaster()?.id === id;
   setFeeds(
