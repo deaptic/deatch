@@ -3,6 +3,12 @@ import defaults from "./default-preferences.json";
 
 export type EventPref = { show: boolean };
 export type BadgePref = { show: boolean };
+export type PinnedChannel = {
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  profile_image_url: string;
+};
 
 export type UserPreferences = {
   feed: {
@@ -18,15 +24,32 @@ export type UserPreferences = {
   advanced: {
     developerMode: boolean;
   };
+  menu: {
+    channels: {
+      pinned: PinnedChannel[];
+    };
+  };
 };
 
 export const DEFAULT_PREFERENCES = defaults as UserPreferences;
 
+function migrateLegacyPinned(): PinnedChannel[] | null {
+  try {
+    const legacy = localStorage.getItem("pinned_channels");
+    if (!legacy) return null;
+    localStorage.removeItem("pinned_channels");
+    const parsed = JSON.parse(legacy);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 export function loadUserPreferences(): UserPreferences {
   try {
     const raw = localStorage.getItem("user_preferences");
-    if (!raw) return DEFAULT_PREFERENCES;
-    const stored = JSON.parse(raw) as Partial<UserPreferences>;
+    const stored = raw ? (JSON.parse(raw) as Partial<UserPreferences>) : {};
+    const pinned = stored.menu?.channels?.pinned ?? migrateLegacyPinned() ?? DEFAULT_PREFERENCES.menu.channels.pinned;
     return {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
@@ -40,6 +63,9 @@ export function loadUserPreferences(): UserPreferences {
       },
       advanced: {
         developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
+      },
+      menu: {
+        channels: { pinned },
       },
     };
   } catch {
