@@ -263,13 +263,12 @@ export default function Chat(props: Props) {
                     getItemId(messages()[index() - 1]) === feeds[props.broadcasterId]?.dividerAtItemId
                   }
                 >
-                  <div class="flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent select-none pointer-events-none">
-                    <span class="shrink-0 inline-flex items-center bg-red-500/10 border border-red-500/40 rounded-md px-1.5 py-1 align-text-bottom">
-                      <span class="text-[0.65em] font-bold text-red-500 uppercase tracking-wider leading-none">
-                        New
-                      </span>
+                  <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent select-none pointer-events-none">
+                    <div class="h-[1em] flex items-center"><div class="w-full border-t border-red-500/60" /></div>
+                    <span class="text-[0.65em] font-bold text-red-500 uppercase tracking-wider leading-none">
+                      New
                     </span>
-                    <div class="flex-1 self-center border-t border-red-500/60" />
+                    <div class="h-[1em] flex items-center"><div class="w-full border-t border-red-500/60" /></div>
                   </div>
                 </Show>
                 {item.kind === "notice" ? (
