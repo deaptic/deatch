@@ -5,7 +5,7 @@ import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import CopyIcon from "../../icons/CopyIcon";
 import { logout } from "../../auth";
 import { user } from "../../user-state";
-import { developerMode } from "../../user-prefs";
+import { advancedDeveloperMode } from "../../preferences";
 
 type Props = {
   x: number;
@@ -21,7 +21,7 @@ export default function AccountContextMenu(props: Props) {
         danger
         onClick={() => { props.onClose(); logout(); }}
       />
-      <Show when={developerMode() && user()}>
+      <Show when={advancedDeveloperMode() && user()}>
         <ContextMenuDivider />
         <ContextMenuItem
           label="Copy Payload"

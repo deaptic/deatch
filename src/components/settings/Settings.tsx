@@ -18,22 +18,22 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: "advanced", label: "Advanced" },
 ];
 import {
-  fontSize,
-  setFontSize,
-  useDisplayName,
-  setUseDisplayName,
-  showTimestamp,
-  setShowTimestamp,
-  badgePrefs,
-  setBadgePref,
-  eventPrefs,
-  setEventPref,
-  mutedUsers,
+  feedFontSize,
+  setFeedFontSize,
+  feedUserShowDisplayName,
+  setFeedUserShowDisplayName,
+  feedShowTimestamp,
+  setFeedShowTimestamp,
+  feedBadges,
+  setFeedBadge,
+  feedEvents,
+  setFeedEvent,
+  feedUserMuted,
   muteUser,
   unmuteUser,
-  developerMode,
-  setDeveloperMode,
-} from "../../user-prefs";
+  advancedDeveloperMode,
+  setAdvancedDeveloperMode,
+} from "../../preferences";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
@@ -56,7 +56,7 @@ export default function Settings() {
 
   // Fetch display metadata for any muted IDs we don't yet have data for.
   createEffect(() => {
-    const missing = mutedUsers().filter((id) => !mutedMeta[id]);
+    const missing = feedUserMuted().filter((id) => !mutedMeta[id]);
     if (missing.length === 0) return;
     invoke<TwitchUser[]>("get_users_by_id", { userIds: missing })
       .then((users) => {
@@ -75,7 +75,7 @@ export default function Settings() {
         toast(`User "${login}" not found`, "error");
         return;
       }
-      if (mutedUsers().includes(u.id)) return;
+      if (feedUserMuted().includes(u.id)) return;
       setMutedMeta(u.id, u);
       muteUser(u.id);
     } catch (e) {
@@ -124,16 +124,16 @@ export default function Settings() {
                 >
                   <Stepper
                     size="md"
-                    label={String(fontSize())}
-                    onDecrement={() => setFontSize(fontSize() - 1)}
-                    onIncrement={() => setFontSize(fontSize() + 1)}
+                    label={String(feedFontSize())}
+                    onDecrement={() => setFeedFontSize(feedFontSize() - 1)}
+                    onIncrement={() => setFeedFontSize(feedFontSize() + 1)}
                   />
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
                   label="Show timestamps"
                   description="Display the time next to each chat message."
                 >
-                  <Toggle size="md" checked={showTimestamp()} onChange={setShowTimestamp} />
+                  <Toggle size="md" checked={feedShowTimestamp()} onChange={setFeedShowTimestamp} />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
 
@@ -142,7 +142,7 @@ export default function Settings() {
                   label="Show display names in chat"
                   description="Show users' chosen display names instead of their login."
                 >
-                  <Toggle size="md" checked={useDisplayName()} onChange={setUseDisplayName} />
+                  <Toggle size="md" checked={feedUserShowDisplayName()} onChange={setFeedUserShowDisplayName} />
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
                   label="Muted users"
@@ -158,9 +158,9 @@ export default function Settings() {
                       if (v) muteByLogin(v);
                     }}
                   />
-                  <Show when={mutedUsers().length > 0}>
+                  <Show when={feedUserMuted().length > 0}>
                     <ChipList>
-                      <For each={mutedUsers()}>
+                      <For each={feedUserMuted()}>
                         {(id) => (
                           <Chip
                             label={mutedMeta[id]?.display_name ?? mutedMeta[id]?.login ?? id}
@@ -179,8 +179,8 @@ export default function Settings() {
                     <SettingsContentSectionItem label={e.label} description={e.description}>
                       <Toggle
                         size="md"
-                        checked={eventPrefs()[e.key]?.show !== false}
-                        onChange={(v) => setEventPref(e.key, v)}
+                        checked={feedEvents()[e.key]?.show !== false}
+                        onChange={(v) => setFeedEvent(e.key, v)}
                       />
                     </SettingsContentSectionItem>
                   )}
@@ -193,8 +193,8 @@ export default function Settings() {
                     <SettingsContentSectionItem label={c.label} description={c.description}>
                       <Toggle
                         size="md"
-                        checked={badgePrefs()[c.key]?.show !== false}
-                        onChange={(v) => setBadgePref(c.key, v)}
+                        checked={feedBadges()[c.key]?.show !== false}
+                        onChange={(v) => setFeedBadge(c.key, v)}
                       />
                     </SettingsContentSectionItem>
                   )}
@@ -208,7 +208,7 @@ export default function Settings() {
                 label="Developer mode"
                 description="Show extra debug info and developer tools."
               >
-                <Toggle size="md" checked={developerMode()} onChange={setDeveloperMode} />
+                <Toggle size="md" checked={advancedDeveloperMode()} onChange={setAdvancedDeveloperMode} />
               </SettingsContentSectionItem>
             </SettingsContent>
           </Show>

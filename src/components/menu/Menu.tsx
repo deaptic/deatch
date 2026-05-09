@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { toast } from "../../notifications";
 import { user } from "../../user-state";
-import { developerMode, pinnedChannels, pinChannel, unpinChannel, reorderPinnedChannels } from "../../user-prefs";
+import { advancedDeveloperMode, menuChannelPinned, pinChannel, unpinChannel, reorderPinnedChannels } from "../../preferences";
 import { unreadCount } from "../../chat-feed";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
@@ -60,12 +60,12 @@ export default function Menu(props: Props) {
   let addBtn: HTMLButtonElement | undefined;
 
   const liveById = () => new Map(live.map((ch) => [ch.user_id, ch]));
-  const pinnedIdSet = () => new Set(pinnedChannels());
+  const pinnedIdSet = () => new Set(menuChannelPinned());
   const onlineList = () => live.filter((ch) => !pinnedIdSet().has(ch.user_id));
   const resolveChannel = (id: string): Channel | undefined => liveById().get(id) ?? pinnedMeta[id];
 
   async function fetchPinnedMeta() {
-    const ids = pinnedChannels();
+    const ids = menuChannelPinned();
     if (ids.length === 0) {
       setLoadingPinned(false);
       return;
@@ -86,7 +86,7 @@ export default function Menu(props: Props) {
     try {
       const followed = await invoke<TwitchStream[]>("get_followed_streams");
       const followedIds = new Set(followed.map((s) => s.user_id));
-      const unfollowedPinnedIds = pinnedChannels().filter((id) => !followedIds.has(id));
+      const unfollowedPinnedIds = menuChannelPinned().filter((id) => !followedIds.has(id));
       const pinnedStreams = unfollowedPinnedIds.length > 0
         ? await invoke<TwitchStream[]>("get_streams_by_user_id", { userIds: unfollowedPinnedIds })
         : [];
@@ -125,7 +125,7 @@ export default function Menu(props: Props) {
 
   // Fetch metadata for any newly-pinned channels we don't yet have data for.
   createEffect(() => {
-    const missing = pinnedChannels().filter((id) => !pinnedMeta[id] && !liveById().get(id));
+    const missing = menuChannelPinned().filter((id) => !pinnedMeta[id] && !liveById().get(id));
     if (missing.length === 0) return;
     invoke<TwitchUser[]>("get_users_by_id", { userIds: missing })
       .then((users) => {
@@ -188,7 +188,7 @@ export default function Menu(props: Props) {
       const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
       const u = users[0];
       if (!u) throw new Error("User not found");
-      if (pinnedChannels().includes(u.id)) {
+      if (menuChannelPinned().includes(u.id)) {
         toast("Already pinned", "error");
         closeAdd();
         return;
@@ -228,7 +228,7 @@ export default function Menu(props: Props) {
           <Show
             when={!loadingPinned()}
             fallback={
-              <For each={pinnedChannels()}>
+              <For each={menuChannelPinned()}>
                 {() => (
                   <div class="w-full flex items-center justify-center p-2">
                     <div class="w-8 h-8 rounded-lg bg-[#2d2d35] animate-pulse" />
@@ -237,7 +237,7 @@ export default function Menu(props: Props) {
               </For>
             }
           >
-            <For each={pinnedChannels()}>
+            <For each={menuChannelPinned()}>
               {(id, index) => {
                 const ch = () => resolveChannel(id);
                 const isOver = () => overIdx() === index() && dragIdx() !== index();
@@ -332,7 +332,7 @@ export default function Menu(props: Props) {
             y={m().y}
             ch={m().ch}
             isPinned={pinnedIdSet().has(m().ch.user_id)}
-            developerMode={developerMode()}
+            developerMode={advancedDeveloperMode()}
             onClose={() => setChMenu(null)}
             onOpenInBrowser={openInBrowser}
             onPin={(ch) => pinChannel(ch.user_id)}

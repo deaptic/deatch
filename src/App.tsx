@@ -8,7 +8,7 @@ import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
 import { settingsOpen } from "./settings-state";
-import { pinnedChannels } from "./user-prefs";
+import { menuChannelPinned } from "./preferences";
 import { user, setUser } from "./user-state";
 import {
   waiting,
@@ -195,7 +195,7 @@ function App() {
     if (!u) return;
     const desired = new Set<string>();
     desired.add(u.user_id);
-    for (const id of pinnedChannels()) desired.add(id);
+    for (const id of menuChannelPinned()) desired.add(id);
     for (const ch of liveChannels()) desired.add(ch.user_id);
     const sel = selectedChannel();
     if (sel) desired.add(sel.user_id);
