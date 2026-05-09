@@ -9,6 +9,7 @@ import ShoutoutIcon from "../../icons/ShoutoutIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import BanIcon from "../../icons/BanIcon";
 import TimeoutIcon from "../../icons/TimeoutIcon";
+import { mutedUsers, muteUser, unmuteUser } from "../../user-prefs";
 import type { FeedMessage } from "../feed/types";
 
 type Props = {
@@ -18,15 +19,13 @@ type Props = {
   isMod: boolean;
   broadcasterId: string;
   developerMode: boolean;
-  mutedUsers: string[];
-  setMutedUsers: (users: string[]) => void;
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
   onModAction: (action: "timeout" | "ban", msg: FeedMessage) => void;
 };
 
 export default function MessageContextMenu(props: Props) {
-  const muted = () => props.mutedUsers.includes(props.msg.chatter_login.toLowerCase());
+  const muted = () => mutedUsers().includes(props.msg.chatter_user_id);
 
   return (
     <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
@@ -44,9 +43,9 @@ export default function MessageContextMenu(props: Props) {
         label={muted() ? `Unmute ${props.msg.chatter_name}` : `Mute ${props.msg.chatter_name}`}
         danger={!muted()}
         onClick={() => {
-          const login = props.msg.chatter_login.toLowerCase();
-          if (muted()) props.setMutedUsers(props.mutedUsers.filter((n) => n !== login));
-          else props.setMutedUsers([...props.mutedUsers, login]);
+          const id = props.msg.chatter_user_id;
+          if (muted()) unmuteUser(id);
+          else muteUser(id);
           props.onClose();
         }}
       />

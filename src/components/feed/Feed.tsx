@@ -49,7 +49,6 @@ import {
   badgePrefs,
   eventPrefs,
   mutedUsers,
-  setMutedUsers,
   developerMode,
 } from "../../user-prefs";
 import CaretDownIcon from "../../icons/CaretDownIcon";
@@ -137,7 +136,7 @@ export default function Feed(props: Props) {
     }
     return (
       eventPrefs().message?.show !== false &&
-      !mutedUsers().includes(item.chatter_login.toLowerCase())
+      !mutedUsers().includes(item.chatter_user_id)
     );
   }
 
@@ -225,8 +224,6 @@ export default function Feed(props: Props) {
             isMod={isMod()}
             broadcasterId={props.broadcasterId}
             developerMode={developerMode()}
-            mutedUsers={mutedUsers()}
-            setMutedUsers={setMutedUsers}
             onClose={closeContextMenu}
             onReply={startReply}
             onModAction={openModAction}

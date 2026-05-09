@@ -1,5 +1,9 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, createEffect, For, onCleanup, onMount, Show } from "solid-js";
+import { createStore } from "solid-js/store";
+import { invoke } from "@tauri-apps/api/core";
 import { setSettingsOpen } from "../../settings-state";
+import { toast } from "../../notifications";
+import type { TwitchUser } from "../../types";
 import SettingsNavigation from "./SettingsNavigation";
 import SettingsNavigationItem from "./SettingsNavigationItem";
 import SettingsContent from "./SettingsContent";
@@ -15,7 +19,7 @@ const SECTIONS: { key: SectionKey; label: string }[] = [
 ];
 import {
   fontSize,
-  changeFontSize,
+  setFontSize,
   useDisplayName,
   setUseDisplayName,
   showTimestamp,
@@ -25,7 +29,8 @@ import {
   eventPrefs,
   setEventPref,
   mutedUsers,
-  setMutedUsers,
+  muteUser,
+  unmuteUser,
   developerMode,
   setDeveloperMode,
 } from "../../user-prefs";
@@ -39,6 +44,8 @@ import CloseIcon from "../../icons/CloseIcon";
 
 export default function Settings() {
   const [section, setSection] = createSignal<SectionKey>("notifications");
+  const [mutedMeta, setMutedMeta] = createStore<Record<string, TwitchUser>>({});
+
   function handleKey(e: KeyboardEvent) {
     if (e.key === "Escape") setSettingsOpen(false);
   }
@@ -46,6 +53,35 @@ export default function Settings() {
     window.addEventListener("keydown", handleKey);
     onCleanup(() => window.removeEventListener("keydown", handleKey));
   });
+
+  // Fetch display metadata for any muted IDs we don't yet have data for.
+  createEffect(() => {
+    const missing = mutedUsers().filter((id) => !mutedMeta[id]);
+    if (missing.length === 0) return;
+    invoke<TwitchUser[]>("get_users_by_id", { userIds: missing })
+      .then((users) => {
+        const updates: Record<string, TwitchUser> = {};
+        for (const u of users) updates[u.id] = u;
+        setMutedMeta(updates);
+      })
+      .catch(() => {});
+  });
+
+  async function muteByLogin(login: string) {
+    try {
+      const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
+      const u = users[0];
+      if (!u) {
+        toast(`User "${login}" not found`, "error");
+        return;
+      }
+      if (mutedUsers().includes(u.id)) return;
+      setMutedMeta(u.id, u);
+      muteUser(u.id);
+    } catch (e) {
+      toast(String(e), "error");
+    }
+  }
 
   return (
     <div
@@ -89,8 +125,8 @@ export default function Settings() {
                   <Stepper
                     size="md"
                     label={String(fontSize())}
-                    onDecrement={() => changeFontSize(-1)}
-                    onIncrement={() => changeFontSize(1)}
+                    onDecrement={() => setFontSize(fontSize() - 1)}
+                    onIncrement={() => setFontSize(fontSize() + 1)}
                   />
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
@@ -119,17 +155,16 @@ export default function Settings() {
                       if (e.key !== "Enter") return;
                       const v = e.currentTarget.value.trim().toLowerCase();
                       e.currentTarget.value = "";
-                      if (!v || mutedUsers().includes(v)) return;
-                      setMutedUsers([...mutedUsers(), v]);
+                      if (v) muteByLogin(v);
                     }}
                   />
                   <Show when={mutedUsers().length > 0}>
                     <ChipList>
                       <For each={mutedUsers()}>
-                        {(name) => (
+                        {(id) => (
                           <Chip
-                            label={name}
-                            onRemove={() => setMutedUsers(mutedUsers().filter((n) => n !== name))}
+                            label={mutedMeta[id]?.display_name ?? mutedMeta[id]?.login ?? id}
+                            onRemove={() => unmuteUser(id)}
                           />
                         )}
                       </For>
