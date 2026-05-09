@@ -15,7 +15,7 @@ type Props = {
   onMore: (x: number, y: number, msg: FeedMessage) => void;
 };
 
-export default function MessageToolbar(props: Props) {
+export default function FeedMessageToolbar(props: Props) {
   return (
     <Toolbar>
       <For each={props.reactions}>
