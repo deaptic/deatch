@@ -1,6 +1,5 @@
-import { createSignal, createEffect, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, createEffect, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { toast } from "./notifications";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Feed from "./components/feed/Feed";
@@ -9,7 +8,7 @@ import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
 import { settingsOpen } from "./settings-state";
 import { menuChannelPinned } from "./preferences";
-import { user } from "./user-state";
+import { user, moderatedChannels, setModeratedChannels } from "./user-state";
 import {
   waiting,
   deviceCode,
@@ -38,21 +37,11 @@ import type {
   GlobalEmote,
   UserEmote,
   SevenTvChannelResult,
-  RawChatMessage,
-  RawNotification,
-  RawShoutout,
-  RawFollow,
   BadgeSet,
 } from "./types";
-import { appendItem, setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen } from "./chat-feed";
-import {
-  mapChatMessage,
-  mapNotice,
-  mapShoutout,
-  mapFollow,
-} from "./chat-events";
-import { getTimestamp } from "./utils";
+import { setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen } from "./chat-feed";
 import type { BadgeMap } from "./components/feed/types";
+import "./events";
 import "./App.css";
 
 // Module-scope so HMR / remounts can't reset them.
@@ -74,7 +63,6 @@ function resetUserScopedCaches() {
 
 function App() {
   const [selectedChannel, setSelectedChannel] = createSignal<Channel | null>(null);
-  const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
   const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
 
   const joinedIds = new Set<string>();
@@ -211,53 +199,6 @@ function App() {
       fetchBttvGlobalEmotes().then(setBttvGlobal).catch(() => {});
       fetchFfzGlobalEmotes().then(setFfzGlobal).catch(() => {});
     }
-
-    const chatUnlistens: (() => void)[] = [];
-    onCleanup(() => {
-      chatUnlistens.forEach((fn) => fn());
-    });
-
-    listen<RawChatMessage>("chat-message", (e) => {
-      const id = e.payload.broadcaster_user_id;
-      appendItem(id, mapChatMessage(e.payload, getTimestamp()));
-    }).then((fn) => chatUnlistens.push(fn));
-
-    listen<RawNotification>("chat-notification", (e) => {
-      const id = e.payload.broadcaster_user_id;
-      if (!e.payload.system_message?.trim()) return;
-      const item = mapNotice(e.payload, getTimestamp());
-      if (e.payload.notice_type === "sub_gift") {
-        setTimeout(() => appendItem(id, item), 600);
-      } else {
-        appendItem(id, item);
-      }
-
-      if (
-        e.payload.notice_type === "raid" &&
-        e.payload.chatter_user_id &&
-        isModOf(id) &&
-        localStorage.getItem("auto_shoutout") === "true" &&
-        selectedChannel()?.user_id === id
-      ) {
-        invoke("send_shoutout", {
-          fromBroadcasterId: id,
-          toBroadcasterId: e.payload.chatter_user_id,
-        });
-      }
-    }).then((fn) => chatUnlistens.push(fn));
-
-    listen<RawShoutout>("chat-shoutout-create", (e) => {
-      appendItem(e.payload.broadcaster_user_id, mapShoutout(e.payload, getTimestamp()));
-    }).then((fn) => chatUnlistens.push(fn));
-
-    listen<RawFollow>("channel-follow", (e) => {
-      appendItem(e.payload.broadcaster_user_id, mapFollow(e.payload, getTimestamp()));
-    }).then((fn) => chatUnlistens.push(fn));
-
-    listen<string>("chat-error", (e) => {
-      console.error("Chat error:", e.payload);
-    }).then((fn) => chatUnlistens.push(fn));
-
   });
 
   createEffect(() => {
@@ -387,7 +328,6 @@ function App() {
                   broadcasterId={ch().user_id}
                   broadcasterLogin={ch().user_login}
                   userLogin={u().login}
-                  moderatedChannels={moderatedChannels()}
                 />
               )}
             </Show>

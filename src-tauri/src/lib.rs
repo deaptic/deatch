@@ -224,21 +224,21 @@ async fn handle_ws_message(
                 Event::ChannelChatMessageV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
                         if subs.contains_key(msg.broadcaster_user_id.as_str()) {
-                            let _ = app.emit("chat-message", msg);
+                            let _ = app.emit("channel-chat-message", msg);
                         }
                     }
                 }
                 Event::ChannelChatNotificationV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
                         if subs.contains_key(msg.broadcaster_user_id.as_str()) {
-                            let _ = app.emit("chat-notification", msg);
+                            let _ = app.emit("channel-chat-notification", msg);
                         }
                     }
                 }
                 Event::ChannelShoutoutCreateV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
                         if subs.contains_key(msg.broadcaster_user_id.as_str()) {
-                            let _ = app.emit("chat-shoutout-create", msg);
+                            let _ = app.emit("channel-shoutout-create", msg);
                         }
                     }
                 }
