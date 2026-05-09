@@ -16,7 +16,7 @@ import FeedInput from "./FeedInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
 import EventContextMenu from "../context-menus/EventContextMenu";
 import BanTimeoutModal from "./BanTimeoutModal";
-import type { ModeratedChannel } from "../../types";
+import { moderatedChannels } from "../../user-state";
 import type { FeedMessage as Message, FeedItem } from "./types";
 import {
   contextMenu,
@@ -57,7 +57,6 @@ type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
   userLogin: string;
-  moderatedChannels: ModeratedChannel[];
 };
 
 export default function Feed(props: Props) {
@@ -71,7 +70,7 @@ export default function Feed(props: Props) {
 
   const isMod = () =>
     props.broadcasterLogin === props.userLogin ||
-    props.moderatedChannels.some((c) => c.broadcaster_id === props.broadcasterId);
+    moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId);
 
   let bottomRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;

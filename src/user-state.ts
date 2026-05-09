@@ -1,5 +1,7 @@
 import { createSignal } from "solid-js";
-import type { UserInfo } from "./types";
+import type { UserInfo, ModeratedChannel } from "./types";
 
 const [user, setUser] = createSignal<UserInfo | null>(null);
-export { user, setUser };
+const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
+
+export { user, setUser, moderatedChannels, setModeratedChannels };
