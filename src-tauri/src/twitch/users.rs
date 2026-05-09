@@ -5,7 +5,7 @@ pub async fn get_users_by_id(
     app: tauri::AppHandle,
     user_ids: Vec<String>,
 ) -> Result<Vec<twitch_api::helix::users::User>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let ids: Vec<twitch_api::types::UserId> =
         user_ids.iter().map(|id| id.as_str().into()).collect();
@@ -24,7 +24,7 @@ pub async fn get_users_by_login(
     app: tauri::AppHandle,
     logins: Vec<String>,
 ) -> Result<Vec<twitch_api::helix::users::User>, String> {
-    let token = get_token(&app)?;
+    let token = get_token(&app).await?;
 
     let names: Vec<twitch_api::types::UserName> =
         logins.iter().map(|l| l.as_str().into()).collect();

@@ -21,7 +21,7 @@ export type ChatReply = {
   parent_user_login: string;
 };
 
-export type BadgeMap = Record<string, string>;
+export type BadgeMap = Record<string, { url: string; title: string }>;
 
 export type ChatMsg = {
   kind: "message";
@@ -195,12 +195,12 @@ export default function ChatMessage(props: Props) {
               )}
             >
               {(b) => {
-                const url = props.badges[`${b.set_id}/${b.id}`];
-                return url ? (
+                const badge = props.badges[`${b.set_id}/${b.id}`];
+                return badge ? (
                   <img
-                    src={url}
-                    alt={b.set_id}
-                    title={`${b.set_id}${b.info ? ` (${b.info})` : ""}`}
+                    src={badge.url}
+                    alt={badge.title}
+                    title={`${badge.title}${b.info ? ` (${b.info})` : ""}`}
                     class="w-[0.85em] h-[0.85em]"
                   />
                 ) : null;

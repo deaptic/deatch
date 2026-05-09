@@ -14,11 +14,13 @@ import ChatNotification from "./ChatNotification";
 import ChatInput from "./ChatInput";
 import ChatSettings from "./ChatSettings";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
+import ChatNotificationContextMenu from "./ChatNotificationContextMenu";
 import ChatTitleBar from "./ChatTitleBar";
 import { getTimestamp } from "../utils";
 import type { ModeratedChannel } from "../types";
 import {
   contextMenu,
+  notifContextMenu,
   replyTo,
   clearReply,
   modAction,
@@ -48,6 +50,7 @@ import {
   type BadgePref,
 } from "../preferences";
 import SwordIcon from "../icons/SwordIcon";
+import { fontSize, changeFontSize, setFontSize, useDisplayName, setUseDisplayName } from "../feed-prefs";
 
 type Props = {
   broadcasterName: string;
@@ -69,7 +72,6 @@ export default function Chat(props: Props) {
   function updatePrefs(update: (p: ReturnType<typeof loadUserPreferences>) => ReturnType<typeof loadUserPreferences>) {
     saveUserPreferences(update(loadUserPreferences()));
   }
-  const [fontSize, setFontSize] = createSignal(_prefs.feed.fontSize);
   const [showTimestamp, setShowTimestamp] = createSignal(_prefs.feed.showTimestamp);
   const [notifPrefs, setNotifPrefs] = createSignal<Record<NotifKey, EventPref>>(_prefs.feed.events as Record<NotifKey, EventPref>);
   function setNotifPref(key: NotifKey, value: boolean) {
@@ -79,19 +81,11 @@ export default function Chat(props: Props) {
       return next;
     });
   }
-  const [useDisplayName, setUseDisplayName] = createSignal(_prefs.feed.users.showDisplayName);
   const [badgePrefs, setBadgePrefs] = createSignal<Record<BadgeCategoryKey, BadgePref>>(_prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>);
   function setBadgePref(key: BadgeCategoryKey, value: boolean) {
     setBadgePrefs((p) => {
       const next = { ...p, [key]: { show: value } };
       updatePrefs((p) => ({ ...p, feed: { ...p.feed, badges: next } }));
-      return next;
-    });
-  }
-  function changeFontSize(delta: number) {
-    setFontSize((s) => {
-      const next = Math.min(24, Math.max(11, s + delta));
-      updatePrefs((p) => ({ ...p, feed: { ...p.feed, fontSize: next } }));
       return next;
     });
   }
@@ -283,6 +277,9 @@ export default function Chat(props: Props) {
           isMod={isMod()}
           broadcasterId={props.broadcasterId}
         />
+      </Show>
+      <Show when={notifContextMenu()}>
+        <ChatNotificationContextMenu />
       </Show>
       <Show when={modAction()}>
         <BanTimeoutModal broadcasterId={props.broadcasterId} />

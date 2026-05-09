@@ -7,6 +7,9 @@ import ChannelListPinned from "./ChannelListPinned";
 import ChannelListOnline from "./ChannelListOnline";
 import ContextMenu from "../ui/ContextMenu";
 import ContextMenuItem from "../ui/ContextMenuItem";
+import ContextMenuDivider from "../ui/ContextMenuDivider";
+import CopyIcon from "../icons/CopyIcon";
+import { developerMode } from "../feed-prefs";
 import type { TwitchStream, TwitchUser } from "../types";
 
 export type { TwitchStream, TwitchUser };
@@ -212,6 +215,17 @@ export default function ChannelList(props: Props) {
                 setMenu(null);
               }}
             />
+            <Show when={developerMode()}>
+              <ContextMenuDivider />
+              <ContextMenuItem
+                label="Copy Payload"
+                icon={<CopyIcon class="w-3.5 h-3.5" />}
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(m().ch, null, 2));
+                  setMenu(null);
+                }}
+              />
+            </Show>
           </ContextMenu>
         )}
       </Show>

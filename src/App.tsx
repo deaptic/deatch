@@ -5,9 +5,15 @@ import { toast } from "./notifications";
 import Sidebar, { Channel } from "./Sidebar";
 import Chat from "./components/Chat";
 import TitleBar from "./components/TitleBar";
+import Settings from "./components/Settings";
+import Loading from "./components/Loading";
+import { settingsOpen } from "./settings-state";
 import TwitchIcon from "./icons/TwitchIcon";
 import ContextMenu from "./ui/ContextMenu";
 import ContextMenuItem from "./ui/ContextMenuItem";
+import ContextMenuDivider from "./ui/ContextMenuDivider";
+import CopyIcon from "./icons/CopyIcon";
+import { developerMode } from "./feed-prefs";
 import {
   setGlobalEmotes,
   setUserEmotes,
@@ -103,9 +109,11 @@ function App() {
     ]).then(([global, channel]) => {
       const map: BadgeMap = {};
       for (const set of global)
-        for (const v of set.versions) map[`${set.set_id}/${v.id}`] = v.image_url_1x;
+        for (const v of set.versions)
+          map[`${set.set_id}/${v.id}`] = { url: v.image_url_1x, title: v.title };
       for (const set of channel)
-        for (const v of set.versions) map[`${set.set_id}/${v.id}`] = v.image_url_1x;
+        for (const v of set.versions)
+          map[`${set.set_id}/${v.id}`] = { url: v.image_url_1x, title: v.title };
       setBadges(broadcasterId, map);
       return map;
     });
@@ -332,9 +340,10 @@ function App() {
   return (
     <div class="flex flex-col h-screen bg-[#0e0e10] relative">
       <TitleBar />
+      <Show when={settingsOpen()}><Settings /></Show>
     <Show
       when={user()}
-      fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-[#0e0e10] flex items-center justify-center"><div class="w-6 h-6 border-2 border-[#9146ff] border-t-transparent rounded-full animate-spin" /></main>}>{
+      fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-[#0e0e10] flex items-center justify-center"><Loading size={48} /></main>}>{
         <main class="flex-1 bg-[#0e0e10] flex items-center justify-center">
           <div class="flex flex-col items-center gap-8">
             <div class="flex items-center gap-3">
@@ -347,9 +356,7 @@ function App() {
                 <>
                   <Show
                     when={deviceCode()}
-                    fallback={
-                      <div class="w-10 h-10 rounded-full border-4 border-[#2d2d35] border-t-[#9146ff] animate-spin" />
-                    }
+                    fallback={<Loading size={56} />}
                   >
                     {(code) => (
                       <div class="flex flex-col items-center gap-4 w-full">
@@ -448,6 +455,17 @@ function App() {
                   danger
                   onClick={() => { setUserMenu(null); handleLogout(); }}
                 />
+                <Show when={developerMode()}>
+                  <ContextMenuDivider />
+                  <ContextMenuItem
+                    label="Copy Payload"
+                    icon={<CopyIcon class="w-3.5 h-3.5" />}
+                    onClick={() => {
+                      navigator.clipboard.writeText(JSON.stringify(u(), null, 2));
+                      setUserMenu(null);
+                    }}
+                  />
+                </Show>
               </ContextMenu>
             )}
           </Show>
