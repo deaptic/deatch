@@ -30,6 +30,8 @@ import {
   feedUserMuted,
   muteUser,
   unmuteUser,
+  feedUserOverrideNameColor,
+  setFeedUserOverrideNameColor,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
   advancedShowLogs,
@@ -150,6 +152,16 @@ export default function Settings(props: Props) {
                   <Toggle size="md" checked={feedUserShowDisplayName()} onChange={setFeedUserShowDisplayName} />
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
+                  label="Override name colors"
+                  description="Use a single color for all chatter names. Leave empty to keep each user's color."
+                >
+                  <TextInput
+                    placeholder="#9481ff"
+                    value={feedUserOverrideNameColor()}
+                    onInput={(e) => setFeedUserOverrideNameColor(e.currentTarget.value.trim())}
+                  />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
                   label="Muted users"
                   description="Hide messages from these users. Press Enter to add."
                   stacked
@@ -209,18 +221,20 @@ export default function Settings(props: Props) {
           </Show>
           <Show when={section() === "advanced"}>
             <SettingsContent title="Advanced">
-              <SettingsContentSectionItem
-                label="Developer mode"
-                description="Show extra debug info and developer tools."
-              >
-                <Toggle size="md" checked={advancedDeveloperMode()} onChange={setAdvancedDeveloperMode} />
-              </SettingsContentSectionItem>
-              <SettingsContentSectionItem
-                label="Show logs"
-                description="Surface log messages as toasts."
-              >
-                <Toggle size="md" checked={advancedShowLogs()} onChange={setAdvancedShowLogs} />
-              </SettingsContentSectionItem>
+              <SettingsContentSection>
+                <SettingsContentSectionItem
+                  label="Developer mode"
+                  description="Show extra debug info and developer tools."
+                >
+                  <Toggle size="md" checked={advancedDeveloperMode()} onChange={setAdvancedDeveloperMode} />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Show logs"
+                  description="Surface log messages as toasts."
+                >
+                  <Toggle size="md" checked={advancedShowLogs()} onChange={setAdvancedShowLogs} />
+                </SettingsContentSectionItem>
+              </SettingsContentSection>
             </SettingsContent>
           </Show>
         </div>

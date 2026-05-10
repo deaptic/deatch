@@ -11,7 +11,8 @@ import {
   ffzChannel,
 } from "../../state/emotes";
 import EmotePicker from "../emotes/EmotePicker";
-import EmoteSuggestions from "../emotes/EmoteSuggestions";
+import FeedSuggestions from "./FeedSuggestions";
+import { chattersByChannel } from "../../state/users";
 import SmileIcon from "../../icons/SmileIcon";
 
 type ReplyTo = { messageId: string; name: string; text: string };
@@ -28,8 +29,10 @@ export default function FeedInput(props: Props) {
   const [sending, setSending] = createSignal(false);
   const [pickerOpen, setPickerOpen] = createSignal(false);
   const [acQuery, setAcQuery] = createSignal<string | null>(null);
+  const [mentionQuery, setMentionQuery] = createSignal<string | null>(null);
   let inputRef: HTMLInputElement | undefined;
   let acHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
+  let mentionHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
 
   onMount(() => {
     props.expose?.({ focus: () => inputRef?.focus() });
@@ -37,6 +40,8 @@ export default function FeedInput(props: Props) {
 
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
   type EmoteEntry = { url: string; source: Source };
+  type EmoteSuggestion = { name: string; url: string; source: Source };
+  type MentionSuggestion = { login: string; displayName: string; color: string };
 
   const allEmotes = createMemo<Record<string, EmoteEntry>>(() => {
     const map: Record<string, EmoteEntry> = {};
@@ -56,12 +61,12 @@ export default function FeedInput(props: Props) {
     return map;
   });
 
-  const acSuggestions = () => {
+  const acSuggestions = (): EmoteSuggestion[] => {
     const q = acQuery();
     if (!q) return [];
     const lower = q.toLowerCase();
-    const starts: { name: string; url: string; source: Source }[] = [];
-    const contains: { name: string; url: string; source: Source }[] = [];
+    const starts: EmoteSuggestion[] = [];
+    const contains: EmoteSuggestion[] = [];
     for (const [name, entry] of Object.entries(allEmotes())) {
       const n = name.toLowerCase();
       if (n.startsWith(lower)) starts.push({ name, url: entry.url, source: entry.source });
@@ -70,6 +75,31 @@ export default function FeedInput(props: Props) {
     starts.sort((a, b) => a.name.localeCompare(b.name));
     contains.sort((a, b) => a.name.localeCompare(b.name));
     return [...starts, ...contains].slice(0, 10);
+  };
+
+  const mentionSuggestions = (): MentionSuggestion[] => {
+    const q = mentionQuery();
+    if (q === null) return [];
+    const bucket = chattersByChannel.get(props.broadcasterId);
+    if (!bucket) return [];
+    const lower = q.toLowerCase();
+    type Ranked = { login: string; displayName: string; color: string; lastSeen: number };
+    const starts: Ranked[] = [];
+    const contains: Ranked[] = [];
+    for (const c of bucket.values()) {
+      const l = c.login.toLowerCase();
+      const d = c.displayName.toLowerCase();
+      if (lower === "" || l.startsWith(lower) || d.startsWith(lower)) {
+        starts.push(c);
+      } else if (l.includes(lower) || d.includes(lower)) {
+        contains.push(c);
+      }
+    }
+    starts.sort((a, b) => b.lastSeen - a.lastSeen);
+    contains.sort((a, b) => b.lastSeen - a.lastSeen);
+    return [...starts, ...contains]
+      .slice(0, 10)
+      .map((c) => ({ login: c.login, displayName: c.displayName, color: c.color }));
   };
 
   async function sendMessage() {
@@ -96,27 +126,53 @@ export default function FeedInput(props: Props) {
     const el = e.currentTarget as HTMLInputElement;
     setInput(el.value);
     const before = el.value.slice(0, el.selectionStart ?? el.value.length);
-    const match = before.match(/(?:^|\s):(\w+)$/);
-    if (match && match[1].length >= 1) setAcQuery(match[1]);
-    else setAcQuery(null);
+    const emoteMatch = before.match(/(?:^|\s):(\w+)$/);
+    const mentionMatch = before.match(/(?:^|\s)@(\w*)$/);
+    if (emoteMatch && emoteMatch[1].length >= 1) {
+      setAcQuery(emoteMatch[1]);
+      setMentionQuery(null);
+    } else if (mentionMatch && mentionMatch[1].length >= 1) {
+      setMentionQuery(mentionMatch[1]);
+      setAcQuery(null);
+    } else {
+      setAcQuery(null);
+      setMentionQuery(null);
+    }
   }
 
-  function selectAcSuggestion(name: string) {
+  function selectAcSuggestion(s: EmoteSuggestion) {
     setAcQuery(null);
-    if (!name) { inputRef?.focus(); return; }
     const cursor = inputRef?.selectionStart ?? input().length;
     const before = input().slice(0, cursor);
     const after = input().slice(cursor);
     setInput(
       before.replace(
         /(?:^|\s):(\w+)$/,
-        (m) => (m.startsWith(":") ? "" : m[0]) + name + " ",
+        (m) => (m.startsWith(":") ? "" : m[0]) + s.name + " ",
       ) + after,
     );
     inputRef?.focus();
   }
 
+  function selectMention(s: MentionSuggestion) {
+    setMentionQuery(null);
+    const cursor = inputRef?.selectionStart ?? input().length;
+    const before = input().slice(0, cursor);
+    const after = input().slice(cursor);
+    setInput(
+      before.replace(
+        /(?:^|\s)@(\w*)$/,
+        (m) => (m.startsWith("@") ? "" : m[0]) + "@" + s.login + " ",
+      ) + after,
+    );
+    inputRef?.focus();
+  }
+
+  function dismissAc() { setAcQuery(null); inputRef?.focus(); }
+  function dismissMention() { setMentionQuery(null); inputRef?.focus(); }
+
   function onKeyDown(e: KeyboardEvent) {
+    if (mentionHandleKey?.(e)) return;
     if (acHandleKey?.(e)) return;
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }
@@ -146,10 +202,36 @@ export default function FeedInput(props: Props) {
         </div>
       </Show>
       <div class="relative flex items-center h-14">
+        <Show when={mentionSuggestions().length > 0}>
+          <FeedSuggestions<MentionSuggestion>
+            suggestions={mentionSuggestions}
+            onSelect={selectMention}
+            onDismiss={dismissMention}
+            renderItem={(s) => (
+              <>
+                <span class="font-semibold flex-1 text-left truncate" style={{ color: s.color || "#efeff1" }}>
+                  {s.displayName}
+                </span>
+                <span class="text-xs font-semibold shrink-0 text-[#5c5c7a]">
+                  {s.displayName.toLowerCase() !== s.login ? s.login : ""}
+                </span>
+              </>
+            )}
+            expose={(api) => { mentionHandleKey = api.handleKey; }}
+          />
+        </Show>
         <Show when={acSuggestions().length > 0}>
-          <EmoteSuggestions
+          <FeedSuggestions<EmoteSuggestion>
             suggestions={acSuggestions}
             onSelect={selectAcSuggestion}
+            onDismiss={dismissAc}
+            renderItem={(s) => (
+              <>
+                <img src={s.url} alt={s.name} class="w-6 h-6 object-contain shrink-0" />
+                <span class="text-[#efeff1] flex-1 text-left truncate">{s.name}</span>
+                <span class="text-xs font-semibold shrink-0 text-[#5c5c7a]">{s.source}</span>
+              </>
+            )}
             expose={(api) => { acHandleKey = api.handleKey; }}
           />
         </Show>

@@ -14,6 +14,7 @@ export type UserPreferences = {
     users: {
       muted: string[];
       showDisplayName: boolean;
+      overrideNameColor: string;
     };
   };
   advanced: {
@@ -46,6 +47,7 @@ function load(): UserPreferences {
         users: {
           muted: (stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted).filter((s) => /^\d+$/.test(s)),
           showDisplayName: stored.feed?.users?.showDisplayName ?? DEFAULT_PREFERENCES.feed.users.showDisplayName,
+          overrideNameColor: stored.feed?.users?.overrideNameColor ?? DEFAULT_PREFERENCES.feed.users.overrideNameColor,
         },
       },
       advanced: {
@@ -73,6 +75,7 @@ export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedBadges = () => prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>;
 export const feedUserMuted = () => prefs.feed.users.muted;
+export const feedUserOverrideNameColor = () => prefs.feed.users.overrideNameColor;
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
@@ -84,6 +87,11 @@ export function setFeedFontSize(value: number) {
 
 export function setFeedUserShowDisplayName(value: boolean) {
   setPrefs("feed", "users", "showDisplayName", value);
+  persist();
+}
+
+export function setFeedUserOverrideNameColor(value: string) {
+  setPrefs("feed", "users", "overrideNameColor", value);
   persist();
 }
 

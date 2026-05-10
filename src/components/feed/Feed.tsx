@@ -30,7 +30,9 @@ import {
 import { NOTICE_TO_EVENT } from "../../constants";
 import {
   feedFontSize,
+  setFeedFontSize,
   feedUserShowDisplayName,
+  feedUserOverrideNameColor,
   feedShowTimestamp,
   feedBadges,
   feedEvents,
@@ -81,6 +83,9 @@ export default function Feed(props: Props) {
     props.broadcasterLogin === props.userLogin ||
     moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId);
 
+  const [fontSizeFlash, setFontSizeFlash] = createSignal(false);
+  let fontSizeFlashTimer: number | undefined;
+
   let bottomRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
   let isProgrammaticScroll = false;
@@ -93,6 +98,15 @@ export default function Feed(props: Props) {
   function scrollToBottom() {
     trimToLatest(props.broadcasterId);
     scrollInstant();
+  }
+
+  function onWheel(e: WheelEvent) {
+    if (!e.altKey || e.deltaY === 0) return;
+    e.preventDefault();
+    setFeedFontSize(feedFontSize() - Math.sign(e.deltaY));
+    setFontSizeFlash(true);
+    clearTimeout(fontSizeFlashTimer);
+    fontSizeFlashTimer = window.setTimeout(() => setFontSizeFlash(false), 800);
   }
 
   function onScroll(e: Event) {
@@ -137,6 +151,8 @@ export default function Feed(props: Props) {
     onCleanup(() => window.removeEventListener("keydown", onKey));
   });
 
+  onCleanup(() => clearTimeout(fontSizeFlashTimer));
+
   function isVisible(item: FeedItem): boolean {
     if (item.kind === "event") {
       const k = NOTICE_TO_EVENT[item.notice_type];
@@ -159,6 +175,11 @@ export default function Feed(props: Props) {
   return (
     <div class="flex flex-col h-full bg-[#0e0e10]">
       <div class="flex-1 relative min-h-0">
+        <Show when={fontSizeFlash()}>
+          <div class="absolute top-3 right-3 z-20 bg-[#1f1f23] border border-[#2d2d35] text-[#efeff1] text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
+            {feedFontSize()}px
+          </div>
+        </Show>
         <Show when={paused()}>
           <button
             onClick={scrollToBottom}
@@ -171,6 +192,7 @@ export default function Feed(props: Props) {
         <div
           ref={scrollRef}
           onScroll={onScroll}
+          onWheel={onWheel}
           class="h-full overflow-y-auto pl-2 pr-3 flex flex-col [scrollbar-gutter:stable]"
           style={{ "font-size": `${feedFontSize()}px` }}
         >
@@ -201,6 +223,7 @@ export default function Feed(props: Props) {
                       badgePrefs={feedBadges()}
                       userLogin={props.userLogin}
                       useDisplayName={feedUserShowDisplayName()}
+                      overrideNameColor={feedUserOverrideNameColor()}
                       showTimestamp={feedShowTimestamp()}
                       reactions={reactions()}
                       onContextMenu={openContextMenu}

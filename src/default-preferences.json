@@ -21,7 +21,8 @@
     },
     "users": {
       "muted": [],
-      "showDisplayName": true
+      "showDisplayName": true,
+      "overrideNameColor": ""
     }
   },
   "advanced": {
