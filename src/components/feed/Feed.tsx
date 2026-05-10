@@ -241,6 +241,7 @@ export default function Feed(props: Props) {
 
       <FeedInput
         broadcasterId={props.broadcasterId}
+        broadcasterLogin={props.broadcasterLogin}
         replyTo={replyTo}
         onClearReply={clearReply}
         expose={(api) => { focusInput = api.focus; }}
