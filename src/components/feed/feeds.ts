@@ -1,6 +1,7 @@
 import { createStore, produce } from "solid-js/store";
 import type { FeedItem, BadgeMap } from "./types";
 import { selectedChannel } from "../../state/channels";
+import { recordChatter } from "../../state/users";
 
 export type { FeedItem };
 
@@ -63,6 +64,15 @@ export function ensureFeed(id: string) {
 
 export function appendItem(id: string, item: FeedItem) {
   ensureFeed(id);
+  if (item.kind === "message") {
+    recordChatter(id, {
+      id: item.chatter_user_id,
+      login: item.chatter_login,
+      displayName: item.chatter_name,
+      color: item.color,
+      lastSeen: item.timestamp,
+    });
+  }
   const isActive = selectedChannel()?.user_id === id;
   setFeeds(
     id,

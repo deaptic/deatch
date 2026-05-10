@@ -16,6 +16,7 @@ type Props = {
   userLogin: string;
   useDisplayName?: boolean;
   showTimestamp?: boolean;
+  overrideNameColor?: string;
   reactions: Reaction[];
   onContextMenu: (x: number, y: number, msg: Message) => void;
   onReply: (msg: Message) => void;
@@ -75,7 +76,7 @@ function renderFragment(frag: Fragment, emotes: EmoteMap) {
     case "mention":
       return (
         <span
-          class="text-[#9146ff] font-medium cursor-pointer hover:underline"
+          class="text-[#9481ff] font-medium cursor-pointer hover:underline"
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -169,7 +170,7 @@ export default function FeedMessage(props: Props) {
             }}
           >
             <span class="text-[0.78em]">⌐ Replying to </span>
-            <span class="text-[0.78em] font-semibold text-[#9146ff]">
+            <span class="text-[0.78em] font-semibold text-[#9481ff]">
               @{props.item.reply!.parent_user_name}
             </span>
             <span class="text-[0.78em]">
@@ -204,7 +205,7 @@ export default function FeedMessage(props: Props) {
         </Show>
         <span
           class="font-semibold cursor-pointer hover:underline"
-          style={{ color: props.item.color || "#9146ff" }}
+          style={{ color: props.overrideNameColor || props.item.color || "#9481ff" }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();

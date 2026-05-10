@@ -17,3 +17,22 @@ export function cacheUsers(users: User[]) {
 }
 
 export const pendingUserById = new Map<string, Promise<void>>();
+
+export type Chatter = {
+  id: string;
+  login: string;
+  displayName: string;
+  color: string;
+  lastSeen: number;
+};
+
+export const chattersByChannel = new Map<string, Map<string, Chatter>>();
+
+export function recordChatter(channelId: string, c: Chatter) {
+  let bucket = chattersByChannel.get(channelId);
+  if (!bucket) {
+    bucket = new Map();
+    chattersByChannel.set(channelId, bucket);
+  }
+  bucket.set(c.id, c);
+}
