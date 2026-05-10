@@ -12,13 +12,13 @@ export default function Stepper(props: Props) {
   const size = () => props.size ?? "sm";
   const btnClass = () =>
     size() === "md"
-      ? "w-8 h-8 flex items-center justify-center text-[#adadb8] hover:text-white transition-colors cursor-pointer rounded hover:bg-[#2d2d35]"
-      : "w-6 h-6 flex items-center justify-center text-[#5c5c7a] hover:text-white transition-colors cursor-pointer rounded hover:bg-[#2d2d35]";
+      ? "w-8 h-8 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer rounded hover:bg-bg-light"
+      : "w-6 h-6 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer rounded hover:bg-bg-light";
   const iconClass = () => (size() === "md" ? "w-4 h-4" : "w-3.5 h-3.5");
   const labelClass = () =>
     size() === "md"
-      ? "text-[#efeff1] text-sm tabular-nums w-8 text-center select-none"
-      : "text-[#efeff1] text-xs tabular-nums w-6 text-center select-none";
+      ? "text-text text-sm tabular-nums w-8 text-center select-none"
+      : "text-text text-xs tabular-nums w-6 text-center select-none";
   const gap = () => (size() === "md" ? "gap-2" : "gap-1");
 
   return (

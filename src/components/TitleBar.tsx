@@ -52,24 +52,24 @@ export default function TitleBar(props: Props) {
     <>
       <div
         data-tauri-drag-region
-        class="relative h-10 shrink-0 flex items-center bg-[#0e0e10] border-b border-[#2d2d35] select-none"
+        class="relative h-10 shrink-0 flex items-center bg-bg-dark border-b border-border-muted select-none"
       >
         <div data-tauri-drag-region class="flex items-center px-3 pointer-events-none">
-          <span class="text-white text-xs font-semibold tracking-tight">Deatch</span>
+          <span class="text-text text-xs font-semibold tracking-tight">Deatch</span>
         </div>
         <div data-tauri-drag-region class="flex-1" />
         <Show when={selectedChannel()}>
           {(b) => (
             <div
               data-tauri-drag-region
-              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#adadb8] text-xs pointer-events-none truncate max-w-[40%]"
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-text-muted text-xs pointer-events-none truncate max-w-[40%]"
             >
               {b().user_name}
             </div>
           )}
         </Show>
         <button
-          class="w-11 h-full flex items-center justify-center text-[#adadb8] hover:bg-[#2d2d35] transition-colors cursor-default"
+          class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg-light transition-colors cursor-default"
           aria-label="Inbox"
           title="Inbox"
         >
@@ -77,7 +77,7 @@ export default function TitleBar(props: Props) {
         </button>
         <button
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-default ${
-            props.settingsOpen ? "text-white bg-[#2d2d35]" : "text-[#adadb8] hover:bg-[#2d2d35]"
+            props.settingsOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg-light"
           }`}
           onClick={props.onToggleSettings}
           aria-label="Settings"
@@ -85,17 +85,17 @@ export default function TitleBar(props: Props) {
         >
           <GearIcon class="w-3.5 h-3.5" />
         </button>
-        <div class="h-5 w-px bg-[#2d2d35] self-center" />
+        <div class="h-5 w-px bg-border-muted self-center" />
         <div class="flex items-stretch h-full">
           <button
-            class="w-11 h-full flex items-center justify-center text-[#adadb8] hover:bg-[#2d2d35] transition-colors cursor-default"
+            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg-light transition-colors cursor-default"
             onClick={() => win.minimize()}
             aria-label="Minimize"
           >
             <MinusIcon class="w-2.5 h-2.5" />
           </button>
           <button
-            class="w-11 h-full flex items-center justify-center text-[#adadb8] hover:bg-[#2d2d35] transition-colors cursor-default"
+            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg-light transition-colors cursor-default"
             onClick={() => win.toggleMaximize()}
             aria-label={maximized() ? "Restore" : "Maximize"}
           >
@@ -106,7 +106,7 @@ export default function TitleBar(props: Props) {
             )}
           </button>
           <button
-            class="w-11 h-full flex items-center justify-center text-[#adadb8] hover:bg-[#c42b1c] hover:text-white transition-colors cursor-default"
+            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-text transition-colors cursor-default"
             onClick={() => win.close()}
             aria-label="Close"
           >

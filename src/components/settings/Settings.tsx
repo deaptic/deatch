@@ -96,19 +96,19 @@ export default function Settings(props: Props) {
       onClick={() => props.onClose()}
     >
       <div
-        class="relative bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl w-full h-full max-w-350 flex flex-col overflow-hidden"
+        class="relative bg-bg border border-border-muted rounded-lg shadow-2xl w-full h-full max-w-350 flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => props.onClose()}
-          class="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center text-[#adadb8] hover:text-white hover:bg-[#2d2d35] rounded transition-colors cursor-pointer"
+          class="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
           title="Close"
           aria-label="Close"
         >
           <CloseIcon class="w-2.5 h-2.5" />
         </button>
-        <div class="flex items-center px-6 h-12 border-b border-[#2d2d35] shrink-0">
-          <span class="text-white text-sm font-semibold">Settings</span>
+        <div class="flex items-center px-6 h-12 border-b border-border-muted shrink-0">
+          <span class="text-text text-sm font-semibold">Settings</span>
         </div>
         <div class="flex-1 flex min-h-0">
           <SettingsNavigation>

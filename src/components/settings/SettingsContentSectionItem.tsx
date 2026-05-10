@@ -18,9 +18,9 @@ export default function SettingsContentSectionItem(props: Props) {
       }`}
     >
       <div class="flex flex-col gap-1 min-w-0">
-        <span class="text-[#efeff1] text-sm">{props.label}</span>
+        <span class="text-text text-sm">{props.label}</span>
         <Show when={props.description}>
-          <span class="text-[#adadb8] text-xs">{props.description}</span>
+          <span class="text-text-muted text-xs">{props.description}</span>
         </Show>
       </div>
       <div class={props.stacked ? "flex flex-col gap-2" : ""}>

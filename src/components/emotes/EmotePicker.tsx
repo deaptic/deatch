@@ -157,16 +157,16 @@ export default function EmotePicker(props: Props) {
   return (
     <>
       <div class="fixed inset-0 z-10" onClick={props.onClose} />
-      <div class="absolute bottom-full right-0 z-20 w-80 bg-[#1f1f23] border border-[#2d2d35] rounded-tl-lg shadow-2xl flex flex-col h-96">
-        <div class="flex border-b border-[#2d2d35] shrink-0">
+      <div class="absolute bottom-full right-0 z-20 w-80 bg-bg border border-border-muted rounded-tl-lg shadow-2xl flex flex-col h-96">
+        <div class="flex border-b border-border-muted shrink-0">
           <For each={TABS}>
             {(t) => (
               <button
                 onClick={() => { setTab(t.id); setSearch(""); }}
                 class={`flex-1 py-2 text-xs font-semibold transition-colors cursor-pointer ${
                   tab() === t.id
-                    ? "text-[#9146ff] border-b-2 border-[#9146ff]"
-                    : "text-[#5c5c7a] hover:text-white"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-text-muted hover:text-text"
                 }`}
               >
                 {t.label}
@@ -175,14 +175,14 @@ export default function EmotePicker(props: Props) {
           </For>
         </div>
 
-        <div class="p-2 border-b border-[#2d2d35] shrink-0">
+        <div class="p-2 border-b border-border-muted shrink-0">
           <input
             type="text"
             placeholder="Search emotes…"
             value={search()}
             onInput={(e) => setSearch(e.currentTarget.value)}
             autofocus
-            class="w-full bg-[#0e0e10] text-white text-sm px-3 py-1.5 rounded outline-none placeholder-[#5c5c7a]"
+            class="w-full bg-bg-dark text-text text-sm px-3 py-1.5 rounded outline-none placeholder-text-muted"
           />
         </div>
 

@@ -210,7 +210,7 @@ export default function Menu(props: Props) {
   });
 
   return (
-    <div class="flex flex-col h-full w-14 shrink-0 bg-[#18181b] border-r border-[#2d2d35] overflow-hidden">
+    <div class="flex flex-col h-full w-14 shrink-0 bg-bg-dark border-r border-border-muted overflow-hidden">
       <div class="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <MenuSection divider="bottom">
           <Show
@@ -219,7 +219,7 @@ export default function Menu(props: Props) {
               <For each={menuChannelPinned()}>
                 {() => (
                   <div class="w-full flex items-center justify-center p-2">
-                    <div class="w-8 h-8 rounded-lg bg-[#2d2d35] animate-pulse" />
+                    <div class="w-8 h-8 rounded-lg bg-bg-light animate-pulse" />
                   </div>
                 )}
               </For>
@@ -238,7 +238,7 @@ export default function Menu(props: Props) {
                         onMouseDown={(e) => startDrag(e, index())}
                       >
                         <Show when={isOver()}>
-                          <div class="pointer-events-none absolute left-1 right-1 -top-px h-0.5 bg-[#9146ff] rounded-full z-10" />
+                          <div class="pointer-events-none absolute left-1 right-1 -top-px h-0.5 bg-primary rounded-full z-10" />
                         </Show>
                         <MenuSectionItem
                           avatar={c().profile_image_url}
@@ -270,7 +270,7 @@ export default function Menu(props: Props) {
               <>
                 {Array.from({ length: 4 }).map(() => (
                   <div class="w-full flex items-center justify-center p-2">
-                    <div class="w-8 h-8 rounded-lg bg-[#2d2d35] animate-pulse" />
+                    <div class="w-8 h-8 rounded-lg bg-bg-light animate-pulse" />
                   </div>
                 ))}
               </>

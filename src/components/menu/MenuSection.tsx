@@ -8,9 +8,9 @@ type Props = {
 export default function MenuSection(props: Props) {
   const border =
     props.divider === "top"
-      ? "border-t border-[#2d2d35]"
+      ? "border-t border-border-muted"
       : props.divider === "bottom"
-        ? "border-b border-[#2d2d35]"
+        ? "border-b border-border-muted"
         : "";
   return <div class={`flex flex-col ${border}`}>{props.children}</div>;
 }

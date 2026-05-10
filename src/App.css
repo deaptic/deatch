@@ -2,28 +2,38 @@
 
 @theme {
   /* Background */
-  --color-bg-dark: #0e0e10;
-  --color-bg: #1f1f23;
-  --color-bg-light: #2d2d35;
+  --color-bg-dark: oklch(0.1 0 340);
+  --color-bg: oklch(0.15 0 340);
+  --color-bg-light: oklch(0.2 0 340);
 
   /* Text */
-  --color-text: #efeff1;
-  --color-text-muted: #adadb8;
+  --color-text: oklch(0.96 0 340);
+  --color-text-muted: oklch(0.76 0 340);
 
   /* Border */
-  --color-highlight: #5c5c7a;
-  --color-border: #3d3d4a;
-  --color-border-muted: #2d2d35;
+  --color-highlight: oklch(0.5 0 340);
+  --color-border: oklch(0.4 0 340);
+  --color-border-muted: oklch(0.3 0 340);
 
   /* Action */
   --color-primary: #9481ff;
   --color-secondary: #c9a85a;
 
   /* Alert */
-  --color-danger: #c97070;
-  --color-warning: #a89860;
-  --color-success: #6a9474;
-  --color-info: #7c8ab5;
+  --color-danger: oklch(0.65 0.16 30);
+  --color-warning: oklch(0.65 0.16 100);
+  --color-success: oklch(0.65 0.16 160);
+  --color-info: oklch(0.65 0.16 260);
+
+  /* Event accents */
+  --color-event-sub: var(--color-primary);
+  --color-event-raid: oklch(0.75 0.17 60);
+  --color-event-announce: oklch(0.78 0.13 195);
+  --color-event-charity: oklch(0.65 0.2 25);
+  --color-event-shoutout: oklch(0.75 0.13 230);
+  --color-event-follow: oklch(0.85 0.2 145);
+  --color-event-bits: oklch(0.85 0.16 90);
+  --color-event-channel-points: oklch(0.71 0.27 340);
 }
 
 ::-webkit-scrollbar {

@@ -10,8 +10,8 @@ export default function SettingsNavigationItem(props: Props) {
       onClick={props.onClick}
       class={`text-left text-xs px-3 py-2 rounded transition-colors cursor-pointer ${
         props.active
-          ? "bg-[#2d2d35] text-white"
-          : "text-[#adadb8] hover:bg-[#2d2d35] hover:text-white"
+          ? "bg-bg-light text-text"
+          : "text-text-muted hover:bg-bg-light hover:text-text"
       }`}
     >
       {props.label}

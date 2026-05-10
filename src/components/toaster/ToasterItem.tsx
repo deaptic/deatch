@@ -8,12 +8,12 @@ import WarnIcon from "../../icons/WarnIcon";
 import LogIcon from "../../icons/LogIcon";
 import type { Toast, ToastType } from "../../state/toasts";
 
-const COLORS: Record<ToastType, { hex: string; icon: string }> = {
-  error: { hex: "#ef4444", icon: "stroke-red-400" },
-  info: { hex: "#3b82f6", icon: "stroke-blue-400" },
-  success: { hex: "#22c55e", icon: "stroke-green-400" },
-  warn: { hex: "#eab308", icon: "stroke-yellow-400" },
-  log: { hex: "#6b7280", icon: "stroke-gray-400" },
+const TYPE: Record<ToastType, { tint: string; stroke: string; fill: string }> = {
+  error: { tint: "bg-danger/15", stroke: "stroke-danger", fill: "bg-danger" },
+  info: { tint: "bg-info/15", stroke: "stroke-info", fill: "bg-info" },
+  success: { tint: "bg-success/15", stroke: "stroke-success", fill: "bg-success" },
+  warn: { tint: "bg-warning/15", stroke: "stroke-warning", fill: "bg-warning" },
+  log: { tint: "bg-text-muted/15", stroke: "stroke-text-muted", fill: "bg-text-muted" },
 };
 
 const ICONS: Record<ToastType, Component<{ class?: string }>> = {
@@ -31,7 +31,7 @@ type Props = {
 
 export default function ToasterItem(props: Props) {
   const toast = props.toast;
-  const color = COLORS[toast.type];
+  const palette = TYPE[toast.type];
   const Icon = ICONS[toast.type];
   const [progress, setProgress] = createSignal(100);
   const [visible, setVisible] = createSignal(false);
@@ -58,7 +58,7 @@ export default function ToasterItem(props: Props) {
 
   return (
     <div
-      class="flex flex-col gap-2 bg-[#16161a] border border-[#2d2d35] rounded-xl p-3 shadow-2xl w-80"
+      class="flex flex-col gap-2 bg-bg border border-border-muted rounded-xl p-3 shadow-2xl w-80"
       style={{
         opacity: shown() ? "1" : "0",
         transform: shown() ? "translateX(0)" : "translateX(24px)",
@@ -66,31 +66,27 @@ export default function ToasterItem(props: Props) {
       }}
     >
       <div class="flex items-center gap-3">
-        <div
-          class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
-          style={{ background: `${color.hex}28` }}
-        >
-          <Icon class={`w-5 h-5 ${color.icon}`} />
+        <div class={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${palette.tint}`}>
+          <Icon class={`w-5 h-5 ${palette.stroke}`} />
         </div>
         <div class="flex-1 min-w-0 flex flex-col gap-0.5">
-          <p class="text-[#efeff1] text-sm font-semibold leading-tight">{toast.title}</p>
+          <p class="text-text text-sm font-semibold leading-tight">{toast.title}</p>
           <Show when={toast.description}>
-            <p class="text-[#adadb8] text-xs leading-snug">{toast.description}</p>
+            <p class="text-text-muted text-xs leading-snug">{toast.description}</p>
           </Show>
         </div>
         <button
           onClick={dismiss}
-          class="shrink-0 w-6 h-6 flex items-center justify-center rounded text-[#adadb8] hover:text-[#efeff1] hover:bg-[#2d2d35] transition-colors cursor-pointer"
+          class="shrink-0 w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text hover:bg-bg-light transition-colors cursor-pointer"
         >
           <CloseIcon class="w-2.5 h-2.5" />
         </button>
       </div>
-      <div class="h-1 rounded-full bg-[#2d2d35] overflow-hidden">
+      <div class="h-1 rounded-full bg-bg-light overflow-hidden">
         <div
-          class="h-full rounded-full"
+          class={`h-full rounded-full ${palette.fill}`}
           style={{
             width: `${progress()}%`,
-            background: color.hex,
             transition: toast.duration > 0 ? `width ${toast.duration}ms linear` : "none",
           }}
         />

@@ -36,7 +36,7 @@ export default function ContextMenu(props: Props) {
     <>
       <div
         ref={menuRef}
-        class="fixed z-50 w-44 bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl overflow-hidden"
+        class="fixed z-50 w-44 bg-bg border border-border-muted rounded-lg shadow-2xl overflow-hidden"
         style={{ top: `${top()}px`, left: `${left}px` }}
         onClick={(e) => e.stopPropagation()}
         onContextMenu={(e) => e.stopPropagation()}

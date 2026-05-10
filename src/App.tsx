@@ -235,20 +235,20 @@ function App() {
   });
 
   return (
-    <div class="flex flex-col h-screen bg-[#0e0e10] relative">
+    <div class="flex flex-col h-screen bg-bg-dark relative">
       <TitleBar settingsOpen={settingsOpen()} onToggleSettings={() => setSettingsOpen((o) => !o)} />
       <Show when={settingsOpen()}><Settings onClose={() => setSettingsOpen(false)} /></Show>
     <Show
       when={user()}
-      fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-[#0e0e10] flex items-center justify-center"><Loading size={48} /></main>}>{
-        <main class="flex-1 bg-[#0e0e10] flex items-center justify-center">
+      fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-bg-dark flex items-center justify-center"><Loading size={48} /></main>}>{
+        <main class="flex-1 bg-bg-dark flex items-center justify-center">
           <div class="flex flex-col items-center gap-8">
             <div class="flex items-center gap-3">
-              <TwitchIcon class="w-12 h-12 fill-[#9146ff]" />
-              <span class="text-white text-3xl font-bold tracking-tight">Deatch</span>
+              <TwitchIcon class="w-12 h-12 fill-primary" />
+              <span class="text-text text-3xl font-bold tracking-tight">Deatch</span>
             </div>
 
-            <div class="bg-[#1f1f23] border border-[#2d2d35] rounded-2xl p-10 flex flex-col items-center gap-6 w-80 shadow-2xl">
+            <div class="bg-bg border border-border-muted rounded-2xl p-10 flex flex-col items-center gap-6 w-80 shadow-2xl">
               {waiting() ? (
                 <>
                   <Show
@@ -258,20 +258,20 @@ function App() {
                     {(code) => (
                       <div class="flex flex-col items-center gap-4 w-full">
                         <div class="text-center flex flex-col gap-1">
-                          <p class="text-white font-semibold">Activate on Twitch</p>
-                          <p class="text-[#adadb8] text-sm">
-                            Go to <span class="text-[#9146ff]">twitch.tv/activate</span> and enter this code:
+                          <p class="text-text font-semibold">Activate on Twitch</p>
+                          <p class="text-text-muted text-sm">
+                            Go to <span class="text-primary">twitch.tv/activate</span> and enter this code:
                           </p>
                         </div>
-                        <div class="bg-[#0e0e10] border border-[#9146ff] rounded-xl px-6 py-4 w-full text-center">
-                          <span class="text-white text-2xl font-mono font-bold tracking-[0.25em]">
+                        <div class="bg-bg-dark border border-primary rounded-xl px-6 py-4 w-full text-center">
+                          <span class="text-text text-2xl font-mono font-bold tracking-[0.25em]">
                             {code().user_code}
                           </span>
                         </div>
                         <a
                           href={code().verification_uri}
                           target="_blank"
-                          class="text-[#9146ff] hover:text-[#bf94ff] text-sm underline transition-colors"
+                          class="text-primary hover:text-primary/80 text-sm underline transition-colors"
                         >
                           Open twitch.tv/activate
                         </a>
@@ -280,7 +280,7 @@ function App() {
                   </Show>
                   <button
                     onClick={cancel}
-                    class="text-[#5c5c7a] hover:text-white text-sm transition-colors cursor-pointer"
+                    class="text-text-muted hover:text-text text-sm transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -288,17 +288,17 @@ function App() {
               ) : (
                 <>
                   <div class="text-center flex flex-col gap-1">
-                    <h2 class="text-white text-xl font-semibold">Welcome back</h2>
-                    <p class="text-[#adadb8] text-sm">Connect your Twitch account to get started</p>
+                    <h2 class="text-text text-xl font-semibold">Welcome back</h2>
+                    <p class="text-text-muted text-sm">Connect your Twitch account to get started</p>
                   </div>
                   <button
                     onClick={login}
-                    class="w-full flex items-center justify-center gap-3 bg-[#9146ff] hover:bg-[#7d2df1] active:bg-[#6a1fd4] transition-colors duration-150 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer"
+                    class="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/85 active:bg-primary/70 transition-colors duration-150 text-text font-semibold py-3 px-6 rounded-lg cursor-pointer"
                   >
-                    <TwitchIcon class="w-5 h-5 fill-white" />
+                    <TwitchIcon class="w-5 h-5 fill-text" />
                     Login with Twitch
                   </button>
-                  <p class="text-[#5c5c7a] text-xs text-center">
+                  <p class="text-text-muted text-xs text-center">
                     Your credentials are never stored by this app
                   </p>
                 </>
@@ -309,7 +309,7 @@ function App() {
       }</Show>}
     >
       {(u) => (
-        <div class="flex flex-1 min-h-0 bg-[#0e0e10] overflow-hidden">
+        <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
           <Menu
             onSelect={handleChannelSelect}
             selectedId={selectedChannel()?.user_id ?? null}
@@ -321,7 +321,7 @@ function App() {
               when={selectedChannel()}
               fallback={
                 <div class="flex items-center justify-center flex-1">
-                  <p class="text-[#5c5c7a] text-sm">Select a channel to view chat</p>
+                  <p class="text-text-muted text-sm">Select a channel to view chat</p>
                 </div>
               }
             >
