@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
+import { banUser } from "../../commands/moderation";
 import type { FeedMessage } from "./types";
 
 const DURATIONS = [
@@ -25,20 +25,12 @@ export default function BanTimeoutModal(props: Props) {
   async function confirm() {
     setLoading(true);
     try {
-      if (props.action === "ban") {
-        await invoke("ban_user", {
-          broadcasterId: props.broadcasterId,
-          userId: props.msg.chatter_user_id,
-          reason: reason(),
-        });
-      } else {
-        await invoke("timeout_user", {
-          broadcasterId: props.broadcasterId,
-          userId: props.msg.chatter_user_id,
-          duration: duration(),
-          reason: reason(),
-        });
-      }
+      await banUser({
+        broadcasterId: props.broadcasterId,
+        userId: props.msg.chatter_user_id,
+        duration: props.action === "ban" ? null : duration(),
+        reason: reason(),
+      });
       props.onClose();
     } finally {
       setLoading(false);

@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
+import { getAllUserEmotes } from "../commands/chat";
 import type { GlobalEmote, RustEmoteEntry, SevenTvChannelResult, UserEmote } from "../types";
 
 export type EmoteMap = Record<string, string>;
@@ -63,6 +64,10 @@ function toFlat(sections: EmoteSection[]): EmoteMap {
   for (const section of sections)
     for (const e of section.emotes) flat[e.name] = e.url;
   return flat;
+}
+
+export async function fetchAllUserEmotes(): Promise<UserEmote[]> {
+  return getAllUserEmotes();
 }
 
 export async function fetchSevenTvGlobalEmotes(): Promise<EmoteEntry[]> {

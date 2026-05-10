@@ -1,5 +1,5 @@
 import { createSignal, createMemo, Show, onMount } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
+import { sendChatMessage } from "../../commands/chat";
 import {
   globalEmotes,
   userEmotes,
@@ -78,13 +78,15 @@ export default function FeedInput(props: Props) {
     setSending(true);
     const reply = props.replyTo();
     try {
-      await invoke("send_chat_message", {
+      const ok = await sendChatMessage({
         broadcasterId: props.broadcasterId,
         message: text,
         replyParentMessageId: reply?.messageId ?? null,
       });
-      setInput("");
-      props.onClearReply();
+      if (ok) {
+        setInput("");
+        props.onClearReply();
+      }
     } finally {
       setSending(false);
     }

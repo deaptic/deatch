@@ -1,5 +1,11 @@
 import { createSignal, createEffect, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
+import { getAllModeratedChannels } from "./commands/moderation";
+import {
+  getGlobalChatBadges,
+  getChannelChatBadges,
+  getGlobalEmotes,
+} from "./commands/chat";
 import { addToast } from "./state/toasts";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Feed from "./components/feed/Feed";
@@ -28,13 +34,11 @@ import {
   fetchSevenTvGlobalEmotes,
   fetchBttvGlobalEmotes,
   fetchFfzGlobalEmotes,
+  fetchAllUserEmotes,
   EmoteEntry,
 } from "./state/emotes";
 import { selectedChannel, setSelectedChannel } from "./state/channels";
 import type {
-  ModeratedChannel,
-  GlobalEmote,
-  UserEmote,
   SevenTvChannelResult,
   BadgeSet,
 } from "./types";
@@ -75,7 +79,7 @@ function App() {
 
   function getGlobalBadges(): Promise<BadgeSet[]> {
     if (!globalBadgesPromise) {
-      globalBadgesPromise = invoke<BadgeSet[]>("get_global_chat_badges").catch(() => [] as BadgeSet[]);
+      globalBadgesPromise = getGlobalChatBadges().catch(() => [] as BadgeSet[]);
     }
     return globalBadgesPromise;
   }
@@ -88,7 +92,7 @@ function App() {
     }
     cached = Promise.all([
       getGlobalBadges(),
-      invoke<BadgeSet[]>("get_channel_chat_badges", { broadcasterId }).catch(() => [] as BadgeSet[]),
+      getChannelChatBadges({ broadcasterId }).catch(() => [] as BadgeSet[]),
     ]).then(([global, channel]) => {
       const map: BadgeMap = {};
       for (const set of global)
@@ -131,11 +135,11 @@ function App() {
   function fetchUserScopedData() {
     if (userScopedFetched) return;
     userScopedFetched = true;
-    invoke<ModeratedChannel[]>("get_moderated_channels")
+    getAllModeratedChannels()
       .then(setModeratedChannels)
       .catch(() => {});
-    invoke<GlobalEmote[]>("get_global_emotes").then(setGlobalEmotes).catch(() => {});
-    invoke<UserEmote[]>("get_user_emotes").then(setUserEmotes).catch(() => {});
+    getGlobalEmotes().then(setGlobalEmotes).catch(() => {});
+    fetchAllUserEmotes().then(setUserEmotes).catch(() => {});
   }
 
   createEffect(() => {

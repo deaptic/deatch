@@ -18,6 +18,7 @@ export type UserPreferences = {
   };
   advanced: {
     developerMode: boolean;
+    showLogs: boolean;
   };
   menu: {
     channels: {
@@ -49,6 +50,7 @@ function load(): UserPreferences {
       },
       advanced: {
         developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
+        showLogs: stored.advanced?.showLogs ?? DEFAULT_PREFERENCES.advanced.showLogs,
       },
       menu: {
         channels: { pinned },
@@ -73,6 +75,7 @@ export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>
 export const feedUserMuted = () => prefs.feed.users.muted;
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
+export const advancedShowLogs = () => prefs.advanced.showLogs;
 
 export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", Math.min(24, Math.max(11, value)));
@@ -134,5 +137,10 @@ export function reorderPinnedChannels(from: number, to: number) {
 
 export function setAdvancedDeveloperMode(value: boolean) {
   setPrefs("advanced", "developerMode", value);
+  persist();
+}
+
+export function setAdvancedShowLogs(value: boolean) {
+  setPrefs("advanced", "showLogs", value);
   persist();
 }

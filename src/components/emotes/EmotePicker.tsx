@@ -14,7 +14,8 @@ import {
   ffzChannel,
 } from "../../state/emotes";
 import { selectedChannel } from "../../state/channels";
-import { userInfoCache, fetchUserInfo } from "../../users";
+import { getUsers } from "../../commands/users";
+import { userCache } from "../../state/users";
 import EmoteGrid from "./EmoteGrid";
 import EmoteSections from "./EmoteSections";
 import EmotePickerSection from "./EmotePickerSection";
@@ -60,7 +61,7 @@ export default function EmotePicker(props: Props) {
         ids.add(e.owner_id);
       }
     }
-    if (ids.size) fetchUserInfo([...ids]);
+    if (ids.size) getUsers({ userIds: [...ids] });
   });
 
   const channelSections = createMemo<EmoteSection[]>(() => {
@@ -111,7 +112,7 @@ export default function EmotePicker(props: Props) {
       }
     }
 
-    const cache = userInfoCache();
+    const cache = userCache();
     const subscriptionSections: EmoteSection[] = [...subGroupMap.entries()]
       .map(([ownerId, emotes]) => ({
         id: `channel-${ownerId}`,
