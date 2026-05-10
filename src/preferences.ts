@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createStore, unwrap } from "solid-js/store";
 import type { EventKey, BadgeCategoryKey } from "./constants";
 import defaults from "./default-preferences.json";
 
@@ -28,30 +28,14 @@ export type UserPreferences = {
 
 const DEFAULT_PREFERENCES = defaults as UserPreferences;
 
-function normalizePinned(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((p) => (typeof p === "string" ? p : (p && typeof p === "object" && "user_id" in p ? String((p as { user_id: unknown }).user_id) : null)))
-    .filter((id): id is string => !!id);
-}
-
-function migrateLegacyPinned(): string[] | null {
-  try {
-    const legacy = localStorage.getItem("pinned_channels");
-    if (!legacy) return null;
-    localStorage.removeItem("pinned_channels");
-    return normalizePinned(JSON.parse(legacy));
-  } catch {
-    return null;
-  }
-}
-
 function load(): UserPreferences {
   try {
     const raw = localStorage.getItem("user_preferences");
     const stored = raw ? (JSON.parse(raw) as Partial<UserPreferences>) : {};
     const rawPinned = stored.menu?.channels?.pinned;
-    const pinned = rawPinned !== undefined ? normalizePinned(rawPinned) : (migrateLegacyPinned() ?? DEFAULT_PREFERENCES.menu.channels.pinned);
+    const pinned = Array.isArray(rawPinned)
+      ? rawPinned.filter((s): s is string => typeof s === "string")
+      : DEFAULT_PREFERENCES.menu.channels.pinned;
     return {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
@@ -75,123 +59,80 @@ function load(): UserPreferences {
   }
 }
 
-function save(prefs: UserPreferences): void {
-  localStorage.setItem("user_preferences", JSON.stringify(prefs));
+const [prefs, setPrefs] = createStore<UserPreferences>(load());
+
+function persist() {
+  localStorage.setItem("user_preferences", JSON.stringify(unwrap(prefs)));
 }
 
-const initial = load();
-const [feedFontSize, setFeedFontSizeSignal] = createSignal(initial.feed.fontSize);
-const [feedUserShowDisplayName, setFeedUserShowDisplayNameSignal] = createSignal(initial.feed.users.showDisplayName);
-const [feedShowTimestamp, setFeedShowTimestampSignal] = createSignal(initial.feed.showTimestamp);
-const [feedBadges, setFeedBadgesSignal] = createSignal<Record<BadgeCategoryKey, BadgePref>>(
-  initial.feed.badges as Record<BadgeCategoryKey, BadgePref>,
-);
-const [feedEvents, setFeedEventsSignal] = createSignal<Record<EventKey, EventPref>>(
-  initial.feed.events as Record<EventKey, EventPref>,
-);
-const [feedUserMuted, setFeedUserMutedSignal] = createSignal<string[]>(initial.feed.users.muted);
-const [menuChannelPinned, setMenuChannelPinnedSignal] = createSignal<string[]>(initial.menu.channels.pinned);
-const [advancedDeveloperMode, setAdvancedDeveloperModeSignal] = createSignal(initial.advanced.developerMode);
-
-export {
-  feedFontSize,
-  feedUserShowDisplayName,
-  feedShowTimestamp,
-  feedBadges,
-  feedEvents,
-  feedUserMuted,
-  menuChannelPinned,
-  advancedDeveloperMode,
-};
+export const feedFontSize = () => prefs.feed.fontSize;
+export const feedUserShowDisplayName = () => prefs.feed.users.showDisplayName;
+export const feedShowTimestamp = () => prefs.feed.showTimestamp;
+export const feedBadges = () => prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
+export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>;
+export const feedUserMuted = () => prefs.feed.users.muted;
+export const menuChannelPinned = () => prefs.menu.channels.pinned;
+export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 
 export function setFeedFontSize(value: number) {
-  const next = Math.min(24, Math.max(11, value));
-  const prefs = load();
-  save({ ...prefs, feed: { ...prefs.feed, fontSize: next } });
-  setFeedFontSizeSignal(next);
+  setPrefs("feed", "fontSize", Math.min(24, Math.max(11, value)));
+  persist();
 }
 
 export function setFeedUserShowDisplayName(value: boolean) {
-  const prefs = load();
-  save({
-    ...prefs,
-    feed: { ...prefs.feed, users: { ...prefs.feed.users, showDisplayName: value } },
-  });
-  setFeedUserShowDisplayNameSignal(value);
+  setPrefs("feed", "users", "showDisplayName", value);
+  persist();
 }
 
 export function setFeedShowTimestamp(value: boolean) {
-  const prefs = load();
-  save({ ...prefs, feed: { ...prefs.feed, showTimestamp: value } });
-  setFeedShowTimestampSignal(value);
+  setPrefs("feed", "showTimestamp", value);
+  persist();
 }
 
 export function setFeedBadge(key: BadgeCategoryKey, show: boolean) {
-  const next = { ...feedBadges(), [key]: { show } };
-  const prefs = load();
-  save({ ...prefs, feed: { ...prefs.feed, badges: next } });
-  setFeedBadgesSignal(next);
+  setPrefs("feed", "badges", key, { show });
+  persist();
 }
 
 export function setFeedEvent(key: EventKey, show: boolean) {
-  const next = { ...feedEvents(), [key]: { show } };
-  const prefs = load();
-  save({ ...prefs, feed: { ...prefs.feed, events: next } });
-  setFeedEventsSignal(next);
+  setPrefs("feed", "events", key, { show });
+  persist();
 }
 
 export function muteUser(user_id: string) {
-  if (feedUserMuted().includes(user_id)) return;
-  const next = [...feedUserMuted(), user_id];
-  const prefs = load();
-  save({
-    ...prefs,
-    feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: next } },
-  });
-  setFeedUserMutedSignal(next);
+  if (prefs.feed.users.muted.includes(user_id)) return;
+  setPrefs("feed", "users", "muted", (m) => [...m, user_id]);
+  persist();
 }
 
 export function unmuteUser(user_id: string) {
-  const next = feedUserMuted().filter((id) => id !== user_id);
-  const prefs = load();
-  save({
-    ...prefs,
-    feed: { ...prefs.feed, users: { ...prefs.feed.users, muted: next } },
-  });
-  setFeedUserMutedSignal(next);
-}
-
-function savePinned(value: string[]) {
-  const prefs = load();
-  save({
-    ...prefs,
-    menu: { ...prefs.menu, channels: { ...prefs.menu.channels, pinned: value } },
-  });
-  setMenuChannelPinnedSignal(value);
+  setPrefs("feed", "users", "muted", (m) => m.filter((id) => id !== user_id));
+  persist();
 }
 
 export function pinChannel(user_id: string) {
-  if (menuChannelPinned().includes(user_id)) return;
-  savePinned([...menuChannelPinned(), user_id]);
+  if (prefs.menu.channels.pinned.includes(user_id)) return;
+  setPrefs("menu", "channels", "pinned", (p) => [...p, user_id]);
+  persist();
 }
 
 export function unpinChannel(user_id: string) {
-  savePinned(menuChannelPinned().filter((id) => id !== user_id));
+  setPrefs("menu", "channels", "pinned", (p) => p.filter((id) => id !== user_id));
+  persist();
 }
 
 export function reorderPinnedChannels(from: number, to: number) {
   if (from === to) return;
-  const next = [...menuChannelPinned()];
-  const [item] = next.splice(from, 1);
-  next.splice(from < to ? to - 1 : to, 0, item);
-  savePinned(next);
+  setPrefs("menu", "channels", "pinned", (p) => {
+    const next = [...p];
+    const [item] = next.splice(from, 1);
+    next.splice(from < to ? to - 1 : to, 0, item);
+    return next;
+  });
+  persist();
 }
 
 export function setAdvancedDeveloperMode(value: boolean) {
-  const prefs = load();
-  save({
-    ...prefs,
-    advanced: { ...prefs.advanced, developerMode: value },
-  });
-  setAdvancedDeveloperModeSignal(value);
+  setPrefs("advanced", "developerMode", value);
+  persist();
 }
