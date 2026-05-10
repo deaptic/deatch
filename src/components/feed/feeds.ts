@@ -1,6 +1,6 @@
 import { createStore, produce } from "solid-js/store";
-import type { FeedItem, BadgeMap } from "./components/feed/types";
-import { activeBroadcaster } from "./broadcaster";
+import type { FeedItem, BadgeMap } from "./types";
+import { selectedChannel } from "../../state/channels";
 
 export type { FeedItem };
 
@@ -32,7 +32,7 @@ export function getItemId(item: FeedItem): string {
 export function unreadCount(id: string): number {
   const feed = feeds[id];
   if (!feed) return 0;
-  if (activeBroadcaster()?.id === id) return 0;
+  if (selectedChannel()?.user_id === id) return 0;
   if (feed.dividerAtItemId) {
     const idx = feed.messages.findIndex((m) => getItemId(m) === feed.dividerAtItemId);
     if (idx === -1) return feed.messages.length;
@@ -63,7 +63,7 @@ export function ensureFeed(id: string) {
 
 export function appendItem(id: string, item: FeedItem) {
   ensureFeed(id);
-  const isActive = activeBroadcaster()?.id === id;
+  const isActive = selectedChannel()?.user_id === id;
   setFeeds(
     id,
     produce((f) => {

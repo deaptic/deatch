@@ -1,8 +1,7 @@
 import { createSignal, createEffect, For, onCleanup, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { invoke } from "@tauri-apps/api/core";
-import { setSettingsOpen } from "../../settings-state";
-import { toast } from "../../notifications";
+import { addToast } from "../../state/toasts";
 import type { TwitchUser } from "../../types";
 import SettingsNavigation from "./SettingsNavigation";
 import SettingsNavigationItem from "./SettingsNavigationItem";
@@ -33,7 +32,7 @@ import {
   unmuteUser,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
-} from "../../preferences";
+} from "../../state/preferences";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
@@ -42,12 +41,16 @@ import ChipList from "../../ui/ChipList";
 import TextInput from "../../ui/TextInput";
 import CloseIcon from "../../icons/CloseIcon";
 
-export default function Settings() {
+type Props = {
+  onClose: () => void;
+};
+
+export default function Settings(props: Props) {
   const [section, setSection] = createSignal<SectionKey>("notifications");
   const [mutedMeta, setMutedMeta] = createStore<Record<string, TwitchUser>>({});
 
   function handleKey(e: KeyboardEvent) {
-    if (e.key === "Escape") setSettingsOpen(false);
+    if (e.key === "Escape") props.onClose();
   }
   onMount(() => {
     window.addEventListener("keydown", handleKey);
@@ -72,28 +75,28 @@ export default function Settings() {
       const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
       const u = users[0];
       if (!u) {
-        toast(`User "${login}" not found`, "error");
+        addToast(`User "${login}" not found`, "error");
         return;
       }
       if (feedUserMuted().includes(u.id)) return;
       setMutedMeta(u.id, u);
       muteUser(u.id);
     } catch (e) {
-      toast(String(e), "error");
+      addToast(String(e), "error");
     }
   }
 
   return (
     <div
       class="fixed top-10 left-0 right-0 bottom-0 z-40 bg-black/60 flex items-center justify-center p-8"
-      onClick={() => setSettingsOpen(false)}
+      onClick={() => props.onClose()}
     >
       <div
         class="relative bg-[#1f1f23] border border-[#2d2d35] rounded-lg shadow-2xl w-full h-full max-w-350 flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={() => setSettingsOpen(false)}
+          onClick={() => props.onClose()}
           class="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center text-[#adadb8] hover:text-white hover:bg-[#2d2d35] rounded transition-colors cursor-pointer"
           title="Close"
           aria-label="Close"

@@ -1,11 +1,11 @@
 import { For, Show } from "solid-js";
-import type { GridItem } from "./types";
+import type { EmoteGridItem } from "./types";
 
 type Props = {
-  items: GridItem[];
+  items: EmoteGridItem[];
   onSelect: (value: string) => void;
   isFavorite: (value: string) => boolean;
-  onToggleFavorite: (item: GridItem) => void;
+  onToggleFavorite: (item: EmoteGridItem) => void;
 };
 
 export default function EmoteGrid(props: Props) {
@@ -14,14 +14,14 @@ export default function EmoteGrid(props: Props) {
       <For each={props.items}>
         {(item) => (
           <button
-            onClick={() => item.accessible !== false && props.onSelect(item.value)}
+            onClick={() => props.onSelect(item.value)}
             onContextMenu={(e) => {
               e.preventDefault();
               e.stopPropagation();
               props.onToggleFavorite(item);
             }}
             title={item.label}
-            class={`relative flex items-center justify-center p-1 rounded ${item.accessible === false ? "opacity-40 cursor-not-allowed" : "hover:bg-[#2d2d35] cursor-pointer"}`}
+            class="relative flex items-center justify-center p-1 rounded hover:bg-[#2d2d35] cursor-pointer"
           >
             <img src={item.url} alt={item.label} class="w-7 h-7 object-contain" />
             <Show when={props.isFavorite(item.value)}>

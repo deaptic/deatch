@@ -1,7 +1,6 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { activeBroadcaster } from "../broadcaster";
-import { settingsOpen, setSettingsOpen } from "../settings-state";
+import { selectedChannel } from "../state/channels";
 import InboxIcon from "../icons/InboxIcon";
 import GearIcon from "../icons/GearIcon";
 import MinusIcon from "../icons/MinusIcon";
@@ -33,7 +32,12 @@ function ResizeHandle(props: { dir: ResizeDir; class: string }) {
   );
 }
 
-export default function TitleBar() {
+type Props = {
+  settingsOpen: boolean;
+  onToggleSettings: () => void;
+};
+
+export default function TitleBar(props: Props) {
   const [maximized, setMaximized] = createSignal(false);
 
   onMount(async () => {
@@ -54,13 +58,13 @@ export default function TitleBar() {
           <span class="text-white text-xs font-semibold tracking-tight">Deatch</span>
         </div>
         <div data-tauri-drag-region class="flex-1" />
-        <Show when={activeBroadcaster()}>
+        <Show when={selectedChannel()}>
           {(b) => (
             <div
               data-tauri-drag-region
               class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[#adadb8] text-xs pointer-events-none truncate max-w-[40%]"
             >
-              {b().name}
+              {b().user_name}
             </div>
           )}
         </Show>
@@ -73,9 +77,9 @@ export default function TitleBar() {
         </button>
         <button
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-default ${
-            settingsOpen() ? "text-white bg-[#2d2d35]" : "text-[#adadb8] hover:bg-[#2d2d35]"
+            props.settingsOpen ? "text-white bg-[#2d2d35]" : "text-[#adadb8] hover:bg-[#2d2d35]"
           }`}
-          onClick={() => setSettingsOpen((o) => !o)}
+          onClick={props.onToggleSettings}
           aria-label="Settings"
           title="Settings"
         >

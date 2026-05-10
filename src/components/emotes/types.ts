@@ -1,1 +1,1 @@
-export type GridItem = { value: string; url: string; label: string; accessible?: boolean };
+export type EmoteGridItem = { value: string; url: string; label: string };

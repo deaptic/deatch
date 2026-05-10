@@ -1,14 +1,13 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { toast } from "./notifications";
-import { setUser } from "./user-state";
-import type { DeviceCode, UserInfo } from "./types";
+import { addToast } from "./toasts";
+import { setUser } from "./users";
+import type { DeviceCode, UserInfo } from "../types";
 
 const [waiting, setWaiting] = createSignal(false);
 const [deviceCode, setDeviceCode] = createSignal<DeviceCode | null>(null);
 const [authChecked, setAuthChecked] = createSignal(false);
-
 export { waiting, deviceCode, authChecked };
 
 export async function login() {
@@ -18,7 +17,7 @@ export async function login() {
     setDeviceCode(code);
     setWaiting(true);
   } catch (e) {
-    toast(String(e), "error");
+    addToast(String(e), "error");
   }
 }
 
@@ -32,7 +31,7 @@ export async function logout() {
     await invoke("revoke_access_token");
     setUser(null);
   } catch (e) {
-    toast(String(e), "error");
+    addToast(String(e), "error");
   }
 }
 
@@ -50,11 +49,11 @@ export async function logout() {
     setWaiting(false);
     setDeviceCode(null);
     setUser(e.payload);
-    toast("Connected to Twitch!", "success");
+    addToast("Connected to Twitch!", "success");
   });
   listen<string>("twitch-auth-error", (e) => {
     setWaiting(false);
     setDeviceCode(null);
-    toast(e.payload, "error");
+    addToast(e.payload, "error");
   });
 })();

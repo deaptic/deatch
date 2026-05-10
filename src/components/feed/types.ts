@@ -25,7 +25,7 @@ export type FeedMessage = {
   fragments: Fragment[];
   badges: Badge[];
   reply?: FeedReply;
-  timestamp: string;
+  timestamp: number;
   channel_points?: boolean;
   first_message?: boolean;
 };
@@ -38,7 +38,7 @@ export type FeedEvent = {
   chatter_user_id?: string;
   chatter_name: string;
   color: string;
-  timestamp: string;
+  timestamp: number;
 };
 
 export type FeedItem = FeedMessage | FeedEvent;

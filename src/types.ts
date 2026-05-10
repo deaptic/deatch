@@ -32,6 +32,17 @@ export type TwitchStream = {
   thumbnail_url: string;
 };
 
+export type Channel = {
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  profile_image_url: string;
+  game_name?: string;
+  viewer_count?: number;
+  title?: string;
+  thumbnail_url?: string;
+};
+
 export type ModeratedChannel = {
   broadcaster_id: string;
   broadcaster_login: string;

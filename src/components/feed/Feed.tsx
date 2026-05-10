@@ -1,6 +1,7 @@
 import {
   createEffect,
   createMemo,
+  createSignal,
   on,
   For,
   Show,
@@ -8,7 +9,7 @@ import {
   onMount,
 } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { buildThirdPartyEmoteMap, favorites } from "../../emotes";
+import { buildThirdPartyEmoteMap, favorites } from "../../state/emotes";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";
@@ -16,23 +17,8 @@ import FeedInput from "./FeedInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
 import EventContextMenu from "../context-menus/EventContextMenu";
 import BanTimeoutModal from "./BanTimeoutModal";
-import { moderatedChannels } from "../../user-state";
-import type { FeedMessage as Message, FeedItem } from "./types";
-import {
-  contextMenu,
-  closeContextMenu,
-  openContextMenu,
-  eventContextMenu,
-  closeEventContextMenu,
-  openEventContextMenu,
-  replyTo,
-  clearReply,
-  startReply,
-  modAction,
-  openModAction,
-  closeModAction,
-  registerInputFocus,
-} from "../../chat-state";
+import { moderatedChannels } from "../../state/users";
+import type { FeedMessage as Message, FeedEvent as EventItem, FeedItem } from "./types";
 import {
   feeds,
   setPaused as setFeedPaused,
@@ -40,7 +26,7 @@ import {
   markSeen,
   clearDivider,
   getItemId,
-} from "../../chat-feed";
+} from "./feeds";
 import { NOTICE_TO_EVENT } from "../../constants";
 import {
   feedFontSize,
@@ -50,7 +36,7 @@ import {
   feedEvents,
   feedUserMuted,
   advancedDeveloperMode,
-} from "../../preferences";
+} from "../../state/preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
 
 type Props = {
@@ -60,6 +46,29 @@ type Props = {
 };
 
 export default function Feed(props: Props) {
+  const [contextMenu, setContextMenu] = createSignal<{ x: number; y: number; msg: Message } | null>(null);
+  const [eventContextMenu, setEventContextMenu] = createSignal<{ x: number; y: number; item: EventItem } | null>(null);
+  const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
+  const [modAction, setModAction] = createSignal<{ action: "timeout" | "ban"; msg: Message } | null>(null);
+
+  let focusInput: (() => void) | undefined;
+
+  const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
+  const closeContextMenu = () => setContextMenu(null);
+  const openEventContextMenu = (x: number, y: number, item: EventItem) => setEventContextMenu({ x, y, item });
+  const closeEventContextMenu = () => setEventContextMenu(null);
+  const openModAction = (action: "timeout" | "ban", msg: Message) => setModAction({ action, msg });
+  const closeModAction = () => setModAction(null);
+  const clearReply = () => setReplyTo(null);
+  const startReply = (msg: Message) => {
+    setReplyTo({
+      messageId: msg.message_id,
+      name: msg.chatter_name,
+      text: msg.fragments.map((f) => f.text).join(""),
+    });
+    focusInput?.();
+  };
+
   const items = createMemo<FeedItem[]>(() => feeds[props.broadcasterId]?.messages ?? []);
   const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});
   const paused = createMemo(() => feeds[props.broadcasterId]?.paused ?? false);
@@ -211,7 +220,7 @@ export default function Feed(props: Props) {
         broadcasterId={props.broadcasterId}
         replyTo={replyTo}
         onClearReply={clearReply}
-        expose={(api) => registerInputFocus(api.focus)}
+        expose={(api) => { focusInput = api.focus; }}
       />
 
       <Show when={contextMenu()}>

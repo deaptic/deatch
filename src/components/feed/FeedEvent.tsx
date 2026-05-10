@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 import type { FeedEvent as Event } from "./types";
+import { formatTimestamp } from "../../utils";
 
 const DEFAULT_COLOR = "#9146ff";
 const SUB_COLOR = "#9146ff";
@@ -53,7 +54,7 @@ export default function FeedEvent(props: Props) {
     >
       <Show when={props.showTimestamp}>
         <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
-          {props.item.timestamp}
+          {formatTimestamp(props.item.timestamp)}
         </span>
       </Show>
       <span class="text-white font-semibold wrap-break-word min-w-0">

@@ -1,8 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
 import type { FeedMessage, FeedEvent, Fragment } from "./components/feed/types";
 import type { RawFragment, RawChatMessage, RawNotification, RawShoutout, RawFollow } from "./types";
-import { appendItem } from "./chat-feed";
-import { getTimestamp } from "./utils";
+import { appendItem } from "./components/feed/feeds";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",
@@ -24,7 +23,7 @@ function mapFragment(f: RawFragment): Fragment {
   }
 }
 
-function mapChatMessage(raw: RawChatMessage, timestamp: string): FeedMessage {
+function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMessage {
   return {
     kind: "message",
     message_id: raw.message_id,
@@ -42,7 +41,7 @@ function mapChatMessage(raw: RawChatMessage, timestamp: string): FeedMessage {
   };
 }
 
-function mapNotice(raw: RawNotification, timestamp: string): FeedEvent {
+function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   return {
     kind: "event",
     id: crypto.randomUUID(),
@@ -55,7 +54,7 @@ function mapNotice(raw: RawNotification, timestamp: string): FeedEvent {
   };
 }
 
-function mapShoutout(raw: RawShoutout, timestamp: string): FeedEvent {
+function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return {
     kind: "event",
     id: crypto.randomUUID(),
@@ -67,7 +66,7 @@ function mapShoutout(raw: RawShoutout, timestamp: string): FeedEvent {
   };
 }
 
-function mapFollow(raw: RawFollow, timestamp: string): FeedEvent {
+function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   return {
     kind: "event",
     id: crypto.randomUUID(),
@@ -81,13 +80,13 @@ function mapFollow(raw: RawFollow, timestamp: string): FeedEvent {
 }
 
 listen<RawChatMessage>("channel-chat-message", (e) => {
-  appendItem(e.payload.broadcaster_user_id, mapChatMessage(e.payload, getTimestamp()));
+  appendItem(e.payload.broadcaster_user_id, mapChatMessage(e.payload, Date.now()));
 });
 
 listen<RawNotification>("channel-chat-notification", (e) => {
   const id = e.payload.broadcaster_user_id;
   if (!e.payload.system_message?.trim()) return;
-  const item = mapNotice(e.payload, getTimestamp());
+  const item = mapNotice(e.payload, Date.now());
   if (e.payload.notice_type === "sub_gift") {
     setTimeout(() => appendItem(id, item), 600);
   } else {
@@ -96,11 +95,11 @@ listen<RawNotification>("channel-chat-notification", (e) => {
 });
 
 listen<RawShoutout>("channel-shoutout-create", (e) => {
-  appendItem(e.payload.broadcaster_user_id, mapShoutout(e.payload, getTimestamp()));
+  appendItem(e.payload.broadcaster_user_id, mapShoutout(e.payload, Date.now()));
 });
 
 listen<RawFollow>("channel-follow", (e) => {
-  appendItem(e.payload.broadcaster_user_id, mapFollow(e.payload, getTimestamp()));
+  appendItem(e.payload.broadcaster_user_id, mapFollow(e.payload, Date.now()));
 });
 
 listen<string>("chat-error", (e) => {

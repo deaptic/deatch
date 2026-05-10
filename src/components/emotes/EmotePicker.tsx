@@ -12,13 +12,13 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-} from "../../emotes";
-import { activeBroadcaster } from "../../broadcaster";
+} from "../../state/emotes";
+import { selectedChannel } from "../../state/channels";
 import { userInfoCache, fetchUserInfo } from "../../users";
 import EmoteGrid from "./EmoteGrid";
 import EmoteSections from "./EmoteSections";
 import EmotePickerSection from "./EmotePickerSection";
-import type { GridItem } from "./types";
+import type { EmoteGridItem } from "./types";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
 type Tab = "channel" | "global" | "emoji";
@@ -48,13 +48,13 @@ export default function EmotePicker(props: Props) {
   const [tab, setTab] = createSignal<Tab>("channel");
 
   createEffect(() => {
-    const broadcaster = activeBroadcaster();
+    const broadcaster = selectedChannel();
     const ids = new Set<string>();
     for (const e of userEmotes()) {
       if (
         e.emote_type === "subscriptions" &&
         e.owner_id &&
-        e.owner_id !== broadcaster?.id &&
+        e.owner_id !== broadcaster?.user_id &&
         /^\d+$/.test(e.owner_id)
       ) {
         ids.add(e.owner_id);
@@ -64,12 +64,12 @@ export default function EmotePicker(props: Props) {
   });
 
   const channelSections = createMemo<EmoteSection[]>(() => {
-    const broadcaster = activeBroadcaster();
+    const broadcaster = selectedChannel();
     const sections: EmoteSection[] = [];
     if (broadcaster) {
       const seen = new Map<string, string>();
       for (const e of userEmotes()) {
-        if (e.owner_id !== broadcaster.id) continue;
+        if (e.owner_id !== broadcaster.user_id) continue;
         if (!seen.has(e.name)) {
           seen.set(e.name, `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`);
         }
@@ -77,7 +77,7 @@ export default function EmotePicker(props: Props) {
       if (seen.size) {
         sections.push({
           id: "twitch",
-          label: broadcaster.name,
+          label: broadcaster.user_name,
           emotes: [...seen.entries()]
             .map(([name, url]) => ({ name, url }))
             .sort((a, b) => a.name.localeCompare(b.name)),
@@ -95,12 +95,12 @@ export default function EmotePicker(props: Props) {
   });
 
   const globalSections = createMemo<EmoteSection[]>(() => {
-    const broadcaster = activeBroadcaster();
+    const broadcaster = selectedChannel();
     const subGroupMap = new Map<string, { name: string; url: string }[]>();
     const otherEmotes = new Map<string, string>();
 
     for (const e of userEmotes()) {
-      if (e.owner_id === broadcaster?.id) continue;
+      if (e.owner_id === broadcaster?.user_id) continue;
       const url = `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`;
       if (e.emote_type === "subscriptions" && e.owner_id && /^\d+$/.test(e.owner_id)) {
         const list = subGroupMap.get(e.owner_id) ?? [];
@@ -140,7 +140,7 @@ export default function EmotePicker(props: Props) {
     ];
   });
 
-  const searchResults = (): GridItem[] => {
+  const searchResults = (): EmoteGridItem[] => {
     const q = search().toLowerCase();
     if (!q) return [];
     return [...channelSections(), ...globalSections()].flatMap((s) =>
@@ -150,7 +150,7 @@ export default function EmotePicker(props: Props) {
     );
   };
 
-  const onToggleFavorite = (item: GridItem) =>
+  const onToggleFavorite = (item: EmoteGridItem) =>
     toggleFavorite({ value: item.value, url: item.url, label: item.label });
 
   return (

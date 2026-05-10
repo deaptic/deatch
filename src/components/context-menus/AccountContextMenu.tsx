@@ -3,9 +3,9 @@ import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import CopyIcon from "../../icons/CopyIcon";
-import { logout } from "../../auth";
-import { user } from "../../user-state";
-import { advancedDeveloperMode } from "../../preferences";
+import { logout } from "../../state/auth";
+import { user } from "../../state/users";
+import { advancedDeveloperMode } from "../../state/preferences";
 
 type Props = {
   x: number;
