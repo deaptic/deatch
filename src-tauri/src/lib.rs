@@ -30,8 +30,13 @@ pub(crate) struct AppState {
 }
 
 pub(crate) enum ChatCmd {
-    Add { broadcaster_id: String, is_mod: bool },
-    Remove { broadcaster_id: String },
+    Add {
+        broadcaster_id: String,
+        is_mod: bool,
+    },
+    Remove {
+        broadcaster_id: String,
+    },
 }
 
 pub(crate) async fn get_token(app: &tauri::AppHandle) -> Result<UserToken, String> {
@@ -68,17 +73,17 @@ async fn add_chat_channel(
     let state = app.state::<AppState>();
     let tx_guard = state.chat_cmd_tx.lock().unwrap();
     if let Some(tx) = tx_guard.as_ref() {
-        tx.send(ChatCmd::Add { broadcaster_id, is_mod })
-            .map_err(|e| e.to_string())?;
+        tx.send(ChatCmd::Add {
+            broadcaster_id,
+            is_mod,
+        })
+        .map_err(|e| e.to_string())?;
     }
     Ok(())
 }
 
 #[tauri::command]
-async fn remove_chat_channel(
-    app: tauri::AppHandle,
-    broadcaster_id: String,
-) -> Result<(), String> {
+async fn remove_chat_channel(app: tauri::AppHandle, broadcaster_id: String) -> Result<(), String> {
     let state = app.state::<AppState>();
     let tx_guard = state.chat_cmd_tx.lock().unwrap();
     if let Some(tx) = tx_guard.as_ref() {
@@ -214,7 +219,9 @@ async fn handle_ws_message(
             for (broadcaster_id, sub) in subs.iter_mut() {
                 match subscribe_to_chat(helix, token, broadcaster_id, sub.is_mod, &sid).await {
                     Ok(ids) => sub.sub_ids = ids,
-                    Err(e) => { let _ = app.emit("chat-error", e); }
+                    Err(e) => {
+                        let _ = app.emit("chat-error", e);
+                    }
                 }
             }
             Ok(None)
@@ -270,17 +277,20 @@ async fn subscribe_to_chat(
 ) -> Result<Vec<String>, String> {
     let mut ids: Vec<String> = Vec::new();
 
-    let resp = helix
-        .req_post(
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelChatMessageV1>::new(),
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                ChannelChatMessageV1::new(broadcaster_id, token.user_id.as_str()),
-                Transport::websocket(session_id),
-            ),
-            token,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
+    let resp =
+        helix
+            .req_post(
+                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
+                    ChannelChatMessageV1,
+                >::new(),
+                twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
+                    ChannelChatMessageV1::new(broadcaster_id, token.user_id.as_str()),
+                    Transport::websocket(session_id),
+                ),
+                token,
+            )
+            .await
+            .map_err(|e| e.to_string())?;
     ids.push(resp.data.id.to_string());
 
     let resp = helix
@@ -301,7 +311,9 @@ async fn subscribe_to_chat(
     if is_mod {
         let resp = helix
             .req_post(
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelShoutoutCreateV1>::new(),
+                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
+                    ChannelShoutoutCreateV1,
+                >::new(),
                 twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
                     ChannelShoutoutCreateV1::new(broadcaster_id, token.user_id.as_str()),
                     Transport::websocket(session_id),
@@ -349,7 +361,10 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(
             tauri_plugin_window_state::Builder::default()
-                .with_state_flags(tauri_plugin_window_state::StateFlags::all() - tauri_plugin_window_state::StateFlags::DECORATIONS)
+                .with_state_flags(
+                    tauri_plugin_window_state::StateFlags::all()
+                        - tauri_plugin_window_state::StateFlags::DECORATIONS,
+                )
                 .build(),
         )
         .manage(AppState {
@@ -364,19 +379,16 @@ pub fn run() {
             add_chat_channel,
             remove_chat_channel,
             twitch::streams::get_followed_streams,
-            twitch::streams::get_streams_by_user_id,
-            twitch::users::get_users_by_id,
-            twitch::users::get_users_by_login,
+            twitch::streams::get_streams,
+            twitch::users::get_users,
             twitch::chat::send_shoutout,
             twitch::chat::send_chat_message,
-            twitch::chat::get_channel_emotes,
             twitch::chat::get_user_emotes,
             twitch::chat::get_global_emotes,
             twitch::chat::get_global_chat_badges,
             twitch::chat::get_channel_chat_badges,
             twitch::moderation::delete_chat_messages,
             twitch::moderation::ban_user,
-            twitch::moderation::timeout_user,
             twitch::moderation::get_moderators,
             twitch::moderation::get_moderated_channels,
             external::bttv::bttv_get_global_emotes,

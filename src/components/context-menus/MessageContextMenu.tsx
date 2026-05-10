@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
+import { sendShoutout } from "../../commands/chat";
+import { deleteChatMessages } from "../../commands/moderation";
 import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
@@ -54,7 +55,7 @@ export default function MessageContextMenu(props: Props) {
         <ContextMenuItem
           label="Shoutout"
           icon={<ShoutoutIcon class="w-3.5 h-3.5" />}
-          onClick={() => { invoke("send_shoutout", { fromBroadcasterId: props.broadcasterId, toBroadcasterId: props.msg.chatter_user_id }); props.onClose(); }}
+          onClick={() => { sendShoutout({ fromBroadcasterId: props.broadcasterId, toBroadcasterId: props.msg.chatter_user_id }); props.onClose(); }}
         />
         <ContextMenuItem
           label={`Timeout ${props.msg.chatter_name}`}
@@ -73,7 +74,7 @@ export default function MessageContextMenu(props: Props) {
           label="Delete Message"
           danger
           icon={<TrashIcon class="w-3.5 h-3.5" />}
-          onClick={() => { invoke("delete_chat_messages", { broadcasterId: props.broadcasterId, messageId: props.msg.message_id }); props.onClose(); }}
+          onClick={() => { deleteChatMessages({ broadcasterId: props.broadcasterId, messageId: props.msg.message_id }); props.onClose(); }}
         />
       </Show>
       <Show when={props.developerMode}>

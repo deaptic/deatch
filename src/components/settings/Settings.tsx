@@ -1,6 +1,6 @@
 import { createSignal, createEffect, For, onCleanup, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { invoke } from "@tauri-apps/api/core";
+import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 import type { TwitchUser } from "../../types";
 import SettingsNavigation from "./SettingsNavigation";
@@ -32,6 +32,8 @@ import {
   unmuteUser,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
+  advancedShowLogs,
+  setAdvancedShowLogs,
 } from "../../state/preferences";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
@@ -61,7 +63,7 @@ export default function Settings(props: Props) {
   createEffect(() => {
     const missing = feedUserMuted().filter((id) => !mutedMeta[id]);
     if (missing.length === 0) return;
-    invoke<TwitchUser[]>("get_users_by_id", { userIds: missing })
+    getUsers({ userIds: missing })
       .then((users) => {
         const updates: Record<string, TwitchUser> = {};
         for (const u of users) updates[u.id] = u;
@@ -72,7 +74,7 @@ export default function Settings(props: Props) {
 
   async function muteByLogin(login: string) {
     try {
-      const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
+      const users = await getUsers({ logins: [login] });
       const u = users[0];
       if (!u) {
         addToast(`User "${login}" not found`, "error");
@@ -212,6 +214,12 @@ export default function Settings(props: Props) {
                 description="Show extra debug info and developer tools."
               >
                 <Toggle size="md" checked={advancedDeveloperMode()} onChange={setAdvancedDeveloperMode} />
+              </SettingsContentSectionItem>
+              <SettingsContentSectionItem
+                label="Show logs"
+                description="Surface log messages as toasts."
+              >
+                <Toggle size="md" checked={advancedShowLogs()} onChange={setAdvancedShowLogs} />
               </SettingsContentSectionItem>
             </SettingsContent>
           </Show>

@@ -25,7 +25,8 @@
     }
   },
   "advanced": {
-    "developerMode": false
+    "developerMode": false,
+    "showLogs": false
   },
   "menu": {
     "channels": {

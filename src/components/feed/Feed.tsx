@@ -8,7 +8,7 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
+import { sendChatMessage } from "../../commands/chat";
 import { buildThirdPartyEmoteMap, favorites } from "../../state/emotes";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
@@ -149,7 +149,7 @@ export default function Feed(props: Props) {
   }
 
   function react(msg: Message, value: string) {
-    invoke("send_chat_message", {
+    sendChatMessage({
       broadcasterId: props.broadcasterId,
       message: value,
       replyParentMessageId: msg.message_id,

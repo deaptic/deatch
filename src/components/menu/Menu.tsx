@@ -1,7 +1,8 @@
 import { Show, For, createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
-import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { getAllFollowedStreams, getAllStreams } from "../../commands/streams";
+import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 import { user } from "../../state/users";
 import { advancedDeveloperMode, menuChannelPinned, pinChannel, unpinChannel, reorderPinnedChannels } from "../../state/preferences";
@@ -60,7 +61,7 @@ export default function Menu(props: Props) {
       return;
     }
     try {
-      const users = await invoke<TwitchUser[]>("get_users_by_id", { userIds: ids });
+      const users = await getUsers({ userIds: ids });
       const next: Record<string, Channel> = {};
       for (const u of users) next[u.id] = userToChannel(u);
       setPinnedMeta(reconcile(next));
@@ -73,19 +74,17 @@ export default function Menu(props: Props) {
 
   async function fetchLive() {
     try {
-      const followed = await invoke<TwitchStream[]>("get_followed_streams");
+      const followed = await getAllFollowedStreams();
       const followedIds = new Set(followed.map((s) => s.user_id));
       const unfollowedPinnedIds = menuChannelPinned().filter((id) => !followedIds.has(id));
       const pinnedStreams = unfollowedPinnedIds.length > 0
-        ? await invoke<TwitchStream[]>("get_streams_by_user_id", { userIds: unfollowedPinnedIds })
+        ? await getAllStreams({ userIds: unfollowedPinnedIds })
         : [];
       const streams = [...followed, ...pinnedStreams];
 
       const profileMap = new Map<string, string>();
       if (streams.length > 0) {
-        const users = await invoke<TwitchUser[]>("get_users_by_id", {
-          userIds: streams.map((s) => s.user_id),
-        });
+        const users = await getUsers({ userIds: streams.map((s) => s.user_id) });
         for (const u of users) profileMap.set(u.id, u.profile_image_url ?? "");
       }
       const data: Channel[] = streams.map((s) => ({
@@ -116,7 +115,7 @@ export default function Menu(props: Props) {
   createEffect(() => {
     const missing = menuChannelPinned().filter((id) => !pinnedMeta[id] && !liveById().get(id));
     if (missing.length === 0) return;
-    invoke<TwitchUser[]>("get_users_by_id", { userIds: missing })
+    getUsers({ userIds: missing })
       .then((users) => {
         const updates: Record<string, Channel> = {};
         for (const u of users) updates[u.id] = userToChannel(u);
@@ -174,7 +173,7 @@ export default function Menu(props: Props) {
     if (!login) return;
     setAddLoading(true);
     try {
-      const users = await invoke<TwitchUser[]>("get_users_by_login", { logins: [login] });
+      const users = await getUsers({ logins: [login] });
       const u = users[0];
       if (!u) throw new Error("User not found");
       if (menuChannelPinned().includes(u.id)) {
