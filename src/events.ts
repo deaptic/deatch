@@ -1,10 +1,7 @@
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { FeedMessage, FeedEvent, Fragment } from "./components/feed/types";
 import type { RawFragment, RawChatMessage, RawNotification, RawShoutout, RawFollow } from "./types";
 import { appendItem } from "./chat-feed";
-import { activeBroadcaster } from "./broadcaster";
-import { user, moderatedChannels } from "./user-state";
 import { getTimestamp } from "./utils";
 
 const CHANNEL_POINT_TYPES = new Set([
@@ -83,13 +80,6 @@ function mapFollow(raw: RawFollow, timestamp: string): FeedEvent {
   };
 }
 
-function isModOf(broadcasterId: string): boolean {
-  const u = user();
-  if (!u) return false;
-  if (broadcasterId === u.user_id) return true;
-  return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
-}
-
 listen<RawChatMessage>("channel-chat-message", (e) => {
   appendItem(e.payload.broadcaster_user_id, mapChatMessage(e.payload, getTimestamp()));
 });
@@ -102,19 +92,6 @@ listen<RawNotification>("channel-chat-notification", (e) => {
     setTimeout(() => appendItem(id, item), 600);
   } else {
     appendItem(id, item);
-  }
-
-  if (
-    e.payload.notice_type === "raid" &&
-    e.payload.chatter_user_id &&
-    isModOf(id) &&
-    localStorage.getItem("auto_shoutout") === "true" &&
-    activeBroadcaster()?.id === id
-  ) {
-    invoke("send_shoutout", {
-      fromBroadcasterId: id,
-      toBroadcasterId: e.payload.chatter_user_id,
-    });
   }
 });
 
