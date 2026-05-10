@@ -62,7 +62,7 @@ export default function TitleBar(props: Props) {
           {(b) => (
             <div
               data-tauri-drag-region
-              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-text-muted text-xs pointer-events-none truncate max-w-[40%]"
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-text text-base font-semibold pointer-events-none truncate max-w-[40%]"
             >
               {b().user_name}
             </div>

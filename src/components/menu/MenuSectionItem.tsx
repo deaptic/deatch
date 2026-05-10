@@ -50,10 +50,13 @@ export default function MenuSectionItem(props: Props) {
           props.onContextMenu(e.clientX, e.clientY);
         }}
         style={{ opacity: props.dimmed ? 0.4 : 1 }}
-        class={`w-full flex items-center justify-center transition-colors cursor-pointer ${
+        class={`relative w-full flex items-center justify-center transition-colors cursor-pointer ${
           props.square ? "px-2 py-3" : "p-2"
-        } ${props.selected ? "bg-highlight" : "hover:bg-bg-light"}`}
+        } ${props.selected ? "" : "hover:bg-bg-light"}`}
       >
+        <Show when={props.selected}>
+          <div class="absolute left-0 top-1 bottom-1 w-1 bg-highlight rounded-r" />
+        </Show>
         <div class="relative shrink-0">
           <img
             src={props.avatar || "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"}

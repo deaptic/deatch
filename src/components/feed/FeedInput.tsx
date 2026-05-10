@@ -19,6 +19,7 @@ type ReplyTo = { messageId: string; name: string; text: string };
 
 type Props = {
   broadcasterId: string;
+  broadcasterLogin: string;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
   expose?: (api: { focus: () => void }) => void;
@@ -242,12 +243,14 @@ export default function FeedInput(props: Props) {
           onInput={onInput}
           onKeyDown={onKeyDown}
           maxLength={500}
-          placeholder="Send a message…"
-          class="flex-1 bg-transparent text-text text-base placeholder-text-muted px-4 py-3 outline-none"
+          placeholder={`Message #${props.broadcasterLogin}`}
+          class="flex-1 bg-transparent text-text text-base placeholder-text-muted/60 px-4 py-3 outline-none"
         />
         <button
           onClick={() => setPickerOpen((o) => !o)}
-          class={`px-3 py-3 transition-colors cursor-pointer ${pickerOpen() ? "text-primary" : "text-text-muted hover:text-text"}`}
+          class={`flex items-center justify-center w-9 h-9 mx-2.5 rounded-md transition-colors cursor-pointer shrink-0 ${
+            pickerOpen() ? "text-primary" : "text-text-muted hover:bg-bg-light hover:text-text"
+          }`}
           title="Emote picker"
         >
           <SmileIcon class="w-5 h-5" />
