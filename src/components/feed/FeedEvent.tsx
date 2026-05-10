@@ -2,35 +2,34 @@ import { Show } from "solid-js";
 import type { FeedEvent as Event } from "./types";
 import { formatTimestamp } from "../../utils";
 
-const DEFAULT_COLOR = "#9146ff";
-const SUB_COLOR = "#9146ff";
-const RAID_COLOR = "#ff9900";
-const ANNOUNCE_COLOR = "#00c8af";
+const SUB = "var(--color-event-sub)";
+const RAID = "var(--color-event-raid)";
+const ANNOUNCE = "var(--color-event-announce)";
 
 const COLORS: Record<string, string> = {
-  sub: SUB_COLOR,
-  resub: SUB_COLOR,
-  sub_gift: SUB_COLOR,
-  community_sub_gift: SUB_COLOR,
-  gift_paid_upgrade: SUB_COLOR,
-  pay_it_forward: SUB_COLOR,
-  prime_paid_upgrade: SUB_COLOR,
-  shared_chat_sub: SUB_COLOR,
-  shared_chat_resub: SUB_COLOR,
-  shared_chat_sub_gift: SUB_COLOR,
-  shared_chat_community_sub_gift: SUB_COLOR,
-  shared_chat_gift_paid_upgrade: SUB_COLOR,
-  shared_chat_pay_it_forward: SUB_COLOR,
-  shared_chat_prime_paid_upgrade: SUB_COLOR,
-  raid: RAID_COLOR,
-  unraid: RAID_COLOR,
-  shared_chat_raid: RAID_COLOR,
-  announcement: ANNOUNCE_COLOR,
-  shared_chat_announcement: ANNOUNCE_COLOR,
-  charity_donation: "#e91916",
-  shoutout: "#00b5ff",
-  follow: "#00ff7f",
-  bits_badge_tier: "#ffd700",
+  sub: SUB,
+  resub: SUB,
+  sub_gift: SUB,
+  community_sub_gift: SUB,
+  gift_paid_upgrade: SUB,
+  pay_it_forward: SUB,
+  prime_paid_upgrade: SUB,
+  shared_chat_sub: SUB,
+  shared_chat_resub: SUB,
+  shared_chat_sub_gift: SUB,
+  shared_chat_community_sub_gift: SUB,
+  shared_chat_gift_paid_upgrade: SUB,
+  shared_chat_pay_it_forward: SUB,
+  shared_chat_prime_paid_upgrade: SUB,
+  raid: RAID,
+  unraid: RAID,
+  shared_chat_raid: RAID,
+  announcement: ANNOUNCE,
+  shared_chat_announcement: ANNOUNCE,
+  charity_donation: "var(--color-event-charity)",
+  shoutout: "var(--color-event-shoutout)",
+  follow: "var(--color-event-follow)",
+  bits_badge_tier: "var(--color-event-bits)",
 };
 
 type Props = {
@@ -40,11 +39,11 @@ type Props = {
 };
 
 export default function FeedEvent(props: Props) {
-  const color = () => COLORS[props.item.notice_type] ?? DEFAULT_COLOR;
+  const color = () => COLORS[props.item.notice_type] ?? SUB;
   return (
     <div
       data-item-id={props.item.id}
-      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-[#1f1f23] border-l-4 rounded-r-md"
+      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-bg border-l-4 rounded-r-md"
       style={{ "border-left-color": color() }}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -53,11 +52,11 @@ export default function FeedEvent(props: Props) {
       }}
     >
       <Show when={props.showTimestamp}>
-        <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
+        <span class="text-text-muted select-none tabular-nums shrink-0">
           {formatTimestamp(props.item.timestamp)}
         </span>
       </Show>
-      <span class="text-white font-semibold wrap-break-word min-w-0">
+      <span class="text-text font-semibold wrap-break-word min-w-0">
         {props.item.system_message}
       </span>
     </div>

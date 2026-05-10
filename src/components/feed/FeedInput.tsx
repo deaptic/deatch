@@ -184,18 +184,18 @@ export default function FeedInput(props: Props) {
   }
 
   return (
-    <div class="shrink-0 border-t border-[#2d2d35]">
+    <div class="shrink-0 border-t border-border-muted">
       <Show when={props.replyTo()}>
-        <div class="flex items-center gap-2 px-4 py-2 bg-[#9146ff0f] border-b border-[#2d2d35]">
-          <span class="text-xs text-[#6e6e8f] truncate min-w-0">
+        <div class="flex items-center gap-2 px-4 py-2 bg-primary/6 border-b border-border-muted">
+          <span class="text-xs text-text-muted truncate min-w-0">
             ⌐ Replying to{" "}
-            <span class="text-[#9146ff] font-semibold">@{props.replyTo()!.name}</span>
+            <span class="text-primary font-semibold">@{props.replyTo()!.name}</span>
             {": "}
             {props.replyTo()!.text}
           </span>
           <button
             onClick={props.onClearReply}
-            class="ml-auto shrink-0 text-[#5c5c7a] hover:text-white cursor-pointer transition-colors text-xs leading-none"
+            class="ml-auto shrink-0 text-text-muted hover:text-text cursor-pointer transition-colors text-xs leading-none"
           >
             ✕
           </button>
@@ -209,10 +209,10 @@ export default function FeedInput(props: Props) {
             onDismiss={dismissMention}
             renderItem={(s) => (
               <>
-                <span class="font-semibold flex-1 text-left truncate" style={{ color: s.color || "#efeff1" }}>
+                <span class="font-semibold flex-1 text-left truncate" style={{ color: s.color || "var(--color-text)" }}>
                   {s.displayName}
                 </span>
-                <span class="text-xs font-semibold shrink-0 text-[#5c5c7a]">
+                <span class="text-xs font-semibold shrink-0 text-text-muted">
                   {s.displayName.toLowerCase() !== s.login ? s.login : ""}
                 </span>
               </>
@@ -228,8 +228,8 @@ export default function FeedInput(props: Props) {
             renderItem={(s) => (
               <>
                 <img src={s.url} alt={s.name} class="w-6 h-6 object-contain shrink-0" />
-                <span class="text-[#efeff1] flex-1 text-left truncate">{s.name}</span>
-                <span class="text-xs font-semibold shrink-0 text-[#5c5c7a]">{s.source}</span>
+                <span class="text-text flex-1 text-left truncate">{s.name}</span>
+                <span class="text-xs font-semibold shrink-0 text-text-muted">{s.source}</span>
               </>
             )}
             expose={(api) => { acHandleKey = api.handleKey; }}
@@ -243,11 +243,11 @@ export default function FeedInput(props: Props) {
           onKeyDown={onKeyDown}
           maxLength={500}
           placeholder="Send a message…"
-          class="flex-1 bg-transparent text-[#efeff1] text-base placeholder-[#5c5c7a] px-4 py-3 outline-none"
+          class="flex-1 bg-transparent text-text text-base placeholder-text-muted px-4 py-3 outline-none"
         />
         <button
           onClick={() => setPickerOpen((o) => !o)}
-          class={`px-3 py-3 transition-colors cursor-pointer ${pickerOpen() ? "text-[#9146ff]" : "text-[#5c5c7a] hover:text-white"}`}
+          class={`px-3 py-3 transition-colors cursor-pointer ${pickerOpen() ? "text-primary" : "text-text-muted hover:text-text"}`}
           title="Emote picker"
         >
           <SmileIcon class="w-5 h-5" />

@@ -173,17 +173,17 @@ export default function Feed(props: Props) {
   }
 
   return (
-    <div class="flex flex-col h-full bg-[#0e0e10]">
+    <div class="flex flex-col h-full bg-bg-dark">
       <div class="flex-1 relative min-h-0">
         <Show when={fontSizeFlash()}>
-          <div class="absolute top-3 right-3 z-20 bg-[#1f1f23] border border-[#2d2d35] text-[#efeff1] text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
+          <div class="absolute top-3 right-3 z-20 bg-bg border border-border-muted text-text text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
             {feedFontSize()}px
           </div>
         </Show>
         <Show when={paused()}>
           <button
             onClick={scrollToBottom}
-            class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-[#9146ff] hover:bg-[#7c3aed] text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
+            class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-primary hover:bg-primary/80 text-text text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
           >
             <CaretDownIcon class="w-3 h-3" />
             Latest messages

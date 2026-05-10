@@ -14,7 +14,7 @@ export default function ToolbarItem(props: Props) {
         e.stopPropagation();
         props.onClick(e);
       }}
-      class="w-8 h-8 flex items-center justify-center text-[#6e6e8f] hover:text-[#efeff1] hover:bg-[#2d2d35] transition-colors cursor-pointer"
+      class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light transition-colors cursor-pointer"
     >
       {props.children}
     </button>

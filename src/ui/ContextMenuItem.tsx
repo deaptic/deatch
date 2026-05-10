@@ -10,7 +10,7 @@ type Props = {
 export default function ContextMenuItem(props: Props) {
   return (
     <button
-      class={`w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-[#2d2d35] cursor-pointer transition-colors ${props.danger ? "text-red-400 hover:text-red-300" : "text-[#efeff1]"}`}
+      class={`w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-bg-light cursor-pointer transition-colors ${props.danger ? "text-danger" : "text-text"}`}
       onClick={props.onClick}
     >
       <span>{props.label}</span>

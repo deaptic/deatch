@@ -51,12 +51,12 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
                 e.preventDefault();
                 openUrl(token);
               }}
-              class="text-[#9146ff] hover:underline break-all"
+              class="text-primary hover:underline break-all"
             >
               {token}
             </a>
           );
-        return <span class="text-[#efeff1]">{token}</span>;
+        return <span class="text-text">{token}</span>;
       }}
     </For>
   );
@@ -76,7 +76,7 @@ function renderFragment(frag: Fragment, emotes: EmoteMap) {
     case "mention":
       return (
         <span
-          class="text-[#9481ff] font-medium cursor-pointer hover:underline"
+          class="text-primary font-medium cursor-pointer hover:underline"
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -125,11 +125,11 @@ export default function FeedMessage(props: Props) {
       data-item-id={props.item.message_id}
       class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
         mentioned()
-          ? "bg-[#9146ff1a] border-[#9146ff]! hover:bg-[#9146ff26]"
+          ? "bg-primary/10 border-primary! hover:bg-primary/15"
           : props.item.channel_points
-            ? "bg-[#ff66cc1a] border-[#ff66cc]! hover:bg-[#ff66cc26]"
+            ? "bg-event-channel-points/10 border-event-channel-points! hover:bg-event-channel-points/15"
             : props.item.first_message
-              ? "bg-[#3d3d4a40] border-[#6e6e8f]! hover:bg-[#3d3d4a66]"
+              ? "bg-border/25 border-highlight! hover:bg-border/40"
               : ""
       }`}
       onContextMenu={(e) => {
@@ -146,14 +146,14 @@ export default function FeedMessage(props: Props) {
         onMore={props.onContextMenu}
       />
       <Show when={props.showTimestamp}>
-        <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
+        <span class="text-text-muted select-none tabular-nums shrink-0">
           {formatTimestamp(props.item.timestamp)}
         </span>
       </Show>
       <div class="wrap-break-word min-w-0">
         <Show when={props.item.reply}>
           <div
-            class="text-[#6e6e8f] leading-[1.6em] truncate cursor-pointer hover:text-[#adadb8] transition-colors"
+            class="text-text-muted/70 leading-[1.6em] truncate cursor-pointer hover:text-text-muted transition-colors"
             onClick={() => {
               const el = document.querySelector(
                 `[data-message-id="${props.item.reply!.parent_message_id}"]`,
@@ -170,7 +170,7 @@ export default function FeedMessage(props: Props) {
             }}
           >
             <span class="text-[0.78em]">⌐ Replying to </span>
-            <span class="text-[0.78em] font-semibold text-[#9481ff]">
+            <span class="text-[0.78em] font-semibold text-primary">
               @{props.item.reply!.parent_user_name}
             </span>
             <span class="text-[0.78em]">
@@ -205,7 +205,7 @@ export default function FeedMessage(props: Props) {
         </Show>
         <span
           class="font-semibold cursor-pointer hover:underline"
-          style={{ color: props.overrideNameColor || props.item.color || "#9481ff" }}
+          style={{ color: props.overrideNameColor || props.item.color || "var(--color-primary)" }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -217,7 +217,7 @@ export default function FeedMessage(props: Props) {
         >
           {props.useDisplayName === false ? props.item.chatter_login : props.item.chatter_name}
         </span>
-        <span class="text-[#adadb8]">: </span>
+        <span class="text-text-muted">: </span>
         <For each={visibleFragments()}>
           {(frag) => renderFragment(frag, props.emotes)}
         </For>

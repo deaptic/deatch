@@ -52,7 +52,7 @@ export default function MenuSectionItem(props: Props) {
         style={{ opacity: props.dimmed ? 0.4 : 1 }}
         class={`w-full flex items-center justify-center transition-colors cursor-pointer ${
           props.square ? "px-2 py-3" : "p-2"
-        } ${props.selected ? "bg-[#3d3d4a]" : "hover:bg-[#2d2d35]"}`}
+        } ${props.selected ? "bg-highlight" : "hover:bg-bg-light"}`}
       >
         <div class="relative shrink-0">
           <img
@@ -61,14 +61,14 @@ export default function MenuSectionItem(props: Props) {
             class="w-8 h-8 rounded-lg"
           />
           <Show when={props.status === "live"}>
-            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1f1f23]" />
+            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-danger rounded-full border-2 border-bg" />
           </Show>
           <Show when={props.status === "self"}>
-            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1f1f23]" />
+            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success rounded-full border-2 border-bg" />
           </Show>
           <Show when={(props.unread ?? 0) > 0}>
-            <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#9146ff] rounded-full border-2 border-[#1f1f23] flex items-center justify-center">
-              <span class="text-[9px] font-bold text-white leading-none tabular-nums">
+            <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary rounded-full border-2 border-bg flex items-center justify-center">
+              <span class="text-[9px] font-bold text-text leading-none tabular-nums">
                 {props.unread! > 99 ? "99+" : props.unread}
               </span>
             </div>
@@ -80,16 +80,16 @@ export default function MenuSectionItem(props: Props) {
           <Portal>
             <div
               style={{ position: "fixed", left: `${t().x}px`, top: `${t().y}px`, transform: "translateY(-50%)" }}
-              class="bg-[#0e0e10] border border-[#3d3d4a] rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-[160px] max-w-[260px]"
+              class="bg-bg-dark border border-border rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-[160px] max-w-[260px]"
             >
-              <p class="text-white text-sm font-semibold truncate">{props.name}</p>
+              <p class="text-text text-sm font-semibold truncate">{props.name}</p>
               <Show when={props.game}>
-                <p class="text-[#adadb8] text-xs truncate mt-0.5">{props.game}</p>
+                <p class="text-text-muted text-xs truncate mt-0.5">{props.game}</p>
               </Show>
               <Show when={props.viewerCount !== undefined}>
                 <div class="flex items-center gap-1.5 mt-1">
-                  <div class="w-1.5 h-1.5 rounded-full bg-red-500" />
-                  <span class="text-[#ff4040] text-xs font-medium">{formatViewers(props.viewerCount!)} viewers</span>
+                  <div class="w-1.5 h-1.5 rounded-full bg-danger" />
+                  <span class="text-danger text-xs font-medium">{formatViewers(props.viewerCount!)} viewers</span>
                 </div>
               </Show>
             </div>
