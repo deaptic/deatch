@@ -1,9 +1,10 @@
 import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { EmoteMap } from "../../emotes";
+import { EmoteMap } from "../../state/emotes";
 import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
+import { formatTimestamp } from "../../utils";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -145,7 +146,7 @@ export default function FeedMessage(props: Props) {
       />
       <Show when={props.showTimestamp}>
         <span class="text-[#6e6e8f] select-none tabular-nums shrink-0">
-          {props.item.timestamp}
+          {formatTimestamp(props.item.timestamp)}
         </span>
       </Show>
       <div class="wrap-break-word min-w-0">

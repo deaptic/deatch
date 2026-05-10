@@ -1,21 +1,20 @@
 import { createSignal, createEffect, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { toast } from "./notifications";
+import { addToast } from "./state/toasts";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Feed from "./components/feed/Feed";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
 import Loading from "./components/Loading";
-import { settingsOpen } from "./settings-state";
-import { menuChannelPinned } from "./preferences";
-import { user, moderatedChannels, setModeratedChannels } from "./user-state";
+import { menuChannelPinned } from "./state/preferences";
+import { user, moderatedChannels, setModeratedChannels } from "./state/users";
 import {
   waiting,
   deviceCode,
   authChecked,
   login,
   cancel,
-} from "./auth";
+} from "./state/auth";
 import TwitchIcon from "./icons/TwitchIcon";
 import {
   setGlobalEmotes,
@@ -30,8 +29,8 @@ import {
   fetchBttvGlobalEmotes,
   fetchFfzGlobalEmotes,
   EmoteEntry,
-} from "./emotes";
-import { activeBroadcaster, setActiveBroadcaster } from "./broadcaster";
+} from "./state/emotes";
+import { selectedChannel, setSelectedChannel } from "./state/channels";
 import type {
   ModeratedChannel,
   GlobalEmote,
@@ -39,7 +38,7 @@ import type {
   SevenTvChannelResult,
   BadgeSet,
 } from "./types";
-import { setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen } from "./chat-feed";
+import { setBadges, dropFeed, ensureFeed, snapshotDivider, markSeen } from "./components/feed/feeds";
 import type { BadgeMap } from "./components/feed/types";
 import "./events";
 import "./App.css";
@@ -62,8 +61,8 @@ function resetUserScopedCaches() {
 }
 
 function App() {
-  const [selectedChannel, setSelectedChannel] = createSignal<Channel | null>(null);
   const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
+  const [settingsOpen, setSettingsOpen] = createSignal(false);
 
   const joinedIds = new Set<string>();
 
@@ -114,7 +113,7 @@ function App() {
       await invoke("add_chat_channel", { broadcasterId, isMod: isModOf(broadcasterId) });
     } catch (e) {
       joinedIds.delete(broadcasterId);
-      toast(String(e), "error");
+      addToast(String(e), "error");
     }
   }
 
@@ -124,7 +123,7 @@ function App() {
     try {
       await invoke("remove_chat_channel", { broadcasterId });
     } catch (e) {
-      toast(String(e), "error");
+      addToast(String(e), "error");
     }
     dropFeed(broadcasterId);
   }
@@ -140,35 +139,35 @@ function App() {
   }
 
   createEffect(() => {
-    const broadcaster = activeBroadcaster();
+    const broadcaster = selectedChannel();
     if (!broadcaster) {
       setSevenTvChannel([]);
       setBttvChannel([]);
       setFfzChannel([]);
       return;
     }
-    let sevenTv = sevenTvChannelCache.get(broadcaster.id);
+    let sevenTv = sevenTvChannelCache.get(broadcaster.user_id);
     if (!sevenTv) {
-      sevenTv = invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId: broadcaster.id })
+      sevenTv = invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId: broadcaster.user_id })
         .then((r) => r.emotes)
         .catch(() => []);
-      sevenTvChannelCache.set(broadcaster.id, sevenTv);
+      sevenTvChannelCache.set(broadcaster.user_id, sevenTv);
     }
     sevenTv.then(setSevenTvChannel);
 
-    let bttv = bttvChannelCache.get(broadcaster.id);
+    let bttv = bttvChannelCache.get(broadcaster.user_id);
     if (!bttv) {
-      bttv = invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId: broadcaster.id })
+      bttv = invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId: broadcaster.user_id })
         .catch(() => [] as EmoteEntry[]);
-      bttvChannelCache.set(broadcaster.id, bttv);
+      bttvChannelCache.set(broadcaster.user_id, bttv);
     }
     bttv.then(setBttvChannel);
 
-    let ffz = ffzChannelCache.get(broadcaster.id);
+    let ffz = ffzChannelCache.get(broadcaster.user_id);
     if (!ffz) {
-      ffz = invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin: broadcaster.login })
+      ffz = invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin: broadcaster.user_login })
         .catch(() => [] as EmoteEntry[]);
-      ffzChannelCache.set(broadcaster.id, ffz);
+      ffzChannelCache.set(broadcaster.user_id, ffz);
     }
     ffz.then(setFfzChannel);
   });
@@ -212,10 +211,9 @@ function App() {
   });
 
   function handleChannelSelect(ch: Channel) {
-    const prev = activeBroadcaster();
-    if (prev && prev.id !== ch.user_id) snapshotDivider(prev.id);
+    const prev = selectedChannel();
+    if (prev && prev.user_id !== ch.user_id) snapshotDivider(prev.user_id);
     setSelectedChannel(ch);
-    setActiveBroadcaster({ id: ch.user_id, login: ch.user_login, name: ch.user_name });
     ensureFeed(ch.user_id);
     markSeen(ch.user_id);
   }
@@ -234,8 +232,8 @@ function App() {
 
   return (
     <div class="flex flex-col h-screen bg-[#0e0e10] relative">
-      <TitleBar />
-      <Show when={settingsOpen()}><Settings /></Show>
+      <TitleBar settingsOpen={settingsOpen()} onToggleSettings={() => setSettingsOpen((o) => !o)} />
+      <Show when={settingsOpen()}><Settings onClose={() => setSettingsOpen(false)} /></Show>
     <Show
       when={user()}
       fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-[#0e0e10] flex items-center justify-center"><Loading size={48} /></main>}>{

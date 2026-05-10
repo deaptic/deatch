@@ -3,7 +3,7 @@ import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import CopyIcon from "../../icons/CopyIcon";
-import type { Channel } from "../menu/Menu";
+import type { Channel } from "../../types";
 
 type Props = {
   x: number;

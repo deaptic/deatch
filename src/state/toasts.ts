@@ -1,22 +1,19 @@
 import { createSignal } from "solid-js";
-import type { ColorKey } from "./constants";
 
-export type { ColorKey as ToastType };
+export type ToastType = "error" | "info" | "success" | "warn" | "log";
 
 export type Toast = {
   id: number;
   title: string;
   description?: string;
-  type: ColorKey;
+  type: ToastType;
   duration: number;
 };
 
 const [toasts, setToasts] = createSignal<Toast[]>([]);
-let nextId = 0;
-
 export { toasts };
 
-const TYPE_DURATION: Record<ColorKey, number> = {
+const TYPE_DURATION: Record<ToastType, number> = {
   error: 0,
   warn: 7000,
   success: 4000,
@@ -24,12 +21,14 @@ const TYPE_DURATION: Record<ColorKey, number> = {
   log: 4000,
 };
 
-export function toast(title: string, type: ColorKey = "info", description?: string) {
+let nextId = 0;
+
+export function addToast(title: string, type: ToastType = "info", description?: string) {
   const id = nextId++;
   const duration = TYPE_DURATION[type];
   setToasts((prev) => [...prev, { id, title, description, type, duration }].slice(-3));
 }
 
-export function dismiss(id: number) {
+export function removeToast(id: number) {
   setToasts((prev) => prev.filter((t) => t.id !== id));
 }

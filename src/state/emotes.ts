@@ -1,44 +1,35 @@
-import { invoke } from "@tauri-apps/api/core";
 import { createSignal } from "solid-js";
-import type { GlobalEmote, RustEmoteEntry, SevenTvChannelResult, UserEmote } from "./types";
+import { invoke } from "@tauri-apps/api/core";
+import type { GlobalEmote, RustEmoteEntry, SevenTvChannelResult, UserEmote } from "../types";
 
 export type EmoteMap = Record<string, string>;
-export type EmoteEntry = { name: string; url: string; accessible?: boolean };
+export type EmoteEntry = { name: string; url: string };
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
-
 export type FavoriteEmote = { value: string; url: string; label: string };
+export type ChannelEmoteResult = {
+  sections: EmoteSection[];
+  flat: EmoteMap;
+  sevenTvEmoteSetId: string | null;
+};
 
 const FAVORITES_KEY = "emote_favorites";
+
 const initialFavorites: FavoriteEmote[] = (() => {
   try { return JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]"); }
   catch { return []; }
 })();
+
 const [favorites, setFavorites] = createSignal<FavoriteEmote[]>(initialFavorites);
 export { favorites };
 
-const [globalEmotes, setGlobalEmotes] = createSignal<GlobalEmote[]>([]);
-export { globalEmotes, setGlobalEmotes };
-
-const [userEmotes, setUserEmotes] = createSignal<UserEmote[]>([]);
-export { userEmotes, setUserEmotes };
-
-const [sevenTvGlobal, setSevenTvGlobal] = createSignal<EmoteEntry[]>([]);
-export { sevenTvGlobal, setSevenTvGlobal };
-
-const [bttvGlobal, setBttvGlobal] = createSignal<EmoteEntry[]>([]);
-export { bttvGlobal, setBttvGlobal };
-
-const [ffzGlobal, setFfzGlobal] = createSignal<EmoteEntry[]>([]);
-export { ffzGlobal, setFfzGlobal };
-
-const [sevenTvChannel, setSevenTvChannel] = createSignal<EmoteEntry[]>([]);
-export { sevenTvChannel, setSevenTvChannel };
-
-const [bttvChannel, setBttvChannel] = createSignal<EmoteEntry[]>([]);
-export { bttvChannel, setBttvChannel };
-
-const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
-export { ffzChannel, setFfzChannel };
+export const [globalEmotes, setGlobalEmotes] = createSignal<GlobalEmote[]>([]);
+export const [userEmotes, setUserEmotes] = createSignal<UserEmote[]>([]);
+export const [sevenTvGlobal, setSevenTvGlobal] = createSignal<EmoteEntry[]>([]);
+export const [bttvGlobal, setBttvGlobal] = createSignal<EmoteEntry[]>([]);
+export const [ffzGlobal, setFfzGlobal] = createSignal<EmoteEntry[]>([]);
+export const [sevenTvChannel, setSevenTvChannel] = createSignal<EmoteEntry[]>([]);
+export const [bttvChannel, setBttvChannel] = createSignal<EmoteEntry[]>([]);
+export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 
 export function buildThirdPartyEmoteMap(): EmoteMap {
   const map: EmoteMap = {};
@@ -66,12 +57,6 @@ export function toggleFavorite(emote: FavoriteEmote) {
 export function isFavorite(value: string): boolean {
   return favorites().some((e) => e.value === value);
 }
-
-export type ChannelEmoteResult = {
-  sections: EmoteSection[];
-  flat: EmoteMap;
-  sevenTvEmoteSetId: string | null;
-};
 
 function toFlat(sections: EmoteSection[]): EmoteMap {
   const flat: EmoteMap = {};

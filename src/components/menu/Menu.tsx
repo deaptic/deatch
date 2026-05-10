@@ -2,30 +2,19 @@ import { Show, For, createSignal, createEffect, onMount, onCleanup } from "solid
 import { createStore, reconcile } from "solid-js/store";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { toast } from "../../notifications";
-import { user } from "../../user-state";
-import { advancedDeveloperMode, menuChannelPinned, pinChannel, unpinChannel, reorderPinnedChannels } from "../../preferences";
-import { unreadCount } from "../../chat-feed";
+import { addToast } from "../../state/toasts";
+import { user } from "../../state/users";
+import { advancedDeveloperMode, menuChannelPinned, pinChannel, unpinChannel, reorderPinnedChannels } from "../../state/preferences";
+import { unreadCount } from "../feed/feeds";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
 import MenuAddPopover from "./MenuAddPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
 import AccountContextMenu from "../context-menus/AccountContextMenu";
-import type { TwitchStream, TwitchUser } from "../../types";
+import type { Channel, TwitchStream, TwitchUser } from "../../types";
 
-export type { TwitchStream, TwitchUser };
-
-export type Channel = {
-  user_id: string;
-  user_login: string;
-  user_name: string;
-  profile_image_url: string;
-  game_name?: string;
-  viewer_count?: number;
-  title?: string;
-  thumbnail_url?: string;
-};
+export type { Channel, TwitchStream, TwitchUser };
 
 type Props = {
   onSelect: (ch: Channel) => void;
@@ -76,7 +65,7 @@ export default function Menu(props: Props) {
       for (const u of users) next[u.id] = userToChannel(u);
       setPinnedMeta(reconcile(next));
     } catch (e) {
-      toast(String(e), "error");
+      addToast(String(e), "error");
     } finally {
       setLoadingPinned(false);
     }
@@ -112,7 +101,7 @@ export default function Menu(props: Props) {
       setLive(reconcile(data, { key: "user_id" }));
       props.onLiveChange?.(data);
     } catch (e) {
-      toast(String(e), "error");
+      addToast(String(e), "error");
     } finally {
       setLoadingLive(false);
     }
@@ -189,7 +178,7 @@ export default function Menu(props: Props) {
       const u = users[0];
       if (!u) throw new Error("User not found");
       if (menuChannelPinned().includes(u.id)) {
-        toast("Already pinned", "error");
+        addToast("Already pinned", "error");
         closeAdd();
         return;
       }
@@ -197,7 +186,7 @@ export default function Menu(props: Props) {
       pinChannel(u.id);
       closeAdd();
     } catch (e) {
-      toast(String(e), "error");
+      addToast(String(e), "error");
     } finally {
       setAddLoading(false);
     }

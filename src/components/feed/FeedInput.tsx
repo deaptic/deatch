@@ -9,7 +9,7 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-} from "../../emotes";
+} from "../../state/emotes";
 import EmotePicker from "../emotes/EmotePicker";
 import EmoteSuggestions from "../emotes/EmoteSuggestions";
 import SmileIcon from "../../icons/SmileIcon";
