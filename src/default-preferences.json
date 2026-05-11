@@ -3,6 +3,7 @@
     "fontSize": 16,
     "showTimestamp": false,
     "showDeletedContent": false,
+    "keywords": [],
     "events": {
       "message": { "show": true },
       "follow": { "show": true },

@@ -10,6 +10,7 @@ export type UserPreferences = {
     fontSize: number;
     showTimestamp: boolean;
     showDeletedContent: boolean;
+    keywords: string[];
     events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
     users: {
@@ -44,6 +45,9 @@ function load(): UserPreferences {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
         showTimestamp: stored.feed?.showTimestamp ?? DEFAULT_PREFERENCES.feed.showTimestamp,
         showDeletedContent: stored.feed?.showDeletedContent ?? DEFAULT_PREFERENCES.feed.showDeletedContent,
+        keywords: Array.isArray(stored.feed?.keywords)
+          ? stored.feed!.keywords.filter((k): k is string => typeof k === "string" && k.trim().length > 0)
+          : DEFAULT_PREFERENCES.feed.keywords,
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {
@@ -78,6 +82,7 @@ export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedBadges = () => prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>;
 export const feedUserMuted = () => prefs.feed.users.muted;
+export const feedKeywords = () => prefs.feed.keywords;
 export const feedUserOverrideNameColor = () => prefs.feed.users.overrideNameColor;
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
@@ -127,6 +132,26 @@ export function muteUser(user_id: string) {
 export function unmuteUser(user_id: string) {
   setPrefs("feed", "users", "muted", (m) => m.filter((id) => id !== user_id));
   persist();
+}
+
+export function addFeedKeyword(keyword: string) {
+  const trimmed = keyword.trim();
+  if (!trimmed) return;
+  const lower = trimmed.toLowerCase();
+  if (prefs.feed.keywords.some((k) => k.toLowerCase() === lower)) return;
+  setPrefs("feed", "keywords", (k) => [...k, trimmed]);
+  persist();
+}
+
+export function removeFeedKeyword(keyword: string) {
+  setPrefs("feed", "keywords", (k) => k.filter((x) => x !== keyword));
+  persist();
+}
+
+export function matchesAnyKeyword(text: string, keywords: string[]): boolean {
+  if (keywords.length === 0) return false;
+  const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return new RegExp(`\\b(${escaped.join("|")})\\b`, "i").test(text);
 }
 
 export function pinChannel(user_id: string) {
