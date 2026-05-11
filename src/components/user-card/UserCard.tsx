@@ -2,6 +2,8 @@ import { createSignal, createMemo, createEffect, For, Show, onMount } from "soli
 import { Portal } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { getUsers, type User } from "../../commands/users";
+import { getChannelFollowers, type GetChannelFollowersResponse } from "../../commands/channels";
+import { user as currentUser, moderatedChannels } from "../../state/users";
 import { feeds } from "../feed/feeds";
 import type { FeedMessage } from "../feed/types";
 import { addToast } from "../../state/toasts";
@@ -9,6 +11,9 @@ import CloseIcon from "../../icons/CloseIcon";
 import CalendarIcon from "../../icons/CalendarIcon";
 import HashIcon from "../../icons/HashIcon";
 import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
+import HeartIcon from "../../icons/HeartIcon";
+
+type Follower = GetChannelFollowersResponse["data"][number];
 
 function copyField(text: string) {
   navigator.clipboard.writeText(text).then(
@@ -37,11 +42,28 @@ export default function UserCard(props: Props) {
     y: props.y,
   });
 
+  const [follower, setFollower] = createSignal<Follower | null>(null);
+
+  const canQueryFollowers = () => {
+    const me = currentUser();
+    if (!me) return false;
+    if (me.user_id === props.broadcasterId) return true;
+    return moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId);
+  };
+
   createEffect(() => {
     const id = props.chatterId;
     setUser(null);
+    setFollower(null);
     getUsers({ userIds: [id] })
       .then((users) => setUser(users[0] ?? null))
+      .catch(() => {});
+    if (!canQueryFollowers()) return;
+    getChannelFollowers(
+      { broadcasterId: props.broadcasterId, userId: id, first: 1 },
+      { silent: true },
+    )
+      .then((res) => setFollower(res.data[0] ?? null))
       .catch(() => {});
   });
 
@@ -126,22 +148,31 @@ export default function UserCard(props: Props) {
           />
           <div class="flex-1 min-w-0 flex flex-col">
             <span
-              class="font-semibold text-text text-lg leading-tight truncate cursor-pointer hover:underline w-fit max-w-full"
+              class="font-semibold text-text text-lg leading-tight truncate"
               style={nameColor() ? { color: nameColor() } : undefined}
-              title="Click to copy"
-              onClick={() => copyField(user()?.display_name ?? props.chatterId)}
             >
               {user()?.display_name ?? props.chatterId}
             </span>
-            <Show when={user()}>
+            <div class="flex items-baseline gap-1.5 min-w-0 flex-wrap">
+              <Show when={user()}>
+                <span
+                  class="text-text-muted/70 text-sm truncate cursor-pointer hover:text-text-muted"
+                  title="Click to copy"
+                  onClick={() => copyField(user()!.login)}
+                >
+                  @{user()!.login}
+                </span>
+                <span class="text-text-muted/40 text-sm">·</span>
+              </Show>
               <span
-                class="text-text-muted/70 text-sm truncate cursor-pointer hover:text-text-muted w-fit max-w-full"
-                title="Click to copy"
-                onClick={() => copyField(user()!.login)}
+                class="text-text-muted/70 text-xs inline-flex items-center gap-1 cursor-pointer hover:text-text-muted tabular-nums shrink-0"
+                title="Click to copy ID"
+                onClick={() => copyField(props.chatterId)}
               >
-                @{user()!.login}
+                <HashIcon class="w-3 h-3 shrink-0" />
+                {props.chatterId}
               </span>
-            </Show>
+            </div>
             <div class="text-text-muted text-xs mt-1.5 truncate flex items-center gap-1.5">
               <Show when={user()?.created_at}>
                 <span
@@ -154,14 +185,27 @@ export default function UserCard(props: Props) {
                 </span>
                 <span class="opacity-50">·</span>
               </Show>
-              <span
-                class="inline-flex items-center gap-1.5 cursor-pointer hover:text-text"
-                title="Click to copy"
-                onClick={() => copyField(props.chatterId)}
+              <Show
+                when={follower()}
+                fallback={
+                  <span
+                    class="inline-flex items-center gap-1.5 opacity-60"
+                    title="Mod permission required to view follow status"
+                  >
+                    <HeartIcon class="w-3 h-3 shrink-0" />
+                    <span>Unknown</span>
+                  </span>
+                }
               >
-                <HashIcon class="w-3 h-3 shrink-0" />
-                <span class="tabular-nums">{props.chatterId}</span>
-              </span>
+                <span
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-text"
+                  title="Click to copy"
+                  onClick={() => copyField(formatJoinDate(follower()!.followed_at))}
+                >
+                  <HeartIcon class="w-3 h-3 shrink-0" />
+                  <span>{formatJoinDate(follower()!.followed_at)}</span>
+                </span>
+              </Show>
             </div>
           </div>
           <div class="shrink-0 self-start flex items-center gap-0.5">
