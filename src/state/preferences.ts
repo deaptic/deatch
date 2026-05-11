@@ -9,6 +9,7 @@ export type UserPreferences = {
   feed: {
     fontSize: number;
     showTimestamp: boolean;
+    showDeletedContent: boolean;
     events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
     users: {
@@ -42,6 +43,7 @@ function load(): UserPreferences {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
         showTimestamp: stored.feed?.showTimestamp ?? DEFAULT_PREFERENCES.feed.showTimestamp,
+        showDeletedContent: stored.feed?.showDeletedContent ?? DEFAULT_PREFERENCES.feed.showDeletedContent,
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {
@@ -72,6 +74,7 @@ function persist() {
 export const feedFontSize = () => prefs.feed.fontSize;
 export const feedUserShowDisplayName = () => prefs.feed.users.showDisplayName;
 export const feedShowTimestamp = () => prefs.feed.showTimestamp;
+export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedBadges = () => prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>;
 export const feedUserMuted = () => prefs.feed.users.muted;
@@ -97,6 +100,11 @@ export function setFeedUserOverrideNameColor(value: string) {
 
 export function setFeedShowTimestamp(value: boolean) {
   setPrefs("feed", "showTimestamp", value);
+  persist();
+}
+
+export function setFeedShowDeletedContent(value: boolean) {
+  setPrefs("feed", "showDeletedContent", value);
   persist();
 }
 

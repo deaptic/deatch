@@ -34,6 +34,7 @@ import {
   feedUserShowDisplayName,
   feedUserOverrideNameColor,
   feedShowTimestamp,
+  feedShowDeletedContent,
   feedBadges,
   feedEvents,
   feedUserMuted,
@@ -226,6 +227,7 @@ export default function Feed(props: Props) {
                       useDisplayName={feedUserShowDisplayName()}
                       overrideNameColor={feedUserOverrideNameColor()}
                       showTimestamp={feedShowTimestamp()}
+                      showDeletedContent={feedShowDeletedContent()}
                       reactions={reactions()}
                       onContextMenu={openContextMenu}
                       onReply={startReply}

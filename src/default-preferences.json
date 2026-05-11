@@ -2,6 +2,7 @@
   "feed": {
     "fontSize": 16,
     "showTimestamp": false,
+    "showDeletedContent": false,
     "events": {
       "message": { "show": true },
       "follow": { "show": true },

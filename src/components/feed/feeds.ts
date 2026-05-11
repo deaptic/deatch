@@ -65,6 +65,41 @@ export function ensureFeed(id: string) {
   if (!feeds[id]) setFeeds(id, emptyFeed());
 }
 
+export function markMessageDeleted(id: string, messageId: string) {
+  if (!feeds[id]) return;
+  setFeeds(
+    id,
+    produce((f) => {
+      const m = f.messages.find((m) => m.kind === "message" && m.message_id === messageId);
+      if (m && m.kind === "message") m.deleted = true;
+    }),
+  );
+}
+
+export function markUserMessagesDeleted(id: string, userId: string) {
+  if (!feeds[id]) return;
+  setFeeds(
+    id,
+    produce((f) => {
+      for (const m of f.messages) {
+        if (m.kind === "message" && m.chatter_user_id === userId) m.deleted = true;
+      }
+    }),
+  );
+}
+
+export function markAllMessagesDeleted(id: string) {
+  if (!feeds[id]) return;
+  setFeeds(
+    id,
+    produce((f) => {
+      for (const m of f.messages) {
+        if (m.kind === "message") m.deleted = true;
+      }
+    }),
+  );
+}
+
 export function appendItem(id: string, item: FeedItem) {
   ensureFeed(id);
   if (item.kind === "message") {

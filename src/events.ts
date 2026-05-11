@@ -1,7 +1,21 @@
 import { listen } from "@tauri-apps/api/event";
 import type { FeedMessage, FeedEvent, Fragment } from "./components/feed/types";
-import type { RawFragment, RawChatMessage, RawNotification, RawShoutout, RawFollow } from "./types";
-import { appendItem } from "./components/feed/feeds";
+import type {
+  RawFragment,
+  RawChatMessage,
+  RawNotification,
+  RawShoutout,
+  RawFollow,
+  RawChatMessageDelete,
+  RawChatClear,
+  RawChatClearUserMessages,
+} from "./types";
+import {
+  appendItem,
+  markMessageDeleted,
+  markUserMessagesDeleted,
+  markAllMessagesDeleted,
+} from "./components/feed/feeds";
 import { user } from "./state/users";
 import { channelsById } from "./state/channels";
 import { recordMention } from "./state/inbox";
@@ -128,6 +142,18 @@ listen<RawShoutout>("channel-shoutout-create", (e) => {
 
 listen<RawFollow>("channel-follow", (e) => {
   appendItem(e.payload.broadcaster_user_id, mapFollow(e.payload, Date.now()));
+});
+
+listen<RawChatMessageDelete>("channel-chat-message-delete", (e) => {
+  markMessageDeleted(e.payload.broadcaster_user_id, e.payload.message_id);
+});
+
+listen<RawChatClearUserMessages>("channel-chat-clear-user-messages", (e) => {
+  markUserMessagesDeleted(e.payload.broadcaster_user_id, e.payload.target_user_id);
+});
+
+listen<RawChatClear>("channel-chat-clear", (e) => {
+  markAllMessagesDeleted(e.payload.broadcaster_user_id);
 });
 
 listen<string>("chat-error", (e) => {
