@@ -1,8 +1,18 @@
-import { createSignal, createMemo, createEffect, For, Show, onMount } from "solid-js";
+import {
+  createSignal,
+  createMemo,
+  createEffect,
+  For,
+  Show,
+  onMount,
+} from "solid-js";
 import { Portal } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { getUsers, type User } from "../../commands/users";
-import { getChannelFollowers, type GetChannelFollowersResponse } from "../../commands/channels";
+import {
+  getChannelFollowers,
+  type GetChannelFollowersResponse,
+} from "../../commands/channels";
 import { user as currentUser, moderatedChannels } from "../../state/users";
 import { feeds } from "../feed/feeds";
 import type { FeedMessage } from "../feed/types";
@@ -48,7 +58,9 @@ export default function UserCard(props: Props) {
     const me = currentUser();
     if (!me) return false;
     if (me.user_id === props.broadcasterId) return true;
-    return moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId);
+    return moderatedChannels().some(
+      (c) => c.broadcaster_id === props.broadcasterId,
+    );
   };
 
   createEffect(() => {
@@ -71,7 +83,10 @@ export default function UserCard(props: Props) {
     if (cardRef) {
       const rect = cardRef.getBoundingClientRect();
       if (rect.bottom > window.innerHeight - 8) {
-        setPos((p) => ({ ...p, y: Math.max(8, window.innerHeight - rect.height - 8) }));
+        setPos((p) => ({
+          ...p,
+          y: Math.max(8, window.innerHeight - rect.height - 8),
+        }));
       }
     }
   });
@@ -86,8 +101,14 @@ export default function UserCard(props: Props) {
       const w = cardRef?.offsetWidth ?? CARD_W;
       const h = cardRef?.offsetHeight ?? CARD_MAX_H;
       setPos({
-        x: Math.max(8, Math.min(ev.clientX - offsetX, window.innerWidth - w - 8)),
-        y: Math.max(8, Math.min(ev.clientY - offsetY, window.innerHeight - h - 8)),
+        x: Math.max(
+          8,
+          Math.min(ev.clientX - offsetX, window.innerWidth - w - 8),
+        ),
+        y: Math.max(
+          8,
+          Math.min(ev.clientY - offsetY, window.innerHeight - h - 8),
+        ),
       });
     };
     const onUp = () => {
@@ -102,12 +123,17 @@ export default function UserCard(props: Props) {
     const feed = feeds[props.broadcasterId];
     if (!feed) return [];
     return feed.messages.filter(
-      (m): m is FeedMessage => m.kind === "message" && m.chatter_user_id === props.chatterId,
+      (m): m is FeedMessage =>
+        m.kind === "message" && m.chatter_user_id === props.chatterId,
     );
   });
 
   const formatJoinDate = (iso: string) =>
-    new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    new Date(iso).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
 
   const nameColor = createMemo(() => {
     const c = messages().find((m) => m.color)?.color;
@@ -117,10 +143,15 @@ export default function UserCard(props: Props) {
   function visibleText(m: FeedMessage): string {
     if (!m.reply) return m.fragments.map((f) => f.text).join("");
     const [first, ...rest] = m.fragments;
-    if (first?.type === "mention" && first.user_login === m.reply.parent_user_login) {
+    if (
+      first?.type === "mention" &&
+      first.user_login === m.reply.parent_user_login
+    ) {
       if (rest[0]?.type === "text") {
         const trimmed = rest[0].text.trimStart();
-        const remaining = trimmed ? [{ ...rest[0], text: trimmed }, ...rest.slice(1)] : rest.slice(1);
+        const remaining = trimmed
+          ? [{ ...rest[0], text: trimmed }, ...rest.slice(1)]
+          : rest.slice(1);
         return remaining.map((f) => f.text).join("");
       }
       return rest.map((f) => f.text).join("");
@@ -143,16 +174,41 @@ export default function UserCard(props: Props) {
             src={user()?.profile_image_url || ""}
             alt={user()?.display_name ?? ""}
             title="Click to copy image URL"
-            class="w-16 h-16 rounded-lg shrink-0 bg-bg-light cursor-pointer"
-            onClick={() => user()?.profile_image_url && copyField(user()!.profile_image_url!)}
+            class="w-22 h-22 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
+            onClick={() =>
+              user()?.profile_image_url && copyField(user()!.profile_image_url!)
+            }
           />
-          <div class="flex-1 min-w-0 flex flex-col">
-            <span
-              class="font-semibold text-text text-lg leading-tight truncate"
-              style={nameColor() ? { color: nameColor() } : undefined}
-            >
-              {user()?.display_name ?? props.chatterId}
-            </span>
+          <div class="flex-1 min-w-0 flex flex-col gap-1">
+            <div class="flex items-center gap-1 min-w-0">
+              <span
+                class="font-semibold text-text text-lg leading-tight truncate flex-1"
+                style={nameColor() ? { color: nameColor() } : undefined}
+              >
+                {user()?.display_name ?? props.chatterId}
+              </span>
+              <button
+                class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() =>
+                  user() && openUrl(`https://twitch.tv/${user()!.login}`)
+                }
+                disabled={!user()}
+                title="Open channel on Twitch"
+                aria-label="Open channel on Twitch"
+              >
+                <ExternalLinkIcon class="w-3.5 h-3.5" />
+              </button>
+              <button
+                class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={props.onClose}
+                title="Close"
+                aria-label="Close"
+              >
+                <CloseIcon class="w-3.5 h-3.5" />
+              </button>
+            </div>
             <div class="flex items-baseline gap-1.5 min-w-0 flex-wrap">
               <Show when={user()}>
                 <span
@@ -200,34 +256,15 @@ export default function UserCard(props: Props) {
                 <span
                   class="inline-flex items-center gap-1.5 cursor-pointer hover:text-text"
                   title="Click to copy"
-                  onClick={() => copyField(formatJoinDate(follower()!.followed_at))}
+                  onClick={() =>
+                    copyField(formatJoinDate(follower()!.followed_at))
+                  }
                 >
                   <HeartIcon class="w-3 h-3 shrink-0" />
                   <span>{formatJoinDate(follower()!.followed_at)}</span>
                 </span>
               </Show>
             </div>
-          </div>
-          <div class="shrink-0 self-start flex items-center gap-0.5">
-            <button
-              class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={() => user() && openUrl(`https://twitch.tv/${user()!.login}`)}
-              disabled={!user()}
-              title="Open channel on Twitch"
-              aria-label="Open channel on Twitch"
-            >
-              <ExternalLinkIcon class="w-3.5 h-3.5" />
-            </button>
-            <button
-              class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={props.onClose}
-              title="Close"
-              aria-label="Close"
-            >
-              <CloseIcon class="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
 
