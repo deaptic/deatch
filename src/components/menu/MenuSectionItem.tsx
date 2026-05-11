@@ -70,7 +70,7 @@ export default function MenuSectionItem(props: Props) {
             <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success rounded-full border-2 border-bg" />
           </Show>
           <Show when={(props.unread ?? 0) > 0}>
-            <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-primary rounded-full border-2 border-bg flex items-center justify-center">
+            <div class="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-primary rounded-full border-2 border-bg flex items-center justify-center">
               <span class="text-[9px] font-bold text-text leading-none tabular-nums">
                 {props.unread! > 99 ? "99+" : props.unread}
               </span>
@@ -83,7 +83,7 @@ export default function MenuSectionItem(props: Props) {
           <Portal>
             <div
               style={{ position: "fixed", left: `${t().x}px`, top: `${t().y}px`, transform: "translateY(-50%)" }}
-              class="bg-bg-dark border border-border rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-[160px] max-w-[260px]"
+              class="bg-bg-dark border border-border rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-40 max-w-64"
             >
               <p class="text-text text-sm font-semibold truncate">{props.name}</p>
               <Show when={props.game}>
