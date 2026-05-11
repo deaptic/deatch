@@ -1,6 +1,5 @@
 import { Show } from "solid-js";
 import type { FeedEvent as Event } from "./types";
-import { formatTimestamp } from "../../utils";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";
@@ -53,7 +52,7 @@ export default function FeedEvent(props: Props) {
     >
       <Show when={props.showTimestamp}>
         <span class="text-text-muted select-none tabular-nums shrink-0">
-          {formatTimestamp(props.item.timestamp)}
+          {new Date(props.item.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}
         </span>
       </Show>
       <span class="text-text font-semibold wrap-break-word min-w-0">
