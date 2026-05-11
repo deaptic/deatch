@@ -11,6 +11,7 @@ import Menu, { type Channel } from "./components/menu/Menu";
 import Feed from "./components/feed/Feed";
 import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
+import Inbox from "./components/inbox/Inbox";
 import Loading from "./components/Loading";
 import { menuChannelPinned } from "./state/preferences";
 import { user, moderatedChannels, setModeratedChannels } from "./state/users";
@@ -37,7 +38,8 @@ import {
   fetchAllUserEmotes,
   EmoteEntry,
 } from "./state/emotes";
-import { selectedChannel, setSelectedChannel } from "./state/channels";
+import { selectedChannel, setSelectedChannel, channelsById, rememberChannel } from "./state/channels";
+import { markMentionRead } from "./state/inbox";
 import type {
   SevenTvChannelResult,
   BadgeSet,
@@ -67,6 +69,7 @@ function resetUserScopedCaches() {
 function App() {
   const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
   const [settingsOpen, setSettingsOpen] = createSignal(false);
+  const [inboxOpen, setInboxOpen] = createSignal(false);
 
   const joinedIds = new Set<string>();
 
@@ -217,9 +220,30 @@ function App() {
   function handleChannelSelect(ch: Channel) {
     const prev = selectedChannel();
     if (prev && prev.user_id !== ch.user_id) snapshotDivider(prev.user_id);
+    rememberChannel(ch);
     setSelectedChannel(ch);
     ensureFeed(ch.user_id);
     markSeen(ch.user_id);
+  }
+
+  function jumpToMessage(channelId: string, messageId: string) {
+    const ch = channelsById.get(channelId);
+    const needsSwitch = !!ch && selectedChannel()?.user_id !== channelId;
+    if (needsSwitch) handleChannelSelect(ch);
+    const doJump = () => {
+      const el = document.querySelector(`[data-message-id="${messageId}"]`) as HTMLElement | null;
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.style.backgroundColor = "color-mix(in oklab, var(--color-primary) 35%, transparent)";
+      const clear = () => {
+        el.style.transition = "background-color 0.3s ease";
+        el.style.backgroundColor = "";
+        el.removeEventListener("mouseenter", clear);
+      };
+      el.addEventListener("mouseenter", clear);
+    };
+    if (needsSwitch) setTimeout(doJump, 100);
+    else doJump();
   }
 
   createEffect(() => {
@@ -236,8 +260,22 @@ function App() {
 
   return (
     <div class="flex flex-col h-screen bg-bg-dark relative">
-      <TitleBar settingsOpen={settingsOpen()} onToggleSettings={() => setSettingsOpen((o) => !o)} />
+      <TitleBar
+        settingsOpen={settingsOpen()}
+        inboxOpen={inboxOpen()}
+        onToggleSettings={() => setSettingsOpen((o) => !o)}
+        onToggleInbox={() => setInboxOpen((o) => !o)}
+      />
       <Show when={settingsOpen()}><Settings onClose={() => setSettingsOpen(false)} /></Show>
+      <Show when={inboxOpen()}>
+        <Inbox
+          onClose={() => setInboxOpen(false)}
+          onJump={(channelId, messageId) => {
+            markMentionRead(messageId);
+            jumpToMessage(channelId, messageId);
+          }}
+        />
+      </Show>
     <Show
       when={user()}
       fallback={<Show when={authChecked()} fallback={<main class="flex-1 bg-bg-dark flex items-center justify-center"><Loading size={48} /></main>}>{
@@ -330,6 +368,7 @@ function App() {
                   broadcasterId={ch().user_id}
                   broadcasterLogin={ch().user_login}
                   userLogin={u().login}
+                  onJumpToMessage={jumpToMessage}
                 />
               )}
             </Show>

@@ -45,6 +45,7 @@ type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
   userLogin: string;
+  onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
 export default function Feed(props: Props) {
@@ -229,6 +230,7 @@ export default function Feed(props: Props) {
                       onContextMenu={openContextMenu}
                       onReply={startReply}
                       onReact={react}
+                      onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
                     />
                   )}
                 </Show>

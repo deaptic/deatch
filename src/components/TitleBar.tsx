@@ -1,6 +1,7 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { selectedChannel } from "../state/channels";
+import { unreadMentionCount } from "../state/inbox";
 import InboxIcon from "../icons/InboxIcon";
 import GearIcon from "../icons/GearIcon";
 import MinusIcon from "../icons/MinusIcon";
@@ -34,7 +35,9 @@ function ResizeHandle(props: { dir: ResizeDir; class: string }) {
 
 type Props = {
   settingsOpen: boolean;
+  inboxOpen: boolean;
   onToggleSettings: () => void;
+  onToggleInbox: () => void;
 };
 
 export default function TitleBar(props: Props) {
@@ -69,11 +72,22 @@ export default function TitleBar(props: Props) {
           )}
         </Show>
         <button
-          class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg-light transition-colors cursor-default"
+          data-inbox-toggle
+          class={`relative w-11 h-full flex items-center justify-center transition-colors cursor-default ${
+            props.inboxOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg-light"
+          }`}
+          onClick={props.onToggleInbox}
           aria-label="Inbox"
           title="Inbox"
         >
           <InboxIcon class="w-3.5 h-3.5" />
+          <Show when={unreadMentionCount() > 0}>
+            <span class="absolute top-1.5 right-1.5 min-w-[14px] h-[14px] px-1 bg-primary rounded-full flex items-center justify-center">
+              <span class="text-[9px] font-bold text-text leading-none tabular-nums">
+                {unreadMentionCount() > 99 ? "99+" : unreadMentionCount()}
+              </span>
+            </span>
+          </Show>
         </button>
         <button
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-default ${

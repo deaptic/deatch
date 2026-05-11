@@ -5,6 +5,7 @@ import { getAllFollowedStreams, getAllStreams } from "../../commands/streams";
 import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 import { user } from "../../state/users";
+import { rememberChannel } from "../../state/channels";
 import { advancedDeveloperMode, menuChannelPinned, pinChannel, unpinChannel, reorderPinnedChannels } from "../../state/preferences";
 import { unreadCount } from "../feed/feeds";
 import MenuSection from "./MenuSection";
@@ -63,7 +64,11 @@ export default function Menu(props: Props) {
     try {
       const users = await getUsers({ userIds: ids });
       const next: Record<string, Channel> = {};
-      for (const u of users) next[u.id] = userToChannel(u);
+      for (const u of users) {
+        const ch = userToChannel(u);
+        next[u.id] = ch;
+        rememberChannel(ch);
+      }
       setPinnedMeta(reconcile(next));
     } catch (e) {
       addToast(String(e), "error");
@@ -97,6 +102,7 @@ export default function Menu(props: Props) {
         thumbnail_url: s.thumbnail_url.replace("{width}", "440").replace("{height}", "248"),
         profile_image_url: profileMap.get(s.user_id) ?? "",
       }));
+      for (const ch of data) rememberChannel(ch);
       setLive(reconcile(data, { key: "user_id" }));
       props.onLiveChange?.(data);
     } catch (e) {
@@ -118,7 +124,11 @@ export default function Menu(props: Props) {
     getUsers({ userIds: missing })
       .then((users) => {
         const updates: Record<string, Channel> = {};
-        for (const u of users) updates[u.id] = userToChannel(u);
+        for (const u of users) {
+          const ch = userToChannel(u);
+          updates[u.id] = ch;
+          rememberChannel(ch);
+        }
         setPinnedMeta(updates);
       })
       .catch(() => {});
@@ -181,7 +191,9 @@ export default function Menu(props: Props) {
         closeAdd();
         return;
       }
-      setPinnedMeta(u.id, userToChannel(u));
+      const ch = userToChannel(u);
+      setPinnedMeta(u.id, ch);
+      rememberChannel(ch);
       pinChannel(u.id);
       closeAdd();
     } catch (e) {

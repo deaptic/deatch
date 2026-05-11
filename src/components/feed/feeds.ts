@@ -48,6 +48,9 @@ export function markSeen(id: string) {
   if (!feed || feed.messages.length === 0) return;
   const lastId = getItemId(feed.messages[feed.messages.length - 1]);
   setFeeds(id, "lastSeenItemId", lastId);
+  if (feed.dividerAtItemId === lastId) {
+    setFeeds(id, "dividerAtItemId", null);
+  }
 }
 
 export function clearDivider(id: string) {
