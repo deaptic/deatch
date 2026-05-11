@@ -74,6 +74,20 @@ export default function UserCard(props: Props) {
 
   const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
 
+  function visibleText(m: FeedMessage): string {
+    if (!m.reply) return m.fragments.map((f) => f.text).join("");
+    const [first, ...rest] = m.fragments;
+    if (first?.type === "mention" && first.user_login === m.reply.parent_user_login) {
+      if (rest[0]?.type === "text") {
+        const trimmed = rest[0].text.trimStart();
+        const remaining = trimmed ? [{ ...rest[0], text: trimmed }, ...rest.slice(1)] : rest.slice(1);
+        return remaining.map((f) => f.text).join("");
+      }
+      return rest.map((f) => f.text).join("");
+    }
+    return m.fragments.map((f) => f.text).join("");
+  }
+
   return (
     <Portal>
       <div
@@ -130,17 +144,28 @@ export default function UserCard(props: Props) {
           >
             <For each={messages()}>
               {(m) => (
-                <div class="flex gap-2 px-2 py-1 hover:bg-bg-light/30 rounded text-base leading-snug">
-                  <span class="text-text-muted tabular-nums shrink-0 select-none">
-                    {new Date(m.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </span>
-                  <span class="text-text wrap-break-word min-w-0">
-                    {m.fragments.map((f) => f.text).join("")}
-                  </span>
+                <div class="px-2 py-1 hover:bg-bg-light/30 rounded text-base leading-snug">
+                  <Show when={m.reply}>
+                    <div class="text-text-muted/70 truncate text-xs">
+                      <span>⌐ Replying to </span>
+                      <span class="font-semibold text-primary">
+                        @{m.reply!.parent_user_name}
+                      </span>
+                      <span>: {m.reply!.parent_message_body}</span>
+                    </div>
+                  </Show>
+                  <div class="flex gap-2">
+                    <span class="text-text-muted tabular-nums shrink-0 select-none">
+                      {new Date(m.timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
+                    </span>
+                    <span class="text-text wrap-break-word min-w-0">
+                      {visibleText(m)}
+                    </span>
+                  </div>
                 </div>
               )}
             </For>
