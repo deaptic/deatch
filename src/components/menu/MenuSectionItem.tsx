@@ -1,11 +1,9 @@
 import { createSignal, Show } from "solid-js";
-import { Portal } from "solid-js/web";
+import StreamTooltip from "../utils/StreamTooltip";
+import type { Channel } from "../../types";
 
 type Props = {
-  avatar: string;
-  name: string;
-  game?: string;
-  viewerCount?: number;
+  channel: Channel;
   status?: "live" | "self";
   selected?: boolean;
   unread?: number;
@@ -16,14 +14,8 @@ type Props = {
   onContextMenu?: (x: number, y: number) => void;
 };
 
-function formatViewers(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return String(n);
-}
-
 export default function MenuSectionItem(props: Props) {
-  const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
+  const [tooltip, setTooltip] = createSignal<{ x: number; y: number } | null>(null);
 
   return (
     <>
@@ -32,7 +24,7 @@ export default function MenuSectionItem(props: Props) {
         onAuxClick={(e) => {
           if (e.button !== 1 || !props.onMiddleClick) return;
           e.preventDefault();
-          setTip(null);
+          setTooltip(null);
           props.onMiddleClick();
         }}
         onMouseDown={(e) => {
@@ -40,13 +32,13 @@ export default function MenuSectionItem(props: Props) {
         }}
         onMouseEnter={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
-          setTip({ x: r.right + 8, y: r.top + r.height / 2 });
+          setTooltip({ x: r.right + 8, y: r.top + r.height / 2 });
         }}
-        onMouseLeave={() => setTip(null)}
+        onMouseLeave={() => setTooltip(null)}
         onContextMenu={(e) => {
           if (!props.onContextMenu) return;
           e.preventDefault();
-          setTip(null);
+          setTooltip(null);
           props.onContextMenu(e.clientX, e.clientY);
         }}
         style={{ opacity: props.dimmed ? 0.4 : 1 }}
@@ -59,8 +51,8 @@ export default function MenuSectionItem(props: Props) {
         </Show>
         <div class="relative shrink-0">
           <img
-            src={props.avatar || "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"}
-            alt={props.name}
+            src={props.channel.profile_image_url || "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"}
+            alt={props.channel.user_name}
             class="w-8 h-8 rounded-lg"
           />
           <Show when={props.status === "live"}>
@@ -78,25 +70,9 @@ export default function MenuSectionItem(props: Props) {
           </Show>
         </div>
       </button>
-      <Show when={tip()}>
+      <Show when={tooltip()}>
         {(t) => (
-          <Portal>
-            <div
-              style={{ position: "fixed", left: `${t().x}px`, top: `${t().y}px`, transform: "translateY(-50%)" }}
-              class="bg-bg-dark border border-border rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-40 max-w-64"
-            >
-              <p class="text-text text-sm font-semibold truncate">{props.name}</p>
-              <Show when={props.game}>
-                <p class="text-text-muted text-xs truncate mt-0.5">{props.game}</p>
-              </Show>
-              <Show when={props.viewerCount !== undefined}>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <div class="w-1.5 h-1.5 rounded-full bg-danger" />
-                  <span class="text-danger text-xs font-medium">{formatViewers(props.viewerCount!)} viewers</span>
-                </div>
-              </Show>
-            </div>
-          </Portal>
+          <StreamTooltip x={t().x} y={t().y} channel={props.channel} live={props.status === "live"} />
         )}
       </Show>
     </>

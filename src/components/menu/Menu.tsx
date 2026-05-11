@@ -253,10 +253,7 @@ export default function Menu(props: Props) {
                           <div class="pointer-events-none absolute left-1 right-1 -top-px h-0.5 bg-primary rounded-full z-10" />
                         </Show>
                         <MenuSectionItem
-                          avatar={c().profile_image_url}
-                          name={c().user_name}
-                          game={c().game_name ?? "Offline"}
-                          viewerCount={c().viewer_count}
+                          channel={c()}
                           status={liveById().has(id) ? "live" : undefined}
                           selected={props.selectedId === id}
                           unread={unreadCount(id)}
@@ -291,10 +288,7 @@ export default function Menu(props: Props) {
             <For each={onlineList()}>
               {(ch) => (
                 <MenuSectionItem
-                  avatar={ch.profile_image_url}
-                  name={ch.user_name}
-                  game={ch.game_name ?? ""}
-                  viewerCount={ch.viewer_count}
+                  channel={ch}
                   status="live"
                   selected={props.selectedId === ch.user_id}
                   unread={unreadCount(ch.user_id)}
@@ -312,8 +306,12 @@ export default function Menu(props: Props) {
         {(u) => (
           <MenuSection divider="top">
             <MenuSectionItem
-              avatar={u().profile_image_url}
-              name={u().display_name}
+              channel={{
+                user_id: u().user_id,
+                user_login: u().login,
+                user_name: u().display_name,
+                profile_image_url: u().profile_image_url,
+              }}
               status="self"
               selected={props.selectedId === u().user_id}
               unread={unreadCount(u().user_id)}
