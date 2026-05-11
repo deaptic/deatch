@@ -24,6 +24,7 @@ type Props = {
   onReply: (msg: Message) => void;
   onReact: (msg: Message, value: string) => void;
   onJumpToMessage: (messageId: string) => void;
+  onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
 };
 
 const INLINE_EMOTE =
@@ -65,7 +66,11 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
   );
 }
 
-function renderFragment(frag: Fragment, emotes: EmoteMap) {
+function renderFragment(
+  frag: Fragment,
+  emotes: EmoteMap,
+  onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void,
+) {
   switch (frag.type) {
     case "emote":
       return (
@@ -80,6 +85,7 @@ function renderFragment(frag: Fragment, emotes: EmoteMap) {
       return (
         <span
           class="text-primary font-medium cursor-pointer hover:underline"
+          onClick={(e) => onShowUserCard?.(e.clientX, e.clientY, { login: frag.user_login })}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -216,6 +222,7 @@ export default function FeedMessage(props: Props) {
                 ? `oklch(from ${props.item.color} max(l, 0.65) c h)`
                 : "var(--color-primary)"),
           }}
+          onClick={(e) => props.onShowUserCard?.(e.clientX, e.clientY, { userId: props.item.chatter_user_id })}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -235,7 +242,7 @@ export default function FeedMessage(props: Props) {
           fallback={<span class="italic text-text-muted">&lt;deleted&gt;</span>}
         >
           <For each={visibleFragments()}>
-            {(frag) => renderFragment(frag, props.emotes)}
+            {(frag) => renderFragment(frag, props.emotes, props.onShowUserCard)}
           </For>
         </Show>
       </div>
