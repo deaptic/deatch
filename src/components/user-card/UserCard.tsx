@@ -3,7 +3,15 @@ import { Portal } from "solid-js/web";
 import { getUsers, type User } from "../../commands/users";
 import { feeds } from "../feed/feeds";
 import type { FeedMessage } from "../feed/types";
+import { addToast } from "../../state/toasts";
 import CloseIcon from "../../icons/CloseIcon";
+
+function copyField(text: string) {
+  navigator.clipboard.writeText(text).then(
+    () => addToast("Copied", "success"),
+    () => addToast("Copy failed", "error"),
+  );
+}
 
 type Props = {
   x: number;
@@ -103,32 +111,56 @@ export default function UserCard(props: Props) {
           <img
             src={user()?.profile_image_url || ""}
             alt={user()?.display_name ?? ""}
-            class="w-16 h-16 rounded-lg shrink-0 bg-bg-light"
+            title="Click to copy image URL"
+            class="w-16 h-16 rounded-lg shrink-0 bg-bg-light cursor-pointer"
+            onClick={() => user()?.profile_image_url && copyField(user()!.profile_image_url!)}
           />
           <div class="flex-1 min-w-0 flex flex-col">
-            <span class="font-semibold text-text text-lg leading-tight truncate">
+            <span
+              class="font-semibold text-text text-lg leading-tight truncate cursor-pointer hover:underline w-fit max-w-full"
+              title="Click to copy"
+              onClick={() => copyField(user()?.display_name ?? props.chatterId)}
+            >
               {user()?.display_name ?? props.chatterId}
             </span>
             <Show when={user()}>
-              <span class="text-text-muted/70 text-sm truncate">@{user()!.login}</span>
+              <span
+                class="text-text-muted/70 text-sm truncate cursor-pointer hover:text-text-muted w-fit max-w-full"
+                title="Click to copy"
+                onClick={() => copyField(user()!.login)}
+              >
+                @{user()!.login}
+              </span>
             </Show>
             <div class="text-text-muted text-xs mt-1.5 truncate flex items-center gap-1.5">
               <Show when={user()?.created_at}>
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3 h-3 shrink-0">
-                  <rect x="2" y="3" width="12" height="11" rx="1" />
-                  <path d="M2 6h12 M5 1.5v3 M11 1.5v3" stroke-linecap="round" />
-                </svg>
-                <span>{formatJoinDate(user()!.created_at)}</span>
+                <span
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-text"
+                  title="Click to copy"
+                  onClick={() => copyField(formatJoinDate(user()!.created_at))}
+                >
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3 h-3 shrink-0">
+                    <rect x="2" y="3" width="12" height="11" rx="1" />
+                    <path d="M2 6h12 M5 1.5v3 M11 1.5v3" stroke-linecap="round" />
+                  </svg>
+                  <span>{formatJoinDate(user()!.created_at)}</span>
+                </span>
                 <span class="opacity-50">·</span>
               </Show>
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3 h-3 shrink-0">
-                <path d="M5 2v12 M11 2v12 M2 5h12 M2 11h12" stroke-linecap="round" />
-              </svg>
-              <span class="tabular-nums">{props.chatterId}</span>
+              <span
+                class="inline-flex items-center gap-1.5 cursor-pointer hover:text-text"
+                title="Click to copy"
+                onClick={() => copyField(props.chatterId)}
+              >
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3 h-3 shrink-0">
+                  <path d="M5 2v12 M11 2v12 M2 5h12 M2 11h12" stroke-linecap="round" />
+                </svg>
+                <span class="tabular-nums">{props.chatterId}</span>
+              </span>
             </div>
           </div>
           <button
-            class="shrink-0 self-start text-text-muted hover:text-text p-1 cursor-pointer"
+            class="shrink-0 self-start w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
             onMouseDown={(e) => e.stopPropagation()}
             onClick={props.onClose}
             title="Close"
