@@ -16,6 +16,7 @@ type Props = {
   userLogin: string;
   useDisplayName?: boolean;
   showTimestamp?: boolean;
+  showDeletedContent?: boolean;
   overrideNameColor?: string;
   reactions: Reaction[];
   onContextMenu: (x: number, y: number, msg: Message) => void;
@@ -125,6 +126,8 @@ export default function FeedMessage(props: Props) {
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
       class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
+        props.item.deleted ? "opacity-50 " : ""
+      }${
         mentioned()
           ? "bg-primary/10 border-primary! hover:bg-primary/15"
           : props.item.channel_points
@@ -206,9 +209,14 @@ export default function FeedMessage(props: Props) {
           {props.useDisplayName === false ? props.item.chatter_login : props.item.chatter_name}
         </span>
         <span class="text-text-muted">: </span>
-        <For each={visibleFragments()}>
-          {(frag) => renderFragment(frag, props.emotes)}
-        </For>
+        <Show
+          when={!props.item.deleted || props.showDeletedContent}
+          fallback={<span class="italic text-text-muted">&lt;deleted&gt;</span>}
+        >
+          <For each={visibleFragments()}>
+            {(frag) => renderFragment(frag, props.emotes)}
+          </For>
+        </Show>
       </div>
     </div>
   );

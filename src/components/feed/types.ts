@@ -28,6 +28,7 @@ export type FeedMessage = {
   timestamp: number;
   channel_points?: boolean;
   first_message?: boolean;
+  deleted?: boolean;
 };
 
 export type FeedEvent = {

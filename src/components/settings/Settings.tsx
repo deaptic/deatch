@@ -23,6 +23,8 @@ import {
   setFeedUserShowDisplayName,
   feedShowTimestamp,
   setFeedShowTimestamp,
+  feedShowDeletedContent,
+  setFeedShowDeletedContent,
   feedBadges,
   setFeedBadge,
   feedEvents,
@@ -141,6 +143,12 @@ export default function Settings(props: Props) {
                   description="Display the time next to each chat message."
                 >
                   <Toggle size="md" checked={feedShowTimestamp()} onChange={setFeedShowTimestamp} />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Show deleted message contents"
+                  description="Display the original text of deleted messages, greyed out. When off, deleted messages render as <deleted>."
+                >
+                  <Toggle size="md" checked={feedShowDeletedContent()} onChange={setFeedShowDeletedContent} />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
 

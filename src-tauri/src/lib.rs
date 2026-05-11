@@ -5,7 +5,10 @@ use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
 use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
 use twitch_api::eventsub::{
-    channel::chat::{ChannelChatMessageV1, ChannelChatNotificationV1},
+    channel::chat::{
+        ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
+        ChannelChatMessageV1, ChannelChatNotificationV1,
+    },
     channel::{ChannelFollowV2, ChannelShoutoutCreateV1},
     Event, EventsubWebsocketData, Transport,
 };
@@ -242,6 +245,27 @@ async fn handle_ws_message(
                         }
                     }
                 }
+                Event::ChannelChatMessageDeleteV1(notif) => {
+                    if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("channel-chat-message-delete", msg);
+                        }
+                    }
+                }
+                Event::ChannelChatClearV1(notif) => {
+                    if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("channel-chat-clear", msg);
+                        }
+                    }
+                }
+                Event::ChannelChatClearUserMessagesV1(notif) => {
+                    if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("channel-chat-clear-user-messages", msg);
+                        }
+                    }
+                }
                 Event::ChannelShoutoutCreateV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
                         if subs.contains_key(msg.broadcaster_user_id.as_str()) {
@@ -300,6 +324,49 @@ async fn subscribe_to_chat(
             >::new(),
             twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
                 ChannelChatNotificationV1::new(broadcaster_id, token.user_id.as_str()),
+                Transport::websocket(session_id),
+            ),
+            token,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    ids.push(resp.data.id.to_string());
+
+    let resp = helix
+        .req_post(
+            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
+                ChannelChatMessageDeleteV1,
+            >::new(),
+            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
+                ChannelChatMessageDeleteV1::new(broadcaster_id, token.user_id.as_str()),
+                Transport::websocket(session_id),
+            ),
+            token,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    ids.push(resp.data.id.to_string());
+
+    let resp = helix
+        .req_post(
+            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelChatClearV1>::new(),
+            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
+                ChannelChatClearV1::new(broadcaster_id, token.user_id.as_str()),
+                Transport::websocket(session_id),
+            ),
+            token,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    ids.push(resp.data.id.to_string());
+
+    let resp = helix
+        .req_post(
+            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
+                ChannelChatClearUserMessagesV1,
+            >::new(),
+            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
+                ChannelChatClearUserMessagesV1::new(broadcaster_id, token.user_id.as_str()),
                 Transport::websocket(session_id),
             ),
             token,

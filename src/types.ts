@@ -143,6 +143,26 @@ export type RawFollow = {
   user_name: string;
 };
 
+// ── EventSub: chat moderation (deletes / clears) ───────────────────────────
+export type RawChatMessageDelete = {
+  broadcaster_user_id: string;
+  message_id: string;
+  target_user_id: string;
+  target_user_login: string;
+  target_user_name: string;
+};
+
+export type RawChatClear = {
+  broadcaster_user_id: string;
+};
+
+export type RawChatClearUserMessages = {
+  broadcaster_user_id: string;
+  target_user_id: string;
+  target_user_login: string;
+  target_user_name: string;
+};
+
 // ── External services proxied through Rust (BTTV / FFZ / 7TV) ──────────────
 export type RustEmoteEntry = { name: string; url: string };
 
