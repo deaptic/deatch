@@ -16,8 +16,8 @@
   --color-border-muted: oklch(0.3 0 340);
 
   /* Action */
-  --color-primary: #9481ff;
-  --color-secondary: #c9a85a;
+  --color-primary: oklch(0.69 0.17 285);
+  --color-secondary: oklch(0.74 0.1 80);
 
   /* Alert */
   --color-danger: oklch(0.65 0.16 30);

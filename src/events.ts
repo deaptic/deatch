@@ -2,6 +2,9 @@ import { listen } from "@tauri-apps/api/event";
 import type { FeedMessage, FeedEvent, Fragment } from "./components/feed/types";
 import type { RawFragment, RawChatMessage, RawNotification, RawShoutout, RawFollow } from "./types";
 import { appendItem } from "./components/feed/feeds";
+import { user } from "./state/users";
+import { channelsById } from "./state/channels";
+import { recordMention } from "./state/inbox";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",
@@ -80,7 +83,32 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
 }
 
 listen<RawChatMessage>("channel-chat-message", (e) => {
-  appendItem(e.payload.broadcaster_user_id, mapChatMessage(e.payload, Date.now()));
+  const raw = e.payload;
+  const ts = Date.now();
+  appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
+
+  const me = user();
+  if (!me || raw.chatter_user_id === me.user_id) return;
+  const myLogin = me.login.toLowerCase();
+  const isMention = raw.message.fragments.some(
+    (f) => f.type === "mention" && f.mention.user_login.toLowerCase() === myLogin,
+  );
+  if (!isMention) return;
+
+  const ch = channelsById.get(raw.broadcaster_user_id);
+  recordMention({
+    id: raw.message_id,
+    channelId: raw.broadcaster_user_id,
+    channelLogin: ch?.user_login ?? raw.broadcaster_user_id,
+    channelName: ch?.user_name ?? raw.broadcaster_user_id,
+    messageId: raw.message_id,
+    chatterLogin: raw.chatter_user_login,
+    chatterName: raw.chatter_user_name,
+    chatterColor: raw.color,
+    chatterAvatar: "",
+    message: raw.message.text,
+    timestamp: ts,
+  });
 });
 
 listen<RawNotification>("channel-chat-notification", (e) => {

@@ -21,6 +21,7 @@ type Props = {
   onContextMenu: (x: number, y: number, msg: Message) => void;
   onReply: (msg: Message) => void;
   onReact: (msg: Message, value: string) => void;
+  onJumpToMessage: (messageId: string) => void;
 };
 
 const INLINE_EMOTE =
@@ -154,20 +155,7 @@ export default function FeedMessage(props: Props) {
         <Show when={props.item.reply}>
           <div
             class="text-text-muted/70 leading-[1.6em] truncate cursor-pointer hover:text-text-muted transition-colors"
-            onClick={() => {
-              const el = document.querySelector(
-                `[data-message-id="${props.item.reply!.parent_message_id}"]`,
-              ) as HTMLElement | null;
-              if (!el) return;
-              el.scrollIntoView({ behavior: "smooth", block: "center" });
-              el.style.backgroundColor = "rgba(145, 70, 255, 0.35)";
-              const clear = () => {
-                el.style.transition = "background-color 0.3s ease";
-                el.style.backgroundColor = "";
-                el.removeEventListener("mouseenter", clear);
-              };
-              el.addEventListener("mouseenter", clear);
-            }}
+            onClick={() => props.onJumpToMessage(props.item.reply!.parent_message_id)}
           >
             <span class="text-[0.78em]">⌐ Replying to </span>
             <span class="text-[0.78em] font-semibold text-primary">
