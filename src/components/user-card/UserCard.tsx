@@ -72,7 +72,8 @@ export default function UserCard(props: Props) {
     );
   });
 
-  const formatDate = (iso: string) => new Date(iso).toLocaleDateString();
+  const formatJoinDate = (iso: string) =>
+    new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
   function visibleText(m: FeedMessage): string {
     if (!m.reply) return m.fragments.map((f) => f.text).join("");
@@ -104,23 +105,27 @@ export default function UserCard(props: Props) {
             alt={user()?.display_name ?? ""}
             class="w-16 h-16 rounded-lg shrink-0 bg-bg-light"
           />
-          <div class="flex-1 min-w-0 flex flex-col gap-0.5">
-            <div class="flex items-baseline justify-between gap-2">
-              <span class="font-semibold text-text truncate">
-                {user()?.display_name ?? props.chatterId}
-              </span>
-              <span class="text-text-muted text-xs shrink-0 tabular-nums">
-                ID: {props.chatterId}
-              </span>
+          <div class="flex-1 min-w-0 flex flex-col">
+            <span class="font-semibold text-text text-lg leading-tight truncate">
+              {user()?.display_name ?? props.chatterId}
+            </span>
+            <Show when={user()}>
+              <span class="text-text-muted/70 text-sm truncate">@{user()!.login}</span>
+            </Show>
+            <div class="text-text-muted text-xs mt-1.5 truncate flex items-center gap-1.5">
+              <Show when={user()?.created_at}>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3 h-3 shrink-0">
+                  <rect x="2" y="3" width="12" height="11" rx="1" />
+                  <path d="M2 6h12 M5 1.5v3 M11 1.5v3" stroke-linecap="round" />
+                </svg>
+                <span>{formatJoinDate(user()!.created_at)}</span>
+                <span class="opacity-50">·</span>
+              </Show>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3 h-3 shrink-0">
+                <path d="M5 2v12 M11 2v12 M2 5h12 M2 11h12" stroke-linecap="round" />
+              </svg>
+              <span class="tabular-nums">{props.chatterId}</span>
             </div>
-            <Show when={user() && user()!.login !== user()!.display_name.toLowerCase()}>
-              <div class="text-text-muted text-xs truncate">{user()!.login}</div>
-            </Show>
-            <Show when={user()?.created_at}>
-              <div class="text-text-muted text-xs mt-1">
-                Created: {formatDate(user()!.created_at)}
-              </div>
-            </Show>
           </div>
           <button
             class="shrink-0 self-start text-text-muted hover:text-text p-1 cursor-pointer"
