@@ -1,8 +1,9 @@
-import { createSignal, createMemo, createEffect, For, Show, onCleanup, onMount } from "solid-js";
+import { createSignal, createMemo, createEffect, For, Show, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { getUsers, type User } from "../../commands/users";
 import { feeds } from "../feed/feeds";
 import type { FeedMessage } from "../feed/types";
+import CloseIcon from "../../icons/CloseIcon";
 
 type Props = {
   x: number;
@@ -23,7 +24,6 @@ export default function UserCard(props: Props) {
     x: Math.max(8, Math.min(props.x, window.innerWidth - CARD_W - 8)),
     y: props.y,
   });
-  let suppressNextClick = false;
 
   createEffect(() => {
     const id = props.chatterId;
@@ -48,9 +48,7 @@ export default function UserCard(props: Props) {
     const start = pos();
     const offsetX = e.clientX - start.x;
     const offsetY = e.clientY - start.y;
-    let moved = false;
     const onMove = (ev: MouseEvent) => {
-      moved = true;
       const w = cardRef?.offsetWidth ?? CARD_W;
       const h = cardRef?.offsetHeight ?? CARD_MAX_H;
       setPos({
@@ -59,28 +57,12 @@ export default function UserCard(props: Props) {
       });
     };
     const onUp = () => {
-      if (moved) suppressNextClick = true;
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
     };
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
-
-  const close = (e: Event) => {
-    if (suppressNextClick) {
-      suppressNextClick = false;
-      return;
-    }
-    if (cardRef?.contains(e.target as Node)) return;
-    props.onClose();
-  };
-  document.addEventListener("click", close, { capture: true });
-  document.addEventListener("contextmenu", close, { capture: true });
-  onCleanup(() => {
-    document.removeEventListener("click", close, { capture: true });
-    document.removeEventListener("contextmenu", close, { capture: true });
-  });
 
   const messages = createMemo<FeedMessage[]>(() => {
     const feed = feeds[props.broadcasterId];
@@ -96,15 +78,8 @@ export default function UserCard(props: Props) {
     <Portal>
       <div
         ref={cardRef}
-        class="fixed z-50 bg-bg border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col"
-        style={{
-          top: `${pos().y}px`,
-          left: `${pos().x}px`,
-          width: `${CARD_W}px`,
-          "max-height": `${CARD_MAX_H}px`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-        onContextMenu={(e) => e.stopPropagation()}
+        class="fixed z-50 bg-bg border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col w-96 h-80 min-w-72 min-h-64 resize"
+        style={{ top: `${pos().y}px`, left: `${pos().x}px` }}
       >
         <div
           class="flex gap-3 p-3 border-b border-border-muted cursor-move select-none"
@@ -133,6 +108,15 @@ export default function UserCard(props: Props) {
               </div>
             </Show>
           </div>
+          <button
+            class="shrink-0 self-start text-text-muted hover:text-text p-1 cursor-pointer"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={props.onClose}
+            title="Close"
+            aria-label="Close"
+          >
+            <CloseIcon class="w-3 h-3" />
+          </button>
         </div>
 
         <div class="flex-1 overflow-y-auto p-1 min-h-0">
