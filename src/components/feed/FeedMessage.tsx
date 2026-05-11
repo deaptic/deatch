@@ -4,7 +4,6 @@ import { EmoteMap } from "../../state/emotes";
 import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
-import { formatTimestamp } from "../../utils";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -151,14 +150,20 @@ export default function FeedMessage(props: Props) {
       />
       <Show when={props.showTimestamp}>
         <span class="text-text-muted select-none tabular-nums shrink-0">
-          {formatTimestamp(props.item.timestamp)}
+          {new Date(props.item.timestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })}
         </span>
       </Show>
       <div class="wrap-break-word min-w-0">
         <Show when={props.item.reply}>
           <div
             class="text-text-muted/70 leading-[1.6em] truncate cursor-pointer hover:text-text-muted transition-colors"
-            onClick={() => props.onJumpToMessage(props.item.reply!.parent_message_id)}
+            onClick={() =>
+              props.onJumpToMessage(props.item.reply!.parent_message_id)
+            }
           >
             <span class="text-[0.78em]">⌐ Replying to </span>
             <span class="text-[0.78em] font-semibold text-primary">
@@ -177,7 +182,8 @@ export default function FeedMessage(props: Props) {
           <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
             <For
               each={props.item.badges.filter(
-                (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
+                (b) =>
+                  props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
               )}
             >
               {(b) => {
@@ -196,7 +202,13 @@ export default function FeedMessage(props: Props) {
         </Show>
         <span
           class="font-semibold cursor-pointer hover:underline"
-          style={{ color: props.overrideNameColor || props.item.color || "var(--color-primary)" }}
+          style={{
+            color:
+              props.overrideNameColor ||
+              (props.item.color
+                ? `oklch(from ${props.item.color} max(l, 0.65) c h)`
+                : "var(--color-primary)"),
+          }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -206,7 +218,9 @@ export default function FeedMessage(props: Props) {
             if (e.button === 1) e.preventDefault();
           }}
         >
-          {props.useDisplayName === false ? props.item.chatter_login : props.item.chatter_name}
+          {props.useDisplayName === false
+            ? props.item.chatter_login
+            : props.item.chatter_name}
         </span>
         <span class="text-text-muted">: </span>
         <Show
