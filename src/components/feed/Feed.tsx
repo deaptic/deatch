@@ -15,6 +15,8 @@ import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";
 import FeedInput from "./FeedInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
+import UserCard from "../user-card/UserCard";
+import { getUsers } from "../../commands/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
 import BanTimeoutModal from "./BanTimeoutModal";
 import { moderatedChannels } from "../../state/users";
@@ -55,11 +57,24 @@ export default function Feed(props: Props) {
   const [eventContextMenu, setEventContextMenu] = createSignal<{ x: number; y: number; item: EventItem } | null>(null);
   const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
   const [modAction, setModAction] = createSignal<{ action: "timeout" | "ban"; msg: Message } | null>(null);
+  const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
 
   let focusInput: (() => void) | undefined;
 
   const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
   const closeContextMenu = () => setContextMenu(null);
+  async function openUserCard(x: number, y: number, identity: { userId?: string; login?: string }) {
+    let id = identity.userId;
+    if (!id && identity.login) {
+      try {
+        const users = await getUsers({ logins: [identity.login] });
+        id = users[0]?.id;
+      } catch {
+        return;
+      }
+    }
+    if (id) setUserCard({ x, y, chatterId: id });
+  }
   const openEventContextMenu = (x: number, y: number, item: EventItem) => setEventContextMenu({ x, y, item });
   const closeEventContextMenu = () => setEventContextMenu(null);
   const openModAction = (action: "timeout" | "ban", msg: Message) => setModAction({ action, msg });
@@ -235,6 +250,7 @@ export default function Feed(props: Props) {
                       onReply={startReply}
                       onReact={react}
                       onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
+                      onShowUserCard={openUserCard}
                     />
                   )}
                 </Show>
@@ -265,6 +281,18 @@ export default function Feed(props: Props) {
             onClose={closeContextMenu}
             onReply={startReply}
             onModAction={openModAction}
+            onShowUserCard={(msg) => openUserCard(cm().x, cm().y, { userId: msg.chatter_user_id })}
+          />
+        )}
+      </Show>
+      <Show when={userCard()}>
+        {(uc) => (
+          <UserCard
+            x={uc().x}
+            y={uc().y}
+            chatterId={uc().chatterId}
+            broadcasterId={props.broadcasterId}
+            onClose={() => setUserCard(null)}
           />
         )}
       </Show>
