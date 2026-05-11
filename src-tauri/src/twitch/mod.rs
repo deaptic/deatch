@@ -1,3 +1,4 @@
+pub mod channels;
 pub mod chat;
 pub mod moderation;
 pub mod response;

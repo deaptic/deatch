@@ -23,7 +23,6 @@ type Props = {
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
   onModAction: (action: "timeout" | "ban", msg: FeedMessage) => void;
-  onShowUserCard: (msg: FeedMessage) => void;
 };
 
 export default function MessageContextMenu(props: Props) {
@@ -41,10 +40,7 @@ export default function MessageContextMenu(props: Props) {
         icon={<CopyIcon class="w-3.5 h-3.5" />}
         onClick={() => { navigator.clipboard.writeText(props.msg.fragments.map((f) => f.text).join("")); props.onClose(); }}
       />
-      <ContextMenuItem
-        label="User card"
-        onClick={() => { props.onShowUserCard(props.msg); props.onClose(); }}
-      />
+      <ContextMenuDivider />
       <ContextMenuItem
         label={muted() ? `Unmute ${props.msg.chatter_name}` : `Mute ${props.msg.chatter_name}`}
         danger={!muted()}

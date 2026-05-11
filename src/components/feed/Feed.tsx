@@ -281,7 +281,6 @@ export default function Feed(props: Props) {
             onClose={closeContextMenu}
             onReply={startReply}
             onModAction={openModAction}
-            onShowUserCard={(msg) => openUserCard(cm().x, cm().y, { userId: msg.chatter_user_id })}
           />
         )}
       </Show>
