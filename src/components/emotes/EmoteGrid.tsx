@@ -25,7 +25,7 @@ export default function EmoteGrid(props: Props) {
           >
             <img src={item.url} alt={item.label} class="w-7 h-7 object-contain" />
             <Show when={props.isFavorite(item.value)}>
-              <span class="absolute top-0 right-0.5 text-[10px] leading-none text-secondary pointer-events-none">★</span>
+              <span class="absolute top-0 right-0.5 text-xs leading-none text-secondary pointer-events-none">★</span>
             </Show>
           </button>
         )}
