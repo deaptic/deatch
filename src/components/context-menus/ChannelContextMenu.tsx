@@ -15,7 +15,6 @@ type Props = {
   onOpenInBrowser: (ch: Channel) => void;
   onPin: (ch: Channel) => void;
   onUnpin: (userId: string) => void;
-  onRefresh: () => void;
 };
 
 export default function ChannelContextMenu(props: Props) {
@@ -39,10 +38,6 @@ export default function ChannelContextMenu(props: Props) {
           onClick={() => { props.onUnpin(props.ch.user_id); props.onClose(); }}
         />
       </Show>
-      <ContextMenuItem
-        label="Refresh"
-        onClick={() => { props.onRefresh(); props.onClose(); }}
-      />
       <Show when={props.developerMode}>
         <ContextMenuDivider />
         <ContextMenuItem

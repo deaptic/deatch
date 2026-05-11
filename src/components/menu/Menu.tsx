@@ -337,7 +337,6 @@ export default function Menu(props: Props) {
             onOpenInBrowser={openInBrowser}
             onPin={(ch) => pinChannel(ch.user_id)}
             onUnpin={unpinChannel}
-            onRefresh={refresh}
           />
         )}
       </Show>
