@@ -19,6 +19,7 @@ import {
 import { user } from "./state/users";
 import { channelsById } from "./state/channels";
 import { recordMention } from "./state/inbox";
+import { feedKeywords, matchesAnyKeyword } from "./state/preferences";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",
@@ -107,7 +108,8 @@ listen<RawChatMessage>("channel-chat-message", (e) => {
   const isMention = raw.message.fragments.some(
     (f) => f.type === "mention" && f.mention.user_login.toLowerCase() === myLogin,
   );
-  if (!isMention) return;
+  const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
+  if (!isMention && !keywordHit) return;
 
   const ch = channelsById.get(raw.broadcaster_user_id);
   recordMention({

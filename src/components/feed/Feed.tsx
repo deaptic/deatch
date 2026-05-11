@@ -35,6 +35,7 @@ import {
   feedUserOverrideNameColor,
   feedShowTimestamp,
   feedShowDeletedContent,
+  feedKeywords,
   feedBadges,
   feedEvents,
   feedUserMuted,
@@ -224,6 +225,7 @@ export default function Feed(props: Props) {
                       badges={badges()}
                       badgePrefs={feedBadges()}
                       userLogin={props.userLogin}
+                      keywords={feedKeywords()}
                       useDisplayName={feedUserShowDisplayName()}
                       overrideNameColor={feedUserOverrideNameColor()}
                       showTimestamp={feedShowTimestamp()}

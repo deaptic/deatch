@@ -32,6 +32,9 @@ import {
   feedUserMuted,
   muteUser,
   unmuteUser,
+  feedKeywords,
+  addFeedKeyword,
+  removeFeedKeyword,
   feedUserOverrideNameColor,
   setFeedUserOverrideNameColor,
   advancedDeveloperMode,
@@ -149,6 +152,31 @@ export default function Settings(props: Props) {
                   description="Display the original text of deleted messages, greyed out. When off, deleted messages render as <deleted>."
                 >
                   <Toggle size="md" checked={feedShowDeletedContent()} onChange={setFeedShowDeletedContent} />
+                </SettingsContentSectionItem>
+              </SettingsContentSection>
+
+              <SettingsContentSection title="Highlights">
+                <SettingsContentSectionItem
+                  label="Keywords"
+                  description="Highlight messages containing any of these words and add them to your inbox, just like a mention. Press Enter to add."
+                  stacked
+                >
+                  <TextInput
+                    placeholder="Add keyword..."
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      const v = e.currentTarget.value;
+                      e.currentTarget.value = "";
+                      addFeedKeyword(v);
+                    }}
+                  />
+                  <Show when={feedKeywords().length > 0}>
+                    <ChipList>
+                      <For each={feedKeywords()}>
+                        {(kw) => <Chip label={kw} onRemove={() => removeFeedKeyword(kw)} />}
+                      </For>
+                    </ChipList>
+                  </Show>
                 </SettingsContentSectionItem>
               </SettingsContentSection>
 

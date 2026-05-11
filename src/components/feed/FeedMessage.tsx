@@ -4,6 +4,7 @@ import { EmoteMap } from "../../state/emotes";
 import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
+import { matchesAnyKeyword } from "../../state/preferences";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -13,6 +14,7 @@ type Props = {
   badges: BadgeMap;
   badgePrefs: Record<BadgeCategoryKey, { show: boolean }>;
   userLogin: string;
+  keywords?: string[];
   useDisplayName?: boolean;
   showTimestamp?: boolean;
   showDeletedContent?: boolean;
@@ -96,10 +98,15 @@ function renderFragment(frag: Fragment, emotes: EmoteMap) {
 }
 
 export default function FeedMessage(props: Props) {
-  const mentioned = () =>
-    props.item.fragments.some(
-      (f) => f.type === "mention" && f.user_login === props.userLogin,
-    );
+  const mentioned = () => {
+    if (props.item.fragments.some((f) => f.type === "mention" && f.user_login === props.userLogin)) {
+      return true;
+    }
+    const kws = props.keywords;
+    if (!kws || kws.length === 0) return false;
+    const text = props.item.fragments.map((f) => f.text).join(" ");
+    return matchesAnyKeyword(text, kws);
+  };
 
   const visibleFragments = () => {
     const item = props.item;
