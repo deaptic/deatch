@@ -82,7 +82,7 @@ export default function TitleBar(props: Props) {
         >
           <InboxIcon class="w-3.5 h-3.5" />
           <Show when={unreadMentionCount() > 0}>
-            <span class="absolute top-1.5 right-1.5 min-w-[14px] h-[14px] px-1 bg-primary rounded-full flex items-center justify-center">
+            <span class="absolute top-1.5 right-1.5 min-w-3.5 h-3.5 px-1 bg-primary rounded-full flex items-center justify-center">
               <span class="text-[9px] font-bold text-text leading-none tabular-nums">
                 {unreadMentionCount() > 99 ? "99+" : unreadMentionCount()}
               </span>
