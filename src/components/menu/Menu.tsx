@@ -1,4 +1,11 @@
-import { Show, For, createSignal, createEffect, onMount, onCleanup } from "solid-js";
+import {
+  Show,
+  For,
+  createSignal,
+  createEffect,
+  onMount,
+  onCleanup,
+} from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { getAllFollowedStreams, getAllStreams } from "../../commands/streams";
@@ -6,7 +13,13 @@ import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 import { user } from "../../state/users";
 import { rememberChannel } from "../../state/channels";
-import { advancedDeveloperMode, menuChannelPinned, pinChannel, unpinChannel, reorderPinnedChannels } from "../../state/preferences";
+import {
+  advancedDeveloperMode,
+  menuChannelPinned,
+  pinChannel,
+  unpinChannel,
+  reorderPinnedChannels,
+} from "../../state/preferences";
 import { unreadCount } from "../feed/feeds";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
@@ -42,10 +55,18 @@ export default function Menu(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
 
-  const [chMenu, setChMenu] = createSignal<{ ch: Channel; x: number; y: number } | null>(null);
-  const [accMenu, setAccMenu] = createSignal<{ x: number; y: number } | null>(null);
+  const [chMenu, setChMenu] = createSignal<{
+    ch: Channel;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [accMenu, setAccMenu] = createSignal<{ x: number; y: number } | null>(
+    null,
+  );
 
-  const [addPop, setAddPop] = createSignal<{ x: number; y: number } | null>(null);
+  const [addPop, setAddPop] = createSignal<{ x: number; y: number } | null>(
+    null,
+  );
   const [addInput, setAddInput] = createSignal("");
   const [addLoading, setAddLoading] = createSignal(false);
   let addBtn: HTMLButtonElement | undefined;
@@ -53,7 +74,8 @@ export default function Menu(props: Props) {
   const liveById = () => new Map(live.map((ch) => [ch.user_id, ch]));
   const pinnedIdSet = () => new Set(menuChannelPinned());
   const onlineList = () => live.filter((ch) => !pinnedIdSet().has(ch.user_id));
-  const resolveChannel = (id: string): Channel | undefined => liveById().get(id) ?? pinnedMeta[id];
+  const resolveChannel = (id: string): Channel | undefined =>
+    liveById().get(id) ?? pinnedMeta[id];
 
   async function fetchPinnedMeta() {
     const ids = menuChannelPinned();
@@ -81,15 +103,20 @@ export default function Menu(props: Props) {
     try {
       const followed = await getAllFollowedStreams();
       const followedIds = new Set(followed.map((s) => s.user_id));
-      const unfollowedPinnedIds = menuChannelPinned().filter((id) => !followedIds.has(id));
-      const pinnedStreams = unfollowedPinnedIds.length > 0
-        ? await getAllStreams({ userIds: unfollowedPinnedIds })
-        : [];
+      const unfollowedPinnedIds = menuChannelPinned().filter(
+        (id) => !followedIds.has(id),
+      );
+      const pinnedStreams =
+        unfollowedPinnedIds.length > 0
+          ? await getAllStreams({ userIds: unfollowedPinnedIds })
+          : [];
       const streams = [...followed, ...pinnedStreams];
 
       const profileMap = new Map<string, string>();
       if (streams.length > 0) {
-        const users = await getUsers({ userIds: streams.map((s) => s.user_id) });
+        const users = await getUsers({
+          userIds: streams.map((s) => s.user_id),
+        });
         for (const u of users) profileMap.set(u.id, u.profile_image_url ?? "");
       }
       const data: Channel[] = streams.map((s) => ({
@@ -99,7 +126,9 @@ export default function Menu(props: Props) {
         game_name: s.game_name,
         title: s.title,
         viewer_count: s.viewer_count,
-        thumbnail_url: s.thumbnail_url.replace("{width}", "440").replace("{height}", "248"),
+        thumbnail_url: s.thumbnail_url
+          .replace("{width}", "440")
+          .replace("{height}", "248"),
         profile_image_url: profileMap.get(s.user_id) ?? "",
       }));
       for (const ch of data) rememberChannel(ch);
@@ -112,14 +141,11 @@ export default function Menu(props: Props) {
     }
   }
 
-  async function refresh() {
-    setLoadingLive(true);
-    await Promise.all([fetchPinnedMeta(), fetchLive()]);
-  }
-
   // Fetch metadata for any newly-pinned channels we don't yet have data for.
   createEffect(() => {
-    const missing = menuChannelPinned().filter((id) => !pinnedMeta[id] && !liveById().get(id));
+    const missing = menuChannelPinned().filter(
+      (id) => !pinnedMeta[id] && !liveById().get(id),
+    );
     if (missing.length === 0) return;
     getUsers({ userIds: missing })
       .then((users) => {
@@ -240,7 +266,8 @@ export default function Menu(props: Props) {
             <For each={menuChannelPinned()}>
               {(id, index) => {
                 const ch = () => resolveChannel(id);
-                const isOver = () => overIdx() === index() && dragIdx() !== index();
+                const isOver = () =>
+                  overIdx() === index() && dragIdx() !== index();
                 return (
                   <Show when={ch()}>
                     {(c) => (
