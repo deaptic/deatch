@@ -52,7 +52,7 @@ export default function FeedEvent(props: Props) {
     >
       <Show when={props.showTimestamp}>
         <span class="text-text-muted select-none tabular-nums shrink-0">
-          {new Date(props.item.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}
+          {new Date(props.item.timestamp).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false })}
         </span>
       </Show>
       <span class="text-text font-semibold wrap-break-word min-w-0">

@@ -163,7 +163,7 @@ export default function FeedMessage(props: Props) {
       />
       <Show when={props.showTimestamp}>
         <span class="text-text-muted select-none tabular-nums shrink-0">
-          {new Date(props.item.timestamp).toLocaleTimeString([], {
+          {new Date(props.item.timestamp).toLocaleTimeString("en-GB", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,

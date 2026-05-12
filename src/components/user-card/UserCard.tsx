@@ -292,7 +292,7 @@ export default function UserCard(props: Props) {
                   </Show>
                   <div class="flex gap-2">
                     <span class="text-text-muted tabular-nums shrink-0">
-                      {new Date(m.timestamp).toLocaleTimeString([], {
+                      {new Date(m.timestamp).toLocaleTimeString("en-GB", {
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: false,
