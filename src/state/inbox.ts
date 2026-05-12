@@ -9,10 +9,10 @@ export type Mention = {
   channelLogin: string;
   channelName: string;
   messageId: string;
+  chatterId: string;
   chatterLogin: string;
   chatterName: string;
   chatterColor: string;
-  chatterAvatar: string;
   message: string;
   timestamp: number;
   unread: boolean;

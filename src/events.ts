@@ -151,10 +151,10 @@ listen<RawChatMessage>("channel-chat-message", (e) => {
     channelLogin: ch?.user_login ?? raw.broadcaster_user_id,
     channelName: ch?.user_name ?? raw.broadcaster_user_id,
     messageId: raw.message_id,
+    chatterId: raw.chatter_user_id,
     chatterLogin: raw.chatter_user_login,
     chatterName: raw.chatter_user_name,
     chatterColor: raw.color,
-    chatterAvatar: "",
     message: raw.message.text,
     timestamp: ts,
   });

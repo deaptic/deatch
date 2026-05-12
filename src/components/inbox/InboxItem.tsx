@@ -1,5 +1,7 @@
-import { Show } from "solid-js";
+import { createEffect } from "solid-js";
 import type { Mention } from "../../state/inbox";
+import { userCache } from "../../state/users";
+import { getUsers } from "../../commands/users";
 
 const DEFAULT_AVATAR =
   "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
@@ -18,20 +20,27 @@ function formatRelative(ms: number): string {
 }
 
 export default function InboxItem(props: Props) {
+  createEffect(() => {
+    const id = props.mention.chatterId;
+    if (id) getUsers({ userIds: [id] }, { silent: true }).catch(() => {});
+  });
+
+  const avatar = () =>
+    userCache()[props.mention.chatterId]?.profile_image_url || DEFAULT_AVATAR;
+
   return (
     <button
       onClick={props.onClick}
-      class={`relative w-full flex gap-3 px-4 py-3 cursor-pointer hover:bg-bg-light transition-colors text-left ${
-        props.mention.unread ? "bg-primary/5" : ""
+      class={`w-full flex gap-3 pl-4 pr-5 py-3 cursor-pointer hover:bg-bg-light transition-colors text-left border-l-4 ${
+        props.mention.unread
+          ? "bg-primary/10 hover:bg-primary/15 border-primary"
+          : "border-transparent"
       }`}
     >
-      <Show when={props.mention.unread}>
-        <div class="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
-      </Show>
       <img
-        src={props.mention.chatterAvatar || DEFAULT_AVATAR}
+        src={avatar()}
         alt={props.mention.chatterName}
-        class="w-9 h-9 rounded-lg shrink-0"
+        class="w-11 h-11 rounded-lg shrink-0"
       />
       <div class="flex-1 min-w-0 flex flex-col gap-0.5">
         <div class="flex items-baseline gap-2">

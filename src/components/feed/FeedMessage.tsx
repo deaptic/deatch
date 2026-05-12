@@ -138,7 +138,7 @@ export default function FeedMessage(props: Props) {
     <div
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
-      class={`relative group flex gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
+      class={`relative group flex gap-2 leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
         props.item.deleted ? "opacity-50 " : ""
       }${
         mentioned()
