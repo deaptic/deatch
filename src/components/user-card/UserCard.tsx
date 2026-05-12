@@ -37,20 +37,31 @@ type Props = {
   y: number;
   chatterId: string;
   broadcasterId: string;
+  getBounds: () => DOMRect | null;
   onClose: () => void;
 };
 
 const CARD_W = 384;
 const CARD_MAX_H = 480;
+const PAD = 8;
 
 export default function UserCard(props: Props) {
   const [user, setUser] = createSignal<User | null>(null);
   let cardRef: HTMLDivElement | undefined;
 
-  const [pos, setPos] = createSignal({
-    x: Math.max(8, Math.min(props.x, window.innerWidth - CARD_W - 8)),
-    y: props.y,
-  });
+  function clamp(x: number, y: number, w: number, h: number) {
+    const b = props.getBounds();
+    const left = b?.left ?? 0;
+    const top = b?.top ?? 0;
+    const right = b?.right ?? window.innerWidth;
+    const bottom = b?.bottom ?? window.innerHeight;
+    return {
+      x: Math.max(left + PAD, Math.min(x, right - w - PAD)),
+      y: Math.max(top + PAD, Math.min(y, bottom - h - PAD)),
+    };
+  }
+
+  const [pos, setPos] = createSignal(clamp(props.x, props.y, CARD_W, CARD_MAX_H));
 
   const [follower, setFollower] = createSignal<Follower | null>(null);
 
@@ -80,15 +91,9 @@ export default function UserCard(props: Props) {
   });
 
   onMount(() => {
-    if (cardRef) {
-      const rect = cardRef.getBoundingClientRect();
-      if (rect.bottom > window.innerHeight - 8) {
-        setPos((p) => ({
-          ...p,
-          y: Math.max(8, window.innerHeight - rect.height - 8),
-        }));
-      }
-    }
+    if (!cardRef) return;
+    const rect = cardRef.getBoundingClientRect();
+    setPos((p) => clamp(p.x, p.y, rect.width, rect.height));
   });
 
   function startDrag(e: MouseEvent) {
@@ -100,16 +105,7 @@ export default function UserCard(props: Props) {
     const onMove = (ev: MouseEvent) => {
       const w = cardRef?.offsetWidth ?? CARD_W;
       const h = cardRef?.offsetHeight ?? CARD_MAX_H;
-      setPos({
-        x: Math.max(
-          8,
-          Math.min(ev.clientX - offsetX, window.innerWidth - w - 8),
-        ),
-        y: Math.max(
-          8,
-          Math.min(ev.clientY - offsetY, window.innerHeight - h - 8),
-        ),
-      });
+      setPos(clamp(ev.clientX - offsetX, ev.clientY - offsetY, w, h));
     };
     const onUp = () => {
       document.removeEventListener("mousemove", onMove);
@@ -164,7 +160,12 @@ export default function UserCard(props: Props) {
       <div
         ref={cardRef}
         class="fixed z-50 bg-bg border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col w-96 h-80 min-w-72 min-h-64 resize"
-        style={{ top: `${pos().y}px`, left: `${pos().x}px` }}
+        style={{
+          top: `${pos().y}px`,
+          left: `${pos().x}px`,
+          "max-width": `calc(100vw - ${pos().x}px - ${PAD}px)`,
+          "max-height": `calc(100vh - ${pos().y}px - ${PAD}px)`,
+        }}
       >
         <div
           class="flex gap-3 p-3 border-b border-border-muted cursor-move select-none"
@@ -197,7 +198,7 @@ export default function UserCard(props: Props) {
                 title="Open channel on Twitch"
                 aria-label="Open channel on Twitch"
               >
-                <ExternalLinkIcon class="w-3.5 h-3.5" />
+                <ExternalLinkIcon class="w-2.5 h-2.5" />
               </button>
               <button
                 class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
@@ -206,7 +207,7 @@ export default function UserCard(props: Props) {
                 title="Close"
                 aria-label="Close"
               >
-                <CloseIcon class="w-3.5 h-3.5" />
+                <CloseIcon class="w-2.5 h-2.5" />
               </button>
             </div>
             <div class="flex items-baseline gap-1.5 min-w-0 flex-wrap">
