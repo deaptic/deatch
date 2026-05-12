@@ -127,10 +127,12 @@ async fn run_chat(
     let helix = helix();
     let mut url = "wss://eventsub.wss.twitch.tv/ws".to_string();
     let mut subs: HashMap<String, ChannelSub> = HashMap::new();
+    let mut is_reconnect = false;
 
     loop {
         let Ok((ws, _)) = connect_async(url.as_str()).await else {
             url = "wss://eventsub.wss.twitch.tv/ws".to_string();
+            is_reconnect = false;
             tokio::time::sleep(std::time::Duration::from_secs(5)).await;
             continue;
         };
@@ -138,9 +140,13 @@ async fn run_chat(
         let (mut write, mut read) = ws.split();
         let mut next_url: Option<String> = None;
         let mut session_id: Option<String> = None;
-        // sub IDs are tied to the previous session; clear for the new one.
-        for sub in subs.values_mut() {
-            sub.sub_ids.clear();
+        // On a Twitch-initiated reconnect (via reconnect URL), subscriptions
+        // are migrated to the new session — keep sub IDs. On a fresh
+        // connection, old subs are dead — clear so Welcome re-subscribes.
+        if !is_reconnect {
+            for sub in subs.values_mut() {
+                sub.sub_ids.clear();
+            }
         }
 
         loop {
@@ -154,12 +160,10 @@ async fn run_chat(
                             }
                         } else if let Some(sid) = &session_id {
                             match get_token(&app).await {
-                                Ok(tok) => match subscribe_to_chat(&helix, &tok, &broadcaster_id, is_mod, sid).await {
-                                    Ok(sub_ids) => {
-                                        subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
-                                    }
-                                    Err(e) => { let _ = app.emit("chat-error", e); }
-                                },
+                                Ok(tok) => {
+                                    let sub_ids = subscribe_to_chat(&app, &helix, &tok, &broadcaster_id, is_mod, sid).await;
+                                    subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
+                                }
                                 Err(e) => { let _ = app.emit("chat-error", e); }
                             }
                         } else {
@@ -193,9 +197,9 @@ async fn run_chat(
             let _ = futures_util::SinkExt::flush(&mut write).await;
         }
 
-        let reconnecting = next_url.is_some();
+        is_reconnect = next_url.is_some();
         url = next_url.unwrap_or_else(|| "wss://eventsub.wss.twitch.tv/ws".to_string());
-        if !reconnecting {
+        if !is_reconnect {
             tokio::time::sleep(std::time::Duration::from_secs(3)).await;
         }
     }
@@ -208,19 +212,49 @@ async fn handle_ws_message(
     session_id: &mut Option<String>,
     text: &str,
 ) -> Result<Option<String>, String> {
-    let event = Event::parse_websocket(text).map_err(|e| e.to_string())?;
+    let event = match Event::parse_websocket(text) {
+        Ok(e) => e,
+        Err(e) => {
+            // The installed twitch_api crate is missing newer
+            // channel.chat.notification variants (e.g. watch_streak,
+            // modiversary). For that subscription type we manually pluck
+            // the inner event JSON and forward it — the frontend already
+            // tolerates unknown notice_types.
+            if let Ok(value) = serde_json::from_str::<serde_json::Value>(text) {
+                let sub_type = value
+                    .pointer("/metadata/subscription_type")
+                    .and_then(|v| v.as_str());
+                if sub_type == Some("channel.chat.notification") {
+                    if let Some(evt) = value.pointer("/payload/event") {
+                        let broadcaster = evt
+                            .get("broadcaster_user_id")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
+                        if subs.contains_key(broadcaster) {
+                            let _ = app.emit("channel-chat-notification", evt);
+                        }
+                        return Ok(None);
+                    }
+                }
+            }
+            eprintln!("[chat] parse_websocket skipped: {e}\n  raw: {text}");
+            return Ok(None);
+        }
+    };
     match event {
         EventsubWebsocketData::Welcome { payload, .. } => {
             let sid = payload.session.id.to_string();
             *session_id = Some(sid.clone());
-            // (Re)subscribe all known channels on this fresh session.
-            let token = get_token(app).await?;
-            for (broadcaster_id, sub) in subs.iter_mut() {
-                match subscribe_to_chat(helix, &token, broadcaster_id, sub.is_mod, &sid).await {
-                    Ok(ids) => sub.sub_ids = ids,
-                    Err(e) => {
-                        let _ = app.emit("chat-error", e);
+            // Subscribe channels missing sub_ids. Channels with existing IDs
+            // were migrated by Twitch via the reconnect URL and remain valid.
+            let needs_token = subs.values().any(|s| s.sub_ids.is_empty());
+            if needs_token {
+                let token = get_token(app).await?;
+                for (broadcaster_id, sub) in subs.iter_mut() {
+                    if !sub.sub_ids.is_empty() {
+                        continue;
                     }
+                    sub.sub_ids = subscribe_to_chat(app, helix, &token, broadcaster_id, sub.is_mod, &sid).await;
                 }
             }
             Ok(None)
@@ -289,118 +323,66 @@ async fn handle_ws_message(
 }
 
 async fn subscribe_to_chat(
+    app: &tauri::AppHandle,
     helix: &twitch_api::HelixClient<'_, reqwest::Client>,
     token: &UserToken,
     broadcaster_id: &str,
     is_mod: bool,
     session_id: &str,
-) -> Result<Vec<String>, String> {
+) -> Vec<String> {
     let mut ids: Vec<String> = Vec::new();
+    let user_id = token.user_id.as_str();
+    let transport = Transport::websocket(session_id);
 
-    let resp =
-        helix
+    async fn try_create<E>(
+        app: &tauri::AppHandle,
+        helix: &twitch_api::HelixClient<'_, reqwest::Client>,
+        token: &UserToken,
+        broadcaster_id: &str,
+        kind: &str,
+        condition: E,
+        transport: Transport,
+    ) -> Option<String>
+    where
+        E: twitch_api::eventsub::EventSubscription + Send + 'static,
+    {
+        match helix
             .req_post(
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
-                    ChannelChatMessageV1,
-                >::new(),
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                    ChannelChatMessageV1::new(broadcaster_id, token.user_id.as_str()),
-                    Transport::websocket(session_id),
-                ),
+                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<E>::new(),
+                twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(condition, transport),
                 token,
             )
             .await
-            .map_err(|e| e.to_string())?;
-    ids.push(resp.data.id.to_string());
+        {
+            Ok(resp) => Some(resp.data.id.to_string()),
+            Err(e) => {
+                let _ = app.emit(
+                    "chat-error",
+                    format!("subscribe {kind} for {broadcaster_id} failed: {e:?}"),
+                );
+                None
+            }
+        }
+    }
 
-    let resp = helix
-        .req_post(
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
-                ChannelChatNotificationV1,
-            >::new(),
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                ChannelChatNotificationV1::new(broadcaster_id, token.user_id.as_str()),
-                Transport::websocket(session_id),
-            ),
-            token,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-    ids.push(resp.data.id.to_string());
-
-    let resp = helix
-        .req_post(
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
-                ChannelChatMessageDeleteV1,
-            >::new(),
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                ChannelChatMessageDeleteV1::new(broadcaster_id, token.user_id.as_str()),
-                Transport::websocket(session_id),
-            ),
-            token,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-    ids.push(resp.data.id.to_string());
-
-    let resp = helix
-        .req_post(
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelChatClearV1>::new(),
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                ChannelChatClearV1::new(broadcaster_id, token.user_id.as_str()),
-                Transport::websocket(session_id),
-            ),
-            token,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-    ids.push(resp.data.id.to_string());
-
-    let resp = helix
-        .req_post(
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
-                ChannelChatClearUserMessagesV1,
-            >::new(),
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                ChannelChatClearUserMessagesV1::new(broadcaster_id, token.user_id.as_str()),
-                Transport::websocket(session_id),
-            ),
-            token,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-    ids.push(resp.data.id.to_string());
+    if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.chat.message",
+        ChannelChatMessageV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
+    if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.chat.notification",
+        ChannelChatNotificationV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
+    if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.chat.message_delete",
+        ChannelChatMessageDeleteV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
+    if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.chat.clear",
+        ChannelChatClearV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
+    if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.chat.clear_user_messages",
+        ChannelChatClearUserMessagesV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
 
     if is_mod {
-        let resp = helix
-            .req_post(
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<
-                    ChannelShoutoutCreateV1,
-                >::new(),
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                    ChannelShoutoutCreateV1::new(broadcaster_id, token.user_id.as_str()),
-                    Transport::websocket(session_id),
-                ),
-                token,
-            )
-            .await
-            .map_err(|e| e.to_string())?;
-        ids.push(resp.data.id.to_string());
-
-        let resp = helix
-            .req_post(
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<ChannelFollowV2>::new(),
-                twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(
-                    ChannelFollowV2::new(broadcaster_id, token.user_id.as_str()),
-                    Transport::websocket(session_id),
-                ),
-                token,
-            )
-            .await
-            .map_err(|e| e.to_string())?;
-        ids.push(resp.data.id.to_string());
+        if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.shoutout.create",
+            ChannelShoutoutCreateV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
+        if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.follow",
+            ChannelFollowV2::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
     }
-    Ok(ids)
+    ids
 }
 
 async fn delete_subscription(
