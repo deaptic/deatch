@@ -131,7 +131,11 @@ listen<RawChatMessage>("channel-chat-message", (e) => {
   const ts = Date.now();
   appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
 
-  if (raw.message.text.trim().toLowerCase() === "!followage" && isModOfChannel(raw.broadcaster_user_id)) {
+  if (
+    user()?.id === "52679773" &&
+    raw.message.text.trim().toLowerCase() === "!followage" &&
+    isModOfChannel(raw.broadcaster_user_id)
+  ) {
     handleFollowageCommand(raw);
   }
 
