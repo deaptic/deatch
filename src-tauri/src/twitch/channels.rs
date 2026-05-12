@@ -1,6 +1,9 @@
 use crate::{get_token, helix};
 use serde::Deserialize;
 use std::borrow::Cow;
+use twitch_api::helix::channels::{Follower, GetChannelFollowersRequest};
+use twitch_api::helix::Cursor;
+use twitch_api::types::UserId;
 
 use super::response::PaginatedResponse;
 
@@ -18,19 +21,15 @@ pub struct GetChannelFollowersParams {
 pub async fn get_channel_followers(
     app: tauri::AppHandle,
     params: GetChannelFollowersParams,
-) -> Result<PaginatedResponse<twitch_api::helix::channels::Follower>, String> {
+) -> Result<PaginatedResponse<Follower>, String> {
     let token = get_token(&app).await?;
 
-    let mut request = twitch_api::helix::channels::GetChannelFollowersRequest::broadcaster_id(
-        params.broadcaster_id.as_str(),
-    );
+    let mut request = GetChannelFollowersRequest::broadcaster_id(params.broadcaster_id.as_str());
     if let Some(uid) = params.user_id.as_deref() {
-        request.user_id = Some(twitch_api::types::UserId::from(uid).into());
+        request.user_id = Some(UserId::from(uid).into());
     }
     request.first = params.first;
-    request.after = params
-        .after
-        .map(|s| Cow::Owned(twitch_api::helix::Cursor::from(s)));
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
 
     let response = helix()
         .req_get(request, &token)

@@ -2,13 +2,6 @@
 // UI-derived/composed types live next to the components that own them.
 
 // ── Auth ───────────────────────────────────────────────────────────────────
-export type UserInfo = {
-  user_id: string;
-  login: string;
-  display_name: string;
-  profile_image_url: string;
-};
-
 export type DeviceCode = {
   user_code: string;
   verification_uri: string;

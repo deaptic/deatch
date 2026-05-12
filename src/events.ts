@@ -103,7 +103,7 @@ listen<RawChatMessage>("channel-chat-message", (e) => {
   appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
 
   const me = user();
-  if (!me || raw.chatter_user_id === me.user_id) return;
+  if (!me || raw.chatter_user_id === me.id) return;
   const myLogin = me.login.toLowerCase();
   const isMention = raw.message.fragments.some(
     (f) => f.type === "mention" && f.mention.user_login.toLowerCase() === myLogin,

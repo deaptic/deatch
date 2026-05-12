@@ -1,7 +1,9 @@
 use crate::{get_token, helix};
 use serde::Deserialize;
 use std::borrow::Cow;
-use twitch_api::types;
+use twitch_api::helix::streams::{GetFollowedStreamsRequest, GetStreamsRequest, Stream};
+use twitch_api::helix::Cursor;
+use twitch_api::types::{CategoryId, UserId, UserName};
 
 use super::response::PaginatedResponse;
 
@@ -22,35 +24,27 @@ pub struct GetStreamsParams {
 pub async fn get_streams(
     app: tauri::AppHandle,
     params: GetStreamsParams,
-) -> Result<PaginatedResponse<twitch_api::helix::streams::Stream>, String> {
-    let user_ids: Vec<types::UserId> = params
-        .user_ids
-        .into_iter()
-        .map(types::UserId::from)
-        .collect();
-    let user_logins: Vec<types::UserName> = params
+) -> Result<PaginatedResponse<Stream>, String> {
+    let user_ids: Vec<UserId> = params.user_ids.into_iter().map(UserId::from).collect();
+    let user_logins: Vec<UserName> = params
         .user_logins
         .into_iter()
-        .map(types::UserName::from)
+        .map(UserName::from)
         .collect();
-    let game_ids: Vec<types::CategoryId> = params
+    let game_ids: Vec<CategoryId> = params
         .game_ids
         .into_iter()
-        .map(types::CategoryId::from)
+        .map(CategoryId::from)
         .collect();
 
-    let mut request = twitch_api::helix::streams::GetStreamsRequest::default();
+    let mut request = GetStreamsRequest::default();
     request.user_id = (&*user_ids).into();
     request.user_login = (&*user_logins).into();
     request.game_id = (&*game_ids).into();
     request.language = params.language.map(Cow::Owned);
     request.first = params.first;
-    request.after = params
-        .after
-        .map(|s| Cow::Owned(twitch_api::helix::Cursor::from(s)));
-    request.before = params
-        .before
-        .map(|s| Cow::Owned(twitch_api::helix::Cursor::from(s)));
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.before = params.before.map(|s| Cow::Owned(Cursor::from(s)));
 
     let token = get_token(&app).await?;
     let response = helix()
@@ -73,15 +67,12 @@ pub struct GetFollowedStreamsParams {
 pub async fn get_followed_streams(
     app: tauri::AppHandle,
     params: GetFollowedStreamsParams,
-) -> Result<PaginatedResponse<twitch_api::helix::streams::Stream>, String> {
+) -> Result<PaginatedResponse<Stream>, String> {
     let token = get_token(&app).await?;
 
-    let mut request =
-        twitch_api::helix::streams::GetFollowedStreamsRequest::user_id(token.user_id.clone());
+    let mut request = GetFollowedStreamsRequest::user_id(token.user_id.clone());
     request.first = params.first;
-    request.after = params
-        .after
-        .map(|s| Cow::Owned(twitch_api::helix::Cursor::from(s)));
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
 
     let response = helix()
         .req_get(request, &token)

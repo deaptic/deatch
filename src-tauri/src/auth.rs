@@ -1,12 +1,8 @@
-use crate::{AppState, UserInfo};
+use crate::AppState;
 use tauri::{Emitter, Manager};
+use twitch_api::helix::users::User;
+use twitch_api::twitch_oauth2::id::DeviceCodeResponse;
 use twitch_api::twitch_oauth2::{DeviceUserTokenBuilder, Scope, TwitchToken, UserToken};
-
-#[derive(serde::Serialize, Clone)]
-pub struct DcfCode {
-    pub user_code: String,
-    pub verification_uri: String,
-}
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct StoredCredentials {
@@ -33,9 +29,9 @@ fn get_access_token(app: &tauri::AppHandle) -> Option<UserToken> {
     app.state::<AppState>().token.lock().unwrap().clone()
 }
 
-fn store_session(app: &tauri::AppHandle, token: UserToken, user_info: UserInfo) {
+fn store_session(app: &tauri::AppHandle, token: UserToken, user: User) {
     *app.state::<AppState>().token.lock().unwrap() = Some(token);
-    *app.state::<AppState>().user_info.lock().unwrap() = Some(user_info);
+    *app.state::<AppState>().user_info.lock().unwrap() = Some(user);
 }
 
 pub async fn refresh_token_now(app: &tauri::AppHandle) -> bool {
@@ -72,25 +68,16 @@ pub fn spawn_token_refresh(app: tauri::AppHandle) {
     });
 }
 
-async fn fetch_user_info(token: &UserToken) -> Result<UserInfo, String> {
+async fn fetch_user_info(token: &UserToken) -> Result<User, String> {
     let ids = [token.user_id.clone()];
-    let user = crate::helix()
+    crate::helix()
         .req_get(twitch_api::helix::users::GetUsersRequest::ids(&ids), token)
         .await
         .map_err(|e| e.to_string())?
         .data
         .into_iter()
         .next()
-        .ok_or("User not found")?;
-    Ok(UserInfo {
-        user_id: token.user_id.to_string(),
-        login: token.login.to_string(),
-        display_name: user.display_name.to_string(),
-        profile_image_url: user
-            .profile_image_url
-            .map(|u| u.to_string())
-            .unwrap_or_default(),
-    })
+        .ok_or_else(|| "User not found".to_string())
 }
 
 fn get_client_id() -> &'static str {
@@ -113,20 +100,16 @@ fn get_scopes() -> Vec<Scope> {
     ]
 }
 
-pub async fn request_dcf_code() -> Result<(DeviceUserTokenBuilder, reqwest::Client, DcfCode), String>
-{
+pub async fn request_dcf_code(
+) -> Result<(DeviceUserTokenBuilder, reqwest::Client, DeviceCodeResponse), String> {
     let mut builder = DeviceUserTokenBuilder::new(get_client_id(), get_scopes());
     let http_client = reqwest::Client::new();
     let code = builder
         .start(&http_client)
         .await
-        .map_err(|e| e.to_string())?;
-    let dcf_code = DcfCode {
-        user_code: code.user_code.to_string(),
-        verification_uri: code.verification_uri.to_string(),
-    };
-    let _ = code;
-    Ok((builder, http_client, dcf_code))
+        .map_err(|e| e.to_string())?
+        .clone();
+    Ok((builder, http_client, code))
 }
 
 pub async fn request_token(
@@ -147,40 +130,58 @@ pub async fn request_revoke(token: UserToken) -> Result<(), String> {
         .map_err(|e| format!("{e}"))
 }
 
-#[tauri::command]
-pub async fn start_dcf_auth(app: tauri::AppHandle) -> Result<DcfCode, String> {
-    let (builder, http_client, code) = request_dcf_code().await?;
-    tauri::async_runtime::spawn(async move {
-        let result = async {
-            let token = request_token(builder, &http_client).await?;
-            let user_info = fetch_user_info(&token).await?;
-            save_credentials(&token);
-            store_session(&app, token, user_info.clone());
-            spawn_token_refresh(app.clone());
-            let _ = app.emit("twitch-auth-success", user_info);
-            Ok::<_, String>(())
-        }
-        .await;
-        if let Err(e) = result {
-            let _ = app.emit("twitch-auth-error", e);
-        }
-    });
-    Ok(code)
+#[derive(serde::Serialize, Clone)]
+pub struct DcfAuthResponse {
+    pub user_code: String,
+    pub verification_uri: String,
+}
+
+async fn listen_device_code_callback(
+    app: tauri::AppHandle,
+    builder: DeviceUserTokenBuilder,
+    http_client: reqwest::Client,
+) {
+    let result = async {
+        let token = request_token(builder, &http_client).await?;
+        let user_info = fetch_user_info(&token).await?;
+        save_credentials(&token);
+        store_session(&app, token, user_info.clone());
+        spawn_token_refresh(app.clone());
+        let _ = app.emit("twitch-auth-success", user_info);
+        Ok::<_, String>(())
+    }
+    .await;
+    if let Err(e) = result {
+        let _ = app.emit("twitch-auth-error", e);
+    }
 }
 
 #[tauri::command]
-pub async fn try_restore_session(app: tauri::AppHandle) -> Result<UserInfo, String> {
+pub async fn get_device_code(app: tauri::AppHandle) -> Result<DcfAuthResponse, String> {
+    let (builder, http_client, code) = request_dcf_code().await?;
+    let response = DcfAuthResponse {
+        user_code: code.user_code,
+        verification_uri: code.verification_uri,
+    };
+    tauri::async_runtime::spawn(listen_device_code_callback(app, builder, http_client));
+    Ok(response)
+}
+
+#[tauri::command]
+pub async fn restore_session(app: tauri::AppHandle) -> Result<User, String> {
     let entry = keyring_entry()?;
     let json = entry.get_password().map_err(|e| e.to_string())?;
     let creds: StoredCredentials = serde_json::from_str(&json).map_err(|e| e.to_string())?;
 
     let http_client = reqwest::Client::new();
-    let token = UserToken::from_existing(
+    let refresh_token = creds
+        .refresh_token
+        .ok_or("Stored credentials missing refresh token, please re-authenticate")?;
+    let token = UserToken::from_existing_or_refresh_token(
         &http_client,
         twitch_api::twitch_oauth2::AccessToken::new(creds.access_token),
-        creds
-            .refresh_token
-            .map(twitch_api::twitch_oauth2::RefreshToken::new),
+        twitch_api::twitch_oauth2::RefreshToken::new(refresh_token),
+        twitch_api::twitch_oauth2::ClientId::new(get_client_id().to_string()),
         None,
     )
     .await
@@ -193,7 +194,9 @@ pub async fn try_restore_session(app: tauri::AppHandle) -> Result<UserInfo, Stri
             if let Ok(entry) = keyring_entry() {
                 let _ = entry.delete_password();
             }
-            return Err(format!("Token missing scope: {scope}, please re-authenticate"));
+            return Err(format!(
+                "Token missing scope: {scope}, please re-authenticate"
+            ));
         }
     }
 
@@ -205,7 +208,7 @@ pub async fn try_restore_session(app: tauri::AppHandle) -> Result<UserInfo, Stri
 }
 
 #[tauri::command]
-pub async fn revoke_access_token(app: tauri::AppHandle) -> Result<(), String> {
+pub async fn revoke_session(app: tauri::AppHandle) -> Result<(), String> {
     if let Some(t) = get_access_token(&app) {
         let _ = request_revoke(t).await;
     }

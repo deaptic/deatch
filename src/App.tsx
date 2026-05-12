@@ -76,7 +76,7 @@ function App() {
   function isModOf(broadcasterId: string): boolean {
     const u = user();
     if (!u) return false;
-    if (broadcasterId === u.user_id) return true;
+    if (broadcasterId === u.id) return true;
     return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
   }
 
@@ -184,7 +184,7 @@ function App() {
     const u = user();
     if (!u) return;
     const desired = new Set<string>();
-    desired.add(u.user_id);
+    desired.add(u.id);
     for (const id of menuChannelPinned()) desired.add(id);
     for (const ch of liveChannels()) desired.add(ch.user_id);
     const sel = selectedChannel();
@@ -250,10 +250,10 @@ function App() {
     const u = user();
     if (u && !selectedChannel()) {
       handleChannelSelect({
-        user_id: u.user_id,
+        user_id: u.id,
         user_login: u.login,
         user_name: u.display_name,
-        profile_image_url: u.profile_image_url,
+        profile_image_url: u.profile_image_url ?? "",
       });
     }
   });
