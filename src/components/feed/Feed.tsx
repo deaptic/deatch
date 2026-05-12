@@ -60,6 +60,7 @@ export default function Feed(props: Props) {
   const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
 
   let focusInput: (() => void) | undefined;
+  let rootRef: HTMLDivElement | undefined;
 
   const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
   const closeContextMenu = () => setContextMenu(null);
@@ -192,7 +193,7 @@ export default function Feed(props: Props) {
 
   return (
     <div class="flex flex-col h-full bg-bg-dark">
-      <div class="flex-1 relative min-h-0">
+      <div ref={rootRef} class="flex-1 relative min-h-0">
         <Show when={fontSizeFlash()}>
           <div class="absolute top-3 right-3 z-20 bg-bg border border-border-muted text-text text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
             {feedFontSize()}px
@@ -291,6 +292,7 @@ export default function Feed(props: Props) {
             y={uc().y}
             chatterId={uc().chatterId}
             broadcasterId={props.broadcasterId}
+            getBounds={() => rootRef?.getBoundingClientRect() ?? null}
             onClose={() => setUserCard(null)}
           />
         )}

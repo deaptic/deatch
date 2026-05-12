@@ -1,4 +1,5 @@
 import { createMemo, createSignal, createEffect, For, Show } from "solid-js";
+import { Portal } from "solid-js/web";
 import {
   globalEmotes,
   userEmotes,
@@ -155,9 +156,9 @@ export default function EmotePicker(props: Props) {
     toggleFavorite({ value: item.value, url: item.url, label: item.label });
 
   return (
-    <>
-      <div class="fixed inset-0 z-10" onClick={props.onClose} />
-      <div class="absolute bottom-full right-0 z-20 w-80 bg-bg border border-border-muted rounded-tl-lg shadow-2xl flex flex-col h-96">
+    <Portal>
+      <div class="fixed inset-0 z-30" onClick={props.onClose} />
+      <div class="fixed bottom-16 right-2 z-40 w-80 h-96 bg-bg border border-border-muted rounded-lg shadow-2xl flex flex-col">
         <div class="flex border-b border-border-muted shrink-0">
           <For each={TABS}>
             {(t) => (
@@ -237,6 +238,6 @@ export default function EmotePicker(props: Props) {
           </Show>
         </div>
       </div>
-    </>
+    </Portal>
   );
 }
