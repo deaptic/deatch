@@ -11,6 +11,7 @@ export type UserPreferences = {
     fontSize: number;
     showTimestamp: boolean;
     showDeletedContent: boolean;
+    showCopypasta: boolean;
     keywords: string[];
     events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
@@ -60,6 +61,7 @@ function load(): UserPreferences {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
         showTimestamp: stored.feed?.showTimestamp ?? DEFAULT_PREFERENCES.feed.showTimestamp,
         showDeletedContent: stored.feed?.showDeletedContent ?? DEFAULT_PREFERENCES.feed.showDeletedContent,
+        showCopypasta: stored.feed?.showCopypasta ?? DEFAULT_PREFERENCES.feed.showCopypasta,
         keywords: Array.isArray(stored.feed?.keywords)
           ? stored.feed!.keywords.filter((k): k is string => typeof k === "string" && k.trim().length > 0)
           : DEFAULT_PREFERENCES.feed.keywords,
@@ -98,6 +100,7 @@ export const feedFontSize = () => prefs.feed.fontSize;
 export const feedUserShowDisplayName = () => prefs.feed.users.showDisplayName;
 export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
+export const feedShowCopypasta = () => prefs.feed.showCopypasta;
 export const feedBadges = () => prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>;
 export const feedUserMuted = () => prefs.feed.users.muted;
@@ -131,6 +134,11 @@ export function setFeedShowTimestamp(value: boolean) {
 
 export function setFeedShowDeletedContent(value: boolean) {
   setPrefs("feed", "showDeletedContent", value);
+  persist();
+}
+
+export function setFeedShowCopypasta(value: boolean) {
+  setPrefs("feed", "showCopypasta", value);
   persist();
 }
 

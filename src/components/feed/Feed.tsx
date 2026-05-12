@@ -213,6 +213,30 @@ export default function Feed(props: Props) {
     });
   }
 
+  function copypasta(msg: Message) {
+    let fragments = msg.fragments;
+    if (msg.reply) {
+      const [first, ...rest] = fragments;
+      if (first?.type === "mention" && first.user_login === msg.reply.parent_user_login) {
+        if (rest[0]?.type === "text") {
+          const trimmed = rest[0].text.trimStart();
+          fragments = trimmed
+            ? [{ ...rest[0], text: trimmed }, ...rest.slice(1)]
+            : rest.slice(1);
+        } else {
+          fragments = rest;
+        }
+      }
+    }
+    const text = fragments.map((f) => f.text).join("");
+    if (!text.trim()) return;
+    sendChatMessage({
+      broadcasterId: props.broadcasterId,
+      message: text,
+      replyParentMessageId: null,
+    });
+  }
+
   return (
     <div class="flex flex-col h-full bg-bg-dark">
       <div ref={rootRef} class="flex-1 relative min-h-0">
@@ -272,6 +296,7 @@ export default function Feed(props: Props) {
                       onContextMenu={openContextMenu}
                       onReply={startReply}
                       onReact={react}
+                      onCopypasta={copypasta}
                       onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
                       onShowUserCard={openUserCard}
                     />

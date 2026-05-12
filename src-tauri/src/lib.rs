@@ -96,7 +96,7 @@ async fn ensure_chat_task(app: &tauri::AppHandle) -> Result<(), String> {
             return Ok(());
         }
     }
-    let token = get_token(app).await?;
+    let _ = get_token(app).await?;
     let state = app.state::<AppState>();
     let mut guard = state.chat_cmd_tx.lock().unwrap();
     let (tx, rx) = mpsc::unbounded_channel();
@@ -105,7 +105,7 @@ async fn ensure_chat_task(app: &tauri::AppHandle) -> Result<(), String> {
 
     let app_clone = app.clone();
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = run_chat(app_clone.clone(), token, rx).await {
+        if let Err(e) = run_chat(app_clone.clone(), rx).await {
             let _ = app_clone.emit("chat-error", e);
         }
         // clear the cmd_tx so next add_chat_channel can respawn.
@@ -122,7 +122,6 @@ struct ChannelSub {
 
 async fn run_chat(
     app: tauri::AppHandle,
-    token: UserToken,
     mut cmd_rx: mpsc::UnboundedReceiver<ChatCmd>,
 ) -> Result<(), String> {
     let helix = helix();
@@ -154,10 +153,13 @@ async fn run_chat(
                                 sub.is_mod = is_mod;
                             }
                         } else if let Some(sid) = &session_id {
-                            match subscribe_to_chat(&helix, &token, &broadcaster_id, is_mod, sid).await {
-                                Ok(sub_ids) => {
-                                    subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
-                                }
+                            match get_token(&app).await {
+                                Ok(tok) => match subscribe_to_chat(&helix, &tok, &broadcaster_id, is_mod, sid).await {
+                                    Ok(sub_ids) => {
+                                        subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
+                                    }
+                                    Err(e) => { let _ = app.emit("chat-error", e); }
+                                },
                                 Err(e) => { let _ = app.emit("chat-error", e); }
                             }
                         } else {
@@ -167,8 +169,10 @@ async fn run_chat(
                     }
                     Some(ChatCmd::Remove { broadcaster_id }) => {
                         if let Some(sub) = subs.remove(&broadcaster_id) {
-                            for sid in sub.sub_ids {
-                                let _ = delete_subscription(&helix, &token, &sid).await;
+                            if let Ok(tok) = get_token(&app).await {
+                                for sid in sub.sub_ids {
+                                    let _ = delete_subscription(&helix, &tok, &sid).await;
+                                }
                             }
                         }
                     }
@@ -176,7 +180,7 @@ async fn run_chat(
                 },
                 msg = read.next() => match msg {
                     Some(Ok(WsMessage::Text(text))) => {
-                        match handle_ws_message(&app, &helix, &token, &mut subs, &mut session_id, &text).await {
+                        match handle_ws_message(&app, &helix, &mut subs, &mut session_id, &text).await {
                             Ok(Some(reconnect)) => { next_url = Some(reconnect); break; }
                             Err(e) => { let _ = app.emit("chat-error", e); }
                             _ => {}
@@ -200,7 +204,6 @@ async fn run_chat(
 async fn handle_ws_message(
     app: &tauri::AppHandle,
     helix: &twitch_api::HelixClient<'_, reqwest::Client>,
-    token: &UserToken,
     subs: &mut HashMap<String, ChannelSub>,
     session_id: &mut Option<String>,
     text: &str,
@@ -211,8 +214,9 @@ async fn handle_ws_message(
             let sid = payload.session.id.to_string();
             *session_id = Some(sid.clone());
             // (Re)subscribe all known channels on this fresh session.
+            let token = get_token(app).await?;
             for (broadcaster_id, sub) in subs.iter_mut() {
-                match subscribe_to_chat(helix, token, broadcaster_id, sub.is_mod, &sid).await {
+                match subscribe_to_chat(helix, &token, broadcaster_id, sub.is_mod, &sid).await {
                     Ok(ids) => sub.sub_ids = ids,
                     Err(e) => {
                         let _ = app.emit("chat-error", e);

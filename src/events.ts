@@ -16,10 +16,12 @@ import {
   markUserMessagesDeleted,
   markAllMessagesDeleted,
 } from "./components/feed/feeds";
-import { user } from "./state/users";
+import { user, moderatedChannels } from "./state/users";
 import { channelsById } from "./state/channels";
 import { recordMention } from "./state/inbox";
 import { feedKeywords, matchesAnyKeyword } from "./state/preferences";
+import { getChannelFollowers } from "./commands/channels";
+import { sendChatMessage } from "./commands/chat";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",
@@ -97,10 +99,41 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   };
 }
 
+function isModOfChannel(broadcasterId: string): boolean {
+  const me = user();
+  if (!me) return false;
+  if (broadcasterId === me.id) return true;
+  return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
+}
+
+async function handleFollowageCommand(raw: RawChatMessage) {
+  try {
+    const res = await getChannelFollowers(
+      { broadcasterId: raw.broadcaster_user_id, userId: raw.chatter_user_id, first: 1 },
+      { silent: true },
+    );
+    const follower = res.data[0];
+    const message = follower
+      ? `You have been following since ${new Date(follower.followed_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+      : `You are not following yet`;
+    await sendChatMessage({
+      broadcasterId: raw.broadcaster_user_id,
+      message,
+      replyParentMessageId: raw.message_id,
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
 listen<RawChatMessage>("channel-chat-message", (e) => {
   const raw = e.payload;
   const ts = Date.now();
   appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
+
+  if (raw.message.text.trim().toLowerCase() === "!followage" && isModOfChannel(raw.broadcaster_user_id)) {
+    handleFollowageCommand(raw);
+  }
 
   const me = user();
   if (!me || raw.chatter_user_id === me.id) return;
