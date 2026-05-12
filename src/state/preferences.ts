@@ -1,6 +1,7 @@
-import { createStore, unwrap } from "solid-js/store";
+import { createStore, produce, unwrap } from "solid-js/store";
 import type { EventKey, BadgeCategoryKey } from "../constants";
 import defaults from "../default-preferences.json";
+import { addToast } from "./toasts";
 
 export type EventPref = { show: boolean };
 export type BadgePref = { show: boolean };
@@ -17,6 +18,7 @@ export type UserPreferences = {
       muted: string[];
       showDisplayName: boolean;
       overrideNameColor: string;
+      nicknames: Record<string, string>;
     };
   };
   advanced: {
@@ -31,6 +33,19 @@ export type UserPreferences = {
 };
 
 const DEFAULT_PREFERENCES = defaults as UserPreferences;
+
+function sanitizeNicknames(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [login, nickname] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof nickname !== "string") continue;
+    const trimmedLogin = login.trim().toLowerCase();
+    const trimmedNick = nickname.trim();
+    if (!trimmedLogin || !trimmedNick) continue;
+    out[trimmedLogin] = trimmedNick;
+  }
+  return out;
+}
 
 function load(): UserPreferences {
   try {
@@ -54,6 +69,7 @@ function load(): UserPreferences {
           muted: (stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted).filter((s) => /^\d+$/.test(s)),
           showDisplayName: stored.feed?.users?.showDisplayName ?? DEFAULT_PREFERENCES.feed.users.showDisplayName,
           overrideNameColor: stored.feed?.users?.overrideNameColor ?? DEFAULT_PREFERENCES.feed.users.overrideNameColor,
+          nicknames: sanitizeNicknames(stored.feed?.users?.nicknames),
         },
       },
       advanced: {
@@ -71,8 +87,11 @@ function load(): UserPreferences {
 
 const [prefs, setPrefs] = createStore<UserPreferences>(load());
 
+let toastTimer: number | undefined;
 function persist() {
   localStorage.setItem("user_preferences", JSON.stringify(unwrap(prefs)));
+  clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => addToast("Preferences saved", "success"), 800);
 }
 
 export const feedFontSize = () => prefs.feed.fontSize;
@@ -84,6 +103,8 @@ export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>
 export const feedUserMuted = () => prefs.feed.users.muted;
 export const feedKeywords = () => prefs.feed.keywords;
 export const feedUserOverrideNameColor = () => prefs.feed.users.overrideNameColor;
+export const feedUserNicknames = () => prefs.feed.users.nicknames;
+export const feedUserNickname = (login: string) => prefs.feed.users.nicknames[login.toLowerCase()];
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
@@ -131,6 +152,27 @@ export function muteUser(user_id: string) {
 
 export function unmuteUser(user_id: string) {
   setPrefs("feed", "users", "muted", (m) => m.filter((id) => id !== user_id));
+  persist();
+}
+
+export function setUserNickname(login: string, nickname: string) {
+  const key = login.trim().toLowerCase();
+  const value = nickname.trim();
+  if (!key) return;
+  if (!value) {
+    removeUserNickname(key);
+    return;
+  }
+  setPrefs("feed", "users", "nicknames", key, value);
+  persist();
+}
+
+export function removeUserNickname(login: string) {
+  const key = login.trim().toLowerCase();
+  if (!key) return;
+  setPrefs("feed", "users", "nicknames", produce((n) => {
+    delete n[key];
+  }));
   persist();
 }
 

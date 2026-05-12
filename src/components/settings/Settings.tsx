@@ -37,11 +37,15 @@ import {
   removeFeedKeyword,
   feedUserOverrideNameColor,
   setFeedUserOverrideNameColor,
+  feedUserNicknames,
+  setUserNickname,
+  removeUserNickname,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
   advancedShowLogs,
   setAdvancedShowLogs,
 } from "../../state/preferences";
+import KeyValueEditor from "../../ui/KeyValueEditor";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
@@ -78,6 +82,24 @@ export default function Settings(props: Props) {
       })
       .catch(() => {});
   });
+
+  async function applyNickname(login: string, nickname: string): Promise<boolean> {
+    const key = login.trim().toLowerCase();
+    if (!key) return false;
+    try {
+      const users = await getUsers({ logins: [key] });
+      const u = users[0];
+      if (!u) {
+        addToast(`User "${key}" not found`, "error");
+        return false;
+      }
+      setUserNickname(u.login, nickname);
+      return true;
+    } catch (e) {
+      addToast(String(e), "error");
+      return false;
+    }
+  }
 
   async function muteByLogin(login: string) {
     try {
@@ -223,6 +245,19 @@ export default function Settings(props: Props) {
                       </For>
                     </ChipList>
                   </Show>
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Nicknames"
+                  description="Custom names that override how users appear in the feed and user cards."
+                  stacked
+                >
+                  <KeyValueEditor
+                    entries={Object.entries(feedUserNicknames()).map(([key, value]) => ({ key, value }))}
+                    keyPlaceholder="Username"
+                    valuePlaceholder="Nickname"
+                    onApply={applyNickname}
+                    onRemove={removeUserNickname}
+                  />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
 

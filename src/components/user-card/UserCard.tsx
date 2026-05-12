@@ -14,6 +14,7 @@ import {
   type GetChannelFollowersResponse,
 } from "../../commands/channels";
 import { user as currentUser, moderatedChannels } from "../../state/users";
+import { feedUserNickname } from "../../state/preferences";
 import { feeds } from "../feed/feeds";
 import type { FeedMessage } from "../feed/types";
 import { addToast } from "../../state/toasts";
@@ -182,11 +183,20 @@ export default function UserCard(props: Props) {
           />
           <div class="flex-1 min-w-0 flex flex-col gap-1">
             <div class="flex items-center gap-1 min-w-0">
-              <span
-                class="font-semibold text-text text-lg leading-tight truncate flex-1"
-                style={nameColor() ? { color: nameColor() } : undefined}
-              >
-                {user()?.display_name ?? props.chatterId}
+              <span class="text-lg leading-tight truncate flex-1 min-w-0">
+                <span
+                  class="font-semibold text-text"
+                  style={nameColor() ? { color: nameColor() } : undefined}
+                >
+                  {(user() && feedUserNickname(user()!.login)) ??
+                    user()?.display_name ??
+                    props.chatterId}
+                </span>
+                <Show when={user() && feedUserNickname(user()!.login)}>
+                  <span class="ml-1.5 text-text-muted/70 text-sm font-normal">
+                    ({user()!.display_name})
+                  </span>
+                </Show>
               </span>
               <button
                 class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"

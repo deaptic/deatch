@@ -24,7 +24,7 @@ import { unreadCount } from "../feed/feeds";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
-import MenuAddPopover from "./MenuAddPopover";
+import InputPopover from "../../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
 import AccountContextMenu from "../context-menus/AccountContextMenu";
 import type { Channel, TwitchStream, TwitchUser } from "../../types";
@@ -378,11 +378,12 @@ export default function Menu(props: Props) {
 
       <Show when={addPop()}>
         {(p) => (
-          <MenuAddPopover
+          <InputPopover
             x={p().x}
             y={p().y}
             value={addInput()}
             loading={addLoading()}
+            placeholder="Channel name"
             onInput={setAddInput}
             onSubmit={submitAdd}
             onClose={closeAdd}

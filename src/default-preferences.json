@@ -24,7 +24,8 @@
     "users": {
       "muted": [],
       "showDisplayName": true,
-      "overrideNameColor": ""
+      "overrideNameColor": "",
+      "nicknames": {}
     }
   },
   "advanced": {

@@ -13,6 +13,7 @@ import {
 import EmotePicker from "../emotes/EmotePicker";
 import FeedSuggestions from "./FeedSuggestions";
 import { chattersByChannel } from "../../state/users";
+import { feedUserNickname } from "../../state/preferences";
 import SmileIcon from "../../icons/SmileIcon";
 
 type ReplyTo = { messageId: string; name: string; text: string };
@@ -42,7 +43,7 @@ export default function FeedInput(props: Props) {
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
   type EmoteEntry = { url: string; source: Source };
   type EmoteSuggestion = { name: string; url: string; source: Source };
-  type MentionSuggestion = { login: string; displayName: string; color: string };
+  type MentionSuggestion = { login: string; displayName: string; color: string; nickname?: string };
 
   const allEmotes = createMemo<Record<string, EmoteEntry>>(() => {
     const map: Record<string, EmoteEntry> = {};
@@ -84,23 +85,26 @@ export default function FeedInput(props: Props) {
     const bucket = chattersByChannel.get(props.broadcasterId);
     if (!bucket) return [];
     const lower = q.toLowerCase();
-    type Ranked = { login: string; displayName: string; color: string; lastSeen: number };
+    type Ranked = { login: string; displayName: string; color: string; nickname?: string; lastSeen: number };
     const starts: Ranked[] = [];
     const contains: Ranked[] = [];
     for (const c of bucket.values()) {
+      const nickname = feedUserNickname(c.login);
       const l = c.login.toLowerCase();
       const d = c.displayName.toLowerCase();
-      if (lower === "" || l.startsWith(lower) || d.startsWith(lower)) {
-        starts.push(c);
-      } else if (l.includes(lower) || d.includes(lower)) {
-        contains.push(c);
+      const n = nickname?.toLowerCase();
+      const ranked: Ranked = { login: c.login, displayName: c.displayName, color: c.color, nickname, lastSeen: c.lastSeen };
+      if (lower === "" || l.startsWith(lower) || d.startsWith(lower) || n?.startsWith(lower)) {
+        starts.push(ranked);
+      } else if (l.includes(lower) || d.includes(lower) || (n && n.includes(lower))) {
+        contains.push(ranked);
       }
     }
     starts.sort((a, b) => b.lastSeen - a.lastSeen);
     contains.sort((a, b) => b.lastSeen - a.lastSeen);
     return [...starts, ...contains]
       .slice(0, 10)
-      .map((c) => ({ login: c.login, displayName: c.displayName, color: c.color }));
+      .map(({ lastSeen: _, ...rest }) => rest);
   };
 
   async function sendMessage() {
@@ -210,9 +214,13 @@ export default function FeedInput(props: Props) {
             onDismiss={dismissMention}
             renderItem={(s) => (
               <>
-                <span class="font-semibold flex-1 text-left truncate" style={{ color: s.color || "var(--color-text)" }}>
-                  {s.displayName}
+                <span class="font-semibold text-left truncate" style={{ color: s.color || "var(--color-text)" }}>
+                  {s.nickname ?? s.displayName}
                 </span>
+                <Show when={s.nickname}>
+                  <span class="text-text-muted text-sm truncate">({s.displayName})</span>
+                </Show>
+                <span class="flex-1" />
                 <span class="text-xs font-semibold shrink-0 text-text-muted">
                   {s.displayName.toLowerCase() !== s.login ? s.login : ""}
                 </span>

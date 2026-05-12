@@ -10,8 +10,14 @@ import ShoutoutIcon from "../../icons/ShoutoutIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import BanIcon from "../../icons/BanIcon";
 import TimeoutIcon from "../../icons/TimeoutIcon";
-import { feedUserMuted, muteUser, unmuteUser } from "../../state/preferences";
+import {
+  feedUserMuted,
+  feedUserNickname,
+  muteUser,
+  unmuteUser,
+} from "../../state/preferences";
 import type { FeedMessage } from "../feed/types";
+import HashIcon from "../../icons/HashIcon";
 
 type Props = {
   x: number;
@@ -23,10 +29,12 @@ type Props = {
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
   onModAction: (action: "timeout" | "ban", msg: FeedMessage) => void;
+  onEditNickname: (msg: FeedMessage, x: number, y: number) => void;
 };
 
 export default function MessageContextMenu(props: Props) {
   const muted = () => feedUserMuted().includes(props.msg.chatter_user_id);
+  const nickname = () => feedUserNickname(props.msg.chatter_login);
 
   return (
     <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
@@ -41,6 +49,11 @@ export default function MessageContextMenu(props: Props) {
         onClick={() => { navigator.clipboard.writeText(props.msg.fragments.map((f) => f.text).join("")); props.onClose(); }}
       />
       <ContextMenuDivider />
+      <ContextMenuItem
+        label={nickname() ? "Edit nickname" : "Set nickname"}
+        icon={<HashIcon class="w-3.5 h-3.5" />}
+        onClick={() => { props.onEditNickname(props.msg, props.x, props.y); props.onClose(); }}
+      />
       <ContextMenuItem
         label={muted() ? `Unmute ${props.msg.chatter_name}` : `Mute ${props.msg.chatter_name}`}
         danger={!muted()}

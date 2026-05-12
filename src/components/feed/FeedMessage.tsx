@@ -4,7 +4,7 @@ import { EmoteMap } from "../../state/emotes";
 import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
-import { matchesAnyKeyword } from "../../state/preferences";
+import { matchesAnyKeyword, feedUserNickname } from "../../state/preferences";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -232,9 +232,10 @@ export default function FeedMessage(props: Props) {
             if (e.button === 1) e.preventDefault();
           }}
         >
-          {props.useDisplayName === false
-            ? props.item.chatter_login
-            : props.item.chatter_name}
+          {feedUserNickname(props.item.chatter_login) ??
+            (props.useDisplayName === false
+              ? props.item.chatter_login
+              : props.item.chatter_name)}
         </span>
         <span class="text-text-muted">: </span>
         <Show
