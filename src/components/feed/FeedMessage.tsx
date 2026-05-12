@@ -26,6 +26,7 @@ type Props = {
   onCopypasta: (msg: Message) => void;
   onJumpToMessage: (messageId: string) => void;
   onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
+  onUserContextMenu?: (x: number, y: number, identity: { userId?: string; login?: string; displayName?: string }) => void;
 };
 
 const INLINE_EMOTE =
@@ -71,6 +72,7 @@ function renderFragment(
   frag: Fragment,
   emotes: EmoteMap,
   onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void,
+  onUserContextMenu?: (x: number, y: number, identity: { userId?: string; login?: string; displayName?: string }) => void,
 ) {
   switch (frag.type) {
     case "emote":
@@ -87,6 +89,12 @@ function renderFragment(
         <span
           class="text-primary font-medium cursor-pointer hover:underline"
           onClick={(e) => onShowUserCard?.(e.clientX, e.clientY, { login: frag.user_login })}
+          onContextMenu={(e) => {
+            if (!onUserContextMenu) return;
+            e.preventDefault();
+            e.stopPropagation();
+            onUserContextMenu(e.clientX, e.clientY, { login: frag.user_login });
+          }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -225,6 +233,16 @@ export default function FeedMessage(props: Props) {
                 : "var(--color-primary)"),
           }}
           onClick={(e) => props.onShowUserCard?.(e.clientX, e.clientY, { userId: props.item.chatter_user_id })}
+          onContextMenu={(e) => {
+            if (!props.onUserContextMenu) return;
+            e.preventDefault();
+            e.stopPropagation();
+            props.onUserContextMenu(e.clientX, e.clientY, {
+              userId: props.item.chatter_user_id,
+              login: props.item.chatter_login,
+              displayName: props.item.chatter_name,
+            });
+          }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;
             e.preventDefault();
@@ -245,7 +263,7 @@ export default function FeedMessage(props: Props) {
           fallback={<span class="italic text-text-muted">&lt;deleted&gt;</span>}
         >
           <For each={visibleFragments()}>
-            {(frag) => renderFragment(frag, props.emotes, props.onShowUserCard)}
+            {(frag) => renderFragment(frag, props.emotes, props.onShowUserCard, props.onUserContextMenu)}
           </For>
         </Show>
       </div>

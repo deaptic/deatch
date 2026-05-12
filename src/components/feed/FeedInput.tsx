@@ -23,7 +23,7 @@ type Props = {
   broadcasterLogin: string;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
-  expose?: (api: { focus: () => void }) => void;
+  expose?: (api: { focus: () => void; insert: (text: string) => void }) => void;
 };
 
 export default function FeedInput(props: Props) {
@@ -36,8 +36,14 @@ export default function FeedInput(props: Props) {
   let acHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let mentionHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
 
+  function insertText(value: string) {
+    const cur = input();
+    setInput((cur === "" || cur.endsWith(" ") ? cur : cur + " ") + value + " ");
+    inputRef?.focus();
+  }
+
   onMount(() => {
-    props.expose?.({ focus: () => inputRef?.focus() });
+    props.expose?.({ focus: () => inputRef?.focus(), insert: insertText });
   });
 
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
