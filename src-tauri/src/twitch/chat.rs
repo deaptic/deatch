@@ -1,16 +1,23 @@
 use crate::{get_token, helix};
 use serde::Deserialize;
+use std::borrow::Cow;
+use twitch_api::helix::chat::{
+    send_a_shoutout::SendAShoutoutRequest,
+    send_chat_message::{SendChatMessageBody, SendChatMessageRequest, SendChatMessageResponse},
+    BadgeSet, GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetGlobalEmotesRequest,
+    GetUserEmotesRequest, GlobalEmote, UserEmote,
+};
+use twitch_api::helix::{Cursor, EmptyBody};
+use twitch_api::types::{MsgId, UserId};
 
 use super::response::PaginatedResponse;
 
 // https://dev.twitch.tv/docs/api/reference/#get-global-emotes
 #[tauri::command]
-pub async fn get_global_emotes(
-    app: tauri::AppHandle,
-) -> Result<Vec<twitch_api::helix::chat::GlobalEmote>, String> {
+pub async fn get_global_emotes(app: tauri::AppHandle) -> Result<Vec<GlobalEmote>, String> {
     let token = get_token(&app).await?;
 
-    let request = twitch_api::helix::chat::GetGlobalEmotesRequest::new();
+    let request = GetGlobalEmotesRequest::new();
 
     helix()
         .req_get(request, &token)
@@ -31,15 +38,11 @@ pub struct GetUserEmotesParams {
 pub async fn get_user_emotes(
     app: tauri::AppHandle,
     params: GetUserEmotesParams,
-) -> Result<PaginatedResponse<twitch_api::helix::chat::UserEmote>, String> {
+) -> Result<PaginatedResponse<UserEmote>, String> {
     let token = get_token(&app).await?;
-    let mut request = twitch_api::helix::chat::GetUserEmotesRequest::user_id(token.user_id.clone());
-    request.broadcaster_id = params
-        .broadcaster_id
-        .map(|s| std::borrow::Cow::Owned(twitch_api::types::UserId::from(s)));
-    request.after = params
-        .after
-        .map(|s| std::borrow::Cow::Owned(twitch_api::helix::Cursor::from(s)));
+    let mut request = GetUserEmotesRequest::user_id(token.user_id.clone());
+    request.broadcaster_id = params.broadcaster_id.map(|s| Cow::Owned(UserId::from(s)));
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
 
     let response = helix()
         .req_get(request, &token)
@@ -51,12 +54,10 @@ pub async fn get_user_emotes(
 
 // https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges
 #[tauri::command]
-pub async fn get_global_chat_badges(
-    app: tauri::AppHandle,
-) -> Result<Vec<twitch_api::helix::chat::BadgeSet>, String> {
+pub async fn get_global_chat_badges(app: tauri::AppHandle) -> Result<Vec<BadgeSet>, String> {
     let token = get_token(&app).await?;
 
-    let request = twitch_api::helix::chat::GetGlobalChatBadgesRequest::new();
+    let request = GetGlobalChatBadgesRequest::new();
 
     helix()
         .req_get(request, &token)
@@ -76,12 +77,10 @@ pub struct GetChannelChatBadgesParams {
 pub async fn get_channel_chat_badges(
     app: tauri::AppHandle,
     params: GetChannelChatBadgesParams,
-) -> Result<Vec<twitch_api::helix::chat::BadgeSet>, String> {
+) -> Result<Vec<BadgeSet>, String> {
     let token = get_token(&app).await?;
 
-    let request = twitch_api::helix::chat::GetChannelChatBadgesRequest::broadcaster_id(
-        params.broadcaster_id.as_str(),
-    );
+    let request = GetChannelChatBadgesRequest::broadcaster_id(params.broadcaster_id.as_str());
 
     helix()
         .req_get(request, &token)
@@ -105,16 +104,14 @@ pub async fn send_shoutout(
 ) -> Result<(), String> {
     let token = get_token(&app).await?;
 
-    let request = twitch_api::helix::chat::send_a_shoutout::SendAShoutoutRequest::new(
+    let request = SendAShoutoutRequest::new(
         params.from_broadcaster_id.as_str(),
         params.to_broadcaster_id.as_str(),
         token.user_id.as_str(),
     );
 
-    let body = twitch_api::helix::EmptyBody;
-
     helix()
-        .req_post(request, body, &token)
+        .req_post(request, EmptyBody, &token)
         .await
         .map(|_| ())
         .map_err(|e| e.to_string())
@@ -133,12 +130,12 @@ pub struct SendChatMessageParams {
 pub async fn send_chat_message(
     app: tauri::AppHandle,
     params: SendChatMessageParams,
-) -> Result<twitch_api::helix::chat::send_chat_message::SendChatMessageResponse, String> {
+) -> Result<SendChatMessageResponse, String> {
     let token = get_token(&app).await?;
 
-    let request = twitch_api::helix::chat::send_chat_message::SendChatMessageRequest::new();
+    let request = SendChatMessageRequest::new();
 
-    let mut body = twitch_api::helix::chat::send_chat_message::SendChatMessageBody::new(
+    let mut body = SendChatMessageBody::new(
         params.broadcaster_id.as_str(),
         token.user_id.as_str(),
         params.message.as_str(),
@@ -146,7 +143,7 @@ pub async fn send_chat_message(
 
     body.reply_parent_message_id = params
         .reply_parent_message_id
-        .map(|s| std::borrow::Cow::Owned(twitch_api::types::MsgId::from(s)));
+        .map(|s| Cow::Owned(MsgId::from(s)));
 
     helix()
         .req_post(request, body, &token)

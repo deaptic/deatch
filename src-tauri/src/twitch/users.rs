@@ -1,6 +1,7 @@
 use crate::{get_token, helix};
 use serde::Deserialize;
-use twitch_api::types;
+use twitch_api::helix::users::{GetUsersRequest, User};
+use twitch_api::types::{UserId, UserName};
 
 // https://dev.twitch.tv/docs/api/reference/#get-users
 #[derive(Default, Deserialize)]
@@ -14,19 +15,11 @@ pub struct GetUsersParams {
 pub async fn get_users(
     app: tauri::AppHandle,
     params: GetUsersParams,
-) -> Result<Vec<twitch_api::helix::users::User>, String> {
-    let user_ids: Vec<types::UserId> = params
-        .user_ids
-        .into_iter()
-        .map(types::UserId::from)
-        .collect();
-    let logins: Vec<types::UserName> = params
-        .logins
-        .into_iter()
-        .map(types::UserName::from)
-        .collect();
+) -> Result<Vec<User>, String> {
+    let user_ids: Vec<UserId> = params.user_ids.into_iter().map(UserId::from).collect();
+    let logins: Vec<UserName> = params.logins.into_iter().map(UserName::from).collect();
 
-    let mut request = twitch_api::helix::users::GetUsersRequest::new();
+    let mut request = GetUsersRequest::new();
     request.id = (&*user_ids).into();
     request.login = (&*logins).into();
 

@@ -18,17 +18,9 @@ mod auth;
 mod external;
 mod twitch;
 
-#[derive(serde::Serialize, Clone)]
-pub(crate) struct UserInfo {
-    user_id: String,
-    login: String,
-    display_name: String,
-    profile_image_url: String,
-}
-
 pub(crate) struct AppState {
     pub(crate) token: Mutex<Option<UserToken>>,
-    pub(crate) user_info: Mutex<Option<UserInfo>>,
+    pub(crate) user_info: Mutex<Option<twitch_api::helix::users::User>>,
     pub(crate) chat_cmd_tx: Mutex<Option<mpsc::UnboundedSender<ChatCmd>>>,
 }
 
@@ -440,9 +432,9 @@ pub fn run() {
             chat_cmd_tx: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
-            auth::start_dcf_auth,
-            auth::try_restore_session,
-            auth::revoke_access_token,
+            auth::get_device_code,
+            auth::restore_session,
+            auth::revoke_session,
             add_chat_channel,
             remove_chat_channel,
             twitch::streams::get_followed_streams,

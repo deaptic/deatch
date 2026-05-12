@@ -233,10 +233,10 @@ export default function Menu(props: Props) {
     const u = user();
     if (!u) return;
     props.onSelect({
-      user_id: u.user_id,
+      user_id: u.id,
       user_login: u.login,
       user_name: u.display_name,
-      profile_image_url: u.profile_image_url,
+      profile_image_url: u.profile_image_url ?? "",
     });
   }
 
@@ -334,14 +334,14 @@ export default function Menu(props: Props) {
           <MenuSection divider="top">
             <MenuSectionItem
               channel={{
-                user_id: u().user_id,
+                user_id: u().id,
                 user_login: u().login,
                 user_name: u().display_name,
-                profile_image_url: u().profile_image_url,
+                profile_image_url: u().profile_image_url ?? "",
               }}
               status="self"
-              selected={props.selectedId === u().user_id}
-              unread={unreadCount(u().user_id)}
+              selected={props.selectedId === u().id}
+              unread={unreadCount(u().id)}
               square
               onClick={selectSelf}
               onContextMenu={(x, y) => setAccMenu({ x, y })}

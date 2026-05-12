@@ -1,6 +1,12 @@
 use crate::{get_token, helix};
 use serde::Deserialize;
 use std::borrow::Cow;
+use twitch_api::helix::moderation::{
+    delete_chat_messages::DeleteChatMessagesRequest, BanUser, BanUserBody, BanUserRequest,
+    GetModeratedChannelsRequest, GetModeratorsRequest, ModeratedChannel, Moderator,
+};
+use twitch_api::helix::Cursor;
+use twitch_api::types::MsgId;
 
 use super::response::PaginatedResponse;
 
@@ -19,14 +25,11 @@ pub async fn delete_chat_messages(
 ) -> Result<(), String> {
     let token = get_token(&app).await?;
 
-    let mut request =
-        twitch_api::helix::moderation::delete_chat_messages::DeleteChatMessagesRequest::new(
-            params.broadcaster_id.as_str(),
-            token.user_id.as_str(),
-        );
-    request.message_id = params
-        .message_id
-        .map(|s| Cow::Owned(twitch_api::types::MsgId::from(s)));
+    let mut request = DeleteChatMessagesRequest::new(
+        params.broadcaster_id.as_str(),
+        token.user_id.as_str(),
+    );
+    request.message_id = params.message_id.map(|s| Cow::Owned(MsgId::from(s)));
 
     helix()
         .req_delete(request, &token)
@@ -47,16 +50,10 @@ pub struct BanUserParams {
 }
 
 #[tauri::command]
-pub async fn ban_user(
-    app: tauri::AppHandle,
-    params: BanUserParams,
-) -> Result<twitch_api::helix::moderation::BanUser, String> {
+pub async fn ban_user(app: tauri::AppHandle, params: BanUserParams) -> Result<BanUser, String> {
     let token = get_token(&app).await?;
-    let request = twitch_api::helix::moderation::BanUserRequest::new(
-        params.broadcaster_id.as_str(),
-        token.user_id.as_str(),
-    );
-    let body = twitch_api::helix::moderation::BanUserBody::new(
+    let request = BanUserRequest::new(params.broadcaster_id.as_str(), token.user_id.as_str());
+    let body = BanUserBody::new(
         params.user_id.as_str(),
         params.reason.unwrap_or_default(),
         params.duration,
@@ -81,16 +78,12 @@ pub struct GetModeratorsParams {
 pub async fn get_moderators(
     app: tauri::AppHandle,
     params: GetModeratorsParams,
-) -> Result<PaginatedResponse<twitch_api::helix::moderation::Moderator>, String> {
+) -> Result<PaginatedResponse<Moderator>, String> {
     let token = get_token(&app).await?;
 
-    let mut request = twitch_api::helix::moderation::GetModeratorsRequest::broadcaster_id(
-        params.broadcaster_id.as_str(),
-    );
+    let mut request = GetModeratorsRequest::broadcaster_id(params.broadcaster_id.as_str());
     request.first = params.first;
-    request.after = params
-        .after
-        .map(|s| Cow::Owned(twitch_api::helix::Cursor::from(s)));
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
 
     let response = helix()
         .req_get(request, &token)
@@ -112,15 +105,12 @@ pub struct GetModeratedChannelsParams {
 pub async fn get_moderated_channels(
     app: tauri::AppHandle,
     params: GetModeratedChannelsParams,
-) -> Result<PaginatedResponse<twitch_api::helix::moderation::ModeratedChannel>, String> {
+) -> Result<PaginatedResponse<ModeratedChannel>, String> {
     let token = get_token(&app).await?;
 
-    let mut request =
-        twitch_api::helix::moderation::GetModeratedChannelsRequest::user_id(token.user_id.clone());
+    let mut request = GetModeratedChannelsRequest::user_id(token.user_id.clone());
     request.first = params.first;
-    request.after = params
-        .after
-        .map(|s| Cow::Owned(twitch_api::helix::Cursor::from(s)));
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
 
     let response = helix()
         .req_get(request, &token)

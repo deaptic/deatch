@@ -57,7 +57,7 @@ export default function UserCard(props: Props) {
   const canQueryFollowers = () => {
     const me = currentUser();
     if (!me) return false;
-    if (me.user_id === props.broadcasterId) return true;
+    if (me.id === props.broadcasterId) return true;
     return moderatedChannels().some(
       (c) => c.broadcaster_id === props.broadcasterId,
     );

@@ -3,7 +3,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { addToast } from "./toasts";
 import { setUser } from "./users";
-import type { DeviceCode, UserInfo } from "../types";
+import type { DeviceCode } from "../types";
+import type { User } from "../commands/users";
 
 const [waiting, setWaiting] = createSignal(false);
 const [deviceCode, setDeviceCode] = createSignal<DeviceCode | null>(null);
@@ -13,7 +14,7 @@ export { waiting, deviceCode, authChecked };
 export async function login() {
   try {
     setDeviceCode(null);
-    const code = await invoke<DeviceCode>("start_dcf_auth");
+    const code = await invoke<DeviceCode>("get_device_code");
     setDeviceCode(code);
     setWaiting(true);
   } catch (e) {
@@ -28,7 +29,7 @@ export function cancel() {
 
 export async function logout() {
   try {
-    await invoke("revoke_access_token");
+    await invoke("revoke_session");
     setUser(null);
   } catch (e) {
     addToast(String(e), "error");
@@ -37,7 +38,7 @@ export async function logout() {
 
 (async () => {
   try {
-    const u = await invoke<UserInfo>("try_restore_session");
+    const u = await invoke<User>("restore_session");
     setUser(u);
   } catch {
     // No stored session — user will log in manually
@@ -45,7 +46,7 @@ export async function logout() {
     setAuthChecked(true);
   }
 
-  listen<UserInfo>("twitch-auth-success", (e) => {
+  listen<User>("twitch-auth-success", (e) => {
     setWaiting(false);
     setDeviceCode(null);
     setUser(e.payload);

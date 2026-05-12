@@ -1,8 +1,8 @@
 import { createSignal } from "solid-js";
-import type { UserInfo, ModeratedChannel } from "../types";
+import type { ModeratedChannel } from "../types";
 import type { User } from "../commands/users";
 
-export const [user, setUser] = createSignal<UserInfo | null>(null);
+export const [user, setUser] = createSignal<User | null>(null);
 export const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
 
 const [userCacheSig, setUserCacheSig] = createSignal<Record<string, User>>({});
