@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
 import { banUser } from "../../commands/moderation";
-import type { FeedMessage } from "./types";
 
 const DURATIONS = [
   { label: "1 minute", value: 60 },
@@ -12,7 +11,8 @@ const DURATIONS = [
 
 type Props = {
   action: "timeout" | "ban";
-  msg: FeedMessage;
+  userId: string;
+  userName: string;
   broadcasterId: string;
   onClose: () => void;
 };
@@ -27,7 +27,7 @@ export default function BanTimeoutModal(props: Props) {
     try {
       await banUser({
         broadcasterId: props.broadcasterId,
-        userId: props.msg.chatter_user_id,
+        userId: props.userId,
         duration: props.action === "ban" ? null : duration(),
         reason: reason(),
       });
@@ -38,7 +38,7 @@ export default function BanTimeoutModal(props: Props) {
   }
 
   const isBan = () => props.action === "ban";
-  const title = () => isBan() ? `Ban ${props.msg.chatter_name}` : `Timeout ${props.msg.chatter_name}`;
+  const title = () => isBan() ? `Ban ${props.userName}` : `Timeout ${props.userName}`;
 
   return (
     <div

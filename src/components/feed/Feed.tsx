@@ -15,6 +15,7 @@ import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";
 import FeedInput from "./FeedInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
+import UserContextMenu, { type UserContextTarget } from "../context-menus/UserContextMenu";
 import UserCard from "../user-card/UserCard";
 import { getUsers } from "../../commands/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
@@ -58,14 +59,15 @@ type Props = {
 
 export default function Feed(props: Props) {
   const [contextMenu, setContextMenu] = createSignal<{ x: number; y: number; msg: Message } | null>(null);
+  const [userContextMenu, setUserContextMenu] = createSignal<{ x: number; y: number } & UserContextTarget | null>(null);
   const [eventContextMenu, setEventContextMenu] = createSignal<{ x: number; y: number; item: EventItem } | null>(null);
   const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
-  const [modAction, setModAction] = createSignal<{ action: "timeout" | "ban"; msg: Message } | null>(null);
+  const [modAction, setModAction] = createSignal<{ action: "timeout" | "ban"; userId: string; userName: string } | null>(null);
   const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
   const [nicknamePop, setNicknamePop] = createSignal<{ x: number; y: number; login: string } | null>(null);
   const [nicknameInput, setNicknameInput] = createSignal("");
 
-  let focusInput: (() => void) | undefined;
+  let inputApi: { focus: () => void; insert: (text: string) => void } | undefined;
   let rootRef: HTMLDivElement | undefined;
 
   const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
@@ -84,16 +86,40 @@ export default function Feed(props: Props) {
   }
   const openEventContextMenu = (x: number, y: number, item: EventItem) => setEventContextMenu({ x, y, item });
   const closeEventContextMenu = () => setEventContextMenu(null);
-  const openModAction = (action: "timeout" | "ban", msg: Message) => setModAction({ action, msg });
+  const openModAction = (action: "timeout" | "ban", target: { userId: string; userName: string }) =>
+    setModAction({ action, ...target });
   const closeModAction = () => setModAction(null);
-  function openNicknameEdit(msg: Message, x: number, y: number) {
-    setNicknameInput(feedUserNickname(msg.chatter_login) ?? "");
-    setNicknamePop({ x, y, login: msg.chatter_login });
+  function openNicknameEdit(login: string, _displayName: string, x: number, y: number) {
+    setNicknameInput(feedUserNickname(login) ?? "");
+    setNicknamePop({ x, y, login });
   }
   function closeNicknameEdit() {
     setNicknamePop(null);
     setNicknameInput("");
   }
+  async function openUserContextMenu(
+    x: number,
+    y: number,
+    identity: { userId?: string; login?: string; displayName?: string },
+  ) {
+    let { userId, login, displayName } = identity;
+    if (!userId || !login || !displayName) {
+      try {
+        const params = userId ? { userIds: [userId] } : login ? { logins: [login] } : null;
+        if (!params) return;
+        const users = await getUsers(params);
+        const u = users[0];
+        if (!u) return;
+        userId = u.id;
+        login = u.login;
+        displayName = u.display_name;
+      } catch {
+        return;
+      }
+    }
+    setUserContextMenu({ x, y, userId, userLogin: login, userDisplayName: displayName });
+  }
+  const closeUserContextMenu = () => setUserContextMenu(null);
   function submitNicknameEdit() {
     const pop = nicknamePop();
     if (!pop) return;
@@ -109,8 +135,12 @@ export default function Feed(props: Props) {
       name: msg.chatter_name,
       text: msg.fragments.map((f) => f.text).join(""),
     });
-    focusInput?.();
+    inputApi?.focus();
   };
+
+  function mentionUser(login: string) {
+    inputApi?.insert(`@${login}`);
+  }
 
   const items = createMemo<FeedItem[]>(() => feeds[props.broadcasterId]?.messages ?? []);
   const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});
@@ -297,6 +327,7 @@ export default function Feed(props: Props) {
                       onReply={startReply}
                       onReact={react}
                       onCopypasta={copypasta}
+                      onUserContextMenu={openUserContextMenu}
                       onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
                       onShowUserCard={openUserCard}
                     />
@@ -314,7 +345,7 @@ export default function Feed(props: Props) {
         broadcasterLogin={props.broadcasterLogin}
         replyTo={replyTo}
         onClearReply={clearReply}
-        expose={(api) => { focusInput = api.focus; }}
+        expose={(api) => { inputApi = api; }}
       />
 
       <Show when={contextMenu()}>
@@ -328,8 +359,25 @@ export default function Feed(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={closeContextMenu}
             onReply={startReply}
+          />
+        )}
+      </Show>
+      <Show when={userContextMenu()}>
+        {(uc) => (
+          <UserContextMenu
+            x={uc().x}
+            y={uc().y}
+            userId={uc().userId}
+            userLogin={uc().userLogin}
+            userDisplayName={uc().userDisplayName}
+            isMod={isMod()}
+            broadcasterId={props.broadcasterId}
+            developerMode={advancedDeveloperMode()}
+            onClose={closeUserContextMenu}
             onModAction={openModAction}
             onEditNickname={openNicknameEdit}
+            onShowProfile={(x, y, userId) => setUserCard({ x, y, chatterId: userId })}
+            onMention={mentionUser}
           />
         )}
       </Show>
@@ -360,7 +408,8 @@ export default function Feed(props: Props) {
         {(ma) => (
           <BanTimeoutModal
             action={ma().action}
-            msg={ma().msg}
+            userId={ma().userId}
+            userName={ma().userName}
             broadcasterId={props.broadcasterId}
             onClose={closeModAction}
           />
