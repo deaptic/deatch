@@ -1,9 +1,11 @@
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import type { FeedMessage } from "./types";
 import Toolbar from "../../ui/Toolbar";
 import ToolbarItem from "../../ui/ToolbarItem";
 import ReplyIcon from "../../icons/ReplyIcon";
 import DotsIcon from "../../icons/DotsIcon";
+import PastaIcon from "../../icons/PastaIcon";
+import { feedShowCopypasta } from "../../state/preferences";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -12,6 +14,7 @@ type Props = {
   reactions: Reaction[];
   onReact: (msg: FeedMessage, value: string) => void;
   onReply: (msg: FeedMessage) => void;
+  onCopypasta: (msg: FeedMessage) => void;
   onMore: (x: number, y: number, msg: FeedMessage) => void;
 };
 
@@ -28,6 +31,11 @@ export default function FeedMessageToolbar(props: Props) {
       <ToolbarItem title="Reply" onClick={() => props.onReply(props.item)}>
         <ReplyIcon class="w-3.5 h-3.5" />
       </ToolbarItem>
+      <Show when={feedShowCopypasta()}>
+        <ToolbarItem title="Copypasta" onClick={() => props.onCopypasta(props.item)}>
+          <PastaIcon class="w-3.5 h-3.5" />
+        </ToolbarItem>
+      </Show>
       <ToolbarItem
         title="More options"
         onClick={(e) => {

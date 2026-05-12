@@ -25,6 +25,8 @@ import {
   setFeedShowTimestamp,
   feedShowDeletedContent,
   setFeedShowDeletedContent,
+  feedShowCopypasta,
+  setFeedShowCopypasta,
   feedBadges,
   setFeedBadge,
   feedEvents,
@@ -174,6 +176,12 @@ export default function Settings(props: Props) {
                   description="Display the original text of deleted messages, greyed out. When off, deleted messages render as <deleted>."
                 >
                   <Toggle size="md" checked={feedShowDeletedContent()} onChange={setFeedShowDeletedContent} />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Copypasta button"
+                  description="Show a toolbar button on each message that re-sends the same text as your own."
+                >
+                  <Toggle size="md" checked={feedShowCopypasta()} onChange={setFeedShowCopypasta} />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
 

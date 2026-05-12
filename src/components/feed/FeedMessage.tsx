@@ -23,6 +23,7 @@ type Props = {
   onContextMenu: (x: number, y: number, msg: Message) => void;
   onReply: (msg: Message) => void;
   onReact: (msg: Message, value: string) => void;
+  onCopypasta: (msg: Message) => void;
   onJumpToMessage: (messageId: string) => void;
   onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
 };
@@ -159,6 +160,7 @@ export default function FeedMessage(props: Props) {
         reactions={props.reactions}
         onReact={props.onReact}
         onReply={props.onReply}
+        onCopypasta={props.onCopypasta}
         onMore={props.onContextMenu}
       />
       <Show when={props.showTimestamp}>
