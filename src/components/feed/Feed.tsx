@@ -19,6 +19,7 @@ import UserCard from "../user-card/UserCard";
 import { getUsers } from "../../commands/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
 import BanTimeoutModal from "./BanTimeoutModal";
+import InputPopover from "../../ui/InputPopover";
 import { moderatedChannels } from "../../state/users";
 import type { FeedMessage as Message, FeedEvent as EventItem, FeedItem } from "./types";
 import {
@@ -41,6 +42,9 @@ import {
   feedBadges,
   feedEvents,
   feedUserMuted,
+  feedUserNickname,
+  setUserNickname,
+  removeUserNickname,
   advancedDeveloperMode,
 } from "../../state/preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
@@ -58,6 +62,8 @@ export default function Feed(props: Props) {
   const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
   const [modAction, setModAction] = createSignal<{ action: "timeout" | "ban"; msg: Message } | null>(null);
   const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
+  const [nicknamePop, setNicknamePop] = createSignal<{ x: number; y: number; login: string } | null>(null);
+  const [nicknameInput, setNicknameInput] = createSignal("");
 
   let focusInput: (() => void) | undefined;
   let rootRef: HTMLDivElement | undefined;
@@ -80,6 +86,22 @@ export default function Feed(props: Props) {
   const closeEventContextMenu = () => setEventContextMenu(null);
   const openModAction = (action: "timeout" | "ban", msg: Message) => setModAction({ action, msg });
   const closeModAction = () => setModAction(null);
+  function openNicknameEdit(msg: Message, x: number, y: number) {
+    setNicknameInput(feedUserNickname(msg.chatter_login) ?? "");
+    setNicknamePop({ x, y, login: msg.chatter_login });
+  }
+  function closeNicknameEdit() {
+    setNicknamePop(null);
+    setNicknameInput("");
+  }
+  function submitNicknameEdit() {
+    const pop = nicknamePop();
+    if (!pop) return;
+    const v = nicknameInput().trim();
+    if (v) setUserNickname(pop.login, v);
+    else removeUserNickname(pop.login);
+    closeNicknameEdit();
+  }
   const clearReply = () => setReplyTo(null);
   const startReply = (msg: Message) => {
     setReplyTo({
@@ -282,6 +304,7 @@ export default function Feed(props: Props) {
             onClose={closeContextMenu}
             onReply={startReply}
             onModAction={openModAction}
+            onEditNickname={openNicknameEdit}
           />
         )}
       </Show>
@@ -315,6 +338,19 @@ export default function Feed(props: Props) {
             msg={ma().msg}
             broadcasterId={props.broadcasterId}
             onClose={closeModAction}
+          />
+        )}
+      </Show>
+      <Show when={nicknamePop()}>
+        {(p) => (
+          <InputPopover
+            x={p().x}
+            y={p().y}
+            value={nicknameInput()}
+            placeholder="Nickname"
+            onInput={setNicknameInput}
+            onSubmit={submitNicknameEdit}
+            onClose={closeNicknameEdit}
           />
         )}
       </Show>
