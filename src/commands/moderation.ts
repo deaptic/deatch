@@ -114,3 +114,27 @@ export async function getAllModeratedChannels(): Promise<
     getModeratedChannels({ after }, options),
   );
 }
+
+export type AddChannelVipParams = {
+  broadcasterId: string;
+  userId: string;
+};
+
+export function addChannelVip(
+  params: AddChannelVipParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("add_channel_vip", params, options);
+}
+
+export type RemoveChannelVipParams = {
+  broadcasterId: string;
+  userId: string;
+};
+
+export function removeChannelVip(
+  params: RemoveChannelVipParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("remove_channel_vip", params, options);
+}

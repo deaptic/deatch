@@ -476,6 +476,8 @@ pub fn run() {
             twitch::moderation::get_banned_users,
             twitch::moderation::get_moderators,
             twitch::moderation::get_moderated_channels,
+            twitch::moderation::add_channel_vip,
+            twitch::moderation::remove_channel_vip,
             twitch::channels::get_channel_followers,
             external::bttv::bttv_get_global_emotes,
             external::bttv::bttv_get_channel_emotes,

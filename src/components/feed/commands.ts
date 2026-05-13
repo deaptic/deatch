@@ -1,4 +1,10 @@
-import { deleteChatMessages, banUser, unbanUser } from "../../commands/moderation";
+import {
+  deleteChatMessages,
+  banUser,
+  unbanUser,
+  addChannelVip,
+  removeChannelVip,
+} from "../../commands/moderation";
 import { sendShoutout } from "../../commands/chat";
 import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
@@ -159,6 +165,28 @@ export const chatCommands: ChatCommand[] = [
     ],
     execute: async ({ username }, ctx) => {
       ctx.openUserCard(username as string);
+    },
+  },
+  {
+    name: "vip",
+    description: "Grant VIP status to a user",
+    role: "broadcaster",
+    options: [
+      { name: "username", description: "User to VIP", type: "user", required: true },
+    ],
+    execute: async ({ username }, ctx) => {
+      await addChannelVip({ broadcasterId: ctx.broadcasterId, userId: username as string });
+    },
+  },
+  {
+    name: "unvip",
+    description: "Revoke VIP status from a user",
+    role: "broadcaster",
+    options: [
+      { name: "username", description: "User to unVIP", type: "user", required: true },
+    ],
+    execute: async ({ username }, ctx) => {
+      await removeChannelVip({ broadcasterId: ctx.broadcasterId, userId: username as string });
     },
   },
   {
