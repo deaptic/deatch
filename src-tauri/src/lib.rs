@@ -443,6 +443,7 @@ pub fn run() {
             external::ffz::ffz_get_channel_emotes,
             external::seventv::seventv_get_global_emotes,
             external::seventv::seventv_get_channel_emotes,
+            external::robotty::get_recent_messages,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

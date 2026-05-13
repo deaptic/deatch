@@ -1,5 +1,6 @@
 pub mod bttv;
 pub mod ffz;
+pub mod robotty;
 pub mod seventv;
 
 #[derive(serde::Serialize, Clone)]

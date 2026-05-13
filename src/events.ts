@@ -43,7 +43,7 @@ function mapFragment(f: RawFragment): Fragment {
   }
 }
 
-function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMessage {
+export function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMessage {
   return {
     kind: "message",
     message_id: raw.message_id,
@@ -58,6 +58,7 @@ function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMessage {
     channel_points:
       !!raw.channel_points_custom_reward_id || CHANNEL_POINT_TYPES.has(raw.message_type),
     first_message: raw.message_type === "user_intro",
+    deleted: raw.deleted,
   };
 }
 
