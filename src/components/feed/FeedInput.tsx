@@ -1,6 +1,6 @@
 import { createSignal, createMemo, Show, onMount } from "solid-js";
 import { sendChatMessage } from "../../commands/chat";
-import { chatCommands, executeChatCommand } from "./commands";
+import { chatCommands, executeChatCommand, buildUsage } from "./commands";
 import {
   globalEmotes,
   userEmotes,
@@ -96,7 +96,7 @@ export default function FeedInput(props: Props) {
     const starts: CommandSuggestion[] = [];
     const contains: CommandSuggestion[] = [];
     for (const c of chatCommands) {
-      const item = { name: c.name, usage: c.usage, description: c.description };
+      const item = { name: c.name, usage: buildUsage(c.options), description: c.description };
       if (lower === "" || c.name.startsWith(lower)) starts.push(item);
       else if (c.name.includes(lower)) contains.push(item);
     }
