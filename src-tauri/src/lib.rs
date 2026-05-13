@@ -259,7 +259,7 @@ async fn handle_ws_message(
             }
             Ok(None)
         }
-        EventsubWebsocketData::Notification { payload, .. } => {
+        EventsubWebsocketData::Notification { payload, metadata, .. } => {
             match payload {
                 Event::ChannelChatMessageV1(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
@@ -313,7 +313,10 @@ async fn handle_ws_message(
                 Event::ChannelModerateV2(notif) => {
                     if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
                         if subs.contains_key(msg.broadcaster_user_id.as_str()) {
-                            let _ = app.emit("channel-moderate", msg);
+                            let _ = app.emit("channel-moderate", serde_json::json!({
+                                "message_timestamp": metadata.message_timestamp.to_string(),
+                                "event": msg,
+                            }));
                         }
                     }
                 }

@@ -172,6 +172,11 @@ type RawModerateBase = {
 
 type RawModUser = { user_id: string; user_login: string; user_name: string };
 
+export type RawModerateEvent = {
+  message_timestamp: string;
+  event: RawModerate;
+};
+
 export type RawModerate = RawModerateBase &
   (
     | { action: "ban"; ban: RawModUser & { reason: string | null } }

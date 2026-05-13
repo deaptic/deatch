@@ -10,6 +10,7 @@ import type {
   RawChatClear,
   RawChatClearUserMessages,
   RawModerate,
+  RawModerateEvent,
 } from "./types";
 import {
   appendItem,
@@ -217,7 +218,7 @@ function formatDuration(seconds: number): string {
   return `${seconds}s`;
 }
 
-function buildModerateMessage(p: RawModerate): string | null {
+function buildModerateMessage(p: RawModerate, serverNowMs: number): string | null {
   const mod = p.moderator_user_name;
   switch (p.action) {
     case "ban": {
@@ -227,7 +228,7 @@ function buildModerateMessage(p: RawModerate): string | null {
     case "unban":
       return `${mod} unbanned ${p.unban.user_name}`;
     case "timeout": {
-      const secs = Math.max(0, Math.round((new Date(p.timeout.expires_at).getTime() - Date.now()) / 1000));
+      const secs = Math.max(0, Math.ceil((new Date(p.timeout.expires_at).getTime() - serverNowMs) / 1000));
       const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
       return `${mod} timed out ${p.timeout.user_name} for ${formatDuration(secs)}${r}`;
     }
@@ -274,20 +275,22 @@ function buildModerateMessage(p: RawModerate): string | null {
   }
 }
 
-listen<RawModerate>("channel-moderate", (e) => {
-  const msg = buildModerateMessage(e.payload);
+listen<RawModerateEvent>("channel-moderate", (e) => {
+  const payload = e.payload.event;
+  const serverNowMs = new Date(e.payload.message_timestamp).getTime();
+  const msg = buildModerateMessage(payload, serverNowMs);
   if (!msg) return;
   const now = Date.now();
   const notice: FeedEvent = {
     kind: "event",
-    id: `moderate-${e.payload.broadcaster_user_id}-${e.payload.action}-${now}-${Math.random().toString(36).slice(2, 8)}`,
-    notice_type: `moderate_${e.payload.action}`,
+    id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${Math.random().toString(36).slice(2, 8)}`,
+    notice_type: `moderate_${payload.action}`,
     system_message: msg,
-    chatter_name: e.payload.moderator_user_name,
+    chatter_name: payload.moderator_user_name,
     color: "",
     timestamp: now,
   };
-  appendItem(e.payload.broadcaster_user_id, notice);
+  appendItem(payload.broadcaster_user_id, notice);
 });
 
 listen<string>("chat-error", (e) => {
