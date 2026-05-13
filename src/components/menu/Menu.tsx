@@ -20,7 +20,8 @@ import {
   unpinChannel,
   reorderPinnedChannels,
 } from "../../state/preferences";
-import { unreadCount } from "../feed/feeds";
+import { hasUnread } from "../feed/feeds";
+import { channelMentionCount } from "../../state/inbox";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
@@ -283,7 +284,8 @@ export default function Menu(props: Props) {
                           channel={c()}
                           status={liveById().has(id) ? "live" : undefined}
                           selected={props.selectedId === id}
-                          unread={unreadCount(id)}
+                          unread={hasUnread(id)}
+                          mentions={channelMentionCount(id)}
                           dimmed={dragIdx() === index()}
                           onClick={() => props.onSelect(c())}
                           onMiddleClick={() => openInBrowser(c())}
@@ -318,7 +320,8 @@ export default function Menu(props: Props) {
                   channel={ch}
                   status="live"
                   selected={props.selectedId === ch.user_id}
-                  unread={unreadCount(ch.user_id)}
+                  unread={hasUnread(ch.user_id)}
+                  mentions={channelMentionCount(ch.user_id)}
                   onClick={() => props.onSelect(ch)}
                   onMiddleClick={() => openInBrowser(ch)}
                   onContextMenu={(x, y) => setChMenu({ ch, x, y })}
@@ -341,7 +344,8 @@ export default function Menu(props: Props) {
               }}
               status="self"
               selected={props.selectedId === u().id}
-              unread={unreadCount(u().id)}
+              unread={hasUnread(u().id)}
+              mentions={channelMentionCount(u().id)}
               square
               onClick={selectSelf}
               onContextMenu={(x, y) => setAccMenu({ x, y })}

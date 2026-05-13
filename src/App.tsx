@@ -39,7 +39,7 @@ import {
   EmoteEntry,
 } from "./state/emotes";
 import { selectedChannel, setSelectedChannel, channelsById, rememberChannel } from "./state/channels";
-import { markMentionRead } from "./state/inbox";
+import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import type {
   SevenTvChannelResult,
   BadgeSet,
@@ -224,6 +224,7 @@ function App() {
     setSelectedChannel(ch);
     ensureFeed(ch.user_id);
     markSeen(ch.user_id);
+    markChannelMentionsRead(ch.user_id);
   }
 
   function jumpToMessage(channelId: string, messageId: string) {
