@@ -111,6 +111,10 @@ export type RawChatMessage = {
   badges: Badge[];
   reply: RawReply | null;
   channel_points_custom_reward_id: string | null;
+  /// Synthetic field set by the robotty backlog mapper when a CLEARMSG /
+  /// CLEARCHAT in the same window targets this message. EventSub messages
+  /// never carry this — they use a separate delete event.
+  deleted?: boolean;
 };
 
 // ── EventSub: chat notification / shoutout / follow ────────────────────────

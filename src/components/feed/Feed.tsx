@@ -8,7 +8,8 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import { sendChatMessage } from "../../commands/chat";
+import { getRecentMessages, sendChatMessage } from "../../commands/chat";
+import { mapChatMessage } from "../../events";
 import { buildThirdPartyEmoteMap, favorites } from "../../state/emotes";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
@@ -30,6 +31,7 @@ import {
   markSeen,
   clearDivider,
   getItemId,
+  prependItems,
 } from "./feeds";
 import { NOTICE_TO_EVENT } from "../../constants";
 import {
@@ -193,6 +195,23 @@ export default function Feed(props: Props) {
 
   createEffect(on(() => props.broadcasterId, () => {
     queueMicrotask(() => { if (!paused()) scrollInstant(); });
+  }));
+
+  // One-time backlog hydration from robotty when a channel feed is first
+  // joined this session. `backfilled` flag in feeds.ts prevents repeats on
+  // channel switch / re-mount.
+  createEffect(on(() => props.broadcasterId, (broadcasterId) => {
+    if (feeds[broadcasterId]?.backfilled) return;
+    const login = props.broadcasterLogin;
+    getRecentMessages({ channelLogin: login, limit: 50 }, { silent: true })
+      .then((msgs) => {
+        const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
+        prependItems(broadcasterId, items);
+      })
+      .catch(() => {
+        // Mark backfilled even on failure so we don't retry every remount.
+        prependItems(broadcasterId, []);
+      });
   }));
 
   createEffect(on(() => items().length, () => {

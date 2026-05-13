@@ -11,6 +11,7 @@ export type ChannelFeed = {
   paused: boolean;
   lastSeenItemId: string | null;
   dividerAtItemId: string | null;
+  backfilled: boolean;
 };
 
 const MAX_MESSAGES = 500;
@@ -24,6 +25,7 @@ const emptyFeed = (): ChannelFeed => ({
   paused: false,
   lastSeenItemId: null,
   dividerAtItemId: null,
+  backfilled: false,
 });
 
 export function getItemId(item: FeedItem): string {
@@ -112,15 +114,50 @@ export function appendItem(id: string, item: FeedItem) {
     });
   }
   const isActive = selectedChannel()?.user_id === id;
+  const itemId = getItemId(item);
   setFeeds(
     id,
     produce((f) => {
+      // Dedupe: a backlog fetch may overlap with the first EventSub events.
+      if (f.messages.some((m) => getItemId(m) === itemId)) return;
       if (!f.paused && f.messages.length >= MAX_MESSAGES) {
         f.messages.splice(0, f.messages.length - TRIM_TO);
       }
       f.messages.push(item);
       if (isActive && !f.paused) {
-        f.lastSeenItemId = getItemId(item);
+        f.lastSeenItemId = itemId;
+      }
+    }),
+  );
+}
+
+/// Inserts older items at the front of the feed. Used for the one-time
+/// backlog hydration from robotty when a channel is first joined. Items
+/// already present (by id) are skipped, and the input is sorted oldest →
+/// newest before being prepended so the order matches the live stream.
+export function prependItems(id: string, items: FeedItem[]) {
+  ensureFeed(id);
+  setFeeds(
+    id,
+    produce((f) => {
+      f.backfilled = true;
+      if (items.length > 0) {
+        const existing = new Set(f.messages.map(getItemId));
+        const fresh = items.filter((it) => !existing.has(getItemId(it)));
+        if (fresh.length > 0) {
+          fresh.sort((a, b) => a.timestamp - b.timestamp);
+          f.messages.unshift(...fresh);
+          if (f.messages.length > MAX_MESSAGES) {
+            f.messages.splice(MAX_MESSAGES);
+          }
+        }
+      }
+      // Backlog is history, not new chat. Mark it as already-seen so that
+      // switching away from this channel doesn't carry it into the menu
+      // unread badge (snapshotDivider only sets a divider when something
+      // has been seen).
+      if (!f.lastSeenItemId && f.messages.length > 0) {
+        f.lastSeenItemId = getItemId(f.messages[f.messages.length - 1]);
       }
     }),
   );

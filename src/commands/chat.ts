@@ -1,4 +1,5 @@
 import { addToast } from "../state/toasts";
+import type { RawChatMessage } from "../types";
 import { fetchAllPages, invokeCommand, type InvokeOptions, type Paginated } from "./utils";
 
 export type GetGlobalEmotesResponse = {
@@ -127,4 +128,17 @@ export async function sendChatMessage(
   } catch {
     return false;
   }
+}
+
+export type GetRecentMessagesParams = {
+  channelLogin: string;
+  limit?: number;
+};
+export type GetRecentMessagesResponse = (RawChatMessage & { timestamp_ms: number })[];
+
+export function getRecentMessages(
+  params: GetRecentMessagesParams,
+  options?: InvokeOptions,
+): Promise<GetRecentMessagesResponse> {
+  return invokeCommand("get_recent_messages", params, options);
 }
