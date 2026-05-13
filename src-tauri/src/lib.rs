@@ -434,6 +434,8 @@ pub fn run() {
             twitch::chat::get_channel_chat_badges,
             twitch::moderation::delete_chat_messages,
             twitch::moderation::ban_user,
+            twitch::moderation::unban_user,
+            twitch::moderation::get_banned_users,
             twitch::moderation::get_moderators,
             twitch::moderation::get_moderated_channels,
             twitch::channels::get_channel_followers,

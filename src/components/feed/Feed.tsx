@@ -20,7 +20,7 @@ import UserContextMenu, { type UserContextTarget } from "../context-menus/UserCo
 import UserCard from "../user-card/UserCard";
 import { getUsers } from "../../commands/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
-import BanTimeoutModal from "./BanTimeoutModal";
+import BanModal from "../utils/BanModal";
 import InputPopover from "../../ui/InputPopover";
 import { moderatedChannels } from "../../state/users";
 import type { FeedMessage as Message, FeedEvent as EventItem, FeedItem } from "./types";
@@ -64,7 +64,7 @@ export default function Feed(props: Props) {
   const [userContextMenu, setUserContextMenu] = createSignal<{ x: number; y: number } & UserContextTarget | null>(null);
   const [eventContextMenu, setEventContextMenu] = createSignal<{ x: number; y: number; item: EventItem } | null>(null);
   const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
-  const [modAction, setModAction] = createSignal<{ action: "timeout" | "ban"; userId: string; userName: string } | null>(null);
+  const [modAction, setModAction] = createSignal<{ userId: string; userName: string } | null>(null);
   const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
   const [nicknamePop, setNicknamePop] = createSignal<{ x: number; y: number; login: string } | null>(null);
   const [nicknameInput, setNicknameInput] = createSignal("");
@@ -88,8 +88,7 @@ export default function Feed(props: Props) {
   }
   const openEventContextMenu = (x: number, y: number, item: EventItem) => setEventContextMenu({ x, y, item });
   const closeEventContextMenu = () => setEventContextMenu(null);
-  const openModAction = (action: "timeout" | "ban", target: { userId: string; userName: string }) =>
-    setModAction({ action, ...target });
+  const openModerate = (target: { userId: string; userName: string }) => setModAction(target);
   const closeModAction = () => setModAction(null);
   function openNicknameEdit(login: string, _displayName: string, x: number, y: number) {
     setNicknameInput(feedUserNickname(login) ?? "");
@@ -393,7 +392,7 @@ export default function Feed(props: Props) {
             broadcasterId={props.broadcasterId}
             developerMode={advancedDeveloperMode()}
             onClose={closeUserContextMenu}
-            onModAction={openModAction}
+            onModerate={openModerate}
             onEditNickname={openNicknameEdit}
             onShowProfile={(x, y, userId) => setUserCard({ x, y, chatterId: userId })}
             onMention={mentionUser}
@@ -425,8 +424,7 @@ export default function Feed(props: Props) {
       </Show>
       <Show when={modAction()}>
         {(ma) => (
-          <BanTimeoutModal
-            action={ma().action}
+          <BanModal
             userId={ma().userId}
             userName={ma().userName}
             broadcasterId={props.broadcasterId}

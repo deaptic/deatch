@@ -3,9 +3,8 @@ import { sendShoutout } from "../../commands/chat";
 import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
-import ShoutoutIcon from "../../icons/ShoutoutIcon";
+import MegaphoneIcon from "../../icons/MegaphoneIcon";
 import BanIcon from "../../icons/BanIcon";
-import TimeoutIcon from "../../icons/TimeoutIcon";
 import HashIcon from "../../icons/HashIcon";
 import MuteIcon from "../../icons/MuteIcon";
 import UserIcon from "../../icons/UserIcon";
@@ -31,7 +30,7 @@ type Props = UserContextTarget & {
   broadcasterId: string;
   developerMode: boolean;
   onClose: () => void;
-  onModAction: (action: "timeout" | "ban", target: { userId: string; userName: string }) => void;
+  onModerate: (target: { userId: string; userName: string }) => void;
   onEditNickname: (login: string, displayName: string, x: number, y: number) => void;
   onShowProfile: (x: number, y: number, userId: string) => void;
   onMention: (login: string) => void;
@@ -53,6 +52,16 @@ export default function UserContextMenu(props: Props) {
         icon={<AtIcon class="w-3.5 h-3.5" />}
         onClick={() => { props.onMention(props.userLogin); props.onClose(); }}
       />
+      <Show when={props.isMod}>
+        <ContextMenuItem
+          label="Shoutout"
+          icon={<MegaphoneIcon class="w-3.5 h-3.5" />}
+          onClick={() => {
+            sendShoutout({ fromBroadcasterId: props.broadcasterId, toBroadcasterId: props.userId });
+            props.onClose();
+          }}
+        />
+      </Show>
       <ContextMenuDivider />
       <ContextMenuItem
         label={nickname() ? "Edit nickname" : "Set nickname"}
@@ -62,17 +71,6 @@ export default function UserContextMenu(props: Props) {
           props.onClose();
         }}
       />
-      <Show when={props.isMod}>
-        <ContextMenuItem
-          label="Shoutout"
-          icon={<ShoutoutIcon class="w-3.5 h-3.5" />}
-          onClick={() => {
-            sendShoutout({ fromBroadcasterId: props.broadcasterId, toBroadcasterId: props.userId });
-            props.onClose();
-          }}
-        />
-      </Show>
-      <ContextMenuDivider />
       <ContextMenuItem
         label={muted() ? `Unmute ${props.userDisplayName}` : `Mute ${props.userDisplayName}`}
         danger={!muted()}
@@ -84,21 +82,13 @@ export default function UserContextMenu(props: Props) {
         }}
       />
       <Show when={props.isMod}>
+        <ContextMenuDivider />
         <ContextMenuItem
-          label={`Timeout ${props.userDisplayName}`}
-          danger
-          icon={<TimeoutIcon class="w-3.5 h-3.5" />}
-          onClick={() => {
-            props.onModAction("timeout", { userId: props.userId, userName: props.userDisplayName });
-            props.onClose();
-          }}
-        />
-        <ContextMenuItem
-          label={`Ban ${props.userDisplayName}`}
+          label="Ban / Timeout"
           danger
           icon={<BanIcon class="w-3.5 h-3.5" />}
           onClick={() => {
-            props.onModAction("ban", { userId: props.userId, userName: props.userDisplayName });
+            props.onModerate({ userId: props.userId, userName: props.userDisplayName });
             props.onClose();
           }}
         />

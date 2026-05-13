@@ -34,6 +34,44 @@ export function banUser(
   return invokeCommand("ban_user", params, options);
 }
 
+export type UnbanUserParams = {
+  broadcasterId: string;
+  userId: string;
+};
+export type UnbanUserResponse = void;
+
+export function unbanUser(
+  params: UnbanUserParams,
+  options?: InvokeOptions,
+): Promise<UnbanUserResponse> {
+  return invokeCommand("unban_user", params, options);
+}
+
+export type GetBannedUsersParams = {
+  broadcasterId: string;
+  userId?: string;
+  first?: number;
+  after?: string;
+};
+export type GetBannedUsersResponse = Paginated<{
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  expires_at: string | null;
+  created_at: string;
+  reason: string;
+  moderator_id: string;
+  moderator_login: string;
+  moderator_name: string;
+}>;
+
+export function getBannedUsers(
+  params: GetBannedUsersParams,
+  options?: InvokeOptions,
+): Promise<GetBannedUsersResponse> {
+  return invokeCommand("get_banned_users", params, options);
+}
+
 export type GetModeratorsParams = {
   broadcasterId: string;
   first?: number;
