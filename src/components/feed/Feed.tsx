@@ -72,6 +72,10 @@ export default function Feed(props: Props) {
   let inputApi: { focus: () => void; insert: (text: string) => void } | undefined;
   let rootRef: HTMLDivElement | undefined;
 
+  createEffect(on(() => props.broadcasterId, () => {
+    inputApi?.focus();
+  }));
+
   const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
   const closeContextMenu = () => setContextMenu(null);
   async function openUserCard(x: number, y: number, identity: { userId?: string; login?: string }) {
