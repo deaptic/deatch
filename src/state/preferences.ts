@@ -22,6 +22,9 @@ export type UserPreferences = {
       nicknames: Record<string, string>;
     };
   };
+  notifications: {
+    mentionSound: boolean;
+  };
   advanced: {
     developerMode: boolean;
     showLogs: boolean;
@@ -76,6 +79,9 @@ function load(): UserPreferences {
           nicknames: sanitizeNicknames(stored.feed?.users?.nicknames),
         },
       },
+      notifications: {
+        mentionSound: stored.notifications?.mentionSound ?? DEFAULT_PREFERENCES.notifications.mentionSound,
+      },
       advanced: {
         developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
         showLogs: stored.advanced?.showLogs ?? DEFAULT_PREFERENCES.advanced.showLogs,
@@ -113,6 +119,7 @@ export const feedUserOverrideNameColor = () => prefs.feed.users.overrideNameColo
 export const feedUserNicknames = () => prefs.feed.users.nicknames;
 export const feedUserNickname = (login: string) => prefs.feed.users.nicknames[login.toLowerCase()];
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
+export const notificationsMentionSound = () => prefs.notifications.mentionSound;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
 export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
@@ -229,6 +236,11 @@ export function reorderPinnedChannels(from: number, to: number) {
     next.splice(from < to ? to - 1 : to, 0, item);
     return next;
   });
+  persist();
+}
+
+export function setNotificationsMentionSound(value: boolean) {
+  setPrefs("notifications", "mentionSound", value);
   persist();
 }
 

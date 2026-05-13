@@ -29,6 +29,9 @@
       "nicknames": {}
     }
   },
+  "notifications": {
+    "mentionSound": true
+  },
   "advanced": {
     "developerMode": false,
     "showLogs": false,
