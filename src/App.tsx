@@ -40,7 +40,7 @@ import {
   fetchAllUserEmotes,
   EmoteEntry,
 } from "./state/emotes";
-import { selectedChannel, setSelectedChannel, channelsById, rememberChannel } from "./state/channels";
+import { selectedChannel, setSelectedChannel, channelsById, rememberChannel, loadLastChannel } from "./state/channels";
 import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import type {
   SevenTvChannelResult,
@@ -221,6 +221,10 @@ function App() {
   createEffect(() => {
     if (user() !== null) {
       fetchUserScopedData();
+      if (selectedChannel() === null) {
+        const last = loadLastChannel();
+        if (last) handleChannelSelect(last);
+      }
       return;
     }
     for (const id of [...joinedIds]) leaveChannel(id);
