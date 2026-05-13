@@ -181,8 +181,8 @@ export async function executeChatCommand(
   }
   try {
     await cmd.execute(parsed.values, ctx);
-  } catch {
-    addToast(`/${head} failed`, "error");
+  } catch (e) {
+    console.error(`/${head} failed`, e);
   }
   return true;
 }
