@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import notificationSound from "../assets/notification.mp3";
 import { notificationsMentionSound } from "./preferences";
+import { selectedChannel } from "./channels";
 
 const audio = new Audio(notificationSound);
 
@@ -30,11 +31,12 @@ export const channelMentionCount = (channelId: string) =>
   mentionsSig().filter((m) => m.unread && m.channelId === channelId).length;
 
 export function recordMention(m: Omit<Mention, "unread">) {
+  const isActive = selectedChannel()?.user_id === m.channelId;
   let added = false;
   setMentionsSig((prev) => {
     if (prev.some((x) => x.id === m.id)) return prev;
     added = true;
-    const next = [{ ...m, unread: true } as Mention, ...prev];
+    const next = [{ ...m, unread: !isActive } as Mention, ...prev];
     return next.length > MAX ? next.slice(0, MAX) : next;
   });
   if (added && notificationsMentionSound()) {
