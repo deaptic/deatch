@@ -49,6 +49,7 @@ const PAD = 8;
 export default function UserCard(props: Props) {
   const [user, setUser] = createSignal<User | null>(null);
   let cardRef: HTMLDivElement | undefined;
+  let messagesRef: HTMLDivElement | undefined;
 
   function clamp(x: number, y: number, w: number, h: number) {
     const b = props.getBounds();
@@ -123,6 +124,29 @@ export default function UserCard(props: Props) {
       (m): m is FeedMessage =>
         m.kind === "message" && m.chatter_user_id === props.chatterId,
     );
+  });
+
+  let isAtBottom = true;
+  let suppressScroll = false;
+
+  function scrollMessagesToBottom() {
+    if (!messagesRef) return;
+    suppressScroll = true;
+    messagesRef.scrollTop = messagesRef.scrollHeight;
+  }
+
+  function onMessagesScroll(e: Event) {
+    if (suppressScroll) {
+      suppressScroll = false;
+      return;
+    }
+    const el = e.currentTarget as HTMLDivElement;
+    isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }
+
+  createEffect(() => {
+    messages().length;
+    queueMicrotask(() => { if (isAtBottom) scrollMessagesToBottom(); });
   });
 
   const formatJoinDate = (iso: string) =>
@@ -279,7 +303,11 @@ export default function UserCard(props: Props) {
           </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-1 min-h-0">
+        <div
+          ref={messagesRef}
+          onScroll={onMessagesScroll}
+          class="flex-1 overflow-y-auto p-1 min-h-0"
+        >
           <Show
             when={messages().length > 0}
             fallback={

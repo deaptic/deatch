@@ -3,7 +3,8 @@ use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::moderation::{
     delete_chat_messages::DeleteChatMessagesRequest, BanUser, BanUserBody, BanUserRequest,
-    GetModeratedChannelsRequest, GetModeratorsRequest, ModeratedChannel, Moderator,
+    BannedUser, GetBannedUsersRequest, GetModeratedChannelsRequest, GetModeratorsRequest,
+    ModeratedChannel, Moderator, UnbanUserRequest,
 };
 use twitch_api::helix::Cursor;
 use twitch_api::types::MsgId;
@@ -62,6 +63,59 @@ pub async fn ban_user(app: tauri::AppHandle, params: BanUserParams) -> Result<Ba
         .req_post(request, body, &token)
         .await
         .map(|r| r.data)
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#get-banned-users
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetBannedUsersParams {
+    pub broadcaster_id: String,
+    pub user_id: Option<String>,
+    pub first: Option<usize>,
+    pub after: Option<String>,
+}
+
+#[tauri::command]
+pub async fn get_banned_users(
+    app: tauri::AppHandle,
+    params: GetBannedUsersParams,
+) -> Result<PaginatedResponse<BannedUser>, String> {
+    let token = get_token(&app).await?;
+    let mut request = GetBannedUsersRequest::broadcaster_id(params.broadcaster_id.as_str());
+    if let Some(uid) = params.user_id.as_deref() {
+        request.user_id = vec![twitch_api::types::UserId::from(uid)].into();
+    }
+    request.first = params.first;
+    request.after = params.after.map(|s| Cow::Owned(Cursor::from(s)));
+
+    let response = helix()
+        .req_get(request, &token)
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(PaginatedResponse::new(response.data, response.pagination))
+}
+
+// https://dev.twitch.tv/docs/api/reference/#unban-user
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UnbanUserParams {
+    pub broadcaster_id: String,
+    pub user_id: String,
+}
+
+#[tauri::command]
+pub async fn unban_user(app: tauri::AppHandle, params: UnbanUserParams) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request = UnbanUserRequest::new(
+        params.broadcaster_id.as_str(),
+        token.user_id.as_str(),
+        params.user_id.as_str(),
+    );
+    helix()
+        .req_delete(request, &token)
+        .await
+        .map(|_| ())
         .map_err(|e| e.to_string())
 }
 

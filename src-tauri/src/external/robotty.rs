@@ -75,7 +75,12 @@ fn split_irc(line: &str) -> Option<(Tags, &str, &str, &str)> {
     let (prefix, rest) = rest.split_once(' ')?;
     let (command, rest) = rest.split_once(' ')?;
     let nick = prefix.split('!').next()?;
-    let body = rest.split_once(" :").map_or("", |(_, b)| b);
+    // Trailing-param `:` is optional when the body has no spaces, so
+    // `PRIVMSG #channel Kappa` is valid IRC. Split off the channel first,
+    // then strip an optional leading `:` from what's left.
+    let body = rest
+        .split_once(' ')
+        .map_or("", |(_, b)| b.strip_prefix(':').unwrap_or(b));
     Some((parse_tags(tags), nick, command, body))
 }
 
@@ -110,7 +115,6 @@ fn unescape(s: &str) -> String {
 // ── PRIVMSG → RecentMessage ────────────────────────────────────────────────
 
 fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
-    // /me action: \x01ACTION text\x01
     let text = body
         .strip_prefix("\u{0001}ACTION ")
         .and_then(|s| s.strip_suffix('\u{0001}'))
@@ -221,7 +225,7 @@ fn build_fragments(text: &str, emotes_tag: &str) -> Vec<Fragment> {
     let mut out: Vec<Fragment> = Vec::new();
     let mut cursor = 0usize;
     for (s, e, kind) in spans {
-        if s < cursor { continue; } // overlap — first wins
+        if s < cursor { continue; }
         if s > cursor {
             out.push(Fragment::Text { text: slice(cursor, s) });
         }
@@ -264,7 +268,6 @@ pub async fn fetch_recent_messages(
         .await
         .map_err(|e| e.to_string())?;
 
-    // Single pass: bucket messages and deletion records by IRC verb.
     let mut messages: Vec<RecentMessage> = Vec::new();
     let mut deleted_ids: HashSet<String> = HashSet::new();
     let mut user_clears: Vec<(String, i64)> = Vec::new();
