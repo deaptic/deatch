@@ -32,17 +32,16 @@ export function getItemId(item: FeedItem): string {
   return item.kind === "message" ? item.message_id : item.id;
 }
 
-export function unreadCount(id: string): number {
+export function hasUnread(id: string): boolean {
   const feed = feeds[id];
-  if (!feed) return 0;
-  if (selectedChannel()?.user_id === id) return 0;
+  if (!feed) return false;
+  if (selectedChannel()?.user_id === id) return false;
   if (feed.dividerAtItemId) {
-    const idx = feed.messages.findIndex((m) => getItemId(m) === feed.dividerAtItemId);
-    if (idx === -1) return feed.messages.length;
-    return feed.messages.length - 1 - idx;
+    const last = feed.messages[feed.messages.length - 1];
+    return last !== undefined && getItemId(last) !== feed.dividerAtItemId;
   }
-  if (feed.lastSeenItemId) return 0;
-  return feed.messages.length;
+  if (feed.lastSeenItemId) return false;
+  return feed.messages.length > 0;
 }
 
 export function markSeen(id: string) {

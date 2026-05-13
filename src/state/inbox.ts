@@ -25,6 +25,9 @@ export const mentions = mentionsSig;
 
 export const unreadMentionCount = () => mentionsSig().filter((m) => m.unread).length;
 
+export const channelMentionCount = (channelId: string) =>
+  mentionsSig().filter((m) => m.unread && m.channelId === channelId).length;
+
 export function recordMention(m: Omit<Mention, "unread">) {
   let added = false;
   setMentionsSig((prev) => {
@@ -48,5 +51,13 @@ export function markMentionRead(id: string) {
 export function markAllMentionsRead() {
   setMentionsSig((prev) =>
     prev.map((m) => (m.unread ? { ...m, unread: false } : m)),
+  );
+}
+
+export function markChannelMentionsRead(channelId: string) {
+  setMentionsSig((prev) =>
+    prev.map((m) =>
+      m.unread && m.channelId === channelId ? { ...m, unread: false } : m,
+    ),
   );
 }
