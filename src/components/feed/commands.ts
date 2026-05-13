@@ -1,4 +1,5 @@
 import { deleteChatMessages, banUser, unbanUser } from "../../commands/moderation";
+import { sendShoutout } from "../../commands/chat";
 import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 
@@ -132,6 +133,20 @@ export const chatCommands: ChatCommand[] = [
     ],
     execute: async ({ username }, ctx) => {
       await unbanUser({ broadcasterId: ctx.broadcasterId, userId: username as string });
+    },
+  },
+  {
+    name: "shoutout",
+    aliases: ["so"],
+    description: "Highlight a channel for viewers to follow",
+    options: [
+      { name: "username", description: "Channel to shout out", type: "user", required: true },
+    ],
+    execute: async ({ username }, ctx) => {
+      await sendShoutout({
+        fromBroadcasterId: ctx.broadcasterId,
+        toBroadcasterId: username as string,
+      });
     },
   },
   {
