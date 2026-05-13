@@ -5,6 +5,7 @@ import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import ReplyIcon from "../../icons/ReplyIcon";
 import CopyIcon from "../../icons/CopyIcon";
+import PastaIcon from "../../icons/PastaIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import type { FeedMessage } from "../feed/types";
 
@@ -17,6 +18,7 @@ type Props = {
   developerMode: boolean;
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
+  onCopypasta: (msg: FeedMessage) => void;
 };
 
 export default function MessageContextMenu(props: Props) {
@@ -31,6 +33,12 @@ export default function MessageContextMenu(props: Props) {
         label="Copy Text"
         icon={<CopyIcon class="w-3.5 h-3.5" />}
         onClick={() => { navigator.clipboard.writeText(props.msg.fragments.map((f) => f.text).join("")); props.onClose(); }}
+      />
+      <ContextMenuDivider />
+      <ContextMenuItem
+        label="Copypasta"
+        icon={<PastaIcon class="w-3.5 h-3.5" />}
+        onClick={() => { props.onCopypasta(props.msg); props.onClose(); }}
       />
       <Show when={props.isMod}>
         <ContextMenuDivider />
