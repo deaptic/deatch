@@ -2,6 +2,7 @@ import { deleteChatMessages, banUser, unbanUser } from "../../commands/moderatio
 import { sendShoutout } from "../../commands/chat";
 import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
+import { isBroadcasterOfChannel, isModOfChannel } from "../../state/users";
 
 export type ChatCommandContext = {
   broadcasterId: string;
@@ -19,13 +20,22 @@ export type CommandOption = {
   default?: unknown;
 };
 
+export type CommandRole = "broadcaster" | "mod" | "regular";
+
 export type ChatCommand = {
   name: string;
   aliases?: string[];
   description: string;
+  role: CommandRole;
   options: CommandOption[];
   execute: (values: Record<string, unknown>, ctx: ChatCommandContext) => Promise<void>;
 };
+
+export function canRunCommand(cmd: ChatCommand, broadcasterId: string): boolean {
+  if (cmd.role === "regular") return true;
+  if (cmd.role === "broadcaster") return isBroadcasterOfChannel(broadcasterId);
+  return isModOfChannel(broadcasterId);
+}
 
 const DURATION_UNITS: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400, w: 604800 };
 
@@ -89,6 +99,7 @@ export const chatCommands: ChatCommand[] = [
   {
     name: "clear",
     description: "Clear all messages in chat",
+    role: "mod",
     options: [],
     execute: async (_, ctx) => {
       await deleteChatMessages({ broadcasterId: ctx.broadcasterId, messageId: null });
@@ -97,6 +108,7 @@ export const chatCommands: ChatCommand[] = [
   {
     name: "ban",
     description: "Permanently ban a user from Chat",
+    role: "mod",
     options: [
       { name: "username", description: "User to ban", type: "user", required: true },
       { name: "reason", description: "Reason", type: "string" },
@@ -112,6 +124,7 @@ export const chatCommands: ChatCommand[] = [
   {
     name: "timeout",
     description: "Temporarily ban a user from Chat",
+    role: "mod",
     options: [
       { name: "username", description: "User to time out", type: "user", required: true },
       { name: "duration", description: "Duration", type: "duration", default: 600 },
@@ -129,6 +142,7 @@ export const chatCommands: ChatCommand[] = [
   {
     name: "unban",
     description: "Remove a ban on a user",
+    role: "mod",
     options: [
       { name: "username", description: "User to unban", type: "user", required: true },
     ],
@@ -139,6 +153,7 @@ export const chatCommands: ChatCommand[] = [
   {
     name: "user",
     description: "Open the user card",
+    role: "regular",
     options: [
       { name: "username", description: "User to view", type: "user", required: true },
     ],
@@ -150,6 +165,7 @@ export const chatCommands: ChatCommand[] = [
     name: "shoutout",
     aliases: ["so"],
     description: "Highlight a channel for viewers to follow",
+    role: "mod",
     options: [
       { name: "username", description: "Channel to shout out", type: "user", required: true },
     ],
@@ -163,6 +179,7 @@ export const chatCommands: ChatCommand[] = [
   {
     name: "untimeout",
     description: "Remove a timeout on a user",
+    role: "mod",
     options: [
       { name: "username", description: "User to remove timeout from", type: "user", required: true },
     ],

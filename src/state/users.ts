@@ -5,6 +5,15 @@ import type { User } from "../commands/users";
 export const [user, setUser] = createSignal<User | null>(null);
 export const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
 
+export function isBroadcasterOfChannel(broadcasterId: string): boolean {
+  return user()?.id === broadcasterId;
+}
+
+export function isModOfChannel(broadcasterId: string): boolean {
+  if (isBroadcasterOfChannel(broadcasterId)) return true;
+  return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
+}
+
 const [userCacheSig, setUserCacheSig] = createSignal<Record<string, User>>({});
 export const userCache = userCacheSig;
 
