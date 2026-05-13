@@ -1,5 +1,6 @@
 import { createSignal, createMemo, Show, onMount } from "solid-js";
 import { sendChatMessage } from "../../commands/chat";
+import { chatCommands, executeChatCommand } from "./commands";
 import {
   globalEmotes,
   userEmotes,
@@ -32,9 +33,11 @@ export default function FeedInput(props: Props) {
   const [pickerOpen, setPickerOpen] = createSignal(false);
   const [acQuery, setAcQuery] = createSignal<string | null>(null);
   const [mentionQuery, setMentionQuery] = createSignal<string | null>(null);
+  const [commandQuery, setCommandQuery] = createSignal<string | null>(null);
   let inputRef: HTMLInputElement | undefined;
   let acHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let mentionHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
+  let commandHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
 
   function insertText(value: string) {
     const cur = input();
@@ -50,6 +53,7 @@ export default function FeedInput(props: Props) {
   type EmoteEntry = { url: string; source: Source };
   type EmoteSuggestion = { name: string; url: string; source: Source };
   type MentionSuggestion = { login: string; displayName: string; color: string; nickname?: string };
+  type CommandSuggestion = { name: string; description: string };
 
   const allEmotes = createMemo<Record<string, EmoteEntry>>(() => {
     const map: Record<string, EmoteEntry> = {};
@@ -79,6 +83,22 @@ export default function FeedInput(props: Props) {
       const n = name.toLowerCase();
       if (n.startsWith(lower)) starts.push({ name, url: entry.url, source: entry.source });
       else if (n.includes(lower)) contains.push({ name, url: entry.url, source: entry.source });
+    }
+    starts.sort((a, b) => a.name.localeCompare(b.name));
+    contains.sort((a, b) => a.name.localeCompare(b.name));
+    return [...starts, ...contains].slice(0, 10);
+  };
+
+  const commandSuggestions = (): CommandSuggestion[] => {
+    const q = commandQuery();
+    if (q === null) return [];
+    const lower = q.toLowerCase();
+    const starts: CommandSuggestion[] = [];
+    const contains: CommandSuggestion[] = [];
+    for (const c of chatCommands) {
+      const item = { name: c.name, description: c.description };
+      if (lower === "" || c.name.startsWith(lower)) starts.push(item);
+      else if (c.name.includes(lower)) contains.push(item);
     }
     starts.sort((a, b) => a.name.localeCompare(b.name));
     contains.sort((a, b) => a.name.localeCompare(b.name));
@@ -117,8 +137,16 @@ export default function FeedInput(props: Props) {
     const text = input().trim();
     if (!text || sending()) return;
     setSending(true);
-    const reply = props.replyTo();
     try {
+      const handled = await executeChatCommand(text, {
+        broadcasterId: props.broadcasterId,
+        broadcasterLogin: props.broadcasterLogin,
+      });
+      if (handled) {
+        setInput("");
+        return;
+      }
+      const reply = props.replyTo();
       const ok = await sendChatMessage({
         broadcasterId: props.broadcasterId,
         message: text,
@@ -137,17 +165,25 @@ export default function FeedInput(props: Props) {
     const el = e.currentTarget as HTMLInputElement;
     setInput(el.value);
     const before = el.value.slice(0, el.selectionStart ?? el.value.length);
+    const commandMatch = before.match(/^\/(\w*)$/);
     const emoteMatch = before.match(/(?:^|\s):(\w+)$/);
     const mentionMatch = before.match(/(?:^|\s)@(\w*)$/);
-    if (emoteMatch && emoteMatch[1].length >= 1) {
+    if (commandMatch) {
+      setCommandQuery(commandMatch[1]);
+      setAcQuery(null);
+      setMentionQuery(null);
+    } else if (emoteMatch && emoteMatch[1].length >= 1) {
       setAcQuery(emoteMatch[1]);
       setMentionQuery(null);
+      setCommandQuery(null);
     } else if (mentionMatch && mentionMatch[1].length >= 1) {
       setMentionQuery(mentionMatch[1]);
       setAcQuery(null);
+      setCommandQuery(null);
     } else {
       setAcQuery(null);
       setMentionQuery(null);
+      setCommandQuery(null);
     }
   }
 
@@ -179,10 +215,18 @@ export default function FeedInput(props: Props) {
     inputRef?.focus();
   }
 
+  function selectCommand(s: CommandSuggestion) {
+    setCommandQuery(null);
+    setInput(`/${s.name} `);
+    inputRef?.focus();
+  }
+
   function dismissAc() { setAcQuery(null); inputRef?.focus(); }
   function dismissMention() { setMentionQuery(null); inputRef?.focus(); }
+  function dismissCommand() { setCommandQuery(null); inputRef?.focus(); }
 
   function onKeyDown(e: KeyboardEvent) {
+    if (commandHandleKey?.(e)) return;
     if (mentionHandleKey?.(e)) return;
     if (acHandleKey?.(e)) return;
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -213,6 +257,20 @@ export default function FeedInput(props: Props) {
         </div>
       </Show>
       <div class="relative flex items-center h-14">
+        <Show when={commandSuggestions().length > 0}>
+          <FeedSuggestions<CommandSuggestion>
+            suggestions={commandSuggestions}
+            onSelect={selectCommand}
+            onDismiss={dismissCommand}
+            renderItem={(s) => (
+              <>
+                <span class="text-text flex-1 text-left truncate">{s.name}</span>
+                <span class="text-xs shrink-0 text-text-muted truncate">{s.description}</span>
+              </>
+            )}
+            expose={(api) => { commandHandleKey = api.handleKey; }}
+          />
+        </Show>
         <Show when={mentionSuggestions().length > 0}>
           <FeedSuggestions<MentionSuggestion>
             suggestions={mentionSuggestions}
