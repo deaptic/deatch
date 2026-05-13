@@ -193,7 +193,19 @@ listen<RawChatClearUserMessages>("channel-chat-clear-user-messages", (e) => {
 });
 
 listen<RawChatClear>("channel-chat-clear", (e) => {
-  markAllMessagesDeleted(e.payload.broadcaster_user_id);
+  const broadcasterId = e.payload.broadcaster_user_id;
+  markAllMessagesDeleted(broadcasterId);
+  const now = Date.now();
+  const notice: FeedEvent = {
+    kind: "event",
+    id: `chat-cleared-${broadcasterId}-${now}`,
+    notice_type: "chat_cleared",
+    system_message: "Chat has been cleared by a moderator.",
+    chatter_name: "",
+    color: "",
+    timestamp: now,
+  };
+  appendItem(broadcasterId, notice);
 });
 
 listen<string>("chat-error", (e) => {
