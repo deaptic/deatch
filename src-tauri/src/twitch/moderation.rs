@@ -1,6 +1,7 @@
 use crate::{get_token, helix};
 use serde::Deserialize;
 use std::borrow::Cow;
+use twitch_api::helix::channels::{AddChannelVipRequest, RemoveChannelVipRequest};
 use twitch_api::helix::moderation::{
     delete_chat_messages::DeleteChatMessagesRequest, BanUser, BanUserBody, BanUserRequest,
     BannedUser, GetBannedUsersRequest, GetModeratedChannelsRequest, GetModeratorsRequest,
@@ -145,6 +146,52 @@ pub async fn get_moderators(
         .map_err(|e| e.to_string())?;
 
     Ok(PaginatedResponse::new(response.data, response.pagination))
+}
+
+// https://dev.twitch.tv/docs/api/reference/#add-channel-vip
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AddChannelVipParams {
+    pub broadcaster_id: String,
+    pub user_id: String,
+}
+
+#[tauri::command]
+pub async fn add_channel_vip(
+    app: tauri::AppHandle,
+    params: AddChannelVipParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request =
+        AddChannelVipRequest::new(params.broadcaster_id.as_str(), params.user_id.as_str());
+    helix()
+        .req_post(request, twitch_api::helix::EmptyBody, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#remove-channel-vip
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveChannelVipParams {
+    pub broadcaster_id: String,
+    pub user_id: String,
+}
+
+#[tauri::command]
+pub async fn remove_channel_vip(
+    app: tauri::AppHandle,
+    params: RemoveChannelVipParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request =
+        RemoveChannelVipRequest::new(params.broadcaster_id.as_str(), params.user_id.as_str());
+    helix()
+        .req_delete(request, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
 }
 
 // https://dev.twitch.tv/docs/api/reference/#get-moderated-channels

@@ -104,6 +104,7 @@ fn get_scopes() -> Vec<Scope> {
         Scope::ModeratorReadModerators,
         Scope::ModeratorReadVips,
         Scope::ModeratorReadWarnings,
+        Scope::ChannelManageVips,
     ]
 }
 
