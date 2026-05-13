@@ -53,7 +53,7 @@ export default function FeedInput(props: Props) {
   type EmoteEntry = { url: string; source: Source };
   type EmoteSuggestion = { name: string; url: string; source: Source };
   type MentionSuggestion = { login: string; displayName: string; color: string; nickname?: string };
-  type CommandSuggestion = { name: string; description: string };
+  type CommandSuggestion = { name: string; usage?: string; description: string };
 
   const allEmotes = createMemo<Record<string, EmoteEntry>>(() => {
     const map: Record<string, EmoteEntry> = {};
@@ -96,7 +96,7 @@ export default function FeedInput(props: Props) {
     const starts: CommandSuggestion[] = [];
     const contains: CommandSuggestion[] = [];
     for (const c of chatCommands) {
-      const item = { name: c.name, description: c.description };
+      const item = { name: c.name, usage: c.usage, description: c.description };
       if (lower === "" || c.name.startsWith(lower)) starts.push(item);
       else if (c.name.includes(lower)) contains.push(item);
     }
@@ -263,10 +263,15 @@ export default function FeedInput(props: Props) {
             onSelect={selectCommand}
             onDismiss={dismissCommand}
             renderItem={(s) => (
-              <>
-                <span class="text-text flex-1 text-left truncate">{s.name}</span>
-                <span class="text-xs shrink-0 text-text-muted truncate">{s.description}</span>
-              </>
+              <div class="flex flex-col flex-1 min-w-0 text-left">
+                <div class="flex items-baseline gap-2 min-w-0">
+                  <span class="font-semibold text-text truncate">/{s.name}</span>
+                  <Show when={s.usage}>
+                    <span class="text-xs text-text-muted truncate">{s.usage}</span>
+                  </Show>
+                </div>
+                <span class="text-xs text-text-muted truncate">{s.description}</span>
+              </div>
             )}
             expose={(api) => { commandHandleKey = api.handleKey; }}
           />
