@@ -87,20 +87,32 @@ export const chatCommands: ChatCommand[] = [
     usage: "[username]",
     description: "Remove a ban on a user",
     execute: async (args, ctx) => {
-      const [target] = args;
-      if (!target) {
-        addToast("Usage: /unban [username]", "error");
-        return;
-      }
-      const userId = await resolveUserId(target);
-      if (!userId) {
-        addToast(`User not found: ${target}`, "error");
-        return;
-      }
-      await unbanUser({ broadcasterId: ctx.broadcasterId, userId });
+      await runUnban(args, ctx, "/unban");
+    },
+  },
+  {
+    name: "untimeout",
+    usage: "[username]",
+    description: "Remove a timeout on a user",
+    execute: async (args, ctx) => {
+      await runUnban(args, ctx, "/untimeout");
     },
   },
 ];
+
+async function runUnban(args: string[], ctx: ChatCommandContext, label: string) {
+  const [target] = args;
+  if (!target) {
+    addToast(`Usage: ${label} [username]`, "error");
+    return;
+  }
+  const userId = await resolveUserId(target);
+  if (!userId) {
+    addToast(`User not found: ${target}`, "error");
+    return;
+  }
+  await unbanUser({ broadcasterId: ctx.broadcasterId, userId });
+}
 
 export async function executeChatCommand(
   input: string,
