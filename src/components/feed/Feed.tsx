@@ -367,6 +367,12 @@ export default function Feed(props: Props) {
         broadcasterLogin={props.broadcasterLogin}
         replyTo={replyTo}
         onClearReply={clearReply}
+        openUserCard={(userId) => {
+          const b = rootRef?.getBoundingClientRect();
+          const x = b ? b.left : 0;
+          const y = b ? b.bottom : window.innerHeight;
+          setUserCard({ x, y, chatterId: userId });
+        }}
         expose={(api) => { inputApi = api; }}
       />
 

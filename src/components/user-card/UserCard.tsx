@@ -95,7 +95,7 @@ export default function UserCard(props: Props) {
   onMount(() => {
     if (!cardRef) return;
     const rect = cardRef.getBoundingClientRect();
-    setPos((p) => clamp(p.x, p.y, rect.width, rect.height));
+    setPos(clamp(props.x, props.y, rect.width, rect.height));
   });
 
   function startDrag(e: MouseEvent) {

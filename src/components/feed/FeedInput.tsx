@@ -24,6 +24,7 @@ type Props = {
   broadcasterLogin: string;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
+  openUserCard: (userId: string) => void;
   expose?: (api: { focus: () => void; insert: (text: string) => void }) => void;
 };
 
@@ -141,6 +142,7 @@ export default function FeedInput(props: Props) {
       const handled = await executeChatCommand(text, {
         broadcasterId: props.broadcasterId,
         broadcasterLogin: props.broadcasterLogin,
+        openUserCard: props.openUserCard,
       });
       if (handled) {
         setInput("");

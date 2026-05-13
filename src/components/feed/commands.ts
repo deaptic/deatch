@@ -6,6 +6,7 @@ import { addToast } from "../../state/toasts";
 export type ChatCommandContext = {
   broadcasterId: string;
   broadcasterLogin: string;
+  openUserCard: (userId: string) => void;
 };
 
 export type OptionType = "user" | "string" | "duration";
@@ -133,6 +134,16 @@ export const chatCommands: ChatCommand[] = [
     ],
     execute: async ({ username }, ctx) => {
       await unbanUser({ broadcasterId: ctx.broadcasterId, userId: username as string });
+    },
+  },
+  {
+    name: "user",
+    description: "Open the user card",
+    options: [
+      { name: "username", description: "User to view", type: "user", required: true },
+    ],
+    execute: async ({ username }, ctx) => {
+      ctx.openUserCard(username as string);
     },
   },
   {
