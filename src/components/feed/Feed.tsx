@@ -377,6 +377,7 @@ export default function Feed(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={closeContextMenu}
             onReply={startReply}
+            onCopypasta={copypasta}
           />
         )}
       </Show>
