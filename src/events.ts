@@ -197,6 +197,7 @@ listen<RawChatClearUserMessages>("channel-chat-clear-user-messages", (e) => {
 listen<RawChatClear>("channel-chat-clear", (e) => {
   const broadcasterId = e.payload.broadcaster_user_id;
   markAllMessagesDeleted(broadcasterId);
+  if (isModOfChannel(broadcasterId)) return;
   const now = Date.now();
   const notice: FeedEvent = {
     kind: "event",
@@ -221,6 +222,8 @@ function formatDuration(seconds: number): string {
 function buildModerateMessage(p: RawModerate, serverNowMs: number): string | null {
   const mod = p.moderator_user_name;
   switch (p.action) {
+    case "clear":
+      return `${mod} cleared the chat`;
     case "ban": {
       const r = p.ban.reason ? `: ${p.ban.reason}` : "";
       return `${mod} banned ${p.ban.user_name}${r}`;
@@ -235,7 +238,7 @@ function buildModerateMessage(p: RawModerate, serverNowMs: number): string | nul
     case "untimeout":
       return `${mod} removed timeout on ${p.untimeout.user_name}`;
     case "delete":
-      return null;
+      return `${mod} deleted message from ${p.delete.user_name} saying: ${p.delete.message_body}`;
     case "mod":
       return `${mod} added ${p.mod.user_name} as a moderator`;
     case "unmod":
