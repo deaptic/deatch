@@ -1,4 +1,4 @@
-import { deleteChatMessages, banUser } from "../../commands/moderation";
+import { deleteChatMessages, banUser, unbanUser } from "../../commands/moderation";
 import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 
@@ -47,6 +47,24 @@ export const chatCommands: ChatCommand[] = [
       }
       const reason = reasonParts.join(" ").trim() || null;
       await banUser({ broadcasterId: ctx.broadcasterId, userId, reason });
+    },
+  },
+  {
+    name: "unban",
+    usage: "[username]",
+    description: "Remove a ban on a user",
+    execute: async (args, ctx) => {
+      const [target] = args;
+      if (!target) {
+        addToast("Usage: /unban [username]", "error");
+        return;
+      }
+      const userId = await resolveUserId(target);
+      if (!userId) {
+        addToast(`User not found: ${target}`, "error");
+        return;
+      }
+      await unbanUser({ broadcasterId: ctx.broadcasterId, userId });
     },
   },
 ];
