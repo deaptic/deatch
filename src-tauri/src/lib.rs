@@ -236,6 +236,28 @@ async fn handle_ws_message(
                         return Ok(None);
                     }
                 }
+                if sub_type == Some("channel.moderate") {
+                    if let Some(evt) = value.pointer("/payload/event") {
+                        let broadcaster = evt
+                            .get("broadcaster_user_id")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
+                        if subs.contains_key(broadcaster) {
+                            let ts = value
+                                .pointer("/metadata/message_timestamp")
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("");
+                            let _ = app.emit(
+                                "channel-moderate",
+                                serde_json::json!({
+                                    "message_timestamp": ts,
+                                    "event": evt,
+                                }),
+                            );
+                        }
+                        return Ok(None);
+                    }
+                }
             }
             eprintln!("[chat] parse_websocket skipped: {e}\n  raw: {text}");
             return Ok(None);

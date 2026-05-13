@@ -179,6 +179,7 @@ export type RawModerateEvent = {
 
 export type RawModerate = RawModerateBase &
   (
+    | { action: "clear" }
     | { action: "ban"; ban: RawModUser & { reason: string | null } }
     | { action: "unban"; unban: RawModUser }
     | { action: "timeout"; timeout: RawModUser & { reason: string | null; expires_at: string } }
