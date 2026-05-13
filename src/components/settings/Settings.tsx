@@ -46,6 +46,10 @@ import {
   setAdvancedDeveloperMode,
   advancedShowLogs,
   setAdvancedShowLogs,
+  advancedAlwaysOnTop,
+  setAdvancedAlwaysOnTop,
+  advancedAutostart,
+  setAdvancedAutostart,
 } from "../../state/preferences";
 import KeyValueEditor from "../../ui/KeyValueEditor";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
@@ -312,6 +316,18 @@ export default function Settings(props: Props) {
                   description="Surface log messages as toasts."
                 >
                   <Toggle size="md" checked={advancedShowLogs()} onChange={setAdvancedShowLogs} />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Always on top"
+                  description="Keep the window above other applications."
+                >
+                  <Toggle size="md" checked={advancedAlwaysOnTop()} onChange={setAdvancedAlwaysOnTop} />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Launch at startup"
+                  description="Start the app automatically when you sign in."
+                >
+                  <Toggle size="md" checked={advancedAutostart()} onChange={setAdvancedAutostart} />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
             </SettingsContent>

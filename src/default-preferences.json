@@ -31,7 +31,9 @@
   },
   "advanced": {
     "developerMode": false,
-    "showLogs": false
+    "showLogs": false,
+    "alwaysOnTop": false,
+    "autostart": false
   },
   "menu": {
     "channels": {
