@@ -98,6 +98,12 @@ fn get_scopes() -> Vec<Scope> {
         Scope::ModeratorManageShoutouts,
         Scope::ModeratorReadFollowers,
         Scope::ModeratorManageBannedUsers,
+        Scope::ModeratorReadBlockedTerms,
+        Scope::ModeratorReadChatSettings,
+        Scope::ModeratorReadUnbanRequests,
+        Scope::ModeratorReadModerators,
+        Scope::ModeratorReadVips,
+        Scope::ModeratorReadWarnings,
     ]
 }
 

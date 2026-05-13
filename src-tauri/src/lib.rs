@@ -9,7 +9,7 @@ use twitch_api::eventsub::{
         ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
         ChannelChatMessageV1, ChannelChatNotificationV1,
     },
-    channel::{ChannelFollowV2, ChannelShoutoutCreateV1},
+    channel::{ChannelFollowV2, ChannelModerateV2, ChannelShoutoutCreateV1},
     Event, EventsubWebsocketData, Transport,
 };
 use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
@@ -310,6 +310,13 @@ async fn handle_ws_message(
                         }
                     }
                 }
+                Event::ChannelModerateV2(notif) => {
+                    if let twitch_api::eventsub::Message::Notification(msg) = notif.message {
+                        if subs.contains_key(msg.broadcaster_user_id.as_str()) {
+                            let _ = app.emit("channel-moderate", msg);
+                        }
+                    }
+                }
                 _ => {}
             }
             Ok(None)
@@ -381,6 +388,8 @@ async fn subscribe_to_chat(
             ChannelShoutoutCreateV1::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
         if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.follow",
             ChannelFollowV2::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
+        if let Some(id) = try_create(app, helix, token, broadcaster_id, "channel.moderate",
+            ChannelModerateV2::new(broadcaster_id, user_id), transport.clone()).await { ids.push(id); }
     }
     ids
 }
