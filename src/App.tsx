@@ -1,5 +1,7 @@
 import { createSignal, createEffect, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { enable as enableAutostart, disable as disableAutostart } from "@tauri-apps/plugin-autostart";
 import { getAllModeratedChannels } from "./commands/moderation";
 import {
   getGlobalChatBadges,
@@ -13,7 +15,7 @@ import TitleBar from "./components/TitleBar";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
 import Loading from "./components/Loading";
-import { menuChannelPinned } from "./state/preferences";
+import { menuChannelPinned, advancedAlwaysOnTop, advancedAutostart } from "./state/preferences";
 import { user, moderatedChannels, setModeratedChannels } from "./state/users";
 import {
   waiting,
@@ -205,6 +207,15 @@ function App() {
       fetchBttvGlobalEmotes().then(setBttvGlobal).catch(() => {});
       fetchFfzGlobalEmotes().then(setFfzGlobal).catch(() => {});
     }
+  });
+
+  createEffect(() => {
+    getCurrentWindow().setAlwaysOnTop(advancedAlwaysOnTop()).catch(() => {});
+  });
+
+  createEffect(() => {
+    const on = advancedAutostart();
+    (on ? enableAutostart() : disableAutostart()).catch(() => {});
   });
 
   createEffect(() => {
