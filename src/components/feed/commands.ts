@@ -7,13 +7,31 @@ export type ChatCommandContext = {
   broadcasterLogin: string;
 };
 
+export type OptionType = "user" | "string" | "duration";
+
+export type CommandOption = {
+  name: string;
+  description: string;
+  type: OptionType;
+  required?: boolean;
+  default?: unknown;
+};
+
 export type ChatCommand = {
   name: string;
   aliases?: string[];
-  usage?: string;
   description: string;
-  execute: (args: string[], ctx: ChatCommandContext) => Promise<void>;
+  options: CommandOption[];
+  execute: (values: Record<string, unknown>, ctx: ChatCommandContext) => Promise<void>;
 };
+
+const DURATION_UNITS: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400, w: 604800 };
+
+function parseDuration(raw: string): number | null {
+  const m = raw.match(/^(\d+)([smhdw]?)$/);
+  if (!m) return null;
+  return parseInt(m[1], 10) * (DURATION_UNITS[m[2]] ?? 1);
+}
 
 async function resolveUserId(rawLogin: string): Promise<string | null> {
   const login = rawLogin.replace(/^@/, "").toLowerCase();
@@ -22,97 +40,111 @@ async function resolveUserId(rawLogin: string): Promise<string | null> {
   return users[0]?.id ?? null;
 }
 
-const DURATION_UNITS: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400, w: 604800 };
+export function buildUsage(options: CommandOption[]): string {
+  return options.map((o) => `[${o.name}]`).join(" ");
+}
 
-function parseDuration(raw: string): number | null {
-  const m = raw.match(/^(\d+)([smhdw]?)$/);
-  if (!m) return null;
-  const n = parseInt(m[1], 10);
-  return n * (DURATION_UNITS[m[2]] ?? 1);
+type ParseResult =
+  | { values: Record<string, unknown> }
+  | { error: string };
+
+async function parseArgs(raw: string[], options: CommandOption[]): Promise<ParseResult> {
+  const values: Record<string, unknown> = {};
+  let i = 0;
+  for (const opt of options) {
+    if (opt.type === "string") {
+      const joined = raw.slice(i).join(" ").trim();
+      if (!joined) {
+        if (opt.required) return { error: `Missing ${opt.name}` };
+        values[opt.name] = opt.default ?? null;
+      } else {
+        values[opt.name] = joined;
+      }
+      i = raw.length;
+      continue;
+    }
+    const arg = raw[i];
+    if (arg === undefined) {
+      if (opt.required) return { error: `Missing ${opt.name}` };
+      values[opt.name] = opt.default ?? null;
+      continue;
+    }
+    if (opt.type === "user") {
+      const userId = await resolveUserId(arg);
+      if (!userId) return { error: `User not found: ${arg}` };
+      values[opt.name] = userId;
+    } else if (opt.type === "duration") {
+      const d = parseDuration(arg);
+      if (d === null) return { error: `Invalid duration: ${arg}` };
+      values[opt.name] = d;
+    }
+    i++;
+  }
+  return { values };
 }
 
 export const chatCommands: ChatCommand[] = [
   {
     name: "clear",
     description: "Clear all messages in chat",
-    execute: async (_args, ctx) => {
+    options: [],
+    execute: async (_, ctx) => {
       await deleteChatMessages({ broadcasterId: ctx.broadcasterId, messageId: null });
     },
   },
   {
     name: "ban",
-    usage: "[username] [reason]",
     description: "Permanently ban a user from Chat",
-    execute: async (args, ctx) => {
-      const [target, ...reasonParts] = args;
-      if (!target) {
-        addToast("Usage: /ban [username] [reason]", "error");
-        return;
-      }
-      const userId = await resolveUserId(target);
-      if (!userId) {
-        addToast(`User not found: ${target}`, "error");
-        return;
-      }
-      const reason = reasonParts.join(" ").trim() || null;
-      await banUser({ broadcasterId: ctx.broadcasterId, userId, reason });
+    options: [
+      { name: "username", description: "User to ban", type: "user", required: true },
+      { name: "reason", description: "Reason", type: "string" },
+    ],
+    execute: async ({ username, reason }, ctx) => {
+      await banUser({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+        reason: (reason as string | null) ?? null,
+      });
     },
   },
   {
     name: "timeout",
-    usage: "[username] [duration] [reason]",
     description: "Temporarily ban a user from Chat",
-    execute: async (args, ctx) => {
-      const [target, durationRaw, ...reasonParts] = args;
-      if (!target) {
-        addToast("Usage: /timeout [username] [duration] [reason]", "error");
-        return;
-      }
-      const duration = durationRaw ? parseDuration(durationRaw) : 600;
-      if (duration === null) {
-        addToast(`Invalid duration: ${durationRaw}`, "error");
-        return;
-      }
-      const userId = await resolveUserId(target);
-      if (!userId) {
-        addToast(`User not found: ${target}`, "error");
-        return;
-      }
-      const reason = reasonParts.join(" ").trim() || null;
-      await banUser({ broadcasterId: ctx.broadcasterId, userId, duration, reason });
+    options: [
+      { name: "username", description: "User to time out", type: "user", required: true },
+      { name: "duration", description: "Duration", type: "duration", default: 600 },
+      { name: "reason", description: "Reason", type: "string" },
+    ],
+    execute: async ({ username, duration, reason }, ctx) => {
+      await banUser({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+        duration: duration as number,
+        reason: (reason as string | null) ?? null,
+      });
     },
   },
   {
     name: "unban",
-    usage: "[username]",
     description: "Remove a ban on a user",
-    execute: async (args, ctx) => {
-      await runUnban(args, ctx, "/unban");
+    options: [
+      { name: "username", description: "User to unban", type: "user", required: true },
+    ],
+    execute: async ({ username }, ctx) => {
+      await unbanUser({ broadcasterId: ctx.broadcasterId, userId: username as string });
     },
   },
   {
     name: "untimeout",
-    usage: "[username]",
     description: "Remove a timeout on a user",
-    execute: async (args, ctx) => {
-      await runUnban(args, ctx, "/untimeout");
+    options: [
+      { name: "username", description: "User to remove timeout from", type: "user", required: true },
+    ],
+    execute: async ({ username }, ctx) => {
+      await unbanUser({ broadcasterId: ctx.broadcasterId, userId: username as string });
     },
   },
 ];
-
-async function runUnban(args: string[], ctx: ChatCommandContext, label: string) {
-  const [target] = args;
-  if (!target) {
-    addToast(`Usage: ${label} [username]`, "error");
-    return;
-  }
-  const userId = await resolveUserId(target);
-  if (!userId) {
-    addToast(`User not found: ${target}`, "error");
-    return;
-  }
-  await unbanUser({ broadcasterId: ctx.broadcasterId, userId });
-}
 
 export async function executeChatCommand(
   input: string,
@@ -127,8 +159,13 @@ export async function executeChatCommand(
     addToast(`Unknown command: /${head}`, "error");
     return true;
   }
+  const parsed = await parseArgs(rest, cmd.options);
+  if ("error" in parsed) {
+    addToast(parsed.error, "error");
+    return true;
+  }
   try {
-    await cmd.execute(rest, ctx);
+    await cmd.execute(parsed.values, ctx);
   } catch {
     addToast(`/${head} failed`, "error");
   }
