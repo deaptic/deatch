@@ -9,6 +9,7 @@ import type {
   RawChatMessageDelete,
   RawChatClear,
   RawChatClearUserMessages,
+  RawModerate,
 } from "./types";
 import {
   appendItem,
@@ -206,6 +207,87 @@ listen<RawChatClear>("channel-chat-clear", (e) => {
     timestamp: now,
   };
   appendItem(broadcasterId, notice);
+});
+
+function formatDuration(seconds: number): string {
+  if (seconds <= 0) return "0s";
+  if (seconds >= 86400) return `${Math.round(seconds / 86400)}d`;
+  if (seconds >= 3600) return `${Math.round(seconds / 3600)}h`;
+  if (seconds >= 60) return `${Math.round(seconds / 60)}m`;
+  return `${seconds}s`;
+}
+
+function buildModerateMessage(p: RawModerate): string | null {
+  const mod = p.moderator_user_name;
+  switch (p.action) {
+    case "ban": {
+      const r = p.ban.reason ? `: ${p.ban.reason}` : "";
+      return `${mod} banned ${p.ban.user_name}${r}`;
+    }
+    case "unban":
+      return `${mod} unbanned ${p.unban.user_name}`;
+    case "timeout": {
+      const secs = Math.max(0, Math.round((new Date(p.timeout.expires_at).getTime() - Date.now()) / 1000));
+      const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
+      return `${mod} timed out ${p.timeout.user_name} for ${formatDuration(secs)}${r}`;
+    }
+    case "untimeout":
+      return `${mod} removed timeout on ${p.untimeout.user_name}`;
+    case "delete":
+      return null;
+    case "mod":
+      return `${mod} added ${p.mod.user_name} as a moderator`;
+    case "unmod":
+      return `${mod} removed ${p.unmod.user_name} as a moderator`;
+    case "vip":
+      return `${mod} added ${p.vip.user_name} as a VIP`;
+    case "unvip":
+      return `${mod} removed ${p.unvip.user_name} as a VIP`;
+    case "raid":
+      return `${mod} initiated a raid on ${p.raid.user_name}`;
+    case "unraid":
+      return `${mod} cancelled the raid`;
+    case "slow":
+      return `${mod} enabled slow mode (${p.slow.wait_time_seconds}s)`;
+    case "slowoff":
+      return `${mod} disabled slow mode`;
+    case "followers":
+      return `${mod} enabled followers-only mode (${p.followers.follow_duration_minutes}m)`;
+    case "followersoff":
+      return `${mod} disabled followers-only mode`;
+    case "emoteonly":
+      return `${mod} enabled emote-only mode`;
+    case "emoteonlyoff":
+      return `${mod} disabled emote-only mode`;
+    case "subscribers":
+      return `${mod} enabled subscribers-only mode`;
+    case "subscribersoff":
+      return `${mod} disabled subscribers-only mode`;
+    case "uniquechat":
+      return `${mod} enabled unique-chat mode`;
+    case "uniquechatoff":
+      return `${mod} disabled unique-chat mode`;
+    case "warn": {
+      const r = p.warn.reason ? `: ${p.warn.reason}` : "";
+      return `${mod} warned ${p.warn.user_name}${r}`;
+    }
+  }
+}
+
+listen<RawModerate>("channel-moderate", (e) => {
+  const msg = buildModerateMessage(e.payload);
+  if (!msg) return;
+  const now = Date.now();
+  const notice: FeedEvent = {
+    kind: "event",
+    id: `moderate-${e.payload.broadcaster_user_id}-${e.payload.action}-${now}-${Math.random().toString(36).slice(2, 8)}`,
+    notice_type: `moderate_${e.payload.action}`,
+    system_message: msg,
+    chatter_name: e.payload.moderator_user_name,
+    color: "",
+    timestamp: now,
+  };
+  appendItem(e.payload.broadcaster_user_id, notice);
 });
 
 listen<string>("chat-error", (e) => {
