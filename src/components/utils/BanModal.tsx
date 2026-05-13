@@ -7,6 +7,7 @@ import {
 } from "../../commands/moderation";
 import Button from "../../ui/Button";
 import TextInput from "../../ui/TextInput";
+import { user } from "../../state/users";
 
 const DURATIONS = [
   { label: "1s", value: 1 },
@@ -40,9 +41,11 @@ function formatDate(iso: string) {
 
 export default function BanModal(props: Props) {
   const [reason, setReason] = createSignal("");
-  const [pending, setPending] = createSignal<number | "ban" | null>(null);
+  const [pending, setPending] = createSignal<number | "ban" | "unban" | null>(null);
   // undefined = loading, null = not banned, object = banned with details.
   const [banInfo, setBanInfo] = createSignal<BanInfo | null | undefined>(undefined);
+
+  const isBroadcaster = () => user()?.id === props.broadcasterId;
 
   async function timeout(seconds: number) {
     if (pending() !== null) return;
@@ -60,20 +63,27 @@ export default function BanModal(props: Props) {
     }
   }
 
-  async function toggleBan() {
-    if (pending() !== null || banInfo() === undefined) return;
+  async function ban() {
+    if (pending() !== null) return;
     setPending("ban");
     try {
-      if (banInfo()) {
-        await unbanUser({ broadcasterId: props.broadcasterId, userId: props.userId });
-      } else {
-        await banUser({
-          broadcasterId: props.broadcasterId,
-          userId: props.userId,
-          duration: null,
-          reason: reason(),
-        });
-      }
+      await banUser({
+        broadcasterId: props.broadcasterId,
+        userId: props.userId,
+        duration: null,
+        reason: reason(),
+      });
+      props.onClose();
+    } finally {
+      setPending(null);
+    }
+  }
+
+  async function unban() {
+    if (pending() !== null) return;
+    setPending("unban");
+    try {
+      await unbanUser({ broadcasterId: props.broadcasterId, userId: props.userId });
       props.onClose();
     } finally {
       setPending(null);
@@ -87,12 +97,18 @@ export default function BanModal(props: Props) {
     window.addEventListener("keydown", onKey);
     onCleanup(() => window.removeEventListener("keydown", onKey));
 
-    getBannedUsers(
-      { broadcasterId: props.broadcasterId, userId: props.userId, first: 1 },
-      { silent: true },
-    )
-      .then((res) => setBanInfo(res.data[0] ?? null))
-      .catch(() => setBanInfo(null));
+    if (isBroadcaster()) {
+      getBannedUsers(
+        { broadcasterId: props.broadcasterId, userId: props.userId, first: 1 },
+        { silent: true },
+      )
+        .then((res) => setBanInfo(res.data[0] ?? null))
+        .catch(() => setBanInfo(null));
+    } else {
+      // Twitch's banned-users endpoint is broadcaster-only. Mods can still
+      // ban/unban — they just have to pick the action without a status hint.
+      setBanInfo(null);
+    }
   });
 
   return (
@@ -151,19 +167,41 @@ export default function BanModal(props: Props) {
 
         <div class="flex gap-2 justify-end">
           <Button variant="secondary" onClick={props.onClose}>Cancel</Button>
-          <Button
-            variant={banInfo() ? "secondary" : "danger"}
-            onClick={toggleBan}
-            disabled={pending() !== null || banInfo() === undefined}
+          <Show
+            when={isBroadcaster()}
+            fallback={
+              <>
+                <Button
+                  variant="secondary"
+                  onClick={unban}
+                  disabled={pending() !== null}
+                >
+                  {pending() === "unban" ? "…" : "Unban"}
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={ban}
+                  disabled={pending() !== null}
+                >
+                  {pending() === "ban" ? "…" : "Ban"}
+                </Button>
+              </>
+            }
           >
-            {pending() === "ban"
-              ? "…"
-              : banInfo() === undefined
+            <Button
+              variant={banInfo() ? "secondary" : "danger"}
+              onClick={banInfo() ? unban : ban}
+              disabled={pending() !== null || banInfo() === undefined}
+            >
+              {pending() === "ban" || pending() === "unban"
                 ? "…"
-                : banInfo()
-                  ? "Unban"
-                  : "Ban"}
-          </Button>
+                : banInfo() === undefined
+                  ? "…"
+                  : banInfo()
+                    ? "Unban"
+                    : "Ban"}
+            </Button>
+          </Show>
         </div>
       </div>
     </div>

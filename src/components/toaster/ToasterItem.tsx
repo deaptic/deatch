@@ -70,9 +70,9 @@ export default function ToasterItem(props: Props) {
           <Icon class={`w-5 h-5 ${palette.stroke}`} />
         </div>
         <div class="flex-1 min-w-0 flex flex-col gap-0.5">
-          <p class="text-text text-sm font-semibold leading-tight">{toast.title}</p>
+          <p class="text-text text-sm font-semibold leading-tight break-words">{toast.title}</p>
           <Show when={toast.description}>
-            <p class="text-text-muted text-xs leading-snug">{toast.description}</p>
+            <p class="text-text-muted text-xs leading-snug break-words">{toast.description}</p>
           </Show>
         </div>
         <button
