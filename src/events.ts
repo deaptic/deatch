@@ -18,7 +18,7 @@ import {
   markUserMessagesDeleted,
   markAllMessagesDeleted,
 } from "./components/feed/feeds";
-import { user, moderatedChannels } from "./state/users";
+import { user, isModOfChannel } from "./state/users";
 import { channelsById } from "./state/channels";
 import { recordMention } from "./state/inbox";
 import { feedKeywords, matchesAnyKeyword } from "./state/preferences";
@@ -100,13 +100,6 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
     color: "",
     timestamp,
   };
-}
-
-function isModOfChannel(broadcasterId: string): boolean {
-  const me = user();
-  if (!me) return false;
-  if (broadcasterId === me.id) return true;
-  return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
 }
 
 async function handleFollowageCommand(raw: RawChatMessage) {
