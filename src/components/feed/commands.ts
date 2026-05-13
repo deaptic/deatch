@@ -22,6 +22,15 @@ async function resolveUserId(rawLogin: string): Promise<string | null> {
   return users[0]?.id ?? null;
 }
 
+const DURATION_UNITS: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400, w: 604800 };
+
+function parseDuration(raw: string): number | null {
+  const m = raw.match(/^(\d+)([smhdw]?)$/);
+  if (!m) return null;
+  const n = parseInt(m[1], 10);
+  return n * (DURATION_UNITS[m[2]] ?? 1);
+}
+
 export const chatCommands: ChatCommand[] = [
   {
     name: "clear",
@@ -47,6 +56,30 @@ export const chatCommands: ChatCommand[] = [
       }
       const reason = reasonParts.join(" ").trim() || null;
       await banUser({ broadcasterId: ctx.broadcasterId, userId, reason });
+    },
+  },
+  {
+    name: "timeout",
+    usage: "[username] [duration] [reason]",
+    description: "Temporarily ban a user from Chat",
+    execute: async (args, ctx) => {
+      const [target, durationRaw, ...reasonParts] = args;
+      if (!target) {
+        addToast("Usage: /timeout [username] [duration] [reason]", "error");
+        return;
+      }
+      const duration = durationRaw ? parseDuration(durationRaw) : 600;
+      if (duration === null) {
+        addToast(`Invalid duration: ${durationRaw}`, "error");
+        return;
+      }
+      const userId = await resolveUserId(target);
+      if (!userId) {
+        addToast(`User not found: ${target}`, "error");
+        return;
+      }
+      const reason = reasonParts.join(" ").trim() || null;
+      await banUser({ broadcasterId: ctx.broadcasterId, userId, duration, reason });
     },
   },
   {
