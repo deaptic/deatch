@@ -198,11 +198,10 @@ export function removeUserNickname(login: string) {
 }
 
 export function addFeedKeyword(keyword: string) {
-  const trimmed = keyword.trim();
-  if (!trimmed) return;
-  const lower = trimmed.toLowerCase();
+  const lower = keyword.trim().toLowerCase();
+  if (!lower) return;
   if (prefs.feed.keywords.some((k) => k.toLowerCase() === lower)) return;
-  setPrefs("feed", "keywords", (k) => [...k, trimmed]);
+  setPrefs("feed", "keywords", (k) => [...k, lower]);
   persist();
 }
 
