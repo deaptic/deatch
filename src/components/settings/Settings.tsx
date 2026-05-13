@@ -42,6 +42,8 @@ import {
   feedUserNicknames,
   setUserNickname,
   removeUserNickname,
+  notificationsMentionSound,
+  setNotificationsMentionSound,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
   advancedShowLogs,
@@ -155,6 +157,18 @@ export default function Settings(props: Props) {
               )}
             </For>
           </SettingsNavigation>
+          <Show when={section() === "notifications"}>
+            <SettingsContent title="Notifications">
+              <SettingsContentSection>
+                <SettingsContentSectionItem
+                  label="Mention ping sound"
+                  description="Play a sound when someone mentions you or a keyword matches."
+                >
+                  <Toggle size="md" checked={notificationsMentionSound()} onChange={setNotificationsMentionSound} />
+                </SettingsContentSectionItem>
+              </SettingsContentSection>
+            </SettingsContent>
+          </Show>
           <Show when={section() === "feed"}>
             <SettingsContent title="Feed">
               <SettingsContentSection title="General">

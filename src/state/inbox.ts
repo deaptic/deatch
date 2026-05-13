@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import notificationSound from "../assets/notification.mp3";
+import { notificationsMentionSound } from "./preferences";
 
 const audio = new Audio(notificationSound);
 
@@ -36,7 +37,7 @@ export function recordMention(m: Omit<Mention, "unread">) {
     const next = [{ ...m, unread: true } as Mention, ...prev];
     return next.length > MAX ? next.slice(0, MAX) : next;
   });
-  if (added) {
+  if (added && notificationsMentionSound()) {
     audio.currentTime = 0;
     audio.play().catch(() => {});
   }
