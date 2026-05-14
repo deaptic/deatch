@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
-import { waiting, deviceCode, cancel } from "../../state/auth";
-import { login } from "../../services/auth";
+import { waiting, deviceCode } from "../../state/auth";
+import { sessionManager } from "../../managers/SessionManager";
 import TwitchIcon from "../../icons/TwitchIcon";
 import Loading from "../../ui/Loading";
 
@@ -41,7 +41,7 @@ export default function Login() {
                 )}
               </Show>
               <button
-                onClick={cancel}
+                onClick={() => sessionManager.abort()}
                 class="text-text-muted hover:text-text text-sm transition-colors cursor-pointer"
               >
                 Cancel
@@ -54,7 +54,7 @@ export default function Login() {
                 <p class="text-text-muted text-sm">Connect your Twitch account to get started</p>
               </div>
               <button
-                onClick={login}
+                onClick={() => sessionManager.login()}
                 class="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/85 active:bg-primary/70 transition-colors duration-150 text-text font-semibold py-3 px-6 rounded-lg cursor-pointer"
               >
                 <TwitchIcon class="w-5 h-5 fill-text" />

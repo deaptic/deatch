@@ -22,7 +22,7 @@ import {
 } from "./state/preferences";
 import { user, setModeratedChannels } from "./state/users";
 import { authChecked } from "./state/auth";
-import { restoreSession } from "./services/auth";
+import { sessionManager } from "./managers/SessionManager";
 import { setGlobalEmotes, clearChannelThirdPartyEmotes } from "./state/emotes";
 import {
   loadGlobalEmotes,
@@ -140,7 +140,7 @@ function App() {
   });
 
   onMount(() => {
-    restoreSession();
+    sessionManager.restore();
     loadThirdPartyGlobalEmotes();
   });
 
