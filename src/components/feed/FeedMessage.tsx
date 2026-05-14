@@ -3,7 +3,8 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { EmoteMap } from "../../state/emotes";
 import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
 import FeedMessageToolbar from "./FeedMessageToolbar";
-import type { FeedMessage as Message, Fragment, BadgeMap } from "./types";
+import FeedMessageFragment from "./FeedMessageFragment";
+import type { FeedMessage as Message, BadgeMap } from "../../types";
 import { matchesAnyKeyword, feedUserNickname } from "../../state/preferences";
 
 type Reaction = { label: string; value: string; url: string };
@@ -28,89 +29,6 @@ type Props = {
   onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
   onUserContextMenu?: (x: number, y: number, identity: { userId?: string; login?: string; displayName?: string }) => void;
 };
-
-const INLINE_EMOTE =
-  "inline-block h-[1.4em] w-auto max-w-[4em] object-contain align-top mt-[0.1em] mx-0.5";
-
-const URL_RE = /^https?:\/\/\S+$/;
-
-function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
-  const tokens = () => props.text.split(/(\s+)/);
-  return (
-    <For each={tokens()}>
-      {(token) => {
-        const emoteUrl = () => props.emotes[token];
-        return (
-          <Show
-            when={emoteUrl()}
-            fallback={
-              URL_RE.test(token) ? (
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openUrl(token);
-                  }}
-                  class="text-primary hover:underline break-all"
-                >
-                  {token}
-                </a>
-              ) : (
-                <span class="text-text">{token}</span>
-              )
-            }
-          >
-            <img src={emoteUrl()!} alt={token} title={token} class={INLINE_EMOTE} />
-          </Show>
-        );
-      }}
-    </For>
-  );
-}
-
-function renderFragment(
-  frag: Fragment,
-  emotes: EmoteMap,
-  onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void,
-  onUserContextMenu?: (x: number, y: number, identity: { userId?: string; login?: string; displayName?: string }) => void,
-) {
-  switch (frag.type) {
-    case "emote":
-      return (
-        <img
-          src={`https://static-cdn.jtvnw.net/emoticons/v2/${frag.id}/default/dark/1.0`}
-          alt={frag.text}
-          title={frag.text}
-          class={INLINE_EMOTE}
-        />
-      );
-    case "mention":
-      return (
-        <span
-          class="text-primary font-medium cursor-pointer hover:underline"
-          onClick={(e) => onShowUserCard?.(e.clientX, e.clientY, { login: frag.user_login })}
-          onContextMenu={(e) => {
-            if (!onUserContextMenu) return;
-            e.preventDefault();
-            e.stopPropagation();
-            onUserContextMenu(e.clientX, e.clientY, { login: frag.user_login });
-          }}
-          onAuxClick={(e) => {
-            if (e.button !== 1) return;
-            e.preventDefault();
-            openUrl(`https://twitch.tv/${frag.user_login}`);
-          }}
-          onMouseDown={(e) => {
-            if (e.button === 1) e.preventDefault();
-          }}
-        >
-          {frag.text}
-        </span>
-      );
-    default:
-      return <TextWithEmotes text={frag.text} emotes={emotes} />;
-  }
-}
 
 export default function FeedMessage(props: Props) {
   const mentioned = () => {
@@ -265,7 +183,14 @@ export default function FeedMessage(props: Props) {
           fallback={<span class="italic text-text-muted">&lt;deleted&gt;</span>}
         >
           <For each={visibleFragments()}>
-            {(frag) => renderFragment(frag, props.emotes, props.onShowUserCard, props.onUserContextMenu)}
+            {(frag) => (
+              <FeedMessageFragment
+                frag={frag}
+                emotes={props.emotes}
+                onShowUserCard={props.onShowUserCard}
+                onUserContextMenu={props.onUserContextMenu}
+              />
+            )}
           </For>
         </Show>
       </div>

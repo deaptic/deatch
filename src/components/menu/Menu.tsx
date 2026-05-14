@@ -20,7 +20,7 @@ import {
   unpinChannel,
   reorderPinnedChannels,
 } from "../../state/preferences";
-import { hasUnread } from "../feed/feeds";
+import { hasUnread } from "../../state/feeds";
 import { channelMentionCount } from "../../state/inbox";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";

@@ -1,7 +1,6 @@
 import { createSignal, createEffect, For, onCleanup, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getUsers } from "../../commands/users";
-import { addToast } from "../../state/toasts";
 import type { TwitchUser } from "../../types";
 import SettingsNavigation from "./SettingsNavigation";
 import SettingsNavigationItem from "./SettingsNavigationItem";
@@ -32,7 +31,6 @@ import {
   feedEvents,
   setFeedEvent,
   feedUserMuted,
-  muteUser,
   unmuteUser,
   feedKeywords,
   addFeedKeyword,
@@ -40,7 +38,6 @@ import {
   feedUserOverrideNameColor,
   setFeedUserOverrideNameColor,
   feedUserNicknames,
-  setUserNickname,
   removeUserNickname,
   notificationsMentionSound,
   setNotificationsMentionSound,
@@ -53,6 +50,7 @@ import {
   advancedAutostart,
   setAdvancedAutostart,
 } from "../../state/preferences";
+import { muteUserByLogin, setUserNicknameByLogin } from "../../services/preferences";
 import KeyValueEditor from "../../ui/KeyValueEditor";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
@@ -92,37 +90,12 @@ export default function Settings(props: Props) {
   });
 
   async function applyNickname(login: string, nickname: string): Promise<boolean> {
-    const key = login.trim().toLowerCase();
-    if (!key) return false;
-    try {
-      const users = await getUsers({ logins: [key] });
-      const u = users[0];
-      if (!u) {
-        addToast(`User "${key}" not found`, "error");
-        return false;
-      }
-      setUserNickname(u.login, nickname);
-      return true;
-    } catch (e) {
-      addToast(String(e), "error");
-      return false;
-    }
+    return !!(await setUserNicknameByLogin(login, nickname));
   }
 
   async function muteByLogin(login: string) {
-    try {
-      const users = await getUsers({ logins: [login] });
-      const u = users[0];
-      if (!u) {
-        addToast(`User "${login}" not found`, "error");
-        return;
-      }
-      if (feedUserMuted().includes(u.id)) return;
-      setMutedMeta(u.id, u);
-      muteUser(u.id);
-    } catch (e) {
-      addToast(String(e), "error");
-    }
+    const u = await muteUserByLogin(login);
+    if (u) setMutedMeta(u.id, u);
   }
 
   return (

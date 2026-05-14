@@ -1,7 +1,9 @@
 import { createStore, produce } from "solid-js/store";
-import type { FeedItem, BadgeMap } from "./types";
-import { selectedChannel } from "../../state/channels";
-import { recordChatter } from "../../state/users";
+import type { FeedItem, BadgeMap } from "../types";
+import { NOTICE_TO_EVENT } from "../constants";
+import { selectedChannel } from "./channels";
+import { recordChatter } from "./users";
+import { feedEvents, feedUserMuted } from "./preferences";
 
 export type { FeedItem };
 
@@ -194,6 +196,20 @@ export function trimToLatest(id: string) {
 
 export function dropFeed(id: string) {
   setFeeds(id, undefined as unknown as ChannelFeed);
+}
+
+/// Whether an item should render in the feed given the user's event-filter,
+/// muted-user, and notice-category preferences. Reads preference signals
+/// directly so it stays reactive when called inside a Solid effect or memo.
+export function isFeedItemVisible(item: FeedItem): boolean {
+  if (item.kind === "event") {
+    const k = NOTICE_TO_EVENT[item.notice_type];
+    return !k || feedEvents()[k]?.show !== false;
+  }
+  return (
+    feedEvents().message?.show !== false &&
+    !feedUserMuted().includes(item.chatter_user_id)
+  );
 }
 
 export { feeds };

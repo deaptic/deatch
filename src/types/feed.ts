@@ -1,4 +1,7 @@
-import type { Badge } from "../../types";
+// UI-side types for rendered feed items. Producers live in `events/` (raw
+// Tauri payloads → feed shapes); consumers live in `components/feed/`.
+
+import type { Badge } from "./chat";
 
 export type Fragment =
   | { type: "text"; text: string }

@@ -3,7 +3,7 @@ import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import CopyIcon from "../../icons/CopyIcon";
-import type { FeedEvent } from "../feed/types";
+import type { FeedEvent } from "../../types";
 
 type Props = {
   x: number;
