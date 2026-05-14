@@ -6,7 +6,9 @@ pub mod moderation;
 pub mod response;
 pub mod streams;
 pub mod users;
+mod utils;
 
+use std::collections::HashSet;
 use std::sync::Mutex;
 use tauri::Manager;
 use tokio::sync::mpsc;
@@ -15,6 +17,11 @@ use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
 pub(crate) struct TwitchState {
     pub(crate) token: Mutex<Option<UserToken>>,
     pub(crate) eventsub_tx: Mutex<Option<mpsc::UnboundedSender<eventsub::EventSubCmd>>>,
+    /// Serializes `eventsub::runner::ensure_task` so concurrent
+    /// subscribe_channel calls can't race the auth check or spawn duplicate
+    /// tasks.
+    pub(crate) eventsub_init: tokio::sync::Mutex<()>,
+    pub(crate) moderated_channel_ids: Mutex<HashSet<String>>,
 }
 
 impl TwitchState {
@@ -22,6 +29,8 @@ impl TwitchState {
         Self {
             token: Mutex::new(None),
             eventsub_tx: Mutex::new(None),
+            eventsub_init: tokio::sync::Mutex::new(()),
+            moderated_channel_ids: Mutex::new(HashSet::new()),
         }
     }
 }

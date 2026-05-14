@@ -1,6 +1,6 @@
 import { addToast } from "../state/toasts";
 import type { RawChatMessage } from "../types";
-import { fetchAllPages, invokeCommand, type InvokeOptions, type Paginated } from "./utils";
+import { invokeCommand, type InvokeOptions, type Paginated } from "./utils";
 
 export type GetGlobalEmotesResponse = {
   id: string;
@@ -37,12 +37,25 @@ export function getUserEmotes(
   return invokeCommand("get_user_emotes", params, options);
 }
 
-export async function getAllUserEmotes(
-  params: GetUserEmotesParams = {},
+export type GetAllUserEmotesParams = {
+  broadcasterId?: string;
+};
+
+export function getAllUserEmotes(
+  params: GetAllUserEmotesParams = {},
+  options?: InvokeOptions,
 ): Promise<GetUserEmotesResponse["data"]> {
-  return fetchAllPages("get_user_emotes", (after, options) =>
-    getUserEmotes({ ...params, after }, options),
-  );
+  return invokeCommand("get_all_user_emotes", params, options);
+}
+
+/// Streams pages of user emotes back via the `user-emote-page` Tauri event.
+/// Resolves when all pages have been emitted. Subscribe to the event in
+/// `events.ts` to handle incoming pages.
+export function streamUserEmotes(
+  params: GetAllUserEmotesParams = {},
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("stream_user_emotes", params, options);
 }
 
 export type GetGlobalChatBadgesResponse = {

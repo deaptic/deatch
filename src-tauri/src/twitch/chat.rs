@@ -52,6 +52,54 @@ pub async fn get_user_emotes(
     Ok(PaginatedResponse::new(response.data, response.pagination))
 }
 
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetAllUserEmotesParams {
+    pub broadcaster_id: Option<String>,
+}
+
+#[tauri::command]
+pub async fn get_all_user_emotes(
+    app: tauri::AppHandle,
+    params: GetAllUserEmotesParams,
+) -> Result<Vec<UserEmote>, String> {
+    let token = get_token(&app).await?;
+    let bc = params.broadcaster_id;
+    super::utils::fetch_all_pages(&token, |after| {
+        let mut request = GetUserEmotesRequest::user_id(token.user_id.clone());
+        request.broadcaster_id = bc.as_deref().map(|s| Cow::Owned(UserId::from(s)));
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await
+}
+
+/// Streams pages of user emotes to the frontend via the `user-emote-page`
+/// Tauri event. The frontend appends each page as it arrives so the picker
+/// becomes usable after the first ~1.3s instead of waiting for the full ~12s.
+#[tauri::command]
+pub async fn stream_user_emotes(
+    app: tauri::AppHandle,
+    params: GetAllUserEmotesParams,
+) -> Result<(), String> {
+    use tauri::Emitter;
+    let token = get_token(&app).await?;
+    let bc = params.broadcaster_id;
+    super::utils::stream_all_pages(
+        &token,
+        |after| {
+            let mut request = GetUserEmotesRequest::user_id(token.user_id.clone());
+            request.broadcaster_id = bc.as_deref().map(|s| Cow::Owned(UserId::from(s)));
+            request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+            request
+        },
+        |page| {
+            let _ = app.emit("user-emote-page", page);
+        },
+    )
+    .await
+}
+
 // https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges
 #[tauri::command]
 pub async fn get_global_chat_badges(app: tauri::AppHandle) -> Result<Vec<BadgeSet>, String> {

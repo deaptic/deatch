@@ -43,12 +43,21 @@ type Props = {
 export default function TitleBar(props: Props) {
   const [maximized, setMaximized] = createSignal(false);
 
-  onMount(async () => {
-    setMaximized(await win.isMaximized());
-    const unlisten = await win.onResized(async () => {
-      setMaximized(await win.isMaximized());
+  onMount(() => {
+    let unlisten: (() => void) | undefined;
+    let cancelled = false;
+    onCleanup(() => {
+      cancelled = true;
+      unlisten?.();
     });
-    onCleanup(unlisten);
+    (async () => {
+      setMaximized(await win.isMaximized());
+      const off = await win.onResized(async () => {
+        setMaximized(await win.isMaximized());
+      });
+      if (cancelled) off();
+      else unlisten = off;
+    })();
   });
 
   return (

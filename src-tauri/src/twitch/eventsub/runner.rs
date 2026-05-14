@@ -6,9 +6,12 @@ use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
 use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
 
+use twitch_api::twitch_oauth2::UserToken;
+
 use super::dispatch::handle_ws_message;
 use super::subscribe::{create_subscriptions, delete_subscription};
 use super::{EventSubCmd, WS_URL};
+use crate::twitch::moderation::get_all_moderated_channels;
 use crate::twitch::{get_token, helix, TwitchState};
 
 pub(super) struct ChannelSub {
@@ -17,19 +20,31 @@ pub(super) struct ChannelSub {
 }
 
 pub(super) async fn ensure_task(app: &tauri::AppHandle) -> Result<(), String> {
-    {
-        let state = app.state::<TwitchState>();
-        if state.eventsub_tx.lock().unwrap().is_some() {
-            return Ok(());
-        }
+    // Hold the init mutex for the entire setup so concurrent callers wait
+    // here instead of racing through their own auth checks and clobbering
+    // each other's tx slots. By the time we drop the guard, either a task
+    // is running and the tx slot is committed, or initialization failed and
+    // the slot is empty — concurrent callers re-check after acquiring.
+    let state = app.state::<TwitchState>();
+    let _init_guard = state.eventsub_init.lock().await;
+
+    if state.eventsub_tx.lock().unwrap().is_some() {
+        return Ok(());
     }
+
+    // Verify auth before committing to a task — failure leaves the slot
+    // empty so the next caller can retry.
     get_token(app).await?;
 
-    let (tx, rx) = mpsc::unbounded_channel();
-    {
-        let state = app.state::<TwitchState>();
-        *state.eventsub_tx.lock().unwrap() = Some(tx);
+    // Refreshes the moderated_channel_ids cache as a side effect so handle_cmd
+    // can read it synchronously when deciding is_mod. Non-fatal — is_mod
+    // defaults to false until the next refresh.
+    if let Err(e) = get_all_moderated_channels(app.clone()).await {
+        let _ = app.emit("eventsub-error", format!("fetch moderated channels failed: {e}"));
     }
+
+    let (tx, rx) = mpsc::unbounded_channel();
+    *state.eventsub_tx.lock().unwrap() = Some(tx);
 
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
@@ -108,26 +123,25 @@ async fn handle_cmd(
     cmd: EventSubCmd,
 ) {
     match cmd {
-        EventSubCmd::Add { broadcaster_id, is_mod } => {
-            if let Some(sub) = subs.get_mut(&broadcaster_id) {
-                // Already subscribed; update is_mod if it changed.
-                sub.is_mod = is_mod;
+        EventSubCmd::Add { broadcaster_id } => {
+            if subs.contains_key(&broadcaster_id) {
                 return;
             }
+            let token = match get_token(app).await {
+                Ok(t) => t,
+                Err(e) => {
+                    let _ = app.emit("eventsub-error", e);
+                    return;
+                }
+            };
+            let is_mod = is_mod_of(app, &token, &broadcaster_id);
             let Some(sid) = session_id else {
                 // No session yet — record so we subscribe on Welcome.
                 subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids: vec![] });
                 return;
             };
-            match get_token(app).await {
-                Ok(tok) => {
-                    let sub_ids = create_subscriptions(app, helix, &tok, &broadcaster_id, is_mod, sid).await;
-                    subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
-                }
-                Err(e) => {
-                    let _ = app.emit("eventsub-error", e);
-                }
-            }
+            let sub_ids = create_subscriptions(app, helix, &token, &broadcaster_id, is_mod, sid).await;
+            subs.insert(broadcaster_id, ChannelSub { is_mod, sub_ids });
         }
         EventSubCmd::Remove { broadcaster_id } => {
             let Some(sub) = subs.remove(&broadcaster_id) else { return };
@@ -137,4 +151,15 @@ async fn handle_cmd(
             }
         }
     }
+}
+
+fn is_mod_of(app: &tauri::AppHandle, token: &UserToken, broadcaster_id: &str) -> bool {
+    if broadcaster_id == token.user_id.as_str() {
+        return true;
+    }
+    app.state::<TwitchState>()
+        .moderated_channel_ids
+        .lock()
+        .unwrap()
+        .contains(broadcaster_id)
 }

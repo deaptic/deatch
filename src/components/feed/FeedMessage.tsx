@@ -39,30 +39,30 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
   return (
     <For each={tokens()}>
       {(token) => {
-        const emoteUrl = props.emotes[token];
-        if (emoteUrl)
-          return (
-            <img
-              src={emoteUrl}
-              alt={token}
-              title={token}
-              class={INLINE_EMOTE}
-            />
-          );
-        if (URL_RE.test(token))
-          return (
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                openUrl(token);
-              }}
-              class="text-primary hover:underline break-all"
-            >
-              {token}
-            </a>
-          );
-        return <span class="text-text">{token}</span>;
+        const emoteUrl = () => props.emotes[token];
+        return (
+          <Show
+            when={emoteUrl()}
+            fallback={
+              URL_RE.test(token) ? (
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openUrl(token);
+                  }}
+                  class="text-primary hover:underline break-all"
+                >
+                  {token}
+                </a>
+              ) : (
+                <span class="text-text">{token}</span>
+              )
+            }
+          >
+            <img src={emoteUrl()!} alt={token} title={token} class={INLINE_EMOTE} />
+          </Show>
+        );
       }}
     </For>
   );
@@ -210,15 +210,17 @@ export default function FeedMessage(props: Props) {
               )}
             >
               {(b) => {
-                const badge = props.badges[`${b.set_id}/${b.id}`];
-                return badge ? (
-                  <img
-                    src={badge.url}
-                    alt={badge.title}
-                    title={`${badge.title}${b.info ? ` (${b.info})` : ""}`}
-                    class="w-[0.85em] h-[0.85em]"
-                  />
-                ) : null;
+                const badge = () => props.badges[`${b.set_id}/${b.id}`];
+                return (
+                  <Show when={badge()}>
+                    <img
+                      src={badge()!.url}
+                      alt={badge()!.title}
+                      title={`${badge()!.title}${b.info ? ` (${b.info})` : ""}`}
+                      class="w-[0.85em] h-[0.85em]"
+                    />
+                  </Show>
+                );
               }}
             </For>
           </span>

@@ -1,4 +1,4 @@
-import { fetchAllPages, invokeCommand, type InvokeOptions, type Paginated } from "./utils";
+import { invokeCommand, type InvokeOptions, type Paginated } from "./utils";
 
 export type GetStreamsParams = {
   userIds?: string[];
@@ -33,12 +33,18 @@ export function getStreams(
   return invokeCommand("get_streams", params, options);
 }
 
-export async function getAllStreams(
-  params: GetStreamsParams = {},
+export type GetAllStreamsParams = {
+  userIds?: string[];
+  userLogins?: string[];
+  gameIds?: string[];
+  language?: string;
+};
+
+export function getAllStreams(
+  params: GetAllStreamsParams = {},
+  options?: InvokeOptions,
 ): Promise<GetStreamsResponse["data"]> {
-  return fetchAllPages("get_streams", (after, options) =>
-    getStreams({ ...params, after }, options),
-  );
+  return invokeCommand("get_all_streams", params, options);
 }
 
 export type GetFollowedStreamsParams = {
@@ -69,8 +75,8 @@ export function getFollowedStreams(
   return invokeCommand("get_followed_streams", params, options);
 }
 
-export async function getAllFollowedStreams(): Promise<GetFollowedStreamsResponse["data"]> {
-  return fetchAllPages("get_followed_streams", (after, options) =>
-    getFollowedStreams({ after }, options),
-  );
+export function getAllFollowedStreams(
+  options?: InvokeOptions,
+): Promise<GetFollowedStreamsResponse["data"]> {
+  return invokeCommand("get_all_followed_streams", undefined, options);
 }

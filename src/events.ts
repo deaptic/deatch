@@ -11,7 +11,9 @@ import type {
   RawChatClearUserMessages,
   RawModerate,
   RawModerateEvent,
+  UserEmote,
 } from "./types";
+import { appendUserEmotes } from "./state/emotes";
 import {
   appendItem,
   markMessageDeleted,
@@ -291,4 +293,8 @@ listen<RawModerateEvent>("channel-moderate", (e) => {
 
 listen<string>("eventsub-error", (e) => {
   console.error("EventSub error:", e.payload);
+});
+
+listen<UserEmote[]>("user-emote-page", (e) => {
+  appendUserEmotes(e.payload);
 });
