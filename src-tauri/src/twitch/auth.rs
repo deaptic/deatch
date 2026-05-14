@@ -1,4 +1,4 @@
-use crate::AppState;
+use super::TwitchState;
 use tauri::{Emitter, Manager};
 use twitch_api::helix::users::User;
 use twitch_api::twitch_oauth2::id::DeviceCodeResponse;
@@ -26,12 +26,11 @@ fn save_credentials(token: &UserToken) {
 }
 
 fn get_access_token(app: &tauri::AppHandle) -> Option<UserToken> {
-    app.state::<AppState>().token.lock().unwrap().clone()
+    app.state::<TwitchState>().token.lock().unwrap().clone()
 }
 
-fn store_session(app: &tauri::AppHandle, token: UserToken, user: User) {
-    *app.state::<AppState>().token.lock().unwrap() = Some(token);
-    *app.state::<AppState>().user_info.lock().unwrap() = Some(user);
+fn store_session(app: &tauri::AppHandle, token: UserToken) {
+    *app.state::<TwitchState>().token.lock().unwrap() = Some(token);
 }
 
 pub async fn refresh_token_now(app: &tauri::AppHandle) -> bool {
@@ -42,7 +41,7 @@ pub async fn refresh_token_now(app: &tauri::AppHandle) -> bool {
     let http_client = reqwest::Client::new();
     if token.refresh_token(&http_client).await.is_ok() {
         save_credentials(&token);
-        *app.state::<AppState>().token.lock().unwrap() = Some(token);
+        *app.state::<TwitchState>().token.lock().unwrap() = Some(token);
         true
     } else {
         false
@@ -54,7 +53,7 @@ pub fn spawn_token_refresh(app: tauri::AppHandle) {
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(60)).await;
             let needs_refresh = {
-                let state = app.state::<AppState>();
+                let state = app.state::<TwitchState>();
                 let guard = state.token.lock().unwrap();
                 match guard.as_ref() {
                     None => false,
@@ -70,7 +69,7 @@ pub fn spawn_token_refresh(app: tauri::AppHandle) {
 
 async fn fetch_user_info(token: &UserToken) -> Result<User, String> {
     let ids = [token.user_id.clone()];
-    crate::helix()
+    super::helix()
         .req_get(twitch_api::helix::users::GetUsersRequest::ids(&ids), token)
         .await
         .map_err(|e| e.to_string())?
@@ -153,7 +152,7 @@ async fn listen_device_code_callback(
         let token = request_token(builder, &http_client).await?;
         let user_info = fetch_user_info(&token).await?;
         save_credentials(&token);
-        store_session(&app, token, user_info.clone());
+        store_session(&app, token);
         spawn_token_refresh(app.clone());
         let _ = app.emit("twitch-auth-success", user_info);
         Ok::<_, String>(())
@@ -210,7 +209,7 @@ pub async fn restore_session(app: tauri::AppHandle) -> Result<User, String> {
 
     let user_info = fetch_user_info(&token).await?;
     save_credentials(&token);
-    store_session(&app, token, user_info.clone());
+    store_session(&app, token);
     spawn_token_refresh(app.clone());
     Ok(user_info)
 }
@@ -223,8 +222,7 @@ pub async fn revoke_session(app: tauri::AppHandle) -> Result<(), String> {
     if let Ok(entry) = keyring_entry() {
         let _ = entry.delete_password();
     }
-    *app.state::<AppState>().token.lock().unwrap() = None;
-    *app.state::<AppState>().user_info.lock().unwrap() = None;
-    *app.state::<AppState>().chat_cmd_tx.lock().unwrap() = None;
+    *app.state::<TwitchState>().token.lock().unwrap() = None;
+    *app.state::<TwitchState>().eventsub_tx.lock().unwrap() = None;
     Ok(())
 }
