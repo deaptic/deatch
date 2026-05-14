@@ -123,7 +123,7 @@ function App() {
     ensureFeed(broadcasterId);
     fetchBadgesFor(broadcasterId);
     try {
-      await invoke("add_chat_channel", { broadcasterId, isMod: isModOf(broadcasterId) });
+      await invoke("subscribe_channel", { broadcasterId, isMod: isModOf(broadcasterId) });
     } catch (e) {
       joinedIds.delete(broadcasterId);
       addToast(String(e), "error");
@@ -134,7 +134,7 @@ function App() {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
     try {
-      await invoke("remove_chat_channel", { broadcasterId });
+      await invoke("unsubscribe_channel", { broadcasterId });
     } catch (e) {
       addToast(String(e), "error");
     }

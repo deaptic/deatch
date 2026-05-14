@@ -289,6 +289,6 @@ listen<RawModerateEvent>("channel-moderate", (e) => {
   appendItem(payload.broadcaster_user_id, notice);
 });
 
-listen<string>("chat-error", (e) => {
-  console.error("Chat error:", e.payload);
+listen<string>("eventsub-error", (e) => {
+  console.error("EventSub error:", e.payload);
 });
