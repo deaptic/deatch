@@ -197,9 +197,15 @@ pub async fn get_device_code(app: tauri::AppHandle) -> Result<DcfAuthResponse, S
 }
 
 #[tauri::command]
-pub async fn restore_session(app: tauri::AppHandle) -> Result<User, String> {
+pub async fn restore_session(app: tauri::AppHandle) -> Result<Option<User>, String> {
     let entry = keyring_entry()?;
-    let json = entry.get_password().map_err(|e| e.to_string())?;
+    let json = match entry.get_password() {
+        Ok(s) => s,
+        // No stored credentials — first launch or after logout. Not an error;
+        // the frontend treats `Ok(None)` as "show the login screen, no toast".
+        Err(keyring::Error::NoEntry) => return Ok(None),
+        Err(e) => return Err(e.to_string()),
+    };
     let creds: StoredCredentials = serde_json::from_str(&json).map_err(|e| e.to_string())?;
 
     let http_client = reqwest::Client::new();
@@ -233,7 +239,7 @@ pub async fn restore_session(app: tauri::AppHandle) -> Result<User, String> {
     save_credentials(&token);
     store_session(&app, token);
     spawn_token_refresh(app.clone());
-    Ok(user_info)
+    Ok(Some(user_info))
 }
 
 #[tauri::command]
