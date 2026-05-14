@@ -1,7 +1,11 @@
 import { createSignal, createEffect, onMount, Show } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { enable as enableAutostart, disable as disableAutostart } from "@tauri-apps/plugin-autostart";
+import {
+  enable as enableAutostart,
+  disable as disableAutostart,
+  isEnabled as isAutostartEnabled,
+} from "@tauri-apps/plugin-autostart";
 import { getAllModeratedChannels } from "./commands/moderation";
 import {
   getGlobalChatBadges,
@@ -214,8 +218,12 @@ function App() {
   });
 
   createEffect(() => {
-    const on = advancedAutostart();
-    (on ? enableAutostart() : disableAutostart()).catch(() => {});
+    const want = advancedAutostart();
+    (async () => {
+      const have = await isAutostartEnabled();
+      if (have === want) return;
+      await (want ? enableAutostart() : disableAutostart());
+    })().catch(() => {});
   });
 
   createEffect(() => {
