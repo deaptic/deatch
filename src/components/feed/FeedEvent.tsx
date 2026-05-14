@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import type { FeedEvent as Event } from "./types";
+import type { FeedEvent as Event } from "../../types";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";

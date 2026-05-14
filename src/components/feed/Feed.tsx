@@ -8,8 +8,7 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import { getRecentMessages, sendChatMessage } from "../../commands/chat";
-import { mapChatMessage } from "../../events";
+import { sendChatMessage } from "../../commands/chat";
 import { buildThirdPartyEmoteMap, favorites } from "../../state/emotes";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
@@ -20,10 +19,10 @@ import UserContextMenu, { type UserContextTarget } from "../context-menus/UserCo
 import UserCard from "../user-card/UserCard";
 import { getUsers } from "../../commands/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
-import BanModal from "../utils/BanModal";
+import BanModal from "../ban-modal/BanModal";
 import InputPopover from "../../ui/InputPopover";
 import { moderatedChannels } from "../../state/users";
-import type { FeedMessage as Message, FeedEvent as EventItem, FeedItem } from "./types";
+import type { FeedMessage as Message, FeedEvent as EventItem, FeedItem } from "../../types";
 import {
   feeds,
   setPaused as setFeedPaused,
@@ -31,9 +30,9 @@ import {
   markSeen,
   clearDivider,
   getItemId,
-  prependItems,
-} from "./feeds";
-import { NOTICE_TO_EVENT } from "../../constants";
+  isFeedItemVisible,
+} from "../../state/feeds";
+import { loadBacklog } from "../../services/feeds";
 import {
   feedFontSize,
   setFeedFontSize,
@@ -43,8 +42,6 @@ import {
   feedShowDeletedContent,
   feedKeywords,
   feedBadges,
-  feedEvents,
-  feedUserMuted,
   feedUserNickname,
   setUserNickname,
   removeUserNickname,
@@ -200,21 +197,8 @@ export default function Feed(props: Props) {
     queueMicrotask(() => { if (!paused()) scrollInstant(); });
   }));
 
-  // One-time backlog hydration from robotty when a channel feed is first
-  // joined this session. `backfilled` flag in feeds.ts prevents repeats on
-  // channel switch / re-mount.
   createEffect(on(() => props.broadcasterId, (broadcasterId) => {
-    if (feeds[broadcasterId]?.backfilled) return;
-    const login = props.broadcasterLogin;
-    getRecentMessages({ channelLogin: login, limit: 50 }, { silent: true })
-      .then((msgs) => {
-        const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
-        prependItems(broadcasterId, items);
-      })
-      .catch(() => {
-        // Mark backfilled even on failure so we don't retry every remount.
-        prependItems(broadcasterId, []);
-      });
+    loadBacklog(broadcasterId, props.broadcasterLogin);
   }));
 
   createEffect(on(() => items().length, () => {
@@ -245,17 +229,6 @@ export default function Feed(props: Props) {
   });
 
   onCleanup(() => clearTimeout(fontSizeFlashTimer));
-
-  function isVisible(item: FeedItem): boolean {
-    if (item.kind === "event") {
-      const k = NOTICE_TO_EVENT[item.notice_type];
-      return !k || feedEvents()[k]?.show !== false;
-    }
-    return (
-      feedEvents().message?.show !== false &&
-      !feedUserMuted().includes(item.chatter_user_id)
-    );
-  }
 
   function react(msg: Message, value: string) {
     sendChatMessage({
@@ -325,7 +298,7 @@ export default function Feed(props: Props) {
                 >
                   <FeedDivider />
                 </Show>
-                <Show when={isVisible(item)}>
+                <Show when={isFeedItemVisible(item)}>
                   {item.kind === "event" ? (
                     <FeedEvent
                       item={item}

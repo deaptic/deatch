@@ -1,5 +1,5 @@
 import { createSignal, Show } from "solid-js";
-import StreamTooltip from "../utils/StreamTooltip";
+import StreamTooltip from "./StreamTooltip";
 import type { Channel } from "../../types";
 
 type Props = {

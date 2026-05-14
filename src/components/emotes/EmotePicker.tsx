@@ -1,22 +1,15 @@
 import { createMemo, createSignal, createEffect, For, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import {
-  globalEmotes,
   userEmotes,
   favorites,
   isFavorite,
   toggleFavorite,
-  EmoteSection,
-  sevenTvGlobal,
-  bttvGlobal,
-  ffzGlobal,
-  sevenTvChannel,
-  bttvChannel,
-  ffzChannel,
+  computeChannelSections,
+  computeGlobalSections,
 } from "../../state/emotes";
 import { selectedChannel } from "../../state/channels";
 import { getUsers } from "../../commands/users";
-import { userCache } from "../../state/users";
 import EmoteGrid from "./EmoteGrid";
 import EmoteSections from "./EmoteSections";
 import EmotePickerSection from "./EmotePickerSection";
@@ -49,6 +42,9 @@ export default function EmotePicker(props: Props) {
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
 
+  // Hydrate display metadata for any channels the user subs to whose owner
+  // info isn't yet in the user cache. Used by `computeGlobalSections` to
+  // label the per-channel groups.
   createEffect(() => {
     const broadcaster = selectedChannel();
     const ids = new Set<string>();
@@ -65,82 +61,8 @@ export default function EmotePicker(props: Props) {
     if (ids.size) getUsers({ userIds: [...ids] });
   });
 
-  const channelSections = createMemo<EmoteSection[]>(() => {
-    const broadcaster = selectedChannel();
-    const sections: EmoteSection[] = [];
-    if (broadcaster) {
-      const seen = new Map<string, string>();
-      for (const e of userEmotes()) {
-        if (e.owner_id !== broadcaster.user_id) continue;
-        if (!seen.has(e.name)) {
-          seen.set(e.name, `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`);
-        }
-      }
-      if (seen.size) {
-        sections.push({
-          id: "twitch",
-          label: broadcaster.user_name,
-          emotes: [...seen.entries()]
-            .map(([name, url]) => ({ name, url }))
-            .sort((a, b) => a.name.localeCompare(b.name)),
-        });
-      }
-    }
-    const sortByName = <T extends { name: string }>(arr: T[]) => [...arr].sort((a, b) => a.name.localeCompare(b.name));
-    const stv = sevenTvChannel();
-    if (stv.length) sections.push({ id: "7tv-channel", label: "7TV", emotes: sortByName(stv) });
-    const bttv = bttvChannel();
-    if (bttv.length) sections.push({ id: "bttv-channel", label: "BetterTTV", emotes: sortByName(bttv) });
-    const ffz = ffzChannel();
-    if (ffz.length) sections.push({ id: "ffz-channel", label: "FrankerFaceZ", emotes: sortByName(ffz) });
-    return sections;
-  });
-
-  const globalSections = createMemo<EmoteSection[]>(() => {
-    const broadcaster = selectedChannel();
-    const subGroupMap = new Map<string, { name: string; url: string }[]>();
-    const otherEmotes = new Map<string, string>();
-
-    for (const e of userEmotes()) {
-      if (e.owner_id === broadcaster?.user_id) continue;
-      const url = `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`;
-      if (e.emote_type === "subscriptions" && e.owner_id && /^\d+$/.test(e.owner_id)) {
-        const list = subGroupMap.get(e.owner_id) ?? [];
-        list.push({ name: e.name, url });
-        subGroupMap.set(e.owner_id, list);
-      } else {
-        otherEmotes.set(e.name, url);
-      }
-    }
-
-    const cache = userCache();
-    const subscriptionSections: EmoteSection[] = [...subGroupMap.entries()]
-      .map(([ownerId, emotes]) => ({
-        id: `channel-${ownerId}`,
-        label: cache[ownerId]?.display_name ?? ownerId,
-        emotes: [...emotes].sort((a, b) => a.name.localeCompare(b.name)),
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-
-    for (const e of globalEmotes()) {
-      if (!otherEmotes.has(e.name)) otherEmotes.set(e.name, e.images.url_1x);
-    }
-    const merged = [...otherEmotes.entries()]
-      .map(([name, url]) => ({ name, url }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    const sortByName = <T extends { name: string }>(arr: T[]) => [...arr].sort((a, b) => a.name.localeCompare(b.name));
-    const stv = sevenTvGlobal();
-    const bttv = bttvGlobal();
-    const ffz = ffzGlobal();
-    return [
-      ...subscriptionSections,
-      ...(merged.length ? [{ id: "twitch-global", label: "Twitch Global", emotes: merged }] : []),
-      ...(stv.length ? [{ id: "7tv", label: "7TV", emotes: sortByName(stv) }] : []),
-      ...(bttv.length ? [{ id: "bttv", label: "BetterTTV", emotes: sortByName(bttv) }] : []),
-      ...(ffz.length ? [{ id: "ffz", label: "FrankerFaceZ", emotes: sortByName(ffz) }] : []),
-    ];
-  });
+  const channelSections = createMemo(() => computeChannelSections(selectedChannel()));
+  const globalSections = createMemo(() => computeGlobalSections(selectedChannel()));
 
   const searchResults = (): EmoteGridItem[] => {
     const q = search().toLowerCase();

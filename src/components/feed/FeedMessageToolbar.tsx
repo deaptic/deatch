@@ -1,5 +1,5 @@
 import { For, Show } from "solid-js";
-import type { FeedMessage } from "./types";
+import type { FeedMessage } from "../../types";
 import Toolbar from "../../ui/Toolbar";
 import ToolbarItem from "../../ui/ToolbarItem";
 import ReplyIcon from "../../icons/ReplyIcon";

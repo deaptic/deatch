@@ -7,7 +7,7 @@ import ReplyIcon from "../../icons/ReplyIcon";
 import CopyIcon from "../../icons/CopyIcon";
 import PastaIcon from "../../icons/PastaIcon";
 import TrashIcon from "../../icons/TrashIcon";
-import type { FeedMessage } from "../feed/types";
+import type { FeedMessage } from "../../types";
 
 type Props = {
   x: number;

@@ -15,8 +15,8 @@ import {
 } from "../../commands/channels";
 import { user as currentUser, moderatedChannels } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
-import { feeds } from "../feed/feeds";
-import type { FeedMessage } from "../feed/types";
+import { feeds } from "../../state/feeds";
+import type { FeedMessage } from "../../types";
 import { addToast } from "../../state/toasts";
 import CloseIcon from "../../icons/CloseIcon";
 import CalendarIcon from "../../icons/CalendarIcon";

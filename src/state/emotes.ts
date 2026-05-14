@@ -1,17 +1,6 @@
 import { createSignal } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
-import { streamUserEmotes, getGlobalEmotes } from "../commands/chat";
-import type { GlobalEmote, RustEmoteEntry, SevenTvChannelResult, UserEmote } from "../types";
-import { loadCache, saveCache } from "./cache";
-import { user } from "./users";
-
-const USER_EMOTES_TTL = 6 * 60 * 60 * 1000; // 6 hours
-const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
-const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000; // 24 hours
-
-function userEmotesCacheKey(userId: string): string {
-  return `cache:user_emotes:${userId}`;
-}
+import type { Channel, GlobalEmote, UserEmote } from "../types";
+import { userCache } from "./users";
 
 export type EmoteMap = Record<string, string>;
 export type EmoteEntry = { name: string; url: string };
@@ -69,100 +58,117 @@ export function isFavorite(value: string): boolean {
   return favorites().some((e) => e.value === value);
 }
 
-function toFlat(sections: EmoteSection[]): EmoteMap {
-  const flat: EmoteMap = {};
-  for (const section of sections)
-    for (const e of section.emotes) flat[e.name] = e.url;
-  return flat;
-}
-
-let userEmotesLoadStarted = false;
-
 export function appendUserEmotes(page: UserEmote[]) {
-  setUserEmotes((prev) => [...prev, ...page]);
+  setUserEmotes((prev) => {
+    const ids = new Set(prev.map((e) => e.id));
+    const fresh = page.filter((e) => !ids.has(e.id));
+    return fresh.length ? [...prev, ...fresh] : prev;
+  });
 }
 
-export function resetUserEmotes() {
-  setUserEmotes([]);
-  userEmotesLoadStarted = false;
-  // Cache stays — it's keyed by user_id so the next user can't see this one's.
+/// Deduplicate a list of user emotes by id. Twitch's `Get User Emotes`
+/// endpoint returns the same emote once per emote-set it belongs to, so
+/// callers ingesting the raw response (e.g. the cache loader) must run
+/// it through here before writing the signal.
+export function dedupeById(list: UserEmote[]): UserEmote[] {
+  const seen = new Set<string>();
+  const out: UserEmote[] = [];
+  for (const e of list) {
+    if (seen.has(e.id)) continue;
+    seen.add(e.id);
+    out.push(e);
+  }
+  return out;
 }
 
-/// Kicks off a fetch of the user's emote inventory. Idempotent — only the
-/// first call per session does work. Hits localStorage first; if the cache
-/// is fresh (< 6h), uses it directly. Otherwise streams from Twitch (pages
-/// arrive via `user-emote-page` in `events.ts`) and persists the final list.
-export async function ensureUserEmotesLoaded(): Promise<void> {
-  if (userEmotesLoadStarted) return;
-  const u = user();
-  if (!u) return;
-  userEmotesLoadStarted = true;
+export function clearChannelThirdPartyEmotes() {
+  setSevenTvChannel([]);
+  setBttvChannel([]);
+  setFfzChannel([]);
+}
 
-  const key = userEmotesCacheKey(u.id);
-  const cached = loadCache<UserEmote[]>(key, USER_EMOTES_TTL);
-  if (cached) {
-    setUserEmotes(cached);
-    return;
+function twitchEmoteUrl(id: string): string {
+  return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0`;
+}
+
+function sortByName<T extends { name: string }>(arr: readonly T[]): T[] {
+  return [...arr].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/// Builds the `Channel` tab sections for the emote picker: the broadcaster's
+/// own Twitch emotes (deduplicated by name) followed by the channel's 7TV /
+/// BTTV / FFZ sets. Reads the relevant signals internally so it can be wrapped
+/// in a `createMemo` at the call site.
+export function computeChannelSections(broadcaster: Channel | null): EmoteSection[] {
+  const sections: EmoteSection[] = [];
+  if (broadcaster) {
+    const seen = new Map<string, string>();
+    for (const e of userEmotes()) {
+      if (e.owner_id !== broadcaster.user_id) continue;
+      if (!seen.has(e.name)) seen.set(e.name, twitchEmoteUrl(e.id));
+    }
+    if (seen.size) {
+      sections.push({
+        id: "twitch",
+        label: broadcaster.user_name,
+        emotes: [...seen.entries()]
+          .map(([name, url]) => ({ name, url }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+      });
+    }
+  }
+  const stv = sevenTvChannel();
+  if (stv.length) sections.push({ id: "7tv-channel", label: "7TV", emotes: sortByName(stv) });
+  const bttv = bttvChannel();
+  if (bttv.length) sections.push({ id: "bttv-channel", label: "BetterTTV", emotes: sortByName(bttv) });
+  const ffz = ffzChannel();
+  if (ffz.length) sections.push({ id: "ffz-channel", label: "FrankerFaceZ", emotes: sortByName(ffz) });
+  return sections;
+}
+
+/// Builds the `Global` tab sections: one section per channel the user subs to
+/// (using `userCache` for display names), then global Twitch, 7TV, BTTV, FFZ.
+/// Emotes already attributed to the active broadcaster are excluded.
+export function computeGlobalSections(broadcaster: Channel | null): EmoteSection[] {
+  const subGroupMap = new Map<string, EmoteEntry[]>();
+  const otherEmotes = new Map<string, string>();
+
+  for (const e of userEmotes()) {
+    if (e.owner_id === broadcaster?.user_id) continue;
+    const url = twitchEmoteUrl(e.id);
+    if (e.emote_type === "subscriptions" && e.owner_id && /^\d+$/.test(e.owner_id)) {
+      const list = subGroupMap.get(e.owner_id) ?? [];
+      list.push({ name: e.name, url });
+      subGroupMap.set(e.owner_id, list);
+    } else {
+      otherEmotes.set(e.name, url);
+    }
   }
 
-  try {
-    await streamUserEmotes();
-    saveCache(key, userEmotes());
-  } catch {
-    userEmotesLoadStarted = false;
+  const cache = userCache();
+  const subscriptionSections: EmoteSection[] = [...subGroupMap.entries()]
+    .map(([ownerId, emotes]) => ({
+      id: `channel-${ownerId}`,
+      label: cache[ownerId]?.display_name ?? ownerId,
+      emotes: sortByName(emotes),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  for (const e of globalEmotes()) {
+    if (!otherEmotes.has(e.name)) otherEmotes.set(e.name, e.images.url_1x);
   }
-}
+  const merged = sortByName(
+    [...otherEmotes.entries()].map(([name, url]) => ({ name, url })),
+  );
 
-/// Returns global emotes, hitting localStorage first (24h TTL). On a cache
-/// hit, kicks off a background refresh so the data stays fresh across
-/// sessions without blocking startup.
-export async function loadGlobalEmotes(): Promise<GlobalEmote[]> {
-  const cached = loadCache<GlobalEmote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
-  if (cached) {
-    getGlobalEmotes()
-      .then((fresh) => {
-        saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
-        setGlobalEmotes(fresh);
-      })
-      .catch(() => {});
-    return cached;
-  }
-  const fresh = await getGlobalEmotes();
-  saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
-  return fresh;
-}
-
-export async function fetchSevenTvGlobalEmotes(): Promise<EmoteEntry[]> {
-  try { return await invoke<RustEmoteEntry[]>("seventv_get_global_emotes"); }
-  catch { return []; }
-}
-
-export async function fetchBttvGlobalEmotes(): Promise<EmoteEntry[]> {
-  try { return await invoke<RustEmoteEntry[]>("bttv_get_global_emotes"); }
-  catch { return []; }
-}
-
-export async function fetchFfzGlobalEmotes(): Promise<EmoteEntry[]> {
-  try { return await invoke<RustEmoteEntry[]>("ffz_get_global_emotes"); }
-  catch { return []; }
-}
-
-export async function fetchChannelEmotes(channelId: string, channelLogin: string): Promise<ChannelEmoteResult> {
-  const [stv, bttv, ffz] = await Promise.allSettled([
-    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId }),
-    invoke<RustEmoteEntry[]>("bttv_get_channel_emotes", { channelId }),
-    invoke<RustEmoteEntry[]>("ffz_get_channel_emotes", { channelLogin }),
-  ]);
-
-  const stvResult = stv.status === "fulfilled" ? stv.value : { emotes: [], emote_set_id: null };
-  const bttvEmotes = bttv.status === "fulfilled" ? bttv.value : [];
-  const ffzEmotes = ffz.status === "fulfilled" ? ffz.value : [];
-
-  const sections: EmoteSection[] = [
-    ...(stvResult.emotes.length ? [{ id: "7tv-channel", label: "7TV", emotes: stvResult.emotes }] : []),
-    ...(bttvEmotes.length ? [{ id: "bttv-channel", label: "BetterTTV", emotes: bttvEmotes }] : []),
-    ...(ffzEmotes.length ? [{ id: "ffz-channel", label: "FrankerFaceZ", emotes: ffzEmotes }] : []),
+  const stv = sevenTvGlobal();
+  const bttv = bttvGlobal();
+  const ffz = ffzGlobal();
+  return [
+    ...subscriptionSections,
+    ...(merged.length ? [{ id: "twitch-global", label: "Twitch Global", emotes: merged }] : []),
+    ...(stv.length ? [{ id: "7tv", label: "7TV", emotes: sortByName(stv) }] : []),
+    ...(bttv.length ? [{ id: "bttv", label: "BetterTTV", emotes: sortByName(bttv) }] : []),
+    ...(ffz.length ? [{ id: "ffz", label: "FrankerFaceZ", emotes: sortByName(ffz) }] : []),
   ];
-
-  return { sections, flat: toFlat(sections), sevenTvEmoteSetId: stvResult.emote_set_id };
 }

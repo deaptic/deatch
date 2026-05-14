@@ -1,6 +1,6 @@
 import { createStore, produce, unwrap } from "solid-js/store";
 import type { EventKey, BadgeCategoryKey } from "../constants";
-import defaults from "../default-preferences.json";
+import defaults from "./default-preferences.json";
 import { addToast } from "./toasts";
 
 export type EventPref = { show: boolean };
@@ -262,3 +262,4 @@ export function setAdvancedAutostart(value: boolean) {
   setPrefs("advanced", "autostart", value);
   persist();
 }
+

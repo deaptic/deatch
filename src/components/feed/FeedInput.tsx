@@ -10,8 +10,8 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-  ensureUserEmotesLoaded,
 } from "../../state/emotes";
+import { ensureUserEmotesLoaded } from "../../services/emotes";
 import EmotePicker from "../emotes/EmotePicker";
 import FeedSuggestions from "./FeedSuggestions";
 import { chattersByChannel } from "../../state/users";
