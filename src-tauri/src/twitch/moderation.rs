@@ -1,4 +1,4 @@
-use crate::{get_token, helix};
+use super::{get_token, helix};
 use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::channels::{AddChannelVipRequest, RemoveChannelVipRequest};

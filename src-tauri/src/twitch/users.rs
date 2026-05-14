@@ -1,4 +1,4 @@
-use crate::{get_token, helix};
+use super::{get_token, helix};
 use serde::Deserialize;
 use twitch_api::helix::users::{GetUsersRequest, User};
 use twitch_api::types::{UserId, UserName};
