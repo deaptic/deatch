@@ -1,7 +1,17 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { getAllUserEmotes } from "../commands/chat";
+import { streamUserEmotes, getGlobalEmotes } from "../commands/chat";
 import type { GlobalEmote, RustEmoteEntry, SevenTvChannelResult, UserEmote } from "../types";
+import { loadCache, saveCache } from "./cache";
+import { user } from "./users";
+
+const USER_EMOTES_TTL = 6 * 60 * 60 * 1000; // 6 hours
+const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
+const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+function userEmotesCacheKey(userId: string): string {
+  return `cache:user_emotes:${userId}`;
+}
 
 export type EmoteMap = Record<string, string>;
 export type EmoteEntry = { name: string; url: string };
@@ -66,8 +76,60 @@ function toFlat(sections: EmoteSection[]): EmoteMap {
   return flat;
 }
 
-export async function fetchAllUserEmotes(): Promise<UserEmote[]> {
-  return getAllUserEmotes();
+let userEmotesLoadStarted = false;
+
+export function appendUserEmotes(page: UserEmote[]) {
+  setUserEmotes((prev) => [...prev, ...page]);
+}
+
+export function resetUserEmotes() {
+  setUserEmotes([]);
+  userEmotesLoadStarted = false;
+  // Cache stays — it's keyed by user_id so the next user can't see this one's.
+}
+
+/// Kicks off a fetch of the user's emote inventory. Idempotent — only the
+/// first call per session does work. Hits localStorage first; if the cache
+/// is fresh (< 6h), uses it directly. Otherwise streams from Twitch (pages
+/// arrive via `user-emote-page` in `events.ts`) and persists the final list.
+export async function ensureUserEmotesLoaded(): Promise<void> {
+  if (userEmotesLoadStarted) return;
+  const u = user();
+  if (!u) return;
+  userEmotesLoadStarted = true;
+
+  const key = userEmotesCacheKey(u.id);
+  const cached = loadCache<UserEmote[]>(key, USER_EMOTES_TTL);
+  if (cached) {
+    setUserEmotes(cached);
+    return;
+  }
+
+  try {
+    await streamUserEmotes();
+    saveCache(key, userEmotes());
+  } catch {
+    userEmotesLoadStarted = false;
+  }
+}
+
+/// Returns global emotes, hitting localStorage first (24h TTL). On a cache
+/// hit, kicks off a background refresh so the data stays fresh across
+/// sessions without blocking startup.
+export async function loadGlobalEmotes(): Promise<GlobalEmote[]> {
+  const cached = loadCache<GlobalEmote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
+  if (cached) {
+    getGlobalEmotes()
+      .then((fresh) => {
+        saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
+        setGlobalEmotes(fresh);
+      })
+      .catch(() => {});
+    return cached;
+  }
+  const fresh = await getGlobalEmotes();
+  saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
+  return fresh;
 }
 
 export async function fetchSevenTvGlobalEmotes(): Promise<EmoteEntry[]> {

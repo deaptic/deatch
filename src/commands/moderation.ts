@@ -1,4 +1,4 @@
-import { fetchAllPages, invokeCommand, type InvokeOptions, type Paginated } from "./utils";
+import { invokeCommand, type InvokeOptions, type Paginated } from "./utils";
 
 export type DeleteChatMessagesParams = {
   broadcasterId: string;
@@ -72,6 +72,18 @@ export function getBannedUsers(
   return invokeCommand("get_banned_users", params, options);
 }
 
+export type GetAllBannedUsersParams = {
+  broadcasterId: string;
+  userId?: string;
+};
+
+export function getAllBannedUsers(
+  params: GetAllBannedUsersParams,
+  options?: InvokeOptions,
+): Promise<GetBannedUsersResponse["data"]> {
+  return invokeCommand("get_all_banned_users", params, options);
+}
+
 export type GetModeratorsParams = {
   broadcasterId: string;
   first?: number;
@@ -88,6 +100,17 @@ export function getModerators(
   options?: InvokeOptions,
 ): Promise<GetModeratorsResponse> {
   return invokeCommand("get_moderators", params, options);
+}
+
+export type GetAllModeratorsParams = {
+  broadcasterId: string;
+};
+
+export function getAllModerators(
+  params: GetAllModeratorsParams,
+  options?: InvokeOptions,
+): Promise<GetModeratorsResponse["data"]> {
+  return invokeCommand("get_all_moderators", params, options);
 }
 
 export type GetModeratedChannelsParams = {
@@ -107,12 +130,10 @@ export function getModeratedChannels(
   return invokeCommand("get_moderated_channels", params, options);
 }
 
-export async function getAllModeratedChannels(): Promise<
-  GetModeratedChannelsResponse["data"]
-> {
-  return fetchAllPages("get_moderated_channels", (after, options) =>
-    getModeratedChannels({ after }, options),
-  );
+export function getAllModeratedChannels(
+  options?: InvokeOptions,
+): Promise<GetModeratedChannelsResponse["data"]> {
+  return invokeCommand("get_all_moderated_channels", undefined, options);
 }
 
 export type AddChannelVipParams = {

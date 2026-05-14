@@ -19,3 +19,15 @@ export function getChannelFollowers(
 ): Promise<GetChannelFollowersResponse> {
   return invokeCommand("get_channel_followers", params, options);
 }
+
+export type GetAllChannelFollowersParams = {
+  broadcasterId: string;
+  userId?: string;
+};
+
+export function getAllChannelFollowers(
+  params: GetAllChannelFollowersParams,
+  options?: InvokeOptions,
+): Promise<GetChannelFollowersResponse["data"]> {
+  return invokeCommand("get_all_channel_followers", params, options);
+}

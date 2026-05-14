@@ -26,16 +26,8 @@ pub async fn get_streams(
     params: GetStreamsParams,
 ) -> Result<PaginatedResponse<Stream>, String> {
     let user_ids: Vec<UserId> = params.user_ids.into_iter().map(UserId::from).collect();
-    let user_logins: Vec<UserName> = params
-        .user_logins
-        .into_iter()
-        .map(UserName::from)
-        .collect();
-    let game_ids: Vec<CategoryId> = params
-        .game_ids
-        .into_iter()
-        .map(CategoryId::from)
-        .collect();
+    let user_logins: Vec<UserName> = params.user_logins.into_iter().map(UserName::from).collect();
+    let game_ids: Vec<CategoryId> = params.game_ids.into_iter().map(CategoryId::from).collect();
 
     let mut request = GetStreamsRequest::default();
     request.user_id = (&*user_ids).into();
@@ -53,6 +45,38 @@ pub async fn get_streams(
         .map_err(|e| e.to_string())?;
 
     Ok(PaginatedResponse::new(response.data, response.pagination))
+}
+
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetAllStreamsParams {
+    pub user_ids: Vec<String>,
+    pub user_logins: Vec<String>,
+    pub game_ids: Vec<String>,
+    pub language: Option<String>,
+}
+
+#[tauri::command]
+pub async fn get_all_streams(
+    app: tauri::AppHandle,
+    params: GetAllStreamsParams,
+) -> Result<Vec<Stream>, String> {
+    let token = get_token(&app).await?;
+    let user_ids: Vec<UserId> = params.user_ids.into_iter().map(UserId::from).collect();
+    let user_logins: Vec<UserName> = params.user_logins.into_iter().map(UserName::from).collect();
+    let game_ids: Vec<CategoryId> = params.game_ids.into_iter().map(CategoryId::from).collect();
+    let language = params.language;
+
+    super::utils::fetch_all_pages(&token, |after| {
+        let mut request = GetStreamsRequest::default();
+        request.user_id = (&*user_ids).into();
+        request.user_login = (&*user_logins).into();
+        request.game_id = (&*game_ids).into();
+        request.language = language.clone().map(Cow::Owned);
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await
 }
 
 // https://dev.twitch.tv/docs/api/reference/#get-followed-streams
@@ -80,4 +104,15 @@ pub async fn get_followed_streams(
         .map_err(|e| e.to_string())?;
 
     Ok(PaginatedResponse::new(response.data, response.pagination))
+}
+
+#[tauri::command]
+pub async fn get_all_followed_streams(app: tauri::AppHandle) -> Result<Vec<Stream>, String> {
+    let token = get_token(&app).await?;
+    super::utils::fetch_all_pages(&token, |after| {
+        let mut request = GetFollowedStreamsRequest::user_id(token.user_id.clone());
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await
 }

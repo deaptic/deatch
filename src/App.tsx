@@ -10,7 +10,6 @@ import { getAllModeratedChannels } from "./commands/moderation";
 import {
   getGlobalChatBadges,
   getChannelChatBadges,
-  getGlobalEmotes,
 } from "./commands/chat";
 import { addToast } from "./state/toasts";
 import Menu, { type Channel } from "./components/menu/Menu";
@@ -20,7 +19,7 @@ import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
 import Loading from "./components/Loading";
 import { menuChannelPinned, advancedAlwaysOnTop, advancedAutostart } from "./state/preferences";
-import { user, moderatedChannels, setModeratedChannels } from "./state/users";
+import { user, setModeratedChannels } from "./state/users";
 import {
   waiting,
   deviceCode,
@@ -31,7 +30,6 @@ import {
 import TwitchIcon from "./icons/TwitchIcon";
 import {
   setGlobalEmotes,
-  setUserEmotes,
   setSevenTvGlobal,
   setBttvGlobal,
   setFfzGlobal,
@@ -41,9 +39,11 @@ import {
   fetchSevenTvGlobalEmotes,
   fetchBttvGlobalEmotes,
   fetchFfzGlobalEmotes,
-  fetchAllUserEmotes,
+  loadGlobalEmotes,
+  resetUserEmotes,
   EmoteEntry,
 } from "./state/emotes";
+import { loadCache, saveCache } from "./state/cache";
 import { selectedChannel, setSelectedChannel, channelsById, rememberChannel, loadLastChannel } from "./state/channels";
 import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import type {
@@ -57,6 +57,8 @@ import "./App.css";
 
 // Module-scope so HMR / remounts can't reset them.
 let globalBadgesPromise: Promise<BadgeSet[]> | null = null;
+const GLOBAL_BADGES_CACHE_KEY = "cache:global_badges";
+const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000; // 24 hours
 let thirdPartyGlobalsFetched = false;
 let userScopedFetched = false;
 const badgesByChannel = new Map<string, Promise<BadgeMap>>();
@@ -70,6 +72,7 @@ function resetUserScopedCaches() {
   sevenTvChannelCache.clear();
   bttvChannelCache.clear();
   ffzChannelCache.clear();
+  resetUserEmotes();
 }
 
 function App() {
@@ -79,17 +82,23 @@ function App() {
 
   const joinedIds = new Set<string>();
 
-  function isModOf(broadcasterId: string): boolean {
-    const u = user();
-    if (!u) return false;
-    if (broadcasterId === u.id) return true;
-    return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
-  }
-
   function getGlobalBadges(): Promise<BadgeSet[]> {
-    if (!globalBadgesPromise) {
-      globalBadgesPromise = getGlobalChatBadges().catch(() => [] as BadgeSet[]);
+    if (globalBadgesPromise) return globalBadgesPromise;
+    const cached = loadCache<BadgeSet[]>(GLOBAL_BADGES_CACHE_KEY, GLOBAL_BADGES_TTL);
+    if (cached) {
+      // Stale-while-revalidate: serve cache, refresh in background.
+      getGlobalChatBadges()
+        .then((fresh) => saveCache(GLOBAL_BADGES_CACHE_KEY, fresh))
+        .catch(() => {});
+      globalBadgesPromise = Promise.resolve(cached);
+      return globalBadgesPromise;
     }
+    globalBadgesPromise = getGlobalChatBadges()
+      .then((fresh) => {
+        saveCache(GLOBAL_BADGES_CACHE_KEY, fresh);
+        return fresh;
+      })
+      .catch(() => [] as BadgeSet[]);
     return globalBadgesPromise;
   }
 
@@ -121,9 +130,8 @@ function App() {
     if (joinedIds.has(broadcasterId)) return;
     joinedIds.add(broadcasterId);
     ensureFeed(broadcasterId);
-    fetchBadgesFor(broadcasterId);
     try {
-      await invoke("subscribe_channel", { broadcasterId, isMod: isModOf(broadcasterId) });
+      await invoke("subscribe_channel", { broadcasterId });
     } catch (e) {
       joinedIds.delete(broadcasterId);
       addToast(String(e), "error");
@@ -147,8 +155,7 @@ function App() {
     getAllModeratedChannels()
       .then(setModeratedChannels)
       .catch(() => {});
-    getGlobalEmotes().then(setGlobalEmotes).catch(() => {});
-    fetchAllUserEmotes().then(setUserEmotes).catch(() => {});
+    loadGlobalEmotes().then(setGlobalEmotes).catch(() => {});
   }
 
   createEffect(() => {
@@ -159,6 +166,7 @@ function App() {
       setFfzChannel([]);
       return;
     }
+    fetchBadgesFor(broadcaster.user_id);
     let sevenTv = sevenTvChannelCache.get(broadcaster.user_id);
     if (!sevenTv) {
       sevenTv = invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId: broadcaster.user_id })

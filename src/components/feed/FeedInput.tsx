@@ -10,6 +10,7 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
+  ensureUserEmotesLoaded,
 } from "../../state/emotes";
 import EmotePicker from "../emotes/EmotePicker";
 import FeedSuggestions from "./FeedSuggestions";
@@ -48,6 +49,7 @@ export default function FeedInput(props: Props) {
 
   onMount(() => {
     props.expose?.({ focus: () => inputRef?.focus(), insert: insertText });
+    ensureUserEmotesLoaded();
   });
 
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";

@@ -38,3 +38,29 @@ pub async fn get_channel_followers(
 
     Ok(PaginatedResponse::new(response.data, response.pagination))
 }
+
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetAllChannelFollowersParams {
+    pub broadcaster_id: String,
+    pub user_id: Option<String>,
+}
+
+#[tauri::command]
+pub async fn get_all_channel_followers(
+    app: tauri::AppHandle,
+    params: GetAllChannelFollowersParams,
+) -> Result<Vec<Follower>, String> {
+    let token = get_token(&app).await?;
+    let bc = params.broadcaster_id;
+    let uid = params.user_id;
+    super::utils::fetch_all_pages(&token, move |after| {
+        let mut request = GetChannelFollowersRequest::broadcaster_id(UserId::from(bc.clone()));
+        if let Some(u) = uid.as_deref() {
+            request.user_id = Some(UserId::from(u).into());
+        }
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await
+}

@@ -97,6 +97,33 @@ pub async fn get_banned_users(
     Ok(PaginatedResponse::new(response.data, response.pagination))
 }
 
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetAllBannedUsersParams {
+    pub broadcaster_id: String,
+    pub user_id: Option<String>,
+}
+
+#[tauri::command]
+pub async fn get_all_banned_users(
+    app: tauri::AppHandle,
+    params: GetAllBannedUsersParams,
+) -> Result<Vec<BannedUser>, String> {
+    let token = get_token(&app).await?;
+    let bc = params.broadcaster_id;
+    let uid = params.user_id;
+    super::utils::fetch_all_pages(&token, |after| {
+        let mut request =
+            GetBannedUsersRequest::broadcaster_id(twitch_api::types::UserId::from(bc.as_str()));
+        if let Some(u) = uid.as_deref() {
+            request.user_id = vec![twitch_api::types::UserId::from(u)].into();
+        }
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await
+}
+
 // https://dev.twitch.tv/docs/api/reference/#unban-user
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -146,6 +173,28 @@ pub async fn get_moderators(
         .map_err(|e| e.to_string())?;
 
     Ok(PaginatedResponse::new(response.data, response.pagination))
+}
+
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetAllModeratorsParams {
+    pub broadcaster_id: String,
+}
+
+#[tauri::command]
+pub async fn get_all_moderators(
+    app: tauri::AppHandle,
+    params: GetAllModeratorsParams,
+) -> Result<Vec<Moderator>, String> {
+    let token = get_token(&app).await?;
+    let bc = params.broadcaster_id;
+    super::utils::fetch_all_pages(&token, |after| {
+        let mut request =
+            GetModeratorsRequest::broadcaster_id(twitch_api::types::UserId::from(bc.as_str()));
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await
 }
 
 // https://dev.twitch.tv/docs/api/reference/#add-channel-vip
@@ -219,4 +268,22 @@ pub async fn get_moderated_channels(
         .map_err(|e| e.to_string())?;
 
     Ok(PaginatedResponse::new(response.data, response.pagination))
+}
+
+/// Fetches every page of moderated channels for the authenticated user and,
+/// as a side effect, refreshes the `moderated_channel_ids` cache used by the
+/// eventsub task to decide `is_mod` for new subscriptions.
+#[tauri::command]
+pub async fn get_all_moderated_channels(
+    app: tauri::AppHandle,
+) -> Result<Vec<ModeratedChannel>, String> {
+    let token = get_token(&app).await?;
+    let channels = super::utils::fetch_all_pages(&token, |after| {
+        let mut request = GetModeratedChannelsRequest::user_id(token.user_id.clone());
+        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+        request
+    })
+    .await?;
+    super::utils::cache_moderated_channel_ids(&app, &channels);
+    Ok(channels)
 }

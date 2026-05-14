@@ -9,23 +9,17 @@ use super::TwitchState;
 pub(super) const WS_URL: &str = "wss://eventsub.wss.twitch.tv/ws";
 
 pub(crate) enum EventSubCmd {
-    Add {
-        broadcaster_id: String,
-        is_mod: bool,
-    },
-    Remove {
-        broadcaster_id: String,
-    },
+    Add { broadcaster_id: String },
+    Remove { broadcaster_id: String },
 }
 
 #[tauri::command]
 pub(crate) async fn subscribe_channel(
     app: tauri::AppHandle,
     broadcaster_id: String,
-    is_mod: bool,
 ) -> Result<(), String> {
     runner::ensure_task(&app).await?;
-    send_cmd(&app, EventSubCmd::Add { broadcaster_id, is_mod })
+    send_cmd(&app, EventSubCmd::Add { broadcaster_id })
 }
 
 #[tauri::command]
