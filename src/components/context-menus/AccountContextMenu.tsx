@@ -3,7 +3,7 @@ import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import CopyIcon from "../../icons/CopyIcon";
-import { logout } from "../../services/auth";
+import { sessionManager } from "../../managers/SessionManager";
 import { user } from "../../state/users";
 import { advancedDeveloperMode } from "../../state/preferences";
 
@@ -19,7 +19,7 @@ export default function AccountContextMenu(props: Props) {
       <ContextMenuItem
         label="Log out"
         danger
-        onClick={() => { props.onClose(); logout(); }}
+        onClick={() => { props.onClose(); sessionManager.logout(); }}
       />
       <Show when={advancedDeveloperMode() && user()}>
         <ContextMenuDivider />
