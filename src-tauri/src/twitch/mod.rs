@@ -36,6 +36,7 @@ impl TwitchState {
 }
 
 pub(crate) async fn get_token(app: &tauri::AppHandle) -> Result<UserToken, String> {
+    use tauri::Emitter;
     let needs_refresh = {
         let state = app.state::<TwitchState>();
         let guard = state.token.lock().unwrap();
@@ -45,7 +46,9 @@ pub(crate) async fn get_token(app: &tauri::AppHandle) -> Result<UserToken, Strin
         }
     };
     if needs_refresh {
-        let _ = auth::refresh_token_now(app).await;
+        if let Err(e) = auth::refresh_token_now(app).await {
+            let _ = app.emit("twitch-auth-error", format!("refresh failed: {e}"));
+        }
     }
     app.state::<TwitchState>()
         .token
