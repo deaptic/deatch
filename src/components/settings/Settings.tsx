@@ -63,12 +63,12 @@ import {
 import Button from "../../ui/Button";
 import { muteUserByLogin, setUserNicknameByLogin } from "../../services/preferences";
 import KeyValueEditor from "../../ui/KeyValueEditor";
+import ChipInput from "../../ui/ChipInput";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
 import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
 import Chip from "../../ui/Chip";
 import ChipList from "../../ui/ChipList";
-import TextInput from "../../ui/TextInput";
 import CloseIcon from "../../icons/CloseIcon";
 import { captureFocusForRestore } from "../../utils/focus";
 
@@ -195,17 +195,12 @@ export default function Settings(props: Props) {
               <SettingsContentSection title="Highlights">
                 <SettingsContentSectionItem
                   label="Keywords"
-                  description="Highlight messages containing any of these words and add them to your inbox, just like a mention. Press Enter to add."
+                  description="Highlight messages containing any of these words and add them to your inbox, just like a mention."
                   stacked
                 >
-                  <TextInput
+                  <ChipInput
                     placeholder="Add keyword..."
-                    onKeyDown={(e) => {
-                      if (e.key !== "Enter") return;
-                      const v = e.currentTarget.value;
-                      e.currentTarget.value = "";
-                      addFeedKeyword(v);
-                    }}
+                    onAdd={addFeedKeyword}
                   />
                   <Show when={feedKeywords().length > 0}>
                     <ChipList>
@@ -252,17 +247,13 @@ export default function Settings(props: Props) {
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
                   label="Muted users"
-                  description="Hide messages from these users. Press Enter to add."
+                  description="Hide messages from these users."
                   stacked
                 >
-                  <TextInput
+                  <ChipInput
                     placeholder="Mute username..."
-                    onKeyDown={(e) => {
-                      if (e.key !== "Enter") return;
-                      const v = e.currentTarget.value.trim().toLowerCase();
-                      e.currentTarget.value = "";
-                      if (v) muteByLogin(v);
-                    }}
+                    normalize={(v) => v.trim().toLowerCase()}
+                    onAdd={muteByLogin}
                   />
                   <Show when={feedUserMuted().length > 0}>
                     <ChipList>
