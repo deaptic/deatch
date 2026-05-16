@@ -16,8 +16,32 @@ export type ChannelFeed = {
   backfilled: boolean;
 };
 
-const MAX_MESSAGES = 500;
-const TRIM_TO = 499;
+// Per-category caps. Items are categorized by `categoryOf` — chat messages
+// share one bucket, each event `notice_type` is its own bucket, and anything
+// not listed here falls back to `DEFAULT_CAP`.
+const CATEGORY_CAPS: Record<string, number> = {
+  message: 400,
+};
+const DEFAULT_CAP = 50;
+
+function categoryOf(item: FeedItem): string {
+  return item.kind === "message" ? "message" : item.notice_type;
+}
+
+function capFor(category: string): number {
+  return CATEGORY_CAPS[category] ?? DEFAULT_CAP;
+}
+
+function enforceCaps(messages: FeedItem[]) {
+  const counts: Record<string, number> = {};
+  const removeIdxs: number[] = [];
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const cat = categoryOf(messages[i]);
+    counts[cat] = (counts[cat] ?? 0) + 1;
+    if (counts[cat] > capFor(cat)) removeIdxs.push(i);
+  }
+  for (const i of removeIdxs) messages.splice(i, 1);
+}
 
 const [feeds, setFeeds] = createStore<Record<string, ChannelFeed>>({});
 
@@ -134,10 +158,8 @@ export function appendItem(id: string, item: FeedItem) {
     produce((f) => {
       // Dedupe: a backlog fetch may overlap with the first EventSub events.
       if (f.messages.some((m) => getItemId(m) === itemId)) return;
-      if (!f.paused && f.messages.length >= MAX_MESSAGES) {
-        f.messages.splice(0, f.messages.length - TRIM_TO);
-      }
       f.messages.push(item);
+      if (!f.paused) enforceCaps(f.messages);
       if (isActive && !f.paused && !isSilent(item)) {
         f.lastSeenItemId = itemId;
       }
@@ -172,9 +194,7 @@ export function prependItems(id: string, items: FeedItem[]) {
         if (fresh.length > 0) {
           fresh.sort((a, b) => a.timestamp - b.timestamp);
           f.messages.unshift(...fresh);
-          if (f.messages.length > MAX_MESSAGES) {
-            f.messages.splice(MAX_MESSAGES);
-          }
+          enforceCaps(f.messages);
         }
       }
       // Backlog is history, not new chat. Mark it as already-seen so that
@@ -210,9 +230,7 @@ export function trimToLatest(id: string) {
   setFeeds(
     id,
     produce((f) => {
-      if (f.messages.length > MAX_MESSAGES) {
-        f.messages.splice(0, f.messages.length - MAX_MESSAGES);
-      }
+      enforceCaps(f.messages);
       f.paused = false;
     }),
   );
