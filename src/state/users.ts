@@ -43,5 +43,7 @@ export function recordChatter(channelId: string, c: Chatter) {
     bucket = new Map();
     chattersByChannel.set(channelId, bucket);
   }
+  const existing = bucket.get(c.id);
+  if (existing && existing.lastSeen >= c.lastSeen) return;
   bucket.set(c.id, c);
 }

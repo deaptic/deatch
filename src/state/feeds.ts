@@ -151,6 +151,17 @@ export function appendItem(id: string, item: FeedItem) {
 /// newest before being prepended so the order matches the live stream.
 export function prependItems(id: string, items: FeedItem[]) {
   ensureFeed(id);
+  for (const it of items) {
+    if (it.kind === "message") {
+      recordChatter(id, {
+        id: it.chatter_user_id,
+        login: it.chatter_login,
+        displayName: it.chatter_name,
+        color: it.color,
+        lastSeen: it.timestamp,
+      });
+    }
+  }
   setFeeds(
     id,
     produce((f) => {
