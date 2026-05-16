@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { For } from "solid-js";
 import type { EmoteGridItem } from "./types";
 
 type Props = {
@@ -21,12 +21,9 @@ export default function EmoteGrid(props: Props) {
               props.onToggleFavorite(item);
             }}
             title={item.label}
-            class="relative flex items-center justify-center p-1 rounded hover:bg-bg-light cursor-pointer"
+            class="relative flex items-center justify-center p-1 rounded hover:bg-bg cursor-pointer"
           >
             <img src={item.url} alt={item.label} class="w-7 h-7 object-contain" />
-            <Show when={props.isFavorite(item.value)}>
-              <span class="absolute top-0 right-0.5 text-xs leading-none text-secondary pointer-events-none">★</span>
-            </Show>
           </button>
         )}
       </For>

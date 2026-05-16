@@ -31,6 +31,9 @@ export type UserPreferences = {
     alwaysOnTop: boolean;
     autostart: boolean;
   };
+  appearance: {
+    colors: Record<string, string>;
+  };
   menu: {
     channels: {
       pinned: string[];
@@ -39,6 +42,18 @@ export type UserPreferences = {
 };
 
 const DEFAULT_PREFERENCES = defaults as UserPreferences;
+
+function sanitizeAppearanceColors(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof value !== "string") continue;
+    const trimmed = value.trim();
+    if (!trimmed) continue;
+    out[key] = trimmed;
+  }
+  return out;
+}
 
 function sanitizeNicknames(raw: unknown): Record<string, string> {
   if (!raw || typeof raw !== "object") return {};
@@ -88,6 +103,9 @@ function load(): UserPreferences {
         alwaysOnTop: stored.advanced?.alwaysOnTop ?? DEFAULT_PREFERENCES.advanced.alwaysOnTop,
         autostart: stored.advanced?.autostart ?? DEFAULT_PREFERENCES.advanced.autostart,
       },
+      appearance: {
+        colors: sanitizeAppearanceColors(stored.appearance?.colors),
+      },
       menu: {
         channels: { pinned },
       },
@@ -124,6 +142,7 @@ export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
 export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
 export const advancedAutostart = () => prefs.advanced.autostart;
+export const appearanceColors = () => prefs.appearance.colors;
 
 export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", Math.min(24, Math.max(11, value)));
@@ -260,6 +279,25 @@ export function setAdvancedAlwaysOnTop(value: boolean) {
 
 export function setAdvancedAutostart(value: boolean) {
   setPrefs("advanced", "autostart", value);
+  persist();
+}
+
+export function setAppearanceColor(key: string, value: string) {
+  setPrefs("appearance", "colors", key, value);
+  persist();
+}
+
+export function resetAppearanceColor(key: string) {
+  setPrefs("appearance", "colors", produce((c) => {
+    delete c[key];
+  }));
+  persist();
+}
+
+export function resetAppearanceColors() {
+  setPrefs("appearance", "colors", produce((c) => {
+    for (const k of Object.keys(c)) delete c[k];
+  }));
   persist();
 }
 

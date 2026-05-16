@@ -25,7 +25,7 @@ export default function StreamTooltip(props: Props) {
           top: `${props.y}px`,
           transform: "translateY(-50%)",
         }}
-        class="bg-bg-dark border border-border rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-40 max-w-xs w-max"
+        class="bg-bg-dark border border-border-muted rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-40 max-w-xs w-max"
       >
         <p class="text-text text-sm font-semibold whitespace-nowrap truncate">
           {props.channel.user_name}

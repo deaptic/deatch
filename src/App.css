@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  /* Accent */
+  --color-primary: oklch(0.69 0.17 285);
+
   /* Background */
   --color-bg-dark: oklch(0.1 0 340);
   --color-bg: oklch(0.15 0 340);
@@ -15,17 +18,13 @@
   --color-border: oklch(0.4 0 340);
   --color-border-muted: oklch(0.3 0 340);
 
-  /* Action */
-  --color-primary: oklch(0.69 0.17 285);
-  --color-secondary: oklch(0.74 0.1 80);
-
   /* Alert */
   --color-danger: oklch(0.65 0.16 30);
   --color-warning: oklch(0.65 0.16 100);
   --color-success: oklch(0.65 0.16 160);
   --color-info: oklch(0.65 0.16 260);
 
-  /* Event accents */
+  /* Event */
   --color-event-sub: var(--color-primary);
   --color-event-raid: oklch(0.75 0.17 60);
   --color-event-announce: oklch(0.78 0.13 195);

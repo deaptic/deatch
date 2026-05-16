@@ -9,7 +9,7 @@ type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
 const VARIANTS: Record<Variant, string> = {
   primary: "text-text bg-primary hover:bg-primary/80",
   secondary:
-    "text-text-muted hover:text-text bg-bg-light hover:bg-border border border-border",
+    "text-text-muted hover:text-text bg-bg-light border border-border hover:border-highlight",
   danger: "text-text bg-danger hover:bg-danger/80",
 };
 

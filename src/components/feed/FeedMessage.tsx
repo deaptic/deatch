@@ -64,7 +64,7 @@ export default function FeedMessage(props: Props) {
     <div
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
-      class={`relative group flex gap-2 leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-white/6 ${
+      class={`relative group flex gap-2 leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-bg ${
         props.item.deleted ? "opacity-50 " : ""
       }${
         mentioned()
@@ -120,7 +120,7 @@ export default function FeedMessage(props: Props) {
             (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
           )}
         >
-          <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
+          <span class="inline-flex items-center gap-1.5 bg-bg border border-border-muted rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
             <For
               each={props.item.badges.filter(
                 (b) =>

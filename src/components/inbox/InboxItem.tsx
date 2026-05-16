@@ -31,7 +31,7 @@ export default function InboxItem(props: Props) {
   return (
     <button
       onClick={props.onClick}
-      class={`w-full flex gap-3 pl-4 pr-5 py-3 cursor-pointer hover:bg-bg-light transition-colors text-left border-l-4 ${
+      class={`w-full flex gap-3 pl-4 pr-5 py-3 cursor-pointer hover:bg-bg transition-colors text-left border-l-4 ${
         props.mention.unread
           ? "bg-primary/10 hover:bg-primary/15 border-primary"
           : "border-transparent"

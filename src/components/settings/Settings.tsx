@@ -8,11 +8,12 @@ import SettingsContent from "./SettingsContent";
 import SettingsContentSection from "./SettingsContentSection";
 import SettingsContentSectionItem from "./SettingsContentSectionItem";
 
-type SectionKey = "feed" | "notifications" | "advanced";
+type SectionKey = "feed" | "notifications" | "appearance" | "advanced";
 
 const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: "notifications", label: "Notifications" },
   { key: "feed", label: "Feed" },
+  { key: "appearance", label: "Appearance" },
   { key: "advanced", label: "Advanced" },
 ];
 import {
@@ -49,7 +50,17 @@ import {
   setAdvancedAlwaysOnTop,
   advancedAutostart,
   setAdvancedAutostart,
+  appearanceColors,
+  setAppearanceColor,
+  resetAppearanceColor,
+  resetAppearanceColors,
 } from "../../state/preferences";
+import {
+  APPEARANCE_COLOR_GROUPS,
+  readAppearanceColorHex,
+  type AppearanceColorKey,
+} from "../../services/appearance";
+import Button from "../../ui/Button";
 import { muteUserByLogin, setUserNicknameByLogin } from "../../services/preferences";
 import KeyValueEditor from "../../ui/KeyValueEditor";
 import { BADGE_CATEGORIES, EVENTS } from "../../constants";
@@ -106,19 +117,22 @@ export default function Settings(props: Props) {
       onClick={() => props.onClose()}
     >
       <div
-        class="relative bg-bg border border-border-muted rounded-lg shadow-2xl w-full h-full max-w-350 flex flex-col overflow-hidden"
+        class="relative bg-bg-dark border border-border-muted rounded-lg shadow-2xl w-full h-full max-w-350 flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={() => props.onClose()}
-          class="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
-          title="Close"
-          aria-label="Close"
-        >
-          <CloseIcon class="w-2.5 h-2.5" />
-        </button>
-        <div class="flex items-center px-6 h-12 border-b border-border-muted shrink-0">
-          <span class="text-text text-sm font-semibold">Settings</span>
+        <div class="relative h-10 shrink-0 flex items-center bg-bg-dark border-b border-border-muted select-none">
+          <div class="flex items-center px-3">
+            <span class="text-text text-xs font-semibold tracking-tight">Settings</span>
+          </div>
+          <div class="flex-1" />
+          <button
+            onClick={() => props.onClose()}
+            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-text transition-colors cursor-pointer"
+            title="Close"
+            aria-label="Close"
+          >
+            <CloseIcon class="w-2.5 h-2.5" />
+          </button>
         </div>
         <div class="flex-1 flex min-h-0">
           <SettingsNavigation>
@@ -291,6 +305,37 @@ export default function Settings(props: Props) {
               </SettingsContentSection>
             </SettingsContent>
           </Show>
+          <Show when={section() === "appearance"}>
+            <SettingsContent title="Appearance">
+              <SettingsContentSection>
+                <div class="flex items-center justify-between">
+                  <span class="text-text-muted text-xs">
+                    Customize the colors used throughout the app. Click a swatch to pick a new color.
+                  </span>
+                  <Button
+                    variant="secondary"
+                    disabled={Object.keys(appearanceColors()).length === 0}
+                    onClick={() => resetAppearanceColors()}
+                  >
+                    Reset all
+                  </Button>
+                </div>
+              </SettingsContentSection>
+              <For each={APPEARANCE_COLOR_GROUPS}>
+                {(group) => (
+                  <SettingsContentSection title={group.label}>
+                    <For each={group.colors}>
+                      {(c) => (
+                        <SettingsContentSectionItem label={c.label}>
+                          <AppearanceColorRow colorKey={c.key} />
+                        </SettingsContentSectionItem>
+                      )}
+                    </For>
+                  </SettingsContentSection>
+                )}
+              </For>
+            </SettingsContent>
+          </Show>
           <Show when={section() === "advanced"}>
             <SettingsContent title="Advanced">
               <SettingsContentSection>
@@ -323,6 +368,34 @@ export default function Settings(props: Props) {
           </Show>
         </div>
       </div>
+    </div>
+  );
+}
+
+function AppearanceColorRow(props: { colorKey: AppearanceColorKey }) {
+  const override = () => appearanceColors()[props.colorKey];
+  const pickerValue = () => override() ?? readAppearanceColorHex(props.colorKey);
+  return (
+    <div class="flex items-center gap-2">
+      <label
+        class="relative w-8 h-8 rounded border border-border cursor-pointer overflow-hidden"
+        style={{ "background-color": `var(--color-${props.colorKey})` }}
+        title="Pick color"
+      >
+        <input
+          type="color"
+          class="absolute inset-0 opacity-0 cursor-pointer"
+          value={pickerValue()}
+          onInput={(e) => setAppearanceColor(props.colorKey, e.currentTarget.value)}
+        />
+      </label>
+      <Button
+        variant="secondary"
+        disabled={!override()}
+        onClick={() => resetAppearanceColor(props.colorKey)}
+      >
+        Reset
+      </Button>
     </div>
   );
 }

@@ -38,6 +38,9 @@
     "alwaysOnTop": false,
     "autostart": false
   },
+  "appearance": {
+    "colors": {}
+  },
   "menu": {
     "channels": {
       "pinned": []

@@ -42,8 +42,11 @@ export default function FeedEvent(props: Props) {
   return (
     <div
       data-item-id={props.item.id}
-      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 bg-bg border-l-4 rounded-r-md"
-      style={{ "border-left-color": color() }}
+      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 border-l-4 rounded-r-md"
+      style={{
+        "background-color": `color-mix(in oklab, ${color()} 10%, transparent)`,
+        "border-left-color": color(),
+      }}
       onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
