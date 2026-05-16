@@ -329,6 +329,8 @@ export default function FeedInput(props: Props) {
           class="flex-1 bg-transparent text-text text-base placeholder-text-muted/60 px-4 py-3 outline-none"
         />
         <button
+          data-emote-picker-toggle
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => setPickerOpen((o) => !o)}
           class={`flex items-center justify-center w-9 h-9 mx-2.5 rounded-md transition-colors cursor-pointer shrink-0 ${
             pickerOpen() ? "text-primary" : "text-text-muted hover:bg-bg-light hover:text-text"

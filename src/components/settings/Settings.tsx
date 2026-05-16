@@ -59,12 +59,14 @@ import Chip from "../../ui/Chip";
 import ChipList from "../../ui/ChipList";
 import TextInput from "../../ui/TextInput";
 import CloseIcon from "../../icons/CloseIcon";
+import { captureFocusForRestore } from "../../utils/focus";
 
 type Props = {
   onClose: () => void;
 };
 
 export default function Settings(props: Props) {
+  captureFocusForRestore();
   const [section, setSection] = createSignal<SectionKey>("notifications");
   const [mutedMeta, setMutedMeta] = createStore<Record<string, TwitchUser>>({});
 

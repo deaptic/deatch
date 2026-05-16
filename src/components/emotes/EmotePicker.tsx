@@ -1,4 +1,4 @@
-import { createMemo, createSignal, createEffect, For, Show } from "solid-js";
+import { createMemo, createSignal, createEffect, For, Show, onMount, onCleanup } from "solid-js";
 import { Portal } from "solid-js/web";
 import {
   userEmotes,
@@ -13,6 +13,7 @@ import { getUsers } from "../../commands/users";
 import EmoteGrid from "./EmoteGrid";
 import EmoteSections from "./EmoteSections";
 import EmotePickerSection from "./EmotePickerSection";
+import { captureFocusForRestore } from "../../utils/focus";
 import type { EmoteGridItem } from "./types";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
@@ -39,8 +40,10 @@ type Props = {
 };
 
 export default function EmotePicker(props: Props) {
+  captureFocusForRestore();
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
+  let panelRef: HTMLDivElement | undefined;
 
   // Hydrate display metadata for any channels the user subs to whose owner
   // info isn't yet in the user cache. Used by `computeGlobalSections` to
@@ -77,10 +80,29 @@ export default function EmotePicker(props: Props) {
   const onToggleFavorite = (item: EmoteGridItem) =>
     toggleFavorite({ value: item.value, url: item.url, label: item.label });
 
+  const onDocumentKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== "Escape" || e.defaultPrevented) return;
+    e.preventDefault();
+    props.onClose();
+  };
+  const onDocumentMouseDown = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (panelRef?.contains(target)) return;
+    if (target.closest("[data-emote-picker-toggle]")) return;
+    props.onClose();
+  };
+  onMount(() => {
+    document.addEventListener("keydown", onDocumentKeyDown);
+    document.addEventListener("mousedown", onDocumentMouseDown, { capture: true });
+    onCleanup(() => {
+      document.removeEventListener("keydown", onDocumentKeyDown);
+      document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true });
+    });
+  });
+
   return (
     <Portal>
-      <div class="fixed inset-0 z-30" onClick={props.onClose} />
-      <div class="fixed bottom-16 right-2 z-40 w-80 h-96 bg-bg border border-border-muted rounded-lg shadow-2xl flex flex-col">
+      <div ref={panelRef} class="fixed bottom-16 right-2 z-40 w-80 h-96 bg-bg border border-border-muted rounded-lg shadow-2xl flex flex-col">
         <div class="flex border-b border-border-muted shrink-0">
           <For each={TABS}>
             {(t) => (
