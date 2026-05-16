@@ -38,7 +38,7 @@ export default function FeedSuggestions<T>(props: Props<T>) {
   });
 
   return (
-    <div ref={containerRef} class="absolute bottom-full left-3 right-3 mb-3 z-30 bg-bg border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60">
+    <div ref={containerRef} class="absolute bottom-full left-3 right-3 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60">
       <For each={props.suggestions()}>
         {(s, i) => (
           <FeedSuggestionItem active={i() === acIndex()} onClick={() => props.onSelect(s)}>
