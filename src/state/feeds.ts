@@ -34,22 +34,35 @@ export function getItemId(item: FeedItem): string {
   return item.kind === "message" ? item.message_id : item.id;
 }
 
+function isSilent(item: FeedItem): boolean {
+  return item.kind === "event" && item.silent === true;
+}
+
+function lastVisible(feed: ChannelFeed): FeedItem | undefined {
+  for (let i = feed.messages.length - 1; i >= 0; i--) {
+    if (!isSilent(feed.messages[i])) return feed.messages[i];
+  }
+  return undefined;
+}
+
 export function hasUnread(id: string): boolean {
   const feed = feeds[id];
   if (!feed) return false;
   if (selectedChannel()?.user_id === id) return false;
   if (feed.dividerAtItemId) {
-    const last = feed.messages[feed.messages.length - 1];
+    const last = lastVisible(feed);
     return last !== undefined && getItemId(last) !== feed.dividerAtItemId;
   }
   if (feed.lastSeenItemId) return false;
-  return feed.messages.length > 0;
+  return lastVisible(feed) !== undefined;
 }
 
 export function markSeen(id: string) {
   const feed = feeds[id];
-  if (!feed || feed.messages.length === 0) return;
-  const lastId = getItemId(feed.messages[feed.messages.length - 1]);
+  if (!feed) return;
+  const last = lastVisible(feed);
+  if (!last) return;
+  const lastId = getItemId(last);
   setFeeds(id, "lastSeenItemId", lastId);
   if (feed.dividerAtItemId === lastId) {
     setFeeds(id, "dividerAtItemId", null);
@@ -125,7 +138,7 @@ export function appendItem(id: string, item: FeedItem) {
         f.messages.splice(0, f.messages.length - TRIM_TO);
       }
       f.messages.push(item);
-      if (isActive && !f.paused) {
+      if (isActive && !f.paused && !isSilent(item)) {
         f.lastSeenItemId = itemId;
       }
     }),

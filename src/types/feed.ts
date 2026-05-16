@@ -43,6 +43,7 @@ export type FeedEvent = {
   chatter_name: string;
   color: string;
   timestamp: number;
+  silent?: boolean;
 };
 
 export type FeedItem = FeedMessage | FeedEvent;

@@ -18,6 +18,7 @@ function pushNotice(broadcasterId: string, noticeType: string, message: string):
     chatter_name: "",
     color: "",
     timestamp: now,
+    silent: true,
   };
   appendItem(broadcasterId, notice);
 }
