@@ -376,7 +376,7 @@ export default function FeedInput(props: Props) {
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => setPickerOpen((o) => !o)}
           class={`flex items-center justify-center w-9 h-9 mx-2.5 rounded-md transition-colors cursor-pointer shrink-0 ${
-            pickerOpen() ? "text-text bg-highlight" : "text-text-muted hover:bg-bg hover:text-text"
+            pickerOpen() ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
           }`}
           title="Emote picker"
         >
