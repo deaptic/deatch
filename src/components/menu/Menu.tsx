@@ -12,7 +12,7 @@ import { getAllFollowedStreams, getAllStreams } from "../../commands/streams";
 import { getUsers } from "../../commands/users";
 import { addToast } from "../../state/toasts";
 import { user } from "../../state/users";
-import { rememberChannel } from "../../state/channels";
+import { rememberChannel, setLiveChannels } from "../../state/channels";
 import {
   advancedDeveloperMode,
   menuChannelPinned,
@@ -134,11 +134,13 @@ export default function Menu(props: Props) {
       }));
       for (const ch of data) rememberChannel(ch);
       setLive(reconcile(data, { key: "user_id" }));
+      setLiveChannels(data);
       props.onLiveChange?.(data);
     } catch (e) {
       addToast(String(e), "error");
       // Signal the parent that the fetch settled (even unsuccessfully) so it
       // can stop waiting on us before proceeding with subscriptions.
+      setLiveChannels([]);
       props.onLiveChange?.([]);
     } finally {
       setLoadingLive(false);

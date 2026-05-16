@@ -1,4 +1,4 @@
-import { createSignal, createEffect, onMount, Show } from "solid-js";
+import { createSignal, createEffect, onMount, onCleanup, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   enable as enableAutostart,
@@ -39,11 +39,13 @@ import {
   channelsById,
   rememberChannel,
   loadLastChannel,
+  nextChannelInOrder,
 } from "./state/channels";
 import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import { loadChannelBadges, resetChannelBadgeCache } from "./services/badges";
 import { dropFeed, ensureFeed, snapshotDivider, markSeen } from "./state/feeds";
 import { scrollToMessage } from "./services/feeds";
+import { registerShortcuts } from "./services/shortcuts";
 import "./events";
 import "./App.css";
 
@@ -141,9 +143,19 @@ function App() {
     }
   });
 
+  function cycleChannel(direction: 1 | -1) {
+    const next = nextChannelInOrder(direction);
+    if (next) handleChannelSelect(next);
+  }
+
   onMount(() => {
     sessionManager.restore();
     loadThirdPartyGlobalEmotes();
+    const unregister = registerShortcuts({
+      "Alt+ArrowDown": () => cycleChannel(1),
+      "Alt+ArrowUp": () => cycleChannel(-1),
+    });
+    onCleanup(unregister);
   });
 
   createEffect(() => {
