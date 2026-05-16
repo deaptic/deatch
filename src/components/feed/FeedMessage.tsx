@@ -1,11 +1,12 @@
 import { For, Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { EmoteMap } from "../../state/emotes";
-import { badgeCategoryFor, type BadgeCategoryKey } from "../../constants";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import FeedMessageFragment from "./FeedMessageFragment";
+import BadgeBox from "../../ui/BadgeBox";
+import DisplayName from "../../ui/DisplayName";
+import Time from "../../ui/Time";
 import type { FeedMessage as Message, BadgeMap } from "../../types";
-import { matchesAnyKeyword, feedUserNickname } from "../../state/preferences";
+import { matchesAnyKeyword } from "../../state/preferences";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -13,19 +14,19 @@ type Props = {
   item: Message;
   emotes: EmoteMap;
   badges: BadgeMap;
-  badgePrefs: Record<BadgeCategoryKey, { show: boolean }>;
   userLogin: string;
   keywords?: string[];
-  useDisplayName?: boolean;
   showTimestamp?: boolean;
   showDeletedContent?: boolean;
-  overrideNameColor?: string;
+  showName?: boolean;
+  showBadges?: boolean;
+  showToolbar?: boolean;
   reactions: Reaction[];
-  onContextMenu: (x: number, y: number, msg: Message) => void;
-  onReply: (msg: Message) => void;
-  onReact: (msg: Message, value: string) => void;
-  onCopypasta: (msg: Message) => void;
-  onJumpToMessage: (messageId: string) => void;
+  onContextMenu?: (x: number, y: number, msg: Message) => void;
+  onReply?: (msg: Message) => void;
+  onReact?: (msg: Message, value: string) => void;
+  onCopypasta?: (msg: Message) => void;
+  onJumpToMessage?: (messageId: string) => void;
   onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
   onUserContextMenu?: (x: number, y: number, identity: { userId?: string; login?: string; displayName?: string }) => void;
 };
@@ -76,34 +77,41 @@ export default function FeedMessage(props: Props) {
               : ""
       }`}
       onContextMenu={(e) => {
+        if (!props.onContextMenu) return;
         e.preventDefault();
         e.stopPropagation();
         props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
-      <FeedMessageToolbar
-        item={props.item}
-        reactions={props.reactions}
-        onReact={props.onReact}
-        onReply={props.onReply}
-        onCopypasta={props.onCopypasta}
-        onMore={props.onContextMenu}
-      />
+      <Show
+        when={
+          props.showToolbar !== false &&
+          props.onReply &&
+          props.onReact &&
+          props.onCopypasta &&
+          props.onContextMenu
+        }
+      >
+        <FeedMessageToolbar
+          item={props.item}
+          reactions={props.reactions}
+          onReact={props.onReact!}
+          onReply={props.onReply!}
+          onCopypasta={props.onCopypasta!}
+          onMore={props.onContextMenu!}
+        />
+      </Show>
       <Show when={props.showTimestamp}>
-        <span class="text-text-muted select-none tabular-nums shrink-0">
-          {new Date(props.item.timestamp).toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          })}
-        </span>
+        <Time ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
       </Show>
       <div class="wrap-break-word min-w-0">
         <Show when={props.item.reply}>
           <div
-            class="text-text-muted/70 leading-[1.6em] truncate cursor-pointer hover:text-text-muted transition-colors"
+            class={`text-text-muted/70 leading-[1.6em] truncate transition-colors ${
+              props.onJumpToMessage ? "cursor-pointer hover:text-text-muted" : ""
+            }`}
             onClick={() =>
-              props.onJumpToMessage(props.item.reply!.parent_message_id)
+              props.onJumpToMessage?.(props.item.reply!.parent_message_id)
             }
           >
             <span class="text-[0.78em]">⌐ Replying to </span>
@@ -115,69 +123,24 @@ export default function FeedMessage(props: Props) {
             </span>
           </div>
         </Show>
-        <Show
-          when={props.item.badges.some(
-            (b) => props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
-          )}
-        >
-          <span class="inline-flex items-center gap-1.5 bg-bg border border-border-muted rounded-md px-1.5 py-1 mr-1.5 align-text-bottom">
-            <For
-              each={props.item.badges.filter(
-                (b) =>
-                  props.badgePrefs[badgeCategoryFor(b.set_id)]?.show !== false,
-              )}
-            >
-              {(b) => {
-                const badge = () => props.badges[`${b.set_id}/${b.id}`];
-                return (
-                  <Show when={badge()}>
-                    <img
-                      src={badge()!.url}
-                      alt={badge()!.title}
-                      title={`${badge()!.title}${b.info ? ` (${b.info})` : ""}`}
-                      class="w-[0.85em] h-[0.85em]"
-                    />
-                  </Show>
-                );
-              }}
-            </For>
-          </span>
+        <Show when={props.showBadges !== false}>
+          <BadgeBox
+            badges={props.item.badges}
+            channelBadges={props.badges}
+            class="mr-1.5 align-text-bottom"
+          />
         </Show>
-        <span
-          class="font-semibold cursor-pointer hover:underline"
-          style={{
-            color:
-              props.overrideNameColor ||
-              (props.item.color
-                ? `oklch(from ${props.item.color} max(l, 0.65) c h)`
-                : "var(--color-primary)"),
-          }}
-          onClick={(e) => props.onShowUserCard?.(e.clientX, e.clientY, { userId: props.item.chatter_user_id })}
-          onContextMenu={(e) => {
-            if (!props.onUserContextMenu) return;
-            e.preventDefault();
-            e.stopPropagation();
-            props.onUserContextMenu(e.clientX, e.clientY, {
-              userId: props.item.chatter_user_id,
-              login: props.item.chatter_login,
-              displayName: props.item.chatter_name,
-            });
-          }}
-          onAuxClick={(e) => {
-            if (e.button !== 1) return;
-            e.preventDefault();
-            openUrl(`https://twitch.tv/${props.item.chatter_login}`);
-          }}
-          onMouseDown={(e) => {
-            if (e.button === 1) e.preventDefault();
-          }}
-        >
-          {feedUserNickname(props.item.chatter_login) ??
-            (props.useDisplayName === false
-              ? props.item.chatter_login
-              : props.item.chatter_name)}
-        </span>
-        <span class="text-text-muted">: </span>
+        <Show when={props.showName !== false}>
+          <DisplayName
+            login={props.item.chatter_login}
+            displayName={props.item.chatter_name}
+            color={props.item.color}
+            userId={props.item.chatter_user_id}
+            onShowUserCard={props.onShowUserCard}
+            onUserContextMenu={props.onUserContextMenu}
+          />
+          <span class="text-text-muted">: </span>
+        </Show>
         <Show
           when={!props.item.deleted || props.showDeletedContent}
           fallback={<span class="italic text-text-muted">&lt;deleted&gt;</span>}

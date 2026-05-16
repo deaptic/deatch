@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 import type { FeedEvent as Event } from "../../types";
+import Time from "../../ui/Time";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";
@@ -34,7 +35,7 @@ const COLORS: Record<string, string> = {
 type Props = {
   item: Event;
   showTimestamp?: boolean;
-  onContextMenu: (x: number, y: number, item: Event) => void;
+  onContextMenu?: (x: number, y: number, item: Event) => void;
 };
 
 export default function FeedEvent(props: Props) {
@@ -48,15 +49,14 @@ export default function FeedEvent(props: Props) {
         "border-left-color": color(),
       }}
       onContextMenu={(e) => {
+        if (!props.onContextMenu) return;
         e.preventDefault();
         e.stopPropagation();
         props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
       <Show when={props.showTimestamp}>
-        <span class="text-text-muted select-none tabular-nums shrink-0">
-          {new Date(props.item.timestamp).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false })}
-        </span>
+        <Time ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
       </Show>
       <span class="text-text font-semibold wrap-break-word min-w-0">
         {props.item.system_message}
