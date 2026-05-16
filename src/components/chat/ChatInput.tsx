@@ -16,6 +16,11 @@ import EmotePicker from "../emotes/EmotePicker";
 import ChatSuggestions from "./ChatSuggestions";
 import { chattersByChannel } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
+import {
+  emotePickerOpen as pickerOpen,
+  setEmotePickerOpen as setPickerOpen,
+  openEmotePicker,
+} from "../../state/ui";
 import SmileIcon from "../../icons/SmileIcon";
 
 type ReplyTo = { messageId: string; name: string; text: string };
@@ -32,7 +37,6 @@ type Props = {
 export default function ChatInput(props: Props) {
   const [input, setInput] = createSignal("");
   const [sending, setSending] = createSignal(false);
-  const [pickerOpen, setPickerOpen] = createSignal(false);
   const [acQuery, setAcQuery] = createSignal<string | null>(null);
   const [mentionQuery, setMentionQuery] = createSignal<string | null>(null);
   const [commandQuery, setCommandQuery] = createSignal<string | null>(null);
@@ -374,7 +378,7 @@ export default function ChatInput(props: Props) {
         <button
           data-emote-picker-toggle
           onMouseDown={(e) => e.preventDefault()}
-          onClick={() => setPickerOpen((o) => !o)}
+          onClick={() => (pickerOpen() ? setPickerOpen(false) : openEmotePicker())}
           class={`flex items-center justify-center w-9 h-9 mx-2.5 rounded-md transition-colors cursor-pointer shrink-0 ${
             pickerOpen() ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
           }`}

@@ -11,6 +11,14 @@ import Chat from "./components/chat/Chat";
 import TitleBar from "./components/title-bar/TitleBar";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
+import {
+  settingsOpen,
+  setSettingsOpen,
+  inboxOpen,
+  setInboxOpen,
+  openSettings,
+  openInbox,
+} from "./state/ui";
 import Login from "./components/login/Login";
 import Loading from "./ui/Loading";
 import {
@@ -70,8 +78,6 @@ function App() {
   // Gate the reconciliation effect until the live-channels fetch settles so
   // pinned ∪ live get subscribed in one batch instead of two.
   const [liveLoaded, setLiveLoaded] = createSignal(false);
-  const [settingsOpen, setSettingsOpen] = createSignal(false);
-  const [inboxOpen, setInboxOpen] = createSignal(false);
 
   const joinedIds = new Set<string>();
 
@@ -207,8 +213,8 @@ function App() {
       <TitleBar
         settingsOpen={settingsOpen()}
         inboxOpen={inboxOpen()}
-        onToggleSettings={() => setSettingsOpen((o) => !o)}
-        onToggleInbox={() => setInboxOpen((o) => !o)}
+        onToggleSettings={() => (settingsOpen() ? setSettingsOpen(false) : openSettings())}
+        onToggleInbox={() => (inboxOpen() ? setInboxOpen(false) : openInbox())}
       />
       <Show when={settingsOpen()}>
         <Settings onClose={() => setSettingsOpen(false)} />
