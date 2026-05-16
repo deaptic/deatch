@@ -13,7 +13,6 @@ import { buildThirdPartyEmoteMap, favorites } from "../../state/emotes";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";
-import FeedInput from "./FeedInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
 import UserContextMenu, { type UserContextTarget } from "../context-menus/UserContextMenu";
 import UserCard from "../user-card/UserCard";
@@ -49,29 +48,30 @@ import {
 } from "../../state/preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
 
+export type FeedApi = {
+  showUserCard: (chatterId: string) => void;
+};
+
 type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
   userLogin: string;
   onJumpToMessage: (channelId: string, messageId: string) => void;
+  onReply?: (msg: Message) => void;
+  onMention?: (login: string) => void;
+  expose?: (api: FeedApi) => void;
 };
 
 export default function Feed(props: Props) {
   const [contextMenu, setContextMenu] = createSignal<{ x: number; y: number; msg: Message } | null>(null);
   const [userContextMenu, setUserContextMenu] = createSignal<{ x: number; y: number } & UserContextTarget | null>(null);
   const [eventContextMenu, setEventContextMenu] = createSignal<{ x: number; y: number; item: EventItem } | null>(null);
-  const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
   const [modAction, setModAction] = createSignal<{ userId: string; userName: string } | null>(null);
   const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
   const [nicknamePop, setNicknamePop] = createSignal<{ x: number; y: number; login: string } | null>(null);
   const [nicknameInput, setNicknameInput] = createSignal("");
 
-  let inputApi: { focus: () => void; insert: (text: string) => void } | undefined;
   let rootRef: HTMLDivElement | undefined;
-
-  createEffect(on(() => props.broadcasterId, () => {
-    inputApi?.focus();
-  }));
 
   const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
   const closeContextMenu = () => setContextMenu(null);
@@ -130,19 +130,8 @@ export default function Feed(props: Props) {
     else removeUserNickname(pop.login);
     closeNicknameEdit();
   }
-  const clearReply = () => setReplyTo(null);
-  const startReply = (msg: Message) => {
-    setReplyTo({
-      messageId: msg.message_id,
-      name: msg.chatter_name,
-      text: msg.fragments.map((f) => f.text).join(""),
-    });
-    inputApi?.focus();
-  };
-
-  function mentionUser(login: string) {
-    inputApi?.insert(`@${login}`);
-  }
+  const startReply = (msg: Message) => props.onReply?.(msg);
+  const mentionUser = (login: string) => props.onMention?.(login);
 
   const items = createMemo<FeedItem[]>(() => feeds[props.broadcasterId]?.messages ?? []);
   const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});
@@ -230,6 +219,17 @@ export default function Feed(props: Props) {
 
   onCleanup(() => clearTimeout(fontSizeFlashTimer));
 
+  onMount(() => {
+    props.expose?.({
+      showUserCard: (chatterId: string) => {
+        const b = rootRef?.getBoundingClientRect();
+        const x = b ? b.left : 0;
+        const y = b ? b.bottom : window.innerHeight;
+        setUserCard({ x, y, chatterId });
+      },
+    });
+  });
+
   function react(msg: Message, value: string) {
     sendChatMessage({
       broadcasterId: props.broadcasterId,
@@ -263,91 +263,75 @@ export default function Feed(props: Props) {
   }
 
   return (
-    <div class="flex flex-col h-full bg-bg-dark">
-      <div ref={rootRef} class="flex-1 relative min-h-0">
-        <Show when={fontSizeFlash()}>
-          <div class="absolute top-3 right-3 z-20 bg-bg border border-border-muted text-text text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
-            {feedFontSize()}px
-          </div>
-        </Show>
-        <Show when={paused()}>
-          <button
-            onClick={scrollToBottom}
-            class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-primary hover:bg-primary/80 text-text text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
-          >
-            <CaretDownIcon class="w-3 h-3" />
-            Latest messages
-          </button>
-        </Show>
-        <div
-          ref={scrollRef}
-          onScroll={onScroll}
-          onWheel={onWheel}
-          class="h-full overflow-y-auto pl-2 pr-3 flex flex-col [scrollbar-gutter:stable]"
-          style={{ "font-size": `${feedFontSize()}px` }}
-        >
-          <For each={items()}>
-            {(item, index) => (
-              <>
-                <Show
-                  when={
-                    index() > 0 &&
-                    dividerAt() &&
-                    getItemId(items()[index() - 1]) === dividerAt()
-                  }
-                >
-                  <FeedDivider />
-                </Show>
-                <Show when={isFeedItemVisible(item)}>
-                  {item.kind === "event" ? (
-                    <FeedEvent
-                      item={item}
-                      showTimestamp={feedShowTimestamp()}
-                      onContextMenu={openEventContextMenu}
-                    />
-                  ) : (
-                    <FeedMessage
-                      item={item}
-                      emotes={emoteMap()}
-                      badges={badges()}
-                      badgePrefs={feedBadges()}
-                      userLogin={props.userLogin}
-                      keywords={feedKeywords()}
-                      useDisplayName={feedUserShowDisplayName()}
-                      overrideNameColor={feedUserOverrideNameColor()}
-                      showTimestamp={feedShowTimestamp()}
-                      showDeletedContent={feedShowDeletedContent()}
-                      reactions={reactions()}
-                      onContextMenu={openContextMenu}
-                      onReply={startReply}
-                      onReact={react}
-                      onCopypasta={copypasta}
-                      onUserContextMenu={openUserContextMenu}
-                      onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
-                      onShowUserCard={openUserCard}
-                    />
-                  )}
-                </Show>
-              </>
-            )}
-          </For>
-          <div ref={bottomRef} />
+    <div ref={rootRef} class="flex-1 relative min-h-0">
+      <Show when={fontSizeFlash()}>
+        <div class="absolute top-3 right-3 z-20 bg-bg border border-border-muted text-text text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
+          {feedFontSize()}px
         </div>
+      </Show>
+      <Show when={paused()}>
+        <button
+          onClick={scrollToBottom}
+          class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-primary hover:bg-primary/80 text-text text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
+        >
+          <CaretDownIcon class="w-3 h-3" />
+          Latest messages
+        </button>
+      </Show>
+      <div
+        ref={scrollRef}
+        onScroll={onScroll}
+        onWheel={onWheel}
+        class="h-full overflow-y-auto pl-2 pr-3 flex flex-col [scrollbar-gutter:stable]"
+        style={{ "font-size": `${feedFontSize()}px` }}
+      >
+        <For each={items()}>
+          {(item, index) => (
+            <>
+              <Show
+                when={
+                  index() > 0 &&
+                  dividerAt() &&
+                  getItemId(items()[index() - 1]) === dividerAt()
+                }
+              >
+                <FeedDivider />
+              </Show>
+              <Show when={isFeedItemVisible(item)}>
+                {item.kind === "event" ? (
+                  <FeedEvent
+                    item={item}
+                    showTimestamp={feedShowTimestamp()}
+                    onContextMenu={openEventContextMenu}
+                  />
+                ) : (
+                  <FeedMessage
+                    item={item}
+                    emotes={emoteMap()}
+                    badges={badges()}
+                    badgePrefs={feedBadges()}
+                    userLogin={props.userLogin}
+                    keywords={feedKeywords()}
+                    useDisplayName={feedUserShowDisplayName()}
+                    overrideNameColor={feedUserOverrideNameColor()}
+                    showTimestamp={feedShowTimestamp()}
+                    showDeletedContent={feedShowDeletedContent()}
+                    reactions={reactions()}
+                    onContextMenu={openContextMenu}
+                    onReply={startReply}
+                    onReact={react}
+                    onCopypasta={copypasta}
+                    onUserContextMenu={openUserContextMenu}
+                    onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
+                    onShowUserCard={openUserCard}
+                  />
+                )}
+              </Show>
+            </>
+          )}
+        </For>
+        <div ref={bottomRef} />
       </div>
-
-      <FeedInput
-        broadcasterId={props.broadcasterId}
-        broadcasterLogin={props.broadcasterLogin}
-        replyTo={replyTo}
-        onClearReply={clearReply}
-        openUserCard={(userId) => {
-          const b = rootRef?.getBoundingClientRect();
-          const x = b ? b.left : 0;
-          const y = b ? b.bottom : window.innerHeight;
-          setUserCard({ x, y, chatterId: userId });
-        }}
-        expose={(api) => { inputApi = api; }}
-      />
 
       <Show when={contextMenu()}>
         {(cm) => (

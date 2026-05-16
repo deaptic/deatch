@@ -13,7 +13,7 @@ import {
 } from "../../state/emotes";
 import { ensureUserEmotesLoaded } from "../../services/emotes";
 import EmotePicker from "../emotes/EmotePicker";
-import FeedSuggestions from "./FeedSuggestions";
+import ChatSuggestions from "./ChatSuggestions";
 import { chattersByChannel } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
 import SmileIcon from "../../icons/SmileIcon";
@@ -29,7 +29,7 @@ type Props = {
   expose?: (api: { focus: () => void; insert: (text: string) => void }) => void;
 };
 
-export default function FeedInput(props: Props) {
+export default function ChatInput(props: Props) {
   const [input, setInput] = createSignal("");
   const [sending, setSending] = createSignal(false);
   const [pickerOpen, setPickerOpen] = createSignal(false);
@@ -306,7 +306,7 @@ export default function FeedInput(props: Props) {
       </Show>
       <div class="relative flex items-center h-14">
         <Show when={commandSuggestions().length > 0}>
-          <FeedSuggestions<CommandSuggestion>
+          <ChatSuggestions<CommandSuggestion>
             suggestions={commandSuggestions}
             onSelect={selectCommand}
             onDismiss={dismissCommand}
@@ -325,7 +325,7 @@ export default function FeedInput(props: Props) {
           />
         </Show>
         <Show when={mentionSuggestions().length > 0}>
-          <FeedSuggestions<MentionSuggestion>
+          <ChatSuggestions<MentionSuggestion>
             suggestions={mentionSuggestions}
             onSelect={selectMention}
             onDismiss={dismissMention}
@@ -347,7 +347,7 @@ export default function FeedInput(props: Props) {
           />
         </Show>
         <Show when={acSuggestions().length > 0}>
-          <FeedSuggestions<EmoteSuggestion>
+          <ChatSuggestions<EmoteSuggestion>
             suggestions={acSuggestions}
             onSelect={selectAcSuggestion}
             onDismiss={dismissAc}

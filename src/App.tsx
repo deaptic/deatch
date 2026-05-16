@@ -7,7 +7,7 @@ import {
 } from "@tauri-apps/plugin-autostart";
 import { getAllModeratedChannels } from "./commands/moderation";
 import Menu, { type Channel } from "./components/menu/Menu";
-import Feed from "./components/feed/Feed";
+import Chat from "./components/chat/Chat";
 import TitleBar from "./components/title-bar/TitleBar";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
@@ -258,7 +258,7 @@ function App() {
                 }
               >
                 {(ch) => (
-                  <Feed
+                  <Chat
                     broadcasterId={ch().user_id}
                     broadcasterLogin={ch().user_login}
                     userLogin={u().login}
