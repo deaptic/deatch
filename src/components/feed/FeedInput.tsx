@@ -40,6 +40,7 @@ export default function FeedInput(props: Props) {
   let acHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let mentionHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let commandHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
+  let tabCycle: { matches: string[]; index: number; start: number; end: number } | null = null;
 
   function insertText(value: string) {
     const cur = input();
@@ -166,7 +167,38 @@ export default function FeedInput(props: Props) {
     }
   }
 
+  function tabComplete() {
+    if (!tabCycle) {
+      const cursor = inputRef?.selectionStart ?? input().length;
+      const partial = input().slice(0, cursor).match(/\S+$/)?.[0];
+      if (!partial) return;
+      const bucket = chattersByChannel.get(props.broadcasterId);
+      if (!bucket) return;
+      const lower = partial.toLowerCase();
+      const matches = [...bucket.values()]
+        .filter((c) => {
+          const nick = feedUserNickname(c.login)?.toLowerCase();
+          return c.login.toLowerCase().startsWith(lower)
+            || c.displayName.toLowerCase().startsWith(lower)
+            || (nick !== undefined && nick.startsWith(lower));
+        })
+        .sort((a, b) => b.lastSeen - a.lastSeen)
+        .map((c) => c.displayName);
+      if (matches.length === 0) return;
+      tabCycle = { matches, index: 0, start: cursor - partial.length, end: cursor };
+    } else {
+      tabCycle.index = (tabCycle.index + 1) % tabCycle.matches.length;
+    }
+    const name = tabCycle.matches[tabCycle.index];
+    const v = input();
+    setInput(v.slice(0, tabCycle.start) + name + v.slice(tabCycle.end));
+    tabCycle.end = tabCycle.start + name.length;
+    const c = tabCycle.end;
+    queueMicrotask(() => inputRef?.setSelectionRange(c, c));
+  }
+
   function onInput(e: InputEvent) {
+    tabCycle = null;
     const el = e.currentTarget as HTMLInputElement;
     setInput(el.value);
     const before = el.value.slice(0, el.selectionStart ?? el.value.length);
@@ -234,6 +266,17 @@ export default function FeedInput(props: Props) {
     if (commandHandleKey?.(e)) return;
     if (mentionHandleKey?.(e)) return;
     if (acHandleKey?.(e)) return;
+    if (
+      e.key === "Tab" &&
+      !e.shiftKey &&
+      commandQuery() === null &&
+      mentionQuery() === null &&
+      acQuery() === null
+    ) {
+      e.preventDefault();
+      tabComplete();
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }
 
