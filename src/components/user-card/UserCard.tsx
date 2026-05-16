@@ -12,6 +12,8 @@ type Props = {
   broadcasterId: string;
   getBounds: () => DOMRect | null;
   onClose: () => void;
+  onJumpToMessage?: (channelId: string, messageId: string) => void;
+  onSwitchUser?: (identity: { userId?: string; login?: string }) => void;
 };
 
 const CARD_W = 384;
@@ -105,6 +107,11 @@ export default function UserCard(props: Props) {
         <UserCardFeed
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
+          onJumpToMessage={(messageId) => {
+            props.onJumpToMessage?.(props.broadcasterId, messageId);
+            props.onClose();
+          }}
+          onShowUserCard={(_x, _y, identity) => props.onSwitchUser?.(identity)}
         />
       </div>
     </Portal>
