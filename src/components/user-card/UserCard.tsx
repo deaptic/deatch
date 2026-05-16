@@ -5,6 +5,7 @@ import {
   For,
   Show,
   onMount,
+  onCleanup,
 } from "solid-js";
 import { Portal } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -18,7 +19,7 @@ import { feedUserNickname } from "../../state/preferences";
 import { feeds } from "../../state/feeds";
 import type { FeedMessage } from "../../types";
 import { addToast } from "../../state/toasts";
-import CloseIcon from "../../icons/CloseIcon";
+import PinIcon from "../../icons/PinIcon";
 import CalendarIcon from "../../icons/CalendarIcon";
 import HashIcon from "../../icons/HashIcon";
 import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
@@ -65,6 +66,8 @@ export default function UserCard(props: Props) {
 
   const [pos, setPos] = createSignal(clamp(props.x, props.y, CARD_W, CARD_MAX_H));
 
+  const [pinned, setPinned] = createSignal(false);
+
   const [follower, setFollower] = createSignal<Follower | null>(null);
 
   const canQueryFollowers = () => {
@@ -97,6 +100,16 @@ export default function UserCard(props: Props) {
     const rect = cardRef.getBoundingClientRect();
     setPos(clamp(props.x, props.y, rect.width, rect.height));
   });
+
+  const onDocumentMouseDown = (e: MouseEvent) => {
+    if (pinned()) return;
+    if (cardRef?.contains(e.target as Node)) return;
+    props.onClose();
+  };
+  document.addEventListener("mousedown", onDocumentMouseDown, { capture: true });
+  onCleanup(() =>
+    document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true }),
+  );
 
   function startDrag(e: MouseEvent) {
     if (e.button !== 0) return;
@@ -235,13 +248,17 @@ export default function UserCard(props: Props) {
                 <ExternalLinkIcon class="w-2.5 h-2.5" />
               </button>
               <button
-                class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer"
+                class={`shrink-0 w-8 h-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
+                  pinned()
+                    ? "text-primary bg-bg-light"
+                    : "text-text-muted hover:text-text hover:bg-bg-light"
+                }`}
                 onMouseDown={(e) => e.stopPropagation()}
-                onClick={props.onClose}
-                title="Close"
-                aria-label="Close"
+                onClick={() => setPinned((p) => !p)}
+                title={pinned() ? "Unpin" : "Pin"}
+                aria-label={pinned() ? "Unpin" : "Pin"}
               >
-                <CloseIcon class="w-2.5 h-2.5" />
+                <PinIcon class="w-3 h-3" filled={pinned()} />
               </button>
             </div>
             <div class="flex items-baseline gap-1.5 min-w-0 flex-wrap">
