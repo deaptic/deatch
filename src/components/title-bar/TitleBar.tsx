@@ -83,7 +83,7 @@ export default function TitleBar(props: Props) {
         <button
           data-inbox-toggle
           class={`relative w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.inboxOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg"
+            props.inboxOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
           }`}
           onMouseDown={(e) => e.preventDefault()}
           onClick={props.onToggleInbox}
@@ -101,7 +101,7 @@ export default function TitleBar(props: Props) {
         </button>
         <button
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.settingsOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg"
+            props.settingsOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
           }`}
           onMouseDown={(e) => e.preventDefault()}
           onClick={props.onToggleSettings}
@@ -113,14 +113,14 @@ export default function TitleBar(props: Props) {
         <div class="h-5 w-px bg-border-muted self-center" />
         <div class="flex items-stretch h-full">
           <button
-            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg transition-colors cursor-pointer"
+            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg hover:text-text transition-colors cursor-pointer"
             onClick={() => win.minimize()}
             aria-label="Minimize"
           >
             <MinusIcon class="w-2.5 h-2.5" />
           </button>
           <button
-            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg transition-colors cursor-pointer"
+            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg hover:text-text transition-colors cursor-pointer"
             onClick={() => win.toggleMaximize()}
             aria-label={maximized() ? "Restore" : "Maximize"}
           >
