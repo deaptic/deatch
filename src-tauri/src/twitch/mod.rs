@@ -18,8 +18,7 @@ pub(crate) struct TwitchState {
     pub(crate) token: Mutex<Option<UserToken>>,
     pub(crate) eventsub_tx: Mutex<Option<mpsc::UnboundedSender<eventsub::EventSubCmd>>>,
     /// Serializes `eventsub::runner::ensure_task` so concurrent
-    /// subscribe_channel calls can't race the auth check or spawn duplicate
-    /// tasks.
+    /// `subscribe` calls can't race the auth check or spawn duplicate tasks.
     pub(crate) eventsub_init: tokio::sync::Mutex<()>,
     pub(crate) moderated_channel_ids: Mutex<HashSet<String>>,
 }

@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
+use futures_util::StreamExt;
 use tauri::Emitter;
 use twitch_api::eventsub::{Event, EventsubWebsocketData};
 
 use super::runner::ChannelSub;
-use super::subscribe::create_subscriptions;
+use super::subscribe::create_subscription;
+use super::EventKind;
 use crate::twitch::get_token;
 
 /// Forwards an EventSub notification to the frontend if the broadcaster is one
@@ -86,20 +88,59 @@ async fn resubscribe_pending(
     subs: &mut HashMap<String, ChannelSub>,
     sid: &str,
 ) -> Result<(), String> {
-    // Subscribe channels missing sub_ids. Channels with existing IDs were
-    // migrated by Twitch via the reconnect URL and remain valid.
-    if !subs.values().any(|s| s.sub_ids.is_empty()) {
+    let has_pending = subs
+        .values()
+        .any(|s| s.requested.iter().any(|k| !s.sub_ids.contains_key(k)));
+    if !has_pending {
         return Ok(());
     }
     let token = get_token(app).await?;
-    for (broadcaster_id, sub) in subs.iter_mut() {
-        if !sub.sub_ids.is_empty() {
-            continue;
+    let token = &token;
+
+    // Build the work queue in KIND_PRIORITY order so every channel's
+    // chat.message HTTP call starts before any other-kind call —
+    // `requested` is a HashSet, so this outer loop is what guarantees ordering.
+    const MAX_CONCURRENT: usize = 20;
+    let mut work: Vec<(EventKind, String)> = Vec::new();
+    for &kind in KIND_PRIORITY {
+        for (broadcaster_id, sub) in subs.iter() {
+            if sub.requested.contains(&kind) && !sub.sub_ids.contains_key(&kind) {
+                work.push((kind, broadcaster_id.clone()));
+            }
         }
-        sub.sub_ids = create_subscriptions(app, helix, &token, broadcaster_id, sub.is_mod, sid).await;
+    }
+
+    let results: Vec<(EventKind, String, Option<String>)> =
+        futures_util::stream::iter(work.into_iter())
+            .map(|item| async move {
+                let (kind, b) = item;
+                let id = create_subscription(app, helix, token, &b, kind, sid).await;
+                (kind, b, id)
+            })
+            .buffer_unordered(MAX_CONCURRENT)
+            .collect()
+            .await;
+
+    for (kind, broadcaster_id, id) in results {
+        if let Some(id) = id {
+            if let Some(sub) = subs.get_mut(&broadcaster_id) {
+                sub.sub_ids.insert(kind, id);
+            }
+        }
     }
     Ok(())
 }
+
+const KIND_PRIORITY: &[EventKind] = &[
+    EventKind::ChannelChatMessage,
+    EventKind::ChannelChatNotification,
+    EventKind::ChannelChatMessageDelete,
+    EventKind::ChannelChatClear,
+    EventKind::ChannelChatClearUserMessages,
+    EventKind::ChannelShoutoutCreate,
+    EventKind::ChannelFollow,
+    EventKind::ChannelModerate,
+];
 
 /// Fallback for messages `twitch_api` can't parse — typically newer
 /// `channel.chat.notification` variants (watch_streak, modiversary) or

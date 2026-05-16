@@ -1,5 +1,4 @@
 import { createSignal, createEffect, onMount, Show } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   enable as enableAutostart,
@@ -7,7 +6,6 @@ import {
   isEnabled as isAutostartEnabled,
 } from "@tauri-apps/plugin-autostart";
 import { getAllModeratedChannels } from "./commands/moderation";
-import { addToast } from "./state/toasts";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Feed from "./components/feed/Feed";
 import TitleBar from "./components/title-bar/TitleBar";
@@ -20,9 +18,11 @@ import {
   advancedAlwaysOnTop,
   advancedAutostart,
 } from "./state/preferences";
-import { user, setModeratedChannels } from "./state/users";
+import { user, setModeratedChannels, isModOfChannel } from "./state/users";
 import { authChecked } from "./state/auth";
 import { sessionManager } from "./managers/SessionManager";
+import { eventSubManager } from "./managers/EventSubManager";
+import { CHAT_KINDS, MOD_KINDS, ALL_KINDS } from "./types/eventsub";
 import { setGlobalEmotes, clearChannelThirdPartyEmotes } from "./state/emotes";
 import {
   loadGlobalEmotes,
@@ -63,31 +63,18 @@ function resetUserScopedCaches() {
 
 function App() {
   const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
+  // Gate the reconciliation effect until the live-channels fetch settles so
+  // pinned ∪ live get subscribed in one batch instead of two.
+  const [liveLoaded, setLiveLoaded] = createSignal(false);
   const [settingsOpen, setSettingsOpen] = createSignal(false);
   const [inboxOpen, setInboxOpen] = createSignal(false);
 
   const joinedIds = new Set<string>();
 
-  async function joinChannel(broadcasterId: string) {
-    if (joinedIds.has(broadcasterId)) return;
-    joinedIds.add(broadcasterId);
-    ensureFeed(broadcasterId);
-    try {
-      await invoke("subscribe_channel", { broadcasterId });
-    } catch (e) {
-      joinedIds.delete(broadcasterId);
-      addToast(String(e), "error");
-    }
-  }
-
-  async function leaveChannel(broadcasterId: string) {
+  function leaveChannel(broadcasterId: string) {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
-    try {
-      await invoke("unsubscribe_channel", { broadcasterId });
-    } catch (e) {
-      addToast(String(e), "error");
-    }
+    for (const k of ALL_KINDS) void eventSubManager.unsubscribe(broadcasterId, k);
     dropFeed(broadcasterId);
   }
 
@@ -124,6 +111,7 @@ function App() {
   createEffect(() => {
     const u = user();
     if (!u) return;
+    if (!liveLoaded()) return;
     const desired = new Set<string>();
     desired.add(u.id);
     for (const id of menuChannelPinned()) desired.add(id);
@@ -131,8 +119,20 @@ function App() {
     const sel = selectedChannel();
     if (sel) desired.add(sel.user_id);
 
+    const newIds: string[] = [];
     for (const id of desired) {
-      if (!joinedIds.has(id)) joinChannel(id);
+      if (joinedIds.has(id)) continue;
+      joinedIds.add(id);
+      ensureFeed(id);
+      newIds.push(id);
+    }
+    // The backend re-orders subs by KIND_PRIORITY before issuing HTTP, so
+    // calling order here doesn't matter — only the set of kinds per channel.
+    for (const id of newIds) {
+      for (const k of CHAT_KINDS) void eventSubManager.subscribe(id, k);
+      if (isModOfChannel(id)) {
+        for (const k of MOD_KINDS) void eventSubManager.subscribe(id, k);
+      }
     }
     for (const id of [...joinedIds]) {
       if (!desired.has(id)) leaveChannel(id);
@@ -169,6 +169,7 @@ function App() {
     for (const id of [...joinedIds]) leaveChannel(id);
     resetUserScopedCaches();
     setSelectedChannel(null);
+    setLiveLoaded(false);
   });
 
   createEffect(() => {
@@ -223,7 +224,10 @@ function App() {
             <Menu
               onSelect={handleChannelSelect}
               selectedId={selectedChannel()?.user_id ?? null}
-              onLiveChange={setLiveChannels}
+              onLiveChange={(data) => {
+                setLiveChannels(data);
+                setLiveLoaded(true);
+              }}
             />
 
             <main class="flex-1 overflow-hidden flex flex-col">
