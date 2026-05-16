@@ -226,13 +226,29 @@ export default function Settings(props: Props) {
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
                   label="Override name colors"
-                  description="Use a single color for all chatter names. Leave empty to keep each user's color."
+                  description="Use a single color for all chatter names. Reset to keep each user's color."
                 >
-                  <TextInput
-                    placeholder="#9481ff"
-                    value={feedUserOverrideNameColor()}
-                    onInput={(e) => setFeedUserOverrideNameColor(e.currentTarget.value.trim())}
-                  />
+                  <div class="flex items-center gap-2">
+                    <label
+                      class="relative w-8 h-8 rounded border border-border cursor-pointer overflow-hidden"
+                      style={{ "background-color": feedUserOverrideNameColor() || "transparent" }}
+                      title="Pick color"
+                    >
+                      <input
+                        type="color"
+                        class="absolute inset-0 opacity-0 cursor-pointer"
+                        value={feedUserOverrideNameColor() || "#9481ff"}
+                        onInput={(e) => setFeedUserOverrideNameColor(e.currentTarget.value)}
+                      />
+                    </label>
+                    <Button
+                      variant="secondary"
+                      disabled={!feedUserOverrideNameColor()}
+                      onClick={() => setFeedUserOverrideNameColor("")}
+                    >
+                      Reset
+                    </Button>
+                  </div>
                 </SettingsContentSectionItem>
                 <SettingsContentSectionItem
                   label="Muted users"
