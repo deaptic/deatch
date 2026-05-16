@@ -6,7 +6,7 @@ type Props = {
   children: JSX.Element;
 };
 
-export default function FeedSuggestionItem(props: Props) {
+export default function ChatSuggestionItem(props: Props) {
   return (
     <button
       onClick={props.onClick}

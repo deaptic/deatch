@@ -1,5 +1,5 @@
 import { For, onMount, createSignal, createEffect, type JSX } from "solid-js";
-import FeedSuggestionItem from "./FeedSuggestionItem";
+import ChatSuggestionItem from "./ChatSuggestionItem";
 
 type Props<T> = {
   suggestions: () => T[];
@@ -9,7 +9,7 @@ type Props<T> = {
   expose?: (api: { handleKey: (e: KeyboardEvent) => boolean }) => void;
 };
 
-export default function FeedSuggestions<T>(props: Props<T>) {
+export default function ChatSuggestions<T>(props: Props<T>) {
   const [acIndex, setAcIndex] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
 
@@ -41,9 +41,9 @@ export default function FeedSuggestions<T>(props: Props<T>) {
     <div ref={containerRef} class="absolute bottom-full left-3 right-3 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60">
       <For each={props.suggestions()}>
         {(s, i) => (
-          <FeedSuggestionItem active={i() === acIndex()} onClick={() => props.onSelect(s)}>
+          <ChatSuggestionItem active={i() === acIndex()} onClick={() => props.onSelect(s)}>
             {props.renderItem(s)}
-          </FeedSuggestionItem>
+          </ChatSuggestionItem>
         )}
       </For>
     </div>
