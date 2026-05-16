@@ -132,14 +132,23 @@ export default function EmotePicker(props: Props) {
         </div>
 
         <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 [scrollbar-gutter:stable]">
-          <Show when={!search() && favorites().length > 0}>
+          <Show when={!search()}>
             <EmotePickerSection label="Favorites">
-              <EmoteGrid
-                items={favorites().map((f) => ({ value: f.value, url: f.url, label: f.label }))}
-                onSelect={props.onSelect}
-                isFavorite={isFavorite}
-                onToggleFavorite={onToggleFavorite}
-              />
+              <Show
+                when={favorites().length > 0}
+                fallback={
+                  <div class="text-text-muted text-xs px-2 py-2 text-center">
+                    Right-click any emote to add it as a favorite.
+                  </div>
+                }
+              >
+                <EmoteGrid
+                  items={favorites().map((f) => ({ value: f.value, url: f.url, label: f.label }))}
+                  onSelect={props.onSelect}
+                  isFavorite={isFavorite}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              </Show>
             </EmotePickerSection>
           </Show>
           <Show when={search()}>
