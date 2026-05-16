@@ -102,7 +102,7 @@ export default function EmotePicker(props: Props) {
 
   return (
     <Portal>
-      <div ref={panelRef} class="fixed bottom-16 right-2 z-40 w-80 h-96 bg-bg border border-border-muted rounded-lg shadow-2xl flex flex-col">
+      <div ref={panelRef} class="fixed bottom-16 right-2 z-40 w-80 h-96 bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col">
         <div class="flex border-b border-border-muted shrink-0">
           <For each={TABS}>
             {(t) => (

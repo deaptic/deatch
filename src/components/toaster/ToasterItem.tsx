@@ -58,7 +58,7 @@ export default function ToasterItem(props: Props) {
 
   return (
     <div
-      class="flex flex-col gap-2 bg-bg border border-border-muted rounded-xl p-3 shadow-2xl w-80"
+      class="flex flex-col gap-2 bg-bg-dark border border-border-muted rounded-xl p-3 shadow-2xl w-80"
       style={{
         opacity: shown() ? "1" : "0",
         transform: shown() ? "translateX(0)" : "translateX(24px)",
@@ -77,12 +77,12 @@ export default function ToasterItem(props: Props) {
         </div>
         <button
           onClick={dismiss}
-          class="shrink-0 w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text hover:bg-bg-light transition-colors cursor-pointer"
+          class="shrink-0 w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text hover:bg-bg transition-colors cursor-pointer"
         >
           <CloseIcon class="w-2.5 h-2.5" />
         </button>
       </div>
-      <div class="h-1 rounded-full bg-bg-light overflow-hidden">
+      <div class={`h-1 rounded-full overflow-hidden ${palette.tint}`}>
         <div
           class={`h-full rounded-full ${palette.fill}`}
           style={{

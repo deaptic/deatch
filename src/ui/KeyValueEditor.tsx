@@ -75,7 +75,7 @@ export default function KeyValueEditor(props: Props) {
                   />
                   <button
                     onClick={() => props.onRemove(entry.key)}
-                    class="shrink-0 w-6 h-6 flex items-center justify-center text-text-muted hover:text-danger hover:bg-bg-light rounded transition-colors cursor-pointer"
+                    class="shrink-0 w-6 h-6 flex items-center justify-center text-text-muted hover:text-danger hover:bg-bg rounded transition-colors cursor-pointer"
                     aria-label="Remove"
                     title="Remove"
                   >

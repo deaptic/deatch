@@ -12,8 +12,8 @@ export default function Stepper(props: Props) {
   const size = () => props.size ?? "sm";
   const btnClass = () =>
     size() === "md"
-      ? "w-8 h-8 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer rounded hover:bg-bg-light"
-      : "w-6 h-6 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer rounded hover:bg-bg-light";
+      ? "w-8 h-8 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer rounded hover:bg-bg"
+      : "w-6 h-6 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer rounded hover:bg-bg";
   const iconClass = () => (size() === "md" ? "w-4 h-4" : "w-3.5 h-3.5");
   const labelClass = () =>
     size() === "md"

@@ -19,7 +19,7 @@ export default function Toggle(props: Props) {
     <button
       onClick={() => props.onChange(!props.checked)}
       class={`relative shrink-0 rounded-full transition-colors cursor-pointer ${trackClass()} ${
-        props.checked ? "bg-primary" : "bg-border"
+        props.checked ? "bg-primary" : "bg-bg-light"
       }`}
     >
       <span

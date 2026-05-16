@@ -17,7 +17,9 @@ import {
   menuChannelPinned,
   advancedAlwaysOnTop,
   advancedAutostart,
+  appearanceColors,
 } from "./state/preferences";
+import { applyAppearanceColors } from "./services/appearance";
 import { user, setModeratedChannels, isModOfChannel } from "./state/users";
 import { authChecked } from "./state/auth";
 import { sessionManager } from "./managers/SessionManager";
@@ -142,6 +144,10 @@ function App() {
   onMount(() => {
     sessionManager.restore();
     loadThirdPartyGlobalEmotes();
+  });
+
+  createEffect(() => {
+    applyAppearanceColors(appearanceColors());
   });
 
   createEffect(() => {

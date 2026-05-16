@@ -206,7 +206,7 @@ export default function UserCard(props: Props) {
     <Portal>
       <div
         ref={cardRef}
-        class="fixed z-50 bg-bg border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col w-96 h-80 min-w-72 min-h-64 resize"
+        class="fixed z-50 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col w-96 h-80 min-w-72 min-h-64 resize"
         style={{
           top: `${pos().y}px`,
           left: `${pos().x}px`,
@@ -222,7 +222,7 @@ export default function UserCard(props: Props) {
             src={user()?.profile_image_url || ""}
             alt={user()?.display_name ?? ""}
             title="Click to copy image URL"
-            class="w-22 h-22 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
+            class="w-22 h-22 shrink-0 self-start rounded-lg bg-highlight cursor-pointer object-cover"
             onClick={() =>
               user()?.profile_image_url && copyField(user()!.profile_image_url!)
             }
@@ -245,7 +245,7 @@ export default function UserCard(props: Props) {
                 </Show>
               </span>
               <button
-                class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg-light rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={() =>
                   user() && openUrl(`https://twitch.tv/${user()!.login}`)
@@ -259,8 +259,8 @@ export default function UserCard(props: Props) {
               <button
                 class={`shrink-0 w-8 h-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
                   pinned()
-                    ? "text-primary bg-bg-light"
-                    : "text-text-muted hover:text-text hover:bg-bg-light"
+                    ? "text-text bg-highlight"
+                    : "text-text-muted hover:text-text hover:bg-bg"
                 }`}
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={() => setPinned((p) => !p)}
@@ -344,7 +344,7 @@ export default function UserCard(props: Props) {
           >
             <For each={messages()}>
               {(m) => (
-                <div class="px-2 py-1 hover:bg-bg-light/30 rounded text-base leading-snug">
+                <div class="px-2 py-1 hover:bg-bg/30 rounded text-base leading-snug">
                   <Show when={m.reply}>
                     <div class="text-text-muted/70 truncate text-xs">
                       <span>⌐ Replying to </span>

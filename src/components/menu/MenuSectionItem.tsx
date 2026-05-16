@@ -45,16 +45,16 @@ export default function MenuSectionItem(props: Props) {
         style={{ opacity: props.dimmed ? 0.4 : 1 }}
         class={`group relative w-full flex items-center justify-center transition-colors cursor-pointer ${
           props.square ? "px-2 py-3" : "p-2"
-        } ${props.selected ? "" : "hover:bg-bg-light"}`}
+        } ${props.selected ? "" : "hover:bg-bg"}`}
       >
         <Show when={props.selected}>
-          <div class="absolute left-0 top-1 bottom-1 w-1 bg-text-muted rounded-r" />
+          <div class="absolute left-0 top-1 bottom-1 w-1 bg-highlight rounded-r" />
         </Show>
         <Show when={!props.selected && props.unread}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-2 w-1 bg-text-muted rounded-r group-hover:hidden" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-2 w-1 bg-highlight rounded-r group-hover:hidden" />
         </Show>
         <Show when={!props.selected}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-text-muted rounded-r hidden group-hover:block" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-highlight rounded-r hidden group-hover:block" />
         </Show>
         <div class="relative shrink-0">
           <img
