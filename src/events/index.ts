@@ -6,6 +6,7 @@ import "./auth";
 import "./chat";
 import "./notifications";
 import "./moderation";
+import "./eventsub";
 
 export { mapChatMessage } from "./chat-mapper";
 

@@ -137,6 +137,9 @@ export default function Menu(props: Props) {
       props.onLiveChange?.(data);
     } catch (e) {
       addToast(String(e), "error");
+      // Signal the parent that the fetch settled (even unsuccessfully) so it
+      // can stop waiting on us before proceeding with subscriptions.
+      props.onLiveChange?.([]);
     } finally {
       setLoadingLive(false);
     }
