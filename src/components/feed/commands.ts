@@ -101,7 +101,7 @@ async function parseArgs(raw: string[], options: CommandOption[]): Promise<Parse
   return { values };
 }
 
-export const chatCommands: ChatCommand[] = [
+const allChatCommands: ChatCommand[] = [
   {
     name: "clear",
     description: "Clear all messages in chat",
@@ -217,10 +217,14 @@ export const chatCommands: ChatCommand[] = [
   },
 ];
 
+// Disabled for now: swap `[]` for `allChatCommands` to re-enable.
+export const chatCommands: ChatCommand[] = [];
+
 export async function executeChatCommand(
   input: string,
   ctx: ChatCommandContext,
 ): Promise<boolean> {
+  if (chatCommands.length === 0) return false;
   if (!input.startsWith("/")) return false;
   const [head, ...rest] = input.slice(1).split(/\s+/);
   const cmd = chatCommands.find(
