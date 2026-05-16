@@ -38,7 +38,6 @@ export class EventSubManager extends Manager {
     this.setStatus(broadcaster_id, kind, "active");
   }
 
-  /// One retry after a fixed delay; on the second failure we give up.
   private onFailed({ broadcaster_id, kind }: FailedPayload): void {
     const key = keyOf(broadcaster_id, kind);
     if (this.retried.has(key)) {
