@@ -11,7 +11,7 @@ export default function FeedSuggestionItem(props: Props) {
     <button
       onClick={props.onClick}
       class={`w-full flex items-center gap-3 px-3 py-1.5 text-sm cursor-pointer transition-colors ${
-        props.active ? "bg-primary/20" : "hover:bg-bg"
+        props.active ? "bg-bg-light" : "hover:bg-bg"
       }`}
     >
       {props.children}

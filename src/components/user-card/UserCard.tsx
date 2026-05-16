@@ -222,7 +222,7 @@ export default function UserCard(props: Props) {
             src={user()?.profile_image_url || ""}
             alt={user()?.display_name ?? ""}
             title="Click to copy image URL"
-            class="w-22 h-22 shrink-0 self-start rounded-lg bg-highlight cursor-pointer object-cover"
+            class="w-22 h-22 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
             onClick={() =>
               user()?.profile_image_url && copyField(user()!.profile_image_url!)
             }
