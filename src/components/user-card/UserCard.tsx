@@ -19,6 +19,7 @@ import { feedUserNickname } from "../../state/preferences";
 import { feeds } from "../../state/feeds";
 import type { FeedMessage } from "../../types";
 import { addToast } from "../../state/toasts";
+import { captureFocusForRestore } from "../../utils/focus";
 import PinIcon from "../../icons/PinIcon";
 import CalendarIcon from "../../icons/CalendarIcon";
 import HashIcon from "../../icons/HashIcon";
@@ -48,6 +49,7 @@ const CARD_MAX_H = 480;
 const PAD = 8;
 
 export default function UserCard(props: Props) {
+  captureFocusForRestore();
   const [user, setUser] = createSignal<User | null>(null);
   let cardRef: HTMLDivElement | undefined;
   let messagesRef: HTMLDivElement | undefined;
@@ -106,10 +108,17 @@ export default function UserCard(props: Props) {
     if (cardRef?.contains(e.target as Node)) return;
     props.onClose();
   };
+  const onDocumentKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== "Escape" || e.defaultPrevented) return;
+    e.preventDefault();
+    props.onClose();
+  };
   document.addEventListener("mousedown", onDocumentMouseDown, { capture: true });
-  onCleanup(() =>
-    document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true }),
-  );
+  document.addEventListener("keydown", onDocumentKeyDown);
+  onCleanup(() => {
+    document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true });
+    document.removeEventListener("keydown", onDocumentKeyDown);
+  });
 
   function startDrag(e: MouseEvent) {
     if (e.button !== 0) return;

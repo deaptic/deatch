@@ -85,6 +85,7 @@ export default function TitleBar(props: Props) {
           class={`relative w-11 h-full flex items-center justify-center transition-colors cursor-default ${
             props.inboxOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg-light"
           }`}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={props.onToggleInbox}
           aria-label="Inbox"
           title="Inbox"
@@ -102,6 +103,7 @@ export default function TitleBar(props: Props) {
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-default ${
             props.settingsOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg-light"
           }`}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={props.onToggleSettings}
           aria-label="Settings"
           title="Settings"

@@ -2,6 +2,7 @@ import { For, Show, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import InboxItem from "./InboxItem";
 import { mentions, markAllMentionsRead } from "../../state/inbox";
+import { captureFocusForRestore } from "../../utils/focus";
 
 type Props = {
   onClose: () => void;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export default function Inbox(props: Props) {
+  captureFocusForRestore();
   let panelRef: HTMLDivElement | undefined;
 
   const onDocumentClick = (e: MouseEvent) => {
@@ -18,9 +20,19 @@ export default function Inbox(props: Props) {
     props.onClose();
   };
 
+  const onDocumentKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== "Escape" || e.defaultPrevented) return;
+    e.preventDefault();
+    props.onClose();
+  };
+
   onMount(() => {
     document.addEventListener("mousedown", onDocumentClick, { capture: true });
-    onCleanup(() => document.removeEventListener("mousedown", onDocumentClick, { capture: true }));
+    document.addEventListener("keydown", onDocumentKeyDown);
+    onCleanup(() => {
+      document.removeEventListener("mousedown", onDocumentClick, { capture: true });
+      document.removeEventListener("keydown", onDocumentKeyDown);
+    });
   });
 
   return (
