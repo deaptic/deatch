@@ -1,6 +1,7 @@
 import { For, Show } from "solid-js";
 import { banUser, unbanUser } from "../../commands/moderation";
 import { user as currentUser, moderatedChannels } from "../../state/users";
+import Button from "../../ui/Button";
 import BanIcon from "../../icons/BanIcon";
 
 type Timeout = { label: string; seconds: number };
@@ -14,9 +15,6 @@ const TIMEOUTS: Timeout[] = [
   { label: "1w", seconds: 604800 },
 ];
 
-const BTN_BASE =
-  "h-9 flex items-center justify-center rounded-md bg-bg border border-border-muted text-text-muted hover:bg-bg-light hover:text-text cursor-pointer transition-colors";
-
 type Props = {
   chatterId: string;
   broadcasterId: string;
@@ -26,6 +24,7 @@ export default function UserCardModActions(props: Props) {
   const canModerate = () => {
     const me = currentUser();
     if (!me) return false;
+    if (me.id === props.chatterId) return false;
     if (me.id === props.broadcasterId) return true;
     return moderatedChannels().some(
       (c) => c.broadcaster_id === props.broadcasterId,
@@ -52,36 +51,35 @@ export default function UserCardModActions(props: Props) {
   return (
     <Show when={canModerate()}>
       <div class="flex gap-1.5 p-2 border-b border-border-muted bg-bg shrink-0">
-        <button
+        <Button
+          variant="secondary"
           onClick={unban}
           title="Unban"
           aria-label="Unban"
-          class={`${BTN_BASE} shrink-0 w-9`}
-        >
-          <BanIcon class="w-4 h-4 text-success" />
-        </button>
-        <div class="flex-1 grid grid-cols-6 gap-1 min-w-0">
+          icon={<BanIcon class="w-4 h-4 text-success" />}
+        />
+        <div class="flex-1 grid grid-cols-6 gap-1.5 min-w-0">
           <For each={TIMEOUTS}>
             {(t) => (
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => timeout(t.seconds)}
                 title={`Timeout ${t.label}`}
                 aria-label={`Timeout ${t.label}`}
-                class={`${BTN_BASE} text-xs font-medium tabular-nums`}
+                class="px-0 text-xs font-medium tabular-nums"
               >
                 {t.label}
-              </button>
+              </Button>
             )}
           </For>
         </div>
-        <button
+        <Button
+          variant="secondary"
           onClick={ban}
           title="Ban"
           aria-label="Ban"
-          class={`${BTN_BASE} shrink-0 w-9`}
-        >
-          <BanIcon class="w-4 h-4 text-danger" />
-        </button>
+          icon={<BanIcon class="w-4 h-4 text-danger" />}
+        />
       </div>
     </Show>
   );

@@ -304,6 +304,19 @@ export default function Chat(props: Props) {
             broadcasterId={props.broadcasterId}
             getBounds={() => feedApi()?.getBounds() ?? null}
             onClose={() => setUserCard(null)}
+            onJumpToMessage={props.onJumpToMessage}
+            onSwitchUser={async (identity) => {
+              let id = identity.userId;
+              if (!id && identity.login) {
+                try {
+                  const users = await getUsers({ logins: [identity.login] });
+                  id = users[0]?.id;
+                } catch {
+                  return;
+                }
+              }
+              if (id) setUserCard((u) => (u ? { ...u, chatterId: id! } : null));
+            }}
           />
         )}
       </Show>

@@ -6,6 +6,12 @@ import Feed from "../feed/Feed";
 type Props = {
   chatterId: string;
   broadcasterId: string;
+  onJumpToMessage?: (messageId: string) => void;
+  onShowUserCard?: (
+    x: number,
+    y: number,
+    identity: { userId?: string; login?: string },
+  ) => void;
 };
 
 export default function UserCardFeed(props: Props) {
@@ -36,6 +42,8 @@ export default function UserCardFeed(props: Props) {
         showBadges={false}
         showToolbar={false}
         showDivider={false}
+        onJumpToMessage={props.onJumpToMessage}
+        onShowUserCard={props.onShowUserCard}
         scrollClass="p-1 text-base"
       />
     </Show>
