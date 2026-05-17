@@ -30,6 +30,7 @@ export type UserPreferences = {
     showLogs: boolean;
     alwaysOnTop: boolean;
     autostart: boolean;
+    discordRichPresence: boolean;
   };
   appearance: {
     colors: Record<string, string>;
@@ -102,6 +103,8 @@ function load(): UserPreferences {
         showLogs: stored.advanced?.showLogs ?? DEFAULT_PREFERENCES.advanced.showLogs,
         alwaysOnTop: stored.advanced?.alwaysOnTop ?? DEFAULT_PREFERENCES.advanced.alwaysOnTop,
         autostart: stored.advanced?.autostart ?? DEFAULT_PREFERENCES.advanced.autostart,
+        discordRichPresence:
+          stored.advanced?.discordRichPresence ?? DEFAULT_PREFERENCES.advanced.discordRichPresence,
       },
       appearance: {
         colors: sanitizeAppearanceColors(stored.appearance?.colors),
@@ -142,6 +145,7 @@ export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
 export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
 export const advancedAutostart = () => prefs.advanced.autostart;
+export const advancedDiscordRichPresence = () => prefs.advanced.discordRichPresence;
 export const appearanceColors = () => prefs.appearance.colors;
 
 export function setFeedFontSize(value: number) {
@@ -279,6 +283,11 @@ export function setAdvancedAlwaysOnTop(value: boolean) {
 
 export function setAdvancedAutostart(value: boolean) {
   setPrefs("advanced", "autostart", value);
+  persist();
+}
+
+export function setAdvancedDiscordRichPresence(value: boolean) {
+  setPrefs("advanced", "discordRichPresence", value);
   persist();
 }
 

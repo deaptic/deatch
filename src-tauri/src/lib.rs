@@ -1,3 +1,4 @@
+mod discord;
 mod external;
 mod twitch;
 
@@ -18,7 +19,12 @@ pub fn run() {
                 .build(),
         )
         .manage(twitch::TwitchState::new())
+        .manage(discord::DiscordState::new())
         .invoke_handler(tauri::generate_handler![
+            discord::discord_connect,
+            discord::discord_disconnect,
+            discord::discord_set_activity,
+            discord::discord_clear_activity,
             twitch::auth::get_device_code,
             twitch::auth::restore_session,
             twitch::auth::revoke_session,
