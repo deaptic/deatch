@@ -50,6 +50,8 @@ import {
   setAdvancedAlwaysOnTop,
   advancedAutostart,
   setAdvancedAutostart,
+  advancedDiscordRichPresence,
+  setAdvancedDiscordRichPresence,
   appearanceColors,
   setAppearanceColor,
   resetAppearanceColor,
@@ -369,6 +371,16 @@ export default function Settings(props: Props) {
                   description="Start the app automatically when you sign in."
                 >
                   <Toggle size="md" checked={advancedAutostart()} onChange={setAdvancedAutostart} />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Discord Rich Presence"
+                  description="Show what you're watching on your Discord profile. Requires Discord to be running."
+                >
+                  <Toggle
+                    size="md"
+                    checked={advancedDiscordRichPresence()}
+                    onChange={setAdvancedDiscordRichPresence}
+                  />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
             </SettingsContent>

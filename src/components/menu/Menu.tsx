@@ -131,6 +131,7 @@ export default function Menu(props: Props) {
           .replace("{width}", "440")
           .replace("{height}", "248"),
         profile_image_url: profileMap.get(s.user_id) ?? "",
+        started_at: s.started_at,
       }));
       for (const ch of data) rememberChannel(ch);
       setLive(reconcile(data, { key: "user_id" }));

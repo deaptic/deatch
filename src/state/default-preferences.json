@@ -36,7 +36,8 @@
     "developerMode": false,
     "showLogs": false,
     "alwaysOnTop": false,
-    "autostart": false
+    "autostart": false,
+    "discordRichPresence": true
   },
   "appearance": {
     "colors": {}

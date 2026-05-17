@@ -13,6 +13,7 @@ export type TwitchStream = {
   title: string;
   viewer_count: number;
   thumbnail_url: string;
+  started_at: string;
 };
 
 export type Channel = {
@@ -24,6 +25,7 @@ export type Channel = {
   viewer_count?: number;
   title?: string;
   thumbnail_url?: string;
+  started_at?: string;
 };
 
 export type ModeratedChannel = {
