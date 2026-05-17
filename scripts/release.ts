@@ -12,6 +12,7 @@ const FILES = {
   pkg: "package.json",
   tauri: "src-tauri/tauri.conf.json",
   cargo: "src-tauri/Cargo.toml",
+  cargoLock: "src-tauri/Cargo.lock",
 };
 
 function bump(current: string, kind: "patch" | "minor" | "major"): string {
@@ -39,6 +40,16 @@ async function patchCargo(path: string, newVersion: string): Promise<void> {
     `version = "${newVersion}"`,
   );
   if (patched === text) throw new Error(`failed to bump version in ${path}`);
+  await Deno.writeTextFile(path, patched);
+}
+
+async function patchCargoLock(path: string, name: string, newVersion: string): Promise<void> {
+  const text = await Deno.readTextFile(path);
+  const re = new RegExp(
+    `(\\[\\[package\\]\\]\\r?\\nname = "${name}"\\r?\\nversion = ")[^"]+(")`,
+  );
+  const patched = text.replace(re, `$1${newVersion}$2`);
+  if (patched === text) throw new Error(`failed to bump ${name} in ${path}`);
   await Deno.writeTextFile(path, patched);
 }
 
@@ -84,11 +95,12 @@ tauri.version = next;
 await writeJson(FILES.tauri, tauri);
 
 await patchCargo(FILES.cargo, next);
+await patchCargoLock(FILES.cargoLock, "deatch", next);
 
 const branch = await captureStdout(["git", "rev-parse", "--abbrev-ref", "HEAD"]);
 const tag = `v${next}`;
 
-await run(["git", "add", FILES.pkg, FILES.tauri, FILES.cargo]);
+await run(["git", "add", FILES.pkg, FILES.tauri, FILES.cargo, FILES.cargoLock]);
 await run(["git", "commit", "-m", `chore: release ${tag}`]);
 await run(["git", "tag", tag]);
 await run(["git", "push", "origin", branch, tag]);
