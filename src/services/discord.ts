@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { addToast } from "../state/toasts";
 
 export type DiscordActivityType = "playing" | "listening" | "watching" | "competing";
 
@@ -21,20 +20,14 @@ let connected = false;
 let lastSerialized: string | null = null;
 let pendingTimer: number | undefined;
 let pendingActivity: DiscordActivity | null = null;
-let connectFailureToasted = false;
 
 export async function connectDiscord(): Promise<boolean> {
   if (connected) return true;
   try {
     await invoke("discord_connect", {});
     connected = true;
-    connectFailureToasted = false;
     return true;
-  } catch (e) {
-    if (!connectFailureToasted) {
-      addToast(`Discord connect failed: ${String(e)}`, "error");
-      connectFailureToasted = true;
-    }
+  } catch {
     connected = false;
     return false;
   }
@@ -92,8 +85,7 @@ async function flush(activity: DiscordActivity): Promise<void> {
       buttons: activity.buttons ?? null,
     });
     lastSerialized = serialized;
-  } catch (e) {
-    addToast(`Discord activity failed: ${String(e)}`, "error");
+  } catch {
     connected = false;
   }
 }
