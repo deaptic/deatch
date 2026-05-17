@@ -192,6 +192,17 @@ function App() {
   });
   const clamp = (s: string, max: number) =>
     s.length > max ? s.slice(0, max - 1) + "…" : s;
+  const SELF_LURK_PHRASES = [
+    "Talking to themselves",
+    "Empty room energy",
+    "Practicing the intro",
+    "Solo in the chat",
+    "Self-lurking",
+    "Reading own chat alone",
+    "Plotting the next stream",
+    "Tumbleweeds rolling by",
+  ];
+  let selfLurkPhrase = SELF_LURK_PHRASES[0];
   createEffect(() => {
     if (!advancedDiscordRichPresence() || !user()) {
       activityMode = null;
@@ -207,6 +218,7 @@ function App() {
     if (mode !== activityMode) {
       activityMode = mode;
       activityStartedAt = Math.floor(Date.now() / 1000);
+      selfLurkPhrase = SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
     }
     if (mode === "inbox") {
       updateActivity({
@@ -218,11 +230,14 @@ function App() {
       });
     } else if (ch) {
       const live = liveChannelsSignal().find((c) => c.user_id === ch.user_id);
+      const isOwnChannel = ch.user_id === user()?.id;
       const stateText = live?.game_name
         ? live.viewer_count != null
           ? `${live.game_name} · ${viewerFormatter.format(live.viewer_count)} viewers`
           : live.game_name
-        : "Offline";
+        : isOwnChannel
+          ? selfLurkPhrase
+          : "Offline";
       const titleHover = live?.title
         ? clamp(live.title, 128)
         : ch.user_name || ch.user_login;
