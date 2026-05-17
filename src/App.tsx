@@ -49,9 +49,16 @@ import {
   channelsById,
   rememberChannel,
   loadLastChannel,
-  nextChannelInOrder,
+  channelsInOrder,
   liveChannels as liveChannelsSignal,
 } from "./state/channels";
+import {
+  watchActive,
+  watchConnected,
+  watchedChannel,
+  watchWarmedChannels,
+  setWatchActive,
+} from "./state/watch";
 import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import { loadChannelBadges, resetChannelBadgeCache } from "./services/badges";
 import { dropFeed, ensureFeed, snapshotDivider, markSeen } from "./state/feeds";
@@ -91,7 +98,7 @@ function App() {
     dropFeed(broadcasterId);
   }
 
-  function handleChannelSelect(ch: Channel) {
+  function applySelection(ch: Channel) {
     const prev = selectedChannel();
     if (prev && prev.user_id !== ch.user_id) snapshotDivider(prev.user_id);
     rememberChannel(ch);
@@ -100,6 +107,24 @@ function App() {
     markSeen(ch.user_id);
     markChannelMentionsRead(ch.user_id);
   }
+
+  function handleChannelSelect(ch: Channel) {
+    setWatchActive(false);
+    applySelection(ch);
+  }
+
+  // Watch-driven channel swap. Goes through applySelection (not
+  // handleChannelSelect) so watchActive isn't cleared.
+  createEffect(() => {
+    if (!watchActive()) return;
+    const ch = watchedChannel();
+    if (!ch) {
+      if (selectedChannel() !== null) setSelectedChannel(null);
+      return;
+    }
+    if (selectedChannel()?.user_id === ch.user_id) return;
+    applySelection(ch);
+  });
 
   function jumpToMessage(channelId: string, messageId: string) {
     const ch = channelsById.get(channelId);
@@ -129,6 +154,7 @@ function App() {
     desired.add(u.id);
     for (const id of menuChannelPinned()) desired.add(id);
     for (const ch of liveChannels()) desired.add(ch.user_id);
+    for (const ch of watchWarmedChannels()) desired.add(ch.user_id);
     const sel = selectedChannel();
     if (sel) desired.add(sel.user_id);
 
@@ -153,8 +179,29 @@ function App() {
   });
 
   function cycleChannel(direction: 1 | -1) {
-    const next = nextChannelInOrder(direction);
-    if (next) handleChannelSelect(next);
+    // Slot 0 is Watch; slots 1..n are regular channels.
+    const ordered = channelsInOrder();
+    const len = ordered.length;
+    const total = len + 1;
+    let currentPos: number;
+    if (watchActive()) {
+      currentPos = 0;
+    } else {
+      const i = ordered.findIndex(
+        (c) => c.user_id === selectedChannel()?.user_id,
+      );
+      currentPos = i === -1 ? (direction === 1 ? -1 : total) : i + 1;
+    }
+    const nextPos = ((currentPos + direction) % total + total) % total;
+    if (nextPos === 0) {
+      setWatchActive(true);
+      const wc = watchedChannel();
+      if (wc && selectedChannel()?.user_id !== wc.user_id) {
+        applySelection(wc);
+      }
+    } else {
+      handleChannelSelect(ordered[nextPos - 1]);
+    }
   }
 
   onMount(() => {
@@ -271,7 +318,7 @@ function App() {
   createEffect(() => {
     if (user() !== null) {
       fetchUserScopedData();
-      if (selectedChannel() === null) {
+      if (selectedChannel() === null && !watchActive()) {
         const last = loadLastChannel();
         if (last) handleChannelSelect(last);
       }
@@ -285,7 +332,7 @@ function App() {
 
   createEffect(() => {
     const u = user();
-    if (u && !selectedChannel()) {
+    if (u && !selectedChannel() && !watchActive()) {
       handleChannelSelect({
         user_id: u.id,
         user_login: u.login,
@@ -345,8 +392,23 @@ function App() {
               <Show
                 when={selectedChannel()}
                 fallback={
-                  <div class="flex items-center justify-center flex-1">
-                    <p class="text-text-muted text-sm">Select a channel to view chat</p>
+                  <div class="flex items-center justify-center flex-1 px-6">
+                    <p class="text-text-muted text-sm text-center max-w-xs">
+                      {(() => {
+                        if (!watchActive()) return "Select a channel to view chat";
+                        if (watchConnected()) {
+                          return "Open a Twitch channel in your browser.";
+                        }
+                        const everSeen = (() => {
+                          try { return localStorage.getItem("deatch_watch_seen") === "1"; }
+                          catch { return false; }
+                        })();
+                        if (everSeen) {
+                          return "Waiting for the browser. Open Firefox and a Twitch tab.";
+                        }
+                        return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
+                      })()}
+                    </p>
                   </div>
                 }
               >

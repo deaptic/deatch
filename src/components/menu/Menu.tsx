@@ -3,6 +3,7 @@ import {
   For,
   createSignal,
   createEffect,
+  on,
   onMount,
   onCleanup,
 } from "solid-js";
@@ -22,9 +23,17 @@ import {
 } from "../../state/preferences";
 import { hasUnread } from "../../state/feeds";
 import { channelMentionCount } from "../../state/inbox";
+import {
+  watchActive,
+  watchConnected,
+  watchedChannel,
+  watchWarmedChannels,
+  setWatchActive,
+} from "../../state/watch";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
+import StreamTooltip from "./StreamTooltip";
 import InputPopover from "../../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
 import AccountContextMenu from "../context-menus/AccountContextMenu";
@@ -70,6 +79,19 @@ export default function Menu(props: Props) {
   );
   const [addInput, setAddInput] = createSignal("");
   const [addLoading, setAddLoading] = createSignal(false);
+  const [watchTooltip, setWatchTooltip] = createSignal<{ x: number; y: number } | null>(null);
+
+  // liveChannels carries game/title/viewers; watchedChannel only has the
+  // profile fields from getUsers. Prefer live when available.
+  const watchChannelRich = () => {
+    const wc = watchedChannel();
+    if (!wc) return null;
+    return liveById().get(wc.user_id) ?? wc;
+  };
+  const watchIsLive = () => {
+    const wc = watchedChannel();
+    return wc ? liveById().has(wc.user_id) : false;
+  };
   let addBtn: HTMLButtonElement | undefined;
 
   const liveById = () => new Map(live.map((ch) => [ch.user_id, ch]));
@@ -104,14 +126,23 @@ export default function Menu(props: Props) {
     try {
       const followed = await getAllFollowedStreams();
       const followedIds = new Set(followed.map((s) => s.user_id));
-      const unfollowedPinnedIds = menuChannelPinned().filter(
-        (id) => !followedIds.has(id),
-      );
-      const pinnedStreams =
-        unfollowedPinnedIds.length > 0
-          ? await getAllStreams({ userIds: unfollowedPinnedIds })
-          : [];
-      const streams = [...followed, ...pinnedStreams];
+      const pinnedSet = new Set(menuChannelPinned());
+      const extraIds = new Set<string>();
+      for (const id of pinnedSet) if (!followedIds.has(id)) extraIds.add(id);
+      const wc = watchedChannel();
+      if (wc && !followedIds.has(wc.user_id) && !pinnedSet.has(wc.user_id)) {
+        extraIds.add(wc.user_id);
+      }
+      for (const ch of watchWarmedChannels()) {
+        if (!followedIds.has(ch.user_id) && !pinnedSet.has(ch.user_id)) {
+          extraIds.add(ch.user_id);
+        }
+      }
+      const extraIdList = [...extraIds];
+      const extraStreams = extraIdList.length > 0
+        ? await getAllStreams({ userIds: extraIdList })
+        : [];
+      const streams = [...followed, ...extraStreams];
 
       const profileMap = new Map<string, string>();
       if (streams.length > 0) {
@@ -254,9 +285,121 @@ export default function Menu(props: Props) {
     onCleanup(() => clearInterval(id));
   });
 
+  // Refresh live data immediately on watched-channel change instead of
+  // waiting for the next 60s tick.
+  createEffect(on(watchedChannel, () => fetchLive(), { defer: true }));
+
+  function activateWatch() {
+    setWatchActive(true);
+    if (watchedChannel()) return;
+    const everSeen = (() => {
+      try { return localStorage.getItem("deatch_watch_seen") === "1"; }
+      catch { return false; }
+    })();
+    if (!watchConnected() && !everSeen) {
+      addToast(
+        "Install the Deatch browser extension and open a Twitch tab to use Watch.",
+        "info",
+      );
+    } else if (watchConnected()) {
+      addToast("Open a Twitch channel in your browser to start watching.", "info");
+    }
+  }
+
   return (
     <div class="flex flex-col h-full w-14 shrink-0 bg-bg-dark border-r border-border-muted overflow-hidden">
       <div class="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <MenuSection divider="bottom">
+          <button
+            type="button"
+            onClick={activateWatch}
+            onMouseEnter={(e) => {
+              if (!watchedChannel()) return;
+              const r = e.currentTarget.getBoundingClientRect();
+              setWatchTooltip({ x: r.right + 8, y: r.top + r.height / 2 });
+            }}
+            onMouseLeave={() => setWatchTooltip(null)}
+            title={
+              watchedChannel()
+                ? undefined
+                : !watchConnected()
+                  ? "Install the browser extension to use Watch"
+                  : "Open a Twitch channel in your browser"
+            }
+            class={`group relative w-full flex items-center justify-center p-2 cursor-pointer transition-colors ${
+              watchActive() ? "" : "hover:bg-bg"
+            }`}
+          >
+            <Show when={watchActive()}>
+              <div class="absolute left-0 top-1 bottom-1 w-1 bg-highlight rounded-r" />
+            </Show>
+            <div class="relative shrink-0">
+              <Show
+                when={watchedChannel()}
+                fallback={
+                  <div
+                    class={`w-8 h-8 rounded-lg bg-bg-light flex items-center justify-center text-text-muted ${
+                      watchConnected() ? "opacity-70" : "opacity-40"
+                    }`}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </div>
+                }
+              >
+                {(wc) => (
+                  <>
+                    <img
+                      src={
+                        wc().profile_image_url ||
+                        "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
+                      }
+                      alt={wc().user_name}
+                      class="w-8 h-8 rounded-lg"
+                    />
+                    <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-bg-dark flex items-center justify-center text-text">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    </div>
+                  </>
+                )}
+              </Show>
+            </div>
+          </button>
+          <Show when={watchTooltip()}>
+            {(t) => (
+              <Show when={watchChannelRich()}>
+                {(ch) => (
+                  <StreamTooltip
+                    x={t().x}
+                    y={t().y}
+                    channel={ch()}
+                    live={watchIsLive()}
+                  />
+                )}
+              </Show>
+            )}
+          </Show>
+        </MenuSection>
+
         <MenuSection divider="bottom">
           <Show
             when={!loadingPinned()}
@@ -289,7 +432,7 @@ export default function Menu(props: Props) {
                         <MenuSectionItem
                           channel={c()}
                           status={liveById().has(id) ? "live" : undefined}
-                          selected={props.selectedId === id}
+                          selected={!watchActive() && props.selectedId === id}
                           unread={hasUnread(id)}
                           mentions={channelMentionCount(id)}
                           dimmed={dragIdx() === index()}
@@ -325,7 +468,7 @@ export default function Menu(props: Props) {
                 <MenuSectionItem
                   channel={ch}
                   status="live"
-                  selected={props.selectedId === ch.user_id}
+                  selected={!watchActive() && props.selectedId === ch.user_id}
                   unread={hasUnread(ch.user_id)}
                   mentions={channelMentionCount(ch.user_id)}
                   onClick={() => props.onSelect(ch)}
@@ -349,7 +492,7 @@ export default function Menu(props: Props) {
                 profile_image_url: u().profile_image_url ?? "",
               }}
               status="self"
-              selected={props.selectedId === u().id}
+              selected={!watchActive() && props.selectedId === u().id}
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               square

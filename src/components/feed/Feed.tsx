@@ -104,7 +104,10 @@ export default function Feed(props: Props) {
   }
 
   createEffect(on(() => props.broadcasterId, () => {
-    queueMicrotask(() => { if (!isPaused()) scrollInstant(); });
+    // Pause state is per-channel; reset on switch so the new channel
+    // doesn't inherit "scrolled up" from the old one.
+    setIsPaused(false);
+    queueMicrotask(scrollInstant);
   }));
 
   createEffect(on(() => items().length, () => {
