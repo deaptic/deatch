@@ -1,5 +1,6 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getVersion } from "@tauri-apps/api/app";
 import { selectedChannel } from "../../state/channels";
 import { unreadMentionCount } from "../../state/inbox";
 import InboxIcon from "../../icons/InboxIcon";
@@ -42,6 +43,11 @@ type Props = {
 
 export default function TitleBar(props: Props) {
   const [maximized, setMaximized] = createSignal(false);
+  const [version, setVersion] = createSignal("");
+
+  onMount(() => {
+    getVersion().then(setVersion).catch(() => {});
+  });
 
   onMount(() => {
     let unlisten: (() => void) | undefined;
@@ -66,8 +72,11 @@ export default function TitleBar(props: Props) {
         data-tauri-drag-region
         class="relative h-10 shrink-0 flex items-center bg-bg-dark border-b border-border-muted select-none"
       >
-        <div data-tauri-drag-region class="flex items-center px-3 pointer-events-none">
+        <div data-tauri-drag-region class="flex items-baseline gap-1.5 px-3 pointer-events-none">
           <span class="text-text text-xs font-semibold tracking-tight">Deatch</span>
+          <Show when={version()}>
+            <span class="text-text-muted text-[10px] tabular-nums">v{version()}</span>
+          </Show>
         </div>
         <div data-tauri-drag-region class="flex-1" />
         <Show when={selectedChannel()}>

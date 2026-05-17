@@ -16,6 +16,11 @@ jobs:
           - platform: windows-latest
             args: ""
     runs-on: ${{ matrix.platform }}
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: sccache
+      CARGO_INCREMENTAL: "0"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -29,6 +34,16 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: cache deno
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/deno
+            ~/.deno
+            ${{ env.LOCALAPPDATA }}\deno
+          key: ${{ runner.os }}-deno-${{ hashFiles('package.json', 'deno.lock') }}
+          restore-keys: ${{ runner.os }}-deno-
+
       - name: setup rust
         uses: dtolnay/rust-toolchain@stable
 
@@ -36,9 +51,13 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+          cache-on-failure: true
+
+      - name: sccache
+        uses: mozilla-actions/sccache-action@v0.0.6
 
       - name: install frontend deps
-        run: npm install
+        run: deno install
 
       - name: build and release
         uses: tauri-apps/tauri-action@v0
@@ -53,3 +72,7 @@ jobs:
           prerelease: false
           updaterJsonPreferNsis: false
           args: ${{ matrix.args }}
+
+      - name: sccache stats
+        if: always()
+        run: sccache --show-stats
