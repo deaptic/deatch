@@ -222,7 +222,7 @@ function App() {
         ? live.viewer_count != null
           ? `${live.game_name} · ${viewerFormatter.format(live.viewer_count)} viewers`
           : live.game_name
-        : "Reading chat";
+        : "Offline";
       const titleHover = live?.title
         ? clamp(live.title, 128)
         : ch.user_name || ch.user_login;
