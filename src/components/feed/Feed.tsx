@@ -34,6 +34,7 @@ export type FeedApi = {
   scrollToBottom: () => void;
   isPaused: () => boolean;
   getBounds: () => DOMRect | null;
+  getElement: () => HTMLElement | null;
 };
 
 type UserIdentity = {
@@ -128,6 +129,7 @@ export default function Feed(props: Props) {
       scrollToBottom: scrollInstant,
       isPaused,
       getBounds: () => rootRef?.getBoundingClientRect() ?? null,
+      getElement: () => rootRef ?? null,
     });
   });
 

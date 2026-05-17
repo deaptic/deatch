@@ -40,21 +40,37 @@ export default function ChatInput(props: Props) {
   const [acQuery, setAcQuery] = createSignal<string | null>(null);
   const [mentionQuery, setMentionQuery] = createSignal<string | null>(null);
   const [commandQuery, setCommandQuery] = createSignal<string | null>(null);
-  let inputRef: HTMLInputElement | undefined;
+  let inputRef: HTMLTextAreaElement | undefined;
+  let rowRef: HTMLDivElement | undefined;
   let acHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let mentionHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let commandHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let tabCycle: { matches: string[]; index: number; start: number; end: number } | null = null;
 
+  let inputBaseH = 0;
+
+  function autoResize() {
+    const el = inputRef;
+    if (!el) return;
+    el.style.height = "";
+    const sh = el.scrollHeight;
+    if (!inputBaseH) inputBaseH = sh;
+    if (sh > inputBaseH) {
+      el.style.height = Math.min(sh, 200) + "px";
+    }
+  }
+
   function insertText(value: string) {
     const cur = input();
     setInput((cur === "" || cur.endsWith(" ") ? cur : cur + " ") + value + " ");
     inputRef?.focus();
+    queueMicrotask(autoResize);
   }
 
   onMount(() => {
     props.expose?.({ focus: () => inputRef?.focus(), insert: insertText });
     ensureUserEmotesLoaded();
+    autoResize();
   });
 
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
@@ -143,7 +159,7 @@ export default function ChatInput(props: Props) {
   };
 
   async function sendMessage() {
-    const text = input().trim();
+    const text = input().replace(/\s*\n\s*/g, " ").trim();
     if (!text || sending()) return;
     setSending(true);
     try {
@@ -154,6 +170,7 @@ export default function ChatInput(props: Props) {
       });
       if (handled) {
         setInput("");
+        queueMicrotask(autoResize);
         return;
       }
       const reply = props.replyTo();
@@ -164,6 +181,7 @@ export default function ChatInput(props: Props) {
       });
       if (ok) {
         setInput("");
+        queueMicrotask(autoResize);
         props.onClearReply();
       }
     } finally {
@@ -203,8 +221,9 @@ export default function ChatInput(props: Props) {
 
   function onInput(e: InputEvent) {
     tabCycle = null;
-    const el = e.currentTarget as HTMLInputElement;
+    const el = e.currentTarget as HTMLTextAreaElement;
     setInput(el.value);
+    autoResize();
     const before = el.value.slice(0, el.selectionStart ?? el.value.length);
     const commandMatch = before.match(/^\/(\w*)$/);
     const emoteMatch = before.match(/(?:^|\s):(\w+)$/);
@@ -308,7 +327,7 @@ export default function ChatInput(props: Props) {
           </button>
         </div>
       </Show>
-      <div class="relative flex items-center h-14">
+      <div ref={rowRef} class="relative flex items-end min-h-14">
         <Show when={commandSuggestions().length > 0}>
           <ChatSuggestions<CommandSuggestion>
             suggestions={commandSuggestions}
@@ -365,31 +384,43 @@ export default function ChatInput(props: Props) {
             expose={(api) => { acHandleKey = api.handleKey; }}
           />
         </Show>
-        <input
+        <textarea
           ref={inputRef}
-          type="text"
+          rows={1}
           value={input()}
           onInput={onInput}
           onKeyDown={onKeyDown}
           maxLength={500}
           placeholder={`Message #${props.broadcasterLogin}`}
-          class="flex-1 bg-transparent text-text text-base placeholder-text-muted/60 px-4 py-3 outline-none"
+          class="flex-1 self-stretch content-center bg-transparent text-text text-base placeholder-text-muted/60 pl-4 pr-0 py-3 outline-none resize-none overflow-y-auto leading-snug"
         />
-        <button
-          data-emote-picker-toggle
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => (pickerOpen() ? setPickerOpen(false) : openEmotePicker())}
-          class={`flex items-center justify-center w-9 h-9 mx-2.5 rounded-md transition-colors cursor-pointer shrink-0 ${
-            pickerOpen() ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
-          }`}
-          title="Emote picker"
-        >
-          <SmileIcon class="w-5 h-5" />
-        </button>
+        <div class="self-stretch flex flex-col items-center mx-2 py-2.5 shrink-0">
+          <button
+            data-emote-picker-toggle
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => (pickerOpen() ? setPickerOpen(false) : openEmotePicker())}
+            class={`flex items-center justify-center w-9 h-9 rounded-md transition-colors cursor-pointer ${
+              pickerOpen() ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
+            }`}
+            title="Emote picker"
+          >
+            <SmileIcon class="w-5 h-5" />
+          </button>
+          <Show when={input().length >= 400}>
+            <span
+              class={`mt-auto text-xs font-medium tabular-nums ${
+                input().length >= 500 ? "text-danger" : "text-text-muted"
+              }`}
+            >
+              {500 - input().length}
+            </span>
+          </Show>
+        </div>
         <Show when={pickerOpen()}>
           <EmotePicker
             onSelect={insertEmote}
             onClose={() => setPickerOpen(false)}
+            anchorEl={rowRef}
           />
         </Show>
       </div>

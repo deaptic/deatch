@@ -303,6 +303,7 @@ export default function Chat(props: Props) {
             chatterId={uc().chatterId}
             broadcasterId={props.broadcasterId}
             getBounds={() => feedApi()?.getBounds() ?? null}
+            getBoundsElement={() => feedApi()?.getElement() ?? null}
             onClose={() => setUserCard(null)}
             onJumpToMessage={props.onJumpToMessage}
             onSwitchUser={async (identity) => {
