@@ -1,5 +1,8 @@
+mod bridge;
+pub mod browser_host;
 mod discord;
 mod external;
+pub mod ipc;
 mod twitch;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -18,6 +21,13 @@ pub fn run() {
                 )
                 .build(),
         )
+        .setup(|app| {
+            if let Err(e) = bridge::register() {
+                eprintln!("browser bridge registration failed: {e}");
+            }
+            ipc::start_server(app.handle().clone());
+            Ok(())
+        })
         .manage(twitch::TwitchState::new())
         .manage(discord::DiscordState::new())
         .invoke_handler(tauri::generate_handler![
@@ -64,6 +74,20 @@ pub fn run() {
             external::seventv::seventv_get_channel_emotes,
             external::robotty::get_recent_messages,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app, event| {
+            // ipc::start_server spawns a tokio task blocked on accept()
+            // forever; without an explicit exit, its worker threads keep the
+            // process alive after the window closes.
+            match event {
+                tauri::RunEvent::WindowEvent {
+                    event: tauri::WindowEvent::CloseRequested { .. },
+                    ..
+                }
+                | tauri::RunEvent::ExitRequested { .. }
+                | tauri::RunEvent::Exit => std::process::exit(0),
+                _ => {}
+            }
+        });
 }

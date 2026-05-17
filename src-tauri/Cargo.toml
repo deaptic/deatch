@@ -32,4 +32,8 @@ tokio = { version = "1", features = ["net", "io-util", "sync", "macros", "time"]
 tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
 futures-util = "0.3"
 discord-rich-presence = "0.2"
+interprocess = { version = "2", features = ["tokio"] }
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.52"
 

@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Deatch Link",
+  "version": "0.1.0",
+  "description": "Sends the Twitch channel you're watching to the Deatch desktop app so its Watch tab follows along.",
+  "homepage_url": "https://github.com/Deaptic/deatch",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "deatch-link@deaptic.com",
+      "strict_min_version": "109.0"
+    }
+  },
+  "permissions": ["tabs", "nativeMessaging"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.twitch.tv/*", "*://twitch.tv/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "icons": {
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

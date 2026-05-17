@@ -30,7 +30,7 @@ export function rememberChannel(ch: Channel) {
   channelsById.set(ch.user_id, ch);
 }
 
-export function nextChannelInOrder(direction: 1 | -1): Channel | null {
+export function channelsInOrder(): Channel[] {
   const pinnedIds = menuChannelPinned();
   const pinnedSet = new Set(pinnedIds);
   const live = liveChannels();
@@ -49,6 +49,11 @@ export function nextChannelInOrder(direction: 1 | -1): Channel | null {
       profile_image_url: u.profile_image_url ?? "",
     });
   }
+  return ordered;
+}
+
+export function nextChannelInOrder(direction: 1 | -1): Channel | null {
+  const ordered = channelsInOrder();
   if (ordered.length === 0) return null;
   const idx = ordered.findIndex((c) => c.user_id === selectedChannel()?.user_id);
   const next =
