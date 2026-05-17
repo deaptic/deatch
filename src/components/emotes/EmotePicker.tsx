@@ -37,12 +37,14 @@ function emojiUrl(emoji: string): string {
 type Props = {
   onSelect: (value: string) => void;
   onClose: () => void;
+  anchorEl?: HTMLElement | null;
 };
 
 export default function EmotePicker(props: Props) {
   captureFocusForRestore();
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
+  const [bottomOffset, setBottomOffset] = createSignal(64);
   let panelRef: HTMLDivElement | undefined;
 
   // Hydrate display metadata for any channels the user subs to whose owner
@@ -98,11 +100,30 @@ export default function EmotePicker(props: Props) {
       document.removeEventListener("keydown", onDocumentKeyDown);
       document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true });
     });
+
+    const anchor = props.anchorEl;
+    if (!anchor) return;
+    const update = () => {
+      const rect = anchor.getBoundingClientRect();
+      setBottomOffset(window.innerHeight - rect.top + 8);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(anchor);
+    window.addEventListener("resize", update);
+    onCleanup(() => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    });
   });
 
   return (
     <Portal>
-      <div ref={panelRef} class="fixed bottom-16 right-2 z-40 w-80 h-96 bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col">
+      <div
+        ref={panelRef}
+        class="fixed right-2 z-40 w-80 h-96 bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col"
+        style={{ bottom: `${bottomOffset()}px` }}
+      >
         <div class="flex border-b border-border-muted shrink-0">
           <For each={TABS}>
             {(t) => (

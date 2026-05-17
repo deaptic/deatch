@@ -11,6 +11,7 @@ type Props = {
   chatterId: string;
   broadcasterId: string;
   getBounds: () => DOMRect | null;
+  getBoundsElement?: () => HTMLElement | null;
   onClose: () => void;
   onJumpToMessage?: (channelId: string, messageId: string) => void;
   onSwitchUser?: (identity: { userId?: string; login?: string }) => void;
@@ -43,6 +44,16 @@ export default function UserCard(props: Props) {
     if (!cardRef) return;
     const rect = cardRef.getBoundingClientRect();
     setPos(clamp(props.x, props.y, rect.width, rect.height));
+
+    const target = props.getBoundsElement?.();
+    if (!target) return;
+    const observer = new ResizeObserver(() => {
+      if (!cardRef) return;
+      const r = cardRef.getBoundingClientRect();
+      setPos((p) => clamp(p.x, p.y, r.width, r.height));
+    });
+    observer.observe(target);
+    onCleanup(() => observer.disconnect());
   });
 
   const onDocumentMouseDown = (e: MouseEvent) => {
