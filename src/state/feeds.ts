@@ -2,8 +2,16 @@ import { createStore, produce } from "solid-js/store";
 import type { FeedItem, BadgeMap } from "../types";
 import { NOTICE_TO_EVENT } from "../constants";
 import { selectedChannel } from "./channels";
-import { recordChatter } from "./users";
+import { recordChatter, user } from "./users";
 import { feedEvents, feedUserMuted } from "./preferences";
+import { pushSentHistory, appendSentHistoryOlder } from "./chatHistory";
+
+function ownMessageText(item: FeedItem): string | null {
+  if (item.kind !== "message") return null;
+  const me = user();
+  if (!me || me.id !== item.chatter_user_id) return null;
+  return item.fragments.map((f) => f.text).join("");
+}
 
 export type { FeedItem };
 
@@ -153,11 +161,13 @@ export function appendItem(id: string, item: FeedItem) {
   }
   const isActive = selectedChannel()?.user_id === id;
   const itemId = getItemId(item);
+  let added = false;
   setFeeds(
     id,
     produce((f) => {
       // Dedupe: a backlog fetch may overlap with the first EventSub events.
       if (f.messages.some((m) => getItemId(m) === itemId)) return;
+      added = true;
       f.messages.push(item);
       if (!f.paused) enforceCaps(f.messages);
       if (isActive && !f.paused && !isSilent(item)) {
@@ -165,6 +175,10 @@ export function appendItem(id: string, item: FeedItem) {
       }
     }),
   );
+  if (added) {
+    const text = ownMessageText(item);
+    if (text) pushSentHistory(id, text);
+  }
 }
 
 /// Inserts older items at the front of the feed. Used for the one-time
@@ -206,6 +220,16 @@ export function prependItems(id: string, items: FeedItem[]) {
       }
     }),
   );
+  // Feed the input-recall history with our own backlog messages. Iterate
+  // newest → oldest so that the newest backlog entry ends up just behind
+  // any live entries already captured.
+  if (items.length > 0 && user()) {
+    const sorted = [...items].sort((a, b) => b.timestamp - a.timestamp);
+    for (const it of sorted) {
+      const text = ownMessageText(it);
+      if (text) appendSentHistoryOlder(id, text);
+    }
+  }
 }
 
 export function snapshotDivider(id: string) {

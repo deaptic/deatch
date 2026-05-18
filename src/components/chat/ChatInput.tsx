@@ -22,6 +22,7 @@ import {
   openEmotePicker,
 } from "../../state/ui";
 import SmileIcon from "../../icons/SmileIcon";
+import { pushSentHistory, getSentHistory } from "../../state/chatHistory";
 
 type ReplyTo = { messageId: string; name: string; text: string };
 
@@ -46,6 +47,8 @@ export default function ChatInput(props: Props) {
   let mentionHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let commandHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
   let tabCycle: { matches: string[]; index: number; start: number; end: number } | null = null;
+  let historyIndex = -1;
+  let savedDraft = "";
 
   let inputBaseH = 0;
 
@@ -169,6 +172,9 @@ export default function ChatInput(props: Props) {
         openUserCard: props.openUserCard,
       });
       if (handled) {
+        pushSentHistory(props.broadcasterId, text);
+        historyIndex = -1;
+        savedDraft = "";
         setInput("");
         queueMicrotask(autoResize);
         return;
@@ -180,6 +186,9 @@ export default function ChatInput(props: Props) {
         replyParentMessageId: reply?.messageId ?? null,
       });
       if (ok) {
+        pushSentHistory(props.broadcasterId, text);
+        historyIndex = -1;
+        savedDraft = "";
         setInput("");
         queueMicrotask(autoResize);
         props.onClearReply();
@@ -187,6 +196,22 @@ export default function ChatInput(props: Props) {
     } finally {
       setSending(false);
     }
+  }
+
+  function stepHistory(delta: 1 | -1): boolean {
+    const arr = getSentHistory(props.broadcasterId);
+    if (!arr?.length) return false;
+    const next = historyIndex + delta;
+    if (next < -1 || next >= arr.length) return false;
+    if (historyIndex === -1) savedDraft = input();
+    historyIndex = next;
+    const text = next === -1 ? savedDraft : arr[next];
+    setInput(text);
+    queueMicrotask(() => {
+      autoResize();
+      inputRef?.setSelectionRange(text.length, text.length);
+    });
+    return true;
   }
 
   function tabComplete() {
@@ -221,6 +246,8 @@ export default function ChatInput(props: Props) {
 
   function onInput(e: InputEvent) {
     tabCycle = null;
+    historyIndex = -1;
+    savedDraft = "";
     const el = e.currentTarget as HTMLTextAreaElement;
     setInput(el.value);
     autoResize();
@@ -299,6 +326,12 @@ export default function ChatInput(props: Props) {
       e.preventDefault();
       tabComplete();
       return;
+    }
+    if ((e.key === "ArrowUp" || e.key === "ArrowDown") && !e.shiftKey) {
+      const delta = e.key === "ArrowUp" ? 1 : -1;
+      const pos = (delta === 1 ? inputRef?.selectionStart : inputRef?.selectionEnd) ?? 0;
+      const side = delta === 1 ? input().slice(0, pos) : input().slice(pos);
+      if (!side.includes("\n") && stepHistory(delta)) { e.preventDefault(); return; }
     }
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }
