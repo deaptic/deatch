@@ -9,6 +9,7 @@ import { getAllModeratedChannels } from "./commands/moderation";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Chat from "./components/chat/Chat";
 import TitleBar from "./components/title-bar/TitleBar";
+import UpdateBanner from "./components/update-banner/UpdateBanner";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
 import {
@@ -350,6 +351,7 @@ function App() {
         onToggleSettings={() => (settingsOpen() ? setSettingsOpen(false) : openSettings())}
         onToggleInbox={() => (inboxOpen() ? setInboxOpen(false) : openInbox())}
       />
+      <UpdateBanner />
       <Show when={settingsOpen()}>
         <Settings onClose={() => setSettingsOpen(false)} />
       </Show>
