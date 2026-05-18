@@ -3,7 +3,6 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
 import { selectedChannel } from "../../state/channels";
 import { unreadMentionCount } from "../../state/inbox";
-import { user } from "../../state/users";
 import InboxIcon from "../../icons/InboxIcon";
 import GearIcon from "../../icons/GearIcon";
 import UserIcon from "../../icons/UserIcon";
@@ -113,6 +112,7 @@ export default function TitleBar(props: Props) {
           </Show>
         </button>
         <button
+          data-settings-toggle
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
             props.settingsOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
           }`}
@@ -123,24 +123,20 @@ export default function TitleBar(props: Props) {
         >
           <GearIcon class="w-3.5 h-3.5" />
         </button>
-        <Show when={user()}>
-          {(u) => (
-            <button
-              data-account-toggle
-              class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-                props.accountOpen
-                  ? "text-text bg-bg-light"
-                  : "text-text-muted hover:bg-bg hover:text-text"
-              }`}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={props.onToggleAccount}
-              aria-label="Accounts"
-              title="Accounts"
-            >
-              <UserIcon class="w-3.5 h-3.5" />
-            </button>
-          )}
-        </Show>
+        <button
+          data-account-toggle
+          class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
+            props.accountOpen
+              ? "text-text bg-bg-light"
+              : "text-text-muted hover:bg-bg hover:text-text"
+          }`}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={props.onToggleAccount}
+          aria-label="Accounts"
+          title="Accounts"
+        >
+          <UserIcon class="w-3.5 h-3.5" />
+        </button>
         <div class="h-5 w-px bg-border-muted self-center" />
         <div class="flex items-stretch h-full">
           <button

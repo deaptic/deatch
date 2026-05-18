@@ -19,8 +19,7 @@ export class SessionManager extends Manager {
   }
 
   public async logout(): Promise<void> {
-    const result = await this.invokeCommand<void>("revoke_session");
-    if (result === null) return;
+    await this.invokeCommand<void>("revoke_session");
     setUser(null);
   }
 
