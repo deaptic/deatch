@@ -1,5 +1,6 @@
-import { createSignal, createEffect, For, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, createEffect, For, onCleanup, onMount, Show, type JSX } from "solid-js";
 import { createStore } from "solid-js/store";
+import { Portal } from "solid-js/web";
 import { getUsers } from "../../commands/users";
 import type { TwitchUser } from "../../types";
 import SettingsNavigation from "./SettingsNavigation";
@@ -8,13 +9,22 @@ import SettingsContent from "./SettingsContent";
 import SettingsContentSection from "./SettingsContentSection";
 import SettingsContentSectionItem from "./SettingsContentSectionItem";
 
+import MegaphoneIcon from "../../icons/MegaphoneIcon";
+import LogIcon from "../../icons/LogIcon";
+import PaletteIcon from "../../icons/PaletteIcon";
+import GearIcon from "../../icons/GearIcon";
+
 type SectionKey = "feed" | "notifications" | "appearance" | "advanced";
 
-const SECTIONS: { key: SectionKey; label: string }[] = [
-  { key: "notifications", label: "Notifications" },
-  { key: "feed", label: "Feed" },
-  { key: "appearance", label: "Appearance" },
-  { key: "advanced", label: "Advanced" },
+const SECTIONS: {
+  key: SectionKey;
+  label: string;
+  Icon: (p: { class?: string }) => JSX.Element;
+}[] = [
+  { key: "notifications", label: "Notifications", Icon: MegaphoneIcon },
+  { key: "feed", label: "Feed", Icon: LogIcon },
+  { key: "appearance", label: "Appearance", Icon: PaletteIcon },
+  { key: "advanced", label: "Advanced", Icon: GearIcon },
 ];
 import {
   feedFontSize,
@@ -71,7 +81,6 @@ import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
 import Chip from "../../ui/Chip";
 import ChipList from "../../ui/ChipList";
-import CloseIcon from "../../icons/CloseIcon";
 import { captureFocusForRestore } from "../../utils/focus";
 
 type Props = {
@@ -82,13 +91,28 @@ export default function Settings(props: Props) {
   captureFocusForRestore();
   const [section, setSection] = createSignal<SectionKey>("notifications");
   const [mutedMeta, setMutedMeta] = createStore<Record<string, TwitchUser>>({});
+  let panelRef: HTMLDivElement | undefined;
 
-  function handleKey(e: KeyboardEvent) {
-    if (e.key === "Escape") props.onClose();
-  }
+  const onDocumentClick = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (panelRef?.contains(target)) return;
+    if (target.closest("[data-settings-toggle]")) return;
+    props.onClose();
+  };
+
+  const onDocumentKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== "Escape" || e.defaultPrevented) return;
+    e.preventDefault();
+    props.onClose();
+  };
+
   onMount(() => {
-    window.addEventListener("keydown", handleKey);
-    onCleanup(() => window.removeEventListener("keydown", handleKey));
+    document.addEventListener("mousedown", onDocumentClick, { capture: true });
+    document.addEventListener("keydown", onDocumentKeyDown);
+    onCleanup(() => {
+      document.removeEventListener("mousedown", onDocumentClick, { capture: true });
+      document.removeEventListener("keydown", onDocumentKeyDown);
+    });
   });
 
   // Fetch display metadata for any muted IDs we don't yet have data for.
@@ -114,27 +138,13 @@ export default function Settings(props: Props) {
   }
 
   return (
-    <div
-      class="fixed top-10 left-0 right-0 bottom-0 z-40 bg-black/60 flex items-center justify-center p-8"
-      onClick={() => props.onClose()}
-    >
+    <Portal>
       <div
-        class="relative bg-bg-dark border border-border-muted rounded-lg shadow-2xl w-full h-full max-w-350 flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        ref={panelRef}
+        class="fixed top-12 right-2 z-40 w-[640px] h-[70vh] max-w-[calc(100vw-1rem)] max-h-[calc(100vh-4rem)] bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col overflow-hidden"
       >
-        <div class="relative h-10 shrink-0 flex items-center bg-bg-dark border-b border-border-muted select-none">
-          <div class="flex items-center px-3">
-            <span class="text-text text-xs font-semibold tracking-tight">Settings</span>
-          </div>
-          <div class="flex-1" />
-          <button
-            onClick={() => props.onClose()}
-            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-text transition-colors cursor-pointer"
-            title="Close"
-            aria-label="Close"
-          >
-            <CloseIcon class="w-2.5 h-2.5" />
-          </button>
+        <div class="flex items-center px-4 h-11 border-b border-border-muted shrink-0">
+          <span class="text-text text-sm font-semibold flex-1">Settings</span>
         </div>
         <div class="flex-1 flex min-h-0">
           <SettingsNavigation>
@@ -142,6 +152,7 @@ export default function Settings(props: Props) {
               {(s) => (
                 <SettingsNavigationItem
                   label={s.label}
+                  icon={<s.Icon class="w-3.5 h-3.5" />}
                   active={section() === s.key}
                   onClick={() => setSection(s.key)}
                 />
@@ -387,7 +398,7 @@ export default function Settings(props: Props) {
           </Show>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 
