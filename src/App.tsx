@@ -12,13 +12,17 @@ import TitleBar from "./components/title-bar/TitleBar";
 import UpdateBanner from "./components/update-banner/UpdateBanner";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
+import Account from "./components/account/Account";
 import {
   settingsOpen,
   setSettingsOpen,
   inboxOpen,
   setInboxOpen,
+  accountOpen,
+  setAccountOpen,
   openSettings,
   openInbox,
+  openAccount,
 } from "./state/ui";
 import Login from "./components/login/Login";
 import Loading from "./ui/Loading";
@@ -146,13 +150,12 @@ function App() {
     loadChannelThirdPartyEmotes(broadcaster.user_id, broadcaster.user_login);
   });
 
-  // Maintain the joined set: pinned ∪ live ∪ {selected} ∪ {self}.
+  // Maintain the joined set: pinned ∪ live ∪ watch-warmed ∪ {selected}.
   createEffect(() => {
     const u = user();
     if (!u) return;
     if (!liveLoaded()) return;
     const desired = new Set<string>();
-    desired.add(u.id);
     for (const id of menuChannelPinned()) desired.add(id);
     for (const ch of liveChannels()) desired.add(ch.user_id);
     for (const ch of watchWarmedChannels()) desired.add(ch.user_id);
@@ -180,29 +183,22 @@ function App() {
   });
 
   function cycleChannel(direction: 1 | -1) {
-    // Slot 0 is Watch; slots 1..n are regular channels.
     const ordered = channelsInOrder();
-    const len = ordered.length;
-    const total = len + 1;
-    let currentPos: number;
-    if (watchActive()) {
-      currentPos = 0;
-    } else {
-      const i = ordered.findIndex(
-        (c) => c.user_id === selectedChannel()?.user_id,
-      );
-      currentPos = i === -1 ? (direction === 1 ? -1 : total) : i + 1;
-    }
-    const nextPos = ((currentPos + direction) % total + total) % total;
-    if (nextPos === 0) {
-      setWatchActive(true);
-      const wc = watchedChannel();
-      if (wc && selectedChannel()?.user_id !== wc.user_id) {
-        applySelection(wc);
-      }
-    } else {
-      handleChannelSelect(ordered[nextPos - 1]);
-    }
+    if (ordered.length === 0) return;
+    const i = watchActive()
+      ? -1
+      : ordered.findIndex((c) => c.user_id === selectedChannel()?.user_id);
+    const nextIdx =
+      i === -1
+        ? direction === 1
+          ? 0
+          : ordered.length - 1
+        : (i + direction + ordered.length) % ordered.length;
+    handleChannelSelect(ordered[nextIdx]);
+  }
+
+  function toggleWatch() {
+    setWatchActive(!watchActive());
   }
 
   onMount(() => {
@@ -211,6 +207,7 @@ function App() {
     const unregister = registerShortcuts({
       "Alt+ArrowDown": () => cycleChannel(1),
       "Alt+ArrowUp": () => cycleChannel(-1),
+      "Alt+w": toggleWatch,
     });
     onCleanup(unregister);
   });
@@ -331,25 +328,15 @@ function App() {
     setLiveLoaded(false);
   });
 
-  createEffect(() => {
-    const u = user();
-    if (u && !selectedChannel() && !watchActive()) {
-      handleChannelSelect({
-        user_id: u.id,
-        user_login: u.login,
-        user_name: u.display_name,
-        profile_image_url: u.profile_image_url ?? "",
-      });
-    }
-  });
-
   return (
     <div class="flex flex-col h-screen bg-bg-dark relative">
       <TitleBar
         settingsOpen={settingsOpen()}
         inboxOpen={inboxOpen()}
+        accountOpen={accountOpen()}
         onToggleSettings={() => (settingsOpen() ? setSettingsOpen(false) : openSettings())}
         onToggleInbox={() => (inboxOpen() ? setInboxOpen(false) : openInbox())}
+        onToggleAccount={() => (accountOpen() ? setAccountOpen(false) : openAccount())}
       />
       <UpdateBanner />
       <Show when={settingsOpen()}>
@@ -363,6 +350,9 @@ function App() {
             jumpToMessage(channelId, messageId);
           }}
         />
+      </Show>
+      <Show when={accountOpen()}>
+        <Account onClose={() => setAccountOpen(false)} />
       </Show>
       <Show
         when={user()}
