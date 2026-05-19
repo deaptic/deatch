@@ -1,4 +1,5 @@
-import { createSignal, createMemo, Show, onMount } from "solid-js";
+import { createSignal, createMemo, createEffect, Show, onMount, onCleanup } from "solid-js";
+import { shortcutManager } from "../../managers/ShortcutManager";
 import { sendChatMessage } from "../../commands/chat";
 import { chatCommands, executeChatCommand, buildUsage, canRunCommand } from "./commands";
 import {
@@ -16,11 +17,7 @@ import EmotePicker from "../emotes/EmotePicker";
 import ChatSuggestions from "./ChatSuggestions";
 import { chattersByChannel } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
-import {
-  emotePickerOpen as pickerOpen,
-  setEmotePickerOpen as setPickerOpen,
-  openEmotePicker,
-} from "../../state/ui";
+import { isPanelOpen, setOpenPanel, togglePanel } from "../../state/ui";
 import SmileIcon from "../../icons/SmileIcon";
 import { pushSentHistory, getSentHistory } from "../../state/chatHistory";
 
@@ -74,6 +71,26 @@ export default function ChatInput(props: Props) {
     props.expose?.({ focus: () => inputRef?.focus(), insert: insertText });
     ensureUserEmotesLoaded();
     autoResize();
+    createEffect(() => {
+      shortcutManager.setContext(
+        "chat:popupOpen",
+        commandQuery() !== null || mentionQuery() !== null || acQuery() !== null,
+      );
+    });
+    const WHEN = "chat:focused && !chat:popupOpen";
+    const unbind = [
+      shortcutManager.register("chat::send", () => { void sendMessage(); }, WHEN),
+      shortcutManager.register("chat::tabComplete", () => tabComplete(), WHEN),
+      shortcutManager.register("chat::recallPrev", () => {
+        if (input().slice(0, inputRef?.selectionStart ?? 0).includes("\n")) return false;
+        return stepHistory(1);
+      }, WHEN),
+      shortcutManager.register("chat::recallNext", () => {
+        if (input().slice(inputRef?.selectionEnd ?? 0).includes("\n")) return false;
+        return stepHistory(-1);
+      }, WHEN),
+    ];
+    onCleanup(() => { for (const u of unbind) u(); });
   });
 
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
@@ -316,30 +333,12 @@ export default function ChatInput(props: Props) {
     if (commandHandleKey?.(e)) return;
     if (mentionHandleKey?.(e)) return;
     if (acHandleKey?.(e)) return;
-    if (
-      e.key === "Tab" &&
-      !e.shiftKey &&
-      commandQuery() === null &&
-      mentionQuery() === null &&
-      acQuery() === null
-    ) {
-      e.preventDefault();
-      tabComplete();
-      return;
-    }
-    if ((e.key === "ArrowUp" || e.key === "ArrowDown") && !e.shiftKey) {
-      const delta = e.key === "ArrowUp" ? 1 : -1;
-      const pos = (delta === 1 ? inputRef?.selectionStart : inputRef?.selectionEnd) ?? 0;
-      const side = delta === 1 ? input().slice(0, pos) : input().slice(pos);
-      if (!side.includes("\n") && stepHistory(delta)) { e.preventDefault(); return; }
-    }
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }
 
   function insertEmote(value: string) {
     const cur = input();
     setInput((cur === "" || cur.endsWith(" ") ? cur : cur + " ") + value + " ");
-    setPickerOpen(false);
+    setOpenPanel(null);
   }
 
   return (
@@ -423,6 +422,8 @@ export default function ChatInput(props: Props) {
           value={input()}
           onInput={onInput}
           onKeyDown={onKeyDown}
+          onFocus={() => shortcutManager.setContext("chat:focused", true)}
+          onBlur={() => shortcutManager.setContext("chat:focused", false)}
           maxLength={500}
           placeholder={`Message #${props.broadcasterLogin}`}
           class="flex-1 self-stretch content-center bg-transparent text-text text-base placeholder-text-muted/60 pl-4 pr-0 py-3 outline-none resize-none overflow-y-auto leading-snug"
@@ -431,9 +432,9 @@ export default function ChatInput(props: Props) {
           <button
             data-emote-picker-toggle
             onMouseDown={(e) => e.preventDefault()}
-            onClick={() => (pickerOpen() ? setPickerOpen(false) : openEmotePicker())}
+            onClick={() => togglePanel("emotePicker")}
             class={`flex items-center justify-center w-9 h-9 rounded-md transition-colors cursor-pointer ${
-              pickerOpen() ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
+              isPanelOpen("emotePicker") ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
             }`}
             title="Emote picker"
           >
@@ -449,10 +450,10 @@ export default function ChatInput(props: Props) {
             </span>
           </Show>
         </div>
-        <Show when={pickerOpen()}>
+        <Show when={isPanelOpen("emotePicker")}>
           <EmotePicker
             onSelect={insertEmote}
-            onClose={() => setPickerOpen(false)}
+            onClose={() => setOpenPanel(null)}
             anchorEl={rowRef}
           />
         </Show>
