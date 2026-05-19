@@ -3,6 +3,7 @@ pub mod browser_host;
 mod discord;
 mod external;
 pub mod ipc;
+mod keymap;
 mod twitch;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -75,6 +76,8 @@ pub fn run() {
             external::seventv::seventv_get_global_emotes,
             external::seventv::seventv_get_channel_emotes,
             external::robotty::get_recent_messages,
+            keymap::read_keymap,
+            keymap::write_keymap,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

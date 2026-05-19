@@ -1,34 +1,11 @@
 import { createSignal } from "solid-js";
 
-export const [settingsOpen, setSettingsOpen] = createSignal(false);
-export const [inboxOpen, setInboxOpen] = createSignal(false);
-export const [accountOpen, setAccountOpen] = createSignal(false);
-export const [emotePickerOpen, setEmotePickerOpen] = createSignal(false);
+export type Panel = "settings" | "inbox" | "account" | "emotePicker";
 
-export function openSettings() {
-  setInboxOpen(false);
-  setAccountOpen(false);
-  setEmotePickerOpen(false);
-  setSettingsOpen(true);
-}
+const [openPanel, setOpenPanel] = createSignal<Panel | null>(null);
 
-export function openInbox() {
-  setSettingsOpen(false);
-  setAccountOpen(false);
-  setEmotePickerOpen(false);
-  setInboxOpen(true);
-}
-
-export function openAccount() {
-  setSettingsOpen(false);
-  setInboxOpen(false);
-  setEmotePickerOpen(false);
-  setAccountOpen(true);
-}
-
-export function openEmotePicker() {
-  setSettingsOpen(false);
-  setInboxOpen(false);
-  setAccountOpen(false);
-  setEmotePickerOpen(true);
-}
+export { openPanel, setOpenPanel };
+export const isPanelOpen = (p: Panel) => openPanel() === p;
+export const togglePanel = (p: Panel): void => {
+  setOpenPanel(openPanel() === p ? null : p);
+};

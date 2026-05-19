@@ -13,22 +13,13 @@ import UpdateBanner from "./components/update-banner/UpdateBanner";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
 import Account from "./components/account/Account";
-import {
-  settingsOpen,
-  setSettingsOpen,
-  inboxOpen,
-  setInboxOpen,
-  accountOpen,
-  setAccountOpen,
-  openSettings,
-  openInbox,
-  openAccount,
-} from "./state/ui";
+import { openPanel, setOpenPanel, isPanelOpen, togglePanel } from "./state/ui";
 import Login from "./components/login/Login";
 import Loading from "./ui/Loading";
 import {
   menuChannelPinned,
   advancedAlwaysOnTop,
+  setAdvancedAlwaysOnTop,
   advancedAutostart,
   advancedDiscordRichPresence,
   appearanceColors,
@@ -69,7 +60,7 @@ import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import { loadChannelBadges, resetChannelBadgeCache } from "./services/badges";
 import { dropFeed, ensureFeed, snapshotDivider, markSeen } from "./state/feeds";
 import { scrollToMessage } from "./services/feeds";
-import { registerShortcuts } from "./services/shortcuts";
+import { shortcutManager } from "./managers/ShortcutManager";
 import "./events";
 import "./App.css";
 
@@ -205,14 +196,36 @@ function App() {
   onMount(() => {
     sessionManager.restore();
     loadThirdPartyGlobalEmotes();
-    const unregister = registerShortcuts({
-      "Alt+ArrowDown": () => cycleChannel(1),
-      "Alt+ArrowUp": () => cycleChannel(-1),
-      "Alt+w": toggleWatch,
-    });
+    const unbindActions = [
+      shortcutManager.register("channel::cycleNext", () => cycleChannel(1)),
+      shortcutManager.register("channel::cyclePrev", () => cycleChannel(-1)),
+      shortcutManager.register("watch::toggle", toggleWatch),
+      shortcutManager.register("settings::toggle", () => togglePanel("settings")),
+      shortcutManager.register("inbox::toggle", () => togglePanel("inbox")),
+      shortcutManager.register("account::toggle", () => togglePanel("account")),
+      shortcutManager.register("emotePicker::toggle", () => togglePanel("emotePicker")),
+      shortcutManager.register("panel::close", () => {
+        if (!openPanel()) return false;
+        setOpenPanel(null);
+      }),
+      shortcutManager.register("view::toggleAlwaysOnTop", () => {
+        setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());
+      }),
+    ];
+    for (let i = 1; i <= 9; i++) {
+      const idx = i - 1;
+      unbindActions.push(
+        shortcutManager.register(`channel::select${i}`, () => {
+          const ordered = channelsInOrder();
+          if (idx < ordered.length) handleChannelSelect(ordered[idx]);
+        }),
+      );
+    }
+    shortcutManager.start();
     const stopUpdateChecker = startUpdateChecker();
     onCleanup(() => {
-      unregister();
+      for (const u of unbindActions) u();
+      shortcutManager.stop();
       stopUpdateChecker();
     });
   });
@@ -260,7 +273,7 @@ function App() {
       return;
     }
     const ch = selectedChannel();
-    const mode = inboxOpen()
+    const mode = isPanelOpen("inbox")
       ? "inbox"
       : ch
         ? `ch:${ch.user_id}`
@@ -336,28 +349,28 @@ function App() {
   return (
     <div class="flex flex-col h-screen bg-bg-dark relative">
       <TitleBar
-        settingsOpen={settingsOpen()}
-        inboxOpen={inboxOpen()}
-        accountOpen={accountOpen()}
-        onToggleSettings={() => (settingsOpen() ? setSettingsOpen(false) : openSettings())}
-        onToggleInbox={() => (inboxOpen() ? setInboxOpen(false) : openInbox())}
-        onToggleAccount={() => (accountOpen() ? setAccountOpen(false) : openAccount())}
+        settingsOpen={isPanelOpen("settings")}
+        inboxOpen={isPanelOpen("inbox")}
+        accountOpen={isPanelOpen("account")}
+        onToggleSettings={() => togglePanel("settings")}
+        onToggleInbox={() => togglePanel("inbox")}
+        onToggleAccount={() => togglePanel("account")}
       />
       <UpdateBanner />
-      <Show when={settingsOpen()}>
-        <Settings onClose={() => setSettingsOpen(false)} />
+      <Show when={isPanelOpen("settings")}>
+        <Settings onClose={() => setOpenPanel(null)} />
       </Show>
-      <Show when={inboxOpen()}>
+      <Show when={isPanelOpen("inbox")}>
         <Inbox
-          onClose={() => setInboxOpen(false)}
+          onClose={() => setOpenPanel(null)}
           onJump={(channelId, messageId) => {
             markMentionRead(messageId);
             jumpToMessage(channelId, messageId);
           }}
         />
       </Show>
-      <Show when={accountOpen()}>
-        <Account onClose={() => setAccountOpen(false)} />
+      <Show when={isPanelOpen("account")}>
+        <Account onClose={() => setOpenPanel(null)} />
       </Show>
       <Show
         when={user()}
