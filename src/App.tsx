@@ -34,6 +34,7 @@ import {
   appearanceColors,
 } from "./state/preferences";
 import { connectDiscord, disconnectDiscord, updateActivity } from "./services/discord";
+import { startUpdateChecker } from "./services/updater";
 import { applyAppearanceColors } from "./services/appearance";
 import { user, setModeratedChannels, isModOfChannel } from "./state/users";
 import { authChecked } from "./state/auth";
@@ -209,7 +210,11 @@ function App() {
       "Alt+ArrowUp": () => cycleChannel(-1),
       "Alt+w": toggleWatch,
     });
-    onCleanup(unregister);
+    const stopUpdateChecker = startUpdateChecker();
+    onCleanup(() => {
+      unregister();
+      stopUpdateChecker();
+    });
   });
 
   createEffect(() => {
