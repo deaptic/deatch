@@ -26,6 +26,7 @@ import {
   feedShowDeletedContent,
   feedKeywords,
 } from "../../state/preferences";
+import { shortcutManager } from "../../managers/ShortcutManager";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";
@@ -35,6 +36,9 @@ export type FeedApi = {
   isPaused: () => boolean;
   getBounds: () => DOMRect | null;
   getElement: () => HTMLElement | null;
+  moveSelection: (direction: 1 | -1) => void;
+  clearSelection: () => void;
+  getSelectedMessage: () => Message | null;
 };
 
 type UserIdentity = {
@@ -71,6 +75,7 @@ type Props = {
 
 export default function Feed(props: Props) {
   const [isPaused, setIsPaused] = createSignal(false);
+  const [selectedId, setSelectedId] = createSignal<string | null>(null);
 
   let rootRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
@@ -89,6 +94,55 @@ export default function Feed(props: Props) {
   const emoteMap = createMemo(buildThirdPartyEmoteMap);
   const reactions = () => favorites().slice(0, 3);
 
+  const messageList = createMemo<Message[]>(() =>
+    items().filter((i): i is Message => i.kind === "message"),
+  );
+  const selectedMessage = createMemo<Message | null>(() => {
+    const id = selectedId();
+    if (!id) return null;
+    return messageList().find((m) => m.message_id === id) ?? null;
+  });
+
+  function moveSelection(direction: 1 | -1) {
+    const list = messageList();
+    if (list.length === 0) return;
+    const id = selectedId();
+    if (!id) {
+      setSelectedId(list[direction === -1 ? list.length - 1 : 0].message_id);
+      return;
+    }
+    const idx = list.findIndex((m) => m.message_id === id);
+    if (idx < 0) {
+      setSelectedId(list[direction === -1 ? list.length - 1 : 0].message_id);
+      return;
+    }
+    const next = Math.min(Math.max(idx + direction, 0), list.length - 1);
+    setSelectedId(list[next].message_id);
+  }
+
+  function clearSelection() {
+    setSelectedId(null);
+  }
+
+  createEffect(() => {
+    shortcutManager.setContext("feedSelected", selectedId() !== null);
+  });
+  onCleanup(() => shortcutManager.setContext("feedSelected", false));
+
+  // Scroll active message into view + give it focus so the chat input loses it
+  // (otherwise chat::send would still fire on Enter).
+  createEffect(() => {
+    const id = selectedId();
+    if (!id) return;
+    queueMicrotask(() => {
+      const el = rootRef?.querySelector<HTMLElement>(
+        `[data-feed-id="${CSS.escape(id)}"]`,
+      );
+      el?.scrollIntoView({ block: "nearest" });
+      el?.focus({ preventScroll: true });
+    });
+  });
+
   function scrollInstant() {
     isProgrammaticScroll = true;
     bottomRef?.scrollIntoView({ behavior: "instant" });
@@ -105,9 +159,8 @@ export default function Feed(props: Props) {
   }
 
   createEffect(on(() => props.broadcasterId, () => {
-    // Pause state is per-channel; reset on switch so the new channel
-    // doesn't inherit "scrolled up" from the old one.
     setIsPaused(false);
+    setSelectedId(null);
     queueMicrotask(scrollInstant);
   }));
 
@@ -130,55 +183,47 @@ export default function Feed(props: Props) {
       isPaused,
       getBounds: () => rootRef?.getBoundingClientRect() ?? null,
       getElement: () => rootRef ?? null,
+      moveSelection,
+      clearSelection,
+      getSelectedMessage: () => selectedMessage(),
     });
   });
 
-  const defaultRender = (item: FeedItem, index: () => number) => (
-    <>
-      <Show
-        when={
-          index() > 0 &&
-          dividerAt() &&
-          getItemId(items()[index() - 1]) === dividerAt()
-        }
-      >
-        <FeedDivider />
-      </Show>
-      <Show when={isFeedItemVisible(item)}>
-        {item.kind === "event" ? (
-          <FeedEvent
-            item={item}
-            showTimestamp={feedShowTimestamp()}
-            onContextMenu={props.onEventContextMenu}
-          />
-        ) : (
-          <FeedMessage
-            item={item}
-            emotes={emoteMap()}
-            badges={badges()}
-            userLogin={props.userLogin ?? ""}
-            keywords={feedKeywords()}
-            showTimestamp={feedShowTimestamp()}
-            showDeletedContent={feedShowDeletedContent()}
-            showName={props.showName}
-            showBadges={props.showBadges}
-            showToolbar={props.showToolbar}
-            reactions={reactions()}
-            onContextMenu={props.onContextMenu}
-            onReply={props.onReply}
-            onReact={props.onReact}
-            onCopypasta={props.onCopypasta}
-            onUserContextMenu={props.onUserContextMenu}
-            onJumpToMessage={props.onJumpToMessage}
-            onShowUserCard={props.onShowUserCard}
-          />
-        )}
-      </Show>
-    </>
+  const defaultRender = (item: FeedItem) => (
+    <Show when={isFeedItemVisible(item)}>
+      {item.kind === "event" ? (
+        <FeedEvent
+          item={item}
+          showTimestamp={feedShowTimestamp()}
+          onContextMenu={props.onEventContextMenu}
+        />
+      ) : (
+        <FeedMessage
+          item={item}
+          emotes={emoteMap()}
+          badges={badges()}
+          userLogin={props.userLogin ?? ""}
+          keywords={feedKeywords()}
+          showTimestamp={feedShowTimestamp()}
+          showDeletedContent={feedShowDeletedContent()}
+          showName={props.showName}
+          showBadges={props.showBadges}
+          showToolbar={props.showToolbar}
+          reactions={reactions()}
+          onContextMenu={props.onContextMenu}
+          onReply={props.onReply}
+          onReact={props.onReact}
+          onCopypasta={props.onCopypasta}
+          onUserContextMenu={props.onUserContextMenu}
+          onJumpToMessage={props.onJumpToMessage}
+          onShowUserCard={props.onShowUserCard}
+        />
+      )}
+    </Show>
   );
 
   const render = (item: FeedItem, index: () => number) =>
-    props.renderItem ? props.renderItem(item, index) : defaultRender(item, index);
+    props.renderItem ? props.renderItem(item, index) : defaultRender(item);
 
   return (
     <div ref={rootRef} class={`flex-1 relative min-h-0 ${props.class ?? ""}`} style={props.style}>
@@ -190,7 +235,30 @@ export default function Feed(props: Props) {
         class={`h-full overflow-y-auto flex flex-col [scrollbar-gutter:stable] ${props.scrollClass ?? ""}`}
       >
         <For each={items()}>
-          {(item, index) => render(item, index)}
+          {(item, index) => (
+            <>
+              <Show
+                when={
+                  index() > 0 &&
+                  dividerAt() &&
+                  getItemId(items()[index() - 1]) === dividerAt()
+                }
+              >
+                <FeedDivider />
+              </Show>
+              <div
+                data-feed-id={item.kind === "message" ? item.message_id : undefined}
+                tabIndex={-1}
+                class={`outline-none rounded ${
+                  item.kind === "message" && selectedId() === item.message_id
+                    ? "bg-primary/25 ring-2 ring-primary"
+                    : ""
+                }`}
+              >
+                {render(item, index)}
+              </div>
+            </>
+          )}
         </For>
         <div ref={bottomRef} />
       </div>

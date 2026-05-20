@@ -101,8 +101,15 @@ export default function ChatInput(props: Props) {
         if (input().slice(inputRef?.selectionEnd ?? 0).includes("\n")) return false;
         return stepHistory(-1);
       }, WHEN),
+      shortcutManager.registerLocal("escape", () => { props.onClearReply(); }, "chat:replyActive"),
     ];
-    onCleanup(() => { for (const u of unbind) u(); });
+    createEffect(() => {
+      shortcutManager.setContext("chat:replyActive", props.replyTo() !== null);
+    });
+    onCleanup(() => {
+      for (const u of unbind) u();
+      shortcutManager.setContext("chat:replyActive", false);
+    });
   });
 
   type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
