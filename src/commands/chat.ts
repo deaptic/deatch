@@ -155,3 +155,50 @@ export function getRecentMessages(
 ): Promise<GetRecentMessagesResponse> {
   return invokeCommand("get_recent_messages", params, options);
 }
+
+export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
+
+export type SendChatAnnouncementParams = {
+  broadcasterId: string;
+  message: string;
+  color?: AnnouncementColor;
+};
+
+export function sendChatAnnouncement(
+  params: SendChatAnnouncementParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("send_chat_announcement", params, options);
+}
+
+export type UpdateChatSettingsParams = {
+  broadcasterId: string;
+  emoteMode?: boolean;
+  followerMode?: boolean;
+  followerModeDuration?: number;
+  slowMode?: boolean;
+  slowModeWaitTime?: number;
+  subscriberMode?: boolean;
+  uniqueChatMode?: boolean;
+};
+
+export function updateChatSettings(
+  params: UpdateChatSettingsParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("update_chat_settings", params, options);
+}
+
+export type NamedUserColor =
+  | "blue" | "blue_violet" | "cadet_blue" | "chocolate" | "coral" | "dodger_blue"
+  | "firebrick" | "golden_rod" | "green" | "hot_pink" | "orange_red" | "red"
+  | "sea_green" | "spring_green" | "yellow_green";
+
+export type UpdateUserChatColorParams = { color: NamedUserColor };
+
+export function updateUserChatColor(
+  params: UpdateUserChatColorParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("update_user_chat_color", params, options);
+}

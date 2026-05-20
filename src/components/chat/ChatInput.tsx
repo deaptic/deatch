@@ -1,7 +1,9 @@
 import { createSignal, createMemo, createEffect, Show, onMount, onCleanup } from "solid-js";
 import { shortcutManager } from "../../managers/ShortcutManager";
 import { sendChatMessage } from "../../commands/chat";
-import { chatCommands, executeChatCommand, buildUsage, canRunCommand } from "./commands";
+import { commands } from "../command-composer/commands";
+import type { Command } from "../command-composer/types";
+import CommandComposer from "../command-composer/CommandComposer";
 import {
   globalEmotes,
   userEmotes,
@@ -14,14 +16,20 @@ import {
 } from "../../state/emotes";
 import { ensureUserEmotesLoaded } from "../../services/emotes";
 import EmotePicker from "../emotes/EmotePicker";
-import ChatSuggestions from "./ChatSuggestions";
-import { chattersByChannel } from "../../state/users";
+import Suggestions from "../suggestions/Suggestions";
+import { chattersByChannel, isBroadcasterOfChannel, isModOfChannel } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
 import { isPanelOpen, setOpenPanel, togglePanel } from "../../state/ui";
 import SmileIcon from "../../icons/SmileIcon";
 import { pushSentHistory, getSentHistory } from "../../state/chatHistory";
 
 type ReplyTo = { messageId: string; name: string; text: string };
+
+function canRunCommand(cmd: Command, broadcasterId: string): boolean {
+  if (cmd.role === "regular") return true;
+  if (cmd.role === "broadcaster") return isBroadcasterOfChannel(broadcasterId);
+  return isModOfChannel(broadcasterId);
+}
 
 type Props = {
   broadcasterId: string;
@@ -38,6 +46,7 @@ export default function ChatInput(props: Props) {
   const [acQuery, setAcQuery] = createSignal<string | null>(null);
   const [mentionQuery, setMentionQuery] = createSignal<string | null>(null);
   const [commandQuery, setCommandQuery] = createSignal<string | null>(null);
+  const [commandMode, setCommandMode] = createSignal<Command | null>(null);
   let inputRef: HTMLTextAreaElement | undefined;
   let rowRef: HTMLDivElement | undefined;
   let acHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
@@ -74,7 +83,10 @@ export default function ChatInput(props: Props) {
     createEffect(() => {
       shortcutManager.setContext(
         "chat:popupOpen",
-        commandQuery() !== null || mentionQuery() !== null || acQuery() !== null,
+        commandQuery() !== null
+          || mentionQuery() !== null
+          || acQuery() !== null
+          || commandMode() !== null,
       );
     });
     const WHEN = "chat:focused && !chat:popupOpen";
@@ -139,15 +151,18 @@ export default function ChatInput(props: Props) {
     const lower = q.toLowerCase();
     const starts: CommandSuggestion[] = [];
     const contains: CommandSuggestion[] = [];
-    for (const c of chatCommands) {
+    for (const c of commands) {
       if (!canRunCommand(c, props.broadcasterId)) continue;
-      const item = { name: c.name, usage: buildUsage(c.options), description: c.description };
+      const usage = c.options
+        .map((o) => (o.required === false ? `[${o.name}?]` : `[${o.name}]`))
+        .join(" ");
+      const item = { name: c.name, usage, description: c.description };
       if (lower === "" || c.name.startsWith(lower)) starts.push(item);
       else if (c.name.includes(lower)) contains.push(item);
     }
     starts.sort((a, b) => a.name.localeCompare(b.name));
     contains.sort((a, b) => a.name.localeCompare(b.name));
-    return [...starts, ...contains].slice(0, 10);
+    return [...starts, ...contains];
   };
 
   const mentionSuggestions = (): MentionSuggestion[] => {
@@ -183,19 +198,6 @@ export default function ChatInput(props: Props) {
     if (!text || sending()) return;
     setSending(true);
     try {
-      const handled = await executeChatCommand(text, {
-        broadcasterId: props.broadcasterId,
-        broadcasterLogin: props.broadcasterLogin,
-        openUserCard: props.openUserCard,
-      });
-      if (handled) {
-        pushSentHistory(props.broadcasterId, text);
-        historyIndex = -1;
-        savedDraft = "";
-        setInput("");
-        queueMicrotask(autoResize);
-        return;
-      }
       const reply = props.replyTo();
       const ok = await sendChatMessage({
         broadcasterId: props.broadcasterId,
@@ -213,6 +215,33 @@ export default function ChatInput(props: Props) {
     } finally {
       setSending(false);
     }
+  }
+
+  async function runCommand(values: Record<string, unknown>) {
+    const cmd = commandMode();
+    if (!cmd) return;
+    setCommandMode(null);
+    setInput("");
+    queueMicrotask(autoResize);
+    try {
+      await cmd.execute(values, {
+        broadcasterId: props.broadcasterId,
+        broadcasterLogin: props.broadcasterLogin,
+        openUserCard: props.openUserCard,
+      });
+    } catch (e) {
+      console.error(`/${cmd.name} failed`, e);
+    }
+    inputRef?.focus();
+  }
+
+  function cancelCommand() {
+    setCommandMode(null);
+    setInput("");
+    queueMicrotask(() => {
+      autoResize();
+      inputRef?.focus();
+    });
   }
 
   function stepHistory(delta: 1 | -1): boolean {
@@ -321,8 +350,14 @@ export default function ChatInput(props: Props) {
 
   function selectCommand(s: CommandSuggestion) {
     setCommandQuery(null);
-    setInput(`/${s.name} `);
-    inputRef?.focus();
+    const cmd = commands.find((c) => c.name === s.name);
+    if (!cmd) {
+      setInput("");
+      inputRef?.focus();
+      return;
+    }
+    setInput("");
+    setCommandMode(cmd);
   }
 
   function dismissAc() { setAcQuery(null); inputRef?.focus(); }
@@ -361,7 +396,7 @@ export default function ChatInput(props: Props) {
       </Show>
       <div ref={rowRef} class="relative flex items-end min-h-14">
         <Show when={commandSuggestions().length > 0}>
-          <ChatSuggestions<CommandSuggestion>
+          <Suggestions<CommandSuggestion>
             suggestions={commandSuggestions}
             onSelect={selectCommand}
             onDismiss={dismissCommand}
@@ -380,7 +415,7 @@ export default function ChatInput(props: Props) {
           />
         </Show>
         <Show when={mentionSuggestions().length > 0}>
-          <ChatSuggestions<MentionSuggestion>
+          <Suggestions<MentionSuggestion>
             suggestions={mentionSuggestions}
             onSelect={selectMention}
             onDismiss={dismissMention}
@@ -402,7 +437,7 @@ export default function ChatInput(props: Props) {
           />
         </Show>
         <Show when={acSuggestions().length > 0}>
-          <ChatSuggestions<EmoteSuggestion>
+          <Suggestions<EmoteSuggestion>
             suggestions={acSuggestions}
             onSelect={selectAcSuggestion}
             onDismiss={dismissAc}
@@ -416,46 +451,66 @@ export default function ChatInput(props: Props) {
             expose={(api) => { acHandleKey = api.handleKey; }}
           />
         </Show>
-        <textarea
-          ref={inputRef}
-          rows={1}
-          value={input()}
-          onInput={onInput}
-          onKeyDown={onKeyDown}
-          onFocus={() => shortcutManager.setContext("chat:focused", true)}
-          onBlur={() => shortcutManager.setContext("chat:focused", false)}
-          maxLength={500}
-          placeholder={`Message #${props.broadcasterLogin}`}
-          class="flex-1 self-stretch content-center bg-transparent text-text text-base placeholder-text-muted/60 pl-4 pr-0 py-3 outline-none resize-none overflow-y-auto leading-snug"
-        />
-        <div class="self-stretch flex flex-col items-center mx-2 py-2.5 shrink-0">
-          <button
-            data-emote-picker-toggle
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => togglePanel("emotePicker")}
-            class={`flex items-center justify-center w-9 h-9 rounded-md transition-colors cursor-pointer ${
-              isPanelOpen("emotePicker") ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
-            }`}
-            title="Emote picker"
-          >
-            <SmileIcon class="w-5 h-5" />
-          </button>
-          <Show when={input().length >= 400}>
-            <span
-              class={`mt-auto text-xs font-medium tabular-nums ${
-                input().length >= 500 ? "text-danger" : "text-text-muted"
-              }`}
-            >
-              {500 - input().length}
-            </span>
-          </Show>
-        </div>
-        <Show when={isPanelOpen("emotePicker")}>
-          <EmotePicker
-            onSelect={insertEmote}
-            onClose={() => setOpenPanel(null)}
-            anchorEl={rowRef}
-          />
+        <Show
+          when={commandMode()}
+          fallback={
+            <>
+              <textarea
+                ref={inputRef}
+                rows={1}
+                value={input()}
+                onInput={onInput}
+                onKeyDown={onKeyDown}
+                onFocus={() => shortcutManager.setContext("chat:focused", true)}
+                onBlur={() => shortcutManager.setContext("chat:focused", false)}
+                maxLength={500}
+                placeholder={`Message #${props.broadcasterLogin}`}
+                class="flex-1 self-stretch content-center bg-transparent text-text text-base placeholder-text-muted/60 pl-4 pr-0 py-3 outline-none resize-none overflow-y-auto leading-snug"
+              />
+              <div class="self-stretch flex flex-col items-center mx-2 py-2.5 shrink-0">
+                <button
+                  data-emote-picker-toggle
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => togglePanel("emotePicker")}
+                  class={`flex items-center justify-center w-9 h-9 rounded-md transition-colors cursor-pointer ${
+                    isPanelOpen("emotePicker") ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
+                  }`}
+                  title="Emote picker"
+                >
+                  <SmileIcon class="w-5 h-5" />
+                </button>
+                <Show when={input().length >= 400}>
+                  <span
+                    class={`mt-auto text-xs font-medium tabular-nums ${
+                      input().length >= 500 ? "text-danger" : "text-text-muted"
+                    }`}
+                  >
+                    {500 - input().length}
+                  </span>
+                </Show>
+              </div>
+              <Show when={isPanelOpen("emotePicker")}>
+                <EmotePicker
+                  onSelect={insertEmote}
+                  onClose={() => setOpenPanel(null)}
+                  anchorEl={rowRef}
+                />
+              </Show>
+            </>
+          }
+        >
+          {(cmd) => (
+            <CommandComposer
+              command={cmd()}
+              ctx={{
+                broadcasterId: props.broadcasterId,
+                broadcasterLogin: props.broadcasterLogin,
+                openUserCard: props.openUserCard,
+              }}
+              onSubmit={runCommand}
+              onCancel={cancelCommand}
+            />
+          )}
         </Show>
       </div>
     </div>

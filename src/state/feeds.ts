@@ -181,6 +181,21 @@ export function appendItem(id: string, item: FeedItem) {
   }
 }
 
+/// Inject a client-only system message that only this user sees.
+/// Never sent over IRC/Helix.
+export function appendLocalNotice(id: string, text: string) {
+  appendItem(id, {
+    kind: "event",
+    id: crypto.randomUUID(),
+    notice_type: "local",
+    system_message: text,
+    chatter_name: "",
+    color: "",
+    timestamp: Date.now(),
+    silent: true,
+  });
+}
+
 /// Inserts older items at the front of the feed. Used for the one-time
 /// backlog hydration from robotty when a channel is first joined. Items
 /// already present (by id) are skipped, and the input is sorted oldest →

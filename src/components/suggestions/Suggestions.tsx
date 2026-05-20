@@ -1,5 +1,5 @@
 import { For, onMount, createSignal, createEffect, type JSX } from "solid-js";
-import ChatSuggestionItem from "./ChatSuggestionItem";
+import SuggestionItem from "./SuggestionItem";
 
 type Props<T> = {
   suggestions: () => T[];
@@ -9,7 +9,7 @@ type Props<T> = {
   expose?: (api: { handleKey: (e: KeyboardEvent) => boolean }) => void;
 };
 
-export default function ChatSuggestions<T>(props: Props<T>) {
+export default function Suggestions<T>(props: Props<T>) {
   const [acIndex, setAcIndex] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
 
@@ -38,12 +38,12 @@ export default function ChatSuggestions<T>(props: Props<T>) {
   });
 
   return (
-    <div ref={containerRef} class="absolute bottom-full left-3 right-3 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60">
+    <div ref={containerRef} class="absolute bottom-full left-0 right-0 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60">
       <For each={props.suggestions()}>
         {(s, i) => (
-          <ChatSuggestionItem active={i() === acIndex()} onClick={() => props.onSelect(s)}>
+          <SuggestionItem active={i() === acIndex()} onClick={() => props.onSelect(s)}>
             {props.renderItem(s)}
-          </ChatSuggestionItem>
+          </SuggestionItem>
         )}
       </For>
     </div>

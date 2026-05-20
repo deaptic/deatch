@@ -117,6 +117,9 @@ fn get_scopes() -> Vec<Scope> {
         Scope::UserBot,
         Scope::ModeratorManageChatMessages,
         Scope::ModeratorManageShoutouts,
+        Scope::ModeratorManageAnnouncements,
+        Scope::ModeratorManageChatSettings,
+        Scope::ModeratorManageWarnings,
         Scope::ModeratorReadFollowers,
         Scope::ModeratorManageBannedUsers,
         Scope::ModeratorReadBlockedTerms,
@@ -126,6 +129,10 @@ fn get_scopes() -> Vec<Scope> {
         Scope::ModeratorReadVips,
         Scope::ModeratorReadWarnings,
         Scope::ChannelManageVips,
+        Scope::ChannelManageRaids,
+        Scope::ChannelManageBroadcast,
+        Scope::ChannelEditCommercial,
+        Scope::UserManageChatColor,
     ]
 }
 

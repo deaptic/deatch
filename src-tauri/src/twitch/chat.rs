@@ -3,12 +3,15 @@ use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::chat::{
     send_a_shoutout::SendAShoutoutRequest,
+    send_chat_announcement::{SendChatAnnouncementBody, SendChatAnnouncementRequest},
     send_chat_message::{SendChatMessageBody, SendChatMessageRequest, SendChatMessageResponse},
+    update_chat_settings::{UpdateChatSettingsBody, UpdateChatSettingsRequest},
+    update_user_chat_color::UpdateUserChatColorRequest,
     BadgeSet, GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetGlobalEmotesRequest,
     GetUserEmotesRequest, GlobalEmote, UserEmote,
 };
 use twitch_api::helix::{Cursor, EmptyBody};
-use twitch_api::types::{MsgId, UserId};
+use twitch_api::types::{MsgId, NamedUserColor, UserId};
 
 use super::response::PaginatedResponse;
 
@@ -197,5 +200,126 @@ pub async fn send_chat_message(
         .req_post(request, body, &token)
         .await
         .map(|r| r.data)
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#send-chat-announcement
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SendChatAnnouncementParams {
+    pub broadcaster_id: String,
+    pub message: String,
+    #[serde(default)]
+    pub color: Option<String>,
+}
+
+#[tauri::command]
+pub async fn send_chat_announcement(
+    app: tauri::AppHandle,
+    params: SendChatAnnouncementParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+
+    let request = SendChatAnnouncementRequest::new(
+        params.broadcaster_id.as_str(),
+        token.user_id.as_str(),
+    );
+
+    let color = params.color.as_deref().unwrap_or("primary");
+    let body = SendChatAnnouncementBody::new(params.message.as_str(), color)
+        .map_err(|e| format!("invalid announcement color: {e}"))?;
+
+    helix()
+        .req_post(request, body, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#update-chat-settings
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateChatSettingsParams {
+    pub broadcaster_id: String,
+    #[serde(default)]
+    pub emote_mode: Option<bool>,
+    #[serde(default)]
+    pub follower_mode: Option<bool>,
+    #[serde(default)]
+    pub follower_mode_duration: Option<u64>,
+    #[serde(default)]
+    pub slow_mode: Option<bool>,
+    #[serde(default)]
+    pub slow_mode_wait_time: Option<u64>,
+    #[serde(default)]
+    pub subscriber_mode: Option<bool>,
+    #[serde(default)]
+    pub unique_chat_mode: Option<bool>,
+}
+
+#[tauri::command]
+pub async fn update_chat_settings(
+    app: tauri::AppHandle,
+    params: UpdateChatSettingsParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+
+    let request = UpdateChatSettingsRequest::new(
+        params.broadcaster_id.as_str(),
+        token.user_id.as_str(),
+    );
+
+    let mut body = UpdateChatSettingsBody::default();
+    body.emote_mode = params.emote_mode;
+    body.follower_mode = params.follower_mode;
+    body.follower_mode_duration = params.follower_mode_duration;
+    body.slow_mode = params.slow_mode;
+    body.slow_mode_wait_time = params.slow_mode_wait_time;
+    body.subscriber_mode = params.subscriber_mode;
+    body.unique_chat_mode = params.unique_chat_mode;
+
+    helix()
+        .req_patch(request, body, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#update-user-chat-color
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateUserChatColorParams {
+    pub color: String,
+}
+
+#[tauri::command]
+pub async fn update_user_chat_color(
+    app: tauri::AppHandle,
+    params: UpdateUserChatColorParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let color: NamedUserColor<'static> = match params.color.to_lowercase().replace('-', "_").as_str() {
+        "blue" => NamedUserColor::Blue,
+        "blue_violet" => NamedUserColor::BlueViolet,
+        "cadet_blue" => NamedUserColor::CadetBlue,
+        "chocolate" => NamedUserColor::Chocolate,
+        "coral" => NamedUserColor::Coral,
+        "dodger_blue" => NamedUserColor::DodgerBlue,
+        "firebrick" => NamedUserColor::Firebrick,
+        "golden_rod" => NamedUserColor::GoldenRod,
+        "green" => NamedUserColor::Green,
+        "hot_pink" => NamedUserColor::HotPink,
+        "orange_red" => NamedUserColor::OrangeRed,
+        "red" => NamedUserColor::Red,
+        "sea_green" => NamedUserColor::SeaGreen,
+        "spring_green" => NamedUserColor::SpringGreen,
+        "yellow_green" => NamedUserColor::YellowGreen,
+        other => return Err(format!("invalid color: {other}")),
+    };
+    let request = UpdateUserChatColorRequest::new(token.user_id.as_str(), color);
+    helix()
+        .req_put(request, EmptyBody, &token)
+        .await
+        .map(|_| ())
         .map_err(|e| e.to_string())
 }
