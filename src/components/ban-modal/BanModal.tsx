@@ -8,6 +8,7 @@ import {
 import Button from "../../ui/Button";
 import TextInput from "../../ui/TextInput";
 import { user } from "../../state/users";
+import { shortcutManager } from "../../managers/ShortcutManager";
 
 const DURATIONS = [
   { label: "1s", value: 1 },
@@ -91,11 +92,16 @@ export default function BanModal(props: Props) {
   }
 
   onMount(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") props.onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    onCleanup(() => window.removeEventListener("keydown", onKey));
+    shortcutManager.setContext("banModalOpen", true);
+    const unbindEsc = shortcutManager.registerLocal(
+      "escape",
+      () => { props.onClose(); },
+      "banModalOpen",
+    );
+    onCleanup(() => {
+      unbindEsc();
+      shortcutManager.setContext("banModalOpen", false);
+    });
 
     if (isBroadcaster()) {
       getBannedUsers(

@@ -104,18 +104,10 @@ export default function Settings(props: Props) {
     props.onClose();
   };
 
-  const onDocumentKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== "Escape" || e.defaultPrevented) return;
-    e.preventDefault();
-    props.onClose();
-  };
-
   onMount(() => {
     document.addEventListener("mousedown", onDocumentClick, { capture: true });
-    document.addEventListener("keydown", onDocumentKeyDown);
     onCleanup(() => {
       document.removeEventListener("mousedown", onDocumentClick, { capture: true });
-      document.removeEventListener("keydown", onDocumentKeyDown);
     });
   });
 
