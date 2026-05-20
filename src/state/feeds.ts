@@ -105,10 +105,6 @@ export function clearDivider(id: string) {
   if (feeds[id]) setFeeds(id, "dividerAtItemId", null);
 }
 
-export function getFeed(id: string): ChannelFeed | undefined {
-  return feeds[id];
-}
-
 export function ensureFeed(id: string) {
   if (!feeds[id]) setFeeds(id, emptyFeed());
 }

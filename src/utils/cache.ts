@@ -19,11 +19,3 @@ export function saveCache<T>(key: string, data: T): void {
     // Quota exceeded or storage unavailable — silently skip.
   }
 }
-
-export function clearCache(key: string): void {
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    // ignore
-  }
-}

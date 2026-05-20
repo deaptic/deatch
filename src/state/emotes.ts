@@ -6,11 +6,6 @@ export type EmoteMap = Record<string, string>;
 export type EmoteEntry = { name: string; url: string };
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 export type FavoriteEmote = { value: string; url: string; label: string };
-export type ChannelEmoteResult = {
-  sections: EmoteSection[];
-  flat: EmoteMap;
-  sevenTvEmoteSetId: string | null;
-};
 
 const FAVORITES_KEY = "emote_favorites";
 

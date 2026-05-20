@@ -1,13 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { streamUserEmotes, getGlobalEmotes } from "../commands/chat";
-import type { GlobalEmote, RustEmoteEntry, SevenTvChannelResult, UserEmote } from "../types";
+import type { GlobalEmote, UserEmote } from "../types";
 import { loadCache, saveCache } from "../utils/cache";
 import { user } from "../state/users";
 import {
-  type ChannelEmoteResult,
   type EmoteEntry,
-  type EmoteMap,
-  type EmoteSection,
   dedupeById,
   setBttvChannel,
   setBttvGlobal,
@@ -19,6 +16,8 @@ import {
   setUserEmotes,
   userEmotes,
 } from "../state/emotes";
+
+type SevenTvChannelResult = { emotes: EmoteEntry[]; emote_set_id: string | null };
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000; // 6 hours
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
@@ -82,36 +81,6 @@ export async function loadGlobalEmotes(): Promise<GlobalEmote[]> {
   return fresh;
 }
 
-function toFlat(sections: EmoteSection[]): EmoteMap {
-  const flat: EmoteMap = {};
-  for (const section of sections)
-    for (const e of section.emotes) flat[e.name] = e.url;
-  return flat;
-}
-
-export async function fetchChannelEmotes(
-  channelId: string,
-  channelLogin: string,
-): Promise<ChannelEmoteResult> {
-  const [stv, bttv, ffz] = await Promise.allSettled([
-    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId }),
-    invoke<RustEmoteEntry[]>("bttv_get_channel_emotes", { channelId }),
-    invoke<RustEmoteEntry[]>("ffz_get_channel_emotes", { channelLogin }),
-  ]);
-
-  const stvResult = stv.status === "fulfilled" ? stv.value : { emotes: [], emote_set_id: null };
-  const bttvEmotes = bttv.status === "fulfilled" ? bttv.value : [];
-  const ffzEmotes = ffz.status === "fulfilled" ? ffz.value : [];
-
-  const sections: EmoteSection[] = [
-    ...(stvResult.emotes.length ? [{ id: "7tv-channel", label: "7TV", emotes: stvResult.emotes }] : []),
-    ...(bttvEmotes.length ? [{ id: "bttv-channel", label: "BetterTTV", emotes: bttvEmotes }] : []),
-    ...(ffzEmotes.length ? [{ id: "ffz-channel", label: "FrankerFaceZ", emotes: ffzEmotes }] : []),
-  ];
-
-  return { sections, flat: toFlat(sections), sevenTvEmoteSetId: stvResult.emote_set_id };
-}
-
 let thirdPartyGlobalsLoaded = false;
 
 /// Loads 7TV / BTTV / FFZ global emote sets in parallel. Idempotent — only
@@ -119,46 +88,39 @@ let thirdPartyGlobalsLoaded = false;
 export function loadThirdPartyGlobalEmotes() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
-  invoke<RustEmoteEntry[]>("seventv_get_global_emotes").then(setSevenTvGlobal).catch(() => {});
-  invoke<RustEmoteEntry[]>("bttv_get_global_emotes").then(setBttvGlobal).catch(() => {});
-  invoke<RustEmoteEntry[]>("ffz_get_global_emotes").then(setFfzGlobal).catch(() => {});
+  invoke<EmoteEntry[]>("seventv_get_global_emotes").then(setSevenTvGlobal).catch(() => {});
+  invoke<EmoteEntry[]>("bttv_get_global_emotes").then(setBttvGlobal).catch(() => {});
+  invoke<EmoteEntry[]>("ffz_get_global_emotes").then(setFfzGlobal).catch(() => {});
 }
 
-const sevenTvChannelCache = new Map<string, Promise<EmoteEntry[]>>();
-const bttvChannelCache = new Map<string, Promise<EmoteEntry[]>>();
-const ffzChannelCache = new Map<string, Promise<EmoteEntry[]>>();
+const channelEmoteCache = new Map<string, Promise<EmoteEntry[]>>();
+
+function cachedChannelFetch(
+  key: string,
+  fetch: () => Promise<EmoteEntry[]>,
+): Promise<EmoteEntry[]> {
+  let p = channelEmoteCache.get(key);
+  if (!p) {
+    p = fetch().catch(() => [] as EmoteEntry[]);
+    channelEmoteCache.set(key, p);
+  }
+  return p;
+}
 
 /// Fetches per-channel 7TV / BTTV / FFZ emotes and updates the channel
 /// emote signals. Results are cached per channel id for the session.
 export function loadChannelThirdPartyEmotes(channelId: string, channelLogin: string) {
-  let stv = sevenTvChannelCache.get(channelId);
-  if (!stv) {
-    stv = invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId })
-      .then((r) => r.emotes)
-      .catch(() => [] as EmoteEntry[]);
-    sevenTvChannelCache.set(channelId, stv);
-  }
-  stv.then(setSevenTvChannel);
-
-  let bttv = bttvChannelCache.get(channelId);
-  if (!bttv) {
-    bttv = invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId })
-      .catch(() => [] as EmoteEntry[]);
-    bttvChannelCache.set(channelId, bttv);
-  }
-  bttv.then(setBttvChannel);
-
-  let ffz = ffzChannelCache.get(channelId);
-  if (!ffz) {
-    ffz = invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin })
-      .catch(() => [] as EmoteEntry[]);
-    ffzChannelCache.set(channelId, ffz);
-  }
-  ffz.then(setFfzChannel);
+  cachedChannelFetch(`stv:${channelId}`, () =>
+    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId }).then((r) => r.emotes),
+  ).then(setSevenTvChannel);
+  cachedChannelFetch(`bttv:${channelId}`, () =>
+    invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId }),
+  ).then(setBttvChannel);
+  cachedChannelFetch(`ffz:${channelLogin}`, () =>
+    invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin }),
+  ).then(setFfzChannel);
 }
 
 export function resetChannelThirdPartyEmoteCache() {
-  sevenTvChannelCache.clear();
-  bttvChannelCache.clear();
-  ffzChannelCache.clear();
+  channelEmoteCache.clear();
 }

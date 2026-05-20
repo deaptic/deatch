@@ -21,7 +21,7 @@ export type AppearanceColorKey =
   | "event-bits"
   | "event-channel-points";
 
-export type AppearanceColorGroup = {
+type AppearanceColorGroup = {
   label: string;
   colors: { key: AppearanceColorKey; label: string }[];
 };
