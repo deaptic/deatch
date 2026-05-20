@@ -370,10 +370,14 @@ export default function ChatInput(props: Props) {
     if (acHandleKey?.(e)) return;
   }
 
-  function insertEmote(value: string) {
+  function insertEmote(value: string, opts?: { keepOpen?: boolean }) {
     const cur = input();
     setInput((cur === "" || cur.endsWith(" ") ? cur : cur + " ") + value + " ");
-    setOpenPanel(null);
+    queueMicrotask(autoResize);
+    if (!opts?.keepOpen) {
+      setOpenPanel(null);
+      inputRef?.focus();
+    }
   }
 
   return (

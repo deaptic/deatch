@@ -1,4 +1,12 @@
-import { createMemo, createSignal, createEffect, For, Show, onMount, onCleanup } from "solid-js";
+import {
+  createMemo,
+  createSignal,
+  createEffect,
+  For,
+  Show,
+  onMount,
+  onCleanup,
+} from "solid-js";
 import { Portal } from "solid-js/web";
 import {
   userEmotes,
@@ -11,9 +19,9 @@ import {
 import { selectedChannel } from "../../state/channels";
 import { getUsers } from "../../commands/users";
 import EmoteGrid from "./EmoteGrid";
-import EmoteSections from "./EmoteSections";
 import EmotePickerSection from "./EmotePickerSection";
 import { captureFocusForRestore } from "../../utils/focus";
+import { shortcutManager } from "../../managers/ShortcutManager";
 import type { EmoteGridItem } from "./types";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
@@ -25,6 +33,8 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "emoji", label: "Emoji" },
 ];
 
+const COLUMNS = 8;
+
 function emojiUrl(emoji: string): string {
   const points: string[] = [];
   for (const char of emoji) {
@@ -34,10 +44,23 @@ function emojiUrl(emoji: string): string {
   return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${points.join("-")}.png`;
 }
 
+const toItem = (e: { name: string; url: string }): EmoteGridItem => ({
+  value: e.name,
+  url: e.url,
+  label: e.name,
+});
+
 type Props = {
-  onSelect: (value: string) => void;
+  onSelect: (value: string, opts?: { keepOpen?: boolean }) => void;
   onClose: () => void;
   anchorEl?: HTMLElement | null;
+};
+
+type RenderSection = {
+  label?: string;
+  items: EmoteGridItem[];
+  emptyHint?: string;
+  startIndex: number;
 };
 
 export default function EmotePicker(props: Props) {
@@ -45,7 +68,9 @@ export default function EmotePicker(props: Props) {
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
   const [bottomOffset, setBottomOffset] = createSignal(64);
+  const [activeIndex, setActiveIndex] = createSignal(0);
   let panelRef: HTMLDivElement | undefined;
+  let searchRef: HTMLInputElement | undefined;
 
   // Hydrate display metadata for any channels the user subs to whose owner
   // info isn't yet in the user cache. Used by `computeGlobalSections` to
@@ -66,18 +91,87 @@ export default function EmotePicker(props: Props) {
     if (ids.size) getUsers({ userIds: [...ids] });
   });
 
-  const channelSections = createMemo(() => computeChannelSections(selectedChannel()));
-  const globalSections = createMemo(() => computeGlobalSections(selectedChannel()));
+  const channelSections = createMemo(() =>
+    computeChannelSections(selectedChannel()),
+  );
+  const globalSections = createMemo(() =>
+    computeGlobalSections(selectedChannel()),
+  );
 
-  const searchResults = (): EmoteGridItem[] => {
+  const tabSections = createMemo<{ label: string; items: EmoteGridItem[] }[]>(
+    () => {
+      if (tab() === "channel")
+        return channelSections().map((s) => ({
+          label: s.label,
+          items: s.emotes.map(toItem),
+        }));
+      if (tab() === "global")
+        return globalSections().map((s) => ({
+          label: s.label,
+          items: s.emotes.map(toItem),
+        }));
+      return emojiGroups.map((g) => ({
+        label: g.name,
+        items: g.emojis.map((e) => ({
+          value: e.emoji,
+          url: emojiUrl(e.emoji),
+          label: e.name,
+        })),
+      }));
+    },
+  );
+
+  const sections = createMemo<RenderSection[]>(() => {
+    let offset = 0;
+    const out: RenderSection[] = [];
+    const add = (s: Omit<RenderSection, "startIndex">) => {
+      out.push({ ...s, startIndex: offset });
+      offset += s.items.length;
+    };
     const q = search().toLowerCase();
-    if (!q) return [];
-    return [...channelSections(), ...globalSections()].flatMap((s) =>
-      s.emotes
-        .filter((e) => e.name.toLowerCase().includes(q))
-        .map((e) => ({ value: e.name, url: e.url, label: e.name }))
-    );
-  };
+    if (q) {
+      add({
+        items: [...channelSections(), ...globalSections()].flatMap((s) =>
+          s.emotes.filter((e) => e.name.toLowerCase().includes(q)).map(toItem),
+        ),
+      });
+    } else {
+      add({
+        label: "Favorites",
+        items: favorites().map((f) => ({
+          value: f.value,
+          url: f.url,
+          label: f.label,
+        })),
+        emptyHint: "Right-click any emote to add it as a favorite.",
+      });
+      for (const s of tabSections()) add(s);
+    }
+    return out;
+  });
+
+  const totalItems = createMemo(() =>
+    sections().reduce((n, s) => n + s.items.length, 0),
+  );
+
+  createEffect(() => {
+    tab();
+    search();
+    setActiveIndex(0);
+  });
+
+  createEffect(() => {
+    setActiveIndex((idx) => Math.min(idx, Math.max(0, totalItems() - 1)));
+  });
+
+  createEffect(() => {
+    const idx = activeIndex();
+    queueMicrotask(() => {
+      panelRef
+        ?.querySelector<HTMLElement>(`[data-emote-index="${idx}"]`)
+        ?.scrollIntoView({ block: "nearest" });
+    });
+  });
 
   const onToggleFavorite = (item: EmoteGridItem) =>
     toggleFavorite({ value: item.value, url: item.url, label: item.label });
@@ -94,11 +188,31 @@ export default function EmotePicker(props: Props) {
     props.onClose();
   };
   onMount(() => {
+    queueMicrotask(() => searchRef?.focus());
     document.addEventListener("keydown", onDocumentKeyDown);
-    document.addEventListener("mousedown", onDocumentMouseDown, { capture: true });
+    document.addEventListener("mousedown", onDocumentMouseDown, {
+      capture: true,
+    });
+    const unbind = shortcutManager.bindScope("emotePickerOpen", {
+      left: () => {
+        setActiveIndex(Math.max(activeIndex() - 1, 0));
+      },
+      right: () => {
+        setActiveIndex(Math.min(activeIndex() + 1, totalItems() - 1));
+      },
+      up: () => moveVertical(-1),
+      down: () => moveVertical(1),
+      tab: () => cycleTab(1),
+      "shift-tab": () => cycleTab(-1),
+      enter: () => selectActive(false),
+      "shift-enter": () => selectActive(true),
+    });
     onCleanup(() => {
       document.removeEventListener("keydown", onDocumentKeyDown);
-      document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true });
+      document.removeEventListener("mousedown", onDocumentMouseDown, {
+        capture: true,
+      });
+      unbind();
     });
 
     const anchor = props.anchorEl;
@@ -117,6 +231,72 @@ export default function EmotePicker(props: Props) {
     });
   });
 
+  function cycleTab(direction: 1 | -1) {
+    const idx = TABS.findIndex((t) => t.id === tab());
+    setTab(TABS[(idx + direction + TABS.length) % TABS.length].id);
+    setSearch("");
+  }
+
+  function moveVertical(direction: 1 | -1) {
+    const secs = sections();
+    const idx = activeIndex();
+    let secIdx = secs.findIndex(
+      (s) => idx >= s.startIndex && idx < s.startIndex + s.items.length,
+    );
+    if (secIdx < 0) return;
+    const sec = secs[secIdx];
+    const pos = idx - sec.startIndex;
+    const col = pos % COLUMNS;
+    const targetRow = Math.floor(pos / COLUMNS) + direction;
+
+    // Same section, adjacent row exists.
+    if (targetRow >= 0 && targetRow * COLUMNS < sec.items.length) {
+      const newPos = Math.min(targetRow * COLUMNS + col, sec.items.length - 1);
+      setActiveIndex(sec.startIndex + newPos);
+      return;
+    }
+
+    // Jump to nearest non-empty section in that direction.
+    for (
+      let i = secIdx + direction;
+      i >= 0 && i < secs.length;
+      i += direction
+    ) {
+      const target = secs[i];
+      if (!target.items.length) continue;
+      const row =
+        direction === 1 ? 0 : Math.floor((target.items.length - 1) / COLUMNS);
+      const newPos = Math.min(row * COLUMNS + col, target.items.length - 1);
+      setActiveIndex(target.startIndex + newPos);
+      return;
+    }
+  }
+
+  function selectActive(keepOpen: boolean) {
+    const secs = sections();
+    for (const s of secs) {
+      const pos = activeIndex() - s.startIndex;
+      if (pos >= 0 && pos < s.items.length) {
+        props.onSelect(s.items[pos].value, { keepOpen });
+        return;
+      }
+    }
+  }
+
+  const renderGrid = (section: RenderSection) => (
+    <EmoteGrid
+      items={section.items}
+      onSelect={(value, idx, opts) => {
+        setActiveIndex(idx);
+        props.onSelect(value, opts);
+      }}
+      isFavorite={isFavorite}
+      onToggleFavorite={onToggleFavorite}
+      startIndex={section.startIndex}
+      activeIndex={activeIndex()}
+    />
+  );
+
   return (
     <Portal>
       <div
@@ -128,7 +308,10 @@ export default function EmotePicker(props: Props) {
           <For each={TABS}>
             {(t) => (
               <button
-                onClick={() => { setTab(t.id); setSearch(""); }}
+                onClick={() => {
+                  setTab(t.id);
+                  setSearch("");
+                }}
                 class={`flex-1 py-2 text-xs font-semibold transition-colors cursor-pointer ${
                   tab() === t.id
                     ? "text-primary border-b-2 border-primary"
@@ -143,73 +326,36 @@ export default function EmotePicker(props: Props) {
 
         <div class="p-2 border-b border-border-muted shrink-0">
           <input
+            ref={searchRef}
             type="text"
             placeholder="Search emotes…"
             value={search()}
             onInput={(e) => setSearch(e.currentTarget.value)}
-            autofocus
             class="w-full bg-bg-dark text-text text-sm px-3 py-1.5 rounded outline-none placeholder-text-muted"
           />
         </div>
 
         <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 [scrollbar-gutter:stable]">
-          <Show when={!search()}>
-            <EmotePickerSection label="Favorites">
-              <Show
-                when={favorites().length > 0}
-                fallback={
-                  <div class="text-text-muted text-xs px-2 py-2 text-center">
-                    Right-click any emote to add it as a favorite.
-                  </div>
-                }
-              >
-                <EmoteGrid
-                  items={favorites().map((f) => ({ value: f.value, url: f.url, label: f.label }))}
-                  onSelect={props.onSelect}
-                  isFavorite={isFavorite}
-                  onToggleFavorite={onToggleFavorite}
-                />
-              </Show>
-            </EmotePickerSection>
-          </Show>
-          <Show when={search()}>
-            <EmoteGrid
-              items={searchResults()}
-              onSelect={props.onSelect}
-              isFavorite={isFavorite}
-              onToggleFavorite={onToggleFavorite}
-            />
-          </Show>
-          <Show when={!search() && tab() === "channel"}>
-            <EmoteSections
-              sections={channelSections()}
-              onSelect={props.onSelect}
-              isFavorite={isFavorite}
-              onToggleFavorite={onToggleFavorite}
-            />
-          </Show>
-          <Show when={!search() && tab() === "global"}>
-            <EmoteSections
-              sections={globalSections()}
-              onSelect={props.onSelect}
-              isFavorite={isFavorite}
-              onToggleFavorite={onToggleFavorite}
-            />
-          </Show>
-          <Show when={!search() && tab() === "emoji"}>
-            <For each={emojiGroups}>
-              {(group) => (
-                <EmotePickerSection label={group.name}>
-                  <EmoteGrid
-                    items={group.emojis.map((e) => ({ value: e.emoji, url: emojiUrl(e.emoji), label: e.name }))}
-                    onSelect={props.onSelect}
-                    isFavorite={isFavorite}
-                    onToggleFavorite={onToggleFavorite}
-                  />
+          <For each={sections()}>
+            {(section) => (
+              <Show when={section.label} fallback={renderGrid(section)}>
+                <EmotePickerSection label={section.label!}>
+                  <Show
+                    when={section.items.length > 0}
+                    fallback={
+                      <Show when={section.emptyHint}>
+                        <div class="text-text-muted text-xs px-2 py-2 text-center">
+                          {section.emptyHint}
+                        </div>
+                      </Show>
+                    }
+                  >
+                    {renderGrid(section)}
+                  </Show>
                 </EmotePickerSection>
-              )}
-            </For>
-          </Show>
+              </Show>
+            )}
+          </For>
         </div>
       </div>
     </Portal>
