@@ -69,6 +69,7 @@ export class ShortcutManager extends Manager {
   private overrides = new Map<string, string[] | null>();
   private keymap = new Map<string, string[]>();
   private contexts = new Map<string, boolean>();
+  private localBindings = new Map<string, Set<ActionEntry>>();
   private listener: ((e: KeyboardEvent) => void) | null = null;
   private pending: { seq: string; timer: number } | null = null;
 
@@ -82,6 +83,40 @@ export class ShortcutManager extends Manager {
     this.actions.set(name, entry);
     return () => {
       if (this.actions.get(name) === entry) this.actions.delete(name);
+    };
+  }
+
+  // Activate a context flag, register a batch of local bindings gated by it,
+  // and return one cleanup that undoes both. Intended for `onMount` →
+  // `onCleanup` use in components that own a set of non-rebindable shortcuts.
+  public bindScope(context: string, bindings: Record<string, Handler>): () => void {
+    this.setContext(context, true);
+    const unregisters = Object.entries(bindings).map(([combo, handler]) =>
+      this.registerLocal(combo, handler, context),
+    );
+    return () => {
+      for (const u of unregisters) u();
+      this.setContext(context, false);
+    };
+  }
+
+  // Bind a combo directly to a handler without going through the user-rebindable
+  // keymap. Use for component-local shortcuts (e.g. an open picker's nav keys)
+  // that should never appear in user config. Locals are dispatched before the
+  // keymap, so they win when their `when` clause passes.
+  public registerLocal(combo: string, handler: Handler, when?: string): () => void {
+    const entry: ActionEntry = { handler, when: when ? compileWhen(when) : undefined };
+    let set = this.localBindings.get(combo);
+    if (!set) {
+      set = new Set();
+      this.localBindings.set(combo, set);
+    }
+    set.add(entry);
+    return () => {
+      const s = this.localBindings.get(combo);
+      if (!s) return;
+      s.delete(entry);
+      if (s.size === 0) this.localBindings.delete(combo);
     };
   }
 
@@ -120,6 +155,15 @@ export class ShortcutManager extends Manager {
   }
 
   private dispatch(seq: string): boolean {
+    const locals = this.localBindings.get(seq);
+    if (locals) {
+      for (const entry of locals) {
+        if (entry.when && !entry.when(this.contexts)) continue;
+        if (entry.handler() === false) continue;
+        this.clearPending();
+        return true;
+      }
+    }
     const names = this.keymap.get(seq);
     if (!names) return false;
     for (const name of names) {
@@ -134,16 +178,17 @@ export class ShortcutManager extends Manager {
 
   private armIfPrefix(seq: string): boolean {
     const prefix = `${seq} `;
-    for (const k of this.keymap.keys()) {
-      if (!k.startsWith(prefix)) continue;
-      if (this.pending) window.clearTimeout(this.pending.timer);
-      this.pending = {
-        seq,
-        timer: window.setTimeout(() => this.clearPending(), CHORD_TIMEOUT_MS),
-      };
-      return true;
-    }
-    return false;
+    const matches = (it: Iterable<string>) => {
+      for (const k of it) if (k.startsWith(prefix)) return true;
+      return false;
+    };
+    if (!matches(this.keymap.keys()) && !matches(this.localBindings.keys())) return false;
+    if (this.pending) window.clearTimeout(this.pending.timer);
+    this.pending = {
+      seq,
+      timer: window.setTimeout(() => this.clearPending(), CHORD_TIMEOUT_MS),
+    };
+    return true;
   }
 
   private clearPending(): void {
