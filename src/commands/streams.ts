@@ -89,5 +89,5 @@ export function createStreamMarker(
   params: CreateStreamMarkerParams = {},
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("create_stream_marker", params, options);
+  return invokeCommand("create_stream_marker", params, { successMessage: "Marker added", ...options });
 }

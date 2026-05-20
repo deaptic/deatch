@@ -9,7 +9,7 @@ type Props = {
 
 export default function Toaster(props: Props) {
   return (
-    <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end">
+    <div class="absolute top-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none [&>*]:pointer-events-auto">
       <For each={props.toasts()}>
         {(toast) => <ToasterItem toast={toast} onDismiss={props.onDismiss} />}
       </For>
