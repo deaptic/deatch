@@ -8,6 +8,8 @@ import {
 } from "solid-js";
 import { sendChatMessage } from "../../commands/chat";
 import { loadBacklog } from "../../services/feeds";
+import { shortcutManager } from "../../managers/ShortcutManager";
+import { copyField } from "../../utils/clipboard";
 import Feed, { type FeedApi } from "../feed/Feed";
 import ChatInput from "./ChatInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
@@ -90,6 +92,28 @@ export default function Chat(props: Props) {
     };
     window.addEventListener("keydown", onKey);
     onCleanup(() => window.removeEventListener("keydown", onKey));
+  });
+
+  onMount(() => {
+    const withSelected = (fn: (msg: Message) => void) => () => {
+      const m = feedApi()?.getSelectedMessage();
+      if (m) fn(m);
+    };
+    const unbinds = [
+      shortcutManager.registerLocal("shift-up", () => { feedApi()?.moveSelection(-1); }),
+      shortcutManager.registerLocal("shift-down", () => { feedApi()?.moveSelection(1); }),
+      shortcutManager.registerLocal("up", () => { feedApi()?.moveSelection(-1); }, "feedSelected"),
+      shortcutManager.registerLocal("down", () => { feedApi()?.moveSelection(1); }, "feedSelected"),
+      shortcutManager.registerLocal("escape", () => {
+        feedApi()?.clearSelection();
+        inputApi?.focus();
+      }, "feedSelected"),
+      shortcutManager.registerLocal("enter", withSelected((m) => startReply(m)), "feedSelected"),
+      shortcutManager.registerLocal("c", withSelected((m) => {
+        copyField(m.fragments.map((f) => f.text).join(""));
+      }), "feedSelected"),
+    ];
+    onCleanup(() => { for (const u of unbinds) u(); });
   });
 
   onCleanup(() => clearTimeout(fontSizeFlashTimer));
