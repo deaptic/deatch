@@ -60,7 +60,7 @@ export function modifyChannelInformation(
   params: ModifyChannelInformationParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("modify_channel_information", params, options);
+  return invokeCommand("modify_channel_information", params, { successMessage: "Channel updated", ...options });
 }
 
 export type CommercialLength = 30 | 60 | 90 | 120 | 150 | 180;
@@ -74,5 +74,5 @@ export function startCommercial(
   params: StartCommercialParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("start_commercial", params, options);
+  return invokeCommand("start_commercial", params, { successMessage: "Commercial started", ...options });
 }

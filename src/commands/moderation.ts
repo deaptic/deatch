@@ -10,7 +10,8 @@ export function deleteChatMessages(
   params: DeleteChatMessagesParams,
   options?: InvokeOptions,
 ): Promise<DeleteChatMessagesResponse> {
-  return invokeCommand("delete_chat_messages", params, options);
+  const successMessage = params.messageId ? "Message deleted" : "Chat cleared";
+  return invokeCommand("delete_chat_messages", params, { successMessage, ...options });
 }
 
 export type BanUserParams = {
@@ -31,7 +32,8 @@ export function banUser(
   params: BanUserParams,
   options?: InvokeOptions,
 ): Promise<BanUserResponse> {
-  return invokeCommand("ban_user", params, options);
+  const successMessage = params.duration ? "User timed out" : "User banned";
+  return invokeCommand("ban_user", params, { successMessage, ...options });
 }
 
 export type UnbanUserParams = {
@@ -44,7 +46,7 @@ export function unbanUser(
   params: UnbanUserParams,
   options?: InvokeOptions,
 ): Promise<UnbanUserResponse> {
-  return invokeCommand("unban_user", params, options);
+  return invokeCommand("unban_user", params, { successMessage: "User unbanned", ...options });
 }
 
 export type GetBannedUsersParams = {
@@ -145,7 +147,7 @@ export function addChannelVip(
   params: AddChannelVipParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("add_channel_vip", params, options);
+  return invokeCommand("add_channel_vip", params, { successMessage: "VIP added", ...options });
 }
 
 export type RemoveChannelVipParams = {
@@ -157,7 +159,7 @@ export function removeChannelVip(
   params: RemoveChannelVipParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("remove_channel_vip", params, options);
+  return invokeCommand("remove_channel_vip", params, { successMessage: "VIP removed", ...options });
 }
 
 export type StartRaidParams = {
@@ -169,7 +171,7 @@ export function startRaid(
   params: StartRaidParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("start_raid", params, options);
+  return invokeCommand("start_raid", params, { successMessage: "Raid started", ...options });
 }
 
 export type CancelRaidParams = {
@@ -180,7 +182,7 @@ export function cancelRaid(
   params: CancelRaidParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("cancel_raid", params, options);
+  return invokeCommand("cancel_raid", params, { successMessage: "Raid cancelled", ...options });
 }
 
 export type WarnUserParams = {
@@ -193,5 +195,5 @@ export function warnUser(
   params: WarnUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("warn_user", params, options);
+  return invokeCommand("warn_user", params, { successMessage: "User warned", ...options });
 }

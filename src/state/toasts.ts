@@ -14,7 +14,7 @@ const [toasts, setToasts] = createSignal<Toast[]>([]);
 export { toasts };
 
 const TYPE_DURATION: Record<ToastType, number> = {
-  error: 0,
+  error: 8000,
   warn: 7000,
   success: 4000,
   info: 4000,

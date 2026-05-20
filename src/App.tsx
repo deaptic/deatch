@@ -8,6 +8,8 @@ import {
 import { getAllModeratedChannels } from "./commands/moderation";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Chat from "./components/chat/Chat";
+import Toaster from "./components/toaster/Toaster";
+import { toasts, removeToast } from "./state/toasts";
 import TitleBar from "./components/title-bar/TitleBar";
 import UpdateBanner from "./components/update-banner/UpdateBanner";
 import Settings from "./components/settings/Settings";
@@ -357,84 +359,87 @@ function App() {
         onToggleAccount={() => togglePanel("account")}
       />
       <UpdateBanner />
-      <Show when={isPanelOpen("settings")}>
-        <Settings onClose={() => setOpenPanel(null)} />
-      </Show>
-      <Show when={isPanelOpen("inbox")}>
-        <Inbox
-          onClose={() => setOpenPanel(null)}
-          onJump={(channelId, messageId) => {
-            markMentionRead(messageId);
-            jumpToMessage(channelId, messageId);
-          }}
-        />
-      </Show>
-      <Show when={isPanelOpen("account")}>
-        <Account onClose={() => setOpenPanel(null)} />
-      </Show>
-      <Show
-        when={user()}
-        fallback={
-          <Show
-            when={authChecked()}
-            fallback={
-              <main class="flex-1 bg-bg-dark flex items-center justify-center">
-                <Loading size={48} />
-              </main>
-            }
-          >
-            <Login />
-          </Show>
-        }
-      >
-        {(u) => (
-          <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
-            <Menu
-              onSelect={handleChannelSelect}
-              selectedId={selectedChannel()?.user_id ?? null}
-              onLiveChange={(data) => {
-                setLiveChannels(data);
-                setLiveLoaded(true);
-              }}
-            />
+      <div class="relative flex-1 min-h-0 flex flex-col overflow-hidden">
+        <Show when={isPanelOpen("settings")}>
+          <Settings onClose={() => setOpenPanel(null)} />
+        </Show>
+        <Show when={isPanelOpen("inbox")}>
+          <Inbox
+            onClose={() => setOpenPanel(null)}
+            onJump={(channelId, messageId) => {
+              markMentionRead(messageId);
+              jumpToMessage(channelId, messageId);
+            }}
+          />
+        </Show>
+        <Show when={isPanelOpen("account")}>
+          <Account onClose={() => setOpenPanel(null)} />
+        </Show>
+        <Show
+          when={user()}
+          fallback={
+            <Show
+              when={authChecked()}
+              fallback={
+                <main class="flex-1 bg-bg-dark flex items-center justify-center">
+                  <Loading size={48} />
+                </main>
+              }
+            >
+              <Login />
+            </Show>
+          }
+        >
+          {(u) => (
+            <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
+              <Menu
+                onSelect={handleChannelSelect}
+                selectedId={selectedChannel()?.user_id ?? null}
+                onLiveChange={(data) => {
+                  setLiveChannels(data);
+                  setLiveLoaded(true);
+                }}
+              />
 
-            <main class="flex-1 overflow-hidden flex flex-col">
-              <Show
-                when={selectedChannel()}
-                fallback={
-                  <div class="flex items-center justify-center flex-1 px-6">
-                    <p class="text-text-muted text-sm text-center max-w-xs">
-                      {(() => {
-                        if (!watchActive()) return "Select a channel to view chat";
-                        if (watchConnected()) {
-                          return "Open a Twitch channel in your browser.";
-                        }
-                        const everSeen = (() => {
-                          try { return localStorage.getItem("deatch_watch_seen") === "1"; }
-                          catch { return false; }
-                        })();
-                        if (everSeen) {
-                          return "Waiting for the browser. Open Firefox and a Twitch tab.";
-                        }
-                        return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
-                      })()}
-                    </p>
-                  </div>
-                }
-              >
-                {(ch) => (
-                  <Chat
-                    broadcasterId={ch().user_id}
-                    broadcasterLogin={ch().user_login}
-                    userLogin={u().login}
-                    onJumpToMessage={jumpToMessage}
-                  />
-                )}
-              </Show>
-            </main>
-          </div>
-        )}
-      </Show>
+              <main class="flex-1 overflow-hidden flex flex-col">
+                <Show
+                  when={selectedChannel()}
+                  fallback={
+                    <div class="flex items-center justify-center flex-1 px-6">
+                      <p class="text-text-muted text-sm text-center max-w-xs">
+                        {(() => {
+                          if (!watchActive()) return "Select a channel to view chat";
+                          if (watchConnected()) {
+                            return "Open a Twitch channel in your browser.";
+                          }
+                          const everSeen = (() => {
+                            try { return localStorage.getItem("deatch_watch_seen") === "1"; }
+                            catch { return false; }
+                          })();
+                          if (everSeen) {
+                            return "Waiting for the browser. Open Firefox and a Twitch tab.";
+                          }
+                          return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
+                        })()}
+                      </p>
+                    </div>
+                  }
+                >
+                  {(ch) => (
+                    <Chat
+                      broadcasterId={ch().user_id}
+                      broadcasterLogin={ch().user_login}
+                      userLogin={u().login}
+                      onJumpToMessage={jumpToMessage}
+                    />
+                  )}
+                </Show>
+              </main>
+            </div>
+          )}
+        </Show>
+        <Toaster toasts={toasts} onDismiss={removeToast} />
+      </div>
     </div>
   );
 }

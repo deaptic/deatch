@@ -8,12 +8,12 @@ import WarnIcon from "../../icons/WarnIcon";
 import LogIcon from "../../icons/LogIcon";
 import type { Toast, ToastType } from "../../state/toasts";
 
-const TYPE: Record<ToastType, { tint: string; stroke: string; fill: string }> = {
-  error: { tint: "bg-danger/15", stroke: "stroke-danger", fill: "bg-danger" },
-  info: { tint: "bg-info/15", stroke: "stroke-info", fill: "bg-info" },
-  success: { tint: "bg-success/15", stroke: "stroke-success", fill: "bg-success" },
-  warn: { tint: "bg-warning/15", stroke: "stroke-warning", fill: "bg-warning" },
-  log: { tint: "bg-text-muted/15", stroke: "stroke-text-muted", fill: "bg-text-muted" },
+const TYPE: Record<ToastType, { fill: string }> = {
+  error: { fill: "bg-danger" },
+  info: { fill: "bg-info" },
+  success: { fill: "bg-success" },
+  warn: { fill: "bg-warning" },
+  log: { fill: "bg-text-muted" },
 };
 
 const ICONS: Record<ToastType, Component<{ class?: string }>> = {
@@ -33,7 +33,6 @@ export default function ToasterItem(props: Props) {
   const toast = props.toast;
   const palette = TYPE[toast.type];
   const Icon = ICONS[toast.type];
-  const [progress, setProgress] = createSignal(100);
   const [visible, setVisible] = createSignal(false);
   const [leaving, setLeaving] = createSignal(false);
 
@@ -44,10 +43,7 @@ export default function ToasterItem(props: Props) {
   }
 
   onMount(() => {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      setVisible(true);
-      if (toast.duration > 0) setProgress(0);
-    }));
+    requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
     if (toast.duration > 0) {
       const timer = setTimeout(dismiss, toast.duration);
       onCleanup(() => clearTimeout(timer));
@@ -58,39 +54,28 @@ export default function ToasterItem(props: Props) {
 
   return (
     <div
-      class="flex flex-col gap-2 bg-bg-dark border border-border-muted rounded-xl p-3 shadow-2xl w-80"
+      class="flex items-stretch bg-bg-dark border border-border-muted rounded-sm shadow-2xl w-80 overflow-hidden"
       style={{
         opacity: shown() ? "1" : "0",
         transform: shown() ? "translateX(0)" : "translateX(24px)",
         transition: "opacity 200ms ease, transform 200ms ease",
       }}
     >
-      <div class="flex items-center gap-3">
-        <div class={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${palette.tint}`}>
-          <Icon class={`w-5 h-5 ${palette.stroke}`} />
-        </div>
-        <div class="flex-1 min-w-0 flex flex-col gap-0.5">
-          <p class="text-text text-sm font-semibold leading-tight break-words">{toast.title}</p>
-          <Show when={toast.description}>
-            <p class="text-text-muted text-xs leading-snug break-words">{toast.description}</p>
-          </Show>
-        </div>
-        <button
-          onClick={dismiss}
-          class="shrink-0 w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text hover:bg-bg transition-colors cursor-pointer"
-        >
-          <CloseIcon class="w-2.5 h-2.5" />
-        </button>
+      <div class={`shrink-0 w-14 flex items-center justify-center ${palette.fill}`}>
+        <Icon class="w-6 h-6 stroke-white" />
       </div>
-      <div class={`h-1 rounded-full overflow-hidden ${palette.tint}`}>
-        <div
-          class={`h-full rounded-full ${palette.fill}`}
-          style={{
-            width: `${progress()}%`,
-            transition: toast.duration > 0 ? `width ${toast.duration}ms linear` : "none",
-          }}
-        />
+      <div class="flex-1 min-w-0 flex flex-col justify-center gap-0.5 px-3 py-3">
+        <p class="text-text text-sm font-semibold leading-tight break-words">{toast.title}</p>
+        <Show when={toast.description}>
+          <p class="text-text-muted text-xs leading-snug break-words line-clamp-3">{toast.description}</p>
+        </Show>
       </div>
+      <button
+        onClick={dismiss}
+        class="shrink-0 w-9 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer"
+      >
+        <CloseIcon class="w-2.5 h-2.5" />
+      </button>
     </div>
   );
 }

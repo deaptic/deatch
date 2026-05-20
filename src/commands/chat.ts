@@ -108,7 +108,7 @@ export function sendShoutout(
   params: SendShoutoutParams,
   options?: InvokeOptions,
 ): Promise<SendShoutoutResponse> {
-  return invokeCommand("send_shoutout", params, options);
+  return invokeCommand("send_shoutout", params, { successMessage: "Shoutout sent", ...options });
 }
 
 export type SendChatMessageParams = {
@@ -168,7 +168,7 @@ export function sendChatAnnouncement(
   params: SendChatAnnouncementParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("send_chat_announcement", params, options);
+  return invokeCommand("send_chat_announcement", params, { successMessage: "Announcement sent", ...options });
 }
 
 export type UpdateChatSettingsParams = {
@@ -186,7 +186,7 @@ export function updateChatSettings(
   params: UpdateChatSettingsParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("update_chat_settings", params, options);
+  return invokeCommand("update_chat_settings", params, { successMessage: "Chat settings updated", ...options });
 }
 
 export type NamedUserColor =
@@ -200,5 +200,5 @@ export function updateUserChatColor(
   params: UpdateUserChatColorParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("update_user_chat_color", params, options);
+  return invokeCommand("update_user_chat_color", params, { successMessage: "Chat color updated", ...options });
 }

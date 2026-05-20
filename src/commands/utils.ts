@@ -4,7 +4,7 @@ import { addToast } from "../state/toasts";
 
 export type Paginated<T> = { data: T[]; pagination: { cursor: string | null } };
 
-export type InvokeOptions = { silent?: boolean };
+export type InvokeOptions = { silent?: boolean; successMessage?: string };
 
 export async function invokeCommand<T>(
   cmd: string,
@@ -16,14 +16,29 @@ export async function invokeCommand<T>(
     const result = await invoke<T>(cmd, params === undefined ? undefined : { params });
     const ms = Math.round(performance.now() - start);
     console.log(`[cmd] ${cmd}`, { params, result, ms });
-    if (!options.silent && advancedShowLogs()) addToast(cmd, "log", summarize(result, ms));
+    if (!options.silent) {
+      if (options.successMessage) addToast(options.successMessage, "success");
+      else if (advancedShowLogs()) addToast(cmd, "log", summarize(result, ms));
+    }
     return result;
   } catch (e) {
     const ms = Math.round(performance.now() - start);
     console.error(`[cmd] ${cmd} failed`, { params, error: e, ms });
-    addToast(cmd, "error", `${ms}ms · ${String(e)}`);
+    if (!options.silent) addToast(`${humanizeCommand(cmd)} failed`, "error", humanizeError(e));
     throw e;
   }
+}
+
+function humanizeCommand(cmd: string): string {
+  const spaced = cmd.replace(/_/g, " ");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function humanizeError(e: unknown): string {
+  const raw = String(e);
+  const helix = raw.match(/helix returned error \d+ - [^:]+:\s*"([^"]+)"/i);
+  if (helix) return helix[1];
+  return raw.replace(/^Error:\s*/, "");
 }
 
 function summarize(result: unknown, ms: number): string {
