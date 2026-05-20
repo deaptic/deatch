@@ -3,11 +3,14 @@ use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::channels::{AddChannelVipRequest, RemoveChannelVipRequest};
 use twitch_api::helix::moderation::{
-    delete_chat_messages::DeleteChatMessagesRequest, BanUser, BanUserBody, BanUserRequest,
-    BannedUser, GetBannedUsersRequest, GetModeratedChannelsRequest, GetModeratorsRequest,
-    ModeratedChannel, Moderator, UnbanUserRequest,
+    delete_chat_messages::DeleteChatMessagesRequest,
+    warn_chat_user::{WarnChatUserBody, WarnChatUserRequest},
+    BanUser, BanUserBody, BanUserRequest, BannedUser, GetBannedUsersRequest,
+    GetModeratedChannelsRequest, GetModeratorsRequest, ModeratedChannel, Moderator,
+    UnbanUserRequest,
 };
-use twitch_api::helix::Cursor;
+use twitch_api::helix::raids::{CancelARaidRequest, StartARaidRequest};
+use twitch_api::helix::{Cursor, EmptyBody};
 use twitch_api::types::MsgId;
 
 use super::response::PaginatedResponse;
@@ -286,4 +289,74 @@ pub async fn get_all_moderated_channels(
     .await?;
     super::utils::cache_moderated_channel_ids(&app, &channels);
     Ok(channels)
+}
+
+// https://dev.twitch.tv/docs/api/reference/#start-a-raid
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StartRaidParams {
+    pub from_broadcaster_id: String,
+    pub to_broadcaster_id: String,
+}
+
+#[tauri::command]
+pub async fn start_raid(
+    app: tauri::AppHandle,
+    params: StartRaidParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request = StartARaidRequest::new(
+        params.from_broadcaster_id.as_str(),
+        params.to_broadcaster_id.as_str(),
+    );
+    helix()
+        .req_post(request, EmptyBody, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#cancel-a-raid
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CancelRaidParams {
+    pub broadcaster_id: String,
+}
+
+#[tauri::command]
+pub async fn cancel_raid(
+    app: tauri::AppHandle,
+    params: CancelRaidParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request = CancelARaidRequest::broadcaster_id(params.broadcaster_id.as_str());
+    helix()
+        .req_delete(request, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#warn-chat-user
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WarnUserParams {
+    pub broadcaster_id: String,
+    pub user_id: String,
+    pub reason: String,
+}
+
+#[tauri::command]
+pub async fn warn_user(app: tauri::AppHandle, params: WarnUserParams) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request = WarnChatUserRequest::new(
+        params.broadcaster_id.as_str(),
+        token.user_id.as_str(),
+    );
+    let body = WarnChatUserBody::new(params.user_id.as_str(), params.reason.as_str());
+    helix()
+        .req_post(request, body, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
 }

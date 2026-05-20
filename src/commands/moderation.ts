@@ -159,3 +159,39 @@ export function removeChannelVip(
 ): Promise<void> {
   return invokeCommand("remove_channel_vip", params, options);
 }
+
+export type StartRaidParams = {
+  fromBroadcasterId: string;
+  toBroadcasterId: string;
+};
+
+export function startRaid(
+  params: StartRaidParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("start_raid", params, options);
+}
+
+export type CancelRaidParams = {
+  broadcasterId: string;
+};
+
+export function cancelRaid(
+  params: CancelRaidParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("cancel_raid", params, options);
+}
+
+export type WarnUserParams = {
+  broadcasterId: string;
+  userId: string;
+  reason: string;
+};
+
+export function warnUser(
+  params: WarnUserParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("warn_user", params, options);
+}

@@ -80,3 +80,14 @@ export function getAllFollowedStreams(
 ): Promise<GetFollowedStreamsResponse["data"]> {
   return invokeCommand("get_all_followed_streams", undefined, options);
 }
+
+export type CreateStreamMarkerParams = {
+  description?: string;
+};
+
+export function createStreamMarker(
+  params: CreateStreamMarkerParams = {},
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("create_stream_marker", params, options);
+}

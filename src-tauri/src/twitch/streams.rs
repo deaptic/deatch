@@ -1,7 +1,10 @@
 use super::{get_token, helix};
 use serde::Deserialize;
 use std::borrow::Cow;
-use twitch_api::helix::streams::{GetFollowedStreamsRequest, GetStreamsRequest, Stream};
+use twitch_api::helix::streams::{
+    create_stream_marker::{CreateStreamMarkerBody, CreateStreamMarkerRequest},
+    GetFollowedStreamsRequest, GetStreamsRequest, Stream,
+};
 use twitch_api::helix::Cursor;
 use twitch_api::types::{CategoryId, UserId, UserName};
 
@@ -115,4 +118,29 @@ pub async fn get_all_followed_streams(app: tauri::AppHandle) -> Result<Vec<Strea
         request
     })
     .await
+}
+
+// https://dev.twitch.tv/docs/api/reference/#create-stream-marker
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct CreateStreamMarkerParams {
+    pub description: Option<String>,
+}
+
+#[tauri::command]
+pub async fn create_stream_marker(
+    app: tauri::AppHandle,
+    params: CreateStreamMarkerParams,
+) -> Result<(), String> {
+    let token = get_token(&app).await?;
+    let request = CreateStreamMarkerRequest::new();
+    let body = CreateStreamMarkerBody::new(
+        token.user_id.as_str(),
+        params.description.as_deref().unwrap_or(""),
+    );
+    helix()
+        .req_post(request, body, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
 }
