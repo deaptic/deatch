@@ -26,7 +26,7 @@ import {
   advancedDiscordRichPresence,
   appearanceColors,
 } from "./state/preferences";
-import { connectDiscord, disconnectDiscord, updateActivity } from "./services/discord";
+import { applyDiscordPresence } from "./services/discord";
 import { startUpdateChecker } from "./services/updater";
 import { applyAppearanceColors } from "./services/appearance";
 import { user, setModeratedChannels, isModOfChannel } from "./state/users";
@@ -249,88 +249,16 @@ function App() {
     })().catch(() => {});
   });
 
-  let activityMode: string | null = null;
-  let activityStartedAt = Math.floor(Date.now() / 1000);
-  const viewerFormatter = new Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  });
-  const clamp = (s: string, max: number) =>
-    s.length > max ? s.slice(0, max - 1) + "…" : s;
-  const SELF_LURK_PHRASES = [
-    "Talking to themselves",
-    "Empty room energy",
-    "Practicing the intro",
-    "Solo in the chat",
-    "Self-lurking",
-    "Reading own chat alone",
-    "Plotting the next stream",
-    "Tumbleweeds rolling by",
-  ];
-  let selfLurkPhrase = SELF_LURK_PHRASES[0];
   createEffect(() => {
-    if (!advancedDiscordRichPresence() || !user()) {
-      activityMode = null;
-      disconnectDiscord();
-      return;
-    }
-    const ch = selectedChannel();
-    const mode = isPanelOpen("inbox")
-      ? "inbox"
-      : ch
-        ? `ch:${ch.user_id}`
-        : "browsing";
-    if (mode !== activityMode) {
-      activityMode = mode;
-      activityStartedAt = Math.floor(Date.now() / 1000);
-      selfLurkPhrase = SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
-    }
-    if (mode === "inbox") {
-      updateActivity({
-        details: "Reading mentions",
-        largeImage: "app_logo",
-        largeText: "Deatch",
-        startedAt: activityStartedAt,
-        activityType: "watching",
-      });
-    } else if (ch) {
-      const live = liveChannelsSignal().find((c) => c.user_id === ch.user_id);
-      const isOwnChannel = ch.user_id === user()?.id;
-      const stateText = live?.game_name
-        ? live.viewer_count != null
-          ? `${live.game_name} · ${viewerFormatter.format(live.viewer_count)} viewers`
-          : live.game_name
-        : isOwnChannel
-          ? selfLurkPhrase
-          : "Offline";
-      const titleHover = live?.title
-        ? clamp(live.title, 128)
-        : ch.user_name || ch.user_login;
-      const streamStartedAt = live?.started_at
-        ? Math.floor(new Date(live.started_at).getTime() / 1000)
-        : null;
-      updateActivity({
-        details: ch.user_name || ch.user_login,
-        stateText,
-        largeImage: ch.profile_image_url || "app_logo",
-        largeText: titleHover,
-        smallImage: "app_logo",
-        smallText: "Deatch",
-        startedAt: streamStartedAt ?? activityStartedAt,
-        activityType: "watching",
-        buttons: [{ label: "Open on Twitch", url: `https://twitch.tv/${ch.user_login}` }],
-      });
-    } else {
-      updateActivity({
-        details: "Browsing channels",
-        stateText: "On Twitch",
-        largeImage: "app_logo",
-        largeText: "Deatch",
-        startedAt: activityStartedAt,
-        activityType: "watching",
-      });
-    }
-    void connectDiscord();
+    const u = user();
+    applyDiscordPresence({
+      enabled: advancedDiscordRichPresence(),
+      authenticated: u !== null,
+      userId: u?.id ?? null,
+      channel: selectedChannel(),
+      inboxOpen: isPanelOpen("inbox"),
+      liveChannels: liveChannelsSignal(),
+    });
   });
 
   createEffect(() => {

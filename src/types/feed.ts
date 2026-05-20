@@ -9,7 +9,7 @@ export type Fragment =
   | { type: "mention"; text: string; user_login: string }
   | { type: "cheermote"; text: string };
 
-export type FeedReply = {
+type FeedReply = {
   parent_message_id: string;
   parent_message_body: string;
   parent_user_name: string;

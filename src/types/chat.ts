@@ -1,5 +1,5 @@
 // Helix: chat badges.
-export type ChatBadge = {
+type ChatBadge = {
   id: string;
   image_url_1x: string;
   image_url_2x: string;
@@ -20,7 +20,7 @@ export type RawFragment =
   | { type: "mention"; text: string; mention: { user_login: string } }
   | { type: "cheermote"; text: string; cheermote: unknown };
 
-export type RawReply = {
+type RawReply = {
   parent_message_id: string;
   parent_message_body: string;
   parent_user_name: string;

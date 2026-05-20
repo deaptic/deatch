@@ -6,15 +6,6 @@ import { pendingUpdate, setPendingUpdate, installing } from "../state/updater";
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const THROTTLE_MS = 60 * 60 * 1000;
 
-export async function checkForUpdates(): Promise<Update | null> {
-  try {
-    return await check();
-  } catch (e) {
-    console.error("updater check failed", e);
-    return null;
-  }
-}
-
 export function startUpdateChecker(): () => void {
   let lastCheckedAt = 0;
 
@@ -22,7 +13,7 @@ export function startUpdateChecker(): () => void {
     if (pendingUpdate() || installing()) return;
     if (Date.now() - lastCheckedAt < THROTTLE_MS) return;
     lastCheckedAt = Date.now();
-    const update = await checkForUpdates();
+    const update = await check().catch(() => null);
     if (update && !pendingUpdate()) setPendingUpdate(update);
   }
 
@@ -39,21 +30,6 @@ export function startUpdateChecker(): () => void {
 }
 
 export async function installUpdate(update: Update): Promise<void> {
-  let downloaded = 0;
-  let total = 0;
-  await update.downloadAndInstall((event) => {
-    switch (event.event) {
-      case "Started":
-        total = event.data.contentLength ?? 0;
-        break;
-      case "Progress":
-        downloaded += event.data.chunkLength;
-        console.log(`update download ${downloaded}/${total}`);
-        break;
-      case "Finished":
-        console.log("update download finished");
-        break;
-    }
-  });
+  await update.downloadAndInstall();
   await relaunch();
 }

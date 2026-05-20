@@ -22,21 +22,21 @@ export type Mention = {
 
 const MAX = 100;
 
-const [mentionsSig, setMentionsSig] = createSignal<Mention[]>([]);
-export const mentions = mentionsSig;
+const [mentions, setMentions] = createSignal<Mention[]>([]);
+export { mentions };
 
-export const unreadMentionCount = () => mentionsSig().filter((m) => m.unread).length;
+export const unreadMentionCount = () => mentions().filter((m) => m.unread).length;
 
 export const channelMentionCount = (channelId: string) =>
-  mentionsSig().filter((m) => m.unread && m.channelId === channelId).length;
+  mentions().filter((m) => m.unread && m.channelId === channelId).length;
 
 export function recordMention(m: Omit<Mention, "unread">) {
   const isActive = selectedChannel()?.user_id === m.channelId;
   let added = false;
-  setMentionsSig((prev) => {
+  setMentions((prev) => {
     if (prev.some((x) => x.id === m.id)) return prev;
     added = true;
-    const next = [{ ...m, unread: !isActive } as Mention, ...prev];
+    const next = [{ ...m, unread: !isActive }, ...prev];
     return next.length > MAX ? next.slice(0, MAX) : next;
   });
   if (added && notificationsMentionSound()) {
@@ -45,22 +45,13 @@ export function recordMention(m: Omit<Mention, "unread">) {
   }
 }
 
-export function markMentionRead(id: string) {
-  setMentionsSig((prev) =>
-    prev.map((m) => (m.id === id && m.unread ? { ...m, unread: false } : m)),
+function markRead(match: (m: Mention) => boolean) {
+  setMentions((prev) =>
+    prev.map((m) => (m.unread && match(m) ? { ...m, unread: false } : m)),
   );
 }
 
-export function markAllMentionsRead() {
-  setMentionsSig((prev) =>
-    prev.map((m) => (m.unread ? { ...m, unread: false } : m)),
-  );
-}
-
-export function markChannelMentionsRead(channelId: string) {
-  setMentionsSig((prev) =>
-    prev.map((m) =>
-      m.unread && m.channelId === channelId ? { ...m, unread: false } : m,
-    ),
-  );
-}
+export const markMentionRead = (id: string) => markRead((m) => m.id === id);
+export const markAllMentionsRead = () => markRead(() => true);
+export const markChannelMentionsRead = (channelId: string) =>
+  markRead((m) => m.channelId === channelId);

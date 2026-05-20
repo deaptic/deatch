@@ -1,10 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { Channel } from "../types";
 
-export type DiscordActivityType = "playing" | "listening" | "watching" | "competing";
+type DiscordActivityType = "playing" | "listening" | "watching" | "competing";
 
-export type DiscordButton = { label: string; url: string };
+type DiscordButton = { label: string; url: string };
 
-export type DiscordActivity = {
+type DiscordActivity = {
   details?: string;
   stateText?: string;
   largeImage?: string;
@@ -21,7 +22,7 @@ let lastSerialized: string | null = null;
 let pendingTimer: number | undefined;
 let pendingActivity: DiscordActivity | null = null;
 
-export async function connectDiscord(): Promise<boolean> {
+async function connect(): Promise<boolean> {
   if (connected) return true;
   try {
     await invoke("discord_connect", {});
@@ -43,33 +44,30 @@ export async function disconnectDiscord(): Promise<void> {
   connected = false;
   lastSerialized = null;
   pendingActivity = null;
+  activityMode = null;
   if (pendingTimer !== undefined) {
     clearTimeout(pendingTimer);
     pendingTimer = undefined;
   }
 }
 
-/// Discord throttles activity updates server-side (~5 per 20s). Debounce
-/// rapid changes — e.g. quickly cycling channels with Alt+Arrow.
+// Discord throttles activity updates server-side (~5 per 20s). Debounce
+// rapid changes — e.g. quickly cycling channels with Alt+Arrow.
 const UPDATE_DEBOUNCE_MS = 1500;
 
-export function updateActivity(activity: DiscordActivity): void {
+function scheduleActivity(activity: DiscordActivity): void {
   pendingActivity = activity;
   if (pendingTimer !== undefined) return;
   pendingTimer = window.setTimeout(() => {
     pendingTimer = undefined;
     const next = pendingActivity;
     pendingActivity = null;
-    if (!next) return;
-    flush(next);
+    if (next) void flush(next);
   }, UPDATE_DEBOUNCE_MS);
 }
 
 async function flush(activity: DiscordActivity): Promise<void> {
-  if (!connected) {
-    const ok = await connectDiscord();
-    if (!ok) return;
-  }
+  if (!connected && !(await connect())) return;
   const serialized = JSON.stringify(activity);
   if (serialized === lastSerialized) return;
   try {
@@ -88,4 +86,95 @@ async function flush(activity: DiscordActivity): Promise<void> {
   } catch {
     connected = false;
   }
+}
+
+const SELF_LURK_PHRASES = [
+  "Talking to themselves",
+  "Empty room energy",
+  "Practicing the intro",
+  "Solo in the chat",
+  "Self-lurking",
+  "Reading own chat alone",
+  "Plotting the next stream",
+  "Tumbleweeds rolling by",
+];
+
+const viewerFormatter = new Intl.NumberFormat("en", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+const clamp = (s: string, max: number) =>
+  s.length > max ? s.slice(0, max - 1) + "…" : s;
+
+let activityMode: string | null = null;
+let activityStartedAt = Math.floor(Date.now() / 1000);
+let selfLurkPhrase = SELF_LURK_PHRASES[0];
+
+export type PresenceContext = {
+  enabled: boolean;
+  authenticated: boolean;
+  userId: string | null;
+  channel: Channel | null;
+  inboxOpen: boolean;
+  liveChannels: Channel[];
+};
+
+export function applyDiscordPresence(ctx: PresenceContext): void {
+  if (!ctx.enabled || !ctx.authenticated) {
+    activityMode = null;
+    void disconnectDiscord();
+    return;
+  }
+  const ch = ctx.channel;
+  const mode = ctx.inboxOpen ? "inbox" : ch ? `ch:${ch.user_id}` : "browsing";
+  if (mode !== activityMode) {
+    activityMode = mode;
+    activityStartedAt = Math.floor(Date.now() / 1000);
+    selfLurkPhrase = SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
+  }
+
+  if (mode === "inbox") {
+    scheduleActivity({
+      details: "Reading mentions",
+      largeImage: "app_logo",
+      largeText: "Deatch",
+      startedAt: activityStartedAt,
+      activityType: "watching",
+    });
+  } else if (ch) {
+    const live = ctx.liveChannels.find((c) => c.user_id === ch.user_id);
+    const isOwnChannel = ch.user_id === ctx.userId;
+    const stateText = live?.game_name
+      ? live.viewer_count != null
+        ? `${live.game_name} · ${viewerFormatter.format(live.viewer_count)} viewers`
+        : live.game_name
+      : isOwnChannel
+        ? selfLurkPhrase
+        : "Offline";
+    const streamStartedAt = live?.started_at
+      ? Math.floor(new Date(live.started_at).getTime() / 1000)
+      : null;
+    scheduleActivity({
+      details: ch.user_name || ch.user_login,
+      stateText,
+      largeImage: ch.profile_image_url || "app_logo",
+      largeText: live?.title ? clamp(live.title, 128) : ch.user_name || ch.user_login,
+      smallImage: "app_logo",
+      smallText: "Deatch",
+      startedAt: streamStartedAt ?? activityStartedAt,
+      activityType: "watching",
+      buttons: [{ label: "Open on Twitch", url: `https://twitch.tv/${ch.user_login}` }],
+    });
+  } else {
+    scheduleActivity({
+      details: "Browsing channels",
+      stateText: "On Twitch",
+      largeImage: "app_logo",
+      largeText: "Deatch",
+      startedAt: activityStartedAt,
+      activityType: "watching",
+    });
+  }
+  void connect();
 }
