@@ -32,6 +32,9 @@
   "notifications": {
     "mentionSound": true
   },
+  "moderation": {
+    "autoShoutoutOnRaid": false
+  },
   "advanced": {
     "developerMode": false,
     "showLogs": false,

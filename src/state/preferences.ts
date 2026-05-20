@@ -25,6 +25,9 @@ export type UserPreferences = {
   notifications: {
     mentionSound: boolean;
   };
+  moderation: {
+    autoShoutoutOnRaid: boolean;
+  };
   advanced: {
     developerMode: boolean;
     showLogs: boolean;
@@ -98,6 +101,10 @@ function load(): UserPreferences {
       notifications: {
         mentionSound: stored.notifications?.mentionSound ?? DEFAULT_PREFERENCES.notifications.mentionSound,
       },
+      moderation: {
+        autoShoutoutOnRaid:
+          stored.moderation?.autoShoutoutOnRaid ?? DEFAULT_PREFERENCES.moderation.autoShoutoutOnRaid,
+      },
       advanced: {
         developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
         showLogs: stored.advanced?.showLogs ?? DEFAULT_PREFERENCES.advanced.showLogs,
@@ -141,6 +148,7 @@ export const feedUserNicknames = () => prefs.feed.users.nicknames;
 export const feedUserNickname = (login: string) => prefs.feed.users.nicknames[login.toLowerCase()];
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const notificationsMentionSound = () => prefs.notifications.mentionSound;
+export const moderationAutoShoutoutOnRaid = () => prefs.moderation.autoShoutoutOnRaid;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
 export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
@@ -263,6 +271,11 @@ export function reorderPinnedChannels(from: number, to: number) {
 
 export function setNotificationsMentionSound(value: boolean) {
   setPrefs("notifications", "mentionSound", value);
+  persist();
+}
+
+export function setModerationAutoShoutoutOnRaid(value: boolean) {
+  setPrefs("moderation", "autoShoutoutOnRaid", value);
   persist();
 }
 

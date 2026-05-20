@@ -1,6 +1,9 @@
 import { listen } from "@tauri-apps/api/event";
 import type { FeedEvent, RawNotification, RawShoutout, RawFollow } from "../types";
 import { appendItem } from "../state/feeds";
+import { isModOfChannel } from "../state/users";
+import { moderationAutoShoutoutOnRaid } from "../state/preferences";
+import { sendShoutout } from "../commands/chat";
 
 function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   return {
@@ -48,6 +51,17 @@ listen<RawNotification>("channel-chat-notification", (e) => {
     setTimeout(() => appendItem(id, item), 600);
   } else {
     appendItem(id, item);
+  }
+  if (
+    e.payload.notice_type === "raid" &&
+    moderationAutoShoutoutOnRaid() &&
+    e.payload.chatter_user_id &&
+    isModOfChannel(id)
+  ) {
+    sendShoutout({
+      fromBroadcasterId: id,
+      toBroadcasterId: e.payload.chatter_user_id,
+    }).catch(() => {});
   }
 });
 
