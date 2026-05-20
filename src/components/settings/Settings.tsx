@@ -13,8 +13,9 @@ import MegaphoneIcon from "../../icons/MegaphoneIcon";
 import LogIcon from "../../icons/LogIcon";
 import PaletteIcon from "../../icons/PaletteIcon";
 import GearIcon from "../../icons/GearIcon";
+import BanIcon from "../../icons/BanIcon";
 
-type SectionKey = "feed" | "notifications" | "appearance" | "advanced";
+type SectionKey = "feed" | "notifications" | "moderation" | "appearance" | "advanced";
 
 const SECTIONS: {
   key: SectionKey;
@@ -23,6 +24,7 @@ const SECTIONS: {
 }[] = [
   { key: "notifications", label: "Notifications", Icon: MegaphoneIcon },
   { key: "feed", label: "Feed", Icon: LogIcon },
+  { key: "moderation", label: "Moderation", Icon: BanIcon },
   { key: "appearance", label: "Appearance", Icon: PaletteIcon },
   { key: "advanced", label: "Advanced", Icon: GearIcon },
 ];
@@ -52,6 +54,8 @@ import {
   removeUserNickname,
   notificationsMentionSound,
   setNotificationsMentionSound,
+  moderationAutoShoutoutOnRaid,
+  setModerationAutoShoutoutOnRaid,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
   advancedShowLogs,
@@ -167,6 +171,22 @@ export default function Settings(props: Props) {
                   description="Play a sound when someone mentions you or a keyword matches."
                 >
                   <Toggle size="md" checked={notificationsMentionSound()} onChange={setNotificationsMentionSound} />
+                </SettingsContentSectionItem>
+              </SettingsContentSection>
+            </SettingsContent>
+          </Show>
+          <Show when={section() === "moderation"}>
+            <SettingsContent title="Moderation">
+              <SettingsContentSection>
+                <SettingsContentSectionItem
+                  label="Auto-shoutout on raid"
+                  description="Automatically shout out the raider on any channel you broadcast or moderate."
+                >
+                  <Toggle
+                    size="md"
+                    checked={moderationAutoShoutoutOnRaid()}
+                    onChange={setModerationAutoShoutoutOnRaid}
+                  />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
             </SettingsContent>
