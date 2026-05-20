@@ -301,9 +301,11 @@ export default function EmotePicker(props: Props) {
           <For each={TABS}>
             {(t) => (
               <button
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   setTab(t.id);
                   setSearch("");
+                  searchRef?.focus();
                 }}
                 class={`flex-1 py-2 text-xs font-semibold transition-colors cursor-pointer ${
                   tab() === t.id
