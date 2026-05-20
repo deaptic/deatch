@@ -86,12 +86,11 @@ export default function Chat(props: Props) {
   });
 
   onMount(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape" || e.defaultPrevented) return;
+    const unbind = shortcutManager.registerLocal("escape", () => {
       clearDivider(props.broadcasterId);
-    };
-    window.addEventListener("keydown", onKey);
-    onCleanup(() => window.removeEventListener("keydown", onKey));
+      return false;
+    });
+    onCleanup(unbind);
   });
 
   onMount(() => {

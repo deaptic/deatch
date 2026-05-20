@@ -1,6 +1,7 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../utils/focus";
+import { shortcutManager } from "../../managers/ShortcutManager";
 import UserCardHeader from "./UserCardHeader";
 import UserCardModActions from "./UserCardModActions";
 import UserCardFeed from "./UserCardFeed";
@@ -61,16 +62,17 @@ export default function UserCard(props: Props) {
     if (cardRef?.contains(e.target as Node)) return;
     props.onClose();
   };
-  const onDocumentKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== "Escape" || e.defaultPrevented) return;
-    e.preventDefault();
-    props.onClose();
-  };
   document.addEventListener("mousedown", onDocumentMouseDown, { capture: true });
-  document.addEventListener("keydown", onDocumentKeyDown);
+  shortcutManager.setContext("userCardOpen", true);
+  const unbindEsc = shortcutManager.registerLocal(
+    "escape",
+    () => { props.onClose(); },
+    "userCardOpen",
+  );
   onCleanup(() => {
     document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true });
-    document.removeEventListener("keydown", onDocumentKeyDown);
+    unbindEsc();
+    shortcutManager.setContext("userCardOpen", false);
   });
 
   function startDrag(e: MouseEvent) {
