@@ -21,9 +21,17 @@ export type Mention = {
 };
 
 const MAX = 100;
+const STORAGE_KEY = "mentions";
 
-const [mentions, setMentions] = createSignal<Mention[]>([]);
+const [mentions, setMentions] = createSignal<Mention[]>(
+  JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"),
+);
 export { mentions };
+
+function save(list: Mention[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  return list;
+}
 
 export const unreadMentionCount = () => mentions().filter((m) => m.unread).length;
 
@@ -37,7 +45,7 @@ export function recordMention(m: Omit<Mention, "unread">) {
     if (prev.some((x) => x.id === m.id)) return prev;
     added = true;
     const next = [{ ...m, unread: !isActive }, ...prev];
-    return next.length > MAX ? next.slice(0, MAX) : next;
+    return save(next.length > MAX ? next.slice(0, MAX) : next);
   });
   if (added && notificationsMentionSound()) {
     audio.currentTime = 0;
@@ -47,7 +55,7 @@ export function recordMention(m: Omit<Mention, "unread">) {
 
 function markRead(match: (m: Mention) => boolean) {
   setMentions((prev) =>
-    prev.map((m) => (m.unread && match(m) ? { ...m, unread: false } : m)),
+    save(prev.map((m) => (m.unread && match(m) ? { ...m, unread: false } : m))),
   );
 }
 
