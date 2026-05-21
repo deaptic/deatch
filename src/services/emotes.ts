@@ -18,7 +18,10 @@ import {
   userEmotes,
 } from "../state/emotes";
 
-type SevenTvChannelResult = { emotes: EmoteEntry[]; emote_set_id: string | null };
+type SevenTvChannelResult = {
+  emotes: EmoteEntry[];
+  emote_set_id: string | null;
+};
 type EmoteSetter = (emotes: EmoteEntry[]) => void;
 
 export type SevenTvUpdate = {
@@ -73,7 +76,10 @@ export function resetUserEmotes() {
 }
 
 export async function loadGlobalEmotes(): Promise<GlobalEmote[]> {
-  const cached = loadCache<GlobalEmote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
+  const cached = loadCache<GlobalEmote[]>(
+    GLOBAL_EMOTES_CACHE_KEY,
+    GLOBAL_EMOTES_TTL,
+  );
   if (cached) {
     getGlobalEmotes()
       .then((fresh) => {
@@ -92,7 +98,9 @@ export function loadThirdPartyGlobalEmotes() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
   for (const [cmd, set] of THIRD_PARTY_GLOBALS) {
-    invoke<EmoteEntry[]>(cmd).then(set).catch(() => {});
+    invoke<EmoteEntry[]>(cmd)
+      .then(set)
+      .catch(() => {});
   }
 }
 
@@ -114,7 +122,9 @@ function watchSevenTvSet(setId: string | null) {
 
 function loadSevenTvChannel(channelId: string) {
   cachedChannelFetch(`stv:${channelId}`, () =>
-    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", { channelId }).then((r) => {
+    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", {
+      channelId,
+    }).then((r) => {
       sevenTvSetByChannel.set(channelId, r.emote_set_id);
       return r.emotes;
     }),
@@ -126,7 +136,10 @@ function loadSevenTvChannel(channelId: string) {
   });
 }
 
-export function loadChannelThirdPartyEmotes(channelId: string, channelLogin: string) {
+export function loadChannelThirdPartyEmotes(
+  channelId: string,
+  channelLogin: string,
+) {
   activeChannelId = channelId;
   loadSevenTvChannel(channelId);
   cachedChannelFetch(`bttv:${channelId}`, () =>
@@ -142,7 +155,9 @@ function applyDelta(prev: EmoteEntry[], u: SevenTvUpdate): EmoteEntry[] {
   const renames = new Map(u.renamed.map((r) => [r.from, r.to] as const));
   const kept = prev
     .filter((e) => !removed.has(e.name))
-    .map((e) => (renames.has(e.name) ? { ...e, name: renames.get(e.name)! } : e));
+    .map((e) =>
+      renames.has(e.name) ? { ...e, name: renames.get(e.name)! } : e,
+    );
   return [...kept, ...u.added];
 }
 
@@ -158,17 +173,30 @@ function announceChanges(channelId: string, u: SevenTvUpdate) {
   const ts = Date.now();
   const who = u.actor ?? "Someone";
   for (const e of u.added) {
-    appendItem(channelId, sevenTvEvent(ts, who, `${who} added 7TV emote ${e.name}.`));
+    appendItem(
+      channelId,
+      sevenTvEvent(ts, who, `${who} added 7TV emote ${e.name}`),
+    );
   }
   for (const name of u.removed) {
-    appendItem(channelId, sevenTvEvent(ts, who, `${who} removed 7TV emote ${name}.`));
+    appendItem(
+      channelId,
+      sevenTvEvent(ts, who, `${who} removed 7TV emote ${name}`),
+    );
   }
   for (const r of u.renamed) {
-    appendItem(channelId, sevenTvEvent(ts, who, `${who} renamed 7TV emote ${r.from} to ${r.to}.`));
+    appendItem(
+      channelId,
+      sevenTvEvent(ts, who, `${who} renamed 7TV emote ${r.from} to ${r.to}`),
+    );
   }
 }
 
-function sevenTvEvent(timestamp: number, actor: string, message: string): FeedEvent {
+function sevenTvEvent(
+  timestamp: number,
+  actor: string,
+  message: string,
+): FeedEvent {
   return {
     kind: "event",
     id: crypto.randomUUID(),
