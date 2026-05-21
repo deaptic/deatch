@@ -1,15 +1,15 @@
 import { listen } from "@tauri-apps/api/event";
 import { Manager } from "./Manager";
 import { eventsubState, setEventsubState } from "../state/eventsub";
+import { subscribe, unsubscribe } from "../commands/eventsub";
 import type { EventKind, SubStatus } from "../types/eventsub";
-
-const RETRY_DELAY_MS = 3000;
-const keyOf = (b: string, k: EventKind) => `${b}|${k}`;
 
 type Payload = { broadcaster_id: string; kind: EventKind };
 type FailedPayload = Payload & { error: string };
 
 export class EventSubManager extends Manager {
+  private static readonly RETRY_DELAY_MS = 3000;
+
   private retryTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private retried = new Set<string>();
 
@@ -22,15 +22,15 @@ export class EventSubManager extends Manager {
     );
   }
 
-  public subscribe(broadcasterId: string, kind: EventKind): Promise<void | null> {
+  public async subscribe(broadcasterId: string, kind: EventKind): Promise<void> {
     this.setStatus(broadcasterId, kind, "pending");
-    return this.invokeCommand("subscribe", { broadcasterId, kind }, { silent: true });
+    await subscribe({ broadcasterId, kind }, { silent: true }).catch(() => {});
   }
 
-  public unsubscribe(broadcasterId: string, kind: EventKind): Promise<void | null> {
+  public async unsubscribe(broadcasterId: string, kind: EventKind): Promise<void> {
     this.cancelRetry(broadcasterId, kind);
     this.clearStatus(broadcasterId, kind);
-    return this.invokeCommand("unsubscribe", { broadcasterId, kind }, { silent: true });
+    await unsubscribe({ broadcasterId, kind }, { silent: true }).catch(() => {});
   }
 
   private onSubscribed({ broadcaster_id, kind }: Payload): void {
@@ -39,7 +39,7 @@ export class EventSubManager extends Manager {
   }
 
   private onFailed({ broadcaster_id, kind }: FailedPayload): void {
-    const key = keyOf(broadcaster_id, kind);
+    const key = EventSubManager.keyOf(broadcaster_id, kind);
     if (this.retried.has(key)) {
       this.retried.delete(key);
       this.setStatus(broadcaster_id, kind, "failed");
@@ -49,12 +49,12 @@ export class EventSubManager extends Manager {
     const timer = setTimeout(() => {
       this.retryTimers.delete(key);
       void this.subscribe(broadcaster_id, kind);
-    }, RETRY_DELAY_MS);
+    }, EventSubManager.RETRY_DELAY_MS);
     this.retryTimers.set(key, timer);
   }
 
   private cancelRetry(broadcasterId: string, kind: EventKind): void {
-    const key = keyOf(broadcasterId, kind);
+    const key = EventSubManager.keyOf(broadcasterId, kind);
     const t = this.retryTimers.get(key);
     if (t !== undefined) {
       clearTimeout(t);
@@ -82,6 +82,10 @@ export class EventSubManager extends Manager {
     if (nextChannelMap.size === 0) next.delete(broadcasterId);
     else next.set(broadcasterId, nextChannelMap);
     setEventsubState(next);
+  }
+
+  private static keyOf(broadcasterId: string, kind: EventKind): string {
+    return `${broadcasterId}|${kind}`;
   }
 }
 

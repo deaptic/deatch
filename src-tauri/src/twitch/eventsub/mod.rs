@@ -42,23 +42,34 @@ pub(crate) enum EventSubCmd {
     Unsubscribe { broadcaster_id: String, kind: EventKind },
 }
 
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct SubscribeParams {
+    pub broadcaster_id: String,
+    pub kind: EventKind,
+}
+
 #[tauri::command]
 pub(crate) async fn subscribe(
     app: tauri::AppHandle,
-    broadcaster_id: String,
-    kind: EventKind,
+    params: SubscribeParams,
 ) -> Result<(), String> {
     runner::ensure_task(&app).await?;
-    send_cmd(&app, EventSubCmd::Subscribe { broadcaster_id, kind })
+    send_cmd(
+        &app,
+        EventSubCmd::Subscribe { broadcaster_id: params.broadcaster_id, kind: params.kind },
+    )
 }
 
 #[tauri::command]
 pub(crate) async fn unsubscribe(
     app: tauri::AppHandle,
-    broadcaster_id: String,
-    kind: EventKind,
+    params: SubscribeParams,
 ) -> Result<(), String> {
-    send_cmd(&app, EventSubCmd::Unsubscribe { broadcaster_id, kind })
+    send_cmd(
+        &app,
+        EventSubCmd::Unsubscribe { broadcaster_id: params.broadcaster_id, kind: params.kind },
+    )
 }
 
 fn send_cmd(app: &tauri::AppHandle, cmd: EventSubCmd) -> Result<(), String> {

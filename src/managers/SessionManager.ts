@@ -1,14 +1,12 @@
-import type { DeviceCode } from "../types";
-import type { User } from "../commands/users";
 import { setUser } from "../state/users";
 import { setWaiting, setDeviceCode, setAuthChecked } from "../state/auth";
+import { getDeviceCode, revokeSession, restoreSession } from "../commands/session";
 import { Manager } from "./Manager";
 
 export class SessionManager extends Manager {
   public async login(): Promise<void> {
     setDeviceCode(null);
-    const code = await this.invokeCommand<DeviceCode>("get_device_code");
-    if (!code) return;
+    const code = await getDeviceCode();
     setDeviceCode(code);
     setWaiting(true);
   }
@@ -19,13 +17,17 @@ export class SessionManager extends Manager {
   }
 
   public async logout(): Promise<void> {
-    await this.invokeCommand<void>("revoke_session");
+    try {
+      await revokeSession();
+    } catch {}
     setUser(null);
   }
 
   public async restore(): Promise<void> {
-    const user = await this.invokeCommand<User | null>("restore_session");
-    if (user) setUser(user);
+    try {
+      const user = await restoreSession();
+      if (user) setUser(user);
+    } catch {}
     setAuthChecked(true);
   }
 }

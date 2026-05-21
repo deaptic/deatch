@@ -1,72 +1,21 @@
-import { invoke } from "@tauri-apps/api/core";
 import { Manager } from "./Manager";
 import defaultKeymap from "../default-keymap.json";
+import { comboFor, MODIFIER_KEYS } from "../utils/keyboard";
+import { compile as compileWhen, type Predicate as WhenFn } from "../utils/boolExpr";
+import { readKeymap, writeKeymap } from "../commands/keymap";
 
 type Handler = () => boolean | void;
-type WhenFn = (ctx: Map<string, boolean>) => boolean;
 type ActionEntry = { handler: Handler; when?: WhenFn };
-
-const CHORD_TIMEOUT_MS = 1000;
-const MODIFIERS = new Set(["Control", "Alt", "Shift", "Meta"]);
-
-const DEFAULTS = new Map<string, string[]>(
-  Object.entries(defaultKeymap as Record<string, string[]>),
-);
-
-function comboFor(e: KeyboardEvent): string {
-  const parts: string[] = [];
-  if (e.ctrlKey) parts.push("ctrl");
-  if (e.altKey) parts.push("alt");
-  if (e.shiftKey) parts.push("shift");
-  if (e.metaKey) parts.push("meta");
-  parts.push(e.key.toLowerCase().replace(/^arrow/, ""));
-  return parts.join("-");
-}
-
-// Tiny boolean DSL: identifiers, !, &&, ||, parens.
-function compileWhen(src: string): WhenFn {
-  let i = 0;
-  const skip = () => { while (i < src.length && /\s/.test(src[i])) i++; };
-  const consume = (s: string): boolean => {
-    skip();
-    if (src.startsWith(s, i)) { i += s.length; return true; }
-    return false;
-  };
-  const parseOr = (): WhenFn => {
-    let left = parseAnd();
-    while (consume("||")) { const r = parseAnd(); const l = left; left = (c) => l(c) || r(c); }
-    return left;
-  };
-  const parseAnd = (): WhenFn => {
-    let left = parseNot();
-    while (consume("&&")) { const r = parseNot(); const l = left; left = (c) => l(c) && r(c); }
-    return left;
-  };
-  const parseNot = (): WhenFn => {
-    if (consume("!")) { const inner = parseNot(); return (c) => !inner(c); }
-    return parsePrimary();
-  };
-  const parsePrimary = (): WhenFn => {
-    skip();
-    if (consume("(")) {
-      const e = parseOr();
-      if (!consume(")")) throw new Error(`expected ) at ${i}`);
-      return e;
-    }
-    const m = src.slice(i).match(/^[a-zA-Z_][a-zA-Z0-9_:.-]*/);
-    if (!m) throw new Error(`expected identifier at ${i}`);
-    i += m[0].length;
-    return ((id) => (c) => !!c.get(id))(m[0]);
-  };
-  const fn = parseOr();
-  skip();
-  if (i < src.length) throw new Error(`trailing input at ${i}: ${src.slice(i)}`);
-  return fn;
-}
+type Overrides = Map<string, string[] | null>;
 
 export class ShortcutManager extends Manager {
+  private static readonly CHORD_TIMEOUT_MS = 1000;
+  private static readonly DEFAULTS = new Map<string, string[]>(
+    Object.entries(defaultKeymap as Record<string, string[]>),
+  );
+
   private actions = new Map<string, ActionEntry>();
-  private overrides = new Map<string, string[] | null>();
+  private overrides: Overrides = new Map();
   private keymap = new Map<string, string[]>();
   private contexts = new Map<string, boolean>();
   private localBindings = new Map<string, Set<ActionEntry>>();
@@ -79,7 +28,7 @@ export class ShortcutManager extends Manager {
   }
 
   public register(name: string, handler: Handler, when?: string): () => void {
-    const entry: ActionEntry = { handler, when: when ? compileWhen(when) : undefined };
+    const entry = this.makeEntry(handler, when);
     this.actions.set(name, entry);
     return () => {
       if (this.actions.get(name) === entry) this.actions.delete(name);
@@ -105,7 +54,7 @@ export class ShortcutManager extends Manager {
   // that should never appear in user config. Locals are dispatched before the
   // keymap, so they win when their `when` clause passes.
   public registerLocal(combo: string, handler: Handler, when?: string): () => void {
-    const entry: ActionEntry = { handler, when: when ? compileWhen(when) : undefined };
+    const entry = this.makeEntry(handler, when);
     let set = this.localBindings.get(combo);
     if (!set) {
       set = new Set();
@@ -127,8 +76,9 @@ export class ShortcutManager extends Manager {
   public start(): void {
     if (this.listener) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.isComposing || MODIFIERS.has(e.key)) return;
-      const seq = this.pending ? `${this.pending.seq} ${comboFor(e)}` : comboFor(e);
+      if (e.isComposing || MODIFIER_KEYS.has(e.key)) return;
+      const combo = comboFor(e);
+      const seq = this.pending ? `${this.pending.seq} ${combo}` : combo;
       if (this.dispatch(seq) || this.armIfPrefix(seq)) {
         e.preventDefault();
         e.stopPropagation();
@@ -138,7 +88,7 @@ export class ShortcutManager extends Manager {
     };
     window.addEventListener("keydown", onKey, true);
     this.listener = onKey;
-    void this.load();
+    void this.loadOverrides();
   }
 
   public stop(): void {
@@ -149,26 +99,23 @@ export class ShortcutManager extends Manager {
   }
 
   public rebind(combo: string, actions: string[] | null): void {
-    this.overrides.set(combo, actions && actions.length > 0 ? actions : null);
+    this.overrides.set(combo, this.normalizeOverride(actions));
     this.rebuild();
-    void this.save();
+    void this.saveOverrides();
   }
 
   private dispatch(seq: string): boolean {
-    const locals = this.localBindings.get(seq);
-    if (locals) {
-      for (const entry of locals) {
-        if (entry.when && !entry.when(this.contexts)) continue;
-        if (entry.handler() === false) continue;
-        this.clearPending();
-        return true;
-      }
-    }
+    if (this.tryRun(this.localBindings.get(seq))) return true;
     const names = this.keymap.get(seq);
     if (!names) return false;
-    for (const name of names) {
-      const entry = this.actions.get(name);
-      if (!entry || (entry.when && !entry.when(this.contexts))) continue;
+    return this.tryRun(names.map((n) => this.actions.get(n)));
+  }
+
+  private tryRun(entries: Iterable<ActionEntry | undefined> | undefined): boolean {
+    if (!entries) return false;
+    for (const entry of entries) {
+      if (!entry) continue;
+      if (entry.when && !entry.when(this.contexts)) continue;
       if (entry.handler() === false) continue;
       this.clearPending();
       return true;
@@ -186,7 +133,7 @@ export class ShortcutManager extends Manager {
     if (this.pending) window.clearTimeout(this.pending.timer);
     this.pending = {
       seq,
-      timer: window.setTimeout(() => this.clearPending(), CHORD_TIMEOUT_MS),
+      timer: window.setTimeout(() => this.clearPending(), ShortcutManager.CHORD_TIMEOUT_MS),
     };
     return true;
   }
@@ -198,36 +145,40 @@ export class ShortcutManager extends Manager {
   }
 
   private rebuild(): void {
-    this.keymap = new Map(DEFAULTS);
+    this.keymap = new Map(ShortcutManager.DEFAULTS);
     for (const [k, v] of this.overrides) {
       if (v === null) this.keymap.delete(k);
       else this.keymap.set(k, v);
     }
   }
 
-  private async load(): Promise<void> {
+  private async loadOverrides(): Promise<void> {
     try {
-      const raw = await invoke<string>("read_keymap");
+      const raw = await readKeymap({ silent: true });
       if (!raw) return;
       const parsed = JSON.parse(raw) as Record<string, string[] | null>;
       this.overrides.clear();
       for (const [combo, actions] of Object.entries(parsed)) {
-        this.overrides.set(combo, actions && actions.length > 0 ? actions : null);
+        this.overrides.set(combo, this.normalizeOverride(actions));
       }
       this.rebuild();
-    } catch (e) {
-      console.error("keymap load failed", e);
+    } catch {
+      // best-effort: fall back to defaults
     }
   }
 
-  private async save(): Promise<void> {
+  private async saveOverrides(): Promise<void> {
     const obj: Record<string, string[] | null> = {};
     for (const [k, v] of this.overrides) obj[k] = v;
-    try {
-      await invoke("write_keymap", { contents: JSON.stringify(obj, null, 2) });
-    } catch (e) {
-      console.error("keymap save failed", e);
-    }
+    await writeKeymap({ contents: JSON.stringify(obj, null, 2) });
+  }
+
+  private makeEntry(handler: Handler, when?: string): ActionEntry {
+    return { handler, when: when ? compileWhen(when) : undefined };
+  }
+
+  private normalizeOverride(actions: string[] | null | undefined): string[] | null {
+    return actions && actions.length > 0 ? actions : null;
   }
 }
 
