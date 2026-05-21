@@ -40,6 +40,7 @@ import {
   loadThirdPartyGlobalEmotes,
   loadChannelThirdPartyEmotes,
   resetChannelThirdPartyEmoteCache,
+  clearActiveSevenTvSubscription,
   resetUserEmotes,
 } from "./services/emotes";
 import {
@@ -138,6 +139,7 @@ function App() {
     const broadcaster = selectedChannel();
     if (!broadcaster) {
       clearChannelThirdPartyEmotes();
+      clearActiveSevenTvSubscription();
       return;
     }
     loadChannelBadges(broadcaster.user_id);

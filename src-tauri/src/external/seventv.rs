@@ -29,11 +29,12 @@ pub struct SevenTvChannelResult {
     pub emote_set_id: Option<String>,
 }
 
+pub fn emote_url(id: &str) -> String {
+    format!("https://cdn.7tv.app/emote/{id}/1x.webp")
+}
+
 fn to_entry(e: StvEmote) -> EmoteEntry {
-    EmoteEntry {
-        url: format!("https://cdn.7tv.app/emote/{}/1x.webp", e.id),
-        name: e.name,
-    }
+    EmoteEntry { url: emote_url(&e.id), name: e.name }
 }
 
 #[tauri::command]
@@ -65,7 +66,7 @@ pub async fn seventv_get_channel_emotes(channel_id: String) -> Result<SevenTvCha
         emotes: response
             .emote_set
             .as_ref()
-            .map(|s| s.emotes.iter().map(|e| EmoteEntry { name: e.name.clone(), url: format!("https://cdn.7tv.app/emote/{}/1x.webp", e.id) }).collect())
+            .map(|s| s.emotes.iter().map(|e| EmoteEntry { name: e.name.clone(), url: emote_url(&e.id) }).collect())
             .unwrap_or_default(),
         emote_set_id: response.emote_set.map(|s| s.id),
     })
