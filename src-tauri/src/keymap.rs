@@ -1,4 +1,11 @@
+use serde::Deserialize;
 use tauri::Manager;
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WriteKeymapParams {
+    pub contents: String,
+}
 
 #[tauri::command]
 pub fn read_keymap(app: tauri::AppHandle) -> Result<String, String> {
@@ -11,9 +18,9 @@ pub fn read_keymap(app: tauri::AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn write_keymap(app: tauri::AppHandle, contents: String) -> Result<(), String> {
+pub fn write_keymap(app: tauri::AppHandle, params: WriteKeymapParams) -> Result<(), String> {
     let dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let path = dir.join("keymap.json");
-    std::fs::write(&path, contents).map_err(|e| e.to_string())
+    std::fs::write(&path, params.contents).map_err(|e| e.to_string())
 }
