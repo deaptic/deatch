@@ -29,6 +29,7 @@ pub fn run() {
                 eprintln!("browser bridge registration failed: {e}");
             }
             ipc::start_server(app.handle().clone());
+            external::seventv_events::spawn(app.handle().clone());
             Ok(())
         })
         .manage(twitch::TwitchState::new())
@@ -85,6 +86,7 @@ pub fn run() {
             external::ffz::ffz_get_channel_emotes,
             external::seventv::seventv_get_global_emotes,
             external::seventv::seventv_get_channel_emotes,
+            external::seventv_events::seventv_watch_emote_set,
             external::robotty::get_recent_messages,
             keymap::read_keymap,
             keymap::write_keymap,
