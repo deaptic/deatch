@@ -29,7 +29,7 @@ pub async fn discord_connect(
     state: State<'_, DiscordState>,
 ) -> Result<(), String> {
     let id = client_id.unwrap_or_else(|| DEFAULT_CLIENT_ID.to_string());
-    let mut client = DiscordIpcClient::new(&id).map_err(|e| e.to_string())?;
+    let mut client = DiscordIpcClient::new(&id);
     client.connect().map_err(|e| e.to_string())?;
     let mut guard = state.0.lock().map_err(|e| e.to_string())?;
     if let Some(mut prev) = guard.take() {
