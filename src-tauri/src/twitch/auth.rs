@@ -10,8 +10,8 @@ struct StoredCredentials {
     refresh_token: Option<String>,
 }
 
-fn keyring_entry() -> Result<keyring::Entry, String> {
-    keyring::Entry::new("deatch", "auth").map_err(|e| e.to_string())
+fn keyring_entry() -> Result<keyring_core::Entry, String> {
+    keyring_core::Entry::new("deatch", "auth").map_err(|e| e.to_string())
 }
 
 fn save_credentials(token: &UserToken) {
@@ -210,7 +210,7 @@ pub async fn restore_session(app: tauri::AppHandle) -> Result<Option<User>, Stri
         Ok(s) => s,
         // No stored credentials — first launch or after logout. Not an error;
         // the frontend treats `Ok(None)` as "show the login screen, no toast".
-        Err(keyring::Error::NoEntry) => return Ok(None),
+        Err(keyring_core::Error::NoEntry) => return Ok(None),
         Err(e) => return Err(e.to_string()),
     };
     let creds: StoredCredentials = serde_json::from_str(&json).map_err(|e| e.to_string())?;
@@ -234,7 +234,7 @@ pub async fn restore_session(app: tauri::AppHandle) -> Result<Option<User>, Stri
     for scope in &required {
         if !token_scopes.contains(scope) {
             if let Ok(entry) = keyring_entry() {
-                let _ = entry.delete_password();
+                let _ = entry.delete_credential();
             }
             return Err(format!(
                 "Token missing scope: {scope}, please re-authenticate"
@@ -255,7 +255,7 @@ pub async fn revoke_session(app: tauri::AppHandle) -> Result<(), String> {
         let _ = request_revoke(t).await;
     }
     if let Ok(entry) = keyring_entry() {
-        let _ = entry.delete_password();
+        let _ = entry.delete_credential();
     }
     *app.state::<TwitchState>().token.lock().unwrap() = None;
     *app.state::<TwitchState>().eventsub_tx.lock().unwrap() = None;
