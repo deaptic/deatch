@@ -32,6 +32,7 @@ async function connect(): Promise<boolean> {
   try {
     await invoke("discord_connect", {});
     connected = true;
+    lastSerialized = null;
     return true;
   } catch {
     connected = false;
@@ -94,6 +95,7 @@ async function flush(activity: DiscordActivity): Promise<void> {
     lastSerialized = serialized;
   } catch {
     connected = false;
+    lastSerialized = null;
   }
 }
 
