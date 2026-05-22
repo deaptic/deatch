@@ -4,7 +4,7 @@ import FeedMessageToolbar from "./FeedMessageToolbar";
 import FeedMessageFragment from "./FeedMessageFragment";
 import BadgeBox from "../../ui/BadgeBox";
 import DisplayName from "../../ui/DisplayName";
-import Time from "../../ui/Time";
+import Timestamp from "../../ui/Timestamp";
 import type { FeedMessage as Message, BadgeMap } from "../../types";
 import { matchesAnyKeyword } from "../../state/preferences";
 
@@ -102,7 +102,7 @@ export default function FeedMessage(props: Props) {
         />
       </Show>
       <Show when={props.showTimestamp}>
-        <Time ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
+        <Timestamp ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
       </Show>
       <div class="wrap-break-word min-w-0">
         <Show when={props.item.reply}>

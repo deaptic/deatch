@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import type { User } from "../../commands/users";
 import type { GetChannelFollowersResponse } from "../../commands/channels";
 import CopyableField from "../../ui/CopyableField";
-import Time from "../../ui/Time";
+import Timestamp from "../../ui/Timestamp";
 import AtIcon from "../../icons/AtIcon";
 import CalendarIcon from "../../icons/CalendarIcon";
 import HashIcon from "../../icons/HashIcon";
@@ -41,7 +41,7 @@ export default function UserCardMeta(props: Props) {
           copy={props.user!.created_at}
           icon={<CalendarIcon class={ICON_CLASS} />}
         >
-          <Time ts={props.user!.created_at} type="date" />
+          <Timestamp ts={props.user!.created_at} format="D" />
         </CopyableField>
       </Show>
       <Show
@@ -60,7 +60,7 @@ export default function UserCardMeta(props: Props) {
           copy={props.follower!.followed_at}
           icon={<HeartIcon class={ICON_CLASS} />}
         >
-          <Time ts={props.follower!.followed_at} type="date" />
+          <Timestamp ts={props.follower!.followed_at} format="D" />
         </CopyableField>
       </Show>
     </div>
