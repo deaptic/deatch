@@ -34,6 +34,7 @@ import {
   setUserNickname,
   removeUserNickname,
   advancedDeveloperMode,
+  feedShowCopypasta,
 } from "../../state/preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
 
@@ -293,6 +294,7 @@ export default function Chat(props: Props) {
             isMod={isMod()}
             broadcasterId={props.broadcasterId}
             developerMode={advancedDeveloperMode()}
+            showCopypasta={feedShowCopypasta()}
             onClose={closeContextMenu}
             onReply={startReply}
             onCopypasta={copypasta}

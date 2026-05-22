@@ -16,6 +16,7 @@ type Props = {
   isMod: boolean;
   broadcasterId: string;
   developerMode: boolean;
+  showCopypasta: boolean;
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
   onCopypasta: (msg: FeedMessage) => void;
@@ -34,12 +35,14 @@ export default function MessageContextMenu(props: Props) {
         icon={<CopyIcon class="w-3.5 h-3.5" />}
         onClick={() => { navigator.clipboard.writeText(props.msg.fragments.map((f) => f.text).join("")); props.onClose(); }}
       />
-      <ContextMenuDivider />
-      <ContextMenuItem
-        label="Copypasta"
-        icon={<PastaIcon class="w-3.5 h-3.5" />}
-        onClick={() => { props.onCopypasta(props.msg); props.onClose(); }}
-      />
+      <Show when={props.showCopypasta}>
+        <ContextMenuDivider />
+        <ContextMenuItem
+          label="Copypasta"
+          icon={<PastaIcon class="w-3.5 h-3.5" />}
+          onClick={() => { props.onCopypasta(props.msg); props.onClose(); }}
+        />
+      </Show>
       <Show when={props.isMod}>
         <ContextMenuDivider />
         <ContextMenuItem
