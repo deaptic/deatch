@@ -20,6 +20,8 @@ import { selectedChannel } from "../../state/channels";
 import { getUsers } from "../../commands/users";
 import EmoteGrid from "./EmoteGrid";
 import EmotePickerSection from "./EmotePickerSection";
+import Navigation from "../../ui/Navigation";
+import NavigationItem from "../../ui/NavigationItem";
 import { captureFocusForRestore } from "../../utils/focus";
 import { shortcutManager } from "../../managers/ShortcutManager";
 import type { EmoteGridItem } from "./types";
@@ -297,27 +299,21 @@ export default function EmotePicker(props: Props) {
         class="fixed right-2 z-40 w-80 h-96 bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col"
         style={{ bottom: `${bottomOffset()}px` }}
       >
-        <div class="flex border-b border-border-muted shrink-0">
+        <Navigation fill class="border-b border-border-muted shrink-0">
           <For each={TABS}>
             {(t) => (
-              <button
-                onMouseDown={(e) => e.preventDefault()}
+              <NavigationItem
+                label={t.label}
+                active={tab() === t.id}
                 onClick={() => {
                   setTab(t.id);
                   setSearch("");
                   searchRef?.focus();
                 }}
-                class={`flex-1 py-2 text-xs font-semibold transition-colors cursor-pointer ${
-                  tab() === t.id
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-text-muted hover:text-text"
-                }`}
-              >
-                {t.label}
-              </button>
+              />
             )}
           </For>
-        </div>
+        </Navigation>
 
         <div class="p-2 border-b border-border-muted shrink-0">
           <input
