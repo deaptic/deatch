@@ -52,13 +52,17 @@ pub async fn discord_disconnect(state: State<'_, DiscordState>) -> Result<(), St
 #[tauri::command]
 pub async fn discord_set_activity(
     details: Option<String>,
+    details_url: Option<String>,
     state_text: Option<String>,
+    state_url: Option<String>,
     large_image: Option<String>,
     large_text: Option<String>,
+    large_url: Option<String>,
     small_image: Option<String>,
     small_text: Option<String>,
     started_at: Option<i64>,
     activity_type: Option<String>,
+    status_display_type: Option<String>,
     buttons: Option<Vec<DiscordButton>>,
     state: State<'_, DiscordState>,
 ) -> Result<(), String> {
@@ -71,8 +75,14 @@ pub async fn discord_set_activity(
     if let Some(d) = details.as_deref().filter(|s| !s.is_empty()) {
         activity = activity.details(d);
     }
+    if let Some(u) = details_url.as_deref().filter(|s| !s.is_empty()) {
+        activity = activity.details_url(u);
+    }
     if let Some(s) = state_text.as_deref().filter(|s| !s.is_empty()) {
         activity = activity.state(s);
+    }
+    if let Some(u) = state_url.as_deref().filter(|s| !s.is_empty()) {
+        activity = activity.state_url(u);
     }
     if let Some(kind) = activity_type.as_deref() {
         let parsed = match kind {
@@ -86,6 +96,17 @@ pub async fn discord_set_activity(
             activity = activity.activity_type(t);
         }
     }
+    if let Some(kind) = status_display_type.as_deref() {
+        let parsed = match kind {
+            "name" => Some(activity::StatusDisplayType::Name),
+            "state" => Some(activity::StatusDisplayType::State),
+            "details" => Some(activity::StatusDisplayType::Details),
+            _ => None,
+        };
+        if let Some(t) = parsed {
+            activity = activity.status_display_type(t);
+        }
+    }
 
     let mut assets = activity::Assets::new();
     let mut has_assets = false;
@@ -95,6 +116,10 @@ pub async fn discord_set_activity(
     }
     if let Some(v) = large_text.as_deref().filter(|s| !s.is_empty()) {
         assets = assets.large_text(v);
+        has_assets = true;
+    }
+    if let Some(v) = large_url.as_deref().filter(|s| !s.is_empty()) {
+        assets = assets.large_url(v);
         has_assets = true;
     }
     if let Some(v) = small_image.as_deref().filter(|s| !s.is_empty()) {
