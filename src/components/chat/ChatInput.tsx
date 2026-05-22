@@ -18,7 +18,7 @@ import { ensureUserEmotesLoaded } from "../../services/emotes";
 import EmotePicker from "../emotes/EmotePicker";
 import Suggestions from "../suggestions/Suggestions";
 import { chattersByChannel, isBroadcasterOfChannel, isModOfChannel } from "../../state/users";
-import { feedUserNickname } from "../../state/preferences";
+import { feedUserNickname, moderationActionsDisabled } from "../../state/preferences";
 import { isPanelOpen, setOpenPanel, togglePanel } from "../../state/ui";
 import SmileIcon from "../../icons/SmileIcon";
 import { pushSentHistory, getSentHistory } from "../../state/chatHistory";
@@ -27,6 +27,7 @@ type ReplyTo = { messageId: string; name: string; text: string };
 
 function canRunCommand(cmd: Command, broadcasterId: string): boolean {
   if (cmd.role === "regular") return true;
+  if (moderationActionsDisabled()) return false;
   if (cmd.role === "broadcaster") return isBroadcasterOfChannel(broadcasterId);
   return isModOfChannel(broadcasterId);
 }

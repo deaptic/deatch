@@ -35,6 +35,7 @@ import {
   removeUserNickname,
   advancedDeveloperMode,
   feedShowCopypasta,
+  moderationActionsDisabled,
 } from "../../state/preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
 
@@ -69,8 +70,9 @@ export default function Chat(props: Props) {
   }));
 
   const isMod = () =>
-    props.broadcasterLogin === props.userLogin ||
-    moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId);
+    !moderationActionsDisabled() &&
+    (props.broadcasterLogin === props.userLogin ||
+      moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId));
 
   createEffect(() => {
     const api = feedApi();

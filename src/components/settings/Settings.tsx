@@ -56,6 +56,8 @@ import {
   setNotificationsMentionSound,
   moderationAutoShoutoutOnRaid,
   setModerationAutoShoutoutOnRaid,
+  moderationActionsDisabled,
+  setModerationActionsDisabled,
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
   advancedShowLogs,
@@ -181,6 +183,16 @@ export default function Settings(props: Props) {
                     size="md"
                     checked={moderationAutoShoutoutOnRaid()}
                     onChange={setModerationAutoShoutoutOnRaid}
+                  />
+                </SettingsContentSectionItem>
+                <SettingsContentSectionItem
+                  label="Disable moderation actions"
+                  description="Hide ban, timeout, delete and other moderation controls in every channel — including ones you broadcast or moderate."
+                >
+                  <Toggle
+                    size="md"
+                    checked={moderationActionsDisabled()}
+                    onChange={setModerationActionsDisabled}
                   />
                 </SettingsContentSectionItem>
               </SettingsContentSection>
