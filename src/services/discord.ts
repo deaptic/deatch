@@ -2,18 +2,23 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Channel } from "../types";
 
 type DiscordActivityType = "playing" | "listening" | "watching" | "competing";
+type DiscordStatusDisplay = "name" | "state" | "details";
 
 type DiscordButton = { label: string; url: string };
 
 type DiscordActivity = {
   details?: string;
+  detailsUrl?: string;
   stateText?: string;
+  stateUrl?: string;
   largeImage?: string;
   largeText?: string;
+  largeUrl?: string;
   smallImage?: string;
   smallText?: string;
   startedAt?: number;
   activityType?: DiscordActivityType;
+  statusDisplayType?: DiscordStatusDisplay;
   buttons?: DiscordButton[];
 };
 
@@ -73,13 +78,17 @@ async function flush(activity: DiscordActivity): Promise<void> {
   try {
     await invoke("discord_set_activity", {
       details: activity.details ?? null,
+      detailsUrl: activity.detailsUrl ?? null,
       stateText: activity.stateText ?? null,
+      stateUrl: activity.stateUrl ?? null,
       largeImage: activity.largeImage ?? null,
       largeText: activity.largeText ?? null,
+      largeUrl: activity.largeUrl ?? null,
       smallImage: activity.smallImage ?? null,
       smallText: activity.smallText ?? null,
       startedAt: activity.startedAt ?? null,
       activityType: activity.activityType ?? null,
+      statusDisplayType: activity.statusDisplayType ?? null,
       buttons: activity.buttons ?? null,
     });
     lastSerialized = serialized;
@@ -141,6 +150,7 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
       largeText: "Deatch",
       startedAt: activityStartedAt,
       activityType: "watching",
+      statusDisplayType: "details",
     });
   } else if (ch) {
     const live = ctx.liveChannels.find((c) => c.user_id === ch.user_id);
@@ -155,16 +165,24 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
     const streamStartedAt = live?.started_at
       ? Math.floor(new Date(live.started_at).getTime() / 1000)
       : null;
+    const channelUrl = `https://twitch.tv/${ch.user_login}`;
+    const categoryUrl = live?.game_name
+      ? `https://www.twitch.tv/directory/game/${encodeURIComponent(live.game_name)}`
+      : undefined;
     scheduleActivity({
       details: ch.user_name || ch.user_login,
+      detailsUrl: channelUrl,
       stateText,
+      stateUrl: categoryUrl,
       largeImage: ch.profile_image_url || "app_logo",
       largeText: live?.title ? clamp(live.title, 128) : ch.user_name || ch.user_login,
+      largeUrl: channelUrl,
       smallImage: "app_logo",
       smallText: "Deatch",
       startedAt: streamStartedAt ?? activityStartedAt,
       activityType: "watching",
-      buttons: [{ label: "Open on Twitch", url: `https://twitch.tv/${ch.user_login}` }],
+      statusDisplayType: "details",
+      buttons: [{ label: "Open on Twitch", url: channelUrl }],
     });
   } else {
     scheduleActivity({
@@ -174,6 +192,7 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
       largeText: "Deatch",
       startedAt: activityStartedAt,
       activityType: "watching",
+      statusDisplayType: "details",
     });
   }
   void connect();
