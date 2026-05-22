@@ -1,6 +1,7 @@
 import { For, Show } from "solid-js";
 import { banUser, unbanUser } from "../../commands/moderation";
 import { user as currentUser, moderatedChannels } from "../../state/users";
+import { moderationActionsDisabled } from "../../state/preferences";
 import Button from "../../ui/Button";
 import BanIcon from "../../icons/BanIcon";
 
@@ -22,6 +23,7 @@ type Props = {
 
 export default function UserCardModActions(props: Props) {
   const canModerate = () => {
+    if (moderationActionsDisabled()) return false;
     const me = currentUser();
     if (!me) return false;
     if (me.id === props.chatterId) return false;

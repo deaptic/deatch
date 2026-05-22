@@ -33,7 +33,8 @@
     "mentionSound": true
   },
   "moderation": {
-    "autoShoutoutOnRaid": false
+    "autoShoutoutOnRaid": false,
+    "actionsDisabled": false
   },
   "advanced": {
     "developerMode": false,

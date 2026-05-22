@@ -27,6 +27,7 @@ export type UserPreferences = {
   };
   moderation: {
     autoShoutoutOnRaid: boolean;
+    actionsDisabled: boolean;
   };
   advanced: {
     developerMode: boolean;
@@ -104,6 +105,8 @@ function load(): UserPreferences {
       moderation: {
         autoShoutoutOnRaid:
           stored.moderation?.autoShoutoutOnRaid ?? DEFAULT_PREFERENCES.moderation.autoShoutoutOnRaid,
+        actionsDisabled:
+          stored.moderation?.actionsDisabled ?? DEFAULT_PREFERENCES.moderation.actionsDisabled,
       },
       advanced: {
         developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
@@ -149,6 +152,7 @@ export const feedUserNickname = (login: string) => prefs.feed.users.nicknames[lo
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const notificationsMentionSound = () => prefs.notifications.mentionSound;
 export const moderationAutoShoutoutOnRaid = () => prefs.moderation.autoShoutoutOnRaid;
+export const moderationActionsDisabled = () => prefs.moderation.actionsDisabled;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
 export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
@@ -276,6 +280,11 @@ export function setNotificationsMentionSound(value: boolean) {
 
 export function setModerationAutoShoutoutOnRaid(value: boolean) {
   setPrefs("moderation", "autoShoutoutOnRaid", value);
+  persist();
+}
+
+export function setModerationActionsDisabled(value: boolean) {
+  setPrefs("moderation", "actionsDisabled", value);
   persist();
 }
 
