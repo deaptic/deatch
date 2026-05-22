@@ -2,6 +2,7 @@ import { createSignal, createEffect } from "solid-js";
 import { getUsers, type User } from "../../commands/users";
 import {
   getChannelFollowers,
+  getFollowedChannels,
   type GetChannelFollowersResponse,
 } from "../../commands/channels";
 import { user as currentUser, moderatedChannels } from "../../state/users";
@@ -39,6 +40,25 @@ export default function UserCardHeader(props: Props) {
     getUsers({ userIds: [id] })
       .then((users) => setUser(users[0] ?? null))
       .catch(() => {});
+    const me = currentUser();
+    if (me && id === me.id) {
+      getFollowedChannels(
+        { userId: id, broadcasterId: props.broadcasterId },
+        { silent: true },
+      )
+        .then((rows) => {
+          const row = rows[0];
+          if (!row) return;
+          setFollower({
+            user_id: id,
+            user_login: me.login,
+            user_name: me.display_name,
+            followed_at: row.followed_at,
+          });
+        })
+        .catch(() => {});
+      return;
+    }
     if (!canQueryFollowers()) return;
     getChannelFollowers(
       { broadcasterId: props.broadcasterId, userId: id, first: 1 },
