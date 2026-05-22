@@ -39,6 +39,7 @@ import {
   unmuteUser,
 } from "../../state/preferences";
 import { appendLocalNotice } from "../../state/feeds";
+import { Time } from "../../utils/time";
 import type { Command } from "./types";
 
 function loginFromUserId(userId: string): string | null {
@@ -496,10 +497,10 @@ const deatchCommands: Command[] = [
           appendLocalNotice(ctx.broadcasterId, "You're not following this channel");
           return;
         }
-        const since = new Date(f.followed_at).toLocaleDateString("en-GB", {
-          day: "numeric", month: "short", year: "numeric",
-        });
-        appendLocalNotice(ctx.broadcasterId, `Following since ${since}`);
+        appendLocalNotice(
+          ctx.broadcasterId,
+          `You started following ${new Time(f.followed_at, "R")}`,
+        );
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch followage");
       }

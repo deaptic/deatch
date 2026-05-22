@@ -1,6 +1,7 @@
 import type { RawChatMessage } from "../types";
 import { getChannelFollowers } from "../commands/channels";
 import { sendChatMessage } from "../commands/chat";
+import { Time } from "../utils/time";
 
 export async function handleFollowageCommand(raw: RawChatMessage) {
   try {
@@ -10,7 +11,7 @@ export async function handleFollowageCommand(raw: RawChatMessage) {
     );
     const follower = res.data[0];
     const message = follower
-      ? `You have been following since ${new Date(follower.followed_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+      ? `You started following ${new Time(follower.followed_at, "R")}`
       : `You are not following yet`;
     await sendChatMessage({
       broadcasterId: raw.broadcaster_user_id,

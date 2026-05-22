@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import type { FeedEvent as Event } from "../../types";
-import Time from "../../ui/Time";
+import Timestamp from "../../ui/Timestamp";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";
@@ -56,7 +56,7 @@ export default function FeedEvent(props: Props) {
       }}
     >
       <Show when={props.showTimestamp}>
-        <Time ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
+        <Timestamp ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
       </Show>
       <span class="text-text font-semibold wrap-break-word min-w-0">
         {props.item.system_message}
