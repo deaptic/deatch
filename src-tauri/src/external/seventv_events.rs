@@ -81,7 +81,7 @@ fn payload(op: u8, set_id: &str) -> Message {
     Message::Text(json!({
         "op": op,
         "d": { "type": EMOTE_SET_UPDATE, "condition": { "object_id": set_id } }
-    }).to_string())
+    }).to_string().into())
 }
 
 fn emit_delta(app: &tauri::AppHandle, text: &str) {
