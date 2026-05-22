@@ -2,6 +2,9 @@ import { createSignal, Show } from "solid-js";
 import StreamTooltip from "./StreamTooltip";
 import type { Channel } from "../../types";
 
+const DEFAULT_AVATAR =
+  "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
+
 type Props = {
   channel: Channel;
   status?: "live" | "self";
@@ -16,11 +19,14 @@ type Props = {
 };
 
 export default function MenuSectionItem(props: Props) {
-  const [tooltip, setTooltip] = createSignal<{ x: number; y: number } | null>(null);
+  const [tooltip, setTooltip] = createSignal<{ x: number; y: number } | null>(
+    null,
+  );
 
   return (
     <>
       <button
+        type="button"
         onClick={props.onClick}
         onAuxClick={(e) => {
           if (e.button !== 1 || !props.onMiddleClick) return;
@@ -58,10 +64,12 @@ export default function MenuSectionItem(props: Props) {
         </Show>
         <div class="relative shrink-0">
           <img
-            src={props.channel.profile_image_url || "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"}
+            src={props.channel.profile_image_url || DEFAULT_AVATAR}
             alt={props.channel.user_name}
             class={`w-8 h-8 rounded-lg transition-opacity ${
-              props.status || props.selected ? "opacity-100" : "opacity-50 group-hover:opacity-100"
+              props.status || props.selected
+                ? "opacity-100"
+                : "opacity-50 group-hover:opacity-100"
             }`}
           />
           <Show when={(props.mentions ?? 0) > 0}>
@@ -75,7 +83,12 @@ export default function MenuSectionItem(props: Props) {
       </button>
       <Show when={tooltip()}>
         {(t) => (
-          <StreamTooltip x={t().x} y={t().y} channel={props.channel} live={props.status === "live"} />
+          <StreamTooltip
+            x={t().x}
+            y={t().y}
+            channel={props.channel}
+            live={props.status === "live"}
+          />
         )}
       </Show>
     </>

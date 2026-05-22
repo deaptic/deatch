@@ -3,8 +3,8 @@ import { createStore } from "solid-js/store";
 import { Portal } from "solid-js/web";
 import { getUsers } from "../../commands/users";
 import type { TwitchUser } from "../../types";
-import SettingsNavigation from "./SettingsNavigation";
-import SettingsNavigationItem from "./SettingsNavigationItem";
+import Navigation from "../../ui/Navigation";
+import NavigationItem from "../../ui/NavigationItem";
 import SettingsContent from "./SettingsContent";
 import SettingsContentSection from "./SettingsContentSection";
 import SettingsContentSectionItem from "./SettingsContentSectionItem";
@@ -143,10 +143,13 @@ export default function Settings(props: Props) {
           <span class="text-text text-sm font-semibold flex-1">Settings</span>
         </div>
         <div class="flex-1 flex min-h-0">
-          <SettingsNavigation>
+          <Navigation
+            orientation="vertical"
+            class="w-48 shrink-0 border-r border-border-muted bg-bg-dark py-3"
+          >
             <For each={SECTIONS}>
               {(s) => (
-                <SettingsNavigationItem
+                <NavigationItem
                   label={s.label}
                   icon={<s.Icon class="w-3.5 h-3.5" />}
                   active={section() === s.key}
@@ -154,7 +157,7 @@ export default function Settings(props: Props) {
                 />
               )}
             </For>
-          </SettingsNavigation>
+          </Navigation>
           <Show when={section() === "notifications"}>
             <SettingsContent title="Notifications">
               <SettingsContentSection>

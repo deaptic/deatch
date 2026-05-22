@@ -351,9 +351,7 @@ export default function Menu(props: Props) {
       <MenuSection divider="top">
         <button
           type="button"
-          onClick={() =>
-            setWatchActive(!watchActive())
-          }
+          onClick={() => setWatchActive(!watchActive())}
           title={
             watchActive()
               ? "Watch mode active — click to stop following"
