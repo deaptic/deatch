@@ -6,8 +6,33 @@ pub mod ipc;
 mod keymap;
 mod twitch;
 
+fn init_keyring_store() {
+    #[cfg(target_os = "windows")]
+    {
+        match windows_native_keyring_store::Store::new() {
+            Ok(store) => keyring_core::set_default_store(store),
+            Err(e) => eprintln!("keyring store init failed: {e}"),
+        }
+    }
+    #[cfg(target_os = "macos")]
+    {
+        match apple_native_keyring_store::Store::new() {
+            Ok(store) => keyring_core::set_default_store(store),
+            Err(e) => eprintln!("keyring store init failed: {e}"),
+        }
+    }
+    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+    {
+        match dbus_secret_service_keyring_store::Store::new() {
+            Ok(store) => keyring_core::set_default_store(store),
+            Err(e) => eprintln!("keyring store init failed: {e}"),
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    init_keyring_store();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())

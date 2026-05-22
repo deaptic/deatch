@@ -28,7 +28,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 twitch_api = { version = "0.7", features = ["helix", "twitch_oauth2", "reqwest", "client", "eventsub", "beta"] }
 reqwest = { version = "0.12", features = ["json"] }
-keyring = "2"
+keyring-core = "1"
 url = "2"
 tokio = { version = "1", features = ["net", "io-util", "sync", "macros", "time"] }
 tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
@@ -38,4 +38,11 @@ interprocess = { version = "2", features = ["tokio"] }
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.52"
+windows-native-keyring-store = "1"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-native-keyring-store = { version = "1", features = ["keychain"] }
+
+[target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dependencies]
+dbus-secret-service-keyring-store = { version = "1", features = ["crypto-rust"] }
 
