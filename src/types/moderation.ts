@@ -1,4 +1,3 @@
-// EventSub: chat moderation (deletes / clears).
 export type RawChatMessageDelete = {
   broadcaster_user_id: string;
   message_id: string;
@@ -18,7 +17,6 @@ export type RawChatClearUserMessages = {
   target_user_name: string;
 };
 
-// EventSub: channel.moderate (mod-only, all moderator actions).
 type RawModerateBase = {
   broadcaster_user_id: string;
   broadcaster_user_login: string;
@@ -62,7 +60,6 @@ export type RawModerate = RawModerateBase &
     | { action: "warn"; warn: RawModUser & { reason: string | null } }
   );
 
-// EventSub: automod.message.hold v2.
 export type AutomodHeldReason =
   | {
       reason: "automod";

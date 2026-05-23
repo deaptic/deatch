@@ -24,9 +24,6 @@ export type ChannelFeed = {
   backfilled: boolean;
 };
 
-// Per-category caps. Items are categorized by `categoryOf` — chat messages
-// share one bucket, each event `notice_type` is its own bucket, and anything
-// not listed here falls back to `DEFAULT_CAP`.
 const CATEGORY_CAPS: Record<string, number> = {
   message: 400,
 };
@@ -81,12 +78,11 @@ export function hasUnread(id: string): boolean {
   const feed = feeds[id];
   if (!feed) return false;
   if (selectedChannel()?.user_id === id) return false;
-  if (feed.dividerAtItemId) {
-    const last = lastVisible(feed);
-    return last !== undefined && getItemId(last) !== feed.dividerAtItemId;
-  }
-  if (feed.lastSeenItemId) return false;
-  return lastVisible(feed) !== undefined;
+  const last = lastVisible(feed);
+  if (!last) return false;
+  const marker = feed.dividerAtItemId ?? feed.lastSeenItemId;
+  if (!marker) return true;
+  return getItemId(last) !== marker;
 }
 
 export function markSeen(id: string) {
@@ -177,8 +173,6 @@ export function appendItem(id: string, item: FeedItem) {
   }
 }
 
-/// Inject a client-only system message that only this user sees.
-/// Never sent over IRC/Helix.
 export function appendLocalNotice(id: string, text: string) {
   appendItem(id, {
     kind: "event",
@@ -192,10 +186,6 @@ export function appendLocalNotice(id: string, text: string) {
   });
 }
 
-/// Inserts older items at the front of the feed. Used for the one-time
-/// backlog hydration from robotty when a channel is first joined. Items
-/// already present (by id) are skipped, and the input is sorted oldest →
-/// newest before being prepended so the order matches the live stream.
 export function prependItems(id: string, items: FeedItem[]) {
   ensureFeed(id);
   for (const it of items) {
@@ -222,18 +212,14 @@ export function prependItems(id: string, items: FeedItem[]) {
           enforceCaps(f.messages);
         }
       }
-      // Backlog is history, not new chat. Mark it as already-seen so that
-      // switching away from this channel doesn't carry it into the menu
-      // unread badge (snapshotDivider only sets a divider when something
-      // has been seen).
+      // Mark backlog as already-seen so it doesn't count as unread.
       if (!f.lastSeenItemId && f.messages.length > 0) {
         f.lastSeenItemId = getItemId(f.messages[f.messages.length - 1]);
       }
     }),
   );
-  // Feed the input-recall history with our own backlog messages. Iterate
-  // newest → oldest so that the newest backlog entry ends up just behind
-  // any live entries already captured.
+  // Iterate newest → oldest so the newest backlog entry lands just behind
+  // any live entries already in the sent-history.
   if (items.length > 0 && user()) {
     const sorted = [...items].sort((a, b) => b.timestamp - a.timestamp);
     for (const it of sorted) {
@@ -275,9 +261,6 @@ export function dropFeed(id: string) {
   setFeeds(id, undefined as unknown as ChannelFeed);
 }
 
-/// Whether an item should render in the feed given the user's event-filter,
-/// muted-user, and notice-category preferences. Reads preference signals
-/// directly so it stays reactive when called inside a Solid effect or memo.
 export function isFeedItemVisible(item: FeedItem): boolean {
   if (item.kind === "event") {
     const k = NOTICE_TO_EVENT[item.notice_type];
