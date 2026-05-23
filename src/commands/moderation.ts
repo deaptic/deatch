@@ -197,3 +197,27 @@ export function warnUser(
 ): Promise<void> {
   return invokeCommand("warn_user", params, { successMessage: "User warned", ...options });
 }
+
+export type ManageHeldAutomodMessageParams = {
+  msgId: string;
+};
+
+export function approveHeldAutomodMessage(
+  params: ManageHeldAutomodMessageParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("approve_held_automod_message", params, {
+    successMessage: "Message approved",
+    ...options,
+  });
+}
+
+export function denyHeldAutomodMessage(
+  params: ManageHeldAutomodMessageParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("deny_held_automod_message", params, {
+    successMessage: "Message denied",
+    ...options,
+  });
+}

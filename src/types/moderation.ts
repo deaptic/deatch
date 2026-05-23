@@ -61,3 +61,37 @@ export type RawModerate = RawModerateBase &
     | { action: "uniquechatoff" }
     | { action: "warn"; warn: RawModUser & { reason: string | null } }
   );
+
+// EventSub: automod.message.hold v2.
+export type AutomodHeldReason =
+  | {
+      reason: "automod";
+      automod: { category: string; level: number; boosts_immunity: boolean };
+    }
+  | {
+      reason: "blocked_term";
+      blocked_term: {
+        terms_found: { term_id: string; boundary: { start_pos: number; end_pos: number } }[];
+      };
+    };
+
+type RawAutomodFragment =
+  | { type: "text"; text: string }
+  | { type: "emote"; text: string; emote: { id: string; emote_set_id: string } }
+  | {
+      type: "cheermote";
+      text: string;
+      cheermote: { prefix: string; bits: number; tier: number };
+    };
+
+export type RawAutomodMessageHold = {
+  broadcaster_user_id: string;
+  broadcaster_user_login: string;
+  broadcaster_user_name: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  message_id: string;
+  message: { text: string; fragments: RawAutomodFragment[] };
+  held_at: string;
+} & AutomodHeldReason;

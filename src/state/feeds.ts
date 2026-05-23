@@ -283,9 +283,31 @@ export function isFeedItemVisible(item: FeedItem): boolean {
     const k = NOTICE_TO_EVENT[item.notice_type];
     return !k || feedEvents()[k]?.show !== false;
   }
+  if (item.automod_hold) {
+    return !feedUserMuted().includes(item.chatter_user_id);
+  }
   return (
     feedEvents().message?.show !== false &&
     !feedUserMuted().includes(item.chatter_user_id)
+  );
+}
+
+export function setAutomodHoldStatus(
+  broadcasterId: string,
+  messageId: string,
+  status: import("../types").AutomodHoldStatus,
+) {
+  if (!feeds[broadcasterId]) return;
+  setFeeds(
+    broadcasterId,
+    produce((f) => {
+      const item = f.messages.find(
+        (m) => m.kind === "message" && m.message_id === messageId,
+      );
+      if (item && item.kind === "message" && item.automod_hold) {
+        item.automod_hold.status = status;
+      }
+    }),
   );
 }
 

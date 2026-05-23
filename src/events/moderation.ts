@@ -1,6 +1,9 @@
 import { listen } from "@tauri-apps/api/event";
 import type {
   FeedEvent,
+  FeedMessage,
+  Fragment,
+  RawAutomodMessageHold,
   RawChatMessageDelete,
   RawChatClear,
   RawChatClearUserMessages,
@@ -123,4 +126,36 @@ listen<RawModerateEvent>("channel-moderate", (e) => {
     timestamp: now,
   };
   appendItem(payload.broadcaster_user_id, notice);
+});
+
+function mapAutomodFragment(f: RawAutomodMessageHold["message"]["fragments"][number]): Fragment {
+  if (f.type === "emote") return { type: "emote", text: f.text, id: f.emote.id };
+  if (f.type === "cheermote") return { type: "cheermote", text: f.text };
+  return { type: "text", text: f.text };
+}
+
+function automodReasonLabel(p: RawAutomodMessageHold): string {
+  if (p.reason === "blocked_term") return "Blocked term";
+  return `AutoMod: ${p.automod.category} (level ${p.automod.level})`;
+}
+
+listen<RawAutomodMessageHold>("automod-message-hold", (e) => {
+  const p = e.payload;
+  const item: FeedMessage = {
+    kind: "message",
+    message_id: p.message_id,
+    chatter_user_id: p.user_id,
+    chatter_login: p.user_login,
+    chatter_name: p.user_name,
+    color: "",
+    fragments: p.message.fragments.map(mapAutomodFragment),
+    badges: [],
+    timestamp: new Date(p.held_at).getTime() || Date.now(),
+    automod_hold: {
+      reason: automodReasonLabel(p),
+      status: "pending",
+      broadcaster_user_id: p.broadcaster_user_id,
+    },
+  };
+  appendItem(p.broadcaster_user_id, item);
 });

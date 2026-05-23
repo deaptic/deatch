@@ -120,6 +120,7 @@ fn get_scopes() -> Vec<Scope> {
         Scope::ModeratorManageAnnouncements,
         Scope::ModeratorManageChatSettings,
         Scope::ModeratorManageWarnings,
+        Scope::ModeratorManageAutoMod,
         Scope::ModeratorReadFollowers,
         Scope::ModeratorManageBannedUsers,
         Scope::ModeratorReadBlockedTerms,

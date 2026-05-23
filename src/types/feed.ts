@@ -18,6 +18,22 @@ type FeedReply = {
 
 export type BadgeMap = Record<string, { url: string; title: string }>;
 
+export type AutomodHoldStatus =
+  | "pending"
+  | "approving"
+  | "denying"
+  | "approved"
+  | "denied";
+
+export type AutomodHoldInfo = {
+  reason: string;
+  status: AutomodHoldStatus;
+  /// Carried so the Approve/Deny actions can locate the message back in the
+  /// per-broadcaster feed store without having to thread broadcasterId
+  /// through every component that renders a message.
+  broadcaster_user_id: string;
+};
+
 export type FeedMessage = {
   kind: "message";
   message_id: string;
@@ -32,6 +48,9 @@ export type FeedMessage = {
   channel_points?: boolean;
   first_message?: boolean;
   deleted?: boolean;
+  /// Present only when this message was held by AutoMod and is awaiting a
+  /// moderator decision. Drives the warning highlight + Approve/Deny actions.
+  automod_hold?: AutomodHoldInfo;
 };
 
 export type FeedEvent = {

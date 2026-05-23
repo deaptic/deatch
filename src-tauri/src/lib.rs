@@ -100,6 +100,8 @@ pub fn run() {
             twitch::moderation::start_raid,
             twitch::moderation::cancel_raid,
             twitch::moderation::warn_user,
+            twitch::moderation::approve_held_automod_message,
+            twitch::moderation::deny_held_automod_message,
             twitch::channels::get_channel_followers,
             twitch::channels::get_all_channel_followers,
             twitch::channels::get_followed_channels,
