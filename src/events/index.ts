@@ -1,6 +1,4 @@
 import { listen } from "@tauri-apps/api/event";
-import type { UserEmote } from "../types";
-import { appendUserEmotes } from "../state/emotes";
 
 import "./auth";
 import "./chat";
@@ -14,8 +12,4 @@ export { mapChatMessage } from "./chat-mapper";
 
 listen<string>("eventsub-error", (e) => {
   console.error("EventSub error:", e.payload);
-});
-
-listen<UserEmote[]>("user-emote-page", (e) => {
-  appendUserEmotes(e.payload);
 });

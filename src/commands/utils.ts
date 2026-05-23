@@ -1,8 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 import { advancedShowLogs } from "../state/preferences";
 import { addToast } from "../state/toasts";
+import type { PaginatedResponse } from "../types/pagination";
 
-export type Paginated<T> = { data: T[]; pagination: { cursor: string | null } };
+export type { PaginatedResponse } from "../types/pagination";
 
 export type InvokeOptions = { silent?: boolean; successMessage?: string };
 
@@ -57,7 +58,7 @@ function summarize(result: unknown, ms: number): string {
 
 export async function fetchAllPages<T>(
   cmd: string,
-  fetcher: (after: string | undefined, options: InvokeOptions) => Promise<Paginated<T>>,
+  fetcher: (after: string | undefined, options: InvokeOptions) => Promise<PaginatedResponse<T>>,
 ): Promise<T[]> {
   const start = performance.now();
   const all: T[] = [];

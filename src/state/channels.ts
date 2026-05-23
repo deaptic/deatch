@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import type { Channel } from "../types";
+import type { Channel } from "../types/composed";
 import { menuChannelPinned } from "./preferences";
 
 const LAST_CHANNEL_KEY = "last_selected_channel";

@@ -1,5 +1,5 @@
 import { listen } from "@tauri-apps/api/event";
-import { getUsers } from "../commands/users";
+import { getUsers } from "../commands/twitch/users";
 import { rememberChannel } from "../state/channels";
 import {
   setWatchConnected,
@@ -7,7 +7,7 @@ import {
   watchWarmedChannels,
   setWatchWarmedChannels,
 } from "../state/watch";
-import type { Channel } from "../types";
+import type { Channel } from "../types/composed";
 
 listen<{ client?: string; version?: string }>("watch:hello", () => {
   setWatchConnected(true);
@@ -40,8 +40,8 @@ listen<{ channels: string[] }>("watch:sync", async (e) => {
     const fresh = users.map<Channel>((u) => ({
       user_id: u.id,
       user_login: u.login,
-      user_name: u.display_name,
-      profile_image_url: u.profile_image_url ?? "",
+      user_name: u.displayName,
+      profile_image_url: u.profileImageUrl,
     }));
     for (const ch of fresh) rememberChannel(ch);
     setWatchWarmedChannels([...keep, ...fresh]);
@@ -60,8 +60,8 @@ listen<{ channel: string; ts: number }>("watch:channel_switched", async (e) => {
     const ch: Channel = {
       user_id: u.id,
       user_login: u.login,
-      user_name: u.display_name,
-      profile_image_url: u.profile_image_url ?? "",
+      user_name: u.displayName,
+      profile_image_url: u.profileImageUrl,
     };
     rememberChannel(ch);
     setWatchedChannel(ch);

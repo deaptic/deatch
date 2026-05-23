@@ -42,15 +42,15 @@ export default function Account(props: Props) {
               <div class="group flex items-center gap-3 px-2 py-2 rounded-md bg-bg transition-colors">
                 <img
                   src={
-                    u().profile_image_url ||
+                    u().profileImageUrl ||
                     "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
                   }
-                  alt={u().display_name}
+                  alt={u().displayName}
                   class="w-10 h-10 rounded-lg shrink-0"
                 />
                 <div class="flex flex-col min-w-0 flex-1">
                   <span class="text-text text-sm font-semibold truncate">
-                    {u().display_name}
+                    {u().displayName}
                   </span>
                   <span class="text-text-muted text-xs truncate">
                     @{u().login}

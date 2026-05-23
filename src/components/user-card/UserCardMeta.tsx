@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
-import type { User } from "../../commands/users";
-import type { GetChannelFollowersResponse } from "../../commands/channels";
+import type { User } from "../../commands/twitch/users";
+import type { Follow } from "../../commands/twitch/channels";
 import CopyableField from "../../ui/CopyableField";
 import Timestamp from "../../ui/Timestamp";
 import AtIcon from "../../icons/AtIcon";
@@ -8,7 +8,7 @@ import CalendarIcon from "../../icons/CalendarIcon";
 import HashIcon from "../../icons/HashIcon";
 import HeartIcon from "../../icons/HeartIcon";
 
-type Follower = GetChannelFollowersResponse["data"][number];
+type Follower = Follow;
 
 type Props = {
   chatterId: string;
@@ -36,12 +36,12 @@ export default function UserCardMeta(props: Props) {
       >
         {props.chatterId}
       </CopyableField>
-      <Show when={props.user?.created_at}>
+      <Show when={props.user?.createdAt}>
         <CopyableField
-          copy={props.user!.created_at}
+          copy={props.user!.createdAt}
           icon={<CalendarIcon class={ICON_CLASS} />}
         >
-          <Timestamp ts={props.user!.created_at} format="D" />
+          <Timestamp ts={props.user!.createdAt} format="D" />
         </CopyableField>
       </Show>
       <Show
@@ -57,10 +57,10 @@ export default function UserCardMeta(props: Props) {
         }
       >
         <CopyableField
-          copy={props.follower!.followed_at}
+          copy={props.follower!.followedAt}
           icon={<HeartIcon class={ICON_CLASS} />}
         >
-          <Timestamp ts={props.follower!.followed_at} format="D" />
+          <Timestamp ts={props.follower!.followedAt} format="D" />
         </CopyableField>
       </Show>
     </div>

@@ -1,4 +1,4 @@
-import type { Badge } from "./chat";
+import type { MessageBadge } from "./twitch/eventsub";
 
 export type Fragment =
   | { type: "text"; text: string }
@@ -36,7 +36,7 @@ export type FeedMessage = {
   chatter_name: string;
   color: string;
   fragments: Fragment[];
-  badges: Badge[];
+  badges: MessageBadge[];
   reply?: FeedReply;
   timestamp: number;
   channel_points?: boolean;

@@ -1,29 +1,19 @@
-import { cacheUsers, pendingUserById, userCache } from "../state/users";
-import { invokeCommand, type InvokeOptions } from "./utils";
+import { cacheUsers, pendingUserById, userCache } from "../../state/users";
+import type { User } from "../../types/twitch/user";
+import { invokeCommand, type InvokeOptions } from "../utils";
+
+export type { User } from "../../types/twitch/user";
 
 export type GetUsersParams = {
-  userIds?: string[];
+  ids?: string[];
   logins?: string[];
 };
-export type User = {
-  id: string;
-  login: string;
-  display_name: string;
-  type: "" | "admin" | "global_mod" | "staff" | null;
-  broadcaster_type: "" | "affiliate" | "partner" | null;
-  description: string | null;
-  profile_image_url: string | null;
-  offline_image_url: string | null;
-  email: string | null;
-  created_at: string;
-};
-export type GetUsersResponse = User[];
 
 export async function getUsers(
   params: GetUsersParams = {},
   options?: InvokeOptions,
-): Promise<GetUsersResponse> {
-  const ids = params.userIds ?? [];
+): Promise<User[]> {
+  const ids = params.ids ?? [];
   const logins = params.logins ?? [];
 
   // Cache-first path: id-only lookups
@@ -32,9 +22,9 @@ export async function getUsers(
     const toFetch = ids.filter((id) => !cache[id] && !pendingUserById.has(id));
 
     if (toFetch.length) {
-      const promise = invokeCommand<GetUsersResponse>(
+      const promise = invokeCommand<User[]>(
         "get_users",
-        { userIds: toFetch },
+        { ids: toFetch },
         options,
       )
         .then((users) => {
@@ -56,7 +46,7 @@ export async function getUsers(
   }
 
   // Anything else (logins, mixed, empty) — pass through and cache the result.
-  const result = await invokeCommand<GetUsersResponse>("get_users", params, options);
+  const result = await invokeCommand<User[]>("get_users", params, options);
   cacheUsers(result);
   return result;
 }

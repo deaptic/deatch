@@ -1,11 +1,14 @@
-import { invoke } from "@tauri-apps/api/core";
-import { streamUserEmotes, getGlobalEmotes } from "../commands/chat";
-import type { FeedEvent, GlobalEmote, UserEmote } from "../types";
-import { loadCache, saveCache } from "../utils/cache";
-import { appendItem } from "../state/feeds";
-import { user } from "../state/users";
+import { bttvGetChannelEmotes, bttvGetGlobalEmotes } from "../commands/external/bttv";
+import { ffzGetChannelEmotes, ffzGetGlobalEmotes } from "../commands/external/ffz";
 import {
-  type EmoteEntry,
+  seventvGetChannelEmotes,
+  seventvGetGlobalEmotes,
+} from "../commands/external/seventv";
+import { seventvWatchEmoteSet } from "../commands/external/seventv_events";
+import { getGlobalEmotes, getUserEmotes } from "../commands/twitch/chat";
+import { fetchAllPages } from "../commands/utils";
+import { appendItem } from "../state/feeds";
+import {
   dedupeById,
   setBttvChannel,
   setBttvGlobal,
@@ -15,32 +18,19 @@ import {
   setSevenTvChannel,
   setSevenTvGlobal,
   setUserEmotes,
-  userEmotes,
 } from "../state/emotes";
+import { user } from "../state/users";
+import type { EmoteEntry } from "../types/external/emote";
+import type { Delta as SevenTvUpdate } from "../types/external/seventv";
+import type { Emote, UserEmote } from "../types/twitch/chat";
+import type { FeedEvent } from "../types/feed";
+import { loadCache, saveCache } from "../utils/cache";
 
-type SevenTvChannelResult = {
-  emotes: EmoteEntry[];
-  emote_set_id: string | null;
-};
-type EmoteSetter = (emotes: EmoteEntry[]) => void;
-
-export type SevenTvUpdate = {
-  id: string;
-  actor: string | null;
-  added: EmoteEntry[];
-  removed: string[];
-  renamed: { from: string; to: string }[];
-};
+export type { SevenTvUpdate };
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
-
-const THIRD_PARTY_GLOBALS: ReadonlyArray<[string, EmoteSetter]> = [
-  ["seventv_get_global_emotes", setSevenTvGlobal],
-  ["bttv_get_global_emotes", setBttvGlobal],
-  ["ffz_get_global_emotes", setFfzGlobal],
-];
 
 const channelEmoteCache = new Map<string, Promise<EmoteEntry[]>>();
 const sevenTvSetByChannel = new Map<string, string | null>();
@@ -63,8 +53,11 @@ export async function ensureUserEmotesLoaded(): Promise<void> {
   }
 
   try {
-    await streamUserEmotes();
-    saveCache(key, userEmotes());
+    const all = await fetchAllPages<UserEmote>("get_user_emotes", (after, opts) =>
+      getUserEmotes({ after }, opts),
+    );
+    setUserEmotes(dedupeById(all));
+    saveCache(key, all);
   } catch {
     userEmotesLoadStarted = false;
   }
@@ -75,11 +68,8 @@ export function resetUserEmotes() {
   userEmotesLoadStarted = false;
 }
 
-export async function loadGlobalEmotes(): Promise<GlobalEmote[]> {
-  const cached = loadCache<GlobalEmote[]>(
-    GLOBAL_EMOTES_CACHE_KEY,
-    GLOBAL_EMOTES_TTL,
-  );
+export async function loadGlobalEmotes(): Promise<Emote[]> {
+  const cached = loadCache<Emote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
   if (cached) {
     getGlobalEmotes()
       .then((fresh) => {
@@ -97,11 +87,9 @@ export async function loadGlobalEmotes(): Promise<GlobalEmote[]> {
 export function loadThirdPartyGlobalEmotes() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
-  for (const [cmd, set] of THIRD_PARTY_GLOBALS) {
-    invoke<EmoteEntry[]>(cmd)
-      .then(set)
-      .catch(() => {});
-  }
+  seventvGetGlobalEmotes({ silent: true }).then(setSevenTvGlobal).catch(() => {});
+  bttvGetGlobalEmotes({ silent: true }).then(setBttvGlobal).catch(() => {});
+  ffzGetGlobalEmotes({ silent: true }).then(setFfzGlobal).catch(() => {});
 }
 
 function cachedChannelFetch(
@@ -117,14 +105,12 @@ function cachedChannelFetch(
 }
 
 function watchSevenTvSet(setId: string | null) {
-  invoke("seventv_watch_emote_set", { emoteSetId: setId }).catch(() => {});
+  seventvWatchEmoteSet({ emoteSetId: setId }, { silent: true }).catch(() => {});
 }
 
 function loadSevenTvChannel(channelId: string) {
   cachedChannelFetch(`stv:${channelId}`, () =>
-    invoke<SevenTvChannelResult>("seventv_get_channel_emotes", {
-      channelId,
-    }).then((r) => {
+    seventvGetChannelEmotes({ channelId }, { silent: true }).then((r) => {
       sevenTvSetByChannel.set(channelId, r.emote_set_id);
       return r.emotes;
     }),
@@ -143,10 +129,10 @@ export function loadChannelThirdPartyEmotes(
   activeChannelId = channelId;
   loadSevenTvChannel(channelId);
   cachedChannelFetch(`bttv:${channelId}`, () =>
-    invoke<EmoteEntry[]>("bttv_get_channel_emotes", { channelId }),
+    bttvGetChannelEmotes({ channelId }, { silent: true }),
   ).then(setBttvChannel);
   cachedChannelFetch(`ffz:${channelLogin}`, () =>
-    invoke<EmoteEntry[]>("ffz_get_channel_emotes", { channelLogin }),
+    ffzGetChannelEmotes({ channelLogin }, { silent: true }),
   ).then(setFfzChannel);
 }
 

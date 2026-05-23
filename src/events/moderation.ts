@@ -8,8 +8,8 @@ import type {
   RawChatClear,
   RawChatClearUserMessages,
   RawModerate,
-  RawModerateEvent,
 } from "../types";
+import type { EventEnvelope } from "../types/twitch/eventsub";
 import {
   appendItem,
   markMessageDeleted,
@@ -85,16 +85,18 @@ function buildModerateMessage(p: RawModerate, serverNowMs: number): string | nul
   }
 }
 
-listen<RawChatMessageDelete>("channel-chat-message-delete", (e) => {
-  markMessageDeleted(e.payload.broadcaster_user_id, e.payload.message_id);
+listen<EventEnvelope<RawChatMessageDelete>>("channel-chat-message-delete", (e) => {
+  const raw = e.payload.event;
+  markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
 });
 
-listen<RawChatClearUserMessages>("channel-chat-clear-user-messages", (e) => {
-  markUserMessagesDeleted(e.payload.broadcaster_user_id, e.payload.target_user_id);
+listen<EventEnvelope<RawChatClearUserMessages>>("channel-chat-clear-user-messages", (e) => {
+  const raw = e.payload.event;
+  markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
 });
 
-listen<RawChatClear>("channel-chat-clear", (e) => {
-  const broadcasterId = e.payload.broadcaster_user_id;
+listen<EventEnvelope<RawChatClear>>("channel-chat-clear", (e) => {
+  const broadcasterId = e.payload.event.broadcaster_user_id;
   markAllMessagesDeleted(broadcasterId);
   if (isModOfChannel(broadcasterId)) return;
   const now = Date.now();
@@ -110,9 +112,9 @@ listen<RawChatClear>("channel-chat-clear", (e) => {
   appendItem(broadcasterId, notice);
 });
 
-listen<RawModerateEvent>("channel-moderate", (e) => {
+listen<EventEnvelope<RawModerate>>("channel-moderate", (e) => {
   const payload = e.payload.event;
-  const serverNowMs = new Date(e.payload.message_timestamp).getTime();
+  const serverNowMs = new Date(e.payload.timestamp).getTime();
   const msg = buildModerateMessage(payload, serverNowMs);
   if (!msg) return;
   const now = Date.now();
@@ -139,8 +141,8 @@ function automodReasonLabel(p: RawAutomodMessageHold): string {
   return `AutoMod: ${p.automod.category} (level ${p.automod.level})`;
 }
 
-listen<RawAutomodMessageHold>("automod-message-hold", (e) => {
-  const p = e.payload;
+listen<EventEnvelope<RawAutomodMessageHold>>("automod-message-hold", (e) => {
+  const p = e.payload.event;
   const item: FeedMessage = {
     kind: "message",
     message_id: p.message_id,

@@ -3,8 +3,8 @@ import {
   banUser,
   getBannedUsers,
   unbanUser,
-  type GetBannedUsersResponse,
-} from "../../commands/moderation";
+  type BannedUser,
+} from "../../commands/twitch/moderation";
 import Button from "../../ui/Button";
 import TextInput from "../../ui/TextInput";
 import { user } from "../../state/users";
@@ -21,7 +21,7 @@ const DURATIONS = [
   { label: "1w", value: 604800 },
 ];
 
-type BanInfo = GetBannedUsersResponse["data"][number];
+type BanInfo = BannedUser;
 
 type Props = {
   userId: string;
@@ -134,14 +134,14 @@ export default function BanModal(props: Props) {
           {(info) => (
             <div class="bg-danger/10 border border-danger/40 rounded p-2.5 flex flex-col gap-1 text-xs">
               <span class="text-text">
-                {info().expires_at ? "Timed out" : "Banned"} by{" "}
-                <span class="font-semibold">{info().moderator_name}</span> · {formatDate(info().created_at)}
+                {info().expiresAt ? "Timed out" : "Banned"} by{" "}
+                <span class="font-semibold">{info().moderator.displayName}</span>
               </span>
               <Show when={info().reason}>
                 <span class="text-text-muted">Reason: {info().reason}</span>
               </Show>
-              <Show when={info().expires_at}>
-                <span class="text-text-muted">Expires: {formatDate(info().expires_at!)}</span>
+              <Show when={info().expiresAt}>
+                <span class="text-text-muted">Expires: {formatDate(info().expiresAt)}</span>
               </Show>
             </div>
           )}

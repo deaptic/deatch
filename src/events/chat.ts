@@ -1,5 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import type { RawChatMessage } from "../types";
+import type { EventEnvelope } from "../types/twitch/eventsub";
 import { appendItem } from "../state/feeds";
 import { user, isModOfChannel } from "../state/users";
 import { channelsById } from "../state/channels";
@@ -8,8 +9,8 @@ import { feedKeywords, matchesAnyKeyword } from "../state/preferences";
 import { mapChatMessage } from "./chat-mapper";
 import { handleFollowageCommand } from "./followage";
 
-listen<RawChatMessage>("channel-chat-message", (e) => {
-  const raw = e.payload;
+listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
+  const raw = e.payload.event;
   const ts = Date.now();
   appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
 

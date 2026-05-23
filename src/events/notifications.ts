@@ -1,9 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
 import type { FeedEvent, RawNotification, RawShoutout, RawFollow } from "../types";
+import type { EventEnvelope } from "../types/twitch/eventsub";
 import { appendItem } from "../state/feeds";
 import { isModOfChannel } from "../state/users";
 import { moderationAutoShoutoutOnRaid } from "../state/preferences";
-import { sendShoutout } from "../commands/chat";
+import { sendShoutout } from "../commands/twitch/chat";
 
 function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   return {
@@ -43,32 +44,35 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   };
 }
 
-listen<RawNotification>("channel-chat-notification", (e) => {
-  const id = e.payload.broadcaster_user_id;
-  if (!e.payload.system_message?.trim()) return;
-  const item = mapNotice(e.payload, Date.now());
-  if (e.payload.notice_type === "sub_gift") {
+listen<EventEnvelope<RawNotification>>("channel-chat-notification", (e) => {
+  const raw = e.payload.event;
+  const id = raw.broadcaster_user_id;
+  if (!raw.system_message?.trim()) return;
+  const item = mapNotice(raw, Date.now());
+  if (raw.notice_type === "sub_gift") {
     setTimeout(() => appendItem(id, item), 600);
   } else {
     appendItem(id, item);
   }
   if (
-    e.payload.notice_type === "raid" &&
+    raw.notice_type === "raid" &&
     moderationAutoShoutoutOnRaid() &&
-    e.payload.chatter_user_id &&
+    raw.chatter_user_id &&
     isModOfChannel(id)
   ) {
     sendShoutout({
       fromBroadcasterId: id,
-      toBroadcasterId: e.payload.chatter_user_id,
+      toBroadcasterId: raw.chatter_user_id,
     }).catch(() => {});
   }
 });
 
-listen<RawShoutout>("channel-shoutout-create", (e) => {
-  appendItem(e.payload.broadcaster_user_id, mapShoutout(e.payload, Date.now()));
+listen<EventEnvelope<RawShoutout>>("channel-shoutout-create", (e) => {
+  const raw = e.payload.event;
+  appendItem(raw.broadcaster_user_id, mapShoutout(raw, Date.now()));
 });
 
-listen<RawFollow>("channel-follow", (e) => {
-  appendItem(e.payload.broadcaster_user_id, mapFollow(e.payload, Date.now()));
+listen<EventEnvelope<RawFollow>>("channel-follow", (e) => {
+  const raw = e.payload.event;
+  appendItem(raw.broadcaster_user_id, mapFollow(raw, Date.now()));
 });

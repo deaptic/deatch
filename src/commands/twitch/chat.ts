@@ -1,17 +1,16 @@
-import { addToast } from "../state/toasts";
-import type { RawChatMessage } from "../types";
-import { invokeCommand, type InvokeOptions, type Paginated } from "./utils";
+import { addToast } from "../../state/toasts";
+import type { RecentMessage } from "../../types/external/robotty";
+import type {
+  BadgeSet,
+  Emote,
+  SendMessageResult,
+  UserEmote,
+} from "../../types/twitch/chat";
+import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils";
 
-export type GetGlobalEmotesResponse = {
-  id: string;
-  name: string;
-  images: { url_1x: string; url_2x: string; url_4x: string };
-  format: ("static" | "animated")[];
-  scale: ("1.0" | "2.0" | "3.0")[];
-  theme_mode: ("light" | "dark")[];
-}[];
+export type { BadgeSet, Emote, SendMessageResult, UserEmote } from "../../types/twitch/chat";
 
-export function getGlobalEmotes(options?: InvokeOptions): Promise<GetGlobalEmotesResponse> {
+export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
   return invokeCommand("get_global_emotes", undefined, options);
 }
 
@@ -19,82 +18,26 @@ export type GetUserEmotesParams = {
   broadcasterId?: string;
   after?: string;
 };
-export type GetUserEmotesResponse = Paginated<{
-  id: string;
-  name: string;
-  emote_type: string;
-  emote_set_id: string;
-  owner_id: string;
-  format: ("static" | "animated")[];
-  scale: ("1.0" | "2.0" | "3.0")[];
-  theme_mode: ("light" | "dark")[];
-}>;
 
 export function getUserEmotes(
   params: GetUserEmotesParams = {},
   options?: InvokeOptions,
-): Promise<GetUserEmotesResponse> {
+): Promise<PaginatedResponse<UserEmote>> {
   return invokeCommand("get_user_emotes", params, options);
 }
 
-export type GetAllUserEmotesParams = {
-  broadcasterId?: string;
-};
-
-export function getAllUserEmotes(
-  params: GetAllUserEmotesParams = {},
-  options?: InvokeOptions,
-): Promise<GetUserEmotesResponse["data"]> {
-  return invokeCommand("get_all_user_emotes", params, options);
-}
-
-/// Streams pages of user emotes back via the `user-emote-page` Tauri event.
-/// Resolves when all pages have been emitted. Subscribe to the event in
-/// `events.ts` to handle incoming pages.
-export function streamUserEmotes(
-  params: GetAllUserEmotesParams = {},
-  options?: InvokeOptions,
-): Promise<void> {
-  return invokeCommand("stream_user_emotes", params, options);
-}
-
-export type GetGlobalChatBadgesResponse = {
-  set_id: string;
-  versions: {
-    id: string;
-    image_url_1x: string;
-    image_url_2x: string;
-    image_url_4x: string;
-    title: string;
-    description: string;
-  }[];
-}[];
-
-export function getGlobalChatBadges(
-  options?: InvokeOptions,
-): Promise<GetGlobalChatBadgesResponse> {
+export function getGlobalChatBadges(options?: InvokeOptions): Promise<BadgeSet[]> {
   return invokeCommand("get_global_chat_badges", undefined, options);
 }
 
 export type GetChannelChatBadgesParams = {
   broadcasterId: string;
 };
-export type GetChannelChatBadgesResponse = {
-  set_id: string;
-  versions: {
-    id: string;
-    image_url_1x: string;
-    image_url_2x: string;
-    image_url_4x: string;
-    title: string;
-    description: string;
-  }[];
-}[];
 
 export function getChannelChatBadges(
   params: GetChannelChatBadgesParams,
   options?: InvokeOptions,
-): Promise<GetChannelChatBadgesResponse> {
+): Promise<BadgeSet[]> {
   return invokeCommand("get_channel_chat_badges", params, options);
 }
 
@@ -102,12 +45,11 @@ export type SendShoutoutParams = {
   fromBroadcasterId: string;
   toBroadcasterId: string;
 };
-export type SendShoutoutResponse = void;
 
 export function sendShoutout(
   params: SendShoutoutParams,
   options?: InvokeOptions,
-): Promise<SendShoutoutResponse> {
+): Promise<void> {
   return invokeCommand("send_shoutout", params, { successMessage: "Shoutout sent", ...options });
 }
 
@@ -116,25 +58,19 @@ export type SendChatMessageParams = {
   message: string;
   replyParentMessageId?: string | null;
 };
-type SendChatMessageRawResponse = {
-  message_id: string | null;
-  is_sent: boolean;
-  drop_reason: { code: string; message: string } | null;
-};
-export type SendChatMessageResponse = boolean;
 
 export async function sendChatMessage(
   params: SendChatMessageParams,
   options?: InvokeOptions,
-): Promise<SendChatMessageResponse> {
+): Promise<boolean> {
   try {
-    const res = await invokeCommand<SendChatMessageRawResponse>(
+    const res = await invokeCommand<SendMessageResult>(
       "send_chat_message",
       params,
       options,
     );
-    if (!res.is_sent) {
-      addToast(res.drop_reason?.message ?? "Message dropped", "error");
+    if (!res.isSent) {
+      addToast(res.dropReason ?? "Message dropped", "error");
       return false;
     }
     return true;
@@ -147,12 +83,11 @@ export type GetRecentMessagesParams = {
   channelLogin: string;
   limit?: number;
 };
-export type GetRecentMessagesResponse = (RawChatMessage & { timestamp_ms: number })[];
 
 export function getRecentMessages(
   params: GetRecentMessagesParams,
   options?: InvokeOptions,
-): Promise<GetRecentMessagesResponse> {
+): Promise<RecentMessage[]> {
   return invokeCommand("get_recent_messages", params, options);
 }
 

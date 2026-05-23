@@ -1,9 +1,8 @@
-import type { TwitchUser } from "../types";
-import { getUsers } from "../commands/users";
+import { getUsers, type User } from "../commands/twitch/users";
 import { addToast } from "../state/toasts";
 import { feedUserMuted, muteUser, setUserNickname } from "../state/preferences";
 
-async function resolveUser(login: string): Promise<TwitchUser | null> {
+async function resolveUser(login: string): Promise<User | null> {
   try {
     const users = await getUsers({ logins: [login] });
     const u = users[0];
@@ -18,7 +17,7 @@ async function resolveUser(login: string): Promise<TwitchUser | null> {
   }
 }
 
-export async function muteUserByLogin(login: string): Promise<TwitchUser | null> {
+export async function muteUserByLogin(login: string): Promise<User | null> {
   const u = await resolveUser(login);
   if (!u || feedUserMuted().includes(u.id)) return null;
   muteUser(u.id);
@@ -28,7 +27,7 @@ export async function muteUserByLogin(login: string): Promise<TwitchUser | null>
 export async function setUserNicknameByLogin(
   login: string,
   nickname: string,
-): Promise<TwitchUser | null> {
+): Promise<User | null> {
   const key = login.trim().toLowerCase();
   if (!key) return null;
   const u = await resolveUser(key);

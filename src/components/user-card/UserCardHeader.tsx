@@ -1,16 +1,16 @@
 import { createSignal, createEffect } from "solid-js";
-import { getUsers, type User } from "../../commands/users";
+import { getUsers, type User } from "../../commands/twitch/users";
 import {
   getChannelFollowers,
   getFollowedChannels,
-  type GetChannelFollowersResponse,
-} from "../../commands/channels";
+  type Follow,
+} from "../../commands/twitch/channels";
 import { user as currentUser, moderatedChannels } from "../../state/users";
 import { copyField } from "../../utils/clipboard";
 import UserCardIdentity from "./UserCardIdentity";
 import UserCardMeta from "./UserCardMeta";
 
-type Follower = GetChannelFollowersResponse["data"][number];
+type Follower = Follow;
 
 type Props = {
   chatterId: string;
@@ -28,16 +28,14 @@ export default function UserCardHeader(props: Props) {
     const me = currentUser();
     if (!me) return false;
     if (me.id === props.broadcasterId) return true;
-    return moderatedChannels().some(
-      (c) => c.broadcaster_id === props.broadcasterId,
-    );
+    return moderatedChannels().some((c) => c.id === props.broadcasterId);
   };
 
   createEffect(() => {
     const id = props.chatterId;
     setUser(null);
     setFollower(null);
-    getUsers({ userIds: [id] })
+    getUsers({ ids: [id] })
       .then((users) => setUser(users[0] ?? null))
       .catch(() => {});
     const me = currentUser();
@@ -50,10 +48,8 @@ export default function UserCardHeader(props: Props) {
           const row = rows[0];
           if (!row) return;
           setFollower({
-            user_id: id,
-            user_login: me.login,
-            user_name: me.display_name,
-            followed_at: row.followed_at,
+            user: { id, login: me.login, displayName: me.displayName },
+            followedAt: row.followedAt,
           });
         })
         .catch(() => {});
@@ -74,12 +70,12 @@ export default function UserCardHeader(props: Props) {
       onMouseDown={props.onStartDrag}
     >
       <img
-        src={user()?.profile_image_url || ""}
-        alt={user()?.display_name ?? ""}
+        src={user()?.profileImageUrl || ""}
+        alt={user()?.displayName ?? ""}
         title="Click to copy image URL"
         class="w-20 h-20 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
         onClick={() =>
-          user()?.profile_image_url && copyField(user()!.profile_image_url!)
+          user()?.profileImageUrl && copyField(user()!.profileImageUrl)
         }
       />
       <div class="flex-1 min-w-0 flex flex-col gap-1">
