@@ -1,4 +1,4 @@
-import { createSignal, createEffect, onMount, onCleanup, Show } from "solid-js";
+import { createSignal, createEffect, on, onMount, onCleanup, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   enable as enableAutostart,
@@ -91,6 +91,18 @@ function App() {
 
   const joinedIds = new Set<string>();
 
+  createEffect(
+    on(
+      selectedChannel,
+      (curr, prev) => {
+        if (prev && prev.user_id !== curr?.user_id) {
+          snapshotDivider(prev.user_id);
+        }
+      },
+      { defer: true },
+    ),
+  );
+
   function leaveChannel(broadcasterId: string) {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
@@ -134,7 +146,6 @@ function App() {
     else scrollToMessage(messageId);
   }
 
-  // Load badges + third-party emotes for the active channel.
   createEffect(() => {
     const broadcaster = selectedChannel();
     if (!broadcaster) {
@@ -146,7 +157,6 @@ function App() {
     loadChannelThirdPartyEmotes(broadcaster.user_id, broadcaster.user_login);
   });
 
-  // Maintain the joined set: pinned ∪ live ∪ watch-warmed ∪ {selected}.
   createEffect(() => {
     const u = user();
     if (!u) return;
@@ -165,8 +175,6 @@ function App() {
       ensureFeed(id);
       newIds.push(id);
     }
-    // The backend re-orders subs by KIND_PRIORITY before issuing HTTP, so
-    // calling order here doesn't matter — only the set of kinds per channel.
     for (const id of newIds) {
       for (const k of CHAT_KINDS) void eventSubManager.subscribe(id, k);
       if (isModOfChannel(id)) {

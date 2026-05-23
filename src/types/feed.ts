@@ -1,6 +1,3 @@
-// UI-side types for rendered feed items. Producers live in `events/` (raw
-// Tauri payloads → feed shapes); consumers live in `components/feed/`.
-
 import type { Badge } from "./chat";
 
 export type Fragment =
@@ -28,9 +25,6 @@ export type AutomodHoldStatus =
 export type AutomodHoldInfo = {
   reason: string;
   status: AutomodHoldStatus;
-  /// Carried so the Approve/Deny actions can locate the message back in the
-  /// per-broadcaster feed store without having to thread broadcasterId
-  /// through every component that renders a message.
   broadcaster_user_id: string;
 };
 
@@ -48,8 +42,6 @@ export type FeedMessage = {
   channel_points?: boolean;
   first_message?: boolean;
   deleted?: boolean;
-  /// Present only when this message was held by AutoMod and is awaiting a
-  /// moderator decision. Drives the warning highlight + Approve/Deny actions.
   automod_hold?: AutomodHoldInfo;
 };
 

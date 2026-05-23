@@ -2,8 +2,6 @@ import { type JSX } from "solid-js";
 
 type Props = {
   children: JSX.Element;
-  /// When true, the toolbar is always visible instead of fading in on hover
-  /// of the parent `.group` container.
   alwaysVisible?: boolean;
 };
 

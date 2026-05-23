@@ -18,7 +18,6 @@ use twitch_api::types::MsgId;
 
 use super::response::PaginatedResponse;
 
-// https://dev.twitch.tv/docs/api/reference/#delete-chat-messages
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteChatMessagesParams {
@@ -45,7 +44,6 @@ pub async fn delete_chat_messages(
         .map(|_| ())
         .map_err(|e| e.to_string())
 }
-// https://dev.twitch.tv/docs/api/reference/#ban-user
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BanUserParams {
@@ -73,7 +71,6 @@ pub async fn ban_user(app: tauri::AppHandle, params: BanUserParams) -> Result<Ba
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#get-banned-users
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct GetBannedUsersParams {
@@ -130,7 +127,6 @@ pub async fn get_all_banned_users(
     .await
 }
 
-// https://dev.twitch.tv/docs/api/reference/#unban-user
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UnbanUserParams {
@@ -153,7 +149,6 @@ pub async fn unban_user(app: tauri::AppHandle, params: UnbanUserParams) -> Resul
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#get-moderators
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct GetModeratorsParams {
@@ -203,7 +198,6 @@ pub async fn get_all_moderators(
     .await
 }
 
-// https://dev.twitch.tv/docs/api/reference/#add-channel-vip
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AddChannelVipParams {
@@ -226,7 +220,6 @@ pub async fn add_channel_vip(
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#remove-channel-vip
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveChannelVipParams {
@@ -249,7 +242,6 @@ pub async fn remove_channel_vip(
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#get-moderated-channels
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct GetModeratedChannelsParams {
@@ -294,7 +286,6 @@ pub async fn get_all_moderated_channels(
     Ok(channels)
 }
 
-// https://dev.twitch.tv/docs/api/reference/#start-a-raid
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct StartRaidParams {
@@ -319,7 +310,6 @@ pub async fn start_raid(
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#cancel-a-raid
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CancelRaidParams {
@@ -340,7 +330,6 @@ pub async fn cancel_raid(
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#warn-chat-user
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct WarnUserParams {
@@ -364,7 +353,6 @@ pub async fn warn_user(app: tauri::AppHandle, params: WarnUserParams) -> Result<
         .map_err(|e| e.to_string())
 }
 
-// https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ManageHeldAutomodMessageParams {
