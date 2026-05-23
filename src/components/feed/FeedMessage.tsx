@@ -1,12 +1,21 @@
-import { For, Show } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { EmoteMap } from "../../state/emotes";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import FeedMessageFragment from "./FeedMessageFragment";
 import BadgeBox from "../../ui/BadgeBox";
 import DisplayName from "../../ui/DisplayName";
 import Timestamp from "../../ui/Timestamp";
+import Toolbar from "../../ui/Toolbar";
+import ToolbarItem from "../../ui/ToolbarItem";
+import CheckIcon from "../../icons/CheckIcon";
+import CloseIcon from "../../icons/CloseIcon";
 import type { FeedMessage as Message, BadgeMap } from "../../types";
 import { matchesAnyKeyword } from "../../state/preferences";
+import { setAutomodHoldStatus } from "../../state/feeds";
+import {
+  approveHeldAutomodMessage,
+  denyHeldAutomodMessage,
+} from "../../commands/moderation";
 
 type Reaction = { label: string; value: string; url: string };
 
@@ -31,7 +40,45 @@ type Props = {
   onUserContextMenu?: (x: number, y: number, identity: { userId?: string; login?: string; displayName?: string }) => void;
 };
 
+const HOLD_COLOR = "var(--color-warning)";
+
 export default function FeedMessage(props: Props) {
+  const hold = () => props.item.automod_hold;
+  const holdPending = () => hold()?.status === "pending";
+  const holdResolved = () => {
+    const s = hold()?.status;
+    return s === "approved" || s === "denied";
+  };
+  const [holdBusy, setHoldBusy] = createSignal(false);
+
+  async function handleHold(action: "approve" | "deny") {
+    const h = hold();
+    if (!h || holdBusy()) return;
+    setHoldBusy(true);
+    const broadcasterId = h.broadcaster_user_id;
+    setAutomodHoldStatus(
+      broadcasterId,
+      props.item.message_id,
+      action === "approve" ? "approving" : "denying",
+    );
+    try {
+      if (action === "approve") {
+        await approveHeldAutomodMessage({ msgId: props.item.message_id });
+      } else {
+        await denyHeldAutomodMessage({ msgId: props.item.message_id });
+      }
+      setAutomodHoldStatus(
+        broadcasterId,
+        props.item.message_id,
+        action === "approve" ? "approved" : "denied",
+      );
+    } catch {
+      setAutomodHoldStatus(broadcasterId, props.item.message_id, "pending");
+    } finally {
+      setHoldBusy(false);
+    }
+  }
+
   const mentioned = () => {
     if (props.item.fragments.some((f) => f.type === "mention" && f.user_login === props.userLogin)) {
       return true;
@@ -66,16 +113,26 @@ export default function FeedMessage(props: Props) {
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
       class={`relative group flex gap-2 leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-bg ${
-        props.item.deleted ? "opacity-50 " : ""
+        props.item.deleted || holdResolved() ? "opacity-50 " : ""
       }${
-        mentioned()
-          ? "bg-primary/10 border-primary! hover:bg-primary/15"
-          : props.item.channel_points
-            ? "bg-event-channel-points/10 border-event-channel-points! hover:bg-event-channel-points/15"
-            : props.item.first_message
-              ? "bg-border/25 border-highlight! hover:bg-border/40"
-              : ""
+        hold()
+          ? ""
+          : mentioned()
+            ? "bg-primary/10 border-primary! hover:bg-primary/15"
+            : props.item.channel_points
+              ? "bg-event-channel-points/10 border-event-channel-points! hover:bg-event-channel-points/15"
+              : props.item.first_message
+                ? "bg-border/25 border-highlight! hover:bg-border/40"
+                : ""
       }`}
+      style={
+        hold()
+          ? {
+              "background-color": `color-mix(in oklab, ${HOLD_COLOR} 25%, transparent)`,
+              "border-left-color": HOLD_COLOR,
+            }
+          : undefined
+      }
       onContextMenu={(e) => {
         if (!props.onContextMenu) return;
         e.preventDefault();
@@ -83,8 +140,29 @@ export default function FeedMessage(props: Props) {
         props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
+      <Show when={holdPending()}>
+        <Toolbar alwaysVisible>
+          <ToolbarItem
+            title="Approve"
+            variant="success"
+            disabled={holdBusy()}
+            onClick={() => handleHold("approve")}
+          >
+            <CheckIcon class="w-4 h-4" />
+          </ToolbarItem>
+          <ToolbarItem
+            title="Deny"
+            variant="danger"
+            disabled={holdBusy()}
+            onClick={() => handleHold("deny")}
+          >
+            <CloseIcon class="w-3 h-3" />
+          </ToolbarItem>
+        </Toolbar>
+      </Show>
       <Show
         when={
+          !hold() &&
           props.showToolbar !== false &&
           props.onReply &&
           props.onReact &&
@@ -155,6 +233,14 @@ export default function FeedMessage(props: Props) {
               />
             )}
           </For>
+        </Show>
+        <Show when={hold()}>
+          <div class="text-text-muted text-[0.78em] leading-[1.6em]">
+            {hold()!.reason}
+            <Show when={holdResolved()}>
+              <span> · {hold()!.status === "approved" ? "approved" : "denied"}</span>
+            </Show>
+          </div>
         </Show>
       </div>
     </div>

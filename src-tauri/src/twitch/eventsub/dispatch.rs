@@ -78,6 +78,7 @@ fn dispatch_notification(
                 }
             }
         }
+        Event::AutomodMessageHoldV2(n) => forward!(app, subs, n, "automod-message-hold"),
         _ => {}
     }
 }
@@ -140,6 +141,7 @@ const KIND_PRIORITY: &[EventKind] = &[
     EventKind::ChannelShoutoutCreate,
     EventKind::ChannelFollow,
     EventKind::ChannelModerate,
+    EventKind::AutomodMessageHold,
 ];
 
 /// Fallback for messages `twitch_api` can't parse — typically newer

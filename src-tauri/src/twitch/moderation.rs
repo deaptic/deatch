@@ -4,6 +4,9 @@ use std::borrow::Cow;
 use twitch_api::helix::channels::{AddChannelVipRequest, RemoveChannelVipRequest};
 use twitch_api::helix::moderation::{
     delete_chat_messages::DeleteChatMessagesRequest,
+    manage_held_automod_messages::{
+        ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
+    },
     warn_chat_user::{WarnChatUserBody, WarnChatUserRequest},
     BanUser, BanUserBody, BanUserRequest, BannedUser, GetBannedUsersRequest,
     GetModeratedChannelsRequest, GetModeratorsRequest, ModeratedChannel, Moderator,
@@ -354,6 +357,44 @@ pub async fn warn_user(app: tauri::AppHandle, params: WarnUserParams) -> Result<
         token.user_id.as_str(),
     );
     let body = WarnChatUserBody::new(params.user_id.as_str(), params.reason.as_str());
+    helix()
+        .req_post(request, body, &token)
+        .await
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+// https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ManageHeldAutomodMessageParams {
+    pub msg_id: String,
+}
+
+#[tauri::command]
+pub async fn approve_held_automod_message(
+    app: tauri::AppHandle,
+    params: ManageHeldAutomodMessageParams,
+) -> Result<(), String> {
+    manage_held_automod_message(&app, params.msg_id.as_str(), true).await
+}
+
+#[tauri::command]
+pub async fn deny_held_automod_message(
+    app: tauri::AppHandle,
+    params: ManageHeldAutomodMessageParams,
+) -> Result<(), String> {
+    manage_held_automod_message(&app, params.msg_id.as_str(), false).await
+}
+
+async fn manage_held_automod_message(
+    app: &tauri::AppHandle,
+    msg_id: &str,
+    allow: bool,
+) -> Result<(), String> {
+    let token = get_token(app).await?;
+    let request = ManageHeldAutoModMessagesRequest::new();
+    let body = ManageHeldAutoModMessagesBody::new(token.user_id.as_str(), msg_id, allow);
     helix()
         .req_post(request, body, &token)
         .await

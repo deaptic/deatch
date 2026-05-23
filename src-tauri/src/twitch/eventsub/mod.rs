@@ -26,13 +26,18 @@ pub(crate) enum EventKind {
     ChannelFollow,
     #[serde(rename = "channel.moderate")]
     ChannelModerate,
+    #[serde(rename = "automod.message.hold")]
+    AutomodMessageHold,
 }
 
 impl EventKind {
     pub(super) fn requires_mod(self) -> bool {
         matches!(
             self,
-            Self::ChannelShoutoutCreate | Self::ChannelFollow | Self::ChannelModerate
+            Self::ChannelShoutoutCreate
+                | Self::ChannelFollow
+                | Self::ChannelModerate
+                | Self::AutomodMessageHold
         )
     }
 }
