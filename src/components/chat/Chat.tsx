@@ -209,7 +209,7 @@ export default function Chat(props: Props) {
     let fragments = msg.fragments;
     if (msg.reply) {
       const [first, ...rest] = fragments;
-      if (first?.type === "mention" && first.user_login === msg.reply.parent_user_login) {
+      if (first.type === "mention" && first.user_login === msg.reply.parent_user_login) {
         if (rest[0]?.type === "text") {
           const trimmed = rest[0].text.trimStart();
           fragments = trimmed

@@ -8,9 +8,8 @@ export * from "./twitch";
 // from their explicit `./external/*` paths when needed.
 export type { EmoteEntry } from "./external/emote";
 
-// Frontend composed/derived shape (Channel = user info ∪ optional live
-// stream fields — used by the menu and channel state).
-export type { Channel } from "./composed";
+// `Channel` is a frontend-composed shape that lives next to its signal in
+// `state/channels` — import it from there directly.
 
 // Frontend feed (app-level rendering types).
 export * from "./feed";

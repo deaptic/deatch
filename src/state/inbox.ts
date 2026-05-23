@@ -39,7 +39,7 @@ export const channelMentionCount = (channelId: string) =>
   mentions().filter((m) => m.unread && m.channelId === channelId).length;
 
 export function recordMention(m: Omit<Mention, "unread">) {
-  const isActive = selectedChannel()?.user_id === m.channelId;
+  const isActive = selectedChannel()?.id === m.channelId;
   let added = false;
   setMentions((prev) => {
     if (prev.some((x) => x.id === m.id)) return prev;

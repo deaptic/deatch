@@ -3,7 +3,7 @@ import type { RawChatMessage } from "../types";
 import type { EventEnvelope } from "../types/twitch/eventsub";
 import { appendItem } from "../state/feeds";
 import { user, isModOfChannel } from "../state/users";
-import { channelsById } from "../state/channels";
+import { usersById } from "../state/channels";
 import { recordMention } from "../state/inbox";
 import { feedKeywords, matchesAnyKeyword } from "../state/preferences";
 import { mapChatMessage } from "./chat-mapper";
@@ -31,12 +31,12 @@ listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
   const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
   if (!isMention && !keywordHit) return;
 
-  const ch = channelsById.get(raw.broadcaster_user_id);
+  const ch = usersById.get(raw.broadcaster_user_id);
   recordMention({
     id: raw.message_id,
     channelId: raw.broadcaster_user_id,
-    channelLogin: ch?.user_login ?? raw.broadcaster_user_id,
-    channelName: ch?.user_name ?? raw.broadcaster_user_id,
+    channelLogin: ch?.login ?? raw.broadcaster_user_id,
+    channelName: ch?.displayName ?? raw.broadcaster_user_id,
     messageId: raw.message_id,
     chatterId: raw.chatter_user_id,
     chatterLogin: raw.chatter_user_login,

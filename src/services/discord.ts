@@ -4,7 +4,8 @@ import {
   discordSetActivity,
   type ActivityInput as DiscordActivity,
 } from "../commands/discord";
-import type { Channel } from "../types";
+import type { Stream } from "../types/twitch/stream";
+import type { User } from "../types/twitch/user";
 
 let connected = false;
 let lastSerialized: string | null = null;
@@ -96,9 +97,9 @@ export type PresenceContext = {
   enabled: boolean;
   authenticated: boolean;
   userId: string | null;
-  channel: Channel | null;
+  channel: User | null;
   inboxOpen: boolean;
-  liveChannels: Channel[];
+  liveStreams: Stream[];
 };
 
 export function applyDiscordPresence(ctx: PresenceContext): void {
@@ -108,7 +109,7 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
     return;
   }
   const ch = ctx.channel;
-  const mode = ctx.inboxOpen ? "inbox" : ch ? `ch:${ch.user_id}` : "browsing";
+  const mode = ctx.inboxOpen ? "inbox" : ch ? `ch:${ch?.id}` : "browsing";
   if (mode !== activityMode) {
     activityMode = mode;
     activityStartedAt = Math.floor(Date.now() / 1000);
@@ -125,29 +126,28 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
       statusDisplayType: "details",
     });
   } else if (ch) {
-    const live = ctx.liveChannels.find((c) => c.user_id === ch.user_id);
-    const isOwnChannel = ch.user_id === ctx.userId;
-    const stateText = live?.game_name
-      ? live.viewer_count != null
-        ? `${live.game_name} · ${viewerFormatter.format(live.viewer_count)} viewers`
-        : live.game_name
+    const stream = ctx.liveStreams.find((s) => s.user.id === ch.id);
+    const isOwnChannel = ch.id === ctx.userId;
+    const gameName = stream?.game.name;
+    const stateText = gameName
+      ? `${gameName} · ${viewerFormatter.format(stream!.viewerCount)} viewers`
       : isOwnChannel
         ? selfLurkPhrase
         : "Offline";
-    const streamStartedAt = live?.started_at
-      ? Math.floor(new Date(live.started_at).getTime() / 1000)
+    const streamStartedAt = stream
+      ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
       : null;
-    const channelUrl = `https://twitch.tv/${ch.user_login}`;
-    const categoryUrl = live?.game_name
-      ? `https://www.twitch.tv/directory/game/${encodeURIComponent(live.game_name)}`
+    const channelUrl = `https://twitch.tv/${ch.login}`;
+    const categoryUrl = gameName
+      ? `https://www.twitch.tv/directory/game/${encodeURIComponent(gameName)}`
       : undefined;
     scheduleActivity({
-      details: ch.user_name || ch.user_login,
+      details: ch.displayName || ch.login,
       detailsUrl: channelUrl,
       stateText,
       stateUrl: categoryUrl,
-      largeImage: ch.profile_image_url || "app_logo",
-      largeText: live?.title ? clamp(live.title, 128) : ch.user_name || ch.user_login,
+      largeImage: ch.profileImageUrl || "app_logo",
+      largeText: stream?.title ? clamp(stream.title, 128) : ch.displayName || ch.login,
       largeUrl: channelUrl,
       smallImage: "app_logo",
       smallText: "Deatch",

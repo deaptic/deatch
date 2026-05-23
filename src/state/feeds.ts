@@ -77,7 +77,7 @@ function lastVisible(feed: ChannelFeed): FeedItem | undefined {
 export function hasUnread(id: string): boolean {
   const feed = feeds[id];
   if (!feed) return false;
-  if (selectedChannel()?.user_id === id) return false;
+  if (selectedChannel()?.id === id) return false;
   const last = lastVisible(feed);
   if (!last) return false;
   const marker = feed.dividerAtItemId ?? feed.lastSeenItemId;
@@ -151,7 +151,7 @@ export function appendItem(id: string, item: FeedItem) {
       lastSeen: item.timestamp,
     });
   }
-  const isActive = selectedChannel()?.user_id === id;
+  const isActive = selectedChannel()?.id === id;
   const itemId = getItemId(item);
   let added = false;
   setFeeds(

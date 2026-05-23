@@ -84,7 +84,7 @@ export default function EmotePicker(props: Props) {
       if (
         e.emoteType === "subscriptions" &&
         e.ownerId &&
-        e.ownerId !== broadcaster?.user_id &&
+        e.ownerId !== broadcaster?.id &&
         /^\d+$/.test(e.ownerId)
       ) {
         ids.add(e.ownerId);

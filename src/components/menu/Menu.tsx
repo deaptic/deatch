@@ -10,12 +10,12 @@ import {
 import { createStore, reconcile } from "solid-js/store";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { getFollowedStreams, getStreams, type Stream } from "../../commands/twitch/streams";
-import { getUsers, type User } from "../../commands/twitch/users";
+import { getUsers } from "../../commands/twitch/users";
 import { fetchAllPages } from "../../commands/utils";
 import { addToast } from "../../state/toasts";
 import {
-  rememberChannel,
-  setLiveChannels,
+  rememberUser,
+  setLiveStreams,
   selectedChannel,
 } from "../../state/channels";
 import {
@@ -39,28 +39,20 @@ import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
 import InputPopover from "../../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
-import type { Channel } from "../../types/composed";
+import type { User } from "../../types/twitch/user";
 
-export type { Channel };
+export type { User };
 
 type Props = {
-  onSelect: (ch: Channel) => void;
+  onSelect: (ch: User) => void;
   selectedId: string | null;
-  onLiveChange?: (live: Channel[]) => void;
+  onLiveChange?: (live: User[]) => void;
 };
 
-function userToChannel(u: User): Channel {
-  return {
-    user_id: u.id,
-    user_login: u.login,
-    user_name: u.displayName,
-    profile_image_url: u.profileImageUrl,
-  };
-}
 
 export default function Menu(props: Props) {
-  const [live, setLive] = createStore<Channel[]>([]);
-  const [pinnedMeta, setPinnedMeta] = createStore<Record<string, Channel>>({});
+  const [live, setLive] = createStore<User[]>([]);
+  const [pinnedMeta, setPinnedMeta] = createStore<Record<string, User>>({});
   const [loadingPinned, setLoadingPinned] = createSignal(true);
   const [loadingLive, setLoadingLive] = createSignal(true);
 
@@ -68,7 +60,7 @@ export default function Menu(props: Props) {
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
 
   const [chMenu, setChMenu] = createSignal<{
-    ch: Channel;
+    ch: User;
     x: number;
     y: number;
   } | null>(null);
@@ -80,10 +72,10 @@ export default function Menu(props: Props) {
   const [addLoading, setAddLoading] = createSignal(false);
   let addBtn: HTMLButtonElement | undefined;
 
-  const liveById = () => new Map(live.map((ch) => [ch.user_id, ch]));
+  const liveById = () => new Map(live.map((ch) => [ch?.id, ch]));
   const pinnedIdSet = () => new Set(menuChannelPinned());
-  const onlineList = () => live.filter((ch) => !pinnedIdSet().has(ch.user_id));
-  const resolveChannel = (id: string): Channel | undefined =>
+  const onlineList = () => live.filter((ch) => !pinnedIdSet().has(ch?.id));
+  const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];
 
   async function fetchPinnedMeta() {
@@ -94,11 +86,10 @@ export default function Menu(props: Props) {
     }
     try {
       const users = await getUsers({ ids });
-      const next: Record<string, Channel> = {};
+      const next: Record<string, User> = {};
       for (const u of users) {
-        const ch = userToChannel(u);
-        next[u.id] = ch;
-        rememberChannel(ch);
+        next[u.id] = u;
+        rememberUser(u);
       }
       setPinnedMeta(reconcile(next));
     } catch (e) {
@@ -119,12 +110,12 @@ export default function Menu(props: Props) {
       const extraIds = new Set<string>();
       for (const id of pinnedSet) if (!followedIds.has(id)) extraIds.add(id);
       const wc = watchedChannel();
-      if (wc && !followedIds.has(wc.user_id) && !pinnedSet.has(wc.user_id)) {
-        extraIds.add(wc.user_id);
+      if (wc && !followedIds.has(wc?.id) && !pinnedSet.has(wc?.id)) {
+        extraIds.add(wc?.id);
       }
       for (const ch of watchWarmedChannels()) {
-        if (!followedIds.has(ch.user_id) && !pinnedSet.has(ch.user_id)) {
-          extraIds.add(ch.user_id);
+        if (!followedIds.has(ch?.id) && !pinnedSet.has(ch?.id)) {
+          extraIds.add(ch?.id);
         }
       }
       const extraIdList = [...extraIds];
@@ -136,33 +127,24 @@ export default function Menu(props: Props) {
           : [];
       const streams = [...followed, ...extraStreams];
 
-      const profileMap = new Map<string, string>();
+      setLiveStreams(streams);
+      const data: User[] = [];
       if (streams.length > 0) {
-        const users = await getUsers({
-          ids: streams.map((s) => s.user.id),
-        });
-        for (const u of users) profileMap.set(u.id, u.profileImageUrl);
+        const users = await getUsers({ ids: streams.map((s) => s.user.id) });
+        const byId = new Map(users.map((u) => [u.id, u]));
+        for (const u of users) rememberUser(u);
+        for (const s of streams) {
+          const u = byId.get(s.user.id);
+          if (u) data.push(u);
+        }
       }
-      const data: Channel[] = streams.map((s) => ({
-        user_id: s.user.id,
-        user_login: s.user.login,
-        user_name: s.user.displayName,
-        game_name: s.game.name,
-        title: s.title,
-        viewer_count: s.viewerCount,
-        thumbnail_url: s.thumbnail.medium,
-        profile_image_url: profileMap.get(s.user.id) ?? "",
-        started_at: s.startedAt,
-      }));
-      for (const ch of data) rememberChannel(ch);
-      setLive(reconcile(data, { key: "user_id" }));
-      setLiveChannels(data);
+      setLive(reconcile(data, { key: "id" }));
       props.onLiveChange?.(data);
     } catch (e) {
       addToast(String(e), "error");
       // Signal the parent that the fetch settled (even unsuccessfully) so it
       // can stop waiting on us before proceeding with subscriptions.
-      setLiveChannels([]);
+      setLiveStreams([]);
       props.onLiveChange?.([]);
     } finally {
       setLoadingLive(false);
@@ -177,11 +159,10 @@ export default function Menu(props: Props) {
     if (missing.length === 0) return;
     getUsers({ ids: missing })
       .then((users) => {
-        const updates: Record<string, Channel> = {};
+        const updates: Record<string, User> = {};
         for (const u of users) {
-          const ch = userToChannel(u);
-          updates[u.id] = ch;
-          rememberChannel(ch);
+          updates[u.id] = u;
+          rememberUser(u);
         }
         setPinnedMeta(updates);
       })
@@ -216,8 +197,8 @@ export default function Menu(props: Props) {
     document.addEventListener("mouseup", onUp);
   }
 
-  function openInBrowser(ch: Channel) {
-    openUrl(`https://twitch.tv/${ch.user_login}`);
+  function openInBrowser(ch: User) {
+    openUrl(`https://twitch.tv/${ch?.login}`);
   }
 
   function openAdd() {
@@ -245,9 +226,8 @@ export default function Menu(props: Props) {
         closeAdd();
         return;
       }
-      const ch = userToChannel(u);
-      setPinnedMeta(u.id, ch);
-      rememberChannel(ch);
+      setPinnedMeta(u.id, u);
+      rememberUser(u);
       pinChannel(u.id);
       closeAdd();
     } catch (e) {
@@ -339,9 +319,9 @@ export default function Menu(props: Props) {
                 <MenuSectionItem
                   channel={ch}
                   status="live"
-                  selected={!watchActive() && props.selectedId === ch.user_id}
-                  unread={hasUnread(ch.user_id)}
-                  mentions={channelMentionCount(ch.user_id)}
+                  selected={!watchActive() && props.selectedId === ch?.id}
+                  unread={hasUnread(ch?.id)}
+                  mentions={channelMentionCount(ch?.id)}
                   onClick={() => props.onSelect(ch)}
                   onMiddleClick={() => openInBrowser(ch)}
                   onContextMenu={(x, y) => setChMenu({ ch, x, y })}
@@ -399,10 +379,10 @@ export default function Menu(props: Props) {
                 <>
                   <img
                     src={
-                      ch().profile_image_url ||
+                      ch()?.profileImageUrl ||
                       "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
                     }
-                    alt={ch().user_name}
+                    alt={ch()?.displayName}
                     class="w-8 h-8 rounded-lg"
                   />
                   <Show when={watchActive()}>
@@ -433,11 +413,11 @@ export default function Menu(props: Props) {
             x={m().x}
             y={m().y}
             ch={m().ch}
-            isPinned={pinnedIdSet().has(m().ch.user_id)}
+            isPinned={pinnedIdSet().has(m().ch?.id)}
             developerMode={advancedDeveloperMode()}
             onClose={() => setChMenu(null)}
             onOpenInBrowser={openInBrowser}
-            onPin={(ch) => pinChannel(ch.user_id)}
+            onPin={(ch) => pinChannel(ch?.id)}
             onUnpin={unpinChannel}
           />
         )}
@@ -450,7 +430,7 @@ export default function Menu(props: Props) {
             y={p().y}
             value={addInput()}
             loading={addLoading()}
-            placeholder="Channel name"
+            placeholder="User name"
             onInput={setAddInput}
             onSubmit={submitAdd}
             onClose={closeAdd}
