@@ -9,6 +9,12 @@ pub struct Sink {
     stream: Option<interprocess::local_socket::Stream>,
 }
 
+impl Default for Sink {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Sink {
     pub fn new() -> Self {
         Self { stream: None }
