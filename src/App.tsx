@@ -7,8 +7,8 @@ import {
 } from "@tauri-apps/plugin-autostart";
 import { getModeratedChannels } from "./commands/twitch/moderation";
 import { fetchAllPages } from "./commands/utils";
-import type { UserRef } from "./types/twitch/user";
-import Menu, { type Channel } from "./components/menu/Menu";
+import type { User, UserRef } from "./types/twitch/user";
+import Menu from "./components/menu/Menu";
 import Chat from "./components/chat/Chat";
 import Toaster from "./components/toaster/Toaster";
 import { toasts, removeToast } from "./state/toasts";
@@ -48,11 +48,11 @@ import {
 import {
   selectedChannel,
   setSelectedChannel,
-  channelsById,
-  rememberChannel,
+  usersById,
+  rememberUser,
   loadLastChannel,
   channelsInOrder,
-  liveChannels as liveChannelsSignal,
+  liveStreams as liveChannelsSignal,
 } from "./state/channels";
 import {
   watchActive,
@@ -90,7 +90,7 @@ function resetUserScopedCaches() {
 }
 
 function App() {
-  const [liveChannels, setLiveChannels] = createSignal<Channel[]>([]);
+  const [liveStreams, setLiveStreams] = createSignal<User[]>([]);
   // Gate the reconciliation effect until the live-channels fetch settles so
   // pinned ∪ live get subscribed in one batch instead of two.
   const [liveLoaded, setLiveLoaded] = createSignal(false);
@@ -101,8 +101,8 @@ function App() {
     on(
       selectedChannel,
       (curr, prev) => {
-        if (prev && prev.user_id !== curr?.user_id) {
-          snapshotDivider(prev.user_id);
+        if (prev && prev?.id !== curr?.id) {
+          snapshotDivider(prev?.id);
         }
       },
       { defer: true },
@@ -116,17 +116,17 @@ function App() {
     dropFeed(broadcasterId);
   }
 
-  function applySelection(ch: Channel) {
+  function applySelection(ch: User) {
     const prev = selectedChannel();
-    if (prev && prev.user_id !== ch.user_id) snapshotDivider(prev.user_id);
-    rememberChannel(ch);
+    if (prev && prev?.id !== ch?.id) snapshotDivider(prev?.id);
+    rememberUser(ch);
     setSelectedChannel(ch);
-    ensureFeed(ch.user_id);
-    markSeen(ch.user_id);
-    markChannelMentionsRead(ch.user_id);
+    ensureFeed(ch?.id);
+    markSeen(ch?.id);
+    markChannelMentionsRead(ch?.id);
   }
 
-  function handleChannelSelect(ch: Channel) {
+  function handleChannelSelect(ch: User) {
     setWatchActive(false);
     applySelection(ch);
   }
@@ -140,13 +140,13 @@ function App() {
       if (selectedChannel() !== null) setSelectedChannel(null);
       return;
     }
-    if (selectedChannel()?.user_id === ch.user_id) return;
+    if (selectedChannel()?.id === ch?.id) return;
     applySelection(ch);
   });
 
   function jumpToMessage(channelId: string, messageId: string) {
-    const ch = channelsById.get(channelId);
-    const needsSwitch = !!ch && selectedChannel()?.user_id !== channelId;
+    const ch = usersById.get(channelId);
+    const needsSwitch = !!ch && selectedChannel()?.id !== channelId;
     if (needsSwitch) handleChannelSelect(ch);
     if (needsSwitch) setTimeout(() => scrollToMessage(messageId), 100);
     else scrollToMessage(messageId);
@@ -159,8 +159,8 @@ function App() {
       clearActiveSevenTvSubscription();
       return;
     }
-    loadChannelBadges(broadcaster.user_id);
-    loadChannelThirdPartyEmotes(broadcaster.user_id, broadcaster.user_login);
+    loadChannelBadges(broadcaster?.id);
+    loadChannelThirdPartyEmotes(broadcaster?.id, broadcaster?.login);
   });
 
   createEffect(() => {
@@ -169,10 +169,10 @@ function App() {
     if (!liveLoaded()) return;
     const desired = new Set<string>();
     for (const id of menuChannelPinned()) desired.add(id);
-    for (const ch of liveChannels()) desired.add(ch.user_id);
-    for (const ch of watchWarmedChannels()) desired.add(ch.user_id);
+    for (const ch of liveStreams()) desired.add(ch?.id);
+    for (const ch of watchWarmedChannels()) desired.add(ch?.id);
     const sel = selectedChannel();
-    if (sel) desired.add(sel.user_id);
+    if (sel) desired.add(sel?.id);
 
     const newIds: string[] = [];
     for (const id of desired) {
@@ -197,7 +197,7 @@ function App() {
     if (ordered.length === 0) return;
     const i = watchActive()
       ? -1
-      : ordered.findIndex((c) => c.user_id === selectedChannel()?.user_id);
+      : ordered.findIndex((c) => c?.id === selectedChannel()?.id);
     const nextIdx =
       i === -1
         ? direction === 1
@@ -273,7 +273,7 @@ function App() {
       userId: u?.id ?? null,
       channel: selectedChannel(),
       inboxOpen: isPanelOpen("inbox"),
-      liveChannels: liveChannelsSignal(),
+      liveStreams: liveChannelsSignal(),
     });
   });
 
@@ -338,9 +338,9 @@ function App() {
             <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
               <Menu
                 onSelect={handleChannelSelect}
-                selectedId={selectedChannel()?.user_id ?? null}
+                selectedId={selectedChannel()?.id ?? null}
                 onLiveChange={(data) => {
-                  setLiveChannels(data);
+                  setLiveStreams(data);
                   setLiveLoaded(true);
                 }}
               />
@@ -371,8 +371,8 @@ function App() {
                 >
                   {(ch) => (
                     <Chat
-                      broadcasterId={ch().user_id}
-                      broadcasterLogin={ch().user_login}
+                      broadcasterId={ch()?.id}
+                      broadcasterLogin={ch()?.login}
                       userLogin={u().login}
                       onJumpToMessage={jumpToMessage}
                     />

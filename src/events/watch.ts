@@ -1,13 +1,12 @@
 import { listen } from "@tauri-apps/api/event";
 import { getUsers } from "../commands/twitch/users";
-import { rememberChannel } from "../state/channels";
+import { rememberUser } from "../state/channels";
 import {
   setWatchConnected,
   setWatchedChannel,
   watchWarmedChannels,
   setWatchWarmedChannels,
 } from "../state/watch";
-import type { Channel } from "../types/composed";
 
 listen<{ client?: string; version?: string }>("watch:hello", () => {
   setWatchConnected(true);
@@ -24,10 +23,10 @@ listen<{ channels: string[] }>("watch:sync", async (e) => {
   const slugs = (e.payload.channels || []).map((s) => s.toLowerCase());
   const incomingSet = new Set(slugs);
   const current = watchWarmedChannels();
-  const currentByLogin = new Map(current.map((c) => [c.user_login, c]));
+  const currentByLogin = new Map(current.map((c) => [c?.login, c]));
 
   // Mirror the sync list: drop anything no longer reported, keep what is.
-  const keep = current.filter((c) => incomingSet.has(c.user_login));
+  const keep = current.filter((c) => incomingSet.has(c?.login));
   const toFetch = slugs.filter((s) => !currentByLogin.has(s));
 
   if (toFetch.length === 0) {
@@ -36,14 +35,8 @@ listen<{ channels: string[] }>("watch:sync", async (e) => {
   }
 
   try {
-    const users = await getUsers({ logins: toFetch });
-    const fresh = users.map<Channel>((u) => ({
-      user_id: u.id,
-      user_login: u.login,
-      user_name: u.displayName,
-      profile_image_url: u.profileImageUrl,
-    }));
-    for (const ch of fresh) rememberChannel(ch);
+    const fresh = await getUsers({ logins: toFetch });
+    for (const u of fresh) rememberUser(u);
     setWatchWarmedChannels([...keep, ...fresh]);
   } catch {
     if (keep.length !== current.length) setWatchWarmedChannels(keep);
@@ -55,15 +48,9 @@ listen<{ channel: string; ts: number }>("watch:channel_switched", async (e) => {
   if (!slug) return;
   try {
     const users = await getUsers({ logins: [slug] });
-    const u = users[0];
-    if (!u) return;
-    const ch: Channel = {
-      user_id: u.id,
-      user_login: u.login,
-      user_name: u.displayName,
-      profile_image_url: u.profileImageUrl,
-    };
-    rememberChannel(ch);
+    const ch = users[0];
+    if (!ch) return;
+    rememberUser(ch);
     setWatchedChannel(ch);
   } catch {
     // Helix lookup failed (network, auth, etc.). Drop the event silently —

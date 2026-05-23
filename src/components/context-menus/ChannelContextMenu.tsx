@@ -3,17 +3,17 @@ import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";
 import CopyIcon from "../../icons/CopyIcon";
-import type { Channel } from "../../types";
+import type { User } from "../../types/twitch/user";
 
 type Props = {
   x: number;
   y: number;
-  ch: Channel;
+  ch: User;
   isPinned: boolean;
   developerMode: boolean;
   onClose: () => void;
-  onOpenInBrowser: (ch: Channel) => void;
-  onPin: (ch: Channel) => void;
+  onOpenInBrowser: (ch: User) => void;
+  onPin: (ch: User) => void;
   onUnpin: (userId: string) => void;
 };
 
@@ -35,7 +35,7 @@ export default function ChannelContextMenu(props: Props) {
       >
         <ContextMenuItem
           label="Unpin"
-          onClick={() => { props.onUnpin(props.ch.user_id); props.onClose(); }}
+          onClick={() => { props.onUnpin(props.ch?.id); props.onClose(); }}
         />
       </Show>
       <Show when={props.developerMode}>

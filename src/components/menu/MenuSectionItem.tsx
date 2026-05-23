@@ -1,12 +1,13 @@
 import { createSignal, Show } from "solid-js";
 import StreamTooltip from "./StreamTooltip";
-import type { Channel } from "../../types";
+import { streamForUserId } from "../../state/channels";
+import type { User } from "../../types/twitch/user";
 
 const DEFAULT_AVATAR =
   "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
 
 type Props = {
-  channel: Channel;
+  channel: User;
   status?: "live" | "self";
   selected?: boolean;
   unread?: boolean;
@@ -64,8 +65,8 @@ export default function MenuSectionItem(props: Props) {
         </Show>
         <div class="relative shrink-0">
           <img
-            src={props.channel.profile_image_url || DEFAULT_AVATAR}
-            alt={props.channel.user_name}
+            src={props.channel?.profileImageUrl || DEFAULT_AVATAR}
+            alt={props.channel?.displayName}
             class={`w-8 h-8 rounded-lg transition-opacity ${
               props.status || props.selected
                 ? "opacity-100"
@@ -86,8 +87,8 @@ export default function MenuSectionItem(props: Props) {
           <StreamTooltip
             x={t().x}
             y={t().y}
-            channel={props.channel}
-            live={props.status === "live"}
+            user={props.channel}
+            stream={props.status === "live" ? streamForUserId(props.channel.id) : undefined}
           />
         )}
       </Show>

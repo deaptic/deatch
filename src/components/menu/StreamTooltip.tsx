@@ -1,12 +1,13 @@
 import { Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import type { Channel } from "../../types";
+import type { Stream } from "../../types/twitch/stream";
+import type { User } from "../../types/twitch/user";
 
 type Props = {
   x: number;
   y: number;
-  channel: Channel;
-  live?: boolean;
+  user: User;
+  stream?: Stream;
 };
 
 function formatViewers(n: number): string {
@@ -28,24 +29,24 @@ export default function StreamTooltip(props: Props) {
         class="bg-bg-dark border border-border-muted rounded-lg px-3 py-2 shadow-xl pointer-events-none z-50 min-w-40 max-w-xs w-max"
       >
         <p class="text-text text-sm font-semibold whitespace-nowrap truncate">
-          {props.channel.user_name}
-          <Show when={props.channel.game_name}>
+          {props.user.displayName}
+          <Show when={props.stream?.game.name}>
             <span class="text-text-muted font-normal">
               {" "}
-              - {props.channel.game_name}
+              - {props.stream!.game.name}
             </span>
           </Show>
         </p>
-        <Show when={props.channel.title}>
+        <Show when={props.stream?.title}>
           <p class="text-text-muted text-xs mt-0.5 wrap-break-word">
-            {props.channel.title}
+            {props.stream!.title}
           </p>
         </Show>
-        <Show when={props.live && props.channel.viewer_count !== undefined}>
+        <Show when={props.stream}>
           <div class="flex items-center gap-1.5 mt-1">
             <div class="w-1.5 h-1.5 rounded-full bg-danger" />
             <span class="text-danger text-xs font-medium whitespace-nowrap">
-              Live | {formatViewers(props.channel.viewer_count!)} viewers
+              Live | {formatViewers(props.stream!.viewerCount)} viewers
             </span>
           </div>
         </Show>

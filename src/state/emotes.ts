@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import type { EmoteEntry } from "../types/external/emote";
 import type { Emote, UserEmote } from "../types/twitch/chat";
-import type { Channel } from "../types/composed";
+import type { User } from "../types/twitch/user";
 import { userCache } from "./users";
 
 export type { EmoteEntry };
@@ -88,22 +88,22 @@ function sortByName<T extends { name: string }>(arr: readonly T[]): T[] {
   return [...arr].sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/// Builds the `Channel` tab sections for the emote picker: the broadcaster's
+/// Builds the `User` tab sections for the emote picker: the broadcaster's
 /// own Twitch emotes (deduplicated by name) followed by the channel's 7TV /
 /// BTTV / FFZ sets. Reads the relevant signals internally so it can be wrapped
 /// in a `createMemo` at the call site.
-export function computeChannelSections(broadcaster: Channel | null): EmoteSection[] {
+export function computeChannelSections(broadcaster: User | null): EmoteSection[] {
   const sections: EmoteSection[] = [];
   if (broadcaster) {
     const seen = new Map<string, string>();
     for (const e of userEmotes()) {
-      if (e.ownerId !== broadcaster.user_id) continue;
+      if (e.ownerId !== broadcaster?.id) continue;
       if (!seen.has(e.name)) seen.set(e.name, e.url);
     }
     if (seen.size) {
       sections.push({
         id: "twitch",
-        label: broadcaster.user_name,
+        label: broadcaster?.displayName,
         emotes: [...seen.entries()]
           .map(([name, url]) => ({ name, url }))
           .sort((a, b) => a.name.localeCompare(b.name)),
@@ -122,12 +122,12 @@ export function computeChannelSections(broadcaster: Channel | null): EmoteSectio
 /// Builds the `Global` tab sections: one section per channel the user subs to
 /// (using `userCache` for display names), then global Twitch, 7TV, BTTV, FFZ.
 /// Emotes already attributed to the active broadcaster are excluded.
-export function computeGlobalSections(broadcaster: Channel | null): EmoteSection[] {
+export function computeGlobalSections(broadcaster: User | null): EmoteSection[] {
   const subGroupMap = new Map<string, EmoteEntry[]>();
   const otherEmotes = new Map<string, string>();
 
   for (const e of userEmotes()) {
-    if (e.ownerId === broadcaster?.user_id) continue;
+    if (e.ownerId === broadcaster?.id) continue;
     if (e.emoteType === "subscriptions" && e.ownerId && /^\d+$/.test(e.ownerId)) {
       const list = subGroupMap.get(e.ownerId) ?? [];
       list.push({ name: e.name, url: e.url });
