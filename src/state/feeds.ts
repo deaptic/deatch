@@ -1,5 +1,5 @@
 import { createStore, produce } from "solid-js/store";
-import type { FeedItem, BadgeMap } from "../types";
+import type { FeedItem, BadgeMap } from "../types/feed";
 import { NOTICE_TO_EVENT } from "../constants";
 import { selectedChannel } from "./channels";
 import { recordChatter, user } from "./users";

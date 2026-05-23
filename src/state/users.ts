@@ -1,9 +1,9 @@
 import { createSignal } from "solid-js";
-import type { ModeratedChannel } from "../types";
-import type { User } from "../commands/users";
+import type { User } from "../commands/twitch/users";
+import type { UserRef } from "../types/twitch/user";
 
 export const [user, setUser] = createSignal<User | null>(null);
-export const [moderatedChannels, setModeratedChannels] = createSignal<ModeratedChannel[]>([]);
+export const [moderatedChannels, setModeratedChannels] = createSignal<UserRef[]>([]);
 
 export function isBroadcasterOfChannel(broadcasterId: string): boolean {
   return user()?.id === broadcasterId;
@@ -11,7 +11,7 @@ export function isBroadcasterOfChannel(broadcasterId: string): boolean {
 
 export function isModOfChannel(broadcasterId: string): boolean {
   if (isBroadcasterOfChannel(broadcasterId)) return true;
-  return moderatedChannels().some((m) => m.broadcaster_id === broadcasterId);
+  return moderatedChannels().some((m) => m.id === broadcasterId);
 }
 
 const [userCacheSig, setUserCacheSig] = createSignal<Record<string, User>>({});

@@ -1,8 +1,7 @@
 import { createSignal, createEffect, For, onCleanup, onMount, Show, type JSX } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Portal } from "solid-js/web";
-import { getUsers } from "../../commands/users";
-import type { TwitchUser } from "../../types";
+import { getUsers, type User } from "../../commands/twitch/users";
 import Navigation from "../../ui/Navigation";
 import NavigationItem from "../../ui/NavigationItem";
 import SettingsContent from "./SettingsContent";
@@ -96,7 +95,7 @@ type Props = {
 export default function Settings(props: Props) {
   captureFocusForRestore();
   const [section, setSection] = createSignal<SectionKey>("notifications");
-  const [mutedMeta, setMutedMeta] = createStore<Record<string, TwitchUser>>({});
+  const [mutedMeta, setMutedMeta] = createStore<Record<string, User>>({});
   let panelRef: HTMLDivElement | undefined;
 
   const onDocumentClick = (e: MouseEvent) => {
@@ -117,9 +116,9 @@ export default function Settings(props: Props) {
   createEffect(() => {
     const missing = feedUserMuted().filter((id) => !mutedMeta[id]);
     if (missing.length === 0) return;
-    getUsers({ userIds: missing })
+    getUsers({ ids: missing })
       .then((users) => {
-        const updates: Record<string, TwitchUser> = {};
+        const updates: Record<string, User> = {};
         for (const u of users) updates[u.id] = u;
         setMutedMeta(updates);
       })
@@ -300,7 +299,7 @@ export default function Settings(props: Props) {
                       <For each={feedUserMuted()}>
                         {(id) => (
                           <Chip
-                            label={mutedMeta[id]?.display_name ?? mutedMeta[id]?.login ?? id}
+                            label={mutedMeta[id]?.displayName ?? mutedMeta[id]?.login ?? id}
                             onRemove={() => unmuteUser(id)}
                           />
                         )}

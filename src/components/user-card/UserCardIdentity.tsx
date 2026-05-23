@@ -1,6 +1,6 @@
 import { createMemo, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { User } from "../../commands/users";
+import type { User } from "../../commands/twitch/users";
 import { feedUserNickname } from "../../state/preferences";
 import { feeds } from "../../state/feeds";
 import type { FeedMessage } from "../../types";
@@ -47,7 +47,7 @@ export default function UserCardIdentity(props: Props) {
         >
           <DisplayName
             login={props.user!.login}
-            displayName={props.user!.display_name}
+            displayName={props.user!.displayName}
             color={messageColor()}
             userId={props.chatterId}
             class="truncate min-w-0"
@@ -60,7 +60,7 @@ export default function UserCardIdentity(props: Props) {
         />
         <Show when={props.user && feedUserNickname(props.user!.login)}>
           <span class="text-text-muted/70 text-sm font-normal truncate min-w-0">
-            ({props.user!.display_name})
+            ({props.user!.displayName})
           </span>
         </Show>
       </div>

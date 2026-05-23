@@ -2,7 +2,7 @@ import { createSignal, createMemo, createEffect, For, Show, onCleanup } from "so
 import type { Command, CommandContext, CommandOption } from "./types";
 import { chattersByChannel } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
-import { getUsers } from "../../commands/users";
+import { getUsers } from "../../commands/twitch/users";
 import Suggestions from "../suggestions/Suggestions";
 import CommandComposerHint from "./CommandComposerHint";
 import CommandComposerSlot from "./CommandComposerSlot";
@@ -150,7 +150,7 @@ export default function CommandComposer(props: Props) {
         patchSlot(idx, { error: `User not found: ${login}` });
         return false;
       }
-      fillUserSlot(idx, u.display_name, u.id, u.display_name);
+      fillUserSlot(idx, u.displayName, u.id, u.displayName);
       return true;
     } catch (e) {
       console.error("user lookup failed", e);

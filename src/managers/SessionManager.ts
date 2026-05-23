@@ -1,6 +1,6 @@
 import { setUser } from "../state/users";
 import { setWaiting, setDeviceCode, setAuthChecked } from "../state/auth";
-import { getDeviceCode, revokeSession, restoreSession } from "../commands/session";
+import { getDeviceCode, revokeSession, restoreSession } from "../commands/twitch/auth";
 import { Manager } from "./Manager";
 
 export class SessionManager extends Manager {

@@ -1,6 +1,6 @@
 import { createSignal, createMemo, createEffect, Show, onMount, onCleanup } from "solid-js";
 import { shortcutManager } from "../../managers/ShortcutManager";
-import { sendChatMessage } from "../../commands/chat";
+import { sendChatMessage } from "../../commands/twitch/chat";
 import { commands } from "../command-composer/commands";
 import type { Command } from "../command-composer/types";
 import CommandComposer from "../command-composer/CommandComposer";
@@ -130,10 +130,8 @@ export default function ChatInput(props: Props) {
     for (const e of sevenTvGlobal()) add(e.name, e.url, "7TV");
     for (const e of bttvGlobal()) add(e.name, e.url, "BetterTTV");
     for (const e of ffzGlobal()) add(e.name, e.url, "FrankerFaceZ");
-    for (const e of userEmotes()) {
-      add(e.name, `https://static-cdn.jtvnw.net/emoticons/v2/${e.id}/default/dark/1.0`, "Twitch");
-    }
-    for (const e of globalEmotes()) add(e.name, e.images.url_1x, "Twitch");
+    for (const e of userEmotes()) add(e.name, e.url, "Twitch");
+    for (const e of globalEmotes()) add(e.name, e.url, "Twitch");
     return map;
   });
 

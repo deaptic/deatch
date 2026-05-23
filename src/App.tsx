@@ -5,7 +5,9 @@ import {
   disable as disableAutostart,
   isEnabled as isAutostartEnabled,
 } from "@tauri-apps/plugin-autostart";
-import { getAllModeratedChannels } from "./commands/moderation";
+import { getModeratedChannels } from "./commands/twitch/moderation";
+import { fetchAllPages } from "./commands/utils";
+import type { UserRef } from "./types/twitch/user";
 import Menu, { type Channel } from "./components/menu/Menu";
 import Chat from "./components/chat/Chat";
 import Toaster from "./components/toaster/Toaster";
@@ -33,7 +35,7 @@ import { user, setModeratedChannels, isModOfChannel } from "./state/users";
 import { authChecked } from "./state/auth";
 import { sessionManager } from "./managers/SessionManager";
 import { eventSubManager } from "./managers/EventSubManager";
-import { CHAT_KINDS, MOD_KINDS, ALL_KINDS } from "./types/eventsub";
+import { CHAT_KINDS, MOD_KINDS, ALL_KINDS } from "./types/twitch/eventsub";
 import { setGlobalEmotes, clearChannelThirdPartyEmotes } from "./state/emotes";
 import {
   loadGlobalEmotes,
@@ -72,7 +74,11 @@ let userScopedFetched = false;
 function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
-  getAllModeratedChannels().then(setModeratedChannels).catch(() => {});
+  fetchAllPages<UserRef>("get_moderated_channels", (after, opts) =>
+    getModeratedChannels({ after }, opts),
+  )
+    .then(setModeratedChannels)
+    .catch(() => {});
   loadGlobalEmotes().then(setGlobalEmotes).catch(() => {});
 }
 

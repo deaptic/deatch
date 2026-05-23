@@ -2,12 +2,9 @@ import {
   banUser,
   unbanUser,
   deleteChatMessages,
-  addChannelVip,
-  removeChannelVip,
-  startRaid,
-  cancelRaid,
   warnUser,
-} from "../../commands/moderation";
+} from "../../commands/twitch/moderation";
+import { startRaid, cancelRaid } from "../../commands/twitch/raids";
 import {
   sendShoutout,
   sendChatAnnouncement,
@@ -16,17 +13,19 @@ import {
   updateUserChatColor,
   type AnnouncementColor,
   type NamedUserColor,
-} from "../../commands/chat";
+} from "../../commands/twitch/chat";
 import {
   createStreamMarker,
   getStreams,
-} from "../../commands/streams";
+} from "../../commands/twitch/streams";
 import {
   modifyChannelInformation,
   startCommercial,
   getFollowedChannels,
+  addChannelVip,
+  removeChannelVip,
   type CommercialLength,
-} from "../../commands/channels";
+} from "../../commands/twitch/channels";
 import {
   user,
   userCache,
@@ -472,7 +471,7 @@ const deatchCommands: Command[] = [
           appendLocalNotice(ctx.broadcasterId, "Stream is offline");
           return;
         }
-        const ms = Date.now() - new Date(s.started_at).getTime();
+        const ms = Date.now() - new Date(s.startedAt).getTime();
         appendLocalNotice(ctx.broadcasterId, `Uptime: ${formatUptime(ms)}`);
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch uptime");
@@ -499,7 +498,7 @@ const deatchCommands: Command[] = [
         }
         appendLocalNotice(
           ctx.broadcasterId,
-          `You started following ${new Time(f.followed_at, "R")}`,
+          `You started following ${new Time(f.followedAt, "R")}`,
         );
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch followage");

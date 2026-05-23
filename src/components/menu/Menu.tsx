@@ -9,8 +9,9 @@ import {
 } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { getAllFollowedStreams, getAllStreams } from "../../commands/streams";
-import { getUsers } from "../../commands/users";
+import { getFollowedStreams, getStreams, type Stream } from "../../commands/twitch/streams";
+import { getUsers, type User } from "../../commands/twitch/users";
+import { fetchAllPages } from "../../commands/utils";
 import { addToast } from "../../state/toasts";
 import {
   rememberChannel,
@@ -38,9 +39,9 @@ import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
 import InputPopover from "../../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
-import type { Channel, TwitchStream, TwitchUser } from "../../types";
+import type { Channel } from "../../types/composed";
 
-export type { Channel, TwitchStream, TwitchUser };
+export type { Channel };
 
 type Props = {
   onSelect: (ch: Channel) => void;
@@ -48,12 +49,12 @@ type Props = {
   onLiveChange?: (live: Channel[]) => void;
 };
 
-function userToChannel(u: TwitchUser): Channel {
+function userToChannel(u: User): Channel {
   return {
     user_id: u.id,
     user_login: u.login,
-    user_name: u.display_name,
-    profile_image_url: u.profile_image_url ?? "",
+    user_name: u.displayName,
+    profile_image_url: u.profileImageUrl,
   };
 }
 
@@ -92,7 +93,7 @@ export default function Menu(props: Props) {
       return;
     }
     try {
-      const users = await getUsers({ userIds: ids });
+      const users = await getUsers({ ids });
       const next: Record<string, Channel> = {};
       for (const u of users) {
         const ch = userToChannel(u);
@@ -109,8 +110,11 @@ export default function Menu(props: Props) {
 
   async function fetchLive() {
     try {
-      const followed = await getAllFollowedStreams();
-      const followedIds = new Set(followed.map((s) => s.user_id));
+      const followed = await fetchAllPages<Stream>(
+        "get_followed_streams",
+        (after, opts) => getFollowedStreams({ after }, opts),
+      );
+      const followedIds = new Set(followed.map((s) => s.user.id));
       const pinnedSet = new Set(menuChannelPinned());
       const extraIds = new Set<string>();
       for (const id of pinnedSet) if (!followedIds.has(id)) extraIds.add(id);
@@ -126,29 +130,29 @@ export default function Menu(props: Props) {
       const extraIdList = [...extraIds];
       const extraStreams =
         extraIdList.length > 0
-          ? await getAllStreams({ userIds: extraIdList })
+          ? await fetchAllPages<Stream>("get_streams", (after, opts) =>
+              getStreams({ userIds: extraIdList, after }, opts),
+            )
           : [];
       const streams = [...followed, ...extraStreams];
 
       const profileMap = new Map<string, string>();
       if (streams.length > 0) {
         const users = await getUsers({
-          userIds: streams.map((s) => s.user_id),
+          ids: streams.map((s) => s.user.id),
         });
-        for (const u of users) profileMap.set(u.id, u.profile_image_url ?? "");
+        for (const u of users) profileMap.set(u.id, u.profileImageUrl);
       }
       const data: Channel[] = streams.map((s) => ({
-        user_id: s.user_id,
-        user_login: s.user_login,
-        user_name: s.user_name,
-        game_name: s.game_name,
+        user_id: s.user.id,
+        user_login: s.user.login,
+        user_name: s.user.displayName,
+        game_name: s.game.name,
         title: s.title,
-        viewer_count: s.viewer_count,
-        thumbnail_url: s.thumbnail_url
-          .replace("{width}", "440")
-          .replace("{height}", "248"),
-        profile_image_url: profileMap.get(s.user_id) ?? "",
-        started_at: s.started_at,
+        viewer_count: s.viewerCount,
+        thumbnail_url: s.thumbnail.medium,
+        profile_image_url: profileMap.get(s.user.id) ?? "",
+        started_at: s.startedAt,
       }));
       for (const ch of data) rememberChannel(ch);
       setLive(reconcile(data, { key: "user_id" }));
@@ -171,7 +175,7 @@ export default function Menu(props: Props) {
       (id) => !pinnedMeta[id] && !liveById().get(id),
     );
     if (missing.length === 0) return;
-    getUsers({ userIds: missing })
+    getUsers({ ids: missing })
       .then((users) => {
         const updates: Record<string, Channel> = {};
         for (const u of users) {

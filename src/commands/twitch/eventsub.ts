@@ -1,5 +1,5 @@
-import type { EventKind } from "../types/eventsub";
-import { invokeCommand, type InvokeOptions } from "./utils";
+import type { EventKind } from "../../types/twitch/eventsub";
+import { invokeCommand, type InvokeOptions } from "../utils";
 
 export type SubscribeParams = { broadcasterId: string; kind: EventKind };
 

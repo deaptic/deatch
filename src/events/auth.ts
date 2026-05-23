@@ -1,5 +1,5 @@
 import { listen } from "@tauri-apps/api/event";
-import type { User } from "../commands/users";
+import type { User } from "../commands/twitch/users";
 import { addToast } from "../state/toasts";
 import { setUser } from "../state/users";
 import { setWaiting, setDeviceCode } from "../state/auth";

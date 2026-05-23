@@ -1,4 +1,4 @@
-import { getRecentMessages } from "../commands/chat";
+import { getRecentMessages } from "../commands/twitch/chat";
 import { mapChatMessage } from "../events/chat-mapper";
 import { feeds, prependItems } from "../state/feeds";
 

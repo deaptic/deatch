@@ -17,7 +17,7 @@ import {
   computeGlobalSections,
 } from "../../state/emotes";
 import { selectedChannel } from "../../state/channels";
-import { getUsers } from "../../commands/users";
+import { getUsers } from "../../commands/twitch/users";
 import EmoteGrid from "./EmoteGrid";
 import EmotePickerSection from "./EmotePickerSection";
 import Navigation from "../../ui/Navigation";
@@ -82,15 +82,15 @@ export default function EmotePicker(props: Props) {
     const ids = new Set<string>();
     for (const e of userEmotes()) {
       if (
-        e.emote_type === "subscriptions" &&
-        e.owner_id &&
-        e.owner_id !== broadcaster?.user_id &&
-        /^\d+$/.test(e.owner_id)
+        e.emoteType === "subscriptions" &&
+        e.ownerId &&
+        e.ownerId !== broadcaster?.user_id &&
+        /^\d+$/.test(e.ownerId)
       ) {
-        ids.add(e.owner_id);
+        ids.add(e.ownerId);
       }
     }
-    if (ids.size) getUsers({ userIds: [...ids] });
+    if (ids.size) getUsers({ ids: [...ids] });
   });
 
   const channelSections = createMemo(() =>

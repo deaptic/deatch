@@ -1,7 +1,7 @@
 import { createEffect } from "solid-js";
 import type { Mention } from "../../state/inbox";
 import { userCache } from "../../state/users";
-import { getUsers } from "../../commands/users";
+import { getUsers } from "../../commands/twitch/users";
 
 const DEFAULT_AVATAR =
   "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
@@ -22,11 +22,11 @@ function formatRelative(ms: number): string {
 export default function InboxItem(props: Props) {
   createEffect(() => {
     const id = props.mention.chatterId;
-    if (id) getUsers({ userIds: [id] }, { silent: true }).catch(() => {});
+    if (id) getUsers({ ids: [id] }, { silent: true }).catch(() => {});
   });
 
   const avatar = () =>
-    userCache()[props.mention.chatterId]?.profile_image_url || DEFAULT_AVATAR;
+    userCache()[props.mention.chatterId]?.profileImageUrl || DEFAULT_AVATAR;
 
   return (
     <button

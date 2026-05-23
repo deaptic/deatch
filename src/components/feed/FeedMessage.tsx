@@ -15,7 +15,7 @@ import { setAutomodHoldStatus } from "../../state/feeds";
 import {
   approveHeldAutomodMessage,
   denyHeldAutomodMessage,
-} from "../../commands/moderation";
+} from "../../commands/twitch/moderation";
 
 type Reaction = { label: string; value: string; url: string };
 

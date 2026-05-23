@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { sendShoutout } from "../../commands/chat";
+import { sendShoutout } from "../../commands/twitch/chat";
 import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";

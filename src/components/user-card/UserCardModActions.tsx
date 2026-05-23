@@ -1,5 +1,5 @@
 import { For, Show } from "solid-js";
-import { banUser, unbanUser } from "../../commands/moderation";
+import { banUser, unbanUser } from "../../commands/twitch/moderation";
 import { user as currentUser, moderatedChannels } from "../../state/users";
 import { moderationActionsDisabled } from "../../state/preferences";
 import Button from "../../ui/Button";
@@ -28,9 +28,7 @@ export default function UserCardModActions(props: Props) {
     if (!me) return false;
     if (me.id === props.chatterId) return false;
     if (me.id === props.broadcasterId) return true;
-    return moderatedChannels().some(
-      (c) => c.broadcaster_id === props.broadcasterId,
-    );
+    return moderatedChannels().some((c) => c.id === props.broadcasterId);
   };
 
   const unban = () =>

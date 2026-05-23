@@ -1,4 +1,7 @@
-import { invokeCommand, type InvokeOptions, type Paginated } from "./utils";
+import type { Follow } from "../../types/twitch/channel";
+import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils";
+
+export type { Follow } from "../../types/twitch/channel";
 
 export type GetChannelFollowersParams = {
   broadcasterId: string;
@@ -6,30 +9,12 @@ export type GetChannelFollowersParams = {
   first?: number;
   after?: string;
 };
-export type GetChannelFollowersResponse = Paginated<{
-  user_id: string;
-  user_login: string;
-  user_name: string;
-  followed_at: string;
-}>;
 
 export function getChannelFollowers(
   params: GetChannelFollowersParams,
   options?: InvokeOptions,
-): Promise<GetChannelFollowersResponse> {
+): Promise<PaginatedResponse<Follow>> {
   return invokeCommand("get_channel_followers", params, options);
-}
-
-export type GetAllChannelFollowersParams = {
-  broadcasterId: string;
-  userId?: string;
-};
-
-export function getAllChannelFollowers(
-  params: GetAllChannelFollowersParams,
-  options?: InvokeOptions,
-): Promise<GetChannelFollowersResponse["data"]> {
-  return invokeCommand("get_all_channel_followers", params, options);
 }
 
 export type GetFollowedChannelsParams = {
@@ -37,17 +22,10 @@ export type GetFollowedChannelsParams = {
   broadcasterId?: string;
 };
 
-export type FollowedBroadcaster = {
-  broadcaster_id: string;
-  broadcaster_login: string;
-  broadcaster_name: string;
-  followed_at: string;
-};
-
 export function getFollowedChannels(
   params: GetFollowedChannelsParams,
   options?: InvokeOptions,
-): Promise<FollowedBroadcaster[]> {
+): Promise<Follow[]> {
   return invokeCommand("get_followed_channels", params, options);
 }
 
@@ -75,4 +53,28 @@ export function startCommercial(
   options?: InvokeOptions,
 ): Promise<void> {
   return invokeCommand("start_commercial", params, { successMessage: "Commercial started", ...options });
+}
+
+export type AddChannelVipParams = {
+  broadcasterId: string;
+  userId: string;
+};
+
+export function addChannelVip(
+  params: AddChannelVipParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("add_channel_vip", params, { successMessage: "VIP added", ...options });
+}
+
+export type RemoveChannelVipParams = {
+  broadcasterId: string;
+  userId: string;
+};
+
+export function removeChannelVip(
+  params: RemoveChannelVipParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("remove_channel_vip", params, { successMessage: "VIP removed", ...options });
 }

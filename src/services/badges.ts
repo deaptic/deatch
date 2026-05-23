@@ -1,7 +1,8 @@
-import { getGlobalChatBadges, getChannelChatBadges } from "../commands/chat";
+import { getGlobalChatBadges, getChannelChatBadges } from "../commands/twitch/chat";
 import { loadCache, saveCache } from "../utils/cache";
 import { setBadges } from "../state/feeds";
-import type { BadgeSet, BadgeMap } from "../types";
+import type { BadgeSet } from "../types/twitch/chat";
+import type { BadgeMap } from "../types/feed";
 
 const GLOBAL_BADGES_CACHE_KEY = "cache:global_badges";
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;
@@ -42,10 +43,10 @@ export function loadChannelBadges(broadcasterId: string): Promise<BadgeMap> {
     const map: BadgeMap = {};
     for (const set of global)
       for (const v of set.versions)
-        map[`${set.set_id}/${v.id}`] = { url: v.image_url_1x, title: v.title };
+        map[`${set.setId}/${v.id}`] = { url: v.url1x, title: v.title };
     for (const set of channel)
       for (const v of set.versions)
-        map[`${set.set_id}/${v.id}`] = { url: v.image_url_1x, title: v.title };
+        map[`${set.setId}/${v.id}`] = { url: v.url1x, title: v.title };
     setBadges(broadcasterId, map);
     return map;
   });

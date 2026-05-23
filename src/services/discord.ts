@@ -1,26 +1,10 @@
-import { invoke } from "@tauri-apps/api/core";
+import {
+  discordConnect,
+  discordDisconnect,
+  discordSetActivity,
+  type ActivityInput as DiscordActivity,
+} from "../commands/discord";
 import type { Channel } from "../types";
-
-type DiscordActivityType = "playing" | "listening" | "watching" | "competing";
-type DiscordStatusDisplay = "name" | "state" | "details";
-
-type DiscordButton = { label: string; url: string };
-
-type DiscordActivity = {
-  details?: string;
-  detailsUrl?: string;
-  stateText?: string;
-  stateUrl?: string;
-  largeImage?: string;
-  largeText?: string;
-  largeUrl?: string;
-  smallImage?: string;
-  smallText?: string;
-  startedAt?: number;
-  activityType?: DiscordActivityType;
-  statusDisplayType?: DiscordStatusDisplay;
-  buttons?: DiscordButton[];
-};
 
 let connected = false;
 let lastSerialized: string | null = null;
@@ -30,7 +14,7 @@ let pendingActivity: DiscordActivity | null = null;
 async function connect(): Promise<boolean> {
   if (connected) return true;
   try {
-    await invoke("discord_connect", {});
+    await discordConnect({}, { silent: true });
     connected = true;
     lastSerialized = null;
     return true;
@@ -43,7 +27,7 @@ async function connect(): Promise<boolean> {
 export async function disconnectDiscord(): Promise<void> {
   if (!connected) return;
   try {
-    await invoke("discord_disconnect");
+    await discordDisconnect({ silent: true });
   } catch {
     // ignore — IPC may already be torn down
   }
@@ -77,21 +61,7 @@ async function flush(activity: DiscordActivity): Promise<void> {
   const serialized = JSON.stringify(activity);
   if (serialized === lastSerialized) return;
   try {
-    await invoke("discord_set_activity", {
-      details: activity.details ?? null,
-      detailsUrl: activity.detailsUrl ?? null,
-      stateText: activity.stateText ?? null,
-      stateUrl: activity.stateUrl ?? null,
-      largeImage: activity.largeImage ?? null,
-      largeText: activity.largeText ?? null,
-      largeUrl: activity.largeUrl ?? null,
-      smallImage: activity.smallImage ?? null,
-      smallText: activity.smallText ?? null,
-      startedAt: activity.startedAt ?? null,
-      activityType: activity.activityType ?? null,
-      statusDisplayType: activity.statusDisplayType ?? null,
-      buttons: activity.buttons ?? null,
-    });
+    await discordSetActivity(activity, { silent: true });
     lastSerialized = serialized;
   } catch {
     connected = false;

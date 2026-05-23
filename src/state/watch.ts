@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import type { Channel } from "../types";
+import type { Channel } from "../types/composed";
 
 export const [watchConnected, setWatchConnected] = createSignal(false);
 export const [watchedChannel, setWatchedChannel] = createSignal<Channel | null>(null);

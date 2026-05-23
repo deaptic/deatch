@@ -1,9 +1,11 @@
 import { createSignal } from "solid-js";
-import type { Channel, GlobalEmote, UserEmote } from "../types";
+import type { EmoteEntry } from "../types/external/emote";
+import type { Emote, UserEmote } from "../types/twitch/chat";
+import type { Channel } from "../types/composed";
 import { userCache } from "./users";
 
+export type { EmoteEntry };
 export type EmoteMap = Record<string, string>;
-export type EmoteEntry = { name: string; url: string };
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 export type FavoriteEmote = { value: string; url: string; label: string };
 
@@ -17,7 +19,7 @@ const initialFavorites: FavoriteEmote[] = (() => {
 const [favorites, setFavorites] = createSignal<FavoriteEmote[]>(initialFavorites);
 export { favorites };
 
-export const [globalEmotes, setGlobalEmotes] = createSignal<GlobalEmote[]>([]);
+export const [globalEmotes, setGlobalEmotes] = createSignal<Emote[]>([]);
 export const [userEmotes, setUserEmotes] = createSignal<UserEmote[]>([]);
 export const [sevenTvGlobal, setSevenTvGlobal] = createSignal<EmoteEntry[]>([]);
 export const [bttvGlobal, setBttvGlobal] = createSignal<EmoteEntry[]>([]);
@@ -82,10 +84,6 @@ export function clearChannelThirdPartyEmotes() {
   setFfzChannel([]);
 }
 
-function twitchEmoteUrl(id: string): string {
-  return `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0`;
-}
-
 function sortByName<T extends { name: string }>(arr: readonly T[]): T[] {
   return [...arr].sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -99,8 +97,8 @@ export function computeChannelSections(broadcaster: Channel | null): EmoteSectio
   if (broadcaster) {
     const seen = new Map<string, string>();
     for (const e of userEmotes()) {
-      if (e.owner_id !== broadcaster.user_id) continue;
-      if (!seen.has(e.name)) seen.set(e.name, twitchEmoteUrl(e.id));
+      if (e.ownerId !== broadcaster.user_id) continue;
+      if (!seen.has(e.name)) seen.set(e.name, e.url);
     }
     if (seen.size) {
       sections.push({
@@ -129,14 +127,13 @@ export function computeGlobalSections(broadcaster: Channel | null): EmoteSection
   const otherEmotes = new Map<string, string>();
 
   for (const e of userEmotes()) {
-    if (e.owner_id === broadcaster?.user_id) continue;
-    const url = twitchEmoteUrl(e.id);
-    if (e.emote_type === "subscriptions" && e.owner_id && /^\d+$/.test(e.owner_id)) {
-      const list = subGroupMap.get(e.owner_id) ?? [];
-      list.push({ name: e.name, url });
-      subGroupMap.set(e.owner_id, list);
+    if (e.ownerId === broadcaster?.user_id) continue;
+    if (e.emoteType === "subscriptions" && e.ownerId && /^\d+$/.test(e.ownerId)) {
+      const list = subGroupMap.get(e.ownerId) ?? [];
+      list.push({ name: e.name, url: e.url });
+      subGroupMap.set(e.ownerId, list);
     } else {
-      otherEmotes.set(e.name, url);
+      otherEmotes.set(e.name, e.url);
     }
   }
 
@@ -144,13 +141,13 @@ export function computeGlobalSections(broadcaster: Channel | null): EmoteSection
   const subscriptionSections: EmoteSection[] = [...subGroupMap.entries()]
     .map(([ownerId, emotes]) => ({
       id: `channel-${ownerId}`,
-      label: cache[ownerId]?.display_name ?? ownerId,
+      label: cache[ownerId]?.displayName ?? ownerId,
       emotes: sortByName(emotes),
     }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
   for (const e of globalEmotes()) {
-    if (!otherEmotes.has(e.name)) otherEmotes.set(e.name, e.images.url_1x);
+    if (!otherEmotes.has(e.name)) otherEmotes.set(e.name, e.url);
   }
   const merged = sortByName(
     [...otherEmotes.entries()].map(([name, url]) => ({ name, url })),

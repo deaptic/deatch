@@ -6,7 +6,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { sendChatMessage } from "../../commands/chat";
+import { sendChatMessage } from "../../commands/twitch/chat";
 import { loadBacklog } from "../../services/feeds";
 import { shortcutManager } from "../../managers/ShortcutManager";
 import { copyField } from "../../utils/clipboard";
@@ -15,7 +15,7 @@ import ChatInput from "./ChatInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
 import UserContextMenu, { type UserContextTarget } from "../context-menus/UserContextMenu";
 import UserCard from "../user-card/UserCard";
-import { getUsers } from "../../commands/users";
+import { getUsers } from "../../commands/twitch/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
 import BanModal from "../ban-modal/BanModal";
 import InputPopover from "../../ui/InputPopover";
@@ -72,7 +72,7 @@ export default function Chat(props: Props) {
   const isMod = () =>
     !moderationActionsDisabled() &&
     (props.broadcasterLogin === props.userLogin ||
-      moderatedChannels().some((c) => c.broadcaster_id === props.broadcasterId));
+      moderatedChannels().some((c) => c.id === props.broadcasterId));
 
   createEffect(() => {
     const api = feedApi();
@@ -163,14 +163,14 @@ export default function Chat(props: Props) {
     let { userId, login, displayName } = identity;
     if (!userId || !login || !displayName) {
       try {
-        const params = userId ? { userIds: [userId] } : login ? { logins: [login] } : null;
+        const params = userId ? { ids: [userId] } : login ? { logins: [login] } : null;
         if (!params) return;
         const users = await getUsers(params);
         const u = users[0];
         if (!u) return;
         userId = u.id;
         login = u.login;
-        displayName = u.display_name;
+        displayName = u.displayName;
       } catch {
         return;
       }

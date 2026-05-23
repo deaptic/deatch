@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { deleteChatMessages } from "../../commands/moderation";
+import { deleteChatMessages } from "../../commands/twitch/moderation";
 import ContextMenu from "../../ui/ContextMenu";
 import ContextMenuItem from "../../ui/ContextMenuItem";
 import ContextMenuDivider from "../../ui/ContextMenuDivider";

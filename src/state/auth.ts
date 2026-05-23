@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
-import type { DeviceCode } from "../types";
+import type { DcfAuthResponse } from "../types/twitch/auth";
 
 export const [waiting, setWaiting] = createSignal(false);
-export const [deviceCode, setDeviceCode] = createSignal<DeviceCode | null>(null);
+export const [deviceCode, setDeviceCode] = createSignal<DcfAuthResponse | null>(null);
 export const [authChecked, setAuthChecked] = createSignal(false);
 
