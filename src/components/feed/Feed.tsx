@@ -14,11 +14,7 @@ import type {
   FeedEvent as EventItem,
   FeedItem,
 } from "../../types";
-import {
-  feeds,
-  isFeedItemVisible,
-  getItemId,
-} from "../../state/feeds";
+import { feeds, isFeedItemVisible, getItemId } from "../../state/feeds";
 import { buildThirdPartyEmoteMap } from "../../state/emotes";
 import { favorites } from "../../state/emotes";
 import {
@@ -61,7 +57,11 @@ type Props = {
   onReact?: (msg: Message, value: string) => void;
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
-  onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
+  onShowUserCard?: (
+    x: number,
+    y: number,
+    identity: { userId?: string; login?: string },
+  ) => void;
   onUserContextMenu?: (x: number, y: number, identity: UserIdentity) => void;
   onEventContextMenu?: (x: number, y: number, item: EventItem) => void;
   header?: JSX.Element;
@@ -90,7 +90,7 @@ export default function Feed(props: Props) {
   const dividerAt = () =>
     props.showDivider === false
       ? null
-      : feeds[props.broadcasterId]?.dividerAtItemId ?? null;
+      : (feeds[props.broadcasterId]?.dividerAtItemId ?? null);
   const emoteMap = createMemo(buildThirdPartyEmoteMap);
   const reactions = () => favorites().slice(0, 3);
 
@@ -158,15 +158,25 @@ export default function Feed(props: Props) {
     setIsPaused(!atBottom);
   }
 
-  createEffect(on(() => props.broadcasterId, () => {
-    setIsPaused(false);
-    setSelectedId(null);
-    queueMicrotask(scrollInstant);
-  }));
+  createEffect(
+    on(
+      () => props.broadcasterId,
+      () => {
+        setIsPaused(false);
+        setSelectedId(null);
+        queueMicrotask(scrollInstant);
+      },
+    ),
+  );
 
-  createEffect(on(() => items().length, () => {
-    if (!isPaused()) scrollInstant();
-  }));
+  createEffect(
+    on(
+      () => items().length,
+      () => {
+        if (!isPaused()) scrollInstant();
+      },
+    ),
+  );
 
   onMount(() => {
     if (!scrollRef) return;
@@ -226,13 +236,17 @@ export default function Feed(props: Props) {
     props.renderItem ? props.renderItem(item, index) : defaultRender(item);
 
   return (
-    <div ref={rootRef} class={`flex-1 relative min-h-0 ${props.class ?? ""}`} style={props.style}>
+    <div
+      ref={rootRef}
+      class={`flex-1 relative min-h-0 ${props.class ?? ""}`}
+      style={props.style}
+    >
       {props.header}
       <div
         ref={scrollRef}
         onScroll={onScroll}
         onWheel={props.onWheel}
-        class={`h-full overflow-y-auto flex flex-col [scrollbar-gutter:stable] ${props.scrollClass ?? ""}`}
+        class={`h-full overflow-y-auto flex flex-col scrollbar-gutter-stabl ${props.scrollClass ?? ""}`}
       >
         <For each={items()}>
           {(item, index) => (
@@ -247,7 +261,9 @@ export default function Feed(props: Props) {
                 <FeedDivider />
               </Show>
               <div
-                data-feed-id={item.kind === "message" ? item.message_id : undefined}
+                data-feed-id={
+                  item.kind === "message" ? item.message_id : undefined
+                }
                 tabIndex={-1}
                 class={`outline-none rounded ${
                   item.kind === "message" && selectedId() === item.message_id
