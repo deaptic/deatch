@@ -188,7 +188,7 @@ export default function ChatInput(props: Props) {
             placeholder={`Message #${props.broadcasterLogin}`}
             ref={(api) => { textAreaApi = api; }}
             addons={
-              <div class="self-stretch flex flex-col items-center mx-2 py-2.5 shrink-0">
+              <div class="self-stretch flex flex-col items-center mx-2 py-3 shrink-0">
                 <Button toggle="emotePicker" icon={<SmileIcon class="w-5 h-5" />} title="Emote picker" />
                 <CharCounter value={input} max={MAX_LEN} class="mt-auto" />
               </div>
