@@ -6,7 +6,7 @@ type Props<T> = {
   onSelect: (item: T) => void;
   onDismiss: () => void;
   renderItem: (item: T) => JSX.Element;
-  expose?: (api: { handleKey: (e: KeyboardEvent) => boolean }) => void;
+  ref?: (api: { handleKey: (e: KeyboardEvent) => boolean }) => void;
 };
 
 export default function Suggestions<T>(props: Props<T>) {
@@ -24,7 +24,7 @@ export default function Suggestions<T>(props: Props<T>) {
   });
 
   onMount(() => {
-    props.expose?.({
+    props.ref?.({
       handleKey: (e) => {
         const s = props.suggestions();
         if (s.length === 0) return false;

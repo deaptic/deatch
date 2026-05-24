@@ -181,7 +181,7 @@ export default function EmotePicker(props: Props) {
   const onDocumentMouseDown = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     if (panelRef?.contains(target)) return;
-    if (target.closest("[data-emote-picker-toggle]")) return;
+    if (target.closest('[data-panel-toggle="emotePicker"]')) return;
     props.onClose();
   };
   onMount(() => {

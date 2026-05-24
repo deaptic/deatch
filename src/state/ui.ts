@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-type Panel = "settings" | "inbox" | "account" | "emotePicker";
+export type Panel = "settings" | "inbox" | "account" | "emotePicker";
 
 export const [openPanel, setOpenPanel] = createSignal<Panel | null>(null);
 

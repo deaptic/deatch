@@ -275,7 +275,7 @@ export default function Chat(props: Props) {
             </button>
           </Show>
         }
-        expose={(api) => setFeedApi(api)}
+        ref={(api) => setFeedApi(api)}
       />
 
       <ChatInput
@@ -284,7 +284,7 @@ export default function Chat(props: Props) {
         replyTo={replyTo}
         onClearReply={clearReply}
         openUserCard={openUserCardFromInput}
-        expose={(api) => { inputApi = api; }}
+        ref={(api) => { inputApi = api; }}
       />
 
       <Show when={contextMenu()}>
