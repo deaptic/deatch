@@ -13,7 +13,7 @@ import { copyField } from "../../utils/clipboard";
 import Feed, { type FeedApi } from "../feed/Feed";
 import ChatInput from "./ChatInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
-import UserContextMenu, { type UserContextTarget } from "../context-menus/UserContextMenu";
+import UserContextMenu from "../context-menus/UserContextMenu";
 import UserCard from "../user-card/UserCard";
 import { getUsers } from "../../commands/twitch/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
@@ -29,15 +29,17 @@ import {
 } from "../../state/feeds";
 import {
   feedFontSize,
-  setFeedFontSize,
-  feedUserNickname,
-  setUserNickname,
-  removeUserNickname,
   advancedDeveloperMode,
   feedShowCopypasta,
   moderationActionsDisabled,
 } from "../../state/preferences";
 import CaretDownIcon from "../../icons/CaretDownIcon";
+import { createPopover } from "./createPopover";
+import { createNicknameEditor } from "./createNicknameEditor";
+import { createFontSizeWheel } from "./createFontSizeWheel";
+
+type Identity = { userId?: string; login?: string; displayName?: string };
+type ResolvedIdentity = { userId: string; login: string; displayName: string };
 
 type Props = {
   broadcasterId: string;
@@ -46,33 +48,41 @@ type Props = {
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
+async function resolveIdentity(identity: Identity): Promise<ResolvedIdentity | null> {
+  let { userId, login, displayName } = identity;
+  if (userId && login && displayName) return { userId, login, displayName };
+  try {
+    const params = userId ? { ids: [userId] } : login ? { logins: [login] } : null;
+    if (!params) return null;
+    const users = await getUsers(params);
+    const u = users[0];
+    if (!u) return null;
+    return { userId: u.id, login: u.login, displayName: u.displayName };
+  } catch {
+    return null;
+  }
+}
+
 export default function Chat(props: Props) {
-  const [contextMenu, setContextMenu] = createSignal<{ x: number; y: number; msg: Message } | null>(null);
-  const [userContextMenu, setUserContextMenu] = createSignal<{ x: number; y: number } & UserContextTarget | null>(null);
-  const [eventContextMenu, setEventContextMenu] = createSignal<{ x: number; y: number; item: EventItem } | null>(null);
+  const messageMenu = createPopover<{ msg: Message }>();
+  const userMenu = createPopover<{ userId: string; userLogin: string; userDisplayName: string }>();
+  const eventMenu = createPopover<{ item: EventItem }>();
+  const userCard = createPopover<{ chatterId: string }>();
+  const nickname = createNicknameEditor();
+  const fontSize = createFontSizeWheel();
+
   const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
   const [modAction, setModAction] = createSignal<{ userId: string; userName: string } | null>(null);
-  const [userCard, setUserCard] = createSignal<{ x: number; y: number; chatterId: string } | null>(null);
-  const [nicknamePop, setNicknamePop] = createSignal<{ x: number; y: number; login: string } | null>(null);
-  const [nicknameInput, setNicknameInput] = createSignal("");
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
-  const [fontSizeFlash, setFontSizeFlash] = createSignal(false);
-
   let inputApi: { focus: () => void; insert: (text: string) => void } | undefined;
-  let fontSizeFlashTimer: number | undefined;
-
-  createEffect(on(() => props.broadcasterId, () => {
-    inputApi?.focus();
-  }));
-
-  createEffect(on(() => props.broadcasterId, (broadcasterId) => {
-    loadBacklog(broadcasterId, props.broadcasterLogin);
-  }));
 
   const isMod = () =>
     !moderationActionsDisabled() &&
     (props.broadcasterLogin === props.userLogin ||
       moderatedChannels().some((c) => c.id === props.broadcasterId));
+
+  createEffect(on(() => props.broadcasterId, () => inputApi?.focus()));
+  createEffect(on(() => props.broadcasterId, (id) => loadBacklog(id, props.broadcasterLogin)));
 
   createEffect(() => {
     const api = feedApi();
@@ -88,114 +98,18 @@ export default function Chat(props: Props) {
     requestAnimationFrame(() => { if (!api.isPaused()) api.scrollToBottom(); });
   });
 
-  onMount(() => {
-    const unbind = shortcutManager.registerLocal("escape", () => {
-      clearDivider(props.broadcasterId);
-      return false;
-    });
-    onCleanup(unbind);
-  });
-
-  onMount(() => {
-    const withSelected = (fn: (msg: Message) => void) => () => {
-      const m = feedApi()?.getSelectedMessage();
-      if (m) fn(m);
-    };
-    const unbinds = [
-      shortcutManager.registerLocal("shift-up", () => { feedApi()?.moveSelection(-1); }),
-      shortcutManager.registerLocal("shift-down", () => { feedApi()?.moveSelection(1); }),
-      shortcutManager.registerLocal("up", () => { feedApi()?.moveSelection(-1); }, "feedSelected"),
-      shortcutManager.registerLocal("down", () => { feedApi()?.moveSelection(1); }, "feedSelected"),
-      shortcutManager.registerLocal("escape", () => {
-        feedApi()?.clearSelection();
-        inputApi?.focus();
-      }, "feedSelected"),
-      shortcutManager.registerLocal("enter", withSelected((m) => startReply(m)), "feedSelected"),
-      shortcutManager.registerLocal("c", withSelected((m) => {
-        copyField(m.fragments.map((f) => f.text).join(""));
-      }), "feedSelected"),
-    ];
-    onCleanup(() => { for (const u of unbinds) u(); });
-  });
-
-  onCleanup(() => clearTimeout(fontSizeFlashTimer));
-
-  function onWheel(e: WheelEvent) {
-    if (!e.altKey || e.deltaY === 0) return;
-    e.preventDefault();
-    setFeedFontSize(feedFontSize() - Math.sign(e.deltaY));
-    setFontSizeFlash(true);
-    clearTimeout(fontSizeFlashTimer);
-    fontSizeFlashTimer = window.setTimeout(() => setFontSizeFlash(false), 800);
-  }
-
-  const openContextMenu = (x: number, y: number, msg: Message) => setContextMenu({ x, y, msg });
-  const closeContextMenu = () => setContextMenu(null);
-  async function openUserCard(x: number, y: number, identity: { userId?: string; login?: string }) {
-    let id = identity.userId;
-    if (!id && identity.login) {
-      try {
-        const users = await getUsers({ logins: [identity.login] });
-        id = users[0]?.id;
-      } catch {
-        return;
-      }
-    }
-    if (id) setUserCard({ x, y, chatterId: id });
-  }
-  const openEventContextMenu = (x: number, y: number, item: EventItem) => setEventContextMenu({ x, y, item });
-  const closeEventContextMenu = () => setEventContextMenu(null);
-  const openModerate = (target: { userId: string; userName: string }) => setModAction(target);
-  const closeModAction = () => setModAction(null);
-  function openNicknameEdit(login: string, _displayName: string, x: number, y: number) {
-    setNicknameInput(feedUserNickname(login) ?? "");
-    setNicknamePop({ x, y, login });
-  }
-  function closeNicknameEdit() {
-    setNicknamePop(null);
-    setNicknameInput("");
-  }
-  async function openUserContextMenu(
-    x: number,
-    y: number,
-    identity: { userId?: string; login?: string; displayName?: string },
-  ) {
-    let { userId, login, displayName } = identity;
-    if (!userId || !login || !displayName) {
-      try {
-        const params = userId ? { ids: [userId] } : login ? { logins: [login] } : null;
-        if (!params) return;
-        const users = await getUsers(params);
-        const u = users[0];
-        if (!u) return;
-        userId = u.id;
-        login = u.login;
-        displayName = u.displayName;
-      } catch {
-        return;
-      }
-    }
-    setUserContextMenu({ x, y, userId, userLogin: login, userDisplayName: displayName });
-  }
-  const closeUserContextMenu = () => setUserContextMenu(null);
-  function submitNicknameEdit() {
-    const pop = nicknamePop();
-    if (!pop) return;
-    const v = nicknameInput().trim();
-    if (v) setUserNickname(pop.login, v);
-    else removeUserNickname(pop.login);
-    closeNicknameEdit();
-  }
-  const clearReply = () => setReplyTo(null);
-  const startReply = (msg: Message) => {
+  function startReply(msg: Message) {
     setReplyTo({
       messageId: msg.message_id,
       name: msg.chatter_name,
       text: msg.fragments.map((f) => f.text).join(""),
     });
     inputApi?.focus();
-  };
-  const mentionUser = (login: string) => inputApi?.insert(`@${login}`);
+  }
+
+  function clearReply() {
+    setReplyTo(null);
+  }
 
   function react(msg: Message, value: string) {
     sendChatMessage({
@@ -234,12 +148,57 @@ export default function Chat(props: Props) {
     feedApi()?.scrollToBottom();
   }
 
+  async function openUserCard(x: number, y: number, identity: Identity) {
+    const id = identity.userId ?? (await resolveIdentity(identity))?.userId;
+    if (id) userCard.open(x, y, { chatterId: id });
+  }
+
+  async function openUserContextMenu(x: number, y: number, identity: Identity) {
+    const r = await resolveIdentity(identity);
+    if (r) userMenu.open(x, y, { userId: r.userId, userLogin: r.login, userDisplayName: r.displayName });
+  }
+
   function openUserCardFromInput(userId: string) {
     const b = feedApi()?.getBounds();
     const x = b ? b.left : 0;
     const y = b ? b.bottom : window.innerHeight;
-    setUserCard({ x, y, chatterId: userId });
+    userCard.open(x, y, { chatterId: userId });
   }
+
+  const mentionUser = (login: string) => inputApi?.insert(`@${login}`);
+
+  function bindFeedShortcuts() {
+    const withSelected = (fn: (msg: Message) => void) => () => {
+      const m = feedApi()?.getSelectedMessage();
+      if (m) fn(m);
+    };
+    return [
+      shortcutManager.registerLocal("shift-up", () => { feedApi()?.moveSelection(-1); }),
+      shortcutManager.registerLocal("shift-down", () => { feedApi()?.moveSelection(1); }),
+      shortcutManager.registerLocal("up", () => { feedApi()?.moveSelection(-1); }, "feedSelected"),
+      shortcutManager.registerLocal("down", () => { feedApi()?.moveSelection(1); }, "feedSelected"),
+      shortcutManager.registerLocal("escape", () => {
+        feedApi()?.clearSelection();
+        inputApi?.focus();
+      }, "feedSelected"),
+      shortcutManager.registerLocal("enter", withSelected(startReply), "feedSelected"),
+      shortcutManager.registerLocal("c", withSelected((m) => {
+        copyField(m.fragments.map((f) => f.text).join(""));
+      }), "feedSelected"),
+    ];
+  }
+
+  onMount(() => {
+    const unbindDivider = shortcutManager.registerLocal("escape", () => {
+      clearDivider(props.broadcasterId);
+      return false;
+    });
+    const unbinds = bindFeedShortcuts();
+    onCleanup(() => {
+      unbindDivider();
+      for (const u of unbinds) u();
+    });
+  });
 
   return (
     <div class="flex flex-col h-full bg-bg-dark">
@@ -248,17 +207,17 @@ export default function Chat(props: Props) {
         userLogin={props.userLogin}
         scrollClass="pl-2 pr-3"
         style={{ "font-size": `${feedFontSize()}px` }}
-        onWheel={onWheel}
-        onContextMenu={openContextMenu}
+        onWheel={fontSize.onWheel}
+        onContextMenu={(x, y, msg) => messageMenu.open(x, y, { msg })}
         onReply={startReply}
         onReact={react}
         onCopypasta={copypasta}
         onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
         onShowUserCard={openUserCard}
         onUserContextMenu={openUserContextMenu}
-        onEventContextMenu={openEventContextMenu}
+        onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
         header={
-          <Show when={fontSizeFlash()}>
+          <Show when={fontSize.flash()}>
             <div class="absolute top-3 right-3 z-20 bg-bg border border-border-muted text-text text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
               {feedFontSize()}px
             </div>
@@ -275,7 +234,7 @@ export default function Chat(props: Props) {
             </button>
           </Show>
         }
-        ref={(api) => setFeedApi(api)}
+        ref={setFeedApi}
       />
 
       <ChatInput
@@ -287,7 +246,7 @@ export default function Chat(props: Props) {
         ref={(api) => { inputApi = api; }}
       />
 
-      <Show when={contextMenu()}>
+      <Show when={messageMenu.state()}>
         {(cm) => (
           <MessageContextMenu
             x={cm().x}
@@ -297,13 +256,13 @@ export default function Chat(props: Props) {
             broadcasterId={props.broadcasterId}
             developerMode={advancedDeveloperMode()}
             showCopypasta={feedShowCopypasta()}
-            onClose={closeContextMenu}
+            onClose={messageMenu.close}
             onReply={startReply}
             onCopypasta={copypasta}
           />
         )}
       </Show>
-      <Show when={userContextMenu()}>
+      <Show when={userMenu.state()}>
         {(uc) => (
           <UserContextMenu
             x={uc().x}
@@ -314,15 +273,15 @@ export default function Chat(props: Props) {
             isMod={isMod()}
             broadcasterId={props.broadcasterId}
             developerMode={advancedDeveloperMode()}
-            onClose={closeUserContextMenu}
-            onModerate={openModerate}
-            onEditNickname={openNicknameEdit}
-            onShowProfile={(x, y, userId) => setUserCard({ x, y, chatterId: userId })}
+            onClose={userMenu.close}
+            onModerate={(t) => setModAction(t)}
+            onEditNickname={(login, _displayName, x, y) => nickname.open(login, x, y)}
+            onShowProfile={(x, y, userId) => userCard.open(x, y, { chatterId: userId })}
             onMention={mentionUser}
           />
         )}
       </Show>
-      <Show when={userCard()}>
+      <Show when={userCard.state()}>
         {(uc) => (
           <UserCard
             x={uc().x}
@@ -331,31 +290,23 @@ export default function Chat(props: Props) {
             broadcasterId={props.broadcasterId}
             getBounds={() => feedApi()?.getBounds() ?? null}
             getBoundsElement={() => feedApi()?.getElement() ?? null}
-            onClose={() => setUserCard(null)}
+            onClose={userCard.close}
             onJumpToMessage={props.onJumpToMessage}
             onSwitchUser={async (identity) => {
-              let id = identity.userId;
-              if (!id && identity.login) {
-                try {
-                  const users = await getUsers({ logins: [identity.login] });
-                  id = users[0]?.id;
-                } catch {
-                  return;
-                }
-              }
-              if (id) setUserCard((u) => (u ? { ...u, chatterId: id! } : null));
+              const id = identity.userId ?? (await resolveIdentity(identity))?.userId;
+              if (id) userCard.update({ chatterId: id });
             }}
           />
         )}
       </Show>
-      <Show when={eventContextMenu()}>
+      <Show when={eventMenu.state()}>
         {(cm) => (
           <EventContextMenu
             x={cm().x}
             y={cm().y}
             item={cm().item}
             developerMode={advancedDeveloperMode()}
-            onClose={closeEventContextMenu}
+            onClose={eventMenu.close}
           />
         )}
       </Show>
@@ -365,20 +316,20 @@ export default function Chat(props: Props) {
             userId={ma().userId}
             userName={ma().userName}
             broadcasterId={props.broadcasterId}
-            onClose={closeModAction}
+            onClose={() => setModAction(null)}
           />
         )}
       </Show>
-      <Show when={nicknamePop()}>
+      <Show when={nickname.state()}>
         {(p) => (
           <InputPopover
             x={p().x}
             y={p().y}
-            value={nicknameInput()}
+            value={nickname.input()}
             placeholder="Nickname"
-            onInput={setNicknameInput}
-            onSubmit={submitNicknameEdit}
-            onClose={closeNicknameEdit}
+            onInput={nickname.setInput}
+            onSubmit={nickname.submit}
+            onClose={nickname.close}
           />
         )}
       </Show>
