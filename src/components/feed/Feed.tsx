@@ -70,7 +70,7 @@ type Props = {
   style?: JSX.CSSProperties;
   scrollClass?: string;
   onWheel?: (e: WheelEvent) => void;
-  expose?: (api: FeedApi) => void;
+  ref?: (api: FeedApi) => void;
 };
 
 export default function Feed(props: Props) {
@@ -178,7 +178,7 @@ export default function Feed(props: Props) {
   });
 
   onMount(() => {
-    props.expose?.({
+    props.ref?.({
       scrollToBottom: scrollInstant,
       isPaused,
       getBounds: () => rootRef?.getBoundingClientRect() ?? null,

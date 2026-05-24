@@ -4,7 +4,7 @@ import { chattersByChannel } from "../../state/users";
 import { feedUserNickname } from "../../state/preferences";
 import { getUsers } from "../../commands/twitch/users";
 import Suggestions from "../suggestions/Suggestions";
-import CommandComposerHint from "./CommandComposerHint";
+import Banner from "../../ui/Banner";
 import CommandComposerSlot from "./CommandComposerSlot";
 
 type Slot = {
@@ -304,7 +304,7 @@ export default function CommandComposer(props: Props) {
               </span>
             </>
           )}
-          expose={(api) => { popupHandleKey = api.handleKey; }}
+          ref={(api) => { popupHandleKey = api.handleKey; }}
         />
       </Show>
       <Show when={showEnumPopup()}>
@@ -313,15 +313,23 @@ export default function CommandComposer(props: Props) {
           onSelect={selectEnum}
           onDismiss={props.onCancel}
           renderItem={(v) => <span class="text-text">{v}</span>}
-          expose={(api) => { popupHandleKey = api.handleKey; }}
+          ref={(api) => { popupHandleKey = api.handleKey; }}
         />
       </Show>
-      <CommandComposerHint
-        commandName={props.command.name}
-        activeOptionName={activeOption()?.name}
-        body={hintBody()}
-        errored={errorActive()}
-      />
+      <Banner tone={errorActive() ? "danger" : "info"}>
+        <span class="text-text-muted">/{props.command.name}</span>
+        <Show when={activeOption()?.name}>
+          <span class="text-text-muted"> · </span>
+          <span class={`font-semibold ${errorActive() ? "text-danger" : "text-primary"}`}>
+            {activeOption()!.name}
+          </span>
+        </Show>
+        <Show when={hintBody()}>
+          <span class={errorActive() ? "text-danger" : "text-text-muted"}>
+            {" — "}{hintBody()}
+          </span>
+        </Show>
+      </Banner>
       <div class="flex items-center flex-wrap gap-2 px-4 min-h-14 py-2 min-w-0">
         <span class="inline-flex items-center px-2 py-1 rounded bg-primary/15 text-primary text-base font-semibold shrink-0">
           /{props.command.name}
