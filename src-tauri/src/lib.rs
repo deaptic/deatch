@@ -94,6 +94,7 @@ pub fn run() {
             commands::twitch::channels::remove_channel_vip,
             commands::twitch::raids::start_raid,
             commands::twitch::raids::cancel_raid,
+            commands::twitch::clips::create_clip,
             commands::twitch::channels::get_channel_followers,
             commands::twitch::channels::get_followed_channels,
             commands::twitch::channels::modify_channel_information,

@@ -1,6 +1,9 @@
 import { Show } from "solid-js";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import type { FeedEvent as Event } from "../../types";
 import Timestamp from "../../ui/Timestamp";
+import RichNotice from "./RichNotice";
+import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";
@@ -31,6 +34,7 @@ const COLORS: Record<string, string> = {
   follow: "var(--color-event-follow)",
   bits_badge_tier: "var(--color-event-bits)",
   channel_points_redemption: "var(--color-event-channel-points)",
+  clip_created: "var(--color-primary)",
 };
 
 type Props = {
@@ -44,7 +48,7 @@ export default function FeedEvent(props: Props) {
   return (
     <div
       data-item-id={props.item.id}
-      class="flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 border-l-4 rounded-r-md"
+      class="relative group flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 border-l-4 rounded-r-md"
       style={{
         "background-color": `color-mix(in oklab, ${color()} 10%, transparent)`,
         "border-left-color": color(),
@@ -59,9 +63,27 @@ export default function FeedEvent(props: Props) {
       <Show when={props.showTimestamp}>
         <Timestamp ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
       </Show>
-      <span class="text-text font-semibold wrap-break-word min-w-0">
-        {props.item.system_message}
-      </span>
+      <Show
+        when={props.item.clip}
+        fallback={
+          <span class="text-text font-semibold wrap-break-word min-w-0">
+            {props.item.system_message}
+          </span>
+        }
+      >
+        <RichNotice
+          class="text-text font-semibold wrap-break-word min-w-0"
+          label={props.item.system_message}
+          actions={[
+            {
+              title: "View clip",
+              icon: <ExternalLinkIcon class="w-3.5 h-3.5" />,
+              variant: "success",
+              onClick: () => openUrl(`https://clips.twitch.tv/${props.item.clip!.id}`),
+            },
+          ]}
+        />
+      </Show>
     </div>
   );
 }

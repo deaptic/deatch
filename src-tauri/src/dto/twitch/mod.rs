@@ -1,5 +1,6 @@
 pub mod channel;
 pub mod chat;
+pub mod clip;
 pub mod eventsub;
 pub mod game;
 pub mod ids;

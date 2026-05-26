@@ -71,6 +71,7 @@ fn scopes() -> Vec<Scope> {
         Scope::ChannelManageBroadcast,
         Scope::ChannelEditCommercial,
         Scope::UserManageChatColor,
+        Scope::ClipsEdit,
     ]
 }
 
