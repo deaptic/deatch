@@ -37,7 +37,8 @@ import {
   muteUser,
   unmuteUser,
 } from "../../state/preferences";
-import { appendLocalNotice } from "../../state/feeds";
+import { createClip } from "../../commands/twitch/clips";
+import { appendItem, appendLocalNotice } from "../../state/feeds";
 import { Time } from "../../utils/time";
 import type { Command } from "./types";
 
@@ -456,6 +457,44 @@ const deatchCommands: Command[] = [
         duration: 1,
         reason: null,
       });
+    },
+  },
+  {
+    name: "clip",
+    description: "Create a clip of the stream",
+    role: "regular",
+    options: [
+      { name: "title", description: "Clip title", type: "string" },
+      {
+        name: "duration",
+        description: "Clip length (5-60s, default 30s)",
+        type: "duration",
+        hint: "between 5s and 60s, e.g. 15s, 30s, 60s",
+      },
+    ],
+    execute: async ({ title, duration }, ctx) => {
+      try {
+        const clip = await createClip(
+          {
+            broadcasterId: ctx.broadcasterId,
+            title: (title as string | null) ?? undefined,
+            duration: (duration as number | null) ?? undefined,
+          },
+          { silent: true },
+        );
+        appendItem(ctx.broadcasterId, {
+          kind: "event",
+          id: clip.id,
+          notice_type: "clip_created",
+          system_message: "Clip created",
+          chatter_name: "",
+          color: "",
+          timestamp: Date.now(),
+          clip: { id: clip.id },
+        });
+      } catch {
+        appendLocalNotice(ctx.broadcasterId, "Failed to create clip (stream may be offline)");
+      }
     },
   },
   {

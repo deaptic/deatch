@@ -57,6 +57,7 @@ export type FeedEvent = {
   color: string;
   timestamp: number;
   silent?: boolean;
+  clip?: { id: string };
 };
 
 export type FeedItem = FeedMessage | FeedEvent;

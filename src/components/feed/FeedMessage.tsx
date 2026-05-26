@@ -5,8 +5,7 @@ import FeedMessageFragment from "./FeedMessageFragment";
 import BadgeBox from "../../ui/BadgeBox";
 import DisplayName from "../../ui/DisplayName";
 import Timestamp from "../../ui/Timestamp";
-import Toolbar from "../../ui/Toolbar";
-import ToolbarItem from "../../ui/ToolbarItem";
+import RichNotice from "./RichNotice";
 import CheckIcon from "../../icons/CheckIcon";
 import CloseIcon from "../../icons/CloseIcon";
 import type { FeedMessage as Message, BadgeMap } from "../../types";
@@ -140,26 +139,6 @@ export default function FeedMessage(props: Props) {
         props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
-      <Show when={holdPending()}>
-        <Toolbar alwaysVisible>
-          <ToolbarItem
-            title="Approve"
-            variant="success"
-            disabled={holdBusy()}
-            onClick={() => handleHold("approve")}
-          >
-            <CheckIcon class="w-4 h-4" />
-          </ToolbarItem>
-          <ToolbarItem
-            title="Deny"
-            variant="danger"
-            disabled={holdBusy()}
-            onClick={() => handleHold("deny")}
-          >
-            <CloseIcon class="w-3 h-3" />
-          </ToolbarItem>
-        </Toolbar>
-      </Show>
       <Show
         when={
           !hold() &&
@@ -181,19 +160,41 @@ export default function FeedMessage(props: Props) {
       </Show>
       <div class="grid grid-cols-[auto_1fr]">
       <Show when={hold()}>
-        <div class="col-start-2 row-start-1 text-warning text-[0.82em] leading-tight font-medium">
-          {hold()!.reason}
-          <Show when={holdResolved()}>
-            <span class="text-text-muted"> · {hold()!.status === "approved" ? "approved" : "denied"}</span>
-          </Show>
-        </div>
+        <RichNotice
+          class="col-start-2 row-start-1 text-warning text-[0.82em] leading-tight font-medium"
+          label={hold()!.reason}
+          suffix={holdResolved() ? (hold()!.status === "approved" ? "approved" : "denied") : undefined}
+          actions={
+            holdPending()
+              ? [
+                  {
+                    title: "Approve",
+                    icon: <CheckIcon class="w-4 h-4" />,
+                    variant: "success",
+                    disabled: holdBusy(),
+                    onClick: () => handleHold("approve"),
+                  },
+                  {
+                    title: "Deny",
+                    icon: <CloseIcon class="w-3 h-3" />,
+                    variant: "danger",
+                    disabled: holdBusy(),
+                    onClick: () => handleHold("deny"),
+                  },
+                ]
+              : undefined
+          }
+        />
       </Show>
       <Show when={props.item.channel_points_custom_reward}>
-        <div class="col-start-2 row-start-1 text-event-channel-points text-[0.82em] leading-tight font-medium">
-          {props.item.channel_points_reward_title
-            ? `Redeemed ${props.item.channel_points_reward_title}`
-            : "Channel point redemption"}
-        </div>
+        <RichNotice
+          class="col-start-2 row-start-1 text-event-channel-points text-[0.82em] leading-tight font-medium"
+          label={
+            props.item.channel_points_reward_title
+              ? `Redeemed ${props.item.channel_points_reward_title}`
+              : "Channel point redemption"
+          }
+        />
       </Show>
       <Show when={props.showTimestamp}>
         <Timestamp
