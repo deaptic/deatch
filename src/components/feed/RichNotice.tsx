@@ -4,10 +4,10 @@ import ToolbarItem from "../../ui/ToolbarItem";
 
 export type RichNoticeAction = {
   title: string;
-  icon: JSX.Element;
+  icon: () => JSX.Element;
   onClick: () => void;
   variant?: "default" | "success" | "danger";
-  disabled?: boolean;
+  disabled?: () => boolean;
 };
 
 type Props = {
@@ -33,10 +33,10 @@ export default function RichNotice(props: Props) {
               <ToolbarItem
                 title={action.title}
                 variant={action.variant}
-                disabled={action.disabled}
+                disabled={action.disabled?.()}
                 onClick={action.onClick}
               >
-                {action.icon}
+                {action.icon()}
               </ToolbarItem>
             )}
           </For>
