@@ -21,6 +21,7 @@ export default function ToolbarItem(props: Props) {
     <button
       title={props.title}
       disabled={props.disabled}
+      onMouseDown={(e) => e.preventDefault()}
       onClick={(e) => {
         e.stopPropagation();
         props.onClick(e);

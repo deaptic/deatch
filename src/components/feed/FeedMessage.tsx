@@ -169,16 +169,16 @@ export default function FeedMessage(props: Props) {
               ? [
                   {
                     title: "Approve",
-                    icon: <CheckIcon class="w-4 h-4" />,
+                    icon: () => <CheckIcon class="w-4 h-4" />,
                     variant: "success",
-                    disabled: holdBusy(),
+                    disabled: holdBusy,
                     onClick: () => handleHold("approve"),
                   },
                   {
                     title: "Deny",
-                    icon: <CloseIcon class="w-3 h-3" />,
+                    icon: () => <CloseIcon class="w-3 h-3" />,
                     variant: "danger",
-                    disabled: holdBusy(),
+                    disabled: holdBusy,
                     onClick: () => handleHold("deny"),
                   },
                 ]
