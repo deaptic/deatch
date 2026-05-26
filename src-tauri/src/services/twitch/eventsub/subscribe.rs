@@ -5,7 +5,10 @@ use twitch_api::eventsub::{
         ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
         ChannelChatMessageV1, ChannelChatNotificationV1,
     },
-    channel::{ChannelFollowV2, ChannelModerateV2, ChannelShoutoutCreateV1},
+    channel::{
+        ChannelFollowV2, ChannelModerateV2, ChannelPointsCustomRewardRedemptionAddV1,
+        ChannelShoutoutCreateV1,
+    },
     Transport,
 };
 use twitch_api::twitch_oauth2::UserToken;
@@ -77,6 +80,15 @@ pub(super) async fn create_subscription(
                 helix,
                 token,
                 AutomodMessageHoldV2::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
+        }
+        EventKind::ChannelPointsCustomRewardRedemptionAdd => {
+            create(
+                helix,
+                token,
+                ChannelPointsCustomRewardRedemptionAddV1::broadcaster_user_id(broadcaster_id),
                 transport,
             )
             .await

@@ -8,11 +8,20 @@ import { recordMention } from "../state/inbox";
 import { feedKeywords, matchesAnyKeyword } from "../state/preferences";
 import { mapChatMessage } from "./chat-mapper";
 import { handleFollowageCommand } from "./followage";
+import { noteChatRedemption } from "./channelPointsCorrelator";
 
 listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
   const raw = e.payload.event;
   const ts = Date.now();
   appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
+  if (raw.channel_points_custom_reward_id) {
+    noteChatRedemption(
+      raw.broadcaster_user_id,
+      raw.chatter_user_id,
+      raw.channel_points_custom_reward_id,
+      raw.message_id,
+    );
+  }
 
   if (
     user()?.id === "52679773" &&

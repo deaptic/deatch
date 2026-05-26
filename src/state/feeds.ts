@@ -275,6 +275,25 @@ export function isFeedItemVisible(item: FeedItem): boolean {
   );
 }
 
+export function setChannelPointsRewardTitle(
+  broadcasterId: string,
+  messageId: string,
+  title: string,
+) {
+  if (!feeds[broadcasterId]) return;
+  setFeeds(
+    broadcasterId,
+    produce((f) => {
+      const item = f.messages.find(
+        (m) => m.kind === "message" && m.message_id === messageId,
+      );
+      if (item && item.kind === "message") {
+        item.channel_points_reward_title = title;
+      }
+    }),
+  );
+}
+
 export function setAutomodHoldStatus(
   broadcasterId: string,
   messageId: string,

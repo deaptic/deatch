@@ -13,7 +13,8 @@ export type EventKind =
   | "channel.shoutout.create"
   | "channel.follow"
   | "channel.moderate"
-  | "automod.message.hold";
+  | "automod.message.hold"
+  | "channel.channel_points_custom_reward_redemption.add";
 
 export const CHAT_KINDS: EventKind[] = [
   "channel.chat.message",
@@ -30,7 +31,12 @@ export const MOD_KINDS: EventKind[] = [
   "automod.message.hold",
 ];
 
-export const ALL_KINDS: EventKind[] = [...CHAT_KINDS, ...MOD_KINDS];
+// Broadcaster-only — only subscribable for the logged-in user's own channel.
+export const OWN_KINDS: EventKind[] = [
+  "channel.channel_points_custom_reward_redemption.add",
+];
+
+export const ALL_KINDS: EventKind[] = [...CHAT_KINDS, ...MOD_KINDS, ...OWN_KINDS];
 
 /// Per-channel subscription status tracked by the EventSubManager.
 export type SubStatus = "pending" | "active" | "failed" | "disconnected";
@@ -103,6 +109,25 @@ export type RawFollow = {
   broadcaster_user_id: string;
   user_id: string;
   user_name: string;
+};
+
+// ── channel.channel_points_custom_reward_redemption.add ──────────────
+
+export type RawChannelPointsRedemption = {
+  broadcaster_user_id: string;
+  id: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  user_input: string;
+  status: "unknown" | "unfulfilled" | "fulfilled" | "canceled";
+  reward: {
+    id: string;
+    title: string;
+    cost: number;
+    prompt: string;
+  };
+  redeemed_at: string;
 };
 
 // ── channel.chat.message_delete / clear / clear_user_messages ────────

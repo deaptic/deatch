@@ -1,10 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
 import type { FeedEvent, RawNotification, RawShoutout, RawFollow } from "../types";
-import type { EventEnvelope } from "../types/twitch/eventsub";
+import type { EventEnvelope, RawChannelPointsRedemption } from "../types/twitch/eventsub";
 import { appendItem } from "../state/feeds";
 import { isModOfChannel } from "../state/users";
 import { moderationAutoShoutoutOnRaid } from "../state/preferences";
 import { sendShoutout } from "../commands/twitch/chat";
+import { correlateRedemption } from "./channelPointsCorrelator";
 
 function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   return {
@@ -44,6 +45,23 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   };
 }
 
+function mapRedemption(raw: RawChannelPointsRedemption, timestamp: number): FeedEvent {
+  const input = raw.user_input.trim();
+  const system_message = input
+    ? `${raw.user_name} redeemed ${raw.reward.title}: ${input}`
+    : `${raw.user_name} redeemed ${raw.reward.title}`;
+  return {
+    kind: "event",
+    id: raw.id,
+    notice_type: "channel_points_redemption",
+    system_message,
+    chatter_user_id: raw.user_id,
+    chatter_name: raw.user_name,
+    color: "",
+    timestamp,
+  };
+}
+
 listen<EventEnvelope<RawNotification>>("channel-chat-notification", (e) => {
   const raw = e.payload.event;
   const id = raw.broadcaster_user_id;
@@ -75,4 +93,16 @@ listen<EventEnvelope<RawShoutout>>("channel-shoutout-create", (e) => {
 listen<EventEnvelope<RawFollow>>("channel-follow", (e) => {
   const raw = e.payload.event;
   appendItem(raw.broadcaster_user_id, mapFollow(raw, Date.now()));
+});
+
+listen<EventEnvelope<RawChannelPointsRedemption>>("channel-points-redemption-add", (e) => {
+  const raw = e.payload.event;
+  const ts = Date.now();
+  correlateRedemption(
+    raw.broadcaster_user_id,
+    raw.user_id,
+    raw.reward.id,
+    raw.reward.title,
+    () => appendItem(raw.broadcaster_user_id, mapRedemption(raw, ts)),
+  );
 });
