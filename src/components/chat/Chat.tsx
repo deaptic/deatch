@@ -1,7 +1,7 @@
 import {
   createEffect,
+  createMemo,
   createSignal,
-  on,
   onCleanup,
   onMount,
   Show,
@@ -45,6 +45,7 @@ type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
   userLogin: string;
+  isActive: boolean;
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
@@ -76,19 +77,23 @@ export default function Chat(props: Props) {
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
   let inputApi: { focus: () => void; insert: (text: string) => void } | undefined;
 
-  const isMod = () =>
+  const isMod = createMemo(() =>
     !moderationActionsDisabled() &&
     (props.broadcasterLogin === props.userLogin ||
-      moderatedChannels().some((c) => c.id === props.broadcasterId));
+      moderatedChannels().some((c) => c.id === props.broadcasterId)),
+  );
 
-  createEffect(on(() => props.broadcasterId, () => inputApi?.focus()));
-  createEffect(on(() => props.broadcasterId, (id) => loadBacklog(id, props.broadcasterLogin)));
+  onMount(() => loadBacklog(props.broadcasterId, props.broadcasterLogin));
+
+  createEffect(() => {
+    if (props.isActive) inputApi?.focus();
+  });
 
   createEffect(() => {
     const api = feedApi();
     if (!api) return;
     setFeedPaused(props.broadcasterId, api.isPaused());
-    if (!api.isPaused()) markSeen(props.broadcasterId);
+    if (props.isActive && !api.isPaused()) markSeen(props.broadcasterId);
   });
 
   createEffect(() => {
@@ -188,7 +193,8 @@ export default function Chat(props: Props) {
     ];
   }
 
-  onMount(() => {
+  createEffect(() => {
+    if (!props.isActive) return;
     const unbindDivider = shortcutManager.registerLocal("escape", () => {
       clearDivider(props.broadcasterId);
       return false;

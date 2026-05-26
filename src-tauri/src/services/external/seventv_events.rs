@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::time::Duration;
 
 use futures_util::{Sink, SinkExt, StreamExt};
@@ -18,7 +19,12 @@ const OP_DISPATCH: u8 = 0;
 const OP_SUBSCRIBE: u8 = 35;
 const OP_UNSUBSCRIBE: u8 = 36;
 
-pub struct SevenTvEvents(pub UnboundedSender<Option<String>>);
+pub enum SevenTvOp {
+    Subscribe(String),
+    Unsubscribe(String),
+}
+
+pub struct SevenTvEvents(pub UnboundedSender<SevenTvOp>);
 
 pub fn spawn(app: tauri::AppHandle) {
     let (tx, rx) = unbounded_channel();
@@ -26,15 +32,15 @@ pub fn spawn(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(run(app, rx));
 }
 
-async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<Option<String>>) {
-    let mut active: Option<String> = None;
+async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
+    let mut active: HashSet<String> = HashSet::new();
     loop {
         let Ok((ws, _)) = connect_async(WS_URL).await else {
             tokio::time::sleep(Duration::from_secs(5)).await;
             continue;
         };
         let (mut write, mut read) = ws.split();
-        if let Some(id) = &active {
+        for id in &active {
             let _ = write.send(payload(OP_SUBSCRIBE, id)).await;
         }
 
@@ -42,7 +48,7 @@ async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<Option<String>>) {
             tokio::select! {
                 next = rx.recv() => match next {
                     None => return,
-                    Some(new) => swap(&mut write, &mut active, new).await,
+                    Some(op) => apply(&mut write, &mut active, op).await,
                 },
                 msg = read.next() => match msg {
                     Some(Ok(Message::Text(t))) => emit_delta(&app, &t),
@@ -56,21 +62,23 @@ async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<Option<String>>) {
     }
 }
 
-async fn swap<S: Sink<Message> + Unpin>(
+async fn apply<S: Sink<Message> + Unpin>(
     write: &mut S,
-    active: &mut Option<String>,
-    next: Option<String>,
+    active: &mut HashSet<String>,
+    op: SevenTvOp,
 ) {
-    if *active == next {
-        return;
+    match op {
+        SevenTvOp::Subscribe(id) => {
+            if active.insert(id.clone()) {
+                let _ = write.send(payload(OP_SUBSCRIBE, &id)).await;
+            }
+        }
+        SevenTvOp::Unsubscribe(id) => {
+            if active.remove(&id) {
+                let _ = write.send(payload(OP_UNSUBSCRIBE, &id)).await;
+            }
+        }
     }
-    if let Some(old) = active.take() {
-        let _ = write.send(payload(OP_UNSUBSCRIBE, &old)).await;
-    }
-    if let Some(id) = &next {
-        let _ = write.send(payload(OP_SUBSCRIBE, id)).await;
-    }
-    *active = next;
 }
 
 fn payload(op: u8, set_id: &str) -> Message {

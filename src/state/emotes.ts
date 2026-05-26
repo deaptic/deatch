@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createMemo, createRoot, createSignal } from "solid-js";
 import type { EmoteEntry } from "../types/external/emote";
 import type { Emote, UserEmote } from "../types/twitch/chat";
 import type { User } from "../types/twitch/user";
@@ -28,7 +28,7 @@ export const [sevenTvChannel, setSevenTvChannel] = createSignal<EmoteEntry[]>([]
 export const [bttvChannel, setBttvChannel] = createSignal<EmoteEntry[]>([]);
 export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 
-export function buildThirdPartyEmoteMap(): EmoteMap {
+function computeThirdPartyEmoteMap(): EmoteMap {
   const map: EmoteMap = {};
   for (const e of sevenTvGlobal()) map[e.name] = e.url;
   for (const e of bttvGlobal()) map[e.name] = e.url;
@@ -38,6 +38,10 @@ export function buildThirdPartyEmoteMap(): EmoteMap {
   for (const e of ffzChannel()) map[e.name] = e.url;
   return map;
 }
+
+export const thirdPartyEmoteMap = createRoot(() =>
+  createMemo(computeThirdPartyEmoteMap),
+);
 
 function persistFavorites(list: FavoriteEmote[]) {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));

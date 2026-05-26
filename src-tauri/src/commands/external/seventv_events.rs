@@ -1,16 +1,24 @@
-use crate::services::external::seventv_events::SevenTvEvents;
+use crate::services::external::seventv_events::{SevenTvEvents, SevenTvOp};
 use serde::Deserialize;
 
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
-pub struct SeventvWatchEmoteSetParams {
-    pub emote_set_id: Option<String>,
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SeventvEmoteSetParams {
+    pub emote_set_id: String,
 }
 
 #[tauri::command]
-pub fn seventv_watch_emote_set(
+pub fn seventv_subscribe_emote_set(
     state: tauri::State<SevenTvEvents>,
-    params: SeventvWatchEmoteSetParams,
+    params: SeventvEmoteSetParams,
 ) {
-    let _ = state.0.send(params.emote_set_id);
+    let _ = state.0.send(SevenTvOp::Subscribe(params.emote_set_id));
+}
+
+#[tauri::command]
+pub fn seventv_unsubscribe_emote_set(
+    state: tauri::State<SevenTvEvents>,
+    params: SeventvEmoteSetParams,
+) {
+    let _ = state.0.send(SevenTvOp::Unsubscribe(params.emote_set_id));
 }
