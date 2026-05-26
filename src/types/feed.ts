@@ -40,6 +40,8 @@ export type FeedMessage = {
   reply?: FeedReply;
   timestamp: number;
   channel_points?: boolean;
+  channel_points_custom_reward?: boolean;
+  channel_points_reward_title?: string;
   first_message?: boolean;
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;

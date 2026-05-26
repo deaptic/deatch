@@ -43,7 +43,7 @@ import { user, setModeratedChannels, isModOfChannel } from "./state/users";
 import { authChecked } from "./state/auth";
 import { sessionManager } from "./managers/SessionManager";
 import { eventSubManager } from "./managers/EventSubManager";
-import { CHAT_KINDS, MOD_KINDS, ALL_KINDS } from "./types/twitch/eventsub";
+import { CHAT_KINDS, MOD_KINDS, OWN_KINDS, ALL_KINDS } from "./types/twitch/eventsub";
 import { setGlobalEmotes, clearChannelThirdPartyEmotes } from "./state/emotes";
 import {
   loadGlobalEmotes,
@@ -201,6 +201,9 @@ function App() {
       for (const k of CHAT_KINDS) void eventSubManager.subscribe(id, k);
       if (isModOfChannel(id)) {
         for (const k of MOD_KINDS) void eventSubManager.subscribe(id, k);
+      }
+      if (id === u.id) {
+        for (const k of OWN_KINDS) void eventSubManager.subscribe(id, k);
       }
       void sevenTvManager.subscribe(id);
     }

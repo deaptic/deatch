@@ -30,6 +30,7 @@ const COLORS: Record<string, string> = {
   shoutout: "var(--color-event-shoutout)",
   follow: "var(--color-event-follow)",
   bits_badge_tier: "var(--color-event-bits)",
+  channel_points_redemption: "var(--color-event-channel-points)",
 };
 
 type Props = {

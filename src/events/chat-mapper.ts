@@ -39,6 +39,7 @@ export function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMess
     timestamp,
     channel_points:
       !!raw.channel_points_custom_reward_id || CHANNEL_POINT_TYPES.has(raw.message_type),
+    channel_points_custom_reward: !!raw.channel_points_custom_reward_id,
     first_message: raw.message_type === "user_intro",
     deleted: raw.deleted,
   };

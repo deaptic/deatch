@@ -112,7 +112,7 @@ export default function FeedMessage(props: Props) {
     <div
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
-      class={`relative group flex gap-2 leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-bg ${
+      class={`relative group leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-bg ${
         props.item.deleted || holdResolved() ? "opacity-50 " : ""
       }${
         hold()
@@ -179,10 +179,29 @@ export default function FeedMessage(props: Props) {
           onMore={props.onContextMenu!}
         />
       </Show>
-      <Show when={props.showTimestamp}>
-        <Timestamp ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
+      <div class="grid grid-cols-[auto_1fr]">
+      <Show when={hold()}>
+        <div class="col-start-2 row-start-1 text-warning text-[0.82em] leading-tight font-medium">
+          {hold()!.reason}
+          <Show when={holdResolved()}>
+            <span class="text-text-muted"> · {hold()!.status === "approved" ? "approved" : "denied"}</span>
+          </Show>
+        </div>
       </Show>
-      <div class="wrap-break-word min-w-0">
+      <Show when={props.item.channel_points_custom_reward}>
+        <div class="col-start-2 row-start-1 text-event-channel-points text-[0.82em] leading-tight font-medium">
+          {props.item.channel_points_reward_title
+            ? `Redeemed ${props.item.channel_points_reward_title}`
+            : "Channel point redemption"}
+        </div>
+      </Show>
+      <Show when={props.showTimestamp}>
+        <Timestamp
+          ts={props.item.timestamp}
+          class="col-start-1 row-start-2 self-start text-text-muted select-none shrink-0 mr-2"
+        />
+      </Show>
+      <div class="col-start-2 row-start-2 wrap-break-word min-w-0">
         <Show when={props.item.reply}>
           <div
             class={`text-text-muted/70 leading-[1.6em] truncate transition-colors ${
@@ -234,14 +253,7 @@ export default function FeedMessage(props: Props) {
             )}
           </For>
         </Show>
-        <Show when={hold()}>
-          <div class="text-text-muted text-[0.78em] leading-[1.6em]">
-            {hold()!.reason}
-            <Show when={holdResolved()}>
-              <span> · {hold()!.status === "approved" ? "approved" : "denied"}</span>
-            </Show>
-          </div>
-        </Show>
+      </div>
       </div>
     </div>
   );
