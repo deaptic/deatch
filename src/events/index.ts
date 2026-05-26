@@ -6,7 +6,6 @@ import "./notifications";
 import "./moderation";
 import "./eventsub";
 import "./watch";
-import "./seventv";
 
 export { mapChatMessage } from "./chat-mapper";
 

@@ -1,4 +1,12 @@
-import { createSignal, createEffect, on, onMount, onCleanup, Show } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  on,
+  onMount,
+  onCleanup,
+  Show,
+  For,
+} from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   enable as enableAutostart,
@@ -42,9 +50,9 @@ import {
   loadThirdPartyGlobalEmotes,
   loadChannelThirdPartyEmotes,
   resetChannelThirdPartyEmoteCache,
-  clearActiveSevenTvSubscription,
   resetUserEmotes,
 } from "./services/emotes";
+import { sevenTvManager } from "./managers/SevenTvManager";
 import {
   selectedChannel,
   setSelectedChannel,
@@ -96,6 +104,7 @@ function App() {
   const [liveLoaded, setLiveLoaded] = createSignal(false);
 
   const joinedIds = new Set<string>();
+  const [renderedChannels, setRenderedChannels] = createSignal<User[]>([]);
 
   createEffect(
     on(
@@ -103,6 +112,11 @@ function App() {
       (curr, prev) => {
         if (prev && prev?.id !== curr?.id) {
           snapshotDivider(prev?.id);
+        }
+        if (curr) {
+          setRenderedChannels((prev) =>
+            prev.some((p) => p.id === curr.id) ? prev : [...prev, curr],
+          );
         }
       },
       { defer: true },
@@ -112,7 +126,9 @@ function App() {
   function leaveChannel(broadcasterId: string) {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
+    setRenderedChannels((prev) => prev.filter((p) => p.id !== broadcasterId));
     for (const k of ALL_KINDS) void eventSubManager.unsubscribe(broadcasterId, k);
+    void sevenTvManager.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
   }
 
@@ -154,9 +170,9 @@ function App() {
 
   createEffect(() => {
     const broadcaster = selectedChannel();
+    sevenTvManager.setActive(broadcaster?.id ?? null);
     if (!broadcaster) {
       clearChannelThirdPartyEmotes();
-      clearActiveSevenTvSubscription();
       return;
     }
     loadChannelBadges(broadcaster?.id);
@@ -186,6 +202,7 @@ function App() {
       if (isModOfChannel(id)) {
         for (const k of MOD_KINDS) void eventSubManager.subscribe(id, k);
       }
+      void sevenTvManager.subscribe(id);
     }
     for (const id of [...joinedIds]) {
       if (!desired.has(id)) leaveChannel(id);
@@ -345,39 +362,49 @@ function App() {
                 }}
               />
 
-              <main class="flex-1 overflow-hidden flex flex-col">
-                <Show
-                  when={selectedChannel()}
-                  fallback={
-                    <div class="flex items-center justify-center flex-1 px-6">
-                      <p class="text-text-muted text-sm text-center max-w-xs">
-                        {(() => {
-                          if (!watchActive()) return "Select a channel to view chat";
-                          if (watchConnected()) {
-                            return "Open a Twitch channel in your browser.";
-                          }
-                          const everSeen = (() => {
-                            try { return localStorage.getItem("deatch_watch_seen") === "1"; }
-                            catch { return false; }
-                          })();
-                          if (everSeen) {
-                            return "Waiting for the browser. Open Firefox and a Twitch tab.";
-                          }
-                          return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
-                        })()}
-                      </p>
-                    </div>
-                  }
-                >
-                  {(ch) => (
-                    <Chat
-                      broadcasterId={ch()?.id}
-                      broadcasterLogin={ch()?.login}
-                      userLogin={u().login}
-                      onJumpToMessage={jumpToMessage}
-                    />
-                  )}
+              <main class="flex-1 overflow-hidden flex flex-col relative">
+                <Show when={!selectedChannel()}>
+                  <div class="flex items-center justify-center flex-1 px-6">
+                    <p class="text-text-muted text-sm text-center max-w-xs">
+                      {(() => {
+                        if (!watchActive()) return "Select a channel to view chat";
+                        if (watchConnected()) {
+                          return "Open a Twitch channel in your browser.";
+                        }
+                        const everSeen = (() => {
+                          try { return localStorage.getItem("deatch_watch_seen") === "1"; }
+                          catch { return false; }
+                        })();
+                        if (everSeen) {
+                          return "Waiting for the browser. Open Firefox and a Twitch tab.";
+                        }
+                        return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
+                      })()}
+                    </p>
+                  </div>
                 </Show>
+                <For each={renderedChannels()}>
+                  {(ch) => {
+                    const isActive = () => selectedChannel()?.id === ch.id;
+                    return (
+                      <div
+                        class="absolute inset-0 flex flex-col"
+                        classList={{
+                          invisible: !isActive(),
+                          "pointer-events-none": !isActive(),
+                        }}
+                      >
+                        <Chat
+                          broadcasterId={ch.id}
+                          broadcasterLogin={ch.login}
+                          userLogin={u().login}
+                          isActive={isActive()}
+                          onJumpToMessage={jumpToMessage}
+                        />
+                      </div>
+                    );
+                  }}
+                </For>
               </main>
             </div>
           )}

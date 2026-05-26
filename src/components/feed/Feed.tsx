@@ -15,8 +15,7 @@ import type {
   FeedItem,
 } from "../../types";
 import { feeds, isFeedItemVisible, getItemId } from "../../state/feeds";
-import { buildThirdPartyEmoteMap } from "../../state/emotes";
-import { favorites } from "../../state/emotes";
+import { thirdPartyEmoteMap, favorites } from "../../state/emotes";
 import {
   feedShowTimestamp,
   feedShowDeletedContent,
@@ -91,8 +90,7 @@ export default function Feed(props: Props) {
     props.showDivider === false
       ? null
       : (feeds[props.broadcasterId]?.dividerAtItemId ?? null);
-  const emoteMap = createMemo(buildThirdPartyEmoteMap);
-  const reactions = () => favorites().slice(0, 3);
+  const reactions = createMemo(() => favorites().slice(0, 3));
 
   const messageList = createMemo<Message[]>(() =>
     items().filter((i): i is Message => i.kind === "message"),
@@ -210,7 +208,7 @@ export default function Feed(props: Props) {
       ) : (
         <FeedMessage
           item={item}
-          emotes={emoteMap()}
+          emotes={thirdPartyEmoteMap()}
           badges={badges()}
           userLogin={props.userLogin ?? ""}
           keywords={feedKeywords()}

@@ -1,12 +1,19 @@
 import { invokeCommand, type InvokeOptions } from "../utils";
 
-export type SeventvWatchEmoteSetParams = {
-  emoteSetId: string | null;
+export type SeventvEmoteSetParams = {
+  emoteSetId: string;
 };
 
-export function seventvWatchEmoteSet(
-  params: SeventvWatchEmoteSetParams,
+export function seventvSubscribeEmoteSet(
+  params: SeventvEmoteSetParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("seventv_watch_emote_set", params, options);
+  return invokeCommand("seventv_subscribe_emote_set", params, options);
+}
+
+export function seventvUnsubscribeEmoteSet(
+  params: SeventvEmoteSetParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  return invokeCommand("seventv_unsubscribe_emote_set", params, options);
 }
