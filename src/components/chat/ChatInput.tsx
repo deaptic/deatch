@@ -23,6 +23,7 @@ export type ReplyTo = { messageId: string; name: string; text: string };
 type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
+  isActive: boolean;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
   openUserCard: (userId: string) => void;
@@ -145,6 +146,7 @@ export default function ChatInput(props: Props) {
   }
 
   createEffect(() => {
+    if (!props.isActive) return;
     shortcutManager.setContext(
       "chat:popupOpen",
       (autocomplete()?.isActive() ?? false) || commandMode() !== null,
@@ -152,16 +154,21 @@ export default function ChatInput(props: Props) {
   });
 
   createEffect(() => {
+    if (!props.isActive) return;
     shortcutManager.setContext("chat:replyActive", props.replyTo() !== null);
+    onCleanup(() => shortcutManager.setContext("chat:replyActive", false));
   });
 
   onMount(() => {
     props.ref?.({ focus, insert: (t) => textAreaApi?.insert(t) });
     ensureUserEmotesLoaded();
+  });
+
+  createEffect(() => {
+    if (!props.isActive) return;
     const unbind = bindShortcuts();
     onCleanup(() => {
       for (const u of unbind) u();
-      shortcutManager.setContext("chat:replyActive", false);
     });
   });
 

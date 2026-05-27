@@ -246,6 +246,7 @@ export default function Chat(props: Props) {
       <ChatInput
         broadcasterId={props.broadcasterId}
         broadcasterLogin={props.broadcasterLogin}
+        isActive={props.isActive}
         replyTo={replyTo}
         onClearReply={clearReply}
         openUserCard={openUserCardFromInput}
