@@ -797,7 +797,7 @@ dependencies = [
 
 [[package]]
 name = "deatch"
-version = "0.1.14"
+version = "0.1.15"
 dependencies = [
  "apple-native-keyring-store",
  "dbus-secret-service-keyring-store",
