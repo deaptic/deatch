@@ -38,6 +38,7 @@ import { watchSetMuted } from "../../commands/watch";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
+import Navigation from "../../ui/Navigation";
 import SpeakerIcon from "../../icons/SpeakerIcon";
 import SpeakerOffIcon from "../../icons/SpeakerOffIcon";
 import WatchIcon from "../../icons/WatchIcon";
@@ -346,6 +347,11 @@ export default function Menu(props: Props) {
         onScroll={updateMainScrollState}
         class="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <MenuSection divider="bottom">
+          <Navigation
+            orientation="vertical"
+            scroll={false}
+            indicatorClass="bg-primary rounded-r-full"
+          >
           <Show
             when={!loadingPinned()}
             fallback={
@@ -393,10 +399,16 @@ export default function Menu(props: Props) {
               }}
             </For>
           </Show>
+          </Navigation>
           <MenuAddButton ref={(el) => (addBtn = el)} onClick={openAdd} />
         </MenuSection>
 
         <MenuSection>
+          <Navigation
+            orientation="vertical"
+            scroll={false}
+            indicatorClass="bg-primary rounded-r-full"
+          >
           <Show
             when={!loadingLive()}
             fallback={
@@ -426,6 +438,7 @@ export default function Menu(props: Props) {
               )}
             </For>
           </Show>
+          </Navigation>
         </MenuSection>
         </div>
       </div>
@@ -447,6 +460,11 @@ export default function Menu(props: Props) {
               onScroll={updateWatchedScrollState}
               class="flex flex-col max-h-[10.5rem] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
+              <Navigation
+                orientation="vertical"
+                scroll={false}
+                indicatorClass="bg-primary rounded-r-full"
+              >
               <For each={watchWarmedChannels()}>
                 {(ch) => {
                   const isMuted = () => watchMutedByLogin()[ch?.login] === true;
@@ -492,6 +510,7 @@ export default function Menu(props: Props) {
                   );
                 }}
               </For>
+              </Navigation>
             </div>
             <Show when={watchedCanScrollDown()}>
               <button

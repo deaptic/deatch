@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 import type { Stream } from "../types/twitch/stream";
 import type { User } from "../types/twitch/user";
 import { menuChannelPinned } from "./preferences";
+import { watchWarmedChannels } from "./watch";
 
 const LAST_CHANNEL_KEY = "last_selected_channel";
 
@@ -36,6 +37,7 @@ export function streamForUserId(userId: string): Stream | undefined {
 export function channelsInOrder(): User[] {
   const pinnedIds = menuChannelPinned();
   const pinnedSet = new Set(pinnedIds);
+  const warmedSet = new Set(watchWarmedChannels().map((c) => c?.id));
   const live = liveStreams();
   const ordered: User[] = [];
   for (const id of pinnedIds) {
@@ -43,7 +45,7 @@ export function channelsInOrder(): User[] {
     if (u) ordered.push(u);
   }
   for (const s of live) {
-    if (pinnedSet.has(s.user.id)) continue;
+    if (pinnedSet.has(s.user.id) || warmedSet.has(s.user.id)) continue;
     const u = usersById.get(s.user.id) ?? streamUserAsUser(s);
     ordered.push(u);
   }

@@ -1,7 +1,8 @@
-import { createSignal, Show, type JSX } from "solid-js";
+import { createSignal, onCleanup, onMount, Show, type JSX } from "solid-js";
 import StreamTooltip from "./StreamTooltip";
 import { streamForUserId } from "../../state/channels";
 import type { User } from "../../types/twitch/user";
+import { useNavigationOptional } from "../../ui/Navigation";
 
 const DEFAULT_AVATAR =
   "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
@@ -24,10 +25,19 @@ export default function MenuSectionItem(props: Props) {
   const [tooltip, setTooltip] = createSignal<{ x: number; y: number } | null>(
     null,
   );
+  const nav = useNavigationOptional();
+  let btnRef!: HTMLButtonElement;
+
+  onMount(() => {
+    if (!nav) return;
+    nav.register(btnRef, () => !!props.selected);
+    onCleanup(() => nav.unregister(btnRef));
+  });
 
   return (
     <>
       <button
+        ref={btnRef}
         type="button"
         onClick={props.onClick}
         onAuxClick={(e) => {
@@ -55,14 +65,14 @@ export default function MenuSectionItem(props: Props) {
           props.square ? "px-2 py-3" : "p-2"
         } ${props.selected ? "" : "hover:bg-bg"}`}
       >
-        <Show when={props.selected}>
-          <div class="absolute left-0 top-1 bottom-1 w-1 bg-highlight rounded-r" />
+        <Show when={props.selected && !nav}>
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-primary rounded-r-full" />
         </Show>
         <Show when={!props.selected && props.unread}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-2 w-1 bg-highlight rounded-r group-hover:hidden" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-2 w-1 bg-highlight rounded-r-full group-hover:hidden" />
         </Show>
         <Show when={!props.selected}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-highlight rounded-r hidden group-hover:block" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-highlight rounded-r-full hidden group-hover:block" />
         </Show>
         <div class="relative shrink-0">
           <img

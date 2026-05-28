@@ -26,9 +26,15 @@ export function useNavigation(): NavigationContextValue {
   return ctx;
 }
 
+export function useNavigationOptional(): NavigationContextValue | undefined {
+  return useContext(NavigationContext);
+}
+
 type Props = {
   orientation?: NavigationOrientation;
   fill?: boolean;
+  indicatorClass?: string;
+  scroll?: boolean;
   children: JSX.Element;
   class?: string;
 };
@@ -41,6 +47,7 @@ export default function Navigation(props: Props) {
     props.orientation ?? "horizontal";
   const horizontal = () => orientation() === "horizontal";
   const fill = () => !!props.fill;
+  const scroll = () => props.scroll !== false;
 
   const [canScrollStart, setCanScrollStart] = createSignal(false);
   const [canScrollEnd, setCanScrollEnd] = createSignal(false);
@@ -123,7 +130,7 @@ export default function Navigation(props: Props) {
           horizontal() ? "flex-row" : "flex-col"
         } ${props.class ?? ""}`}
       >
-        <Show when={canScrollStart()}>
+        <Show when={scroll() && canScrollStart()}>
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
@@ -144,17 +151,21 @@ export default function Navigation(props: Props) {
         <div
           ref={scrollEl}
           class={`relative flex min-w-0 min-h-0 flex-1 ${
-            horizontal()
-              ? "flex-row overflow-x-auto"
-              : "flex-col overflow-y-auto"
-          } [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
+            horizontal() ? "flex-row" : "flex-col"
+          } ${
+            scroll()
+              ? `${horizontal() ? "overflow-x-auto" : "overflow-y-auto"} [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`
+              : ""
+          }`}
         >
           {props.children}
           <Show when={activeMetrics()}>
             {(m) => (
               <span
                 aria-hidden
-                class="pointer-events-none absolute bg-primary rounded-full transition-all duration-200 ease-out z-10"
+                class={`pointer-events-none absolute transition-all duration-200 ease-out z-10 ${
+                  props.indicatorClass ?? "bg-primary rounded-full"
+                }`}
                 style={
                   horizontal()
                     ? {
@@ -175,7 +186,7 @@ export default function Navigation(props: Props) {
           </Show>
         </div>
 
-        <Show when={canScrollEnd()}>
+        <Show when={scroll() && canScrollEnd()}>
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
