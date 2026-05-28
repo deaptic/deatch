@@ -52,6 +52,7 @@ jobs:
         with:
           workspaces: src-tauri
           cache-on-failure: true
+          cache-targets: false
 
       - name: sccache
         uses: mozilla-actions/sccache-action@v0.0.6
