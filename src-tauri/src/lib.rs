@@ -110,6 +110,8 @@ pub fn run() {
             commands::external::robotty::get_recent_messages,
             commands::keymap::read_keymap,
             commands::keymap::write_keymap,
+            commands::watch::watch_set_muted,
+            commands::watch::watch_request_state,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

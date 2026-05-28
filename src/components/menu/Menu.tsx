@@ -28,15 +28,21 @@ import {
 import { hasUnread } from "../../state/feeds";
 import { channelMentionCount } from "../../state/inbox";
 import {
-  watchActive,
-  watchConnected,
+  watchMode,
   watchedChannel,
   watchWarmedChannels,
-  setWatchActive,
+  watchMutedByLogin,
+  setWatchMode,
 } from "../../state/watch";
+import { watchSetMuted } from "../../commands/watch";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
+import SpeakerIcon from "../../icons/SpeakerIcon";
+import SpeakerOffIcon from "../../icons/SpeakerOffIcon";
+import WatchIcon from "../../icons/WatchIcon";
+import ChevronUpIcon from "../../icons/ChevronUpIcon";
+import ChevronDownIcon from "../../icons/ChevronDownIcon";
 import InputPopover from "../../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
 import type { User } from "../../types/twitch/user";
@@ -44,7 +50,7 @@ import type { User } from "../../types/twitch/user";
 export type { User };
 
 type Props = {
-  onSelect: (ch: User) => void;
+  onSelect: (ch: User, fromWatched?: boolean) => void;
   selectedId: string | null;
   onLiveChange?: (live: User[]) => void;
 };
@@ -96,6 +102,47 @@ export default function Menu(props: Props) {
   createEffect(() => {
     watchWarmedChannels();
     queueMicrotask(updateWatchedScrollState);
+  });
+
+  const [mainCanScrollUp, setMainCanScrollUp] = createSignal(false);
+  const [mainCanScrollDown, setMainCanScrollDown] = createSignal(false);
+  let mainScrollEl: HTMLDivElement | undefined;
+  function updateMainScrollState() {
+    const el = mainScrollEl;
+    if (!el) {
+      setMainCanScrollUp(false);
+      setMainCanScrollDown(false);
+      return;
+    }
+    setMainCanScrollUp(el.scrollTop > 0);
+    setMainCanScrollDown(
+      el.scrollTop + el.clientHeight < el.scrollHeight - 1,
+    );
+  }
+  createEffect(() => {
+    menuChannelPinned();
+    live.length;
+    queueMicrotask(updateMainScrollState);
+  });
+
+  function scrollByOneChannel(el: HTMLDivElement | undefined, direction: -1 | 1) {
+    if (!el) return;
+    const first = el.querySelector("[data-channel-id]") as HTMLElement | null;
+    const step = first?.offsetHeight ?? 48;
+    el.scrollBy({ top: direction * step, behavior: "smooth" });
+  }
+
+  createEffect(() => {
+    const sel = selectedChannel();
+    if (!sel) return;
+    queueMicrotask(() => {
+      const targets = document.querySelectorAll(
+        `[data-channel-id="${sel.id}"]`,
+      );
+      for (const t of targets) {
+        (t as HTMLElement).scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    });
   });
 
 
@@ -271,7 +318,29 @@ export default function Menu(props: Props) {
 
   return (
     <div class="flex flex-col h-full w-14 shrink-0 bg-bg-dark border-r border-border-muted overflow-hidden">
-      <div class="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div class="relative flex-1 min-h-0">
+        <Show when={mainCanScrollUp()}>
+          <button
+            type="button"
+            onClick={() => scrollByOneChannel(mainScrollEl, -1)}
+            class="absolute top-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-b from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
+          >
+            <ChevronUpIcon class="w-3 h-3" />
+          </button>
+        </Show>
+        <Show when={mainCanScrollDown()}>
+          <button
+            type="button"
+            onClick={() => scrollByOneChannel(mainScrollEl, 1)}
+            class="absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-t from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
+          >
+            <ChevronDownIcon class="w-3 h-3" />
+          </button>
+        </Show>
+      <div
+        ref={(el) => (mainScrollEl = el)}
+        onScroll={updateMainScrollState}
+        class="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <MenuSection divider="bottom">
           <Show
             when={!loadingPinned()}
@@ -295,6 +364,7 @@ export default function Menu(props: Props) {
                     {(c) => (
                       <div
                         data-pinned-index={index()}
+                        data-channel-id={id}
                         class="relative"
                         onMouseDown={(e) => startDrag(e, index())}
                       >
@@ -304,7 +374,7 @@ export default function Menu(props: Props) {
                         <MenuSectionItem
                           channel={c()}
                           status={liveById().has(id) ? "live" : undefined}
-                          selected={!watchActive() && props.selectedId === id}
+                          selected={watchMode() === null && props.selectedId === id}
                           unread={hasUnread(id)}
                           mentions={channelMentionCount(id)}
                           dimmed={dragIdx() === index()}
@@ -337,31 +407,36 @@ export default function Menu(props: Props) {
           >
             <For each={onlineList()}>
               {(ch) => (
-                <MenuSectionItem
-                  channel={ch}
-                  status="live"
-                  selected={!watchActive() && props.selectedId === ch?.id}
-                  unread={hasUnread(ch?.id)}
-                  mentions={channelMentionCount(ch?.id)}
-                  onClick={() => props.onSelect(ch)}
-                  onMiddleClick={() => openInBrowser(ch)}
-                  onContextMenu={(x, y) => setChMenu({ ch, x, y })}
-                />
+                <div data-channel-id={ch?.id}>
+                  <MenuSectionItem
+                    channel={ch}
+                    status="live"
+                    selected={watchMode() === null && props.selectedId === ch?.id}
+                    unread={hasUnread(ch?.id)}
+                    mentions={channelMentionCount(ch?.id)}
+                    onClick={() => props.onSelect(ch)}
+                    onMiddleClick={() => openInBrowser(ch)}
+                    onContextMenu={(x, y) => setChMenu({ ch, x, y })}
+                  />
+                </div>
               )}
             </For>
           </Show>
         </MenuSection>
+        </div>
       </div>
 
       <Show when={watchWarmedChannels().length > 0}>
         <MenuSection divider="top">
           <div class="relative">
             <Show when={watchedCanScrollUp()}>
-              <div class="pointer-events-none absolute top-0 left-0 right-0 h-4 flex items-start justify-center bg-gradient-to-b from-bg-dark to-transparent z-10 text-text-muted">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="18 15 12 9 6 15" />
-                </svg>
-              </div>
+              <button
+                type="button"
+                onClick={() => scrollByOneChannel(watchedScrollEl, -1)}
+                class="absolute top-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-b from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
+              >
+                <ChevronUpIcon class="w-3 h-3" />
+              </button>
             </Show>
             <div
               ref={(el) => (watchedScrollEl = el)}
@@ -369,26 +444,59 @@ export default function Menu(props: Props) {
               class="flex flex-col max-h-[10.5rem] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               <For each={watchWarmedChannels()}>
-                {(ch) => (
-                  <MenuSectionItem
-                    channel={ch}
-                    status={liveById().has(ch?.id) ? "live" : undefined}
-                    selected={props.selectedId === ch?.id}
-                    unread={hasUnread(ch?.id)}
-                    mentions={channelMentionCount(ch?.id)}
-                    onClick={() => props.onSelect(ch)}
-                    onMiddleClick={() => openInBrowser(ch)}
-                    onContextMenu={(x, y) => setChMenu({ ch, x, y })}
-                  />
-                )}
+                {(ch) => {
+                  const isMuted = () => watchMutedByLogin()[ch?.login] === true;
+                  return (
+                    <div data-channel-id={ch?.id}>
+                    <MenuSectionItem
+                      channel={ch}
+                      status={liveById().has(ch?.id) ? "live" : undefined}
+                      selected={props.selectedId === ch?.id}
+                      unread={hasUnread(ch?.id)}
+                      mentions={channelMentionCount(ch?.id)}
+                      onClick={() => props.onSelect(ch, true)}
+                      onMiddleClick={() => openInBrowser(ch)}
+                      onContextMenu={(x, y) => setChMenu({ ch, x, y })}
+                      bottomRight={
+                        <div
+                          role="button"
+                          tabindex="0"
+                          title={
+                            isMuted() ? "Unmute browser tab" : "Mute browser tab"
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void watchSetMuted(ch?.login, !isMuted());
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          class={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-bg hover:bg-bg-light border border-border-muted flex items-center justify-center transition-colors cursor-pointer ${
+                            isMuted()
+                              ? "text-danger"
+                              : "text-text-muted hover:text-text"
+                          }`}
+                        >
+                          <Show
+                            when={isMuted()}
+                            fallback={<SpeakerIcon class="w-3.5 h-3.5" />}
+                          >
+                            <SpeakerOffIcon class="w-3.5 h-3.5" />
+                          </Show>
+                        </div>
+                      }
+                    />
+                    </div>
+                  );
+                }}
               </For>
             </div>
             <Show when={watchedCanScrollDown()}>
-              <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-4 flex items-end justify-center bg-gradient-to-t from-bg-dark to-transparent z-10 text-text-muted">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
+              <button
+                type="button"
+                onClick={() => scrollByOneChannel(watchedScrollEl, 1)}
+                class="absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-t from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
+              >
+                <ChevronDownIcon class="w-3 h-3" />
+              </button>
             </Show>
           </div>
         </MenuSection>
@@ -397,73 +505,54 @@ export default function Menu(props: Props) {
       <MenuSection divider="top">
         <button
           type="button"
-          onClick={() => setWatchActive(!watchActive())}
+          onClick={() => setWatchMode(watchMode() === null ? "auto" : null)}
           title={
-            watchActive()
-              ? "Watch mode active — click to stop following"
-              : selectedChannel()
-                ? "Activate Watch mode"
-                : !watchConnected()
-                  ? "Install the browser extension to use Watch"
-                  : "Open a Twitch channel in your browser"
+            watchMode() === null
+              ? "Click to start Watch mode"
+              : "Click to stop Watch mode"
           }
-          class={`group relative w-full flex items-center justify-center px-2 py-3 cursor-pointer transition-colors ${
-            watchActive() ? "" : "hover:bg-bg"
-          }`}
+          class="group w-full flex items-center justify-center px-2 py-3 cursor-pointer hover:bg-bg transition-colors"
         >
-          <Show when={watchActive()}>
-            <div class="absolute left-0 top-1 bottom-1 w-1 bg-highlight rounded-r" />
-          </Show>
           <div class="relative shrink-0">
             <Show
               when={selectedChannel()}
               fallback={
-                <div
-                  class={`w-8 h-8 rounded-lg bg-bg-light flex items-center justify-center ${
-                    watchActive() ? "text-text" : "text-text-muted"
-                  } ${!watchConnected() && !watchActive() ? "opacity-40" : ""}`}
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
+                <div class="w-8 h-8 rounded-lg bg-bg-light flex items-center justify-center text-text-muted">
+                  <WatchIcon class="w-4 h-4" />
                 </div>
               }
             >
               {(ch) => (
-                <>
-                  <img
-                    src={
-                      ch()?.profileImageUrl ||
-                      "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
-                    }
-                    alt={ch()?.displayName}
-                    class="w-8 h-8 rounded-lg"
-                  />
-                  <Show when={watchActive()}>
-                    <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-bg-dark flex items-center justify-center text-text">
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    </div>
-                  </Show>
-                </>
+                <img
+                  src={
+                    ch()?.profileImageUrl ||
+                    "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
+                  }
+                  alt={ch()?.displayName}
+                  class="w-8 h-8 rounded-lg"
+                />
               )}
+            </Show>
+            <Show when={watchMode() !== null}>
+              <div
+                role="button"
+                tabindex="0"
+                title={
+                  watchMode() === "manual"
+                    ? "Manual — click to follow your browser tab"
+                    : "Auto — click to lock on current"
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setWatchMode(watchMode() === "manual" ? "auto" : "manual");
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+                class={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-bg hover:bg-bg-light border border-border-muted flex items-center justify-center cursor-pointer transition-colors ${
+                  watchMode() === "manual" ? "text-danger" : "text-emerald-500"
+                }`}
+              >
+                <WatchIcon class="w-3.5 h-3.5" />
+              </div>
             </Show>
           </div>
         </button>
