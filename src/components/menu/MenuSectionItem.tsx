@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal, Show, type JSX } from "solid-js";
 import StreamTooltip from "./StreamTooltip";
 import { streamForUserId } from "../../state/channels";
 import type { User } from "../../types/twitch/user";
@@ -14,6 +14,7 @@ type Props = {
   mentions?: number;
   dimmed?: boolean;
   square?: boolean;
+  bottomRight?: JSX.Element;
   onClick?: () => void;
   onMiddleClick?: () => void;
   onContextMenu?: (x: number, y: number) => void;
@@ -80,6 +81,7 @@ export default function MenuSectionItem(props: Props) {
               </span>
             </div>
           </Show>
+          {props.bottomRight}
         </div>
       </button>
       <Show when={tooltip()}>

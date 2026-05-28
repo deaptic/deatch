@@ -1,4 +1,5 @@
 import {
+  batch,
   createSignal,
   createEffect,
   on,
@@ -63,13 +64,14 @@ import {
   liveStreams as liveChannelsSignal,
 } from "./state/channels";
 import {
-  watchActive,
+  watchMode,
   watchConnected,
   watchedChannel,
   watchWarmedChannels,
-  setWatchActive,
-  setWatchedChannel,
+  watchMutedByLogin,
+  setWatchMode,
 } from "./state/watch";
+import { watchSetMuted } from "./commands/watch";
 import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import { loadChannelBadges, resetChannelBadgeCache } from "./services/badges";
 import { dropFeed, ensureFeed, snapshotDivider, markSeen } from "./state/feeds";
@@ -143,15 +145,20 @@ function App() {
     markChannelMentionsRead(ch?.id);
   }
 
-  function handleChannelSelect(ch: User) {
-    setWatchActive(false);
-    applySelection(ch);
+  function handleChannelSelect(ch: User, fromWatched = false) {
+    batch(() => {
+      if (fromWatched) {
+        setWatchMode("manual");
+        applySelection(ch);
+        return;
+      }
+      setWatchMode(null);
+      applySelection(ch);
+    });
   }
 
-  // Watch-driven channel swap. Goes through applySelection (not
-  // handleChannelSelect) so watchActive isn't cleared.
   createEffect(() => {
-    if (!watchActive()) return;
+    if (watchMode() !== "auto") return;
     const ch = watchedChannel();
     if (!ch) {
       if (selectedChannel() !== null) setSelectedChannel(null);
@@ -159,6 +166,14 @@ function App() {
     }
     if (selectedChannel()?.id === ch?.id) return;
     applySelection(ch);
+  });
+
+  createEffect(() => {
+    if (watchMode() !== "manual") return;
+    const sel = selectedChannel();
+    if (sel && !watchWarmedChannels().some((c) => c?.id === sel.id)) {
+      setWatchMode("auto");
+    }
   });
 
   function jumpToMessage(channelId: string, messageId: string) {
@@ -214,17 +229,20 @@ function App() {
   });
 
   function cycleChannel(direction: 1 | -1) {
-    if (watchActive()) {
+    if (watchMode() !== null) {
       const watched = watchWarmedChannels();
       if (watched.length === 0) return;
-      const i = watched.findIndex((c) => c?.id === watchedChannel()?.id);
+      const i = watched.findIndex((c) => c?.id === selectedChannel()?.id);
       const nextIdx =
         i === -1
           ? direction === 1
             ? 0
             : watched.length - 1
           : (i + direction + watched.length) % watched.length;
-      setWatchedChannel(watched[nextIdx]);
+      batch(() => {
+        setWatchMode("manual");
+        applySelection(watched[nextIdx]);
+      });
       return;
     }
     const ordered = channelsInOrder();
@@ -240,7 +258,55 @@ function App() {
   }
 
   function toggleWatch() {
-    setWatchActive(!watchActive());
+    setWatchMode(watchMode() === null ? "auto" : null);
+  }
+
+  function resetWatchFocus() {
+    if (watchMode() === "manual") setWatchMode("auto");
+  }
+
+  function muteOtherWatched() {
+    const sel = selectedChannel();
+    const watched = watchWarmedChannels();
+    const focusedLogin =
+      sel && watched.some((c) => c?.id === sel.id) ? sel.login : null;
+    for (const ch of watched) {
+      if (!ch?.login) continue;
+      const shouldBeMuted = ch.login !== focusedLogin;
+      const isMuted = watchMutedByLogin()[ch.login] === true;
+      if (isMuted !== shouldBeMuted) {
+        void watchSetMuted(ch.login, shouldBeMuted);
+      }
+    }
+  }
+
+  function toggleMuteAllWatched() {
+    const watched = watchWarmedChannels();
+    if (watched.length === 0) return;
+    const mutedMap = watchMutedByLogin();
+    const anyUnmuted = watched.some(
+      (ch) => ch?.login && mutedMap[ch.login] !== true,
+    );
+    for (const ch of watched) {
+      if (!ch?.login) continue;
+      const isMuted = mutedMap[ch.login] === true;
+      if (isMuted !== anyUnmuted) {
+        void watchSetMuted(ch.login, anyUnmuted);
+      }
+    }
+  }
+
+  function toggleWatchMute() {
+    const target = watchMode() !== null
+      ? (watchMode() === "manual" ? selectedChannel() : watchedChannel())
+      : (() => {
+          const sel = selectedChannel();
+          if (!sel) return null;
+          return watchWarmedChannels().some((c) => c?.id === sel.id) ? sel : null;
+        })();
+    if (!target?.login) return;
+    const muted = watchMutedByLogin()[target.login] === true;
+    void watchSetMuted(target.login, !muted);
   }
 
   onMount(() => {
@@ -250,6 +316,10 @@ function App() {
       shortcutManager.register("channel::cycleNext", () => cycleChannel(1)),
       shortcutManager.register("channel::cyclePrev", () => cycleChannel(-1)),
       shortcutManager.register("watch::toggle", toggleWatch),
+      shortcutManager.register("watch::toggleMute", toggleWatchMute),
+      shortcutManager.register("watch::resetFocus", resetWatchFocus),
+      shortcutManager.register("watch::muteOthers", muteOtherWatched),
+      shortcutManager.register("watch::toggleMuteAll", toggleMuteAllWatched),
       shortcutManager.register("settings::toggle", () => togglePanel("settings")),
       shortcutManager.register("inbox::toggle", () => togglePanel("inbox")),
       shortcutManager.register("account::toggle", () => togglePanel("account")),
@@ -312,7 +382,7 @@ function App() {
   createEffect(() => {
     if (user() !== null) {
       fetchUserScopedData();
-      if (selectedChannel() === null && !watchActive()) {
+      if (selectedChannel() === null && watchMode() === null) {
         const last = loadLastChannel();
         if (last) handleChannelSelect(last);
       }
@@ -382,7 +452,7 @@ function App() {
                   <div class="flex items-center justify-center flex-1 px-6">
                     <p class="text-text-muted text-sm text-center max-w-xs">
                       {(() => {
-                        if (!watchActive()) return "Select a channel to view chat";
+                        if (watchMode() === null) return "Select a channel to view chat";
                         if (watchConnected()) {
                           return "Open a Twitch channel in your browser.";
                         }

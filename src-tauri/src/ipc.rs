@@ -1,44 +1,41 @@
-// Local-socket IPC: browser-host process → running GUI. One-way for now.
-// Messages are newline-delimited JSON.
+use std::sync::OnceLock;
 
 const PIPE_NAME: &str = "deatch-bridge";
 
-// ---- host side (sync, called from browser_host::run) ----
-
-pub struct Sink {
-    stream: Option<interprocess::local_socket::Stream>,
+pub fn connect_to_gui() -> std::io::Result<interprocess::local_socket::Stream> {
+    use interprocess::local_socket::{prelude::*, GenericNamespaced, Stream, ToNsName};
+    let name = PIPE_NAME.to_ns_name::<GenericNamespaced>()?;
+    Stream::connect(name)
 }
 
-impl Default for Sink {
-    fn default() -> Self {
-        Self::new()
-    }
+type HostWriter = tokio::io::WriteHalf<interprocess::local_socket::tokio::Stream>;
+
+static HOST_WRITER: OnceLock<tokio::sync::Mutex<Option<HostWriter>>> = OnceLock::new();
+
+fn writer_slot() -> &'static tokio::sync::Mutex<Option<HostWriter>> {
+    HOST_WRITER.get_or_init(|| tokio::sync::Mutex::new(None))
 }
 
-impl Sink {
-    pub fn new() -> Self {
-        Self { stream: None }
+pub async fn send_to_host(line: &str) -> std::io::Result<()> {
+    use tokio::io::AsyncWriteExt;
+    let mut slot = writer_slot().lock().await;
+    let Some(writer) = slot.as_mut() else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotConnected,
+            "host not connected",
+        ));
+    };
+    let payload = format!("{line}\n");
+    if let Err(e) = writer.write_all(payload.as_bytes()).await {
+        *slot = None;
+        return Err(e);
     }
-
-    pub fn forward(&mut self, line: &str) -> std::io::Result<()> {
-        use interprocess::local_socket::{prelude::*, GenericNamespaced, Stream, ToNsName};
-        use std::io::Write;
-
-        if self.stream.is_none() {
-            let name = PIPE_NAME.to_ns_name::<GenericNamespaced>()?;
-            self.stream = Some(Stream::connect(name)?);
-        }
-        let stream = self.stream.as_mut().unwrap();
-
-        if let Err(e) = writeln!(stream, "{line}").and_then(|_| stream.flush()) {
-            self.stream = None; // next forward() reconnects
-            return Err(e);
-        }
-        Ok(())
+    if let Err(e) = writer.flush().await {
+        *slot = None;
+        return Err(e);
     }
+    Ok(())
 }
-
-// ---- GUI side (async, spawned from Tauri setup hook) ----
 
 pub fn start_server(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
@@ -64,10 +61,7 @@ async fn run_server(app: tauri::AppHandle) -> std::io::Result<()> {
                 continue;
             }
         };
-        let app = app.clone();
-        tauri::async_runtime::spawn(async move {
-            handle_connection(app, conn).await;
-        });
+        handle_connection(app.clone(), conn).await;
     }
 }
 
@@ -78,7 +72,13 @@ async fn handle_connection(
     use tauri::Emitter;
     use tokio::io::AsyncBufReadExt;
 
-    let mut lines = tokio::io::BufReader::new(conn).lines();
+    let (read_half, write_half) = tokio::io::split(conn);
+    {
+        let mut slot = writer_slot().lock().await;
+        *slot = Some(write_half);
+    }
+
+    let mut lines = tokio::io::BufReader::new(read_half).lines();
     while let Ok(Some(line)) = lines.next_line().await {
         let payload: serde_json::Value = match serde_json::from_str(&line) {
             Ok(v) => v,
@@ -88,15 +88,18 @@ async fn handle_connection(
             }
         };
         let event = match payload.get("type").and_then(|v| v.as_str()) {
-            Some("channel_switched") => "watch:channel_switched",
-            Some("hello") => "watch:hello",
-            Some("sync") => "watch:sync",
+            Some("state") => "watch:state",
             other => {
                 eprintln!("ipc unknown type: {other:?}");
                 continue;
             }
         };
         let _ = app.emit(event, payload);
+    }
+
+    {
+        let mut slot = writer_slot().lock().await;
+        *slot = None;
     }
     let _ = app.emit("watch:disconnected", ());
 }
