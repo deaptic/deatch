@@ -78,6 +78,27 @@ export default function Menu(props: Props) {
   const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];
 
+  const [watchedCanScrollUp, setWatchedCanScrollUp] = createSignal(false);
+  const [watchedCanScrollDown, setWatchedCanScrollDown] = createSignal(false);
+  let watchedScrollEl: HTMLDivElement | undefined;
+  function updateWatchedScrollState() {
+    const el = watchedScrollEl;
+    if (!el) {
+      setWatchedCanScrollUp(false);
+      setWatchedCanScrollDown(false);
+      return;
+    }
+    setWatchedCanScrollUp(el.scrollTop > 0);
+    setWatchedCanScrollDown(
+      el.scrollTop + el.clientHeight < el.scrollHeight - 1,
+    );
+  }
+  createEffect(() => {
+    watchWarmedChannels();
+    queueMicrotask(updateWatchedScrollState);
+  });
+
+
   async function fetchPinnedMeta() {
     const ids = menuChannelPinned();
     if (ids.length === 0) {
@@ -331,6 +352,47 @@ export default function Menu(props: Props) {
           </Show>
         </MenuSection>
       </div>
+
+      <Show when={watchWarmedChannels().length > 0}>
+        <MenuSection divider="top">
+          <div class="relative">
+            <Show when={watchedCanScrollUp()}>
+              <div class="pointer-events-none absolute top-0 left-0 right-0 h-4 flex items-start justify-center bg-gradient-to-b from-bg-dark to-transparent z-10 text-text-muted">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+              </div>
+            </Show>
+            <div
+              ref={(el) => (watchedScrollEl = el)}
+              onScroll={updateWatchedScrollState}
+              class="flex flex-col max-h-[10.5rem] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              <For each={watchWarmedChannels()}>
+                {(ch) => (
+                  <MenuSectionItem
+                    channel={ch}
+                    status={liveById().has(ch?.id) ? "live" : undefined}
+                    selected={props.selectedId === ch?.id}
+                    unread={hasUnread(ch?.id)}
+                    mentions={channelMentionCount(ch?.id)}
+                    onClick={() => props.onSelect(ch)}
+                    onMiddleClick={() => openInBrowser(ch)}
+                    onContextMenu={(x, y) => setChMenu({ ch, x, y })}
+                  />
+                )}
+              </For>
+            </div>
+            <Show when={watchedCanScrollDown()}>
+              <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-4 flex items-end justify-center bg-gradient-to-t from-bg-dark to-transparent z-10 text-text-muted">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </Show>
+          </div>
+        </MenuSection>
+      </Show>
 
       <MenuSection divider="top">
         <button

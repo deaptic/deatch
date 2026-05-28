@@ -68,6 +68,7 @@ import {
   watchedChannel,
   watchWarmedChannels,
   setWatchActive,
+  setWatchedChannel,
 } from "./state/watch";
 import { markMentionRead, markChannelMentionsRead } from "./state/inbox";
 import { loadChannelBadges, resetChannelBadgeCache } from "./services/badges";
@@ -213,11 +214,22 @@ function App() {
   });
 
   function cycleChannel(direction: 1 | -1) {
+    if (watchActive()) {
+      const watched = watchWarmedChannels();
+      if (watched.length === 0) return;
+      const i = watched.findIndex((c) => c?.id === watchedChannel()?.id);
+      const nextIdx =
+        i === -1
+          ? direction === 1
+            ? 0
+            : watched.length - 1
+          : (i + direction + watched.length) % watched.length;
+      setWatchedChannel(watched[nextIdx]);
+      return;
+    }
     const ordered = channelsInOrder();
     if (ordered.length === 0) return;
-    const i = watchActive()
-      ? -1
-      : ordered.findIndex((c) => c?.id === selectedChannel()?.id);
+    const i = ordered.findIndex((c) => c?.id === selectedChannel()?.id);
     const nextIdx =
       i === -1
         ? direction === 1
