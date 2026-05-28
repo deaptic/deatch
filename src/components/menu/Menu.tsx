@@ -80,7 +80,11 @@ export default function Menu(props: Props) {
 
   const liveById = () => new Map(live.map((ch) => [ch?.id, ch]));
   const pinnedIdSet = () => new Set(menuChannelPinned());
-  const onlineList = () => live.filter((ch) => !pinnedIdSet().has(ch?.id));
+  const warmedIdSet = () => new Set(watchWarmedChannels().map((ch) => ch?.id));
+  const onlineList = () =>
+    live.filter(
+      (ch) => !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id),
+    );
   const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];
 
