@@ -54,6 +54,15 @@ pub fn run() {
             }
             ipc::start_server(app.handle().clone());
             services::external::seventv_events::spawn(app.handle().clone());
+
+            if let Some(w) = tauri::Manager::get_webview_window(app, "main") {
+                if let Ok(icon) = tauri::image::Image::from_bytes(include_bytes!(
+                    "../icons/taskbar.png"
+                )) {
+                    let _ = w.set_icon(icon);
+                }
+            }
+
             Ok(())
         })
         .manage(services::twitch::TwitchState::new())
@@ -112,6 +121,7 @@ pub fn run() {
             commands::keymap::write_keymap,
             commands::watch::watch_set_muted,
             commands::watch::watch_request_state,
+            commands::notifications::set_mentions_badge,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

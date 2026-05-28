@@ -5,35 +5,40 @@
 ```
 Twitch tab           Extension                   Native host process
   URL change ──► content.js                       ┌──────────────────┐
-                    │                             │ reads JSON from  │
-                    └─► background.js ────────────► stdin (4-byte    │
-                          (focused-tab            │ length prefix)   │
-                           tracking)              │                  │
-                                                  │ forwards to      │
-                                                  │ running Deatch   │
-                                                  │ via local pipe   │
+                    │                             │ stdin ⇄ stdout   │
+                    └─► background.js ◄─────────► │ (4-byte LE       │
+                          state machine:          │  length prefix)  │
+                          tabs + current,         │                  │
+                          mute, reconnect         │ bidirectional    │
+                          w/ backoff              │ pipe to running  │
+                                                  │ Deatch GUI       │
                                                   └──────────────────┘
 ```
 
-The "native host process" is `deatch.exe` itself, launched with `--browser-host`
-mode (Deatch detects argv on startup and short-circuits to host mode before
-Tauri init). The host process forwards each JSON line to the running Deatch
-GUI via a local socket (`\\.\pipe\deatch-bridge` on Windows).
+`deatch.exe` is launched with `--browser-host` (it routes to host mode
+before Tauri init). The host forwards NDJSON lines to the running GUI over
+a local socket (`\\.\pipe\deatch-bridge` on Windows). The bridge is fully
+bidirectional — extension → GUI for state, GUI → extension for commands.
 
 ## Message protocol
 
 JSON, length-prefixed (4-byte little-endian) per the
 [native messaging spec](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/Native_messaging).
 
-| Direction | Message | When |
-|---|---|---|
-| → host | `{ "type": "hello", "client": "deatch-ext", "version": "x.y.z" }` | On connect. |
-| → host | `{ "type": "channel_switched", "channel": "<slug>", "ts": <unix-ms> }` | Focused Twitch tab's channel changed. |
-| → host | `{ "type": "sync", "channels": ["<slug>", ...] }` | Set of open Twitch tabs changed. Deduped against last sent set in `background.js`. |
+### Extension → host
 
-The extension only emits `channel_switched` when the focused tab is a Twitch
-channel page. Non-channel paths (`/directory`, `/settings`, `/popout`, etc.)
-are filtered in `content.js`.
+| Message | When |
+|---|---|
+| `{ "type": "state", "channels": [{"login": "<slug>", "muted": <bool>}, ...], "current": "<slug>" \| null }` | On any state change: tab open/close/url, focus change, mute change. Deduped by content. |
+
+`current` resolves to: focused Twitch tab → last-focused Twitch tab → `null`.
+
+### Host → extension
+
+| Message | Effect |
+|---|---|
+| `{ "type": "get_state" }` | Force re-emit of current `state`. Auto-sent by host on every (re)connect to GUI. |
+| `{ "type": "set_muted", "channel": "<slug>", "muted": <bool> }` | Apply mute/unmute via `chrome.tabs.update` to every tab on that channel. |
 
 ## Loading as a temporary add-on (Firefox)
 
@@ -42,26 +47,21 @@ are filtered in `content.js`.
    cd D:\deatch\src-tauri
    cargo run
    ```
-   (Or `deno task tauri dev` from the repo root.) This writes
-   `%LOCALAPPDATA%\Deatch\deatch-host.json` and the registry key under
-   `HKCU\Software\Mozilla\NativeMessagingHosts\com.deaptic.deatch`.
+   This writes `%LOCALAPPDATA%\Deatch\deatch-host.json` and the registry key
+   under `HKCU\Software\Mozilla\NativeMessagingHosts\com.deaptic.deatch`.
 
-2. In Firefox, paste this in the address bar:
-   ```
-   about:debugging#/runtime/this-firefox
-   ```
+2. In Firefox: `about:debugging#/runtime/this-firefox`.
 
-3. Click **Load Temporary Add-on…** → pick `D:\deatch\extension\manifest.json`.
+3. **Load Temporary Add-on…** → pick `D:\deatch\extension\manifest.json`.
 
-4. Click **Inspect** next to "Deatch Link" to open the background script's console.
+4. Click **Inspect** next to "Deatch Link" to open the background console.
 
 ## Debug logging
 
-`background.js` and `content.js` each have a `const DEBUG = false;` at the
-top. Flip to `true` and reload the add-on to see all `[deatch]` log lines in
-the background console.
+`background.js` and `content.js` each have `const DEBUG = false;` at the
+top. Flip to `true` and reload to see `[deatch]` lines.
 
-The host process logs every received message to `%TEMP%\deatch-host.log`:
+Host-side log (all in/out frames):
 
 ```pwsh
 Get-Content $env:TEMP\deatch-host.log -Wait -Tail 20
@@ -70,8 +70,8 @@ Get-Content $env:TEMP\deatch-host.log -Wait -Tail 20
 ## Loading in Chrome / Edge
 
 Not yet wired up. To support it, swap `background.scripts` for
-`service_worker` in `manifest.json`, drop the `browser_specific_settings`
-block, and add a Chrome-style native messaging manifest path in
+`service_worker` in `manifest.json`, drop `browser_specific_settings`, and
+add a Chrome-style native messaging manifest path in
 `src-tauri/src/bridge.rs`.
 
 ## Packaging for distribution
@@ -81,6 +81,5 @@ block, and add a Chrome-style native messaging manifest path in
 Compress-Archive -Path manifest.json,background.js,content.js,icons -DestinationPath deatch.zip -Force
 ```
 
-Then submit `deatch.zip` to [addons.mozilla.org](https://addons.mozilla.org)
-for signing + listing. Mozilla's automated signing produces an `.xpi` you can
-self-host if you choose "Unlisted" instead of "Listed."
+Submit `deatch.zip` to [addons.mozilla.org](https://addons.mozilla.org) for
+signing.
