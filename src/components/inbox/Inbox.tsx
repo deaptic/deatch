@@ -31,7 +31,7 @@ export default function Inbox(props: Props) {
     <Portal>
       <div
         ref={panelRef}
-        class="fixed top-12 right-2 z-40 w-96 max-w-[calc(100vw-1rem)] max-h-[calc(100vh-4rem)] bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col overflow-hidden"
+        class="fixed top-12 right-2 z-40 w-96 max-w-[calc(100vw-1rem)] max-h-[min(70vh,600px)] bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col overflow-hidden"
       >
         <div class="flex items-center px-4 h-11 border-b border-border-muted shrink-0">
           <span class="text-text text-sm font-semibold flex-1">Mentions</span>
@@ -50,7 +50,7 @@ export default function Inbox(props: Props) {
             </div>
           }
         >
-          <div class="flex-1 overflow-y-auto">
+          <div class="flex-1 min-h-0 overflow-y-auto">
             <For each={mentions()}>
               {(m) => (
                 <InboxItem
