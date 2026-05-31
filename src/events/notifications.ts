@@ -7,12 +7,27 @@ import { moderationAutoShoutoutOnRaid } from "../state/preferences";
 import { sendShoutout } from "../commands/twitch/chat";
 import { correlateRedemption } from "./channelPointsCorrelator";
 
+// Most notices ship a complete `system_message` that already starts with the
+// chatter name (e.g. resub: "viewer23 subscribed at Tier 1..."). A few
+// undocumented types (e.g. modiversary) omit it, sending just the predicate
+// ("has been a moderator for 84 months!"), so we prepend the name for those.
+const NOTICES_NEEDING_NAME = new Set(["modiversary"]);
+
 function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
+  const name = raw.chatter_user_name;
+  let system_message = raw.system_message;
+  if (
+    name &&
+    NOTICES_NEEDING_NAME.has(raw.notice_type) &&
+    !system_message.toLowerCase().startsWith(name.toLowerCase())
+  ) {
+    system_message = `${name} ${system_message}`;
+  }
   return {
     kind: "event",
     id: crypto.randomUUID(),
     notice_type: raw.notice_type,
-    system_message: raw.system_message,
+    system_message,
     chatter_user_id: raw.chatter_is_anonymous ? undefined : raw.chatter_user_id,
     chatter_name: raw.chatter_user_name ?? "anonymous",
     color: raw.color ?? "",
