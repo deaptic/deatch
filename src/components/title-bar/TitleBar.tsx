@@ -23,7 +23,9 @@ function ResizeHandle(props: { dir: ResizeDir; class: string }) {
       class={`absolute z-50 ${props.class}`}
       onMouseDown={(e) => {
         if (e.button !== 0) return;
-        win.startResizeDragging(props.dir as any);
+        win.startResizeDragging(
+          props.dir as Parameters<typeof win.startResizeDragging>[0],
+        );
       }}
     />
   );
