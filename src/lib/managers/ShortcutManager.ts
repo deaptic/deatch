@@ -1,5 +1,5 @@
 import { Manager } from "./Manager.ts";
-import defaultKeymap from "../../default-keymap.json";
+import defaultKeymap from "../../default-keymap.json" with { type: "json" };
 import { comboFor, MODIFIER_KEYS } from "../utils/keyboard.ts";
 import {
   compile as compileWhen,

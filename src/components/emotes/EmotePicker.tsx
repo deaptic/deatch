@@ -32,7 +32,9 @@ import {
   type RenderSection,
   toItem,
 } from "./helpers.ts";
-import emojiGroups from "unicode-emoji-json/data-by-group.json";
+import emojiGroups from "unicode-emoji-json/data-by-group.json" with {
+  type: "json",
+};
 
 type Tab = "channel" | "global" | "emoji";
 
@@ -273,7 +275,7 @@ export default function EmotePicker(props: Props) {
           />
         </div>
 
-        <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 [scrollbar-gutter:stable]">
+        <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 scrollbar-gutter-stable">
           <For each={sections()}>
             {(section) => (
               <Show when={section.label} fallback={renderGrid(section)}>
