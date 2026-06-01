@@ -20,8 +20,7 @@ import MenuPinnedList from "./MenuPinnedList";
 import MenuLiveList from "./MenuLiveList";
 import MenuWatchedList from "./MenuWatchedList";
 import MenuWatchToggle from "./MenuWatchToggle";
-import ChevronUpIcon from "../icons/ChevronUpIcon";
-import ChevronDownIcon from "../icons/ChevronDownIcon";
+import ScrollChevron from "../ui/ScrollChevron";
 import InputPopover from "../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
 import type { User } from "../../lib/types/twitch/user";
@@ -109,22 +108,10 @@ export default function Menu(props: Props) {
     <div class="flex flex-col h-full w-14 shrink-0 bg-bg-dark border-r border-border-muted overflow-hidden">
       <div class="relative flex-1 min-h-0">
         <Show when={main.canUp()}>
-          <button
-            type="button"
-            onClick={() => main.scrollByOne(-1)}
-            class="absolute top-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-b from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
-          >
-            <ChevronUpIcon class="w-3 h-3" />
-          </button>
+          <ScrollChevron direction="up" onClick={() => main.scrollByOne(-1)} />
         </Show>
         <Show when={main.canDown()}>
-          <button
-            type="button"
-            onClick={() => main.scrollByOne(1)}
-            class="absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-t from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
-          >
-            <ChevronDownIcon class="w-3 h-3" />
-          </button>
+          <ScrollChevron direction="down" onClick={() => main.scrollByOne(1)} />
         </Show>
         <div
           ref={main.setRef}

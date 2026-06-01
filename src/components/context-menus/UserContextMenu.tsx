@@ -9,7 +9,7 @@ import HashIcon from "../icons/HashIcon";
 import MuteIcon from "../icons/MuteIcon";
 import UserIcon from "../icons/UserIcon";
 import AtIcon from "../icons/AtIcon";
-import CopyIcon from "../icons/CopyIcon";
+import CopyPayloadItem from "./CopyPayloadItem";
 import {
   feedUserMuted,
   feedUserNickname,
@@ -93,23 +93,15 @@ export default function UserContextMenu(props: Props) {
           }}
         />
       </Show>
-      <Show when={props.developerMode}>
-        <ContextMenuDivider />
-        <ContextMenuItem
-          label="Copy Payload"
-          icon={<CopyIcon class="w-3.5 h-3.5" />}
-          onClick={() => {
-            navigator.clipboard.writeText(
-              JSON.stringify(
-                { userId: props.userId, userLogin: props.userLogin, userDisplayName: props.userDisplayName },
-                null,
-                2,
-              ),
-            );
-            props.onClose();
-          }}
-        />
-      </Show>
+      <CopyPayloadItem
+        show={props.developerMode}
+        data={{
+          userId: props.userId,
+          userLogin: props.userLogin,
+          userDisplayName: props.userDisplayName,
+        }}
+        onClose={props.onClose}
+      />
     </ContextMenu>
   );
 }
