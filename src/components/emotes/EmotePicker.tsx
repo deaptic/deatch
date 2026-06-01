@@ -25,6 +25,12 @@ import NavigationItem from "../ui/NavigationItem";
 import { captureFocusForRestore } from "../../lib/utils/focus";
 import { shortcutManager } from "../../lib/managers/ShortcutManager";
 import type { EmoteGridItem } from "./types";
+import {
+  type RenderSection,
+  emojiUrl,
+  toItem,
+  nextVerticalIndex,
+} from "./helpers";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
 type Tab = "channel" | "global" | "emoji";
@@ -35,34 +41,10 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "emoji", label: "Emoji" },
 ];
 
-const COLUMNS = 8;
-
-function emojiUrl(emoji: string): string {
-  const points: string[] = [];
-  for (const char of emoji) {
-    const cp = char.codePointAt(0);
-    if (cp !== undefined && cp !== 0xfe0f) points.push(cp.toString(16));
-  }
-  return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${points.join("-")}.png`;
-}
-
-const toItem = (e: { name: string; url: string }): EmoteGridItem => ({
-  value: e.name,
-  url: e.url,
-  label: e.name,
-});
-
 type Props = {
   onSelect: (value: string, opts?: { keepOpen?: boolean }) => void;
   onClose: () => void;
   anchorEl?: HTMLElement | null;
-};
-
-type RenderSection = {
-  label?: string;
-  items: EmoteGridItem[];
-  emptyHint?: string;
-  startIndex: number;
 };
 
 export default function EmotePicker(props: Props) {
@@ -233,38 +215,7 @@ export default function EmotePicker(props: Props) {
   }
 
   function moveVertical(direction: 1 | -1) {
-    const secs = sections();
-    const idx = activeIndex();
-    let secIdx = secs.findIndex(
-      (s) => idx >= s.startIndex && idx < s.startIndex + s.items.length,
-    );
-    if (secIdx < 0) return;
-    const sec = secs[secIdx];
-    const pos = idx - sec.startIndex;
-    const col = pos % COLUMNS;
-    const targetRow = Math.floor(pos / COLUMNS) + direction;
-
-    // Same section, adjacent row exists.
-    if (targetRow >= 0 && targetRow * COLUMNS < sec.items.length) {
-      const newPos = Math.min(targetRow * COLUMNS + col, sec.items.length - 1);
-      setActiveIndex(sec.startIndex + newPos);
-      return;
-    }
-
-    // Jump to nearest non-empty section in that direction.
-    for (
-      let i = secIdx + direction;
-      i >= 0 && i < secs.length;
-      i += direction
-    ) {
-      const target = secs[i];
-      if (!target.items.length) continue;
-      const row =
-        direction === 1 ? 0 : Math.floor((target.items.length - 1) / COLUMNS);
-      const newPos = Math.min(row * COLUMNS + col, target.items.length - 1);
-      setActiveIndex(target.startIndex + newPos);
-      return;
-    }
+    setActiveIndex(nextVerticalIndex(sections(), activeIndex(), direction));
   }
 
   function selectActive(keepOpen: boolean) {
