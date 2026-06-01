@@ -1,8 +1,7 @@
-import { Show } from "solid-js";
 import ContextMenu from "../ui/ContextMenu";
 import ContextMenuItem from "../ui/ContextMenuItem";
-import ContextMenuDivider from "../ui/ContextMenuDivider";
 import CopyIcon from "../icons/CopyIcon";
+import CopyPayloadItem from "./CopyPayloadItem";
 import type { FeedEvent } from "../../lib/types";
 
 type Props = {
@@ -24,17 +23,11 @@ export default function EventContextMenu(props: Props) {
           props.onClose();
         }}
       />
-      <Show when={props.developerMode}>
-        <ContextMenuDivider />
-        <ContextMenuItem
-          label="Copy Payload"
-          icon={<CopyIcon class="w-3.5 h-3.5" />}
-          onClick={() => {
-            navigator.clipboard.writeText(JSON.stringify(props.item, null, 2));
-            props.onClose();
-          }}
-        />
-      </Show>
+      <CopyPayloadItem
+        show={props.developerMode}
+        data={props.item}
+        onClose={props.onClose}
+      />
     </ContextMenu>
   );
 }

@@ -7,6 +7,7 @@ import ReplyIcon from "../icons/ReplyIcon";
 import CopyIcon from "../icons/CopyIcon";
 import PastaIcon from "../icons/PastaIcon";
 import TrashIcon from "../icons/TrashIcon";
+import CopyPayloadItem from "./CopyPayloadItem";
 import type { FeedMessage } from "../../lib/types";
 
 type Props = {
@@ -52,17 +53,11 @@ export default function MessageContextMenu(props: Props) {
           onClick={() => { deleteChatMessages({ broadcasterId: props.broadcasterId, messageId: props.msg.message_id }); props.onClose(); }}
         />
       </Show>
-      <Show when={props.developerMode}>
-        <ContextMenuDivider />
-        <ContextMenuItem
-          label="Copy Payload"
-          icon={<CopyIcon class="w-3.5 h-3.5" />}
-          onClick={() => {
-            navigator.clipboard.writeText(JSON.stringify(props.msg, null, 2));
-            props.onClose();
-          }}
-        />
-      </Show>
+      <CopyPayloadItem
+        show={props.developerMode}
+        data={props.msg}
+        onClose={props.onClose}
+      />
     </ContextMenu>
   );
 }

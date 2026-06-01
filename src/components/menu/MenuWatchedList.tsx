@@ -4,8 +4,7 @@ import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import SpeakerIcon from "../icons/SpeakerIcon";
 import SpeakerOffIcon from "../icons/SpeakerOffIcon";
-import ChevronUpIcon from "../icons/ChevronUpIcon";
-import ChevronDownIcon from "../icons/ChevronDownIcon";
+import ScrollChevron from "../ui/ScrollChevron";
 import {
   watchWarmedChannels,
   watchMutedByLogin,
@@ -36,13 +35,7 @@ export default function MenuWatchedList(props: Props) {
       <MenuSection divider="top">
         <div class="relative">
           <Show when={scroll.canUp()}>
-            <button
-              type="button"
-              onClick={() => scroll.scrollByOne(-1)}
-              class="absolute top-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-b from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
-            >
-              <ChevronUpIcon class="w-3 h-3" />
-            </button>
+            <ScrollChevron direction="up" onClick={() => scroll.scrollByOne(-1)} />
           </Show>
           <div
             ref={scroll.setRef}
@@ -102,13 +95,7 @@ export default function MenuWatchedList(props: Props) {
             </Navigation>
           </div>
           <Show when={scroll.canDown()}>
-            <button
-              type="button"
-              onClick={() => scroll.scrollByOne(1)}
-              class="absolute bottom-0 left-0 right-0 h-5 flex items-center justify-center bg-gradient-to-t from-bg-dark to-transparent z-10 text-text-muted hover:text-text cursor-pointer"
-            >
-              <ChevronDownIcon class="w-3 h-3" />
-            </button>
+            <ScrollChevron direction="down" onClick={() => scroll.scrollByOne(1)} />
           </Show>
         </div>
       </MenuSection>
