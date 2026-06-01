@@ -61,7 +61,10 @@ export default function TextArea(props: Props) {
   });
 
   return (
-    <div ref={rowRef} class="relative flex items-end min-h-14">
+    <div
+      ref={rowRef}
+      class="relative flex items-end min-h-14 focus-within:ring-2 focus-within:ring-primary focus-within:ring-inset"
+    >
       {local.children}
       <textarea
         {...textareaProps}
