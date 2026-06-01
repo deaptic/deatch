@@ -2,7 +2,7 @@ import { type Accessor, createEffect, createSignal, on } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
 import { selectedChannel } from "../stores/channels.ts";
 import { menuChannelPinned } from "../stores/preferences.ts";
-import { isModOfChannel, user } from "../stores/users.ts";
+import { clearChatters, isModOfChannel, user } from "../stores/users.ts";
 import { watchWarmedChannels } from "../stores/watch.ts";
 import { eventSubManager } from "../managers/EventSubManager.ts";
 import { sevenTvManager } from "../managers/SevenTvManager.ts";
@@ -36,6 +36,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     }
     void sevenTvManager.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
+    clearChatters(broadcasterId);
   }
 
   createEffect(

@@ -39,6 +39,16 @@ export type Chatter = {
 
 export const chattersByChannel = new Map<string, Map<string, Chatter>>();
 
+const MAX_CHATTERS_PER_CHANNEL = 1000;
+
+function pruneChatters(bucket: Map<string, Chatter>) {
+  const recent = [...bucket.values()]
+    .sort((a, b) => b.lastSeen - a.lastSeen)
+    .slice(0, MAX_CHATTERS_PER_CHANNEL);
+  bucket.clear();
+  for (const c of recent) bucket.set(c.id, c);
+}
+
 export function recordChatter(channelId: string, c: Chatter) {
   let bucket = chattersByChannel.get(channelId);
   if (!bucket) {
@@ -48,4 +58,9 @@ export function recordChatter(channelId: string, c: Chatter) {
   const existing = bucket.get(c.id);
   if (existing && existing.lastSeen >= c.lastSeen) return;
   bucket.set(c.id, c);
+  if (bucket.size > MAX_CHATTERS_PER_CHANNEL + 200) pruneChatters(bucket);
+}
+
+export function clearChatters(channelId: string) {
+  chattersByChannel.delete(channelId);
 }

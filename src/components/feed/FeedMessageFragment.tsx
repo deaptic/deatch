@@ -49,6 +49,7 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
               src={emoteUrl()!}
               alt={token}
               title={token}
+              decoding="async"
               class={INLINE_EMOTE}
             />
           </Show>
@@ -67,6 +68,7 @@ export default function FeedMessageFragment(props: Props) {
           src={`https://static-cdn.jtvnw.net/emoticons/v2/${frag.id}/default/dark/1.0`}
           alt={frag.text}
           title={frag.text}
+          decoding="async"
           class={INLINE_EMOTE}
         />
       );
