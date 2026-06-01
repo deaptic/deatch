@@ -15,7 +15,7 @@ export default function ModerationSection() {
       <SettingsContentSection>
         <SettingsContentSectionItem
           label="Auto-shoutout on raid"
-          description="Automatically shout out the raider on any channel you broadcast or moderate."
+          description="Shout out raiders in channels you own or mod."
         >
           <Toggle
             size="md"
@@ -25,7 +25,7 @@ export default function ModerationSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Disable moderation actions"
-          description="Hide ban, timeout, delete and other moderation controls in every channel — including ones you broadcast or moderate."
+          description="Hide all mod controls (ban, timeout, delete) everywhere."
         >
           <Toggle
             size="md"
