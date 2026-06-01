@@ -1,8 +1,8 @@
 import { Show } from "solid-js";
-import { waiting, deviceCode } from "../../state/auth";
-import { sessionManager } from "../../managers/SessionManager";
-import TwitchIcon from "../../icons/TwitchIcon";
-import Loading from "../../ui/Loading";
+import { waiting, deviceCode } from "../../lib/stores/auth";
+import { sessionManager } from "../../lib/managers/SessionManager";
+import TwitchIcon from "../icons/TwitchIcon";
+import Loading from "../ui/Loading";
 
 export default function Login() {
   return (

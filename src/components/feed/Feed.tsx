@@ -13,15 +13,15 @@ import type {
   FeedMessage as Message,
   FeedEvent as EventItem,
   FeedItem,
-} from "../../types";
-import { feeds, isFeedItemVisible, getItemId } from "../../state/feeds";
-import { thirdPartyEmoteMap, favorites } from "../../state/emotes";
+} from "../../lib/types";
+import { feeds, isFeedItemVisible, getItemId } from "../../lib/stores/feeds";
+import { thirdPartyEmoteMap, favorites } from "../../lib/stores/emotes";
 import {
   feedShowTimestamp,
   feedShowDeletedContent,
   feedKeywords,
-} from "../../state/preferences";
-import { shortcutManager } from "../../managers/ShortcutManager";
+} from "../../lib/stores/preferences";
+import { shortcutManager } from "../../lib/managers/ShortcutManager";
 import FeedMessage from "./FeedMessage";
 import FeedEvent from "./FeedEvent";
 import FeedDivider from "./FeedDivider";

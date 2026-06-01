@@ -9,44 +9,44 @@ import {
 } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { getFollowedStreams, getStreams, type Stream } from "../../commands/twitch/streams";
-import { getUsers } from "../../commands/twitch/users";
-import { fetchAllPages } from "../../commands/utils";
-import { addToast } from "../../state/toasts";
+import { getFollowedStreams, getStreams, type Stream } from "../../lib/api/twitch/streams";
+import { getUsers } from "../../lib/api/twitch/users";
+import { fetchAllPages } from "../../lib/api/utils";
+import { addToast } from "../../lib/stores/toasts";
 import {
   rememberUser,
   setLiveStreams,
   selectedChannel,
-} from "../../state/channels";
+} from "../../lib/stores/channels";
 import {
   advancedDeveloperMode,
   menuChannelPinned,
   pinChannel,
   unpinChannel,
   reorderPinnedChannels,
-} from "../../state/preferences";
-import { hasUnread } from "../../state/feeds";
-import { channelMentionCount } from "../../state/inbox";
+} from "../../lib/stores/preferences";
+import { hasUnread } from "../../lib/stores/feeds";
+import { channelMentionCount } from "../../lib/stores/inbox";
 import {
   watchMode,
   watchedChannel,
   watchWarmedChannels,
   watchMutedByLogin,
   setWatchMode,
-} from "../../state/watch";
-import { watchSetMuted } from "../../commands/watch";
+} from "../../lib/stores/watch";
+import { watchSetMuted } from "../../lib/api/watch";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
 import MenuAddButton from "./MenuAddButton";
-import Navigation from "../../ui/Navigation";
-import SpeakerIcon from "../../icons/SpeakerIcon";
-import SpeakerOffIcon from "../../icons/SpeakerOffIcon";
-import WatchIcon from "../../icons/WatchIcon";
-import ChevronUpIcon from "../../icons/ChevronUpIcon";
-import ChevronDownIcon from "../../icons/ChevronDownIcon";
-import InputPopover from "../../ui/InputPopover";
+import Navigation from "../ui/Navigation";
+import SpeakerIcon from "../icons/SpeakerIcon";
+import SpeakerOffIcon from "../icons/SpeakerOffIcon";
+import WatchIcon from "../icons/WatchIcon";
+import ChevronUpIcon from "../icons/ChevronUpIcon";
+import ChevronDownIcon from "../icons/ChevronDownIcon";
+import InputPopover from "../ui/InputPopover";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu";
-import type { User } from "../../types/twitch/user";
+import type { User } from "../../lib/types/twitch/user";
 
 export type { User };
 

@@ -1,11 +1,11 @@
 import { For, Show } from "solid-js";
-import type { FeedMessage } from "../../types";
-import Toolbar from "../../ui/Toolbar";
-import ToolbarItem from "../../ui/ToolbarItem";
-import ReplyIcon from "../../icons/ReplyIcon";
-import DotsIcon from "../../icons/DotsIcon";
-import PastaIcon from "../../icons/PastaIcon";
-import { feedShowCopypasta } from "../../state/preferences";
+import type { FeedMessage } from "../../lib/types";
+import Toolbar from "../ui/Toolbar";
+import ToolbarItem from "../ui/ToolbarItem";
+import ReplyIcon from "../icons/ReplyIcon";
+import DotsIcon from "../icons/DotsIcon";
+import PastaIcon from "../icons/PastaIcon";
+import { feedShowCopypasta } from "../../lib/stores/preferences";
 
 type Reaction = { label: string; value: string; url: string };
 

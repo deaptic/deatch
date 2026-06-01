@@ -14,21 +14,21 @@ import {
   disable as disableAutostart,
   isEnabled as isAutostartEnabled,
 } from "@tauri-apps/plugin-autostart";
-import { getModeratedChannels } from "./commands/twitch/moderation";
-import { fetchAllPages } from "./commands/utils";
-import type { User, UserRef } from "./types/twitch/user";
+import { getModeratedChannels } from "./lib/api/twitch/moderation";
+import { fetchAllPages } from "./lib/api/utils";
+import type { User, UserRef } from "./lib/types/twitch/user";
 import Menu from "./components/menu/Menu";
 import Chat from "./components/chat/Chat";
 import Toaster from "./components/toaster/Toaster";
-import { toasts, removeToast } from "./state/toasts";
+import { toasts, removeToast } from "./lib/stores/toasts";
 import TitleBar from "./components/title-bar/TitleBar";
 import UpdateBanner from "./components/update-banner/UpdateBanner";
 import Settings from "./components/settings/Settings";
 import Inbox from "./components/inbox/Inbox";
 import Account from "./components/account/Account";
-import { openPanel, setOpenPanel, isPanelOpen, togglePanel } from "./state/ui";
+import { openPanel, setOpenPanel, isPanelOpen, togglePanel } from "./lib/stores/ui";
 import Login from "./components/login/Login";
-import Loading from "./ui/Loading";
+import Loading from "./components/ui/Loading";
 import {
   menuChannelPinned,
   advancedAlwaysOnTop,
@@ -36,24 +36,24 @@ import {
   advancedAutostart,
   advancedDiscordRichPresence,
   appearanceColors,
-} from "./state/preferences";
-import { applyDiscordPresence } from "./services/discord";
-import { startUpdateChecker } from "./services/updater";
-import { applyAppearanceColors } from "./services/appearance";
-import { user, setModeratedChannels, isModOfChannel } from "./state/users";
-import { authChecked } from "./state/auth";
-import { sessionManager } from "./managers/SessionManager";
-import { eventSubManager } from "./managers/EventSubManager";
-import { CHAT_KINDS, MOD_KINDS, OWN_KINDS, ALL_KINDS } from "./types/twitch/eventsub";
-import { setGlobalEmotes, clearChannelThirdPartyEmotes } from "./state/emotes";
+} from "./lib/stores/preferences";
+import { applyDiscordPresence } from "./lib/services/discord";
+import { startUpdateChecker } from "./lib/services/updater";
+import { applyAppearanceColors } from "./lib/services/appearance";
+import { user, setModeratedChannels, isModOfChannel } from "./lib/stores/users";
+import { authChecked } from "./lib/stores/auth";
+import { sessionManager } from "./lib/managers/SessionManager";
+import { eventSubManager } from "./lib/managers/EventSubManager";
+import { CHAT_KINDS, MOD_KINDS, OWN_KINDS, ALL_KINDS } from "./lib/types/twitch/eventsub";
+import { setGlobalEmotes, clearChannelThirdPartyEmotes } from "./lib/stores/emotes";
 import {
   loadGlobalEmotes,
   loadThirdPartyGlobalEmotes,
   loadChannelThirdPartyEmotes,
   resetChannelThirdPartyEmoteCache,
   resetUserEmotes,
-} from "./services/emotes";
-import { sevenTvManager } from "./managers/SevenTvManager";
+} from "./lib/services/emotes";
+import { sevenTvManager } from "./lib/managers/SevenTvManager";
 import {
   selectedChannel,
   setSelectedChannel,
@@ -62,7 +62,7 @@ import {
   loadLastChannel,
   channelsInOrder,
   liveStreams as liveChannelsSignal,
-} from "./state/channels";
+} from "./lib/stores/channels";
 import {
   watchMode,
   watchConnected,
@@ -70,15 +70,15 @@ import {
   watchWarmedChannels,
   watchMutedByLogin,
   setWatchMode,
-} from "./state/watch";
-import { watchSetMuted } from "./commands/watch";
-import { markMentionRead, markChannelMentionsRead, unreadMentionCount } from "./state/inbox";
+} from "./lib/stores/watch";
+import { watchSetMuted } from "./lib/api/watch";
+import { markMentionRead, markChannelMentionsRead, unreadMentionCount } from "./lib/stores/inbox";
 import { invoke } from "@tauri-apps/api/core";
-import { loadChannelBadges, resetChannelBadgeCache } from "./services/badges";
-import { dropFeed, ensureFeed, snapshotDivider, markSeen } from "./state/feeds";
-import { scrollToMessage } from "./services/feeds";
-import { shortcutManager } from "./managers/ShortcutManager";
-import "./events";
+import { loadChannelBadges, resetChannelBadgeCache } from "./lib/services/badges";
+import { dropFeed, ensureFeed, snapshotDivider, markSeen } from "./lib/stores/feeds";
+import { scrollToMessage } from "./lib/services/feeds";
+import { shortcutManager } from "./lib/managers/ShortcutManager";
+import "./lib/events";
 import "./App.css";
 
 let userScopedFetched = false;

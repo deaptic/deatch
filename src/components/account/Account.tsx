@@ -1,9 +1,9 @@
 import { Show, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
-import { user } from "../../state/users";
-import { sessionManager } from "../../managers/SessionManager";
-import { captureFocusForRestore } from "../../utils/focus";
-import LogoutIcon from "../../icons/LogoutIcon";
+import { user } from "../../lib/stores/users";
+import { sessionManager } from "../../lib/managers/SessionManager";
+import { captureFocusForRestore } from "../../lib/utils/focus";
+import LogoutIcon from "../icons/LogoutIcon";
 
 type Props = {
   onClose: () => void;

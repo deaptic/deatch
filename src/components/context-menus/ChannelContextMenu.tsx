@@ -1,9 +1,9 @@
 import { Show } from "solid-js";
-import ContextMenu from "../../ui/ContextMenu";
-import ContextMenuItem from "../../ui/ContextMenuItem";
-import ContextMenuDivider from "../../ui/ContextMenuDivider";
-import CopyIcon from "../../icons/CopyIcon";
-import type { User } from "../../types/twitch/user";
+import ContextMenu from "../ui/ContextMenu";
+import ContextMenuItem from "../ui/ContextMenuItem";
+import ContextMenuDivider from "../ui/ContextMenuDivider";
+import CopyIcon from "../icons/CopyIcon";
+import type { User } from "../../lib/types/twitch/user";
 
 type Props = {
   x: number;

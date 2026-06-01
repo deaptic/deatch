@@ -6,34 +6,34 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { sendChatMessage } from "../../commands/twitch/chat";
-import { loadBacklog } from "../../services/feeds";
-import { shortcutManager } from "../../managers/ShortcutManager";
-import { copyField } from "../../utils/clipboard";
+import { sendChatMessage } from "../../lib/api/twitch/chat";
+import { loadBacklog } from "../../lib/services/feeds";
+import { shortcutManager } from "../../lib/managers/ShortcutManager";
+import { copyField } from "../../lib/utils/clipboard";
 import Feed, { type FeedApi } from "../feed/Feed";
 import ChatInput from "./ChatInput";
 import MessageContextMenu from "../context-menus/MessageContextMenu";
 import UserContextMenu from "../context-menus/UserContextMenu";
 import UserCard from "../user-card/UserCard";
-import { getUsers } from "../../commands/twitch/users";
+import { getUsers } from "../../lib/api/twitch/users";
 import EventContextMenu from "../context-menus/EventContextMenu";
 import BanModal from "../ban-modal/BanModal";
-import InputPopover from "../../ui/InputPopover";
-import { moderatedChannels } from "../../state/users";
-import type { FeedMessage as Message, FeedEvent as EventItem } from "../../types";
+import InputPopover from "../ui/InputPopover";
+import { moderatedChannels } from "../../lib/stores/users";
+import type { FeedMessage as Message, FeedEvent as EventItem } from "../../lib/types";
 import {
   setPaused as setFeedPaused,
   trimToLatest,
   markSeen,
   clearDivider,
-} from "../../state/feeds";
+} from "../../lib/stores/feeds";
 import {
   feedFontSize,
   advancedDeveloperMode,
   feedShowCopypasta,
   moderationActionsDisabled,
-} from "../../state/preferences";
-import CaretDownIcon from "../../icons/CaretDownIcon";
+} from "../../lib/stores/preferences";
+import CaretDownIcon from "../icons/CaretDownIcon";
 import { createPopover } from "./createPopover";
 import { createNicknameEditor } from "./createNicknameEditor";
 import { createFontSizeWheel } from "./createFontSizeWheel";

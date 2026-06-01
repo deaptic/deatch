@@ -1,10 +1,10 @@
 import { createSignal, createMemo, createEffect, For, Show, onCleanup } from "solid-js";
 import type { Command, CommandContext, CommandOption } from "./types";
-import { chattersByChannel } from "../../state/users";
-import { feedUserNickname } from "../../state/preferences";
-import { getUsers } from "../../commands/twitch/users";
+import { chattersByChannel } from "../../lib/stores/users";
+import { feedUserNickname } from "../../lib/stores/preferences";
+import { getUsers } from "../../lib/api/twitch/users";
 import Suggestions from "../suggestions/Suggestions";
-import Banner from "../../ui/Banner";
+import Banner from "../ui/Banner";
 import CommandComposerSlot from "./CommandComposerSlot";
 
 type Slot = {

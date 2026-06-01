@@ -1,8 +1,8 @@
 import { For, Show, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import InboxItem from "./InboxItem";
-import { mentions, markAllMentionsRead } from "../../state/inbox";
-import { captureFocusForRestore } from "../../utils/focus";
+import { mentions, markAllMentionsRead } from "../../lib/stores/inbox";
+import { captureFocusForRestore } from "../../lib/utils/focus";
 
 type Props = {
   onClose: () => void;

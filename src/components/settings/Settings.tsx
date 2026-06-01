@@ -1,18 +1,18 @@
 import { createSignal, createEffect, For, onCleanup, onMount, Show, type JSX } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Portal } from "solid-js/web";
-import { getUsers, type User } from "../../commands/twitch/users";
-import Navigation from "../../ui/Navigation";
-import NavigationItem from "../../ui/NavigationItem";
+import { getUsers, type User } from "../../lib/api/twitch/users";
+import Navigation from "../ui/Navigation";
+import NavigationItem from "../ui/NavigationItem";
 import SettingsContent from "./SettingsContent";
 import SettingsContentSection from "./SettingsContentSection";
 import SettingsContentSectionItem from "./SettingsContentSectionItem";
 
-import MegaphoneIcon from "../../icons/MegaphoneIcon";
-import LogIcon from "../../icons/LogIcon";
-import PaletteIcon from "../../icons/PaletteIcon";
-import GearIcon from "../../icons/GearIcon";
-import BanIcon from "../../icons/BanIcon";
+import MegaphoneIcon from "../icons/MegaphoneIcon";
+import LogIcon from "../icons/LogIcon";
+import PaletteIcon from "../icons/PaletteIcon";
+import GearIcon from "../icons/GearIcon";
+import BanIcon from "../icons/BanIcon";
 
 type SectionKey = "feed" | "notifications" | "moderation" | "appearance" | "advanced";
 
@@ -71,22 +71,22 @@ import {
   setAppearanceColor,
   resetAppearanceColor,
   resetAppearanceColors,
-} from "../../state/preferences";
+} from "../../lib/stores/preferences";
 import {
   APPEARANCE_COLOR_GROUPS,
   readAppearanceColorHex,
   type AppearanceColorKey,
-} from "../../services/appearance";
-import Button from "../../ui/Button";
-import { muteUserByLogin, setUserNicknameByLogin } from "../../services/preferences";
-import KeyValueEditor from "../../ui/KeyValueEditor";
-import ChipInput from "../../ui/ChipInput";
-import { BADGE_CATEGORIES, EVENTS } from "../../constants";
-import Stepper from "../../ui/Stepper";
-import Toggle from "../../ui/Toggle";
-import Chip from "../../ui/Chip";
-import ChipList from "../../ui/ChipList";
-import { captureFocusForRestore } from "../../utils/focus";
+} from "../../lib/services/appearance";
+import Button from "../ui/Button";
+import { muteUserByLogin, setUserNicknameByLogin } from "../../lib/services/preferences";
+import KeyValueEditor from "../ui/KeyValueEditor";
+import ChipInput from "../ui/ChipInput";
+import { BADGE_CATEGORIES, EVENTS } from "../../lib/constants";
+import Stepper from "../ui/Stepper";
+import Toggle from "../ui/Toggle";
+import Chip from "../ui/Chip";
+import ChipList from "../ui/ChipList";
+import { captureFocusForRestore } from "../../lib/utils/focus";
 
 type Props = {
   onClose: () => void;

@@ -1,7 +1,7 @@
 import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions";
-import { chattersByChannel } from "../../../state/users";
-import { feedUserNickname } from "../../../state/preferences";
+import { chattersByChannel } from "../../../lib/stores/users";
+import { feedUserNickname } from "../../../lib/stores/preferences";
 import type { ChatAutocompleteController } from "./controller";
 
 type MentionSuggestion = { login: string; displayName: string; color: string; nickname?: string };

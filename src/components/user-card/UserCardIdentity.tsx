@@ -1,13 +1,13 @@
 import { createMemo, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { User } from "../../commands/twitch/users";
-import { feedUserNickname } from "../../state/preferences";
-import { feeds } from "../../state/feeds";
-import type { FeedMessage } from "../../types";
-import BadgeBox from "../../ui/BadgeBox";
-import DisplayName from "../../ui/DisplayName";
-import PinIcon from "../../icons/PinIcon";
-import ExternalLinkIcon from "../../icons/ExternalLinkIcon";
+import type { User } from "../../lib/api/twitch/users";
+import { feedUserNickname } from "../../lib/stores/preferences";
+import { feeds } from "../../lib/stores/feeds";
+import type { FeedMessage } from "../../lib/types";
+import BadgeBox from "../ui/BadgeBox";
+import DisplayName from "../ui/DisplayName";
+import PinIcon from "../icons/PinIcon";
+import ExternalLinkIcon from "../icons/ExternalLinkIcon";
 
 type Props = {
   chatterId: string;

@@ -1,20 +1,20 @@
 import { For, Show, createSignal } from "solid-js";
-import { EmoteMap } from "../../state/emotes";
+import { EmoteMap } from "../../lib/stores/emotes";
 import FeedMessageToolbar from "./FeedMessageToolbar";
 import FeedMessageFragment from "./FeedMessageFragment";
-import BadgeBox from "../../ui/BadgeBox";
-import DisplayName from "../../ui/DisplayName";
-import Timestamp from "../../ui/Timestamp";
+import BadgeBox from "../ui/BadgeBox";
+import DisplayName from "../ui/DisplayName";
+import Timestamp from "../ui/Timestamp";
 import RichNotice from "./RichNotice";
-import CheckIcon from "../../icons/CheckIcon";
-import CloseIcon from "../../icons/CloseIcon";
-import type { FeedMessage as Message, BadgeMap } from "../../types";
-import { matchesAnyKeyword } from "../../state/preferences";
-import { setAutomodHoldStatus } from "../../state/feeds";
+import CheckIcon from "../icons/CheckIcon";
+import CloseIcon from "../icons/CloseIcon";
+import type { FeedMessage as Message, BadgeMap } from "../../lib/types";
+import { matchesAnyKeyword } from "../../lib/stores/preferences";
+import { setAutomodHoldStatus } from "../../lib/stores/feeds";
 import {
   approveHeldAutomodMessage,
   denyHeldAutomodMessage,
-} from "../../commands/twitch/moderation";
+} from "../../lib/api/twitch/moderation";
 
 type Reaction = { label: string; value: string; url: string };
 

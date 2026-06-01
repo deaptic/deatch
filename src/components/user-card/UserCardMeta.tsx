@@ -1,12 +1,12 @@
 import { Show } from "solid-js";
-import type { User } from "../../commands/twitch/users";
-import type { Follow } from "../../commands/twitch/channels";
-import CopyableField from "../../ui/CopyableField";
-import Timestamp from "../../ui/Timestamp";
-import AtIcon from "../../icons/AtIcon";
-import CalendarIcon from "../../icons/CalendarIcon";
-import HashIcon from "../../icons/HashIcon";
-import HeartIcon from "../../icons/HeartIcon";
+import type { User } from "../../lib/api/twitch/users";
+import type { Follow } from "../../lib/api/twitch/channels";
+import CopyableField from "../ui/CopyableField";
+import Timestamp from "../ui/Timestamp";
+import AtIcon from "../icons/AtIcon";
+import CalendarIcon from "../icons/CalendarIcon";
+import HashIcon from "../icons/HashIcon";
+import HeartIcon from "../icons/HeartIcon";
 
 type Follower = Follow;
 

@@ -1,12 +1,12 @@
 import { createSignal, createEffect } from "solid-js";
-import { getUsers, type User } from "../../commands/twitch/users";
+import { getUsers, type User } from "../../lib/api/twitch/users";
 import {
   getChannelFollowers,
   getFollowedChannels,
   type Follow,
-} from "../../commands/twitch/channels";
-import { user as currentUser, moderatedChannels } from "../../state/users";
-import { copyField } from "../../utils/clipboard";
+} from "../../lib/api/twitch/channels";
+import { user as currentUser, moderatedChannels } from "../../lib/stores/users";
+import { copyField } from "../../lib/utils/clipboard";
 import UserCardIdentity from "./UserCardIdentity";
 import UserCardMeta from "./UserCardMeta";
 

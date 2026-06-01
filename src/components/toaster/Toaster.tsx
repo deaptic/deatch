@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import type { Toast } from "../../state/toasts";
+import type { Toast } from "../../lib/stores/toasts";
 import ToasterItem from "./ToasterItem";
 
 type Props = {

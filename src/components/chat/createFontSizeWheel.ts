@@ -1,5 +1,5 @@
 import { createSignal, onCleanup } from "solid-js";
-import { feedFontSize, setFeedFontSize } from "../../state/preferences";
+import { feedFontSize, setFeedFontSize } from "../../lib/stores/preferences";
 
 export function createFontSizeWheel() {
   const [flash, setFlash] = createSignal(false);

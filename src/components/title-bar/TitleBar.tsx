@@ -1,15 +1,15 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
-import { selectedChannel } from "../../state/channels";
-import { unreadMentionCount } from "../../state/inbox";
-import InboxIcon from "../../icons/InboxIcon";
-import GearIcon from "../../icons/GearIcon";
-import UserIcon from "../../icons/UserIcon";
-import MinusIcon from "../../icons/MinusIcon";
-import SquareIcon from "../../icons/SquareIcon";
-import RestoreIcon from "../../icons/RestoreIcon";
-import CloseIcon from "../../icons/CloseIcon";
+import { selectedChannel } from "../../lib/stores/channels";
+import { unreadMentionCount } from "../../lib/stores/inbox";
+import InboxIcon from "../icons/InboxIcon";
+import GearIcon from "../icons/GearIcon";
+import UserIcon from "../icons/UserIcon";
+import MinusIcon from "../icons/MinusIcon";
+import SquareIcon from "../icons/SquareIcon";
+import RestoreIcon from "../icons/RestoreIcon";
+import CloseIcon from "../icons/CloseIcon";
 
 const win = getCurrentWindow();
 
