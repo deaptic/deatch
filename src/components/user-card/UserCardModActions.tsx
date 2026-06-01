@@ -1,9 +1,9 @@
 import { For, Show } from "solid-js";
-import { banUser, unbanUser } from "../../commands/twitch/moderation";
-import { user as currentUser, moderatedChannels } from "../../state/users";
-import { moderationActionsDisabled } from "../../state/preferences";
-import Button from "../../ui/Button";
-import BanIcon from "../../icons/BanIcon";
+import { banUser, unbanUser } from "../../lib/api/twitch/moderation";
+import { user as currentUser, moderatedChannels } from "../../lib/stores/users";
+import { moderationActionsDisabled } from "../../lib/stores/preferences";
+import Button from "../ui/Button";
+import BanIcon from "../icons/BanIcon";
 
 type Timeout = { label: string; seconds: number };
 

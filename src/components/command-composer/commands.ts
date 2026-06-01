@@ -3,8 +3,8 @@ import {
   unbanUser,
   deleteChatMessages,
   warnUser,
-} from "../../commands/twitch/moderation";
-import { startRaid, cancelRaid } from "../../commands/twitch/raids";
+} from "../../lib/api/twitch/moderation";
+import { startRaid, cancelRaid } from "../../lib/api/twitch/raids";
 import {
   sendShoutout,
   sendChatAnnouncement,
@@ -13,11 +13,11 @@ import {
   updateUserChatColor,
   type AnnouncementColor,
   type NamedUserColor,
-} from "../../commands/twitch/chat";
+} from "../../lib/api/twitch/chat";
 import {
   createStreamMarker,
   getStreams,
-} from "../../commands/twitch/streams";
+} from "../../lib/api/twitch/streams";
 import {
   modifyChannelInformation,
   startCommercial,
@@ -25,21 +25,21 @@ import {
   addChannelVip,
   removeChannelVip,
   type CommercialLength,
-} from "../../commands/twitch/channels";
+} from "../../lib/api/twitch/channels";
 import {
   user,
   userCache,
   chattersByChannel,
-} from "../../state/users";
+} from "../../lib/stores/users";
 import {
   setUserNickname,
   removeUserNickname,
   muteUser,
   unmuteUser,
-} from "../../state/preferences";
-import { createClip } from "../../commands/twitch/clips";
-import { appendItem, appendLocalNotice } from "../../state/feeds";
-import { Time } from "../../utils/time";
+} from "../../lib/stores/preferences";
+import { createClip } from "../../lib/api/twitch/clips";
+import { appendItem, appendLocalNotice } from "../../lib/stores/feeds";
+import { Time } from "../../lib/utils/time";
 import type { Command } from "./types";
 
 function loginFromUserId(userId: string): string | null {

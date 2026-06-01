@@ -15,15 +15,15 @@ import {
   toggleFavorite,
   computeChannelSections,
   computeGlobalSections,
-} from "../../state/emotes";
-import { selectedChannel } from "../../state/channels";
-import { getUsers } from "../../commands/twitch/users";
+} from "../../lib/stores/emotes";
+import { selectedChannel } from "../../lib/stores/channels";
+import { getUsers } from "../../lib/api/twitch/users";
 import EmoteGrid from "./EmoteGrid";
 import EmotePickerSection from "./EmotePickerSection";
-import Navigation from "../../ui/Navigation";
-import NavigationItem from "../../ui/NavigationItem";
-import { captureFocusForRestore } from "../../utils/focus";
-import { shortcutManager } from "../../managers/ShortcutManager";
+import Navigation from "../ui/Navigation";
+import NavigationItem from "../ui/NavigationItem";
+import { captureFocusForRestore } from "../../lib/utils/focus";
+import { shortcutManager } from "../../lib/managers/ShortcutManager";
 import type { EmoteGridItem } from "./types";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 

@@ -1,4 +1,4 @@
-import PlusIcon from "../../icons/PlusIcon";
+import PlusIcon from "../icons/PlusIcon";
 
 type Props = {
   onClick: () => void;

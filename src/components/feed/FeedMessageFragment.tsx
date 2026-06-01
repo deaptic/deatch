@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { EmoteMap } from "../../state/emotes";
-import type { Fragment } from "../../types";
+import type { EmoteMap } from "../../lib/stores/emotes";
+import type { Fragment } from "../../lib/types";
 
 const INLINE_EMOTE =
   "inline-block h-[1.4em] w-auto max-w-[4em] object-contain align-top mt-[0.1em] mx-0.5";

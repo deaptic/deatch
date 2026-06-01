@@ -1,13 +1,13 @@
 import { Show } from "solid-js";
-import { deleteChatMessages } from "../../commands/twitch/moderation";
-import ContextMenu from "../../ui/ContextMenu";
-import ContextMenuItem from "../../ui/ContextMenuItem";
-import ContextMenuDivider from "../../ui/ContextMenuDivider";
-import ReplyIcon from "../../icons/ReplyIcon";
-import CopyIcon from "../../icons/CopyIcon";
-import PastaIcon from "../../icons/PastaIcon";
-import TrashIcon from "../../icons/TrashIcon";
-import type { FeedMessage } from "../../types";
+import { deleteChatMessages } from "../../lib/api/twitch/moderation";
+import ContextMenu from "../ui/ContextMenu";
+import ContextMenuItem from "../ui/ContextMenuItem";
+import ContextMenuDivider from "../ui/ContextMenuDivider";
+import ReplyIcon from "../icons/ReplyIcon";
+import CopyIcon from "../icons/CopyIcon";
+import PastaIcon from "../icons/PastaIcon";
+import TrashIcon from "../icons/TrashIcon";
+import type { FeedMessage } from "../../lib/types";
 
 type Props = {
   x: number;

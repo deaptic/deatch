@@ -1,5 +1,5 @@
-import { chattersByChannel } from "../../state/users";
-import { feedUserNickname } from "../../state/preferences";
+import { chattersByChannel } from "../../lib/stores/users";
+import { feedUserNickname } from "../../lib/stores/preferences";
 
 type Options = {
   value: () => string;

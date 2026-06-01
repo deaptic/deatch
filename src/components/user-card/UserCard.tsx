@@ -1,7 +1,7 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { Portal } from "solid-js/web";
-import { captureFocusForRestore } from "../../utils/focus";
-import { shortcutManager } from "../../managers/ShortcutManager";
+import { captureFocusForRestore } from "../../lib/utils/focus";
+import { shortcutManager } from "../../lib/managers/ShortcutManager";
 import UserCardHeader from "./UserCardHeader";
 import UserCardModActions from "./UserCardModActions";
 import UserCardFeed from "./UserCardFeed";

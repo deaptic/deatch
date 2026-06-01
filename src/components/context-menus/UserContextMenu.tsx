@@ -1,21 +1,21 @@
 import { Show } from "solid-js";
-import { sendShoutout } from "../../commands/twitch/chat";
-import ContextMenu from "../../ui/ContextMenu";
-import ContextMenuItem from "../../ui/ContextMenuItem";
-import ContextMenuDivider from "../../ui/ContextMenuDivider";
-import MegaphoneIcon from "../../icons/MegaphoneIcon";
-import BanIcon from "../../icons/BanIcon";
-import HashIcon from "../../icons/HashIcon";
-import MuteIcon from "../../icons/MuteIcon";
-import UserIcon from "../../icons/UserIcon";
-import AtIcon from "../../icons/AtIcon";
-import CopyIcon from "../../icons/CopyIcon";
+import { sendShoutout } from "../../lib/api/twitch/chat";
+import ContextMenu from "../ui/ContextMenu";
+import ContextMenuItem from "../ui/ContextMenuItem";
+import ContextMenuDivider from "../ui/ContextMenuDivider";
+import MegaphoneIcon from "../icons/MegaphoneIcon";
+import BanIcon from "../icons/BanIcon";
+import HashIcon from "../icons/HashIcon";
+import MuteIcon from "../icons/MuteIcon";
+import UserIcon from "../icons/UserIcon";
+import AtIcon from "../icons/AtIcon";
+import CopyIcon from "../icons/CopyIcon";
 import {
   feedUserMuted,
   feedUserNickname,
   muteUser,
   unmuteUser,
-} from "../../state/preferences";
+} from "../../lib/stores/preferences";
 
 export type UserContextTarget = {
   userId: string;

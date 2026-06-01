@@ -9,7 +9,7 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-} from "../../../state/emotes";
+} from "../../../lib/stores/emotes";
 import type { ChatAutocompleteController } from "./controller";
 
 type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";

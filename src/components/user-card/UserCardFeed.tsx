@@ -1,6 +1,6 @@
 import { createMemo, Show } from "solid-js";
-import { feeds } from "../../state/feeds";
-import type { FeedMessage } from "../../types";
+import { feeds } from "../../lib/stores/feeds";
+import type { FeedMessage } from "../../lib/types";
 import Feed from "../feed/Feed";
 
 type Props = {
