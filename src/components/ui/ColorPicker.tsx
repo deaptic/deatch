@@ -12,7 +12,7 @@ export default function ColorPicker(props: Props) {
   return (
     <div class="flex items-center gap-2">
       <label
-        class="relative w-8 h-8 rounded border border-border cursor-pointer overflow-hidden"
+        class="relative size-8 rounded border border-border cursor-pointer overflow-hidden"
         style={{ "background-color": props.swatchColor }}
         title="Pick color"
       >

@@ -64,7 +64,7 @@ export default function MenuPinnedList(props: Props) {
           <For each={menuChannelPinned()}>
             {() => (
               <div class="w-full flex items-center justify-center p-2">
-                <div class="w-8 h-8 rounded-lg bg-bg-light animate-pulse" />
+                <div class="size-8 rounded-lg bg-bg-light animate-pulse" />
               </div>
             )}
           </For>

@@ -101,7 +101,7 @@ export default function UserCard(props: Props) {
     <Portal>
       <div
         ref={cardRef}
-        class="fixed z-50 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col w-96 h-96 min-w-72 min-h-64 resize"
+        class="fixed z-50 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col size-96 min-w-72 min-h-64 resize"
         style={{
           top: `${pos().y}px`,
           left: `${pos().x}px`,

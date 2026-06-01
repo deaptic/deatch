@@ -65,7 +65,7 @@ export default function EmoteAutocomplete(props: Props) {
 
   const render = (s: EmoteSuggestion) => (
     <>
-      <img src={s.url} alt={s.name} class="w-6 h-6 object-contain shrink-0" />
+      <img src={s.url} alt={s.name} class="size-6 object-contain shrink-0" />
       <span class="text-text flex-1 text-left truncate">{s.name}</span>
       <span class="text-xs font-semibold shrink-0 text-text-muted">
         {s.source}

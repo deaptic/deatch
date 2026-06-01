@@ -57,7 +57,7 @@ export default function Settings(props: Props) {
             {(s) => (
               <NavigationItem
                 label={s.label}
-                icon={<s.Icon class="w-3.5 h-3.5" />}
+                icon={<s.Icon class="size-3.5" />}
                 active={section() === s.key}
                 onClick={() => setSection(s.key)}
               />

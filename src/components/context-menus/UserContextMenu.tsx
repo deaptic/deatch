@@ -44,7 +44,7 @@ export default function UserContextMenu(props: Props) {
     <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
       <ContextMenuItem
         label="Profile"
-        icon={<User class="w-3.5 h-3.5" />}
+        icon={<User class="size-3.5" />}
         onClick={() => {
           props.onShowProfile(props.x, props.y, props.userId);
           props.onClose();
@@ -52,7 +52,7 @@ export default function UserContextMenu(props: Props) {
       />
       <ContextMenuItem
         label="Mention"
-        icon={<AtSign class="w-3.5 h-3.5" />}
+        icon={<AtSign class="size-3.5" />}
         onClick={() => {
           props.onMention(props.userLogin);
           props.onClose();
@@ -61,7 +61,7 @@ export default function UserContextMenu(props: Props) {
       <Show when={props.isMod}>
         <ContextMenuItem
           label="Shoutout"
-          icon={<Megaphone class="w-3.5 h-3.5" />}
+          icon={<Megaphone class="size-3.5" />}
           onClick={() => {
             sendShoutout({
               fromBroadcasterId: props.broadcasterId,
@@ -74,7 +74,7 @@ export default function UserContextMenu(props: Props) {
       <ContextMenuDivider />
       <ContextMenuItem
         label={nickname() ? "Edit nickname" : "Set nickname"}
-        icon={<Hash class="w-3.5 h-3.5" />}
+        icon={<Hash class="size-3.5" />}
         onClick={() => {
           props.onEditNickname(
             props.userLogin,
@@ -90,7 +90,7 @@ export default function UserContextMenu(props: Props) {
           ? `Unmute ${props.userDisplayName}`
           : `Mute ${props.userDisplayName}`}
         danger={!muted()}
-        icon={<VolumeX class="w-3.5 h-3.5" />}
+        icon={<VolumeX class="size-3.5" />}
         onClick={() => {
           if (muted()) unmuteUser(props.userId);
           else muteUser(props.userId);
@@ -102,7 +102,7 @@ export default function UserContextMenu(props: Props) {
         <ContextMenuItem
           label="Ban / Timeout"
           danger
-          icon={<Ban class="w-3.5 h-3.5" />}
+          icon={<Ban class="size-3.5" />}
           onClick={() => {
             props.onModerate({
               userId: props.userId,

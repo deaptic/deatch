@@ -80,11 +80,11 @@ export default function KeyValueEditor(props: Props) {
                   />
                   <button
                     onClick={() => props.onRemove(entry.key)}
-                    class="shrink-0 w-6 h-6 flex items-center justify-center text-text-muted hover:text-danger hover:bg-bg rounded transition-colors cursor-pointer"
+                    class="shrink-0 size-6 flex items-center justify-center text-text-muted hover:text-danger hover:bg-bg rounded transition-colors cursor-pointer"
                     aria-label="Remove"
                     title="Remove"
                   >
-                    <X class="w-2 h-2" />
+                    <X class="size-2" />
                   </button>
                 </div>
               );
@@ -120,10 +120,10 @@ export default function KeyValueEditor(props: Props) {
           <Show
             when={!busy()}
             fallback={
-              <div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
+              <div class="size-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
             }
           >
-            <Check class="w-4 h-4" />
+            <Check class="size-4" />
           </Show>
         </Button>
       </div>

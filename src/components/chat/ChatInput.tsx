@@ -226,7 +226,7 @@ export default function ChatInput(props: Props) {
               <div class="self-stretch flex flex-col items-center mx-2 py-3 shrink-0">
                 <Button
                   toggle="emotePicker"
-                  icon={<Smile class="w-5 h-5" />}
+                  icon={<Smile class="size-5" />}
                   title="Emote picker"
                 />
                 <CharCounter value={input} max={MAX_LEN} class="mt-auto" />

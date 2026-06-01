@@ -76,7 +76,7 @@ export default function MenuSectionItem(props: Props) {
           <Avatar
             src={props.channel?.profileImageUrl}
             alt={props.channel?.displayName}
-            class={`w-8 h-8 rounded-lg transition-opacity ${
+            class={`size-8 rounded-lg transition-opacity ${
               props.status || props.selected
                 ? "opacity-100"
                 : "opacity-50 group-hover:opacity-100"

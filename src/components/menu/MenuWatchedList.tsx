@@ -75,7 +75,7 @@ export default function MenuWatchedList(props: Props) {
                               void watchSetMuted(ch?.login, !isMuted());
                             }}
                             onMouseDown={(e) => e.stopPropagation()}
-                            class={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-bg hover:bg-bg-light border border-border-muted flex items-center justify-center transition-colors cursor-pointer ${
+                            class={`absolute -bottom-1 -right-1 size-5 rounded-full bg-bg hover:bg-bg-light border border-border-muted flex items-center justify-center transition-colors cursor-pointer ${
                               isMuted()
                                 ? "text-danger"
                                 : "text-text-muted hover:text-text"
@@ -83,9 +83,9 @@ export default function MenuWatchedList(props: Props) {
                           >
                             <Show
                               when={isMuted()}
-                              fallback={<Volume2 class="w-3.5 h-3.5" />}
+                              fallback={<Volume2 class="size-3.5" />}
                             >
-                              <VolumeOff class="w-3.5 h-3.5" />
+                              <VolumeOff class="size-3.5" />
                             </Show>
                           </div>
                         }

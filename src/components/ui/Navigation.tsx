@@ -140,7 +140,7 @@ export default function Navigation(props: Props) {
             <svg
               viewBox="0 0 16 16"
               fill="currentColor"
-              class="w-3 h-3"
+              class="size-3"
               style={{ transform: `rotate(${horizontal() ? 90 : 180}deg)` }}
             >
               <path d="M8 12L2 6h12z" />
@@ -196,7 +196,7 @@ export default function Navigation(props: Props) {
             <svg
               viewBox="0 0 16 16"
               fill="currentColor"
-              class="w-3 h-3"
+              class="size-3"
               style={{ transform: `rotate(${horizontal() ? -90 : 0}deg)` }}
             >
               <path d="M8 12L2 6h12z" />

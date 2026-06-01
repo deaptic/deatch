@@ -107,7 +107,7 @@ export default function TitleBar(props: Props) {
           aria-label="Inbox"
           title="Inbox"
         >
-          <Inbox class="w-3.5 h-3.5" />
+          <Inbox class="size-3.5" />
           <Show when={unreadMentionCount() > 0}>
             <span class="absolute top-1.5 right-1.5 min-w-3.5 h-3.5 px-1 bg-primary rounded-full flex items-center justify-center">
               <span class="text-[9px] font-bold text-text leading-none tabular-nums">
@@ -128,7 +128,7 @@ export default function TitleBar(props: Props) {
           aria-label="Settings"
           title="Settings"
         >
-          <Settings class="w-3.5 h-3.5" />
+          <Settings class="size-3.5" />
         </button>
         <button
           data-account-toggle
@@ -142,7 +142,7 @@ export default function TitleBar(props: Props) {
           aria-label="Accounts"
           title="Accounts"
         >
-          <User class="w-3.5 h-3.5" />
+          <User class="size-3.5" />
         </button>
         <div class="h-5 w-px bg-border-muted self-center" />
         <div class="flex items-stretch h-full">
@@ -151,7 +151,7 @@ export default function TitleBar(props: Props) {
             onClick={() => win.minimize()}
             aria-label="Minimize"
           >
-            <Minus class="w-2.5 h-2.5" />
+            <Minus class="size-2.5" />
           </button>
           <button
             class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg hover:text-text transition-colors cursor-pointer"
@@ -159,15 +159,15 @@ export default function TitleBar(props: Props) {
             aria-label={maximized() ? "Restore" : "Maximize"}
           >
             {maximized()
-              ? <Copy class="w-2.5 h-2.5" />
-              : <Square class="w-2.5 h-2.5" />}
+              ? <Copy class="size-2.5" />
+              : <Square class="size-2.5" />}
           </button>
           <button
             class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-text transition-colors cursor-pointer"
             onClick={() => win.close()}
             aria-label="Close"
           >
-            <X class="w-2.5 h-2.5" />
+            <X class="size-2.5" />
           </button>
         </div>
       </div>
@@ -191,19 +191,19 @@ export default function TitleBar(props: Props) {
           />
           <ResizeHandle
             dir="NorthWest"
-            class="top-0 left-0 w-2 h-2 cursor-nw-resize"
+            class="top-0 left-0 size-2 cursor-nw-resize"
           />
           <ResizeHandle
             dir="NorthEast"
-            class="top-0 right-0 w-2 h-2 cursor-ne-resize"
+            class="top-0 right-0 size-2 cursor-ne-resize"
           />
           <ResizeHandle
             dir="SouthWest"
-            class="bottom-0 left-0 w-2 h-2 cursor-sw-resize"
+            class="bottom-0 left-0 size-2 cursor-sw-resize"
           />
           <ResizeHandle
             dir="SouthEast"
-            class="bottom-0 right-0 w-2 h-2 cursor-se-resize"
+            class="bottom-0 right-0 size-2 cursor-se-resize"
           />
         </>
       )}

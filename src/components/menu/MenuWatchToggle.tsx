@@ -20,8 +20,8 @@ export default function MenuWatchToggle() {
           <Show
             when={selectedChannel()}
             fallback={
-              <div class="w-8 h-8 rounded-lg bg-bg-light flex items-center justify-center text-text-muted">
-                <Eye class="w-4 h-4" />
+              <div class="size-8 rounded-lg bg-bg-light flex items-center justify-center text-text-muted">
+                <Eye class="size-4" />
               </div>
             }
           >
@@ -29,7 +29,7 @@ export default function MenuWatchToggle() {
               <Avatar
                 src={ch()?.profileImageUrl}
                 alt={ch()?.displayName}
-                class="w-8 h-8 rounded-lg"
+                class="size-8 rounded-lg"
               />
             )}
           </Show>
@@ -45,11 +45,11 @@ export default function MenuWatchToggle() {
                 setWatchMode(watchMode() === "manual" ? "auto" : "manual");
               }}
               onMouseDown={(e) => e.stopPropagation()}
-              class={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-bg hover:bg-bg-light border border-border-muted flex items-center justify-center cursor-pointer transition-colors ${
+              class={`absolute -bottom-1 -right-1 size-5 rounded-full bg-bg hover:bg-bg-light border border-border-muted flex items-center justify-center cursor-pointer transition-colors ${
                 watchMode() === "manual" ? "text-danger" : "text-emerald-500"
               }`}
             >
-              <Eye class="w-3.5 h-3.5" />
+              <Eye class="size-3.5" />
             </div>
           </Show>
         </div>
