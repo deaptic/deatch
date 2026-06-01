@@ -307,7 +307,7 @@ export default function CommandComposer(props: Props) {
         </Show>
         <Show when={hintBody()}>
           <span class={errorActive() ? "text-danger" : "text-text-muted"}>
-            {" — "}{hintBody()}
+             — {hintBody()}
           </span>
         </Show>
       </Banner>

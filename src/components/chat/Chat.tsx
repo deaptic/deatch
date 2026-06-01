@@ -50,7 +50,7 @@ type Props = {
 };
 
 async function resolveIdentity(identity: Identity): Promise<ResolvedIdentity | null> {
-  let { userId, login, displayName } = identity;
+  const { userId, login, displayName } = identity;
   if (userId && login && displayName) return { userId, login, displayName };
   try {
     const params = userId ? { ids: [userId] } : login ? { logins: [login] } : null;

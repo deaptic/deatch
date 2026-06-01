@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-export function createPopover<T extends object = {}>() {
+export function createPopover<T extends object = Record<string, never>>() {
   type State = ({ x: number; y: number } & T) | null;
   const [state, setState] = createSignal<State>(null);
 
