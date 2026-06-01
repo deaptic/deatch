@@ -9,7 +9,7 @@ import { createSystemIntegration } from "./createSystemIntegration";
 import { createSessionLifecycle } from "./createSessionLifecycle";
 import { createAppShortcuts } from "./createAppShortcuts";
 
-export interface AppController {
+export type AppController = {
   renderedChannels: Accessor<User[]>;
   selectChannel: (ch: User, fromWatched?: boolean) => void;
   jumpToMessage: (channelId: string, messageId: string) => void;

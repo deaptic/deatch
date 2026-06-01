@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-export interface ScrollAffordance {
+export type ScrollAffordance = {
   canUp: () => boolean;
   canDown: () => boolean;
   setRef: (el: HTMLDivElement) => void;

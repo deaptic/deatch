@@ -10,7 +10,7 @@ import {
 } from "../stores/watch";
 import { watchSetMuted } from "../api/watch";
 
-export interface WatchControls {
+export type WatchControls = {
   cycleChannel(direction: 1 | -1): void;
   toggleWatch(): void;
   resetWatchFocus(): void;

@@ -10,7 +10,7 @@ import { hasUnread } from "../../lib/stores/feeds";
 import { channelMentionCount } from "../../lib/stores/inbox";
 import type { User } from "../../lib/types/twitch/user";
 
-interface Props {
+type Props = {
   resolveChannel: (id: string) => User | undefined;
   isLive: (id: string) => boolean;
   loading: boolean;

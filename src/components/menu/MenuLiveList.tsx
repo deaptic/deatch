@@ -6,7 +6,7 @@ import { hasUnread } from "../../lib/stores/feeds";
 import { channelMentionCount } from "../../lib/stores/inbox";
 import type { User } from "../../lib/types/twitch/user";
 
-interface Props {
+type Props = {
   channels: User[];
   loading: boolean;
   selectedId: string | null;

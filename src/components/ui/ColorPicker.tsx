@@ -1,6 +1,6 @@
 import Button from "./Button";
 
-interface Props {
+type Props = {
   swatchColor: string;
   value: string;
   onInput: (hex: string) => void;

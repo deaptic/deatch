@@ -3,7 +3,7 @@ import { Show } from "solid-js";
 import ContextMenuItem from "../ui/ContextMenuItem";
 import ContextMenuDivider from "../ui/ContextMenuDivider";
 
-interface Props {
+type Props = {
   show: boolean;
   data: unknown;
   onClose: () => void;

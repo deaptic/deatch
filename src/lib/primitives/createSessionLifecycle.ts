@@ -40,7 +40,7 @@ function resetUserScopedCaches() {
   resetUserEmotes();
 }
 
-export interface SessionDeps {
+export type SessionDeps = {
   selectChannel: ChannelNavigation["selectChannel"];
   setLiveLoaded: (loaded: boolean) => void;
   leaveAll(): void;

@@ -3,7 +3,7 @@ import { Portal } from "solid-js/web";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 import { captureFocusForRestore } from "../../lib/utils/focus";
 
-interface Props {
+type Props = {
   title: string;
   onClose: () => void;
   ignoreSelector: string;

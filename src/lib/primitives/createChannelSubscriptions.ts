@@ -14,7 +14,7 @@ import {
 } from "../types/twitch/eventsub";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds";
 
-export interface ChannelSubscriptions {
+export type ChannelSubscriptions = {
   renderedChannels: Accessor<User[]>;
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;

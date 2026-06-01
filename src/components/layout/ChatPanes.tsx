@@ -5,7 +5,7 @@ import Chat from "../chat/Chat";
 import EmptyState from "./EmptyState";
 import Boundary from "../ui/Boundary";
 
-interface ChatPanesProps {
+type ChatPanesProps = {
   channels: User[];
   userLogin: string;
   onJumpToMessage: (channelId: string, messageId: string) => void;

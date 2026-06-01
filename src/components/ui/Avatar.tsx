@@ -1,6 +1,6 @@
 import { DEFAULT_AVATAR_URL } from "../../lib/constants";
 
-interface Props {
+type Props = {
   src?: string;
   alt?: string;
   class?: string;
