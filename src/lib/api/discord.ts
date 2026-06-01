@@ -32,7 +32,9 @@ export async function discordConnect(
   await invokeCommand("discord_connect", params, options);
 }
 
-export async function discordDisconnect(options?: InvokeOptions): Promise<void> {
+export async function discordDisconnect(
+  options?: InvokeOptions,
+): Promise<void> {
   await invokeCommand("discord_disconnect", undefined, options);
 }
 
@@ -43,6 +45,8 @@ export async function discordSetActivity(
   await invokeCommand("discord_set_activity", params, options);
 }
 
-export async function discordClearActivity(options?: InvokeOptions): Promise<void> {
+export async function discordClearActivity(
+  options?: InvokeOptions,
+): Promise<void> {
   await invokeCommand("discord_clear_activity", undefined, options);
 }

@@ -1,6 +1,10 @@
 import { getUsers, type User } from "../api/twitch/users.ts";
 import { addToast } from "../stores/toasts.ts";
-import { feedUserMuted, muteUser, setUserNickname } from "../stores/preferences.ts";
+import {
+  feedUserMuted,
+  muteUser,
+  setUserNickname,
+} from "../stores/preferences.ts";
 
 async function resolveUser(login: string): Promise<User | null> {
   try {

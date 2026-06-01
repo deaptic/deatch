@@ -2,7 +2,9 @@ import type { EmoteEntry } from "../../types/external/emote.ts";
 import type { ChannelResult } from "../../types/external/seventv.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export function seventvGetGlobalEmotes(options?: InvokeOptions): Promise<EmoteEntry[]> {
+export function seventvGetGlobalEmotes(
+  options?: InvokeOptions,
+): Promise<EmoteEntry[]> {
   return invokeCommand("seventv_get_global_emotes", undefined, options);
 }
 

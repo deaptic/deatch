@@ -1,10 +1,10 @@
 import {
-  createSignal,
   createEffect,
   createMemo,
+  createSignal,
   on,
-  onMount,
   onCleanup,
+  onMount,
 } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import {
@@ -27,7 +27,7 @@ export type MenuChannels = {
   resolveChannel: (id: string) => User | undefined;
   isLive: (id: string) => boolean;
   cachePinned: (u: User) => void;
-}
+};
 
 export function createMenuChannels(
   onLiveChange?: (live: User[]) => void,
@@ -43,7 +43,9 @@ export function createMenuChannels(
     () => new Set(watchWarmedChannels().map((ch) => ch?.id)),
   );
   const onlineList = createMemo(() =>
-    live.filter((ch) => !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id)),
+    live.filter((ch) =>
+      !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id)
+    )
   );
   const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];
@@ -90,12 +92,12 @@ export function createMenuChannels(
         }
       }
       const extraIdList = [...extraIds];
-      const extraStreams =
-        extraIdList.length > 0
-          ? await fetchAllPages<Stream>("get_streams", (after, opts) =>
-              getStreams({ userIds: extraIdList, after }, opts),
-            )
-          : [];
+      const extraStreams = extraIdList.length > 0
+        ? await fetchAllPages<Stream>(
+          "get_streams",
+          (after, opts) => getStreams({ userIds: extraIdList, after }, opts),
+        )
+        : [];
       const streams = [...followed, ...extraStreams];
 
       setLiveStreams(streams);

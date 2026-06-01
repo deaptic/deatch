@@ -21,7 +21,10 @@ export default function FeedMessageToolbar(props: Props) {
     <Toolbar>
       <For each={props.reactions}>
         {(r) => (
-          <ToolbarItem title={r.label} onClick={() => props.onReact(props.item, r.value)}>
+          <ToolbarItem
+            title={r.label}
+            onClick={() => props.onReact(props.item, r.value)}
+          >
             <img src={r.url} alt={r.label} class="w-5 h-5 object-contain" />
           </ToolbarItem>
         )}
@@ -30,7 +33,10 @@ export default function FeedMessageToolbar(props: Props) {
         <Reply class="w-3.5 h-3.5" />
       </ToolbarItem>
       <Show when={feedShowCopypasta()}>
-        <ToolbarItem title="Copypasta" onClick={() => props.onCopypasta(props.item)}>
+        <ToolbarItem
+          title="Copypasta"
+          onClick={() => props.onCopypasta(props.item)}
+        >
           <ClipboardPaste class="w-3.5 h-3.5" />
         </ToolbarItem>
       </Show>

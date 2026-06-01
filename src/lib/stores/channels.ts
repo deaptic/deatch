@@ -6,7 +6,9 @@ import { watchWarmedChannels } from "./watch.ts";
 
 const LAST_CHANNEL_KEY = "last_selected_channel";
 
-const [selectedChannelSig, setSelectedChannelSig] = createSignal<User | null>(null);
+const [selectedChannelSig, setSelectedChannelSig] = createSignal<User | null>(
+  null,
+);
 export const selectedChannel = selectedChannelSig;
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
@@ -17,12 +19,15 @@ export function setSelectedChannel(u: User | null) {
   setSelectedChannelSig(u);
   if (!u) return;
   try {
-    localStorage.setItem(LAST_CHANNEL_KEY, JSON.stringify({
-      id: u.id,
-      login: u.login,
-      displayName: u.displayName,
-      profileImageUrl: u.profileImageUrl,
-    }));
+    localStorage.setItem(
+      LAST_CHANNEL_KEY,
+      JSON.stringify({
+        id: u.id,
+        login: u.login,
+        displayName: u.displayName,
+        profileImageUrl: u.profileImageUrl,
+      }),
+    );
   } catch {}
 }
 

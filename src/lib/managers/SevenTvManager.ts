@@ -20,19 +20,29 @@ export class SevenTvManager extends Manager {
 
   constructor() {
     super();
-    void listen<Delta>("seventv-emote-set-updated", (e) => this.onDelta(e.payload));
+    void listen<Delta>(
+      "seventv-emote-set-updated",
+      (e) => this.onDelta(e.payload),
+    );
   }
 
   public async subscribe(broadcasterId: string): Promise<void> {
     if (this.byBroadcaster.has(broadcasterId)) return;
-    const r = await seventvGetChannelEmotes({ channelId: broadcasterId }, { silent: true })
+    const r = await seventvGetChannelEmotes({ channelId: broadcasterId }, {
+      silent: true,
+    })
       .catch(() => null);
     if (!r?.emote_set_id) return;
-    const entry: Entry = { broadcasterId, setId: r.emote_set_id, emotes: r.emotes };
+    const entry: Entry = {
+      broadcasterId,
+      setId: r.emote_set_id,
+      emotes: r.emotes,
+    };
     this.byBroadcaster.set(broadcasterId, entry);
     this.bySetId.set(entry.setId, entry);
     this.pushIfActive(entry);
-    void seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true }).catch(() => {});
+    void seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true })
+      .catch(() => {});
   }
 
   public async unsubscribe(broadcasterId: string): Promise<void> {
@@ -41,12 +51,16 @@ export class SevenTvManager extends Manager {
     this.byBroadcaster.delete(broadcasterId);
     this.bySetId.delete(entry.setId);
     if (broadcasterId === this.activeChannelId) setSevenTvChannel([]);
-    void seventvUnsubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true }).catch(() => {});
+    void seventvUnsubscribeEmoteSet({ emoteSetId: entry.setId }, {
+      silent: true,
+    }).catch(() => {});
   }
 
   public setActive(broadcasterId: string | null): void {
     this.activeChannelId = broadcasterId;
-    setSevenTvChannel(broadcasterId ? this.byBroadcaster.get(broadcasterId)?.emotes ?? [] : []);
+    setSevenTvChannel(
+      broadcasterId ? this.byBroadcaster.get(broadcasterId)?.emotes ?? [] : [],
+    );
   }
 
   private onDelta(u: Delta): void {
@@ -58,7 +72,9 @@ export class SevenTvManager extends Manager {
   }
 
   private pushIfActive(entry: Entry): void {
-    if (entry.broadcasterId === this.activeChannelId) setSevenTvChannel(entry.emotes);
+    if (entry.broadcasterId === this.activeChannelId) {
+      setSevenTvChannel(entry.emotes);
+    }
   }
 
   private applyDelta(prev: EmoteEntry[], u: Delta): EmoteEntry[] {
@@ -67,7 +83,7 @@ export class SevenTvManager extends Manager {
     const kept = prev.flatMap((e) =>
       removed.has(e.name)
         ? []
-        : [renames.has(e.name) ? { ...e, name: renames.get(e.name)! } : e],
+        : [renames.has(e.name) ? { ...e, name: renames.get(e.name)! } : e]
     );
     return [...kept, ...u.added];
   }
@@ -80,7 +96,9 @@ export class SevenTvManager extends Manager {
       ...u.renamed.map((r) => `${who} renamed 7TV emote ${r.from} to ${r.to}`),
     ];
     const ts = Date.now();
-    for (const message of lines) appendItem(channelId, this.event(ts, who, message));
+    for (const message of lines) {
+      appendItem(channelId, this.event(ts, who, message));
+    }
   }
 
   private event(timestamp: number, actor: string, message: string): FeedEvent {

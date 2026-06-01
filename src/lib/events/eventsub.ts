@@ -8,11 +8,17 @@ type FailedPayload = Payload & { error: string };
 
 const CHAT = "channel.chat.message" as const;
 
-function pushNotice(broadcasterId: string, noticeType: string, message: string): void {
+function pushNotice(
+  broadcasterId: string,
+  noticeType: string,
+  message: string,
+): void {
   const now = Date.now();
   const notice: FeedEvent = {
     kind: "event",
-    id: `${noticeType}-${broadcasterId}-${now}-${Math.random().toString(36).slice(2, 8)}`,
+    id: `${noticeType}-${broadcasterId}-${now}-${
+      Math.random().toString(36).slice(2, 8)
+    }`,
     notice_type: noticeType,
     system_message: message,
     chatter_name: "",
@@ -30,7 +36,11 @@ listen<Payload>("eventsub-subscribed", (e) => {
 
 listen<Payload>("eventsub-unsubscribed", (e) => {
   if (e.payload.kind !== CHAT) return;
-  pushNotice(e.payload.broadcaster_id, "chat_disconnected", "Disconnected from chat");
+  pushNotice(
+    e.payload.broadcaster_id,
+    "chat_disconnected",
+    "Disconnected from chat",
+  );
 });
 
 listen<FailedPayload>("eventsub-subscribe-failed", (e) => {

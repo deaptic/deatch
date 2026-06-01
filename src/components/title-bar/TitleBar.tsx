@@ -71,10 +71,17 @@ export default function TitleBar(props: Props) {
         data-tauri-drag-region
         class="relative h-10 shrink-0 flex items-center bg-bg-dark border-b border-border-muted select-none"
       >
-        <div data-tauri-drag-region class="flex items-baseline gap-1.5 px-3 pointer-events-none">
-          <span class="text-text text-xs font-semibold tracking-tight">Deatch</span>
+        <div
+          data-tauri-drag-region
+          class="flex items-baseline gap-1.5 px-3 pointer-events-none"
+        >
+          <span class="text-text text-xs font-semibold tracking-tight">
+            Deatch
+          </span>
           <Show when={version()}>
-            <span class="text-text-muted text-[10px] tabular-nums">v{version()}</span>
+            <span class="text-text-muted text-[10px] tabular-nums">
+              v{version()}
+            </span>
           </Show>
         </div>
         <div data-tauri-drag-region class="flex-1" />
@@ -91,7 +98,9 @@ export default function TitleBar(props: Props) {
         <button
           data-inbox-toggle
           class={`relative w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.inboxOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
+            props.inboxOpen
+              ? "text-text bg-bg-light"
+              : "text-text-muted hover:bg-bg hover:text-text"
           }`}
           onMouseDown={(e) => e.preventDefault()}
           onClick={props.onToggleInbox}
@@ -110,7 +119,9 @@ export default function TitleBar(props: Props) {
         <button
           data-settings-toggle
           class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.settingsOpen ? "text-text bg-bg-light" : "text-text-muted hover:bg-bg hover:text-text"
+            props.settingsOpen
+              ? "text-text bg-bg-light"
+              : "text-text-muted hover:bg-bg hover:text-text"
           }`}
           onMouseDown={(e) => e.preventDefault()}
           onClick={props.onToggleSettings}
@@ -147,11 +158,9 @@ export default function TitleBar(props: Props) {
             onClick={() => win.toggleMaximize()}
             aria-label={maximized() ? "Restore" : "Maximize"}
           >
-            {maximized() ? (
-              <Copy class="w-2.5 h-2.5" />
-            ) : (
-              <Square class="w-2.5 h-2.5" />
-            )}
+            {maximized()
+              ? <Copy class="w-2.5 h-2.5" />
+              : <Square class="w-2.5 h-2.5" />}
           </button>
           <button
             class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-text transition-colors cursor-pointer"
@@ -164,14 +173,38 @@ export default function TitleBar(props: Props) {
       </div>
       {!maximized() && (
         <>
-          <ResizeHandle dir="North" class="top-0 left-2 right-2 h-1 cursor-n-resize" />
-          <ResizeHandle dir="South" class="bottom-0 left-2 right-2 h-1 cursor-s-resize" />
-          <ResizeHandle dir="West" class="left-0 top-2 bottom-2 w-1 cursor-w-resize" />
-          <ResizeHandle dir="East" class="right-0 top-2 bottom-2 w-1 cursor-e-resize" />
-          <ResizeHandle dir="NorthWest" class="top-0 left-0 w-2 h-2 cursor-nw-resize" />
-          <ResizeHandle dir="NorthEast" class="top-0 right-0 w-2 h-2 cursor-ne-resize" />
-          <ResizeHandle dir="SouthWest" class="bottom-0 left-0 w-2 h-2 cursor-sw-resize" />
-          <ResizeHandle dir="SouthEast" class="bottom-0 right-0 w-2 h-2 cursor-se-resize" />
+          <ResizeHandle
+            dir="North"
+            class="top-0 left-2 right-2 h-1 cursor-n-resize"
+          />
+          <ResizeHandle
+            dir="South"
+            class="bottom-0 left-2 right-2 h-1 cursor-s-resize"
+          />
+          <ResizeHandle
+            dir="West"
+            class="left-0 top-2 bottom-2 w-1 cursor-w-resize"
+          />
+          <ResizeHandle
+            dir="East"
+            class="right-0 top-2 bottom-2 w-1 cursor-e-resize"
+          />
+          <ResizeHandle
+            dir="NorthWest"
+            class="top-0 left-0 w-2 h-2 cursor-nw-resize"
+          />
+          <ResizeHandle
+            dir="NorthEast"
+            class="top-0 right-0 w-2 h-2 cursor-ne-resize"
+          />
+          <ResizeHandle
+            dir="SouthWest"
+            class="bottom-0 left-0 w-2 h-2 cursor-sw-resize"
+          />
+          <ResizeHandle
+            dir="SouthEast"
+            class="bottom-0 right-0 w-2 h-2 cursor-se-resize"
+          />
         </>
       )}
     </>

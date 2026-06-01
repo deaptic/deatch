@@ -1,8 +1,8 @@
-import { createEffect, onMount, onCleanup } from "solid-js";
+import { createEffect, onCleanup, onMount } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
-  enable as enableAutostart,
   disable as disableAutostart,
+  enable as enableAutostart,
   isEnabled as isAutostartEnabled,
 } from "@tauri-apps/plugin-autostart";
 import {
@@ -15,7 +15,7 @@ import { applyAppearanceColors } from "../services/appearance.ts";
 import { applyDiscordPresence } from "../services/discord.ts";
 import { startUpdateChecker } from "../services/updater.ts";
 import { user } from "../stores/users.ts";
-import { selectedChannel, liveStreams } from "../stores/channels.ts";
+import { liveStreams, selectedChannel } from "../stores/channels.ts";
 import { isPanelOpen } from "../stores/ui.ts";
 
 export function createSystemIntegration(): void {

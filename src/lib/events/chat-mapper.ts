@@ -3,7 +3,12 @@
 // can use it for backlog hydration without creating a cycle with the
 // chat-event listener in `./chat.ts`.
 
-import type { FeedMessage, Fragment, RawFragment, RawChatMessage } from "../types/index.ts";
+import type {
+  FeedMessage,
+  Fragment,
+  RawChatMessage,
+  RawFragment,
+} from "../types/index.ts";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",
@@ -17,7 +22,11 @@ function mapFragment(f: RawFragment): Fragment {
     case "emote":
       return { type: "emote", text: f.text, id: f.emote.id };
     case "mention":
-      return { type: "mention", text: f.text, user_login: f.mention.user_login };
+      return {
+        type: "mention",
+        text: f.text,
+        user_login: f.mention.user_login,
+      };
     case "cheermote":
       return { type: "cheermote", text: f.text };
     default:
@@ -25,7 +34,10 @@ function mapFragment(f: RawFragment): Fragment {
   }
 }
 
-export function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMessage {
+export function mapChatMessage(
+  raw: RawChatMessage,
+  timestamp: number,
+): FeedMessage {
   return {
     kind: "message",
     message_id: raw.message_id,
@@ -37,8 +49,8 @@ export function mapChatMessage(raw: RawChatMessage, timestamp: number): FeedMess
     badges: raw.badges,
     reply: raw.reply ?? undefined,
     timestamp,
-    channel_points:
-      !!raw.channel_points_custom_reward_id || CHANNEL_POINT_TYPES.has(raw.message_type),
+    channel_points: !!raw.channel_points_custom_reward_id ||
+      CHANNEL_POINT_TYPES.has(raw.message_type),
     channel_points_custom_reward: !!raw.channel_points_custom_reward_id,
     first_message: raw.message_type === "user_intro",
     deleted: raw.deleted,

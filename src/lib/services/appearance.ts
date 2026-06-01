@@ -119,7 +119,9 @@ function cssColorToHex(input: string): string | null {
   const m = out.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
   if (!m) return null;
   const hex = [m[1], m[2], m[3]]
-    .map((v) => Math.max(0, Math.min(255, parseInt(v, 10))).toString(16).padStart(2, "0"))
+    .map((v) =>
+      Math.max(0, Math.min(255, parseInt(v, 10))).toString(16).padStart(2, "0")
+    )
     .join("");
   return `#${hex}`;
 }

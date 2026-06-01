@@ -13,27 +13,27 @@ desktop app over
 [native messaging](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)
 — no network, no localhost server, no firewall prompts.
 
-Deatch can also send commands back: toggle mute on a tab, or pull a fresh
-state dump when the app starts.
+Deatch can also send commands back: toggle mute on a tab, or pull a fresh state
+dump when the app starts.
 
 ## Permissions
 
-| Permission | Why |
-|---|---|
-| `tabs` | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
-| `nativeMessaging` | Talk to the Deatch desktop app over a local pipe. |
-| `twitch.tv` host access | Inject a small content script that reads the current channel slug from the URL. |
+| Permission              | Why                                                                                |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `tabs`                  | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
+| `nativeMessaging`       | Talk to the Deatch desktop app over a local pipe.                                  |
+| `twitch.tv` host access | Inject a small content script that reads the current channel slug from the URL.    |
 
 The extension does **not** read chat, modify pages, send data to any third
-party, or talk to the network. The only data it transmits is your open
-channel slugs and per-tab mute state, and only to the locally installed
-Deatch desktop app.
+party, or talk to the network. The only data it transmits is your open channel
+slugs and per-tab mute state, and only to the locally installed Deatch desktop
+app.
 
 ## Requirements
 
 You need the [Deatch desktop app](https://github.com/Deaptic/deatch) installed
-and run at least once. Deatch self-registers as a native messaging host on
-first launch.
+and run at least once. Deatch self-registers as a native messaging host on first
+launch.
 
 ## Development
 

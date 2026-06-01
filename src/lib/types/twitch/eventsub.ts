@@ -36,7 +36,11 @@ export const OWN_KINDS: EventKind[] = [
   "channel.channel_points_custom_reward_redemption.add",
 ];
 
-export const ALL_KINDS: EventKind[] = [...CHAT_KINDS, ...MOD_KINDS, ...OWN_KINDS];
+export const ALL_KINDS: EventKind[] = [
+  ...CHAT_KINDS,
+  ...MOD_KINDS,
+  ...OWN_KINDS,
+];
 
 /// Per-channel subscription status tracked by the EventSubManager.
 export type SubStatus = "pending" | "active" | "failed" | "disconnected";
@@ -164,14 +168,21 @@ type RawModerateBase = {
 
 type RawModUser = { user_id: string; user_login: string; user_name: string };
 
-export type RawModerate = RawModerateBase &
-  (
+export type RawModerate =
+  & RawModerateBase
+  & (
     | { action: "clear" }
     | { action: "ban"; ban: RawModUser & { reason: string | null } }
     | { action: "unban"; unban: RawModUser }
-    | { action: "timeout"; timeout: RawModUser & { reason: string | null; expires_at: string } }
+    | {
+      action: "timeout";
+      timeout: RawModUser & { reason: string | null; expires_at: string };
+    }
     | { action: "untimeout"; untimeout: RawModUser }
-    | { action: "delete"; delete: RawModUser & { message_id: string; message_body: string } }
+    | {
+      action: "delete";
+      delete: RawModUser & { message_id: string; message_body: string };
+    }
     | { action: "mod"; mod: RawModUser }
     | { action: "unmod"; unmod: RawModUser }
     | { action: "vip"; vip: RawModUser }
@@ -195,24 +206,27 @@ export type RawModerate = RawModerateBase &
 
 export type AutomodHeldReason =
   | {
-      reason: "automod";
-      automod: { category: string; level: number; boosts_immunity: boolean };
-    }
+    reason: "automod";
+    automod: { category: string; level: number; boosts_immunity: boolean };
+  }
   | {
-      reason: "blocked_term";
-      blocked_term: {
-        terms_found: { term_id: string; boundary: { start_pos: number; end_pos: number } }[];
-      };
+    reason: "blocked_term";
+    blocked_term: {
+      terms_found: {
+        term_id: string;
+        boundary: { start_pos: number; end_pos: number };
+      }[];
     };
+  };
 
 type RawAutomodFragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; emote: { id: string; emote_set_id: string } }
   | {
-      type: "cheermote";
-      text: string;
-      cheermote: { prefix: string; bits: number; tier: number };
-    };
+    type: "cheermote";
+    text: string;
+    cheermote: { prefix: string; bits: number; tier: number };
+  };
 
 export type RawAutomodMessageHold = {
   broadcaster_user_id: string;

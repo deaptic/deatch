@@ -23,8 +23,7 @@ export default function InboxItem(props: Props) {
     if (id) getUsers({ ids: [id] }, { silent: true }).catch(() => {});
   });
 
-  const avatar = () =>
-    userCache()[props.mention.chatterId]?.profileImageUrl;
+  const avatar = () => userCache()[props.mention.chatterId]?.profileImageUrl;
 
   return (
     <button

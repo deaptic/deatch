@@ -1,6 +1,10 @@
 import { setUser } from "../stores/users.ts";
-import { setWaiting, setDeviceCode, setAuthChecked } from "../stores/auth.ts";
-import { getDeviceCode, revokeSession, restoreSession } from "../api/twitch/auth.ts";
+import { setAuthChecked, setDeviceCode, setWaiting } from "../stores/auth.ts";
+import {
+  getDeviceCode,
+  restoreSession,
+  revokeSession,
+} from "../api/twitch/auth.ts";
 import { Manager } from "./Manager.ts";
 
 export class SessionManager extends Manager {

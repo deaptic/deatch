@@ -10,9 +10,7 @@ export default function Toggle(props: Props) {
   const thumbSize = () => (size() === "md" ? "w-5 h-5" : "w-3 h-3");
   const thumbTranslate = () =>
     props.checked
-      ? size() === "md"
-        ? "translate-x-5"
-        : "translate-x-4"
+      ? size() === "md" ? "translate-x-5" : "translate-x-4"
       : "translate-x-0";
 
   return (

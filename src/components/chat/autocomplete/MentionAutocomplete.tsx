@@ -4,7 +4,12 @@ import { chattersByChannel } from "../../../lib/stores/users.ts";
 import { feedUserNickname } from "../../../lib/stores/preferences.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
-type MentionSuggestion = { login: string; displayName: string; color: string; nickname?: string };
+type MentionSuggestion = {
+  login: string;
+  displayName: string;
+  color: string;
+  nickname?: string;
+};
 
 type Props = {
   controller: ChatAutocompleteController;
@@ -18,7 +23,13 @@ export default function MentionAutocomplete(props: Props) {
     const bucket = chattersByChannel.get(props.broadcasterId);
     if (!bucket) return [];
     const lower = q.toLowerCase();
-    type Ranked = { login: string; displayName: string; color: string; nickname?: string; lastSeen: number };
+    type Ranked = {
+      login: string;
+      displayName: string;
+      color: string;
+      nickname?: string;
+      lastSeen: number;
+    };
     const starts: Ranked[] = [];
     const contains: Ranked[] = [];
     for (const c of bucket.values()) {
@@ -26,10 +37,21 @@ export default function MentionAutocomplete(props: Props) {
       const l = c.login.toLowerCase();
       const d = c.displayName.toLowerCase();
       const n = nickname?.toLowerCase();
-      const ranked: Ranked = { login: c.login, displayName: c.displayName, color: c.color, nickname, lastSeen: c.lastSeen };
-      if (lower === "" || l.startsWith(lower) || d.startsWith(lower) || n?.startsWith(lower)) {
+      const ranked: Ranked = {
+        login: c.login,
+        displayName: c.displayName,
+        color: c.color,
+        nickname,
+        lastSeen: c.lastSeen,
+      };
+      if (
+        lower === "" || l.startsWith(lower) || d.startsWith(lower) ||
+        n?.startsWith(lower)
+      ) {
         starts.push(ranked);
-      } else if (l.includes(lower) || d.includes(lower) || (n && n.includes(lower))) {
+      } else if (
+        l.includes(lower) || d.includes(lower) || (n && n.includes(lower))
+      ) {
         contains.push(ranked);
       }
     }
@@ -49,7 +71,10 @@ export default function MentionAutocomplete(props: Props) {
 
   const render = (s: MentionSuggestion) => (
     <>
-      <span class="font-semibold text-left truncate" style={{ color: s.color || "var(--color-text)" }}>
+      <span
+        class="font-semibold text-left truncate"
+        style={{ color: s.color || "var(--color-text)" }}
+      >
         {s.nickname ?? s.displayName}
       </span>
       <Show when={s.nickname}>

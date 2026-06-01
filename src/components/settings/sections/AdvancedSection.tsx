@@ -3,16 +3,16 @@ import SettingsContentSection from "../SettingsContentSection.tsx";
 import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import {
-  advancedDeveloperMode,
-  setAdvancedDeveloperMode,
-  advancedShowLogs,
-  setAdvancedShowLogs,
   advancedAlwaysOnTop,
-  setAdvancedAlwaysOnTop,
   advancedAutostart,
-  setAdvancedAutostart,
+  advancedDeveloperMode,
   advancedDiscordRichPresence,
+  advancedShowLogs,
+  setAdvancedAlwaysOnTop,
+  setAdvancedAutostart,
+  setAdvancedDeveloperMode,
   setAdvancedDiscordRichPresence,
+  setAdvancedShowLogs,
 } from "../../../lib/stores/preferences.ts";
 
 export default function AdvancedSection() {

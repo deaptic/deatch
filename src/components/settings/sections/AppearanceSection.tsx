@@ -6,19 +6,20 @@ import Button from "../../ui/Button.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
 import {
   appearanceColors,
-  setAppearanceColor,
   resetAppearanceColor,
   resetAppearanceColors,
+  setAppearanceColor,
 } from "../../../lib/stores/preferences.ts";
 import {
   APPEARANCE_COLOR_GROUPS,
-  readAppearanceColorHex,
   type AppearanceColorKey,
+  readAppearanceColorHex,
 } from "../../../lib/services/appearance.ts";
 
 function AppearanceColorRow(props: { colorKey: AppearanceColorKey }) {
   const override = () => appearanceColors()[props.colorKey];
-  const pickerValue = () => override() ?? readAppearanceColorHex(props.colorKey);
+  const pickerValue = () =>
+    override() ?? readAppearanceColorHex(props.colorKey);
   return (
     <ColorPicker
       swatchColor={`var(--color-${props.colorKey})`}
@@ -36,7 +37,8 @@ export default function AppearanceSection() {
       <SettingsContentSection>
         <div class="flex items-center justify-between">
           <span class="text-text-muted text-xs">
-            Customize the colors used throughout the app. Click a swatch to pick a new color.
+            Customize the colors used throughout the app. Click a swatch to pick
+            a new color.
           </span>
           <Button
             variant="secondary"

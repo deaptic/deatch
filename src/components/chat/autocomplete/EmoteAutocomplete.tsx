@@ -1,14 +1,14 @@
 import { createMemo, onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
 import {
-  globalEmotes,
-  userEmotes,
-  sevenTvGlobal,
-  bttvGlobal,
-  ffzGlobal,
-  sevenTvChannel,
   bttvChannel,
+  bttvGlobal,
   ffzChannel,
+  ffzGlobal,
+  globalEmotes,
+  sevenTvChannel,
+  sevenTvGlobal,
+  userEmotes,
 } from "../../../lib/stores/emotes.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
@@ -45,8 +45,11 @@ export default function EmoteAutocomplete(props: Props) {
     const contains: EmoteSuggestion[] = [];
     for (const [name, entry] of Object.entries(allEmotes())) {
       const n = name.toLowerCase();
-      if (n.startsWith(lower)) starts.push({ name, url: entry.url, source: entry.source });
-      else if (n.includes(lower)) contains.push({ name, url: entry.url, source: entry.source });
+      if (n.startsWith(lower)) {
+        starts.push({ name, url: entry.url, source: entry.source });
+      } else if (n.includes(lower)) {
+        contains.push({ name, url: entry.url, source: entry.source });
+      }
     }
     starts.sort((a, b) => a.name.localeCompare(b.name));
     contains.sort((a, b) => a.name.localeCompare(b.name));
@@ -64,7 +67,9 @@ export default function EmoteAutocomplete(props: Props) {
     <>
       <img src={s.url} alt={s.name} class="w-6 h-6 object-contain shrink-0" />
       <span class="text-text flex-1 text-left truncate">{s.name}</span>
-      <span class="text-xs font-semibold shrink-0 text-text-muted">{s.source}</span>
+      <span class="text-xs font-semibold shrink-0 text-text-muted">
+        {s.source}
+      </span>
     </>
   );
 

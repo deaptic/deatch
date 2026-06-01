@@ -10,7 +10,9 @@ type Options = {
   focus: () => void;
 };
 
-export type ChatAutocompleteController = ReturnType<typeof createChatAutocompleteController>;
+export type ChatAutocompleteController = ReturnType<
+  typeof createChatAutocompleteController
+>;
 
 export function createChatAutocompleteController(opts: Options) {
   const [active, setActive] = createSignal<Active | null>(null);
@@ -39,7 +41,10 @@ export function createChatAutocompleteController(opts: Options) {
     return keyHandlers[a.kind]?.(e) ?? false;
   }
 
-  function registerKeyHandler(kind: Kind, handler: (e: KeyboardEvent) => boolean) {
+  function registerKeyHandler(
+    kind: Kind,
+    handler: (e: KeyboardEvent) => boolean,
+  ) {
     keyHandlers[kind] = handler;
   }
 

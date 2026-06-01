@@ -1,11 +1,15 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   feedUserNickname,
-  feedUserShowDisplayName,
   feedUserOverrideNameColor,
+  feedUserShowDisplayName,
 } from "../../lib/stores/preferences.ts";
 
-export type UserIdentity = { userId?: string; login: string; displayName: string };
+export type UserIdentity = {
+  userId?: string;
+  login: string;
+  displayName: string;
+};
 
 type Props = {
   login: string;
@@ -26,15 +30,19 @@ export default function DisplayName(props: Props) {
 
   const text = () =>
     feedUserNickname(props.login) ??
-    (feedUserShowDisplayName() === false ? props.login : props.displayName);
+      (feedUserShowDisplayName() === false ? props.login : props.displayName);
 
   const color = () =>
     feedUserOverrideNameColor() ||
-    (props.color ? `oklch(from ${props.color} max(l, 0.65) c h)` : "var(--color-primary)");
+    (props.color
+      ? `oklch(from ${props.color} max(l, 0.65) c h)`
+      : "var(--color-primary)");
 
   return (
     <span
-      class={`font-semibold ${props.onShowUserCard ? "cursor-pointer hover:underline" : ""} ${props.class ?? ""}`}
+      class={`font-semibold ${
+        props.onShowUserCard ? "cursor-pointer hover:underline" : ""
+      } ${props.class ?? ""}`}
       style={{ color: color() }}
       onClick={(e) => props.onShowUserCard?.(e.clientX, e.clientY, id())}
       onContextMenu={(e) => {
@@ -48,7 +56,9 @@ export default function DisplayName(props: Props) {
         e.preventDefault();
         openUrl(`https://twitch.tv/${props.login}`);
       }}
-      onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+      onMouseDown={(e) => {
+        if (e.button === 1) e.preventDefault();
+      }}
     >
       {text()}
     </span>

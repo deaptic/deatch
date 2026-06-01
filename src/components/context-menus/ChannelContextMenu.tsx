@@ -21,20 +21,29 @@ export default function ChannelContextMenu(props: Props) {
     <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
       <ContextMenuItem
         label="Open in browser"
-        onClick={() => { props.onOpenInBrowser(props.ch); props.onClose(); }}
+        onClick={() => {
+          props.onOpenInBrowser(props.ch);
+          props.onClose();
+        }}
       />
       <Show
         when={props.isPinned}
         fallback={
           <ContextMenuItem
             label="Pin"
-            onClick={() => { props.onPin(props.ch); props.onClose(); }}
+            onClick={() => {
+              props.onPin(props.ch);
+              props.onClose();
+            }}
           />
         }
       >
         <ContextMenuItem
           label="Unpin"
-          onClick={() => { props.onUnpin(props.ch?.id); props.onClose(); }}
+          onClick={() => {
+            props.onUnpin(props.ch?.id);
+            props.onClose();
+          }}
         />
       </Show>
       <CopyPayloadItem

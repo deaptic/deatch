@@ -15,22 +15,42 @@ export class EventSubManager extends Manager {
 
   constructor() {
     super();
-    void listen<Payload>("eventsub-subscribed", (e) => this.onSubscribed(e.payload));
-    void listen<FailedPayload>("eventsub-subscribe-failed", (e) => this.onFailed(e.payload));
-    void listen<Payload>("eventsub-unsubscribed", (e) =>
-      this.setStatus(e.payload.broadcaster_id, e.payload.kind, "disconnected"),
+    void listen<Payload>(
+      "eventsub-subscribed",
+      (e) => this.onSubscribed(e.payload),
+    );
+    void listen<FailedPayload>(
+      "eventsub-subscribe-failed",
+      (e) => this.onFailed(e.payload),
+    );
+    void listen<Payload>(
+      "eventsub-unsubscribed",
+      (e) =>
+        this.setStatus(
+          e.payload.broadcaster_id,
+          e.payload.kind,
+          "disconnected",
+        ),
     );
   }
 
-  public async subscribe(broadcasterId: string, kind: EventKind): Promise<void> {
+  public async subscribe(
+    broadcasterId: string,
+    kind: EventKind,
+  ): Promise<void> {
     this.setStatus(broadcasterId, kind, "pending");
     await subscribe({ broadcasterId, kind }, { silent: true }).catch(() => {});
   }
 
-  public async unsubscribe(broadcasterId: string, kind: EventKind): Promise<void> {
+  public async unsubscribe(
+    broadcasterId: string,
+    kind: EventKind,
+  ): Promise<void> {
     this.cancelRetry(broadcasterId, kind);
     this.clearStatus(broadcasterId, kind);
-    await unsubscribe({ broadcasterId, kind }, { silent: true }).catch(() => {});
+    await unsubscribe({ broadcasterId, kind }, { silent: true }).catch(
+      () => {},
+    );
   }
 
   private onSubscribed({ broadcaster_id, kind }: Payload): void {
@@ -63,7 +83,11 @@ export class EventSubManager extends Manager {
     this.retried.delete(key);
   }
 
-  private setStatus(broadcasterId: string, kind: EventKind, status: SubStatus): void {
+  private setStatus(
+    broadcasterId: string,
+    kind: EventKind,
+    status: SubStatus,
+  ): void {
     const prev = eventsubState();
     const channelMap = new Map(prev.get(broadcasterId) ?? []);
     channelMap.set(kind, status);

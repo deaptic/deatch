@@ -1,7 +1,11 @@
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { pendingUpdate, setPendingUpdate, installing } from "../stores/updater.ts";
+import {
+  installing,
+  pendingUpdate,
+  setPendingUpdate,
+} from "../stores/updater.ts";
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const THROTTLE_MS = 60 * 60 * 1000;
@@ -20,7 +24,9 @@ export function startUpdateChecker(): () => void {
   void maybeCheck();
   const interval = window.setInterval(maybeCheck, CHECK_INTERVAL_MS);
   const unlisten = getCurrentWindow().onFocusChanged(
-    ({ payload }) => { if (payload) void maybeCheck(); },
+    ({ payload }) => {
+      if (payload) void maybeCheck();
+    },
   );
 
   return () => {

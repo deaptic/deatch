@@ -7,7 +7,13 @@ export type Slot = {
   error: string | null;
 };
 
-const DURATION_UNITS: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400, w: 604800 };
+const DURATION_UNITS: Record<string, number> = {
+  s: 1,
+  m: 60,
+  h: 3600,
+  d: 86400,
+  w: 604800,
+};
 
 export function parseDuration(raw: string): number | null {
   const m = raw.match(/^(\d+)([smhdw]?)$/);

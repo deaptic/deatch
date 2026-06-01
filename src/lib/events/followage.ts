@@ -6,7 +6,11 @@ import { Time } from "../utils/time.ts";
 export async function handleFollowageCommand(raw: RawChatMessage) {
   try {
     const res = await getChannelFollowers(
-      { broadcasterId: raw.broadcaster_user_id, userId: raw.chatter_user_id, first: 1 },
+      {
+        broadcasterId: raw.broadcaster_user_id,
+        userId: raw.chatter_user_id,
+        first: 1,
+      },
       { silent: true },
     );
     const follower = res.data[0];

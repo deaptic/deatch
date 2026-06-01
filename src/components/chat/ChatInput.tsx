@@ -1,26 +1,31 @@
 import { Smile } from "lucide-solid";
 import {
-  createSignal,
   createEffect,
+  createSignal,
+  lazy,
+  onCleanup,
+  onMount,
   Show,
   Suspense,
-  lazy,
-  onMount,
-  onCleanup,
 } from "solid-js";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import CommandComposer from "../command-composer/CommandComposer.tsx";
 import { ensureUserEmotesLoaded } from "../../lib/services/emotes.ts";
-import { pushSentHistory, getSentHistory } from "../../lib/stores/chatHistory.ts";
+import {
+  getSentHistory,
+  pushSentHistory,
+} from "../../lib/stores/chatHistory.ts";
 import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui.ts";
 import TextArea, { type TextAreaApi } from "../ui/TextArea.tsx";
 import Banner from "../ui/Banner.tsx";
 import CharCounter from "../ui/CharCounter.tsx";
 import Button from "../ui/Button.tsx";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
-import ChatAutocomplete, { type ChatAutocompleteHandle } from "./autocomplete/ChatAutocomplete.tsx";
+import ChatAutocomplete, {
+  type ChatAutocompleteHandle,
+} from "./autocomplete/ChatAutocomplete.tsx";
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 
@@ -42,13 +47,18 @@ export default function ChatInput(props: Props) {
   const [input, setInput] = createSignal("");
   const [sending, setSending] = createSignal(false);
   const [commandMode, setCommandMode] = createSignal<Command | null>(null);
-  const [autocomplete, setAutocomplete] = createSignal<ChatAutocompleteHandle | null>(null);
+  const [autocomplete, setAutocomplete] = createSignal<
+    ChatAutocompleteHandle | null
+  >(null);
   let textAreaApi: TextAreaApi | undefined;
 
   const focus = () => textAreaApi?.focus();
-  const getCursor = () => textAreaApi?.textareaEl()?.selectionStart ?? input().length;
-  const setCursor = (pos: number) => textAreaApi?.textareaEl()?.setSelectionRange(pos, pos);
-  const setFocused = (b: boolean) => shortcutManager.setContext("chat:focused", b);
+  const getCursor = () =>
+    textAreaApi?.textareaEl()?.selectionStart ?? input().length;
+  const setCursor = (pos: number) =>
+    textAreaApi?.textareaEl()?.setSelectionRange(pos, pos);
+  const setFocused = (b: boolean) =>
+    shortcutManager.setContext("chat:focused", b);
 
   const history = createInputHistory({
     history: () => getSentHistory(props.broadcasterId) ?? [],
@@ -139,8 +149,12 @@ export default function ChatInput(props: Props) {
   function bindShortcuts() {
     const WHEN = "chat:focused && !chat:popupOpen";
     return [
-      shortcutManager.register("chat::send", () => { void sendMessage(); }, WHEN),
-      shortcutManager.register("chat::tabComplete", () => { tabComplete.complete(); }, WHEN),
+      shortcutManager.register("chat::send", () => {
+        void sendMessage();
+      }, WHEN),
+      shortcutManager.register("chat::tabComplete", () => {
+        tabComplete.complete();
+      }, WHEN),
       shortcutManager.register("chat::recallPrev", () => {
         if (hasNewlineBeforeCursor()) return false;
         return history.step(1);
@@ -149,7 +163,9 @@ export default function ChatInput(props: Props) {
         if (hasNewlineAfterCursor()) return false;
         return history.step(-1);
       }, WHEN),
-      shortcutManager.registerLocal("escape", () => { props.onClearReply(); }, "chat:replyActive"),
+      shortcutManager.registerLocal("escape", () => {
+        props.onClearReply();
+      }, "chat:replyActive"),
     ];
   }
 
@@ -185,7 +201,9 @@ export default function ChatInput(props: Props) {
       <Show when={props.replyTo()}>
         <Banner onDismiss={props.onClearReply}>
           ⌐ Replying to{" "}
-          <span class="text-primary font-semibold">@{props.replyTo()!.name}</span>
+          <span class="text-primary font-semibold">
+            @{props.replyTo()!.name}
+          </span>
           {": "}
           {props.replyTo()!.text}
         </Banner>
@@ -201,10 +219,16 @@ export default function ChatInput(props: Props) {
             onBlur={() => setFocused(false)}
             maxLength={MAX_LEN}
             placeholder={`Message #${props.broadcasterLogin}`}
-            ref={(api) => { textAreaApi = api; }}
+            ref={(api) => {
+              textAreaApi = api;
+            }}
             addons={
               <div class="self-stretch flex flex-col items-center mx-2 py-3 shrink-0">
-                <Button toggle="emotePicker" icon={<Smile class="w-5 h-5" />} title="Emote picker" />
+                <Button
+                  toggle="emotePicker"
+                  icon={<Smile class="w-5 h-5" />}
+                  title="Emote picker"
+                />
                 <CharCounter value={input} max={MAX_LEN} class="mt-auto" />
               </div>
             }

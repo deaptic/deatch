@@ -1,7 +1,13 @@
 export type TimeFormat = "t" | "T" | "d" | "D" | "f" | "F" | "r" | "R";
 
 export class Time {
-  private static readonly UNITS = ["years", "months", "days", "hours", "minutes"] as const;
+  private static readonly UNITS = [
+    "years",
+    "months",
+    "days",
+    "hours",
+    "minutes",
+  ] as const;
 
   readonly date: Date;
   readonly locale: string = "en-GB";

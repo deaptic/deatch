@@ -6,7 +6,7 @@ export type ScrollAffordance = {
   setRef: (el: HTMLDivElement) => void;
   update: () => void;
   scrollByOne: (direction: -1 | 1) => void;
-}
+};
 
 export function createScrollAffordance(): ScrollAffordance {
   const [canUp, setCanUp] = createSignal(false);

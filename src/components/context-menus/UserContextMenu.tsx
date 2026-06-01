@@ -26,7 +26,12 @@ type Props = UserContextTarget & {
   developerMode: boolean;
   onClose: () => void;
   onModerate: (target: { userId: string; userName: string }) => void;
-  onEditNickname: (login: string, displayName: string, x: number, y: number) => void;
+  onEditNickname: (
+    login: string,
+    displayName: string,
+    x: number,
+    y: number,
+  ) => void;
   onShowProfile: (x: number, y: number, userId: string) => void;
   onMention: (login: string) => void;
 };
@@ -40,19 +45,28 @@ export default function UserContextMenu(props: Props) {
       <ContextMenuItem
         label="Profile"
         icon={<User class="w-3.5 h-3.5" />}
-        onClick={() => { props.onShowProfile(props.x, props.y, props.userId); props.onClose(); }}
+        onClick={() => {
+          props.onShowProfile(props.x, props.y, props.userId);
+          props.onClose();
+        }}
       />
       <ContextMenuItem
         label="Mention"
         icon={<AtSign class="w-3.5 h-3.5" />}
-        onClick={() => { props.onMention(props.userLogin); props.onClose(); }}
+        onClick={() => {
+          props.onMention(props.userLogin);
+          props.onClose();
+        }}
       />
       <Show when={props.isMod}>
         <ContextMenuItem
           label="Shoutout"
           icon={<Megaphone class="w-3.5 h-3.5" />}
           onClick={() => {
-            sendShoutout({ fromBroadcasterId: props.broadcasterId, toBroadcasterId: props.userId });
+            sendShoutout({
+              fromBroadcasterId: props.broadcasterId,
+              toBroadcasterId: props.userId,
+            });
             props.onClose();
           }}
         />
@@ -62,12 +76,19 @@ export default function UserContextMenu(props: Props) {
         label={nickname() ? "Edit nickname" : "Set nickname"}
         icon={<Hash class="w-3.5 h-3.5" />}
         onClick={() => {
-          props.onEditNickname(props.userLogin, props.userDisplayName, props.x, props.y);
+          props.onEditNickname(
+            props.userLogin,
+            props.userDisplayName,
+            props.x,
+            props.y,
+          );
           props.onClose();
         }}
       />
       <ContextMenuItem
-        label={muted() ? `Unmute ${props.userDisplayName}` : `Mute ${props.userDisplayName}`}
+        label={muted()
+          ? `Unmute ${props.userDisplayName}`
+          : `Mute ${props.userDisplayName}`}
         danger={!muted()}
         icon={<VolumeX class="w-3.5 h-3.5" />}
         onClick={() => {
@@ -83,7 +104,10 @@ export default function UserContextMenu(props: Props) {
           danger
           icon={<Ban class="w-3.5 h-3.5" />}
           onClick={() => {
-            props.onModerate({ userId: props.userId, userName: props.userDisplayName });
+            props.onModerate({
+              userId: props.userId,
+              userName: props.userDisplayName,
+            });
             props.onClose();
           }}
         />

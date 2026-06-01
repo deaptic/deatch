@@ -62,7 +62,10 @@ export function createUsernameTabComplete(opts: Options) {
   return { complete, reset };
 }
 
-function matchesPrefix(c: { login: string; displayName: string }, query: string): boolean {
+function matchesPrefix(
+  c: { login: string; displayName: string },
+  query: string,
+): boolean {
   if (c.login.toLowerCase().startsWith(query)) return true;
   if (c.displayName.toLowerCase().startsWith(query)) return true;
   const nick = feedUserNickname(c.login);

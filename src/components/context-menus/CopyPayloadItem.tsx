@@ -7,7 +7,7 @@ type Props = {
   show: boolean;
   data: unknown;
   onClose: () => void;
-}
+};
 
 export default function CopyPayloadItem(props: Props) {
   return (

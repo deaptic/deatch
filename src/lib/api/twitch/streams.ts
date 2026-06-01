@@ -1,5 +1,9 @@
 import type { Stream } from "../../types/twitch/stream.ts";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
+import {
+  invokeCommand,
+  type InvokeOptions,
+  type PaginatedResponse,
+} from "../utils.ts";
 
 export type { Stream } from "../../types/twitch/stream.ts";
 
@@ -40,5 +44,8 @@ export function createStreamMarker(
   params: CreateStreamMarkerParams = {},
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("create_stream_marker", params, { successMessage: "Marker added", ...options });
+  return invokeCommand("create_stream_marker", params, {
+    successMessage: "Marker added",
+    ...options,
+  });
 }

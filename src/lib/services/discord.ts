@@ -1,8 +1,8 @@
 import {
+  type ActivityInput as DiscordActivity,
   discordConnect,
   discordDisconnect,
   discordSetActivity,
-  type ActivityInput as DiscordActivity,
 } from "../api/discord.ts";
 import type { Stream } from "../types/twitch/stream.ts";
 import type { User } from "../types/twitch/user.ts";
@@ -113,7 +113,8 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
   if (mode !== activityMode) {
     activityMode = mode;
     activityStartedAt = Math.floor(Date.now() / 1000);
-    selfLurkPhrase = SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
+    selfLurkPhrase =
+      SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
   }
 
   if (mode === "inbox") {
@@ -132,8 +133,8 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
     const stateText = gameName
       ? `${gameName} · ${viewerFormatter.format(stream!.viewerCount)} viewers`
       : isOwnChannel
-        ? selfLurkPhrase
-        : "Offline";
+      ? selfLurkPhrase
+      : "Offline";
     const streamStartedAt = stream
       ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
       : null;
@@ -147,7 +148,9 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
       stateText,
       stateUrl: categoryUrl,
       largeImage: ch.profileImageUrl || "app_logo",
-      largeText: stream?.title ? clamp(stream.title, 128) : ch.displayName || ch.login,
+      largeText: stream?.title
+        ? clamp(stream.title, 128)
+        : ch.displayName || ch.login,
       largeUrl: channelUrl,
       smallImage: "app_logo",
       smallText: "Deatch",

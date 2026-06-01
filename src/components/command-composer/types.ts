@@ -24,5 +24,8 @@ export type Command = {
   description: string;
   role: CommandRole;
   options: CommandOption[];
-  execute: (values: Record<string, unknown>, ctx: CommandContext) => Promise<void>;
+  execute: (
+    values: Record<string, unknown>,
+    ctx: CommandContext,
+  ) => Promise<void>;
 };

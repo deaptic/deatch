@@ -2,11 +2,11 @@ import {
   createContext,
   createMemo,
   createSignal,
+  type JSX,
   onCleanup,
   onMount,
   Show,
   useContext,
-  type JSX,
 } from "solid-js";
 
 export type NavigationOrientation = "horizontal" | "vertical";
@@ -126,9 +126,9 @@ export default function Navigation(props: Props) {
       value={{ orientation, fill, register, unregister }}
     >
       <div
-        class={`flex items-stretch ${
-          horizontal() ? "flex-row" : "flex-col"
-        } ${props.class ?? ""}`}
+        class={`flex items-stretch ${horizontal() ? "flex-row" : "flex-col"} ${
+          props.class ?? ""
+        }`}
       >
         <Show when={scroll() && canScrollStart()}>
           <button
@@ -154,7 +154,9 @@ export default function Navigation(props: Props) {
             horizontal() ? "flex-row" : "flex-col"
           } ${
             scroll()
-              ? `${horizontal() ? "overflow-x-auto" : "overflow-y-auto"} [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`
+              ? `${
+                horizontal() ? "overflow-x-auto" : "overflow-y-auto"
+              } [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`
               : ""
           }`}
         >
@@ -166,21 +168,19 @@ export default function Navigation(props: Props) {
                 class={`pointer-events-none absolute transition-all duration-200 ease-out z-10 ${
                   props.indicatorClass ?? "bg-primary rounded-full"
                 }`}
-                style={
-                  horizontal()
-                    ? {
-                        left: `${m().left}px`,
-                        top: `${m().top + m().height - 4}px`,
-                        width: `${m().width}px`,
-                        height: "4px",
-                      }
-                    : {
-                        left: `${m().left}px`,
-                        top: `${m().top + m().height / 6}px`,
-                        width: "4px",
-                        height: `${(m().height * 2) / 3}px`,
-                      }
-                }
+                style={horizontal()
+                  ? {
+                    left: `${m().left}px`,
+                    top: `${m().top + m().height - 4}px`,
+                    width: `${m().width}px`,
+                    height: "4px",
+                  }
+                  : {
+                    left: `${m().left}px`,
+                    top: `${m().top + m().height / 6}px`,
+                    width: "4px",
+                    height: `${(m().height * 2) / 3}px`,
+                  }}
               />
             )}
           </Show>

@@ -21,7 +21,8 @@ type Token =
   | { type: "id"; value: string }
   | { type: "(" | ")" | "!" | "&&" | "||" };
 
-const TOKEN_RE = /\s*(?:(&&)|(\|\|)|(!)|(\()|(\))|([a-zA-Z_][a-zA-Z0-9_:.-]*)|(\S))/g;
+const TOKEN_RE =
+  /\s*(?:(&&)|(\|\|)|(!)|(\()|(\))|([a-zA-Z_][a-zA-Z0-9_:.-]*)|(\S))/g;
 
 function tokenize(src: string): Token[] {
   const out: Token[] = [];
@@ -73,10 +74,14 @@ function parse(tokens: Token[]): Expr {
 
 function evaluate(expr: Expr, flags: FlagMap): boolean {
   switch (expr.type) {
-    case "ref": return !!flags.get(expr.name);
-    case "not": return !evaluate(expr.expr, flags);
-    case "and": return evaluate(expr.left, flags) && evaluate(expr.right, flags);
-    case "or":  return evaluate(expr.left, flags) || evaluate(expr.right, flags);
+    case "ref":
+      return !!flags.get(expr.name);
+    case "not":
+      return !evaluate(expr.expr, flags);
+    case "and":
+      return evaluate(expr.left, flags) && evaluate(expr.right, flags);
+    case "or":
+      return evaluate(expr.left, flags) || evaluate(expr.right, flags);
   }
 }
 

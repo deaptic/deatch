@@ -66,7 +66,8 @@ export default function UserCardIdentity(props: Props) {
       <button
         class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         onMouseDown={(e) => e.stopPropagation()}
-        onClick={() => props.user && openUrl(`https://twitch.tv/${props.user.login}`)}
+        onClick={() =>
+          props.user && openUrl(`https://twitch.tv/${props.user.login}`)}
         disabled={!props.user}
         title="Open channel on Twitch"
         aria-label="Open channel on Twitch"

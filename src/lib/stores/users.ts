@@ -3,7 +3,9 @@ import type { User } from "../api/twitch/users.ts";
 import type { UserRef } from "../types/twitch/user.ts";
 
 export const [user, setUser] = createSignal<User | null>(null);
-export const [moderatedChannels, setModeratedChannels] = createSignal<UserRef[]>([]);
+export const [moderatedChannels, setModeratedChannels] = createSignal<
+  UserRef[]
+>([]);
 
 export function isBroadcasterOfChannel(broadcasterId: string): boolean {
   return user()?.id === broadcasterId;

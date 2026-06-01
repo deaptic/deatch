@@ -1,4 +1,7 @@
 {
+  "fmt": {
+    "include": ["src/"]
+  },
   "lint": {
     "include": ["src/"],
     "rules": {

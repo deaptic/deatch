@@ -1,9 +1,6 @@
-import { Show, createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import {
-  selectedChannel,
-  rememberUser,
-} from "../../lib/stores/channels.ts";
+import { rememberUser, selectedChannel } from "../../lib/stores/channels.ts";
 import {
   advancedDeveloperMode,
   menuChannelPinned,
@@ -35,11 +32,13 @@ export default function Menu(props: Props) {
   const channels = createMenuChannels(props.onLiveChange);
   const main = createScrollAffordance();
 
-  const [chMenu, setChMenu] = createSignal<{
-    ch: User;
-    x: number;
-    y: number;
-  } | null>(null);
+  const [chMenu, setChMenu] = createSignal<
+    {
+      ch: User;
+      x: number;
+      y: number;
+    } | null
+  >(null);
   const [addPop, setAddPop] = createSignal<{ x: number; y: number } | null>(
     null,
   );
@@ -57,9 +56,14 @@ export default function Menu(props: Props) {
     const sel = selectedChannel();
     if (!sel) return;
     queueMicrotask(() => {
-      const targets = document.querySelectorAll(`[data-channel-id="${sel.id}"]`);
+      const targets = document.querySelectorAll(
+        `[data-channel-id="${sel.id}"]`,
+      );
       for (const t of targets) {
-        (t as HTMLElement).scrollIntoView({ block: "nearest", behavior: "smooth" });
+        (t as HTMLElement).scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        });
       }
     });
   });

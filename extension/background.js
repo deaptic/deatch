@@ -3,14 +3,34 @@ const RECONNECT_MIN_MS = 1000;
 const RECONNECT_MAX_MS = 30_000;
 
 const NON_CHANNEL_PATHS = new Set([
-  "directory", "settings", "subscriptions", "wallet", "inventory",
-  "drops", "friends", "following", "messages", "search", "p", "popout",
-  "videos", "downloads", "turbo", "prime", "jobs", "store", "payments",
+  "directory",
+  "settings",
+  "subscriptions",
+  "wallet",
+  "inventory",
+  "drops",
+  "friends",
+  "following",
+  "messages",
+  "search",
+  "p",
+  "popout",
+  "videos",
+  "downloads",
+  "turbo",
+  "prime",
+  "jobs",
+  "store",
+  "payments",
 ]);
 
 function channelFromUrl(url) {
   let u;
-  try { u = new URL(url); } catch { return null; }
+  try {
+    u = new URL(url);
+  } catch {
+    return null;
+  }
   if (!/(^|\.)twitch\.tv$/.test(u.hostname)) return null;
   const seg = u.pathname.split("/").filter(Boolean);
   if (seg.length !== 1) return null;
@@ -42,11 +62,12 @@ function buildState() {
     .map(([login, muted]) => ({ login, muted }))
     .sort((a, b) => a.login.localeCompare(b.login));
 
-  const activeCh = activeTabId != null ? tabChannels.get(activeTabId) ?? null : null;
-  const fallbackCh =
-    lastFocusedTwitchTabId != null
-      ? tabChannels.get(lastFocusedTwitchTabId) ?? null
-      : null;
+  const activeCh = activeTabId != null
+    ? tabChannels.get(activeTabId) ?? null
+    : null;
+  const fallbackCh = lastFocusedTwitchTabId != null
+    ? tabChannels.get(lastFocusedTwitchTabId) ?? null
+    : null;
   const current = activeCh ?? fallbackCh ?? null;
 
   return { type: "state", channels, current };
@@ -58,7 +79,9 @@ function emitState() {
   const key = JSON.stringify(state.channels) + "|" + (state.current ?? "");
   if (key === lastStateKey) return;
   lastStateKey = key;
-  try { port.postMessage(state); } catch {}
+  try {
+    port.postMessage(state);
+  } catch {}
 }
 
 function applyTabUrl(tabId, url) {
@@ -168,17 +191,24 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
   if (windowId === chrome.windows.WINDOW_ID_NONE) return;
-  const [tab] = await chrome.tabs.query({ active: true, windowId }).catch(() => []);
+  const [tab] = await chrome.tabs.query({ active: true, windowId }).catch(
+    () => [],
+  );
   if (tab?.id != null) setActiveTab(tab.id);
 });
 
 (async () => {
-  const tabs = await chrome.tabs.query({ url: ["*://*.twitch.tv/*", "*://twitch.tv/*"] }).catch(() => []);
+  const tabs = await chrome.tabs.query({
+    url: ["*://*.twitch.tv/*", "*://twitch.tv/*"],
+  }).catch(() => []);
   for (const tab of tabs) {
     applyTabUrl(tab.id, tab.url);
     if (tab.mutedInfo) tabMuted.set(tab.id, !!tab.mutedInfo.muted);
   }
-  const [active] = await chrome.tabs.query({ active: true, lastFocusedWindow: true }).catch(() => []);
+  const [active] = await chrome.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  }).catch(() => []);
   if (active?.id != null) {
     activeTabId = active.id;
     if (tabChannels.get(active.id)) lastFocusedTwitchTabId = active.id;

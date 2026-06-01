@@ -1,4 +1,4 @@
-import { For, Show, type JSX } from "solid-js";
+import { For, type JSX, Show } from "solid-js";
 import Toolbar from "../ui/Toolbar.tsx";
 import ToolbarItem from "../ui/ToolbarItem.tsx";
 
@@ -23,7 +23,7 @@ export default function RichNotice(props: Props) {
       <div class={props.class}>
         {props.label}
         <Show when={props.suffix}>
-          <span class="text-text-muted"> · {props.suffix}</span>
+          <span class="text-text-muted">· {props.suffix}</span>
         </Show>
       </div>
       <Show when={props.actions?.length}>

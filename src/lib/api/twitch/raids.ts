@@ -9,7 +9,10 @@ export function startRaid(
   params: StartRaidParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("start_raid", params, { successMessage: "Raid started", ...options });
+  return invokeCommand("start_raid", params, {
+    successMessage: "Raid started",
+    ...options,
+  });
 }
 
 export type CancelRaidParams = {
@@ -20,5 +23,8 @@ export function cancelRaid(
   params: CancelRaidParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("cancel_raid", params, { successMessage: "Raid cancelled", ...options });
+  return invokeCommand("cancel_raid", params, {
+    successMessage: "Raid cancelled",
+    ...options,
+  });
 }

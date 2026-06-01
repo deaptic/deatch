@@ -61,7 +61,10 @@ export default function FeedEvent(props: Props) {
       }}
     >
       <Show when={props.showTimestamp}>
-        <Timestamp ts={props.item.timestamp} class="text-text-muted select-none shrink-0" />
+        <Timestamp
+          ts={props.item.timestamp}
+          class="text-text-muted select-none shrink-0"
+        />
       </Show>
       <Show
         when={props.item.clip}
@@ -79,7 +82,8 @@ export default function FeedEvent(props: Props) {
               title: "View clip",
               icon: () => <ExternalLink class="w-3.5 h-3.5" />,
               variant: "success",
-              onClick: () => openUrl(`https://clips.twitch.tv/${props.item.clip!.id}`),
+              onClick: () =>
+                openUrl(`https://clips.twitch.tv/${props.item.clip!.id}`),
             },
           ]}
         />

@@ -22,7 +22,9 @@ export default function BadgeBox(props: Props) {
   return (
     <Show when={items().length > 0}>
       <span
-        class={`inline-flex items-center gap-1.5 bg-bg border border-border-muted rounded-md px-1.5 py-1 ${props.class ?? ""}`}
+        class={`inline-flex items-center gap-1.5 bg-bg border border-border-muted rounded-md px-1.5 py-1 ${
+          props.class ?? ""
+        }`}
       >
         <For each={items()}>
           {(b) => (

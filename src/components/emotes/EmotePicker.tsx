@@ -1,20 +1,20 @@
 import {
+  createEffect,
   createMemo,
   createSignal,
-  createEffect,
   For,
-  Show,
-  onMount,
   onCleanup,
+  onMount,
+  Show,
 } from "solid-js";
 import { Portal } from "solid-js/web";
 import {
-  userEmotes,
+  computeChannelSections,
+  computeGlobalSections,
   favorites,
   isFavorite,
   toggleFavorite,
-  computeChannelSections,
-  computeGlobalSections,
+  userEmotes,
 } from "../../lib/stores/emotes.ts";
 import { selectedChannel } from "../../lib/stores/channels.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
@@ -27,10 +27,10 @@ import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 import type { EmoteGridItem } from "./types.ts";
 import {
-  type RenderSection,
   emojiUrl,
-  toItem,
   nextVerticalIndex,
+  type RenderSection,
+  toItem,
 } from "./helpers.ts";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
@@ -77,24 +77,26 @@ export default function EmotePicker(props: Props) {
   });
 
   const channelSections = createMemo(() =>
-    computeChannelSections(selectedChannel()),
+    computeChannelSections(selectedChannel())
   );
   const globalSections = createMemo(() =>
-    computeGlobalSections(selectedChannel()),
+    computeGlobalSections(selectedChannel())
   );
 
   const tabSections = createMemo<{ label: string; items: EmoteGridItem[] }[]>(
     () => {
-      if (tab() === "channel")
+      if (tab() === "channel") {
         return channelSections().map((s) => ({
           label: s.label,
           items: s.emotes.map(toItem),
         }));
-      if (tab() === "global")
+      }
+      if (tab() === "global") {
         return globalSections().map((s) => ({
           label: s.label,
           items: s.emotes.map(toItem),
         }));
+      }
       return emojiGroups.map((g) => ({
         label: g.name,
         items: g.emojis.map((e) => ({
@@ -117,7 +119,7 @@ export default function EmotePicker(props: Props) {
     if (q) {
       add({
         items: [...channelSections(), ...globalSections()].flatMap((s) =>
-          s.emotes.filter((e) => e.name.toLowerCase().includes(q)).map(toItem),
+          s.emotes.filter((e) => e.name.toLowerCase().includes(q)).map(toItem)
         ),
       });
     } else {
@@ -136,7 +138,7 @@ export default function EmotePicker(props: Props) {
   });
 
   const totalItems = createMemo(() =>
-    sections().reduce((n, s) => n + s.items.length, 0),
+    sections().reduce((n, s) => n + s.items.length, 0)
   );
 
   createEffect(() => {

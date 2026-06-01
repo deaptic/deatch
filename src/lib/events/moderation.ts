@@ -4,17 +4,17 @@ import type {
   FeedMessage,
   Fragment,
   RawAutomodMessageHold,
-  RawChatMessageDelete,
   RawChatClear,
   RawChatClearUserMessages,
+  RawChatMessageDelete,
   RawModerate,
 } from "../types/index.ts";
 import type { EventEnvelope } from "../types/twitch/eventsub.ts";
 import {
   appendItem,
+  markAllMessagesDeleted,
   markMessageDeleted,
   markUserMessagesDeleted,
-  markAllMessagesDeleted,
 } from "../stores/feeds.ts";
 import { isModOfChannel } from "../stores/users.ts";
 
@@ -26,7 +26,10 @@ function formatDuration(seconds: number): string {
   return `${seconds}s`;
 }
 
-function buildModerateMessage(p: RawModerate, serverNowMs: number): string | null {
+function buildModerateMessage(
+  p: RawModerate,
+  serverNowMs: number,
+): string | null {
   const mod = p.moderator_user_name;
   switch (p.action) {
     case "clear":
@@ -38,9 +41,16 @@ function buildModerateMessage(p: RawModerate, serverNowMs: number): string | nul
     case "unban":
       return `${mod} unbanned ${p.unban.user_name}`;
     case "timeout": {
-      const secs = Math.max(0, Math.ceil((new Date(p.timeout.expires_at).getTime() - serverNowMs) / 1000));
+      const secs = Math.max(
+        0,
+        Math.ceil(
+          (new Date(p.timeout.expires_at).getTime() - serverNowMs) / 1000,
+        ),
+      );
       const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
-      return `${mod} timed out ${p.timeout.user_name} for ${formatDuration(secs)}${r}`;
+      return `${mod} timed out ${p.timeout.user_name} for ${
+        formatDuration(secs)
+      }${r}`;
     }
     case "untimeout":
       return `${mod} removed timeout on ${p.untimeout.user_name}`;
@@ -85,15 +95,21 @@ function buildModerateMessage(p: RawModerate, serverNowMs: number): string | nul
   }
 }
 
-listen<EventEnvelope<RawChatMessageDelete>>("channel-chat-message-delete", (e) => {
-  const raw = e.payload.event;
-  markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
-});
+listen<EventEnvelope<RawChatMessageDelete>>(
+  "channel-chat-message-delete",
+  (e) => {
+    const raw = e.payload.event;
+    markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
+  },
+);
 
-listen<EventEnvelope<RawChatClearUserMessages>>("channel-chat-clear-user-messages", (e) => {
-  const raw = e.payload.event;
-  markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
-});
+listen<EventEnvelope<RawChatClearUserMessages>>(
+  "channel-chat-clear-user-messages",
+  (e) => {
+    const raw = e.payload.event;
+    markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
+  },
+);
 
 listen<EventEnvelope<RawChatClear>>("channel-chat-clear", (e) => {
   const broadcasterId = e.payload.event.broadcaster_user_id;
@@ -120,7 +136,9 @@ listen<EventEnvelope<RawModerate>>("channel-moderate", (e) => {
   const now = Date.now();
   const notice: FeedEvent = {
     kind: "event",
-    id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${Math.random().toString(36).slice(2, 8)}`,
+    id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${
+      Math.random().toString(36).slice(2, 8)
+    }`,
     notice_type: `moderate_${payload.action}`,
     system_message: msg,
     chatter_name: payload.moderator_user_name,
@@ -130,8 +148,12 @@ listen<EventEnvelope<RawModerate>>("channel-moderate", (e) => {
   appendItem(payload.broadcaster_user_id, notice);
 });
 
-function mapAutomodFragment(f: RawAutomodMessageHold["message"]["fragments"][number]): Fragment {
-  if (f.type === "emote") return { type: "emote", text: f.text, id: f.emote.id };
+function mapAutomodFragment(
+  f: RawAutomodMessageHold["message"]["fragments"][number],
+): Fragment {
+  if (f.type === "emote") {
+    return { type: "emote", text: f.text, id: f.emote.id };
+  }
   if (f.type === "cheermote") return { type: "cheermote", text: f.text };
   return { type: "text", text: f.text };
 }

@@ -6,7 +6,7 @@ export type DismissOnOutsideOptions = {
   events?: string[];
   ignoreSelector?: string;
   shouldDismiss?: () => boolean;
-}
+};
 
 export function dismissOnOutside(opts: DismissOnOutsideOptions): void {
   const events = opts.events ?? ["mousedown"];

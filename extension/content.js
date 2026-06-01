@@ -53,7 +53,9 @@ function report() {
   if (ch === lastChannel) return;
   lastChannel = ch;
   log("detected channel:", ch);
-  chrome.runtime.sendMessage({ type: "channel-changed", channel: ch }).catch(() => {});
+  chrome.runtime.sendMessage({ type: "channel-changed", channel: ch }).catch(
+    () => {},
+  );
 }
 
 report();
@@ -71,8 +73,11 @@ addEventListener("popstate", report);
 
 // Backstop: title mutations fire reliably after the SPA settles a route,
 // covering cases where pushState patching misses.
-new MutationObserver(report).observe(document.querySelector("title") || document.head, {
-  subtree: true,
-  characterData: true,
-  childList: true,
-});
+new MutationObserver(report).observe(
+  document.querySelector("title") || document.head,
+  {
+    subtree: true,
+    characterData: true,
+    childList: true,
+  },
+);

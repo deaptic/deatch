@@ -36,8 +36,7 @@ export default function UserCardFeed(props: Props) {
       <Feed
         broadcasterId={props.broadcasterId}
         filter={(item) =>
-          item.kind === "message" && item.chatter_user_id === props.chatterId
-        }
+          item.kind === "message" && item.chatter_user_id === props.chatterId}
         showName={false}
         showBadges={false}
         showToolbar={false}

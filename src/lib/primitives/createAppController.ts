@@ -15,7 +15,7 @@ export type AppController = {
   jumpToMessage: (channelId: string, messageId: string) => void;
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
-}
+};
 
 export function createAppController(): AppController {
   const nav = createChannelNavigation();

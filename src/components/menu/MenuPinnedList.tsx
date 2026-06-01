@@ -1,4 +1,4 @@
-import { Show, For, createSignal } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import Navigation from "../ui/Navigation.tsx";
 import MenuSectionItem from "./MenuSectionItem.tsx";
 import {
@@ -18,7 +18,7 @@ type Props = {
   onSelect: (ch: User) => void;
   onOpenInBrowser: (ch: User) => void;
   onContextMenu: (ch: User, x: number, y: number) => void;
-}
+};
 
 export default function MenuPinnedList(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
