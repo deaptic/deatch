@@ -9,7 +9,7 @@ import {
   moderatedChannels,
   user as currentUser,
 } from "../../lib/stores/users.ts";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta from "./UserCardMeta.tsx";
 
@@ -75,12 +75,12 @@ export default function UserCardHeader(props: Props) {
       <img
         src={user()?.profileImageUrl || ""}
         alt={user()?.displayName ?? ""}
-        title="Click to copy image URL"
+        title="Open channel on Twitch"
         class="size-20 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
         loading="lazy"
         decoding="async"
         onClick={() =>
-          user()?.profileImageUrl && copyField(user()!.profileImageUrl)}
+          user()?.login && openUrl(`https://twitch.tv/${user()!.login}`)}
       />
       <div class="flex-1 min-w-0 flex flex-col gap-1">
         <UserCardIdentity
