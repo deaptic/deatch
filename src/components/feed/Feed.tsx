@@ -246,7 +246,7 @@ export default function Feed(props: Props) {
         ref={scrollRef}
         onScroll={onScroll}
         onWheel={props.onWheel}
-        class={`h-full overflow-y-auto flex flex-col scrollbar-gutter-stabl ${
+        class={`h-full overflow-y-auto overflow-x-hidden flex flex-col scrollbar-gutter-stable ${
           props.scrollClass ?? ""
         }`}
       >
