@@ -42,7 +42,7 @@ export default function MenuWatchedList(props: Props) {
           <div
             ref={scroll.setRef}
             onScroll={scroll.update}
-            class="flex flex-col max-h-[10.5rem] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            class="flex flex-col max-h-42 overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
           >
             <Navigation
               orientation="vertical"

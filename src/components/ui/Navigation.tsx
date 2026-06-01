@@ -156,7 +156,7 @@ export default function Navigation(props: Props) {
             scroll()
               ? `${
                 horizontal() ? "overflow-x-auto" : "overflow-y-auto"
-              } [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`
+              } scrollbar-none [&::-webkit-scrollbar]:hidden`
               : ""
           }`}
         >

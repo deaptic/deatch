@@ -120,7 +120,7 @@ export default function Menu(props: Props) {
         <div
           ref={main.setRef}
           onScroll={main.update}
-          class="h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          class="h-full overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
         >
           <MenuSection divider="bottom">
             <MenuPinnedList
