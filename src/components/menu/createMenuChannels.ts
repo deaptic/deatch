@@ -1,4 +1,11 @@
-import { createSignal, createEffect, on, onMount, onCleanup } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  on,
+  onMount,
+  onCleanup,
+} from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import {
   getFollowedStreams,
@@ -30,11 +37,14 @@ export function createMenuChannels(
   const [loadingPinned, setLoadingPinned] = createSignal(true);
   const [loadingLive, setLoadingLive] = createSignal(true);
 
-  const liveById = () => new Map(live.map((ch) => [ch?.id, ch]));
-  const pinnedIdSet = () => new Set(menuChannelPinned());
-  const warmedIdSet = () => new Set(watchWarmedChannels().map((ch) => ch?.id));
-  const onlineList = () =>
-    live.filter((ch) => !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id));
+  const liveById = createMemo(() => new Map(live.map((ch) => [ch?.id, ch])));
+  const pinnedIdSet = createMemo(() => new Set(menuChannelPinned()));
+  const warmedIdSet = createMemo(
+    () => new Set(watchWarmedChannels().map((ch) => ch?.id)),
+  );
+  const onlineList = createMemo(() =>
+    live.filter((ch) => !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id)),
+  );
   const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];
   const isLive = (id: string) => liveById().has(id);

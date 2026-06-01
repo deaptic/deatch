@@ -74,6 +74,8 @@ export default function UserCardHeader(props: Props) {
         alt={user()?.displayName ?? ""}
         title="Click to copy image URL"
         class="w-20 h-20 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
+        loading="lazy"
+        decoding="async"
         onClick={() =>
           user()?.profileImageUrl && copyField(user()!.profileImageUrl)
         }

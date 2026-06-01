@@ -1,4 +1,12 @@
-import { createSignal, createEffect, Show, onMount, onCleanup } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  Show,
+  Suspense,
+  lazy,
+  onMount,
+  onCleanup,
+} from "solid-js";
 import { shortcutManager } from "../../lib/managers/ShortcutManager";
 import { sendChatMessage } from "../../lib/api/twitch/chat";
 import type { Command } from "../command-composer/types";
@@ -11,7 +19,7 @@ import Banner from "../ui/Banner";
 import CharCounter from "../ui/CharCounter";
 import Button from "../ui/Button";
 import SmileIcon from "../icons/SmileIcon";
-import EmotePicker from "../emotes/EmotePicker";
+const EmotePicker = lazy(() => import("../emotes/EmotePicker"));
 import ChatAutocomplete, { type ChatAutocompleteHandle } from "./autocomplete/ChatAutocomplete";
 import { createInputHistory } from "./createInputHistory";
 import { createUsernameTabComplete } from "./createUsernameTabComplete";
@@ -211,11 +219,13 @@ export default function ChatInput(props: Props) {
               ref={setAutocomplete}
             />
             <Show when={isPanelOpen("emotePicker")}>
-              <EmotePicker
-                onSelect={onEmoteSelect}
-                onClose={() => setOpenPanel(null)}
-                anchorEl={textAreaApi?.anchorEl()}
-              />
+              <Suspense>
+                <EmotePicker
+                  onSelect={onEmoteSelect}
+                  onClose={() => setOpenPanel(null)}
+                  anchorEl={textAreaApi?.anchorEl()}
+                />
+              </Suspense>
             </Show>
           </TextArea>
         }

@@ -1,9 +1,10 @@
-import { Show } from "solid-js";
+import { Show, Suspense, lazy } from "solid-js";
 import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui";
 import { markMentionRead } from "../../lib/stores/inbox";
-import Settings from "../settings/Settings";
-import Inbox from "../inbox/Inbox";
-import Account from "../account/Account";
+
+const Settings = lazy(() => import("../settings/Settings"));
+const Inbox = lazy(() => import("../inbox/Inbox"));
+const Account = lazy(() => import("../account/Account"));
 
 interface PanelHostProps {
   onJump: (channelId: string, messageId: string) => void;
@@ -11,7 +12,7 @@ interface PanelHostProps {
 
 export default function PanelHost(props: PanelHostProps) {
   return (
-    <>
+    <Suspense>
       <Show when={isPanelOpen("settings")}>
         <Settings onClose={() => setOpenPanel(null)} />
       </Show>
@@ -27,6 +28,6 @@ export default function PanelHost(props: PanelHostProps) {
       <Show when={isPanelOpen("account")}>
         <Account onClose={() => setOpenPanel(null)} />
       </Show>
-    </>
+    </Suspense>
   );
 }

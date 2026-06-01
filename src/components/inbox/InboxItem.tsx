@@ -2,9 +2,7 @@ import { createEffect } from "solid-js";
 import type { Mention } from "../../lib/stores/inbox";
 import { userCache } from "../../lib/stores/users";
 import { getUsers } from "../../lib/api/twitch/users";
-import { DEFAULT_AVATAR_URL } from "../../lib/constants";
-
-const DEFAULT_AVATAR = DEFAULT_AVATAR_URL;
+import Avatar from "../ui/Avatar";
 
 type Props = {
   mention: Mention;
@@ -26,7 +24,7 @@ export default function InboxItem(props: Props) {
   });
 
   const avatar = () =>
-    userCache()[props.mention.chatterId]?.profileImageUrl || DEFAULT_AVATAR;
+    userCache()[props.mention.chatterId]?.profileImageUrl;
 
   return (
     <button
@@ -37,7 +35,7 @@ export default function InboxItem(props: Props) {
           : "border-transparent"
       }`}
     >
-      <img
+      <Avatar
         src={avatar()}
         alt={props.mention.chatterName}
         class="w-11 h-11 rounded-lg shrink-0"

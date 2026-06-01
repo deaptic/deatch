@@ -3,7 +3,7 @@ import MenuSection from "./MenuSection";
 import WatchIcon from "../icons/WatchIcon";
 import { selectedChannel } from "../../lib/stores/channels";
 import { watchMode, setWatchMode } from "../../lib/stores/watch";
-import { DEFAULT_AVATAR_URL } from "../../lib/constants";
+import Avatar from "../ui/Avatar";
 
 export default function MenuWatchToggle() {
   return (
@@ -28,8 +28,8 @@ export default function MenuWatchToggle() {
             }
           >
             {(ch) => (
-              <img
-                src={ch()?.profileImageUrl || DEFAULT_AVATAR_URL}
+              <Avatar
+                src={ch()?.profileImageUrl}
                 alt={ch()?.displayName}
                 class="w-8 h-8 rounded-lg"
               />
