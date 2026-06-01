@@ -53,7 +53,7 @@ export default function UserCardModActions(props: Props) {
 
   return (
     <Show when={canModerate()}>
-      <div class="flex gap-1.5 p-2 border-b border-border-muted bg-bg shrink-0">
+      <div class="flex gap-1.5 p-2 border-b border-border-muted bg-bg-dark shrink-0">
         <Button
           variant="secondary"
           onClick={unban}
