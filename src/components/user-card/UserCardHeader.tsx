@@ -1,11 +1,14 @@
-import { createSignal, createEffect } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { getUsers, type User } from "../../lib/api/twitch/users.ts";
 import {
+  type Follow,
   getChannelFollowers,
   getFollowedChannels,
-  type Follow,
 } from "../../lib/api/twitch/channels.ts";
-import { user as currentUser, moderatedChannels } from "../../lib/stores/users.ts";
+import {
+  moderatedChannels,
+  user as currentUser,
+} from "../../lib/stores/users.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta from "./UserCardMeta.tsx";
@@ -77,8 +80,7 @@ export default function UserCardHeader(props: Props) {
         loading="lazy"
         decoding="async"
         onClick={() =>
-          user()?.profileImageUrl && copyField(user()!.profileImageUrl)
-        }
+          user()?.profileImageUrl && copyField(user()!.profileImageUrl)}
       />
       <div class="flex-1 min-w-0 flex flex-col gap-1">
         <UserCardIdentity

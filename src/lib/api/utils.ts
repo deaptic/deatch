@@ -14,7 +14,10 @@ export async function invokeCommand<T>(
 ): Promise<T> {
   const start = performance.now();
   try {
-    const result = await invoke<T>(cmd, params === undefined ? undefined : { params });
+    const result = await invoke<T>(
+      cmd,
+      params === undefined ? undefined : { params },
+    );
     const ms = Math.round(performance.now() - start);
     console.log(`[cmd] ${cmd}`, { params, result, ms });
     if (!options.silent) {
@@ -25,7 +28,9 @@ export async function invokeCommand<T>(
   } catch (e) {
     const ms = Math.round(performance.now() - start);
     console.error(`[cmd] ${cmd} failed`, { params, error: e, ms });
-    if (!options.silent) addToast(`${humanizeCommand(cmd)} failed`, "error", humanizeError(e));
+    if (!options.silent) {
+      addToast(`${humanizeCommand(cmd)} failed`, "error", humanizeError(e));
+    }
     throw e;
   }
 }
@@ -49,8 +54,11 @@ function summarize(result: unknown, ms: number): string {
     typeof result === "object" &&
     Array.isArray((result as { data?: unknown }).data)
   ) {
-    const data = (result as { data: unknown[]; pagination?: { cursor: string | null } }).data;
-    const more = (result as { pagination?: { cursor: string | null } }).pagination?.cursor;
+    const data =
+      (result as { data: unknown[]; pagination?: { cursor: string | null } })
+        .data;
+    const more = (result as { pagination?: { cursor: string | null } })
+      .pagination?.cursor;
     return `${ms}ms · ${data.length} items${more ? " · more…" : ""}`;
   }
   return `${ms}ms`;
@@ -58,7 +66,10 @@ function summarize(result: unknown, ms: number): string {
 
 export async function fetchAllPages<T>(
   cmd: string,
-  fetcher: (after: string | undefined, options: InvokeOptions) => Promise<PaginatedResponse<T>>,
+  fetcher: (
+    after: string | undefined,
+    options: InvokeOptions,
+  ) => Promise<PaginatedResponse<T>>,
 ): Promise<T[]> {
   const start = performance.now();
   const all: T[] = [];

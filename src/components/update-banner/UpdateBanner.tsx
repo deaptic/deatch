@@ -1,5 +1,9 @@
 import { Show } from "solid-js";
-import { pendingUpdate, installing, setInstalling } from "../../lib/stores/updater.ts";
+import {
+  installing,
+  pendingUpdate,
+  setInstalling,
+} from "../../lib/stores/updater.ts";
 import { installUpdate } from "../../lib/services/updater.ts";
 
 export default function UpdateBanner() {
@@ -30,7 +34,7 @@ export default function UpdateBanner() {
               fallback={<>Installing update…</>}
             >
               <span class="font-semibold">Update available</span>
-              <span class="text-text-muted"> · v{u().version}</span>
+              <span class="text-text-muted">· v{u().version}</span>
             </Show>
           </span>
         </button>

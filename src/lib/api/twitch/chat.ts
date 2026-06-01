@@ -6,9 +6,18 @@ import type {
   SendMessageResult,
   UserEmote,
 } from "../../types/twitch/chat.ts";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
+import {
+  invokeCommand,
+  type InvokeOptions,
+  type PaginatedResponse,
+} from "../utils.ts";
 
-export type { BadgeSet, Emote, SendMessageResult, UserEmote } from "../../types/twitch/chat.ts";
+export type {
+  BadgeSet,
+  Emote,
+  SendMessageResult,
+  UserEmote,
+} from "../../types/twitch/chat.ts";
 
 export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
   return invokeCommand("get_global_emotes", undefined, options);
@@ -26,7 +35,9 @@ export function getUserEmotes(
   return invokeCommand("get_user_emotes", params, options);
 }
 
-export function getGlobalChatBadges(options?: InvokeOptions): Promise<BadgeSet[]> {
+export function getGlobalChatBadges(
+  options?: InvokeOptions,
+): Promise<BadgeSet[]> {
   return invokeCommand("get_global_chat_badges", undefined, options);
 }
 
@@ -50,7 +61,10 @@ export function sendShoutout(
   params: SendShoutoutParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("send_shoutout", params, { successMessage: "Shoutout sent", ...options });
+  return invokeCommand("send_shoutout", params, {
+    successMessage: "Shoutout sent",
+    ...options,
+  });
 }
 
 export type SendChatMessageParams = {
@@ -91,7 +105,12 @@ export function getRecentMessages(
   return invokeCommand("get_recent_messages", params, options);
 }
 
-export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
+export type AnnouncementColor =
+  | "primary"
+  | "blue"
+  | "green"
+  | "orange"
+  | "purple";
 
 export type SendChatAnnouncementParams = {
   broadcasterId: string;
@@ -103,7 +122,10 @@ export function sendChatAnnouncement(
   params: SendChatAnnouncementParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("send_chat_announcement", params, { successMessage: "Announcement sent", ...options });
+  return invokeCommand("send_chat_announcement", params, {
+    successMessage: "Announcement sent",
+    ...options,
+  });
 }
 
 export type UpdateChatSettingsParams = {
@@ -121,13 +143,28 @@ export function updateChatSettings(
   params: UpdateChatSettingsParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("update_chat_settings", params, { successMessage: "Chat settings updated", ...options });
+  return invokeCommand("update_chat_settings", params, {
+    successMessage: "Chat settings updated",
+    ...options,
+  });
 }
 
 export type NamedUserColor =
-  | "blue" | "blue_violet" | "cadet_blue" | "chocolate" | "coral" | "dodger_blue"
-  | "firebrick" | "golden_rod" | "green" | "hot_pink" | "orange_red" | "red"
-  | "sea_green" | "spring_green" | "yellow_green";
+  | "blue"
+  | "blue_violet"
+  | "cadet_blue"
+  | "chocolate"
+  | "coral"
+  | "dodger_blue"
+  | "firebrick"
+  | "golden_rod"
+  | "green"
+  | "hot_pink"
+  | "orange_red"
+  | "red"
+  | "sea_green"
+  | "spring_green"
+  | "yellow_green";
 
 export type UpdateUserChatColorParams = { color: NamedUserColor };
 
@@ -135,5 +172,8 @@ export function updateUserChatColor(
   params: UpdateUserChatColorParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("update_user_chat_color", params, { successMessage: "Chat color updated", ...options });
+  return invokeCommand("update_user_chat_color", params, {
+    successMessage: "Chat color updated",
+    ...options,
+  });
 }

@@ -3,13 +3,13 @@ import { getUsers } from "../api/twitch/users.ts";
 import { watchRequestState } from "../api/watch.ts";
 import { rememberUser } from "../stores/channels.ts";
 import {
-  watchConnected,
   setWatchConnected,
-  watchedChannel,
   setWatchedChannel,
-  watchWarmedChannels,
-  setWatchWarmedChannels,
   setWatchMutedByLogin,
+  setWatchWarmedChannels,
+  watchConnected,
+  watchedChannel,
+  watchWarmedChannels,
 } from "../stores/watch.ts";
 
 type StatePayload = {

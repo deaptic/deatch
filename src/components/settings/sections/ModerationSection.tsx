@@ -3,10 +3,10 @@ import SettingsContentSection from "../SettingsContentSection.tsx";
 import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import {
-  moderationAutoShoutoutOnRaid,
-  setModerationAutoShoutoutOnRaid,
   moderationActionsDisabled,
+  moderationAutoShoutoutOnRaid,
   setModerationActionsDisabled,
+  setModerationAutoShoutoutOnRaid,
 } from "../../../lib/stores/preferences.ts";
 
 export default function ModerationSection() {

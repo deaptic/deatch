@@ -2,24 +2,24 @@ import {
   createEffect,
   createMemo,
   createSignal,
-  on,
   For,
-  Show,
+  type JSX,
+  on,
   onCleanup,
   onMount,
-  type JSX,
+  Show,
 } from "solid-js";
 import type {
-  FeedMessage as Message,
   FeedEvent as EventItem,
   FeedItem,
+  FeedMessage as Message,
 } from "../../lib/types/index.ts";
-import { feeds, isFeedItemVisible, getItemId } from "../../lib/stores/feeds.ts";
-import { thirdPartyEmoteMap, favorites } from "../../lib/stores/emotes.ts";
+import { feeds, getItemId, isFeedItemVisible } from "../../lib/stores/feeds.ts";
+import { favorites, thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
 import {
-  feedShowTimestamp,
-  feedShowDeletedContent,
   feedKeywords,
+  feedShowDeletedContent,
+  feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import FeedMessage from "./FeedMessage.tsx";
@@ -93,7 +93,7 @@ export default function Feed(props: Props) {
   const reactions = createMemo(() => favorites().slice(0, 3));
 
   const messageList = createMemo<Message[]>(() =>
-    items().filter((i): i is Message => i.kind === "message"),
+    items().filter((i): i is Message => i.kind === "message")
   );
   const selectedMessage = createMemo<Message | null>(() => {
     const id = selectedId();
@@ -199,34 +199,36 @@ export default function Feed(props: Props) {
 
   const defaultRender = (item: FeedItem) => (
     <Show when={isFeedItemVisible(item)}>
-      {item.kind === "event" ? (
-        <FeedEvent
-          item={item}
-          showTimestamp={feedShowTimestamp()}
-          onContextMenu={props.onEventContextMenu}
-        />
-      ) : (
-        <FeedMessage
-          item={item}
-          emotes={thirdPartyEmoteMap()}
-          badges={badges()}
-          userLogin={props.userLogin ?? ""}
-          keywords={feedKeywords()}
-          showTimestamp={feedShowTimestamp()}
-          showDeletedContent={feedShowDeletedContent()}
-          showName={props.showName}
-          showBadges={props.showBadges}
-          showToolbar={props.showToolbar}
-          reactions={reactions()}
-          onContextMenu={props.onContextMenu}
-          onReply={props.onReply}
-          onReact={props.onReact}
-          onCopypasta={props.onCopypasta}
-          onUserContextMenu={props.onUserContextMenu}
-          onJumpToMessage={props.onJumpToMessage}
-          onShowUserCard={props.onShowUserCard}
-        />
-      )}
+      {item.kind === "event"
+        ? (
+          <FeedEvent
+            item={item}
+            showTimestamp={feedShowTimestamp()}
+            onContextMenu={props.onEventContextMenu}
+          />
+        )
+        : (
+          <FeedMessage
+            item={item}
+            emotes={thirdPartyEmoteMap()}
+            badges={badges()}
+            userLogin={props.userLogin ?? ""}
+            keywords={feedKeywords()}
+            showTimestamp={feedShowTimestamp()}
+            showDeletedContent={feedShowDeletedContent()}
+            showName={props.showName}
+            showBadges={props.showBadges}
+            showToolbar={props.showToolbar}
+            reactions={reactions()}
+            onContextMenu={props.onContextMenu}
+            onReply={props.onReply}
+            onReact={props.onReact}
+            onCopypasta={props.onCopypasta}
+            onUserContextMenu={props.onUserContextMenu}
+            onJumpToMessage={props.onJumpToMessage}
+            onShowUserCard={props.onShowUserCard}
+          />
+        )}
     </Show>
   );
 
@@ -244,24 +246,24 @@ export default function Feed(props: Props) {
         ref={scrollRef}
         onScroll={onScroll}
         onWheel={props.onWheel}
-        class={`h-full overflow-y-auto flex flex-col scrollbar-gutter-stabl ${props.scrollClass ?? ""}`}
+        class={`h-full overflow-y-auto flex flex-col scrollbar-gutter-stabl ${
+          props.scrollClass ?? ""
+        }`}
       >
         <For each={items()}>
           {(item, index) => (
             <>
               <Show
-                when={
-                  index() > 0 &&
+                when={index() > 0 &&
                   dividerAt() &&
-                  getItemId(items()[index() - 1]) === dividerAt()
-                }
+                  getItemId(items()[index() - 1]) === dividerAt()}
               >
                 <FeedDivider />
               </Show>
               <div
-                data-feed-id={
-                  item.kind === "message" ? item.message_id : undefined
-                }
+                data-feed-id={item.kind === "message"
+                  ? item.message_id
+                  : undefined}
                 tabIndex={-1}
                 class={`outline-none rounded ${
                   item.kind === "message" && selectedId() === item.message_id

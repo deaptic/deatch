@@ -43,7 +43,11 @@ async function patchCargo(path: string, newVersion: string): Promise<void> {
   await Deno.writeTextFile(path, patched);
 }
 
-async function patchCargoLock(path: string, name: string, newVersion: string): Promise<void> {
+async function patchCargoLock(
+  path: string,
+  name: string,
+  newVersion: string,
+): Promise<void> {
   const text = await Deno.readTextFile(path);
   const re = new RegExp(
     `(\\[\\[package\\]\\]\\r?\\nname = "${name}"\\r?\\nversion = ")[^"]+(")`,
@@ -54,7 +58,11 @@ async function patchCargoLock(path: string, name: string, newVersion: string): P
 }
 
 async function run(cmd: string[]): Promise<void> {
-  const p = new Deno.Command(cmd[0], { args: cmd.slice(1), stdout: "inherit", stderr: "inherit" });
+  const p = new Deno.Command(cmd[0], {
+    args: cmd.slice(1),
+    stdout: "inherit",
+    stderr: "inherit",
+  });
   const { code } = await p.output();
   if (code !== 0) throw new Error(`${cmd.join(" ")} exited with ${code}`);
 }
@@ -80,7 +88,9 @@ if (!/^\d+\.\d+\.\d+$/.test(next)) {
 
 const status = await captureStdout(["git", "status", "--porcelain"]);
 if (status) {
-  console.error("working tree has uncommitted changes — commit or stash first:");
+  console.error(
+    "working tree has uncommitted changes — commit or stash first:",
+  );
   console.error(status);
   Deno.exit(1);
 }
@@ -97,7 +107,12 @@ await writeJson(FILES.tauri, tauri);
 await patchCargo(FILES.cargo, next);
 await patchCargoLock(FILES.cargoLock, "deatch", next);
 
-const branch = await captureStdout(["git", "rev-parse", "--abbrev-ref", "HEAD"]);
+const branch = await captureStdout([
+  "git",
+  "rev-parse",
+  "--abbrev-ref",
+  "HEAD",
+]);
 const tag = `v${next}`;
 
 await run(["git", "add", FILES.pkg, FILES.tauri, FILES.cargo, FILES.cargoLock]);
@@ -105,4 +120,6 @@ await run(["git", "commit", "-m", `chore: release ${tag}`]);
 await run(["git", "tag", tag]);
 await run(["git", "push", "origin", branch, tag]);
 
-console.log(`released ${tag} from ${branch} — GitHub Action will build and publish.`);
+console.log(
+  `released ${tag} from ${branch} — GitHub Action will build and publish.`,
+);

@@ -1,7 +1,9 @@
 import type { EmoteEntry } from "../../types/external/emote.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export function ffzGetGlobalEmotes(options?: InvokeOptions): Promise<EmoteEntry[]> {
+export function ffzGetGlobalEmotes(
+  options?: InvokeOptions,
+): Promise<EmoteEntry[]> {
   return invokeCommand("ffz_get_global_emotes", undefined, options);
 }
 

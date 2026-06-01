@@ -2,7 +2,7 @@ import { Eye } from "lucide-solid";
 import { Show } from "solid-js";
 import MenuSection from "./MenuSection.tsx";
 import { selectedChannel } from "../../lib/stores/channels.ts";
-import { watchMode, setWatchMode } from "../../lib/stores/watch.ts";
+import { setWatchMode, watchMode } from "../../lib/stores/watch.ts";
 import Avatar from "../ui/Avatar.tsx";
 
 export default function MenuWatchToggle() {
@@ -11,11 +11,9 @@ export default function MenuWatchToggle() {
       <button
         type="button"
         onClick={() => setWatchMode(watchMode() === null ? "auto" : null)}
-        title={
-          watchMode() === null
-            ? "Click to start Watch mode"
-            : "Click to stop Watch mode"
-        }
+        title={watchMode() === null
+          ? "Click to start Watch mode"
+          : "Click to stop Watch mode"}
         class="group w-full flex items-center justify-center px-2 py-3 cursor-pointer hover:bg-bg transition-colors"
       >
         <div class="relative shrink-0">
@@ -39,11 +37,9 @@ export default function MenuWatchToggle() {
             <div
               role="button"
               tabindex="0"
-              title={
-                watchMode() === "manual"
-                  ? "Manual — click to follow your browser tab"
-                  : "Auto — click to lock on current"
-              }
+              title={watchMode() === "manual"
+                ? "Manual — click to follow your browser tab"
+                : "Auto — click to lock on current"}
               onClick={(e) => {
                 e.stopPropagation();
                 setWatchMode(watchMode() === "manual" ? "auto" : "manual");

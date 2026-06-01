@@ -1,4 +1,4 @@
-import { Show, type JSX } from "solid-js";
+import { type JSX, Show } from "solid-js";
 
 type Tone = "info" | "danger";
 
@@ -15,8 +15,14 @@ const TONES: Record<Tone, string> = {
 
 export default function Banner(props: Props) {
   return (
-    <div class={`flex items-center gap-2 px-4 py-2 border-b border-border-muted ${TONES[props.tone ?? "info"]}`}>
-      <span class="text-xs text-text-muted truncate min-w-0">{props.children}</span>
+    <div
+      class={`flex items-center gap-2 px-4 py-2 border-b border-border-muted ${
+        TONES[props.tone ?? "info"]
+      }`}
+    >
+      <span class="text-xs text-text-muted truncate min-w-0">
+        {props.children}
+      </span>
       <Show when={props.onDismiss}>
         <button
           onClick={props.onDismiss}

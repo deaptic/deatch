@@ -33,7 +33,8 @@ function save(list: Mention[]) {
   return list;
 }
 
-export const unreadMentionCount = () => mentions().filter((m) => m.unread).length;
+export const unreadMentionCount = () =>
+  mentions().filter((m) => m.unread).length;
 
 export const channelMentionCount = (channelId: string) =>
   mentions().filter((m) => m.unread && m.channelId === channelId).length;
@@ -55,7 +56,7 @@ export function recordMention(m: Omit<Mention, "unread">) {
 
 function markRead(match: (m: Mention) => boolean) {
   setMentions((prev) =>
-    save(prev.map((m) => (m.unread && match(m) ? { ...m, unread: false } : m))),
+    save(prev.map((m) => (m.unread && match(m) ? { ...m, unread: false } : m)))
   );
 }
 

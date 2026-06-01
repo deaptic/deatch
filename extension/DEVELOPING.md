@@ -15,10 +15,10 @@ Twitch tab           Extension                   Native host process
                                                   └──────────────────┘
 ```
 
-`deatch.exe` is launched with `--browser-host` (it routes to host mode
-before Tauri init). The host forwards NDJSON lines to the running GUI over
-a local socket (`\\.\pipe\deatch-bridge` on Windows). The bridge is fully
-bidirectional — extension → GUI for state, GUI → extension for commands.
+`deatch.exe` is launched with `--browser-host` (it routes to host mode before
+Tauri init). The host forwards NDJSON lines to the running GUI over a local
+socket (`\\.\pipe\deatch-bridge` on Windows). The bridge is fully bidirectional
+— extension → GUI for state, GUI → extension for commands.
 
 ## Message protocol
 
@@ -27,18 +27,18 @@ JSON, length-prefixed (4-byte little-endian) per the
 
 ### Extension → host
 
-| Message | When |
-|---|---|
+| Message                                                                                                     | When                                                                                    |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `{ "type": "state", "channels": [{"login": "<slug>", "muted": <bool>}, ...], "current": "<slug>" \| null }` | On any state change: tab open/close/url, focus change, mute change. Deduped by content. |
 
 `current` resolves to: focused Twitch tab → last-focused Twitch tab → `null`.
 
 ### Host → extension
 
-| Message | Effect |
-|---|---|
-| `{ "type": "get_state" }` | Force re-emit of current `state`. Auto-sent by host on every (re)connect to GUI. |
-| `{ "type": "set_muted", "channel": "<slug>", "muted": <bool> }` | Apply mute/unmute via `chrome.tabs.update` to every tab on that channel. |
+| Message                                                         | Effect                                                                           |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `{ "type": "get_state" }`                                       | Force re-emit of current `state`. Auto-sent by host on every (re)connect to GUI. |
+| `{ "type": "set_muted", "channel": "<slug>", "muted": <bool> }` | Apply mute/unmute via `chrome.tabs.update` to every tab on that channel.         |
 
 ## Loading as a temporary add-on (Firefox)
 
@@ -58,8 +58,8 @@ JSON, length-prefixed (4-byte little-endian) per the
 
 ## Debug logging
 
-`background.js` and `content.js` each have `const DEBUG = false;` at the
-top. Flip to `true` and reload to see `[deatch]` lines.
+`background.js` and `content.js` each have `const DEBUG = false;` at the top.
+Flip to `true` and reload to see `[deatch]` lines.
 
 Host-side log (all in/out frames):
 
@@ -69,10 +69,9 @@ Get-Content $env:TEMP\deatch-host.log -Wait -Tail 20
 
 ## Loading in Chrome / Edge
 
-Not yet wired up. To support it, swap `background.scripts` for
-`service_worker` in `manifest.json`, drop `browser_specific_settings`, and
-add a Chrome-style native messaging manifest path in
-`src-tauri/src/bridge.rs`.
+Not yet wired up. To support it, swap `background.scripts` for `service_worker`
+in `manifest.json`, drop `browser_specific_settings`, and add a Chrome-style
+native messaging manifest path in `src-tauri/src/bridge.rs`.
 
 ## Packaging for distribution
 

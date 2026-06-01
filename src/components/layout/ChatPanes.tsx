@@ -9,7 +9,7 @@ type ChatPanesProps = {
   channels: User[];
   userLogin: string;
   onJumpToMessage: (channelId: string, messageId: string) => void;
-}
+};
 
 export default function ChatPanes(props: ChatPanesProps) {
   return (

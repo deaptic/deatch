@@ -1,4 +1,4 @@
-import { createSignal, onMount, onCleanup } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
@@ -39,7 +39,9 @@ export default function UserCard(props: Props) {
     };
   }
 
-  const [pos, setPos] = createSignal(clamp(props.x, props.y, CARD_W, CARD_MAX_H));
+  const [pos, setPos] = createSignal(
+    clamp(props.x, props.y, CARD_W, CARD_MAX_H),
+  );
   const [pinned, setPinned] = createSignal(false);
 
   onMount(() => {
@@ -66,7 +68,9 @@ export default function UserCard(props: Props) {
   shortcutManager.setContext("userCardOpen", true);
   const unbindEsc = shortcutManager.registerLocal(
     "escape",
-    () => { props.onClose(); },
+    () => {
+      props.onClose();
+    },
     "userCardOpen",
   );
   onCleanup(() => {

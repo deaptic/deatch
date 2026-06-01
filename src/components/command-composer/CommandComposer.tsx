@@ -1,4 +1,11 @@
-import { createSignal, createMemo, createEffect, For, Show, onCleanup } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  Show,
+} from "solid-js";
 import type { Command, CommandContext } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
@@ -6,7 +13,7 @@ import { getUsers } from "../../lib/api/twitch/users.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Banner from "../ui/Banner.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
-import { type Slot, parseDuration, slotSatisfied } from "./parse.ts";
+import { parseDuration, type Slot, slotSatisfied } from "./parse.ts";
 
 type UserSuggestion = {
   id: string;
@@ -26,7 +33,12 @@ type Props = {
 export default function CommandComposer(props: Props) {
   const options = props.command.options;
   const [slots, setSlots] = createSignal<Slot[]>(
-    options.map(() => ({ raw: "", resolved: null, displayLabel: "", error: null })),
+    options.map(() => ({
+      raw: "",
+      resolved: null,
+      displayLabel: "",
+      error: null,
+    })),
   );
   const [activeIdx, setActiveIdx] = createSignal(0);
   const [resolving, setResolving] = createSignal(false);
@@ -42,7 +54,9 @@ export default function CommandComposer(props: Props) {
   const activeRaw = () => activeSlot()?.raw ?? "";
 
   function patchSlot(idx: number, patch: Partial<Slot>) {
-    setSlots((prev) => prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)));
+    setSlots((prev) =>
+      prev.map((s, i) => (i === idx ? { ...s, ...patch } : s))
+    );
   }
 
   function fillUserSlot(idx: number, raw: string, id: string, label: string) {
@@ -79,8 +93,12 @@ export default function CommandComposer(props: Props) {
       const containsAny = !startsAny && fields.some((f) => f.includes(q));
       if (!startsAny && !containsAny) continue;
       const ranked: Ranked = {
-        id: c.id, login: c.login, displayName: c.displayName, color: c.color,
-        nickname, lastSeen: c.lastSeen,
+        id: c.id,
+        login: c.login,
+        displayName: c.displayName,
+        color: c.color,
+        nickname,
+        lastSeen: c.lastSeen,
       };
       (startsAny ? starts : contains).push(ranked);
     }
@@ -119,7 +137,8 @@ export default function CommandComposer(props: Props) {
     return opt.required && slot.resolved === null ? `Required · ${base}` : base;
   });
 
-  const canSubmit = () => options.every((opt, i) => slotSatisfied(opt, slots()[i]));
+  const canSubmit = () =>
+    options.every((opt, i) => slotSatisfied(opt, slots()[i]));
 
   async function resolveUserSlot(idx: number): Promise<boolean> {
     const login = slots()[idx].raw.replace(/^@/, "").trim().toLowerCase();
@@ -147,7 +166,9 @@ export default function CommandComposer(props: Props) {
     const opt = options[idx];
     if (!opt) return false;
     let slot = slots()[idx];
-    if (opt.type === "user" && slot.raw && slot.resolved === null && !slot.error) {
+    if (
+      opt.type === "user" && slot.raw && slot.resolved === null && !slot.error
+    ) {
       if (!(await resolveUserSlot(idx))) return false;
       slot = slots()[idx];
     }
@@ -170,14 +191,16 @@ export default function CommandComposer(props: Props) {
       prev.map((slot, i) =>
         options[i]?.required && slot.resolved === null && !slot.error
           ? { ...slot, error: "Required" }
-          : slot,
-      ),
+          : slot
+      )
     );
     clearTimeout(requiredFlashTimer);
     requiredFlashTimer = window.setTimeout(() => {
       requiredFlashTimer = undefined;
       setSlots((prev) =>
-        prev.map((slot) => (slot.error === "Required" ? { ...slot, error: null } : slot)),
+        prev.map((
+          slot,
+        ) => (slot.error === "Required" ? { ...slot, error: null } : slot))
       );
     }, 1500);
   }
@@ -190,11 +213,20 @@ export default function CommandComposer(props: Props) {
     if (opt.type === "duration") {
       const n = value === "" ? null : parseDuration(value);
       patchSlot(idx, {
-        raw: value, resolved: n, displayLabel: value,
-        error: value !== "" && n === null ? `Try ${opt.hint ?? "30s, 5m, 1h"}` : null,
+        raw: value,
+        resolved: n,
+        displayLabel: value,
+        error: value !== "" && n === null
+          ? `Try ${opt.hint ?? "30s, 5m, 1h"}`
+          : null,
       });
     } else if (opt.type === "user") {
-      patchSlot(idx, { raw: value, resolved: null, displayLabel: value, error: null });
+      patchSlot(idx, {
+        raw: value,
+        resolved: null,
+        displayLabel: value,
+        error: null,
+      });
     } else if (opt.type === "enum") {
       const allowed = opt.values ?? [];
       const exact = allowed.includes(value);
@@ -202,12 +234,16 @@ export default function CommandComposer(props: Props) {
         raw: value,
         resolved: exact ? value : null,
         displayLabel: value,
-        error: value !== "" && !exact ? `Must be one of: ${allowed.join(", ")}` : null,
+        error: value !== "" && !exact
+          ? `Must be one of: ${allowed.join(", ")}`
+          : null,
       });
     } else {
       patchSlot(idx, {
-        raw: value, displayLabel: value,
-        resolved: value === "" ? null : value, error: null,
+        raw: value,
+        displayLabel: value,
+        resolved: value === "" ? null : value,
+        error: null,
       });
     }
   }
@@ -218,7 +254,12 @@ export default function CommandComposer(props: Props) {
   }
 
   function selectEnum(value: string) {
-    patchSlot(activeIdx(), { raw: value, resolved: value, displayLabel: value, error: null });
+    patchSlot(activeIdx(), {
+      raw: value,
+      resolved: value,
+      displayLabel: value,
+      error: null,
+    });
     void advance();
   }
 
@@ -236,7 +277,10 @@ export default function CommandComposer(props: Props) {
     }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (canSubmit()) { submit(); return; }
+      if (canSubmit()) {
+        submit();
+        return;
+      }
       void (async () => {
         await advance();
         if (canSubmit()) submit();
@@ -277,7 +321,9 @@ export default function CommandComposer(props: Props) {
                 {s.nickname ?? s.displayName}
               </span>
               <Show when={s.nickname}>
-                <span class="text-text-muted text-sm truncate">({s.displayName})</span>
+                <span class="text-text-muted text-sm truncate">
+                  ({s.displayName})
+                </span>
               </Show>
               <span class="flex-1" />
               <span class="text-xs font-semibold shrink-0 text-text-muted">
@@ -285,7 +331,9 @@ export default function CommandComposer(props: Props) {
               </span>
             </>
           )}
-          ref={(api) => { popupHandleKey = api.handleKey; }}
+          ref={(api) => {
+            popupHandleKey = api.handleKey;
+          }}
         />
       </Show>
       <Show when={showEnumPopup()}>
@@ -294,20 +342,26 @@ export default function CommandComposer(props: Props) {
           onSelect={selectEnum}
           onDismiss={props.onCancel}
           renderItem={(v) => <span class="text-text">{v}</span>}
-          ref={(api) => { popupHandleKey = api.handleKey; }}
+          ref={(api) => {
+            popupHandleKey = api.handleKey;
+          }}
         />
       </Show>
       <Banner tone={errorActive() ? "danger" : "info"}>
         <span class="text-text-muted">/{props.command.name}</span>
         <Show when={activeOption()?.name}>
-          <span class="text-text-muted"> · </span>
-          <span class={`font-semibold ${errorActive() ? "text-danger" : "text-primary"}`}>
+          <span class="text-text-muted">·</span>
+          <span
+            class={`font-semibold ${
+              errorActive() ? "text-danger" : "text-primary"
+            }`}
+          >
             {activeOption()!.name}
           </span>
         </Show>
         <Show when={hintBody()}>
           <span class={errorActive() ? "text-danger" : "text-text-muted"}>
-             — {hintBody()}
+            — {hintBody()}
           </span>
         </Show>
       </Banner>
@@ -328,7 +382,9 @@ export default function CommandComposer(props: Props) {
                 isFilled={slot().resolved !== null && !active()}
                 errored={active() && !!slot().error}
                 onActivate={() => setActiveIdx(i())}
-                inputRef={(el) => { activeInput = el; }}
+                inputRef={(el) => {
+                  activeInput = el;
+                }}
                 onInput={onActiveInput}
                 onKeyDown={onKeyDown}
               />

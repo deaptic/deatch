@@ -1,4 +1,7 @@
-import { getGlobalChatBadges, getChannelChatBadges } from "../api/twitch/chat.ts";
+import {
+  getChannelChatBadges,
+  getGlobalChatBadges,
+} from "../api/twitch/chat.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 import { setBadges } from "../stores/feeds.ts";
 import type { BadgeSet } from "../types/twitch/chat.ts";
@@ -12,7 +15,10 @@ const channelBadgesPromise = new Map<string, Promise<BadgeMap>>();
 
 function loadGlobalBadges(): Promise<BadgeSet[]> {
   if (globalBadgesPromise) return globalBadgesPromise;
-  const cached = loadCache<BadgeSet[]>(GLOBAL_BADGES_CACHE_KEY, GLOBAL_BADGES_TTL);
+  const cached = loadCache<BadgeSet[]>(
+    GLOBAL_BADGES_CACHE_KEY,
+    GLOBAL_BADGES_TTL,
+  );
   if (cached) {
     // Stale-while-revalidate: serve cache, refresh in background.
     getGlobalChatBadges()
@@ -41,12 +47,16 @@ export function loadChannelBadges(broadcasterId: string): Promise<BadgeMap> {
     getChannelChatBadges({ broadcasterId }).catch(() => [] as BadgeSet[]),
   ]).then(([global, channel]) => {
     const map: BadgeMap = {};
-    for (const set of global)
-      for (const v of set.versions)
+    for (const set of global) {
+      for (const v of set.versions) {
         map[`${set.setId}/${v.id}`] = { url: v.url1x, title: v.title };
-    for (const set of channel)
-      for (const v of set.versions)
+      }
+    }
+    for (const set of channel) {
+      for (const v of set.versions) {
         map[`${set.setId}/${v.id}`] = { url: v.url1x, title: v.title };
+      }
+    }
     setBadges(broadcasterId, map);
     return map;
   });

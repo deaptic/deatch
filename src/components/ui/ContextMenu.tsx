@@ -1,4 +1,4 @@
-import { type JSX, createSignal, onMount } from "solid-js";
+import { createSignal, type JSX, onMount } from "solid-js";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 
 type Props = {
@@ -17,8 +17,9 @@ export default function ContextMenu(props: Props) {
   onMount(() => {
     if (menuRef) {
       const rect = menuRef.getBoundingClientRect();
-      if (rect.bottom > window.innerHeight - 8)
+      if (rect.bottom > window.innerHeight - 8) {
         setTop(window.innerHeight - rect.height - 8);
+      }
     }
   });
 

@@ -2,7 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import type { RawChatMessage } from "../types/index.ts";
 import type { EventEnvelope } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
-import { user, isModOfChannel } from "../stores/users.ts";
+import { isModOfChannel, user } from "../stores/users.ts";
 import { usersById } from "../stores/channels.ts";
 import { recordMention } from "../stores/inbox.ts";
 import { feedKeywords, matchesAnyKeyword } from "../stores/preferences.ts";
@@ -35,7 +35,8 @@ listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
   if (!me || raw.chatter_user_id === me.id) return;
   const myLogin = me.login.toLowerCase();
   const isMention = raw.message.fragments.some(
-    (f) => f.type === "mention" && f.mention.user_login.toLowerCase() === myLogin,
+    (f) =>
+      f.type === "mention" && f.mention.user_login.toLowerCase() === myLogin,
   );
   const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
   if (!isMention && !keywordHit) return;

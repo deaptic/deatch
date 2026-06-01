@@ -1,4 +1,4 @@
-import { watchMode, watchConnected } from "../../lib/stores/watch.ts";
+import { watchConnected, watchMode } from "../../lib/stores/watch.ts";
 
 function watchSeen(): boolean {
   try {
@@ -12,8 +12,9 @@ export default function EmptyState() {
   const message = () => {
     if (watchMode() === null) return "Select a channel to view chat";
     if (watchConnected()) return "Open a Twitch channel in your browser.";
-    if (watchSeen())
+    if (watchSeen()) {
       return "Waiting for the browser. Open Firefox and a Twitch tab.";
+    }
     return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
   };
   return (

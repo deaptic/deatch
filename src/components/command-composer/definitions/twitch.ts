@@ -1,30 +1,36 @@
 import {
   banUser,
-  unbanUser,
   deleteChatMessages,
+  unbanUser,
   warnUser,
 } from "../../../lib/api/twitch/moderation.ts";
-import { startRaid, cancelRaid } from "../../../lib/api/twitch/raids.ts";
+import { cancelRaid, startRaid } from "../../../lib/api/twitch/raids.ts";
 import {
-  sendShoutout,
-  sendChatAnnouncement,
-  sendChatMessage,
-  updateChatSettings,
-  updateUserChatColor,
   type AnnouncementColor,
   type NamedUserColor,
+  sendChatAnnouncement,
+  sendChatMessage,
+  sendShoutout,
+  updateChatSettings,
+  updateUserChatColor,
 } from "../../../lib/api/twitch/chat.ts";
 import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
 import {
-  modifyChannelInformation,
-  startCommercial,
   addChannelVip,
-  removeChannelVip,
   type CommercialLength,
+  modifyChannelInformation,
+  removeChannelVip,
+  startCommercial,
 } from "../../../lib/api/twitch/channels.ts";
 import type { Command } from "../types.ts";
 
-const ANNOUNCEMENT_COLORS: AnnouncementColor[] = ["primary", "blue", "green", "orange", "purple"];
+const ANNOUNCEMENT_COLORS: AnnouncementColor[] = [
+  "primary",
+  "blue",
+  "green",
+  "orange",
+  "purple",
+];
 
 export const twitchCommands: Command[] = [
   {
@@ -32,8 +38,17 @@ export const twitchCommands: Command[] = [
     description: "Permanently ban a user from chat",
     role: "mod",
     options: [
-      { name: "username", description: "User to ban", type: "user", required: true },
-      { name: "reason", description: "Reason shown to the user", type: "string" },
+      {
+        name: "username",
+        description: "User to ban",
+        type: "user",
+        required: true,
+      },
+      {
+        name: "reason",
+        description: "Reason shown to the user",
+        type: "string",
+      },
     ],
     execute: async ({ username, reason }, ctx) => {
       await banUser({
@@ -48,10 +63,18 @@ export const twitchCommands: Command[] = [
     description: "Lift a user's ban",
     role: "mod",
     options: [
-      { name: "username", description: "User to unban", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to unban",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }, ctx) => {
-      await unbanUser({ broadcasterId: ctx.broadcasterId, userId: username as string });
+      await unbanUser({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+      });
     },
   },
   {
@@ -59,7 +82,12 @@ export const twitchCommands: Command[] = [
     description: "Temporarily ban a user from chat",
     role: "mod",
     options: [
-      { name: "username", description: "User to time out", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to time out",
+        type: "user",
+        required: true,
+      },
       {
         name: "duration",
         description: "Length of the timeout",
@@ -67,7 +95,11 @@ export const twitchCommands: Command[] = [
         required: true,
         hint: "e.g. 30s, 5m, 1h, 1d",
       },
-      { name: "reason", description: "Reason shown to the user", type: "string" },
+      {
+        name: "reason",
+        description: "Reason shown to the user",
+        type: "string",
+      },
     ],
     execute: async ({ username, duration, reason }, ctx) => {
       await banUser({
@@ -83,10 +115,18 @@ export const twitchCommands: Command[] = [
     description: "Lift a user's timeout",
     role: "mod",
     options: [
-      { name: "username", description: "User to untimeout", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to untimeout",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }, ctx) => {
-      await unbanUser({ broadcasterId: ctx.broadcasterId, userId: username as string });
+      await unbanUser({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+      });
     },
   },
   {
@@ -95,7 +135,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await deleteChatMessages({ broadcasterId: ctx.broadcasterId, messageId: null });
+      await deleteChatMessages({
+        broadcasterId: ctx.broadcasterId,
+        messageId: null,
+      });
     },
   },
   {
@@ -103,7 +146,12 @@ export const twitchCommands: Command[] = [
     description: "Send a highlighted announcement to chat",
     role: "mod",
     options: [
-      { name: "message", description: "Announcement text", type: "string", required: true },
+      {
+        name: "message",
+        description: "Announcement text",
+        type: "string",
+        required: true,
+      },
       {
         name: "color",
         description: "Highlight color",
@@ -146,7 +194,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, slowMode: false });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        slowMode: false,
+      });
     },
   },
   {
@@ -176,7 +227,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, followerMode: false });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        followerMode: false,
+      });
     },
   },
   {
@@ -185,7 +239,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, emoteMode: true });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        emoteMode: true,
+      });
     },
   },
   {
@@ -194,7 +251,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, emoteMode: false });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        emoteMode: false,
+      });
     },
   },
   {
@@ -203,7 +263,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, subscriberMode: true });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        subscriberMode: true,
+      });
     },
   },
   {
@@ -212,7 +275,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, subscriberMode: false });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        subscriberMode: false,
+      });
     },
   },
   {
@@ -221,7 +287,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, uniqueChatMode: true });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        uniqueChatMode: true,
+      });
     },
   },
   {
@@ -230,7 +299,10 @@ export const twitchCommands: Command[] = [
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
-      await updateChatSettings({ broadcasterId: ctx.broadcasterId, uniqueChatMode: false });
+      await updateChatSettings({
+        broadcasterId: ctx.broadcasterId,
+        uniqueChatMode: false,
+      });
     },
   },
   {
@@ -239,7 +311,12 @@ export const twitchCommands: Command[] = [
     description: "Highlight another channel for viewers to follow",
     role: "mod",
     options: [
-      { name: "channel", description: "Channel to shout out", type: "user", required: true },
+      {
+        name: "channel",
+        description: "Channel to shout out",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ channel }, ctx) => {
       await sendShoutout({
@@ -253,10 +330,18 @@ export const twitchCommands: Command[] = [
     description: "Grant a user VIP status",
     role: "broadcaster",
     options: [
-      { name: "username", description: "User to grant VIP status", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to grant VIP status",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }, ctx) => {
-      await addChannelVip({ broadcasterId: ctx.broadcasterId, userId: username as string });
+      await addChannelVip({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+      });
     },
   },
   {
@@ -264,10 +349,18 @@ export const twitchCommands: Command[] = [
     description: "Revoke a user's VIP status",
     role: "broadcaster",
     options: [
-      { name: "username", description: "User to revoke VIP from", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to revoke VIP from",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }, ctx) => {
-      await removeChannelVip({ broadcasterId: ctx.broadcasterId, userId: username as string });
+      await removeChannelVip({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+      });
     },
   },
   {
@@ -275,7 +368,12 @@ export const twitchCommands: Command[] = [
     description: "Raid another channel",
     role: "broadcaster",
     options: [
-      { name: "channel", description: "Channel to raid", type: "user", required: true },
+      {
+        name: "channel",
+        description: "Channel to raid",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ channel }, ctx) => {
       await startRaid({
@@ -298,7 +396,12 @@ export const twitchCommands: Command[] = [
     description: "Send a message as an action",
     role: "regular",
     options: [
-      { name: "message", description: "Action text", type: "string", required: true },
+      {
+        name: "message",
+        description: "Action text",
+        type: "string",
+        required: true,
+      },
     ],
     execute: async ({ message }, ctx) => {
       await sendChatMessage({
@@ -312,8 +415,18 @@ export const twitchCommands: Command[] = [
     description: "Warn a user without timing them out",
     role: "mod",
     options: [
-      { name: "username", description: "User to warn", type: "user", required: true },
-      { name: "reason", description: "Reason for the warning", type: "string", required: true },
+      {
+        name: "username",
+        description: "User to warn",
+        type: "user",
+        required: true,
+      },
+      {
+        name: "reason",
+        description: "Reason for the warning",
+        type: "string",
+        required: true,
+      },
     ],
     execute: async ({ username, reason }, ctx) => {
       await warnUser({
@@ -328,7 +441,11 @@ export const twitchCommands: Command[] = [
     description: "Add a stream marker at the current point",
     role: "broadcaster",
     options: [
-      { name: "description", description: "Note for the marker (max 140 chars)", type: "string" },
+      {
+        name: "description",
+        description: "Note for the marker (max 140 chars)",
+        type: "string",
+      },
     ],
     execute: async ({ description }) => {
       await createStreamMarker({
@@ -347,9 +464,21 @@ export const twitchCommands: Command[] = [
         type: "enum",
         required: true,
         values: [
-          "blue", "blue_violet", "cadet_blue", "chocolate", "coral", "dodger_blue",
-          "firebrick", "golden_rod", "green", "hot_pink", "orange_red", "red",
-          "sea_green", "spring_green", "yellow_green",
+          "blue",
+          "blue_violet",
+          "cadet_blue",
+          "chocolate",
+          "coral",
+          "dodger_blue",
+          "firebrick",
+          "golden_rod",
+          "green",
+          "hot_pink",
+          "orange_red",
+          "red",
+          "sea_green",
+          "spring_green",
+          "yellow_green",
         ],
       },
     ],
@@ -362,7 +491,12 @@ export const twitchCommands: Command[] = [
     description: "Change the stream title",
     role: "broadcaster",
     options: [
-      { name: "title", description: "New stream title", type: "string", required: true },
+      {
+        name: "title",
+        description: "New stream title",
+        type: "string",
+        required: true,
+      },
     ],
     execute: async ({ title }, ctx) => {
       await modifyChannelInformation({

@@ -23,7 +23,7 @@ async function renderBadgeBytes(count: number): Promise<number[] | null> {
   ctx.textBaseline = "middle";
   ctx.fillText(count > 9 ? "9+" : String(count), 16, 17);
   const blob = await new Promise<Blob | null>((r) =>
-    canvas.toBlob((b) => r(b), "image/png"),
+    canvas.toBlob((b) => r(b), "image/png")
   );
   if (!blob) return null;
   return Array.from(new Uint8Array(await blob.arrayBuffer()));

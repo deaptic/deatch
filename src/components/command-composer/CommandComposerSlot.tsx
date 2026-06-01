@@ -21,7 +21,10 @@ export default function CommandComposerSlot(props: Props) {
       fallback={
         <button
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); props.onActivate(); }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            props.onActivate();
+          }}
           class={`inline-flex items-center px-2 py-1 rounded text-base transition-colors cursor-pointer ${
             props.isFilled
               ? "bg-bg-light text-text hover:bg-bg-light/80"
@@ -30,7 +33,9 @@ export default function CommandComposerSlot(props: Props) {
         >
           {props.isFilled
             ? props.displayLabel
-            : `${props.option.name}${props.option.required === false ? "?" : ""}`}
+            : `${props.option.name}${
+              props.option.required === false ? "?" : ""
+            }`}
         </button>
       }
     >

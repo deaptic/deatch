@@ -13,9 +13,9 @@ import {
 import { resetChannelBadgeCache } from "../services/badges.ts";
 import { sessionManager } from "../managers/SessionManager.ts";
 import {
+  loadLastChannel,
   selectedChannel,
   setSelectedChannel,
-  loadLastChannel,
 } from "../stores/channels.ts";
 import { watchMode } from "../stores/watch.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
@@ -25,8 +25,9 @@ let userScopedFetched = false;
 function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
-  fetchAllPages<UserRef>("get_moderated_channels", (after, opts) =>
-    getModeratedChannels({ after }, opts),
+  fetchAllPages<UserRef>(
+    "get_moderated_channels",
+    (after, opts) => getModeratedChannels({ after }, opts),
   )
     .then(setModeratedChannels)
     .catch(() => {});
@@ -44,7 +45,7 @@ export type SessionDeps = {
   selectChannel: ChannelNavigation["selectChannel"];
   setLiveLoaded: (loaded: boolean) => void;
   leaveAll(): void;
-}
+};
 
 export function createSessionLifecycle(deps: SessionDeps): void {
   onMount(() => {

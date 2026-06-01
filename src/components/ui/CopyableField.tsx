@@ -14,7 +14,9 @@ export default function CopyableField(props: Props) {
     <span
       class={`inline-flex items-center min-w-0 text-text-muted/70 ${
         props.icon ? "gap-1.5" : ""
-      } ${props.copy ? "cursor-pointer hover:text-text" : ""} ${props.class ?? ""}`}
+      } ${props.copy ? "cursor-pointer hover:text-text" : ""} ${
+        props.class ?? ""
+      }`}
       title={props.title ?? (props.copy ? "Click to copy" : undefined)}
       onClick={() => props.copy && copyField(props.copy)}
     >

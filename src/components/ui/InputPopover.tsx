@@ -42,7 +42,9 @@ export default function InputPopover(props: Props) {
         >
           <Show
             when={!props.loading}
-            fallback={<div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />}
+            fallback={
+              <div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
+            }
           >
             <Check class="w-4 h-4" />
           </Show>

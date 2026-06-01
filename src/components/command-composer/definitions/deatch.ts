@@ -2,11 +2,15 @@ import { banUser } from "../../../lib/api/twitch/moderation.ts";
 import { createClip } from "../../../lib/api/twitch/clips.ts";
 import { getStreams } from "../../../lib/api/twitch/streams.ts";
 import { getFollowedChannels } from "../../../lib/api/twitch/channels.ts";
-import { user, userCache, chattersByChannel } from "../../../lib/stores/users.ts";
 import {
-  setUserNickname,
-  removeUserNickname,
+  chattersByChannel,
+  user,
+  userCache,
+} from "../../../lib/stores/users.ts";
+import {
   muteUser,
+  removeUserNickname,
+  setUserNickname,
   unmuteUser,
 } from "../../../lib/stores/preferences.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
@@ -39,7 +43,12 @@ export const deatchCommands: Command[] = [
     description: "Open a user's profile card",
     role: "regular",
     options: [
-      { name: "username", description: "User to view", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to view",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }, ctx) => {
       ctx.openUserCard(username as string);
@@ -50,7 +59,12 @@ export const deatchCommands: Command[] = [
     description: "Clear a user's recent messages",
     role: "mod",
     options: [
-      { name: "username", description: "User to purge", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to purge",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }, ctx) => {
       await banUser({
@@ -95,7 +109,10 @@ export const deatchCommands: Command[] = [
           clip: { id: clip.id },
         });
       } catch {
-        appendLocalNotice(ctx.broadcasterId, "Failed to create clip (stream may be offline)");
+        appendLocalNotice(
+          ctx.broadcasterId,
+          "Failed to create clip (stream may be offline)",
+        );
       }
     },
   },
@@ -134,7 +151,10 @@ export const deatchCommands: Command[] = [
         });
         const f = r[0];
         if (!f) {
-          appendLocalNotice(ctx.broadcasterId, "You're not following this channel");
+          appendLocalNotice(
+            ctx.broadcasterId,
+            "You're not following this channel",
+          );
           return;
         }
         appendLocalNotice(
@@ -151,8 +171,18 @@ export const deatchCommands: Command[] = [
     description: "Set a custom display name for a user (only visible to you)",
     role: "regular",
     options: [
-      { name: "username", description: "User to rename", type: "user", required: true },
-      { name: "nickname", description: "Name to display instead", type: "string", required: true },
+      {
+        name: "username",
+        description: "User to rename",
+        type: "user",
+        required: true,
+      },
+      {
+        name: "nickname",
+        description: "Name to display instead",
+        type: "string",
+        required: true,
+      },
     ],
     execute: async ({ username, nickname }) => {
       const login = loginFromUserId(username as string);
@@ -165,7 +195,12 @@ export const deatchCommands: Command[] = [
     description: "Clear a user's custom nickname",
     role: "regular",
     options: [
-      { name: "username", description: "User to reset", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to reset",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }) => {
       const login = loginFromUserId(username as string);
@@ -178,7 +213,12 @@ export const deatchCommands: Command[] = [
     description: "Hide a user's messages (only affects your view)",
     role: "regular",
     options: [
-      { name: "username", description: "User to mute", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to mute",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }) => {
       muteUser(username as string);
@@ -189,7 +229,12 @@ export const deatchCommands: Command[] = [
     description: "Show a user's messages again",
     role: "regular",
     options: [
-      { name: "username", description: "User to unmute", type: "user", required: true },
+      {
+        name: "username",
+        description: "User to unmute",
+        type: "user",
+        required: true,
+      },
     ],
     execute: async ({ username }) => {
       unmuteUser(username as string);

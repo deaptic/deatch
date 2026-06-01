@@ -9,7 +9,10 @@ type Props = {
   entries: KeyValueEntry[];
   keyPlaceholder?: string;
   valuePlaceholder?: string;
-  onApply: (key: string, value: string) => void | boolean | Promise<void | boolean>;
+  onApply: (
+    key: string,
+    value: string,
+  ) => void | boolean | Promise<void | boolean>;
   onRemove: (key: string) => void;
 };
 
@@ -53,7 +56,10 @@ export default function KeyValueEditor(props: Props) {
               }
               return (
                 <div class="flex items-center gap-2 bg-bg-light/40 border border-border rounded px-2 py-1">
-                  <span class="text-text text-sm flex-1 truncate" title={entry.key}>
+                  <span
+                    class="text-text text-sm flex-1 truncate"
+                    title={entry.key}
+                  >
                     {entry.key}
                   </span>
                   <span class="text-text-muted text-xs">→</span>
@@ -92,14 +98,18 @@ export default function KeyValueEditor(props: Props) {
           placeholder={props.keyPlaceholder ?? "Key"}
           value={keyInput()}
           onInput={(e) => setKeyInput(e.currentTarget.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") apply(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") apply();
+          }}
         />
         <TextInput
           class="flex-1 min-w-0"
           placeholder={props.valuePlaceholder ?? "Value"}
           value={valueInput()}
           onInput={(e) => setValueInput(e.currentTarget.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") apply(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") apply();
+          }}
         />
         <Button
           onClick={apply}
@@ -109,7 +119,9 @@ export default function KeyValueEditor(props: Props) {
         >
           <Show
             when={!busy()}
-            fallback={<div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />}
+            fallback={
+              <div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
+            }
           >
             <Check class="w-4 h-4" />
           </Show>

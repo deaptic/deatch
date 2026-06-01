@@ -1,18 +1,18 @@
 import { batch, createEffect } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
 import {
+  rememberUser,
   selectedChannel,
   setSelectedChannel,
   usersById,
-  rememberUser,
 } from "../stores/channels.ts";
 import {
-  watchMode,
-  watchedChannel,
-  watchWarmedChannels,
   setWatchMode,
+  watchedChannel,
+  watchMode,
+  watchWarmedChannels,
 } from "../stores/watch.ts";
-import { snapshotDivider, ensureFeed, markSeen } from "../stores/feeds.ts";
+import { ensureFeed, markSeen, snapshotDivider } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
 import { scrollToMessage } from "../services/feeds.ts";
 
@@ -20,7 +20,7 @@ export type ChannelNavigation = {
   applySelection(ch: User): void;
   selectChannel(ch: User, fromWatched?: boolean): void;
   jumpToMessage(channelId: string, messageId: string): void;
-}
+};
 
 export function createChannelNavigation(): ChannelNavigation {
   function applySelection(ch: User) {

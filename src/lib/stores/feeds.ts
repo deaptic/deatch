@@ -1,10 +1,10 @@
 import { createStore, produce } from "solid-js/store";
-import type { FeedItem, BadgeMap } from "../types/feed.ts";
+import type { BadgeMap, FeedItem } from "../types/feed.ts";
 import { NOTICE_TO_EVENT } from "../constants.ts";
 import { selectedChannel } from "./channels.ts";
 import { recordChatter, user } from "./users.ts";
 import { feedEvents, feedUserMuted } from "./preferences.ts";
-import { pushSentHistory, appendSentHistoryOlder } from "./chatHistory.ts";
+import { appendSentHistoryOlder, pushSentHistory } from "./chatHistory.ts";
 
 function ownMessageText(item: FeedItem): string | null {
   if (item.kind !== "message") return null;
@@ -110,7 +110,9 @@ export function markMessageDeleted(id: string, messageId: string) {
   setFeeds(
     id,
     produce((f) => {
-      const m = f.messages.find((m) => m.kind === "message" && m.message_id === messageId);
+      const m = f.messages.find((m) =>
+        m.kind === "message" && m.message_id === messageId
+      );
       if (m && m.kind === "message") m.deleted = true;
     }),
   );
@@ -122,7 +124,9 @@ export function markUserMessagesDeleted(id: string, userId: string) {
     id,
     produce((f) => {
       for (const m of f.messages) {
-        if (m.kind === "message" && m.chatter_user_id === userId) m.deleted = true;
+        if (m.kind === "message" && m.chatter_user_id === userId) {
+          m.deleted = true;
+        }
       }
     }),
   );

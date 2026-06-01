@@ -1,9 +1,9 @@
-import { For, Show, createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import {
+  type BannedUser,
   banUser,
   getBannedUsers,
   unbanUser,
-  type BannedUser,
 } from "../../lib/api/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
 import TextInput from "../ui/TextInput.tsx";
@@ -42,9 +42,13 @@ function formatDate(iso: string) {
 
 export default function BanModal(props: Props) {
   const [reason, setReason] = createSignal("");
-  const [pending, setPending] = createSignal<number | "ban" | "unban" | null>(null);
+  const [pending, setPending] = createSignal<number | "ban" | "unban" | null>(
+    null,
+  );
   // undefined = loading, null = not banned, object = banned with details.
-  const [banInfo, setBanInfo] = createSignal<BanInfo | null | undefined>(undefined);
+  const [banInfo, setBanInfo] = createSignal<BanInfo | null | undefined>(
+    undefined,
+  );
 
   const isBroadcaster = () => user()?.id === props.broadcasterId;
 
@@ -84,7 +88,10 @@ export default function BanModal(props: Props) {
     if (pending() !== null) return;
     setPending("unban");
     try {
-      await unbanUser({ broadcasterId: props.broadcasterId, userId: props.userId });
+      await unbanUser({
+        broadcasterId: props.broadcasterId,
+        userId: props.userId,
+      });
       props.onClose();
     } finally {
       setPending(null);
@@ -95,7 +102,9 @@ export default function BanModal(props: Props) {
     shortcutManager.setContext("banModalOpen", true);
     const unbindEsc = shortcutManager.registerLocal(
       "escape",
-      () => { props.onClose(); },
+      () => {
+        props.onClose();
+      },
       "banModalOpen",
     );
     onCleanup(() => {
@@ -120,11 +129,15 @@ export default function BanModal(props: Props) {
   return (
     <div
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={(e) => { if (e.target === e.currentTarget) props.onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) props.onClose();
+      }}
     >
       <div class="bg-bg border border-border-muted rounded-lg shadow-2xl w-96 p-4 flex flex-col gap-4">
         <div class="flex flex-col gap-1">
-          <span class="text-text text-sm font-semibold">Ban / Timeout {props.userName}</span>
+          <span class="text-text text-sm font-semibold">
+            Ban / Timeout {props.userName}
+          </span>
           <span class="text-text-muted text-xs">
             Pick a timeout duration, ban, or remove an existing ban.
           </span>
@@ -135,13 +148,17 @@ export default function BanModal(props: Props) {
             <div class="bg-danger/10 border border-danger/40 rounded p-2.5 flex flex-col gap-1 text-xs">
               <span class="text-text">
                 {info().expiresAt ? "Timed out" : "Banned"} by{" "}
-                <span class="font-semibold">{info().moderator.displayName}</span>
+                <span class="font-semibold">
+                  {info().moderator.displayName}
+                </span>
               </span>
               <Show when={info().reason}>
                 <span class="text-text-muted">Reason: {info().reason}</span>
               </Show>
               <Show when={info().expiresAt}>
-                <span class="text-text-muted">Expires: {formatDate(info().expiresAt)}</span>
+                <span class="text-text-muted">
+                  Expires: {formatDate(info().expiresAt)}
+                </span>
               </Show>
             </div>
           )}
@@ -202,10 +219,10 @@ export default function BanModal(props: Props) {
               {pending() === "ban" || pending() === "unban"
                 ? "…"
                 : banInfo() === undefined
-                  ? "…"
-                  : banInfo()
-                    ? "Unban"
-                    : "Ban"}
+                ? "…"
+                : banInfo()
+                ? "Unban"
+                : "Ban"}
             </Button>
           </Show>
         </div>

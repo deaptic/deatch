@@ -13,7 +13,11 @@ type UserIdentity = { userId?: string; login?: string; displayName?: string };
 type Props = {
   frag: Fragment;
   emotes: EmoteMap;
-  onShowUserCard?: (x: number, y: number, identity: { userId?: string; login?: string }) => void;
+  onShowUserCard?: (
+    x: number,
+    y: number,
+    identity: { userId?: string; login?: string },
+  ) => void;
   onUserContextMenu?: (x: number, y: number, identity: UserIdentity) => void;
 };
 
@@ -26,8 +30,8 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
         return (
           <Show
             when={emoteUrl()}
-            fallback={
-              URL_RE.test(token) ? (
+            fallback={URL_RE.test(token)
+              ? (
                 <a
                   href="#"
                   onClick={(e) => {
@@ -38,12 +42,15 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
                 >
                   {token}
                 </a>
-              ) : (
-                <span class="text-text">{token}</span>
               )
-            }
+              : <span class="text-text">{token}</span>}
           >
-            <img src={emoteUrl()!} alt={token} title={token} class={INLINE_EMOTE} />
+            <img
+              src={emoteUrl()!}
+              alt={token}
+              title={token}
+              class={INLINE_EMOTE}
+            />
           </Show>
         );
       }}
@@ -67,12 +74,17 @@ export default function FeedMessageFragment(props: Props) {
       return (
         <span
           class="text-primary font-medium cursor-pointer hover:underline"
-          onClick={(e) => props.onShowUserCard?.(e.clientX, e.clientY, { login: frag.user_login })}
+          onClick={(e) =>
+            props.onShowUserCard?.(e.clientX, e.clientY, {
+              login: frag.user_login,
+            })}
           onContextMenu={(e) => {
             if (!props.onUserContextMenu) return;
             e.preventDefault();
             e.stopPropagation();
-            props.onUserContextMenu(e.clientX, e.clientY, { login: frag.user_login });
+            props.onUserContextMenu(e.clientX, e.clientY, {
+              login: frag.user_login,
+            });
           }}
           onAuxClick={(e) => {
             if (e.button !== 1) return;

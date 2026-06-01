@@ -22,11 +22,19 @@ export default function Stepper(props: Props) {
 
   return (
     <div class={`flex items-center ${gap()}`}>
-      <button onClick={props.onDecrement} class={btnClass()} aria-label="Decrease">
+      <button
+        onClick={props.onDecrement}
+        class={btnClass()}
+        aria-label="Decrease"
+      >
         <Minus class={iconClass()} />
       </button>
       <span class={labelClass()}>{props.label}</span>
-      <button onClick={props.onIncrement} class={btnClass()} aria-label="Increase">
+      <button
+        onClick={props.onIncrement}
+        class={btnClass()}
+        aria-label="Increase"
+      >
         <Plus class={iconClass()} />
       </button>
     </div>

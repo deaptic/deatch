@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount, Show, type JSX } from "solid-js";
+import { createSignal, type JSX, onCleanup, onMount, Show } from "solid-js";
 import StreamTooltip from "./StreamTooltip.tsx";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
@@ -83,7 +83,6 @@ export default function MenuSectionItem(props: Props) {
             }`}
           />
           <Show when={(props.mentions ?? 0) > 0}>
-
             <div class="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-danger rounded-full border-2 border-bg flex items-center justify-center">
               <span class="text-[10px] font-bold text-text leading-none tabular-nums">
                 {props.mentions! > 99 ? "99+" : props.mentions}
@@ -99,7 +98,9 @@ export default function MenuSectionItem(props: Props) {
             x={t().x}
             y={t().y}
             user={props.channel}
-            stream={props.status === "live" ? streamForUserId(props.channel.id) : undefined}
+            stream={props.status === "live"
+              ? streamForUserId(props.channel.id)
+              : undefined}
           />
         )}
       </Show>

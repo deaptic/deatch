@@ -21,16 +21,19 @@ import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import { moderatedChannels } from "../../lib/stores/users.ts";
-import type { FeedMessage as Message, FeedEvent as EventItem } from "../../lib/types/index.ts";
+import type {
+  FeedEvent as EventItem,
+  FeedMessage as Message,
+} from "../../lib/types/index.ts";
 import {
+  clearDivider,
+  markSeen,
   setPaused as setFeedPaused,
   trimToLatest,
-  markSeen,
-  clearDivider,
 } from "../../lib/stores/feeds.ts";
 import {
-  feedFontSize,
   advancedDeveloperMode,
+  feedFontSize,
   feedShowCopypasta,
   moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
@@ -49,11 +52,17 @@ type Props = {
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
-async function resolveIdentity(identity: Identity): Promise<ResolvedIdentity | null> {
+async function resolveIdentity(
+  identity: Identity,
+): Promise<ResolvedIdentity | null> {
   const { userId, login, displayName } = identity;
   if (userId && login && displayName) return { userId, login, displayName };
   try {
-    const params = userId ? { ids: [userId] } : login ? { logins: [login] } : null;
+    const params = userId
+      ? { ids: [userId] }
+      : login
+      ? { logins: [login] }
+      : null;
     if (!params) return null;
     const users = await getUsers(params);
     const u = users[0];
@@ -66,21 +75,29 @@ async function resolveIdentity(identity: Identity): Promise<ResolvedIdentity | n
 
 export default function Chat(props: Props) {
   const messageMenu = createPopover<{ msg: Message }>();
-  const userMenu = createPopover<{ userId: string; userLogin: string; userDisplayName: string }>();
+  const userMenu = createPopover<
+    { userId: string; userLogin: string; userDisplayName: string }
+  >();
   const eventMenu = createPopover<{ item: EventItem }>();
   const userCard = createPopover<{ chatterId: string }>();
   const nickname = createNicknameEditor();
   const fontSize = createFontSizeWheel();
 
-  const [replyTo, setReplyTo] = createSignal<{ messageId: string; name: string; text: string } | null>(null);
-  const [modAction, setModAction] = createSignal<{ userId: string; userName: string } | null>(null);
+  const [replyTo, setReplyTo] = createSignal<
+    { messageId: string; name: string; text: string } | null
+  >(null);
+  const [modAction, setModAction] = createSignal<
+    { userId: string; userName: string } | null
+  >(null);
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
-  let inputApi: { focus: () => void; insert: (text: string) => void } | undefined;
+  let inputApi:
+    | { focus: () => void; insert: (text: string) => void }
+    | undefined;
 
   const isMod = createMemo(() =>
     !moderationActionsDisabled() &&
     (props.broadcasterLogin === props.userLogin ||
-      moderatedChannels().some((c) => c.id === props.broadcasterId)),
+      moderatedChannels().some((c) => c.id === props.broadcasterId))
   );
 
   onMount(() => loadBacklog(props.broadcasterId, props.broadcasterLogin));
@@ -100,7 +117,9 @@ export default function Chat(props: Props) {
     feedFontSize();
     const api = feedApi();
     if (!api) return;
-    requestAnimationFrame(() => { if (!api.isPaused()) api.scrollToBottom(); });
+    requestAnimationFrame(() => {
+      if (!api.isPaused()) api.scrollToBottom();
+    });
   });
 
   function startReply(msg: Message) {
@@ -128,7 +147,10 @@ export default function Chat(props: Props) {
     let fragments = msg.fragments;
     if (msg.reply) {
       const [first, ...rest] = fragments;
-      if (first.type === "mention" && first.user_login === msg.reply.parent_user_login) {
+      if (
+        first.type === "mention" &&
+        first.user_login === msg.reply.parent_user_login
+      ) {
         if (rest[0]?.type === "text") {
           const trimmed = rest[0].text.trimStart();
           fragments = trimmed
@@ -160,7 +182,13 @@ export default function Chat(props: Props) {
 
   async function openUserContextMenu(x: number, y: number, identity: Identity) {
     const r = await resolveIdentity(identity);
-    if (r) userMenu.open(x, y, { userId: r.userId, userLogin: r.login, userDisplayName: r.displayName });
+    if (r) {
+      userMenu.open(x, y, {
+        userId: r.userId,
+        userLogin: r.login,
+        userDisplayName: r.displayName,
+      });
+    }
   }
 
   function openUserCardFromInput(userId: string) {
@@ -178,18 +206,34 @@ export default function Chat(props: Props) {
       if (m) fn(m);
     };
     return [
-      shortcutManager.registerLocal("shift-up", () => { feedApi()?.moveSelection(-1); }),
-      shortcutManager.registerLocal("shift-down", () => { feedApi()?.moveSelection(1); }),
-      shortcutManager.registerLocal("up", () => { feedApi()?.moveSelection(-1); }, "feedSelected"),
-      shortcutManager.registerLocal("down", () => { feedApi()?.moveSelection(1); }, "feedSelected"),
+      shortcutManager.registerLocal("shift-up", () => {
+        feedApi()?.moveSelection(-1);
+      }),
+      shortcutManager.registerLocal("shift-down", () => {
+        feedApi()?.moveSelection(1);
+      }),
+      shortcutManager.registerLocal("up", () => {
+        feedApi()?.moveSelection(-1);
+      }, "feedSelected"),
+      shortcutManager.registerLocal("down", () => {
+        feedApi()?.moveSelection(1);
+      }, "feedSelected"),
       shortcutManager.registerLocal("escape", () => {
         feedApi()?.clearSelection();
         inputApi?.focus();
       }, "feedSelected"),
-      shortcutManager.registerLocal("enter", withSelected(startReply), "feedSelected"),
-      shortcutManager.registerLocal("c", withSelected((m) => {
-        copyField(m.fragments.map((f) => f.text).join(""));
-      }), "feedSelected"),
+      shortcutManager.registerLocal(
+        "enter",
+        withSelected(startReply),
+        "feedSelected",
+      ),
+      shortcutManager.registerLocal(
+        "c",
+        withSelected((m) => {
+          copyField(m.fragments.map((f) => f.text).join(""));
+        }),
+        "feedSelected",
+      ),
     ];
   }
 
@@ -218,7 +262,8 @@ export default function Chat(props: Props) {
         onReply={startReply}
         onReact={react}
         onCopypasta={copypasta}
-        onJumpToMessage={(messageId) => props.onJumpToMessage(props.broadcasterId, messageId)}
+        onJumpToMessage={(messageId) =>
+          props.onJumpToMessage(props.broadcasterId, messageId)}
         onShowUserCard={openUserCard}
         onUserContextMenu={openUserContextMenu}
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
@@ -250,7 +295,9 @@ export default function Chat(props: Props) {
         replyTo={replyTo}
         onClearReply={clearReply}
         openUserCard={openUserCardFromInput}
-        ref={(api) => { inputApi = api; }}
+        ref={(api) => {
+          inputApi = api;
+        }}
       />
 
       <Show when={messageMenu.state()}>
@@ -282,8 +329,10 @@ export default function Chat(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={userMenu.close}
             onModerate={(t) => setModAction(t)}
-            onEditNickname={(login, _displayName, x, y) => nickname.open(login, x, y)}
-            onShowProfile={(x, y, userId) => userCard.open(x, y, { chatterId: userId })}
+            onEditNickname={(login, _displayName, x, y) =>
+              nickname.open(login, x, y)}
+            onShowProfile={(x, y, userId) =>
+              userCard.open(x, y, { chatterId: userId })}
             onMention={mentionUser}
           />
         )}
@@ -300,7 +349,8 @@ export default function Chat(props: Props) {
             onClose={userCard.close}
             onJumpToMessage={props.onJumpToMessage}
             onSwitchUser={async (identity) => {
-              const id = identity.userId ?? (await resolveIdentity(identity))?.userId;
+              const id = identity.userId ??
+                (await resolveIdentity(identity))?.userId;
               if (id) userCard.update({ chatterId: id });
             }}
           />

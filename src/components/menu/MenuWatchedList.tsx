@@ -1,12 +1,12 @@
 import { Volume2, VolumeOff } from "lucide-solid";
-import { Show, For, createEffect } from "solid-js";
+import { createEffect, For, Show } from "solid-js";
 import Navigation from "../ui/Navigation.tsx";
 import MenuSection from "./MenuSection.tsx";
 import MenuSectionItem from "./MenuSectionItem.tsx";
 import ScrollChevron from "../ui/ScrollChevron.tsx";
 import {
-  watchWarmedChannels,
   watchMutedByLogin,
+  watchWarmedChannels,
 } from "../../lib/stores/watch.ts";
 import { watchSetMuted } from "../../lib/api/watch.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
@@ -20,7 +20,7 @@ type Props = {
   onSelect: (ch: User, fromWatched?: boolean) => void;
   onOpenInBrowser: (ch: User) => void;
   onContextMenu: (ch: User, x: number, y: number) => void;
-}
+};
 
 export default function MenuWatchedList(props: Props) {
   const scroll = createScrollAffordance();
@@ -34,7 +34,10 @@ export default function MenuWatchedList(props: Props) {
       <MenuSection divider="top">
         <div class="relative">
           <Show when={scroll.canUp()}>
-            <ScrollChevron direction="up" onClick={() => scroll.scrollByOne(-1)} />
+            <ScrollChevron
+              direction="up"
+              onClick={() => scroll.scrollByOne(-1)}
+            />
           </Show>
           <div
             ref={scroll.setRef}
@@ -64,9 +67,9 @@ export default function MenuWatchedList(props: Props) {
                           <div
                             role="button"
                             tabindex="0"
-                            title={
-                              isMuted() ? "Unmute browser tab" : "Mute browser tab"
-                            }
+                            title={isMuted()
+                              ? "Unmute browser tab"
+                              : "Mute browser tab"}
                             onClick={(e) => {
                               e.stopPropagation();
                               void watchSetMuted(ch?.login, !isMuted());
@@ -94,7 +97,10 @@ export default function MenuWatchedList(props: Props) {
             </Navigation>
           </div>
           <Show when={scroll.canDown()}>
-            <ScrollChevron direction="down" onClick={() => scroll.scrollByOne(1)} />
+            <ScrollChevron
+              direction="down"
+              onClick={() => scroll.scrollByOne(1)}
+            />
           </Show>
         </div>
       </MenuSection>

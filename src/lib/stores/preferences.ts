@@ -1,5 +1,5 @@
 import { createStore, produce, unwrap } from "solid-js/store";
-import type { EventKey, BadgeCategoryKey } from "../constants.ts";
+import type { BadgeCategoryKey, EventKey } from "../constants.ts";
 import defaults from "./default-preferences.json";
 import { addToast } from "./toasts.ts";
 
@@ -63,7 +63,9 @@ function sanitizeAppearanceColors(raw: unknown): Record<string, string> {
 function sanitizeNicknames(raw: unknown): Record<string, string> {
   if (!raw || typeof raw !== "object") return {};
   const out: Record<string, string> = {};
-  for (const [login, nickname] of Object.entries(raw as Record<string, unknown>)) {
+  for (
+    const [login, nickname] of Object.entries(raw as Record<string, unknown>)
+  ) {
     if (typeof nickname !== "string") continue;
     const trimmedLogin = login.trim().toLowerCase();
     const trimmedNick = nickname.trim();
@@ -84,37 +86,51 @@ function load(): UserPreferences {
     return {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
-        showTimestamp: stored.feed?.showTimestamp ?? DEFAULT_PREFERENCES.feed.showTimestamp,
-        showDeletedContent: stored.feed?.showDeletedContent ?? DEFAULT_PREFERENCES.feed.showDeletedContent,
-        showCopypasta: stored.feed?.showCopypasta ?? DEFAULT_PREFERENCES.feed.showCopypasta,
+        showTimestamp: stored.feed?.showTimestamp ??
+          DEFAULT_PREFERENCES.feed.showTimestamp,
+        showDeletedContent: stored.feed?.showDeletedContent ??
+          DEFAULT_PREFERENCES.feed.showDeletedContent,
+        showCopypasta: stored.feed?.showCopypasta ??
+          DEFAULT_PREFERENCES.feed.showCopypasta,
         keywords: Array.isArray(stored.feed?.keywords)
-          ? stored.feed!.keywords.filter((k): k is string => typeof k === "string" && k.trim().length > 0)
+          ? stored.feed!.keywords.filter((k): k is string =>
+            typeof k === "string" && k.trim().length > 0
+          )
           : DEFAULT_PREFERENCES.feed.keywords,
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {
-          muted: (stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted).filter((s) => /^\d+$/.test(s)),
-          showDisplayName: stored.feed?.users?.showDisplayName ?? DEFAULT_PREFERENCES.feed.users.showDisplayName,
-          overrideNameColor: stored.feed?.users?.overrideNameColor ?? DEFAULT_PREFERENCES.feed.users.overrideNameColor,
+          muted:
+            (stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted)
+              .filter((s) => /^\d+$/.test(s)),
+          showDisplayName: stored.feed?.users?.showDisplayName ??
+            DEFAULT_PREFERENCES.feed.users.showDisplayName,
+          overrideNameColor: stored.feed?.users?.overrideNameColor ??
+            DEFAULT_PREFERENCES.feed.users.overrideNameColor,
           nicknames: sanitizeNicknames(stored.feed?.users?.nicknames),
         },
       },
       notifications: {
-        mentionSound: stored.notifications?.mentionSound ?? DEFAULT_PREFERENCES.notifications.mentionSound,
+        mentionSound: stored.notifications?.mentionSound ??
+          DEFAULT_PREFERENCES.notifications.mentionSound,
       },
       moderation: {
-        autoShoutoutOnRaid:
-          stored.moderation?.autoShoutoutOnRaid ?? DEFAULT_PREFERENCES.moderation.autoShoutoutOnRaid,
-        actionsDisabled:
-          stored.moderation?.actionsDisabled ?? DEFAULT_PREFERENCES.moderation.actionsDisabled,
+        autoShoutoutOnRaid: stored.moderation?.autoShoutoutOnRaid ??
+          DEFAULT_PREFERENCES.moderation.autoShoutoutOnRaid,
+        actionsDisabled: stored.moderation?.actionsDisabled ??
+          DEFAULT_PREFERENCES.moderation.actionsDisabled,
       },
       advanced: {
-        developerMode: stored.advanced?.developerMode ?? DEFAULT_PREFERENCES.advanced.developerMode,
-        showLogs: stored.advanced?.showLogs ?? DEFAULT_PREFERENCES.advanced.showLogs,
-        alwaysOnTop: stored.advanced?.alwaysOnTop ?? DEFAULT_PREFERENCES.advanced.alwaysOnTop,
-        autostart: stored.advanced?.autostart ?? DEFAULT_PREFERENCES.advanced.autostart,
-        discordRichPresence:
-          stored.advanced?.discordRichPresence ?? DEFAULT_PREFERENCES.advanced.discordRichPresence,
+        developerMode: stored.advanced?.developerMode ??
+          DEFAULT_PREFERENCES.advanced.developerMode,
+        showLogs: stored.advanced?.showLogs ??
+          DEFAULT_PREFERENCES.advanced.showLogs,
+        alwaysOnTop: stored.advanced?.alwaysOnTop ??
+          DEFAULT_PREFERENCES.advanced.alwaysOnTop,
+        autostart: stored.advanced?.autostart ??
+          DEFAULT_PREFERENCES.advanced.autostart,
+        discordRichPresence: stored.advanced?.discordRichPresence ??
+          DEFAULT_PREFERENCES.advanced.discordRichPresence,
       },
       appearance: {
         colors: sanitizeAppearanceColors(stored.appearance?.colors),
@@ -134,7 +150,10 @@ let toastTimer: number | undefined;
 function persist() {
   localStorage.setItem("user_preferences", JSON.stringify(unwrap(prefs)));
   clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => addToast("Preferences saved", "success"), 800);
+  toastTimer = window.setTimeout(
+    () => addToast("Preferences saved", "success"),
+    800,
+  );
 }
 
 export const feedFontSize = () => prefs.feed.fontSize;
@@ -142,22 +161,28 @@ export const feedUserShowDisplayName = () => prefs.feed.users.showDisplayName;
 export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
-export const feedBadges = () => prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
-export const feedEvents = () => prefs.feed.events as Record<EventKey, EventPref>;
+export const feedBadges = () =>
+  prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
+export const feedEvents = () =>
+  prefs.feed.events as Record<EventKey, EventPref>;
 export const feedUserMuted = () => prefs.feed.users.muted;
 export const feedKeywords = () => prefs.feed.keywords;
-export const feedUserOverrideNameColor = () => prefs.feed.users.overrideNameColor;
+export const feedUserOverrideNameColor = () =>
+  prefs.feed.users.overrideNameColor;
 export const feedUserNicknames = () => prefs.feed.users.nicknames;
-export const feedUserNickname = (login: string) => prefs.feed.users.nicknames[login.toLowerCase()];
+export const feedUserNickname = (login: string) =>
+  prefs.feed.users.nicknames[login.toLowerCase()];
 export const menuChannelPinned = () => prefs.menu.channels.pinned;
 export const notificationsMentionSound = () => prefs.notifications.mentionSound;
-export const moderationAutoShoutoutOnRaid = () => prefs.moderation.autoShoutoutOnRaid;
+export const moderationAutoShoutoutOnRaid = () =>
+  prefs.moderation.autoShoutoutOnRaid;
 export const moderationActionsDisabled = () => prefs.moderation.actionsDisabled;
 export const advancedDeveloperMode = () => prefs.advanced.developerMode;
 export const advancedShowLogs = () => prefs.advanced.showLogs;
 export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
 export const advancedAutostart = () => prefs.advanced.autostart;
-export const advancedDiscordRichPresence = () => prefs.advanced.discordRichPresence;
+export const advancedDiscordRichPresence = () =>
+  prefs.advanced.discordRichPresence;
 export const appearanceColors = () => prefs.appearance.colors;
 
 export function setFeedFontSize(value: number) {
@@ -226,9 +251,14 @@ export function setUserNickname(login: string, nickname: string) {
 export function removeUserNickname(login: string) {
   const key = login.trim().toLowerCase();
   if (!key) return;
-  setPrefs("feed", "users", "nicknames", produce((n) => {
-    delete n[key];
-  }));
+  setPrefs(
+    "feed",
+    "users",
+    "nicknames",
+    produce((n) => {
+      delete n[key];
+    }),
+  );
   persist();
 }
 
@@ -258,7 +288,12 @@ export function pinChannel(user_id: string) {
 }
 
 export function unpinChannel(user_id: string) {
-  setPrefs("menu", "channels", "pinned", (p) => p.filter((id) => id !== user_id));
+  setPrefs(
+    "menu",
+    "channels",
+    "pinned",
+    (p) => p.filter((id) => id !== user_id),
+  );
   persist();
 }
 
@@ -319,16 +354,23 @@ export function setAppearanceColor(key: string, value: string) {
 }
 
 export function resetAppearanceColor(key: string) {
-  setPrefs("appearance", "colors", produce((c) => {
-    delete c[key];
-  }));
+  setPrefs(
+    "appearance",
+    "colors",
+    produce((c) => {
+      delete c[key];
+    }),
+  );
   persist();
 }
 
 export function resetAppearanceColors() {
-  setPrefs("appearance", "colors", produce((c) => {
-    for (const k of Object.keys(c)) delete c[k];
-  }));
+  setPrefs(
+    "appearance",
+    "colors",
+    produce((c) => {
+      for (const k of Object.keys(c)) delete c[k];
+    }),
+  );
   persist();
 }
-

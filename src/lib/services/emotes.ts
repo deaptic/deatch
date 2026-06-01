@@ -1,5 +1,11 @@
-import { bttvGetChannelEmotes, bttvGetGlobalEmotes } from "../api/external/bttv.ts";
-import { ffzGetChannelEmotes, ffzGetGlobalEmotes } from "../api/external/ffz.ts";
+import {
+  bttvGetChannelEmotes,
+  bttvGetGlobalEmotes,
+} from "../api/external/bttv.ts";
+import {
+  ffzGetChannelEmotes,
+  ffzGetGlobalEmotes,
+} from "../api/external/ffz.ts";
 import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
 import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat.ts";
 import { fetchAllPages } from "../api/utils.ts";
@@ -41,8 +47,9 @@ export async function ensureUserEmotesLoaded(): Promise<void> {
   }
 
   try {
-    const all = await fetchAllPages<UserEmote>("get_user_emotes", (after, opts) =>
-      getUserEmotes({ after }, opts),
+    const all = await fetchAllPages<UserEmote>(
+      "get_user_emotes",
+      (after, opts) => getUserEmotes({ after }, opts),
     );
     setUserEmotes(dedupeById(all));
     saveCache(key, all);
@@ -75,7 +82,9 @@ export async function loadGlobalEmotes(): Promise<Emote[]> {
 export function loadThirdPartyGlobalEmotes() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
-  seventvGetGlobalEmotes({ silent: true }).then(setSevenTvGlobal).catch(() => {});
+  seventvGetGlobalEmotes({ silent: true }).then(setSevenTvGlobal).catch(
+    () => {},
+  );
   bttvGetGlobalEmotes({ silent: true }).then(setBttvGlobal).catch(() => {});
   ffzGetGlobalEmotes({ silent: true }).then(setFfzGlobal).catch(() => {});
 }
@@ -96,11 +105,13 @@ export function loadChannelThirdPartyEmotes(
   channelId: string,
   channelLogin: string,
 ) {
-  cachedChannelFetch(`bttv:${channelId}`, () =>
-    bttvGetChannelEmotes({ channelId }, { silent: true }),
+  cachedChannelFetch(
+    `bttv:${channelId}`,
+    () => bttvGetChannelEmotes({ channelId }, { silent: true }),
   ).then(setBttvChannel);
-  cachedChannelFetch(`ffz:${channelLogin}`, () =>
-    ffzGetChannelEmotes({ channelLogin }, { silent: true }),
+  cachedChannelFetch(
+    `ffz:${channelLogin}`,
+    () => ffzGetChannelEmotes({ channelLogin }, { silent: true }),
   ).then(setFfzChannel);
 }
 

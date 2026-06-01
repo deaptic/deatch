@@ -1,7 +1,10 @@
 import { Ban } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { banUser, unbanUser } from "../../lib/api/twitch/moderation.ts";
-import { user as currentUser, moderatedChannels } from "../../lib/stores/users.ts";
+import {
+  moderatedChannels,
+  user as currentUser,
+} from "../../lib/stores/users.ts";
 import { moderationActionsDisabled } from "../../lib/stores/preferences.ts";
 import Button from "../ui/Button.tsx";
 

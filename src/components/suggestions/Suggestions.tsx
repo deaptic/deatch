@@ -1,4 +1,4 @@
-import { For, onMount, createSignal, createEffect, type JSX } from "solid-js";
+import { createEffect, createSignal, For, type JSX, onMount } from "solid-js";
 import SuggestionItem from "./SuggestionItem.tsx";
 
 type Props<T> = {
@@ -28,20 +28,42 @@ export default function Suggestions<T>(props: Props<T>) {
       handleKey: (e) => {
         const s = props.suggestions();
         if (s.length === 0) return false;
-        if (e.key === "ArrowDown") { e.preventDefault(); setAcIndex((i) => Math.min(i + 1, s.length - 1)); return true; }
-        if (e.key === "ArrowUp")   { e.preventDefault(); setAcIndex((i) => Math.max(i - 1, 0)); return true; }
-        if (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey)) { e.preventDefault(); props.onSelect(s[acIndex()]); return true; }
-        if (e.key === "Escape")    { e.preventDefault(); props.onDismiss(); return true; }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setAcIndex((i) => Math.min(i + 1, s.length - 1));
+          return true;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setAcIndex((i) => Math.max(i - 1, 0));
+          return true;
+        }
+        if (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey)) {
+          e.preventDefault();
+          props.onSelect(s[acIndex()]);
+          return true;
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          props.onDismiss();
+          return true;
+        }
         return false;
       },
     });
   });
 
   return (
-    <div ref={containerRef} class="absolute bottom-full left-0 right-0 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60">
+    <div
+      ref={containerRef}
+      class="absolute bottom-full left-0 right-0 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60"
+    >
       <For each={props.suggestions()}>
         {(s, i) => (
-          <SuggestionItem active={i() === acIndex()} onClick={() => props.onSelect(s)}>
+          <SuggestionItem
+            active={i() === acIndex()}
+            onClick={() => props.onSelect(s)}
+          >
             {props.renderItem(s)}
           </SuggestionItem>
         )}

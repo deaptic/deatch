@@ -126,7 +126,8 @@ export const BADGE_CATEGORIES = [
 export type BadgeCategoryKey = (typeof BADGE_CATEGORIES)[number]["key"];
 
 export function badgeCategoryFor(setId: string): BadgeCategoryKey {
-  for (const c of BADGE_CATEGORIES)
+  for (const c of BADGE_CATEGORIES) {
     if ((c.setIds as readonly string[]).includes(setId)) return c.key;
+  }
   return "vanity";
 }

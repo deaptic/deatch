@@ -1,16 +1,16 @@
-import { createSignal, createEffect, on, type Accessor } from "solid-js";
+import { type Accessor, createEffect, createSignal, on } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
 import { selectedChannel } from "../stores/channels.ts";
 import { menuChannelPinned } from "../stores/preferences.ts";
-import { user, isModOfChannel } from "../stores/users.ts";
+import { isModOfChannel, user } from "../stores/users.ts";
 import { watchWarmedChannels } from "../stores/watch.ts";
 import { eventSubManager } from "../managers/EventSubManager.ts";
 import { sevenTvManager } from "../managers/SevenTvManager.ts";
 import {
+  ALL_KINDS,
   CHAT_KINDS,
   MOD_KINDS,
   OWN_KINDS,
-  ALL_KINDS,
 } from "../types/twitch/eventsub.ts";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
@@ -19,7 +19,7 @@ export type ChannelSubscriptions = {
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
   leaveAll(): void;
-}
+};
 
 export function createChannelSubscriptions(): ChannelSubscriptions {
   const [liveStreams, setLiveStreams] = createSignal<User[]>([]);
@@ -31,7 +31,9 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
     setRenderedChannels((prev) => prev.filter((p) => p.id !== broadcasterId));
-    for (const k of ALL_KINDS) void eventSubManager.unsubscribe(broadcasterId, k);
+    for (const k of ALL_KINDS) {
+      void eventSubManager.unsubscribe(broadcasterId, k);
+    }
     void sevenTvManager.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
   }
@@ -43,7 +45,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
         if (prev && prev.id !== curr?.id) snapshotDivider(prev.id);
         if (curr) {
           setRenderedChannels((list) =>
-            list.some((p) => p.id === curr.id) ? list : [...list, curr],
+            list.some((p) => p.id === curr.id) ? list : [...list, curr]
           );
         }
       },

@@ -1,4 +1,4 @@
-import { For, Show, createEffect } from "solid-js";
+import { createEffect, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getUsers, type User } from "../../../lib/api/twitch/users.ts";
 import SettingsContent from "../SettingsContent.tsx";
@@ -17,29 +17,29 @@ import {
   setUserNicknameByLogin,
 } from "../../../lib/services/preferences.ts";
 import {
-  feedFontSize,
-  setFeedFontSize,
-  feedUserShowDisplayName,
-  setFeedUserShowDisplayName,
-  feedShowTimestamp,
-  setFeedShowTimestamp,
-  feedShowDeletedContent,
-  setFeedShowDeletedContent,
-  feedShowCopypasta,
-  setFeedShowCopypasta,
-  feedBadges,
-  setFeedBadge,
-  feedEvents,
-  setFeedEvent,
-  feedUserMuted,
-  unmuteUser,
-  feedKeywords,
   addFeedKeyword,
-  removeFeedKeyword,
-  feedUserOverrideNameColor,
-  setFeedUserOverrideNameColor,
+  feedBadges,
+  feedEvents,
+  feedFontSize,
+  feedKeywords,
+  feedShowCopypasta,
+  feedShowDeletedContent,
+  feedShowTimestamp,
+  feedUserMuted,
   feedUserNicknames,
+  feedUserOverrideNameColor,
+  feedUserShowDisplayName,
+  removeFeedKeyword,
   removeUserNickname,
+  setFeedBadge,
+  setFeedEvent,
+  setFeedFontSize,
+  setFeedShowCopypasta,
+  setFeedShowDeletedContent,
+  setFeedShowTimestamp,
+  setFeedUserOverrideNameColor,
+  setFeedUserShowDisplayName,
+  unmuteUser,
 } from "../../../lib/stores/preferences.ts";
 
 export default function FeedSection() {
@@ -57,7 +57,10 @@ export default function FeedSection() {
       .catch(() => {});
   });
 
-  async function applyNickname(login: string, nickname: string): Promise<boolean> {
+  async function applyNickname(
+    login: string,
+    nickname: string,
+  ): Promise<boolean> {
     return !!(await setUserNicknameByLogin(login, nickname));
   }
 
@@ -84,19 +87,31 @@ export default function FeedSection() {
           label="Show timestamps"
           description="Display the time next to each chat message."
         >
-          <Toggle size="md" checked={feedShowTimestamp()} onChange={setFeedShowTimestamp} />
+          <Toggle
+            size="md"
+            checked={feedShowTimestamp()}
+            onChange={setFeedShowTimestamp}
+          />
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Show deleted message contents"
           description="Display the original text of deleted messages, greyed out. When off, deleted messages render as <deleted>."
         >
-          <Toggle size="md" checked={feedShowDeletedContent()} onChange={setFeedShowDeletedContent} />
+          <Toggle
+            size="md"
+            checked={feedShowDeletedContent()}
+            onChange={setFeedShowDeletedContent}
+          />
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Copypasta button"
           description="Show a toolbar button on each message that re-sends the same text as your own."
         >
-          <Toggle size="md" checked={feedShowCopypasta()} onChange={setFeedShowCopypasta} />
+          <Toggle
+            size="md"
+            checked={feedShowCopypasta()}
+            onChange={setFeedShowCopypasta}
+          />
         </SettingsContentSectionItem>
       </SettingsContentSection>
 
@@ -110,7 +125,12 @@ export default function FeedSection() {
           <Show when={feedKeywords().length > 0}>
             <ChipList>
               <For each={feedKeywords()}>
-                {(kw) => <Chip label={kw} onRemove={() => removeFeedKeyword(kw)} />}
+                {(kw) => (
+                  <Chip
+                    label={kw}
+                    onRemove={() => removeFeedKeyword(kw)}
+                  />
+                )}
               </For>
             </ChipList>
           </Show>
@@ -122,7 +142,11 @@ export default function FeedSection() {
           label="Show display names in chat"
           description="Show users' chosen display names instead of their login."
         >
-          <Toggle size="md" checked={feedUserShowDisplayName()} onChange={setFeedUserShowDisplayName} />
+          <Toggle
+            size="md"
+            checked={feedUserShowDisplayName()}
+            onChange={setFeedUserShowDisplayName}
+          />
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Override name colors"
@@ -151,7 +175,8 @@ export default function FeedSection() {
               <For each={feedUserMuted()}>
                 {(id) => (
                   <Chip
-                    label={mutedMeta[id]?.displayName ?? mutedMeta[id]?.login ?? id}
+                    label={mutedMeta[id]?.displayName ?? mutedMeta[id]?.login ??
+                      id}
                     onRemove={() => unmuteUser(id)}
                   />
                 )}
@@ -165,7 +190,9 @@ export default function FeedSection() {
           stacked
         >
           <KeyValueEditor
-            entries={Object.entries(feedUserNicknames()).map(([key, value]) => ({ key, value }))}
+            entries={Object.entries(feedUserNicknames()).map((
+              [key, value],
+            ) => ({ key, value }))}
             keyPlaceholder="Username"
             valuePlaceholder="Nickname"
             onApply={applyNickname}
@@ -177,7 +204,10 @@ export default function FeedSection() {
       <SettingsContentSection title="Events">
         <For each={EVENTS}>
           {(e) => (
-            <SettingsContentSectionItem label={e.label} description={e.description}>
+            <SettingsContentSectionItem
+              label={e.label}
+              description={e.description}
+            >
               <Toggle
                 size="md"
                 checked={feedEvents()[e.key]?.show !== false}
@@ -191,7 +221,10 @@ export default function FeedSection() {
       <SettingsContentSection title="Badges">
         <For each={BADGE_CATEGORIES}>
           {(c) => (
-            <SettingsContentSectionItem label={c.label} description={c.description}>
+            <SettingsContentSectionItem
+              label={c.label}
+              description={c.description}
+            >
               <Toggle
                 size="md"
                 checked={feedBadges()[c.key]?.show !== false}

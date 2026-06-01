@@ -1,5 +1,5 @@
-import { splitProps, type JSX } from "solid-js";
-import { isPanelOpen, togglePanel, type Panel } from "../../lib/stores/ui.ts";
+import { type JSX, splitProps } from "solid-js";
+import { isPanelOpen, type Panel, togglePanel } from "../../lib/stores/ui.ts";
 
 type Variant = "primary" | "secondary" | "danger";
 
@@ -20,7 +20,13 @@ const TOGGLE_ACTIVE = "text-text bg-bg-light";
 const TOGGLE_INACTIVE = "text-text-muted hover:bg-bg hover:text-text";
 
 export default function Button(props: Props) {
-  const [local, others] = splitProps(props, ["class", "variant", "icon", "children", "toggle"]);
+  const [local, others] = splitProps(props, [
+    "class",
+    "variant",
+    "icon",
+    "children",
+    "toggle",
+  ]);
   const iconOnly = () => local.icon !== undefined && local.children == null;
   const isToggle = () => local.toggle !== undefined;
   const styleClass = () =>
@@ -34,10 +40,10 @@ export default function Button(props: Props) {
       {...others}
       {...(isToggle()
         ? {
-            onClick: () => togglePanel(local.toggle!),
-            onMouseDown: (e: MouseEvent) => e.preventDefault(),
-            "data-panel-toggle": local.toggle,
-          }
+          onClick: () => togglePanel(local.toggle!),
+          onMouseDown: (e: MouseEvent) => e.preventDefault(),
+          "data-panel-toggle": local.toggle,
+        }
         : {})}
       class={`shrink-0 h-8 flex items-center justify-center text-sm rounded cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
         iconOnly() ? "w-8" : "px-3 gap-1.5"

@@ -6,7 +6,7 @@ type Props = {
   onInput: (hex: string) => void;
   onReset: () => void;
   resetDisabled: boolean;
-}
+};
 
 export default function ColorPicker(props: Props) {
   return (

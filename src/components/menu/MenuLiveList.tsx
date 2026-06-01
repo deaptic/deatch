@@ -1,4 +1,4 @@
-import { Show, For } from "solid-js";
+import { For, Show } from "solid-js";
 import Navigation from "../ui/Navigation.tsx";
 import MenuSectionItem from "./MenuSectionItem.tsx";
 import { watchMode } from "../../lib/stores/watch.ts";
@@ -13,7 +13,7 @@ type Props = {
   onSelect: (ch: User) => void;
   onOpenInBrowser: (ch: User) => void;
   onContextMenu: (ch: User, x: number, y: number) => void;
-}
+};
 
 export default function MenuLiveList(props: Props) {
   return (

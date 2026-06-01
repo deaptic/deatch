@@ -11,12 +11,12 @@ import { isPanelOpen, togglePanel } from "../../lib/stores/ui.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
 import { selectedChannel } from "../../lib/stores/channels.ts";
-import { toasts, removeToast } from "../../lib/stores/toasts.ts";
+import { removeToast, toasts } from "../../lib/stores/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
 
 type AppLayoutProps = {
   controller: AppController;
-}
+};
 
 export default function AppLayout(props: AppLayoutProps) {
   const c = props.controller;

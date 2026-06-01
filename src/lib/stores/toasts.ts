@@ -23,10 +23,16 @@ const TYPE_DURATION: Record<ToastType, number> = {
 
 let nextId = 0;
 
-export function addToast(title: string, type: ToastType = "info", description?: string) {
+export function addToast(
+  title: string,
+  type: ToastType = "info",
+  description?: string,
+) {
   const id = nextId++;
   const duration = TYPE_DURATION[type];
-  setToasts((prev) => [...prev, { id, title, description, type, duration }].slice(-3));
+  setToasts((prev) =>
+    [...prev, { id, title, description, type, duration }].slice(-3)
+  );
 }
 
 export function removeToast(id: number) {

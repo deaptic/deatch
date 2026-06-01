@@ -4,7 +4,7 @@ type Props = {
   src?: string;
   alt?: string;
   class?: string;
-}
+};
 
 export default function Avatar(props: Props) {
   return (

@@ -26,19 +26,30 @@ export default function MessageContextMenu(props: Props) {
       <ContextMenuItem
         label="Reply"
         icon={<Reply class="w-3.5 h-3.5" />}
-        onClick={() => { props.onReply(props.msg); props.onClose(); }}
+        onClick={() => {
+          props.onReply(props.msg);
+          props.onClose();
+        }}
       />
       <ContextMenuItem
         label="Copy Text"
         icon={<Copy class="w-3.5 h-3.5" />}
-        onClick={() => { navigator.clipboard.writeText(props.msg.fragments.map((f) => f.text).join("")); props.onClose(); }}
+        onClick={() => {
+          navigator.clipboard.writeText(
+            props.msg.fragments.map((f) => f.text).join(""),
+          );
+          props.onClose();
+        }}
       />
       <Show when={props.showCopypasta}>
         <ContextMenuDivider />
         <ContextMenuItem
           label="Copypasta"
           icon={<ClipboardPaste class="w-3.5 h-3.5" />}
-          onClick={() => { props.onCopypasta(props.msg); props.onClose(); }}
+          onClick={() => {
+            props.onCopypasta(props.msg);
+            props.onClose();
+          }}
         />
       </Show>
       <Show when={props.isMod}>
@@ -47,7 +58,13 @@ export default function MessageContextMenu(props: Props) {
           label="Delete Message"
           danger
           icon={<Trash2 class="w-3.5 h-3.5" />}
-          onClick={() => { deleteChatMessages({ broadcasterId: props.broadcasterId, messageId: props.msg.message_id }); props.onClose(); }}
+          onClick={() => {
+            deleteChatMessages({
+              broadcasterId: props.broadcasterId,
+              messageId: props.msg.message_id,
+            });
+            props.onClose();
+          }}
         />
       </Show>
       <CopyPayloadItem

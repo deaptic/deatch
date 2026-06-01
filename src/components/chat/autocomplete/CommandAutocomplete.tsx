@@ -2,7 +2,10 @@ import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
 import { commands } from "../../command-composer/commands.ts";
 import type { Command } from "../../command-composer/types.ts";
-import { isBroadcasterOfChannel, isModOfChannel } from "../../../lib/stores/users.ts";
+import {
+  isBroadcasterOfChannel,
+  isModOfChannel,
+} from "../../../lib/stores/users.ts";
 import { moderationActionsDisabled } from "../../../lib/stores/preferences.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 

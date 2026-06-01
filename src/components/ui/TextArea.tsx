@@ -1,4 +1,4 @@
-import { onMount, createEffect, on, splitProps, type JSX } from "solid-js";
+import { createEffect, type JSX, on, onMount, splitProps } from "solid-js";
 
 export type TextAreaApi = {
   focus: () => void;
@@ -7,17 +7,19 @@ export type TextAreaApi = {
   textareaEl: () => HTMLTextAreaElement | undefined;
 };
 
-type Props = Omit<
-  JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "value" | "onInput" | "ref" | "rows" | "class" | "children"
-> & {
-  value: string;
-  onInput: (value: string) => void;
-  maxHeight?: number;
-  addons?: JSX.Element;
-  children?: JSX.Element;
-  ref?: (api: TextAreaApi) => void;
-};
+type Props =
+  & Omit<
+    JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    "value" | "onInput" | "ref" | "rows" | "class" | "children"
+  >
+  & {
+    value: string;
+    onInput: (value: string) => void;
+    maxHeight?: number;
+    addons?: JSX.Element;
+    children?: JSX.Element;
+    ref?: (api: TextAreaApi) => void;
+  };
 
 export default function TextArea(props: Props) {
   const [local, textareaProps] = splitProps(props, [
@@ -39,12 +41,15 @@ export default function TextArea(props: Props) {
     el.style.height = "";
     const sh = el.scrollHeight;
     if (!baseH) baseH = sh;
-    if (sh > baseH) el.style.height = Math.min(sh, local.maxHeight ?? 200) + "px";
+    if (sh > baseH) {
+      el.style.height = Math.min(sh, local.maxHeight ?? 200) + "px";
+    }
   }
 
   function insert(text: string) {
     const cur = local.value;
-    const next = (cur === "" || cur.endsWith(" ") ? cur : cur + " ") + text + " ";
+    const next = (cur === "" || cur.endsWith(" ") ? cur : cur + " ") + text +
+      " ";
     local.onInput(next);
     textareaRef?.focus();
   }

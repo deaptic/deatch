@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp } from "lucide-solid";
 type Props = {
   direction: "up" | "down";
   onClick: () => void;
-}
+};
 
 export default function ScrollChevron(props: Props) {
   return (
@@ -17,11 +17,9 @@ export default function ScrollChevron(props: Props) {
           : "bottom-0 bg-gradient-to-t from-bg-dark to-transparent"
       }`}
     >
-      {props.direction === "up" ? (
-        <ChevronUp class="w-3 h-3" />
-      ) : (
-        <ChevronDown class="w-3 h-3" />
-      )}
+      {props.direction === "up"
+        ? <ChevronUp class="w-3 h-3" />
+        : <ChevronDown class="w-3 h-3" />}
     </button>
   );
 }

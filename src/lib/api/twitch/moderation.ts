@@ -1,6 +1,10 @@
 import type { Ban, BannedUser } from "../../types/twitch/moderation.ts";
 import type { UserRef } from "../../types/twitch/user.ts";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
+import {
+  invokeCommand,
+  type InvokeOptions,
+  type PaginatedResponse,
+} from "../utils.ts";
 
 export type { Ban, BannedUser } from "../../types/twitch/moderation.ts";
 
@@ -14,7 +18,10 @@ export function deleteChatMessages(
   options?: InvokeOptions,
 ): Promise<void> {
   const successMessage = params.messageId ? "Message deleted" : "Chat cleared";
-  return invokeCommand("delete_chat_messages", params, { successMessage, ...options });
+  return invokeCommand("delete_chat_messages", params, {
+    successMessage,
+    ...options,
+  });
 }
 
 export type BanUserParams = {
@@ -41,7 +48,10 @@ export function unbanUser(
   params: UnbanUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("unban_user", params, { successMessage: "User unbanned", ...options });
+  return invokeCommand("unban_user", params, {
+    successMessage: "User unbanned",
+    ...options,
+  });
 }
 
 export type GetBannedUsersParams = {
@@ -93,7 +103,10 @@ export function warnUser(
   params: WarnUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("warn_user", params, { successMessage: "User warned", ...options });
+  return invokeCommand("warn_user", params, {
+    successMessage: "User warned",
+    ...options,
+  });
 }
 
 export type ManageHeldAutomodMessageParams = {

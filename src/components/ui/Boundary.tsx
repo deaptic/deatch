@@ -3,7 +3,7 @@ import { ErrorBoundary, type JSX } from "solid-js";
 type Props = {
   label?: string;
   children: JSX.Element;
-}
+};
 
 export default function Boundary(props: Props) {
   return (

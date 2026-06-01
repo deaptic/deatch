@@ -1,5 +1,12 @@
-import { CircleAlert, CircleCheck, Info, ScrollText, TriangleAlert, X } from "lucide-solid";
-import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import {
+  CircleAlert,
+  CircleCheck,
+  Info,
+  ScrollText,
+  TriangleAlert,
+  X,
+} from "lucide-solid";
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { Component } from "solid-js";
 import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
 
@@ -56,13 +63,19 @@ export default function ToasterItem(props: Props) {
         transition: "opacity 200ms ease, transform 200ms ease",
       }}
     >
-      <div class={`shrink-0 w-14 flex items-center justify-center ${palette.fill}`}>
+      <div
+        class={`shrink-0 w-14 flex items-center justify-center ${palette.fill}`}
+      >
         <Icon class="w-6 h-6 stroke-white" />
       </div>
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-0.5 px-3 py-3">
-        <p class="text-text text-sm font-semibold leading-tight break-words">{toast.title}</p>
+        <p class="text-text text-sm font-semibold leading-tight break-words">
+          {toast.title}
+        </p>
         <Show when={toast.description}>
-          <p class="text-text-muted text-xs leading-snug break-words line-clamp-3">{toast.description}</p>
+          <p class="text-text-muted text-xs leading-snug break-words line-clamp-3">
+            {toast.description}
+          </p>
         </Show>
       </div>
       <button

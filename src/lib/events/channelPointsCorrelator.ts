@@ -61,7 +61,11 @@ export function correlateRedemption(
   if (pending) {
     clearTimeout(pending.timer);
     chatPending.delete(k);
-    setChannelPointsRewardTitle(pending.broadcasterId, pending.messageId, rewardTitle);
+    setChannelPointsRewardTitle(
+      pending.broadcasterId,
+      pending.messageId,
+      rewardTitle,
+    );
     return;
   }
   const existing = redemptionPending.get(k);
