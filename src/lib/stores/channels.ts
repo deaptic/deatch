@@ -31,8 +31,15 @@ export function setSelectedChannel(u: User | null) {
   } catch {}
 }
 
+const MAX_REMEMBERED_USERS = 5000;
+
 export function rememberUser(u: User) {
   usersById.set(u.id, u);
+  while (usersById.size > MAX_REMEMBERED_USERS) {
+    const oldest = usersById.keys().next().value;
+    if (oldest === undefined) break;
+    usersById.delete(oldest);
+  }
 }
 
 export function streamForUserId(userId: string): Stream | undefined {

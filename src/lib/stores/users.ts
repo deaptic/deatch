@@ -19,10 +19,18 @@ export function isModOfChannel(broadcasterId: string): boolean {
 const [userCacheSig, setUserCacheSig] = createSignal<Record<string, User>>({});
 export const userCache = userCacheSig;
 
+const MAX_CACHED_USERS = 5000;
+
 export function cacheUsers(users: User[]) {
   setUserCacheSig((prev) => {
     const next = { ...prev };
     for (const u of users) next[u.id] = u;
+    const keys = Object.keys(next);
+    if (keys.length > MAX_CACHED_USERS) {
+      for (const k of keys.slice(0, keys.length - MAX_CACHED_USERS)) {
+        delete next[k];
+      }
+    }
     return next;
   });
 }

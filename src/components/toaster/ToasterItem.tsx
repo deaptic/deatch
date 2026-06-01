@@ -80,6 +80,7 @@ export default function ToasterItem(props: Props) {
       </div>
       <button
         onClick={dismiss}
+        aria-label="Dismiss"
         class="shrink-0 w-9 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer"
       >
         <X class="size-2.5" />
