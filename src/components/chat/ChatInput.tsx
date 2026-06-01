@@ -218,7 +218,7 @@ export default function ChatInput(props: Props) {
               onCommandSelected={setCommandMode}
               ref={setAutocomplete}
             />
-            <Show when={isPanelOpen("emotePicker")}>
+            <Show when={isPanelOpen("emotePicker") && props.isActive}>
               <Suspense>
                 <EmotePicker
                   onSelect={onEmoteSelect}
