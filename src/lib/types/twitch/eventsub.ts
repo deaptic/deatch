@@ -14,6 +14,7 @@ export type EventKind =
   | "channel.follow"
   | "channel.moderate"
   | "automod.message.hold"
+  | "automod.message.update"
   | "channel.channel_points_custom_reward_redemption.add";
 
 export const CHAT_KINDS: EventKind[] = [
@@ -29,6 +30,7 @@ export const MOD_KINDS: EventKind[] = [
   "channel.follow",
   "channel.moderate",
   "automod.message.hold",
+  "automod.message.update",
 ];
 
 // Broadcaster-only — only subscribable for the logged-in user's own channel.
@@ -239,3 +241,10 @@ export type RawAutomodMessageHold = {
   message: { text: string; fragments: RawAutomodFragment[] };
   held_at: string;
 } & AutomodHeldReason;
+
+// ── automod.message.update ───────────────────────────────────────────
+export type RawAutomodMessageUpdate = {
+  broadcaster_user_id: string;
+  message_id: string;
+  status: string;
+};

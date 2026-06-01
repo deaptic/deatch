@@ -69,6 +69,7 @@ fn dispatch_notification(
         Event::ChannelFollowV2(n) => forward!(app, subs, n, "channel-follow", timestamp),
         Event::ChannelModerateV2(n) => forward!(app, subs, n, "channel-moderate", timestamp),
         Event::AutomodMessageHoldV2(n) => forward!(app, subs, n, "automod-message-hold", timestamp),
+        Event::AutomodMessageUpdateV2(n) => forward!(app, subs, n, "automod-message-update", timestamp),
         Event::ChannelPointsCustomRewardRedemptionAddV1(n) => forward!(app, subs, n, "channel-points-redemption-add", timestamp),
         _ => {}
     }
@@ -133,6 +134,7 @@ const KIND_PRIORITY: &[EventKind] = &[
     EventKind::ChannelFollow,
     EventKind::ChannelModerate,
     EventKind::AutomodMessageHold,
+    EventKind::AutomodMessageUpdate,
     EventKind::ChannelPointsCustomRewardRedemptionAdd,
 ];
 
