@@ -3,9 +3,7 @@ import StreamTooltip from "./StreamTooltip";
 import { streamForUserId } from "../../lib/stores/channels";
 import type { User } from "../../lib/types/twitch/user";
 import { useNavigationOptional } from "../ui/Navigation";
-import { DEFAULT_AVATAR_URL } from "../../lib/constants";
-
-const DEFAULT_AVATAR = DEFAULT_AVATAR_URL;
+import Avatar from "../ui/Avatar";
 
 type Props = {
   channel: User;
@@ -75,8 +73,8 @@ export default function MenuSectionItem(props: Props) {
           <div class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-highlight rounded-r-full hidden group-hover:block" />
         </Show>
         <div class="relative shrink-0">
-          <img
-            src={props.channel?.profileImageUrl || DEFAULT_AVATAR}
+          <Avatar
+            src={props.channel?.profileImageUrl}
             alt={props.channel?.displayName}
             class={`w-8 h-8 rounded-lg transition-opacity ${
               props.status || props.selected
@@ -85,6 +83,7 @@ export default function MenuSectionItem(props: Props) {
             }`}
           />
           <Show when={(props.mentions ?? 0) > 0}>
+
             <div class="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-danger rounded-full border-2 border-bg flex items-center justify-center">
               <span class="text-[10px] font-bold text-text leading-none tabular-nums">
                 {props.mentions! > 99 ? "99+" : props.mentions}

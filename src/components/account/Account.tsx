@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import { user } from "../../lib/stores/users";
 import { sessionManager } from "../../lib/managers/SessionManager";
 import LogoutIcon from "../icons/LogoutIcon";
-import { DEFAULT_AVATAR_URL } from "../../lib/constants";
+import Avatar from "../ui/Avatar";
 import Panel from "../ui/Panel";
 
 type Props = {
@@ -21,8 +21,8 @@ export default function Account(props: Props) {
           <Show when={user()}>
             {(u) => (
               <div class="group flex items-center gap-3 px-2 py-2 rounded-md bg-bg transition-colors">
-                <img
-                  src={u().profileImageUrl || DEFAULT_AVATAR_URL}
+                <Avatar
+                  src={u().profileImageUrl}
                   alt={u().displayName}
                   class="w-10 h-10 rounded-lg shrink-0"
                 />
