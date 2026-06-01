@@ -3,6 +3,7 @@ import type { User } from "../../lib/types/twitch/user";
 import { selectedChannel } from "../../lib/stores/channels";
 import Chat from "../chat/Chat";
 import EmptyState from "./EmptyState";
+import Boundary from "../ui/Boundary";
 
 interface ChatPanesProps {
   channels: User[];
@@ -27,13 +28,15 @@ export default function ChatPanes(props: ChatPanesProps) {
                 "pointer-events-none": !isActive(),
               }}
             >
-              <Chat
-                broadcasterId={ch.id}
-                broadcasterLogin={ch.login}
-                userLogin={props.userLogin}
-                isActive={isActive()}
-                onJumpToMessage={props.onJumpToMessage}
-              />
+              <Boundary label="This channel hit an error">
+                <Chat
+                  broadcasterId={ch.id}
+                  broadcasterLogin={ch.login}
+                  userLogin={props.userLogin}
+                  isActive={isActive()}
+                  onJumpToMessage={props.onJumpToMessage}
+                />
+              </Boundary>
             </div>
           );
         }}

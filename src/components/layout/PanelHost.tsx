@@ -1,6 +1,7 @@
 import { Show, Suspense, lazy } from "solid-js";
 import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui";
 import { markMentionRead } from "../../lib/stores/inbox";
+import Boundary from "../ui/Boundary";
 
 const Settings = lazy(() => import("../settings/Settings"));
 const Inbox = lazy(() => import("../inbox/Inbox"));
@@ -12,7 +13,8 @@ interface PanelHostProps {
 
 export default function PanelHost(props: PanelHostProps) {
   return (
-    <Suspense>
+    <Boundary label="Panel failed to load">
+      <Suspense>
       <Show when={isPanelOpen("settings")}>
         <Settings onClose={() => setOpenPanel(null)} />
       </Show>
@@ -28,6 +30,7 @@ export default function PanelHost(props: PanelHostProps) {
       <Show when={isPanelOpen("account")}>
         <Account onClose={() => setOpenPanel(null)} />
       </Show>
-    </Suspense>
+      </Suspense>
+    </Boundary>
   );
 }
