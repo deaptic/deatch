@@ -1,3 +1,4 @@
+import { ExternalLink, Pin } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { User } from "../../lib/api/twitch/users";
@@ -6,8 +7,6 @@ import { feeds } from "../../lib/stores/feeds";
 import type { FeedMessage } from "../../lib/types";
 import BadgeBox from "../ui/BadgeBox";
 import DisplayName from "../ui/DisplayName";
-import PinIcon from "../icons/PinIcon";
-import ExternalLinkIcon from "../icons/ExternalLinkIcon";
 
 type Props = {
   chatterId: string;
@@ -72,7 +71,7 @@ export default function UserCardIdentity(props: Props) {
         title="Open channel on Twitch"
         aria-label="Open channel on Twitch"
       >
-        <ExternalLinkIcon class="w-2.5 h-2.5" />
+        <ExternalLink class="w-2.5 h-2.5" />
       </button>
       <button
         class={`shrink-0 w-8 h-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
@@ -85,7 +84,7 @@ export default function UserCardIdentity(props: Props) {
         title={props.pinned ? "Unpin" : "Pin"}
         aria-label={props.pinned ? "Unpin" : "Pin"}
       >
-        <PinIcon class="w-3 h-3" filled={props.pinned} />
+        <Pin class="w-3 h-3" fill={props.pinned ? "currentColor" : "none"} />
       </button>
     </div>
   );

@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-solid";
 import {
   createEffect,
   createMemo,
@@ -33,7 +34,6 @@ import {
   feedShowCopypasta,
   moderationActionsDisabled,
 } from "../../lib/stores/preferences";
-import CaretDownIcon from "../icons/CaretDownIcon";
 import { createPopover } from "./createPopover";
 import { createNicknameEditor } from "./createNicknameEditor";
 import { createFontSizeWheel } from "./createFontSizeWheel";
@@ -235,7 +235,7 @@ export default function Chat(props: Props) {
               onClick={jumpToLatest}
               class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-primary hover:bg-primary/80 text-text text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
             >
-              <CaretDownIcon class="w-3 h-3" />
+              <ChevronDown class="w-3 h-3" />
               Latest messages
             </button>
           </Show>

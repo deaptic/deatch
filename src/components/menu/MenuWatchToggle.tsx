@@ -1,6 +1,6 @@
+import { Eye } from "lucide-solid";
 import { Show } from "solid-js";
 import MenuSection from "./MenuSection";
-import WatchIcon from "../icons/WatchIcon";
 import { selectedChannel } from "../../lib/stores/channels";
 import { watchMode, setWatchMode } from "../../lib/stores/watch";
 import Avatar from "../ui/Avatar";
@@ -23,7 +23,7 @@ export default function MenuWatchToggle() {
             when={selectedChannel()}
             fallback={
               <div class="w-8 h-8 rounded-lg bg-bg-light flex items-center justify-center text-text-muted">
-                <WatchIcon class="w-4 h-4" />
+                <Eye class="w-4 h-4" />
               </div>
             }
           >
@@ -53,7 +53,7 @@ export default function MenuWatchToggle() {
                 watchMode() === "manual" ? "text-danger" : "text-emerald-500"
               }`}
             >
-              <WatchIcon class="w-3.5 h-3.5" />
+              <Eye class="w-3.5 h-3.5" />
             </div>
           </Show>
         </div>

@@ -1,9 +1,8 @@
+import { Volume2, VolumeOff } from "lucide-solid";
 import { Show, For, createEffect } from "solid-js";
 import Navigation from "../ui/Navigation";
 import MenuSection from "./MenuSection";
 import MenuSectionItem from "./MenuSectionItem";
-import SpeakerIcon from "../icons/SpeakerIcon";
-import SpeakerOffIcon from "../icons/SpeakerOffIcon";
 import ScrollChevron from "../ui/ScrollChevron";
 import {
   watchWarmedChannels,
@@ -81,9 +80,9 @@ export default function MenuWatchedList(props: Props) {
                           >
                             <Show
                               when={isMuted()}
-                              fallback={<SpeakerIcon class="w-3.5 h-3.5" />}
+                              fallback={<Volume2 class="w-3.5 h-3.5" />}
                             >
-                              <SpeakerOffIcon class="w-3.5 h-3.5" />
+                              <VolumeOff class="w-3.5 h-3.5" />
                             </Show>
                           </div>
                         }

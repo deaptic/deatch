@@ -1,9 +1,9 @@
+import { ExternalLink } from "lucide-solid";
 import { Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { FeedEvent as Event } from "../../lib/types";
 import Timestamp from "../ui/Timestamp";
 import RichNotice from "./RichNotice";
-import ExternalLinkIcon from "../icons/ExternalLinkIcon";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";
@@ -77,7 +77,7 @@ export default function FeedEvent(props: Props) {
           actions={[
             {
               title: "View clip",
-              icon: () => <ExternalLinkIcon class="w-3.5 h-3.5" />,
+              icon: () => <ExternalLink class="w-3.5 h-3.5" />,
               variant: "success",
               onClick: () => openUrl(`https://clips.twitch.tv/${props.item.clip!.id}`),
             },

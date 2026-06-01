@@ -1,5 +1,4 @@
-import MinusIcon from "../icons/MinusIcon";
-import PlusIcon from "../icons/PlusIcon";
+import { Minus, Plus } from "lucide-solid";
 
 type Props = {
   label: string;
@@ -24,11 +23,11 @@ export default function Stepper(props: Props) {
   return (
     <div class={`flex items-center ${gap()}`}>
       <button onClick={props.onDecrement} class={btnClass()} aria-label="Decrease">
-        <MinusIcon class={iconClass()} />
+        <Minus class={iconClass()} />
       </button>
       <span class={labelClass()}>{props.label}</span>
       <button onClick={props.onIncrement} class={btnClass()} aria-label="Increase">
-        <PlusIcon class={iconClass()} />
+        <Plus class={iconClass()} />
       </button>
     </div>
   );
