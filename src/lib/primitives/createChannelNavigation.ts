@@ -16,7 +16,7 @@ import { snapshotDivider, ensureFeed, markSeen } from "../stores/feeds";
 import { markChannelMentionsRead } from "../stores/inbox";
 import { scrollToMessage } from "../services/feeds";
 
-export interface ChannelNavigation {
+export type ChannelNavigation = {
   applySelection(ch: User): void;
   selectChannel(ch: User, fromWatched?: boolean): void;
   jumpToMessage(channelId: string, messageId: string): void;

@@ -1,6 +1,6 @@
 import { onCleanup } from "solid-js";
 
-export interface DismissOnOutsideOptions {
+export type DismissOnOutsideOptions = {
   ref: () => HTMLElement | undefined;
   onDismiss: () => void;
   events?: string[];

@@ -14,7 +14,7 @@ import { selectedChannel } from "../../lib/stores/channels";
 import { toasts, removeToast } from "../../lib/stores/toasts";
 import type { AppController } from "../../lib/primitives/createAppController";
 
-interface AppLayoutProps {
+type AppLayoutProps = {
   controller: AppController;
 }
 

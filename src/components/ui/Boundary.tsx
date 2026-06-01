@@ -1,6 +1,6 @@
 import { ErrorBoundary, type JSX } from "solid-js";
 
-interface Props {
+type Props = {
   label?: string;
   children: JSX.Element;
 }

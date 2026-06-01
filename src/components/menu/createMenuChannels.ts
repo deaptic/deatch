@@ -20,7 +20,7 @@ import { menuChannelPinned } from "../../lib/stores/preferences";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch";
 import type { User } from "../../lib/types/twitch/user";
 
-export interface MenuChannels {
+export type MenuChannels = {
   loadingPinned: () => boolean;
   loadingLive: () => boolean;
   onlineList: () => User[];

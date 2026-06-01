@@ -7,7 +7,7 @@ const Settings = lazy(() => import("../settings/Settings"));
 const Inbox = lazy(() => import("../inbox/Inbox"));
 const Account = lazy(() => import("../account/Account"));
 
-interface PanelHostProps {
+type PanelHostProps = {
   onJump: (channelId: string, messageId: string) => void;
 }
 

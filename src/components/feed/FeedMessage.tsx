@@ -48,6 +48,7 @@ export default function FeedMessage(props: Props) {
     return s === "approved" || s === "denied";
   };
   const [holdBusy, setHoldBusy] = createSignal(false);
+  const [hovered, setHovered] = createSignal(false);
 
   async function handleHold(action: "approve" | "deny") {
     const h = hold();
@@ -131,6 +132,8 @@ export default function FeedMessage(props: Props) {
             }
           : undefined
       }
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       onContextMenu={(e) => {
         if (!props.onContextMenu) return;
         e.preventDefault();
@@ -140,6 +143,7 @@ export default function FeedMessage(props: Props) {
     >
       <Show
         when={
+          hovered() &&
           !hold() &&
           props.showToolbar !== false &&
           props.onReply &&

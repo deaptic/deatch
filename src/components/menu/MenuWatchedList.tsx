@@ -14,7 +14,7 @@ import { channelMentionCount } from "../../lib/stores/inbox";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance";
 import type { User } from "../../lib/types/twitch/user";
 
-interface Props {
+type Props = {
   selectedId: string | null;
   isLive: (id: string) => boolean;
   onSelect: (ch: User, fromWatched?: boolean) => void;
