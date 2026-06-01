@@ -13,18 +13,18 @@ import type {
   FeedMessage as Message,
   FeedEvent as EventItem,
   FeedItem,
-} from "../../lib/types";
-import { feeds, isFeedItemVisible, getItemId } from "../../lib/stores/feeds";
-import { thirdPartyEmoteMap, favorites } from "../../lib/stores/emotes";
+} from "../../lib/types/index.ts";
+import { feeds, isFeedItemVisible, getItemId } from "../../lib/stores/feeds.ts";
+import { thirdPartyEmoteMap, favorites } from "../../lib/stores/emotes.ts";
 import {
   feedShowTimestamp,
   feedShowDeletedContent,
   feedKeywords,
-} from "../../lib/stores/preferences";
-import { shortcutManager } from "../../lib/managers/ShortcutManager";
-import FeedMessage from "./FeedMessage";
-import FeedEvent from "./FeedEvent";
-import FeedDivider from "./FeedDivider";
+} from "../../lib/stores/preferences.ts";
+import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import FeedMessage from "./FeedMessage.tsx";
+import FeedEvent from "./FeedEvent.tsx";
+import FeedDivider from "./FeedDivider.tsx";
 
 export type FeedApi = {
   scrollToBottom: () => void;

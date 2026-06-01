@@ -1,7 +1,7 @@
-import type { RawChatMessage } from "../types";
-import { getChannelFollowers } from "../api/twitch/channels";
-import { sendChatMessage } from "../api/twitch/chat";
-import { Time } from "../utils/time";
+import type { RawChatMessage } from "../types/index.ts";
+import { getChannelFollowers } from "../api/twitch/channels.ts";
+import { sendChatMessage } from "../api/twitch/chat.ts";
+import { Time } from "../utils/time.ts";
 
 export async function handleFollowageCommand(raw: RawChatMessage) {
   try {

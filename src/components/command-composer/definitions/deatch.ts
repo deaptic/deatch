@@ -1,17 +1,17 @@
-import { banUser } from "../../../lib/api/twitch/moderation";
-import { createClip } from "../../../lib/api/twitch/clips";
-import { getStreams } from "../../../lib/api/twitch/streams";
-import { getFollowedChannels } from "../../../lib/api/twitch/channels";
-import { user, userCache, chattersByChannel } from "../../../lib/stores/users";
+import { banUser } from "../../../lib/api/twitch/moderation.ts";
+import { createClip } from "../../../lib/api/twitch/clips.ts";
+import { getStreams } from "../../../lib/api/twitch/streams.ts";
+import { getFollowedChannels } from "../../../lib/api/twitch/channels.ts";
+import { user, userCache, chattersByChannel } from "../../../lib/stores/users.ts";
 import {
   setUserNickname,
   removeUserNickname,
   muteUser,
   unmuteUser,
-} from "../../../lib/stores/preferences";
-import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds";
-import { Time } from "../../../lib/utils/time";
-import type { Command } from "../types";
+} from "../../../lib/stores/preferences.ts";
+import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
+import { Time } from "../../../lib/utils/time.ts";
+import type { Command } from "../types.ts";
 
 function loginFromUserId(userId: string): string | null {
   const cached = userCache()[userId];

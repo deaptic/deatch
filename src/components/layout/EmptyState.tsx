@@ -1,4 +1,4 @@
-import { watchMode, watchConnected } from "../../lib/stores/watch";
+import { watchMode, watchConnected } from "../../lib/stores/watch.ts";
 
 function watchSeen(): boolean {
   try {

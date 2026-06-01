@@ -1,7 +1,7 @@
 import { Check } from "lucide-solid";
 import { Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import Button from "./Button";
+import Button from "./Button.tsx";
 
 type Props = {
   x: number;

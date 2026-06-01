@@ -1,21 +1,21 @@
 import { For, Show, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
-import { getUsers, type User } from "../../../lib/api/twitch/users";
-import SettingsContent from "../SettingsContent";
-import SettingsContentSection from "../SettingsContentSection";
-import SettingsContentSectionItem from "../SettingsContentSectionItem";
-import ColorPicker from "../../ui/ColorPicker";
-import Stepper from "../../ui/Stepper";
-import Toggle from "../../ui/Toggle";
-import Chip from "../../ui/Chip";
-import ChipList from "../../ui/ChipList";
-import ChipInput from "../../ui/ChipInput";
-import KeyValueEditor from "../../ui/KeyValueEditor";
-import { BADGE_CATEGORIES, EVENTS } from "../../../lib/constants";
+import { getUsers, type User } from "../../../lib/api/twitch/users.ts";
+import SettingsContent from "../SettingsContent.tsx";
+import SettingsContentSection from "../SettingsContentSection.tsx";
+import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import ColorPicker from "../../ui/ColorPicker.tsx";
+import Stepper from "../../ui/Stepper.tsx";
+import Toggle from "../../ui/Toggle.tsx";
+import Chip from "../../ui/Chip.tsx";
+import ChipList from "../../ui/ChipList.tsx";
+import ChipInput from "../../ui/ChipInput.tsx";
+import KeyValueEditor from "../../ui/KeyValueEditor.tsx";
+import { BADGE_CATEGORIES, EVENTS } from "../../../lib/constants.ts";
 import {
   muteUserByLogin,
   setUserNicknameByLogin,
-} from "../../../lib/services/preferences";
+} from "../../../lib/services/preferences.ts";
 import {
   feedFontSize,
   setFeedFontSize,
@@ -40,7 +40,7 @@ import {
   setFeedUserOverrideNameColor,
   feedUserNicknames,
   removeUserNickname,
-} from "../../../lib/stores/preferences";
+} from "../../../lib/stores/preferences.ts";
 
 export default function FeedSection() {
   const [mutedMeta, setMutedMeta] = createStore<Record<string, User>>({});

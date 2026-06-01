@@ -1,18 +1,18 @@
 import { Show } from "solid-js";
-import TitleBar from "../title-bar/TitleBar";
-import UpdateBanner from "../update-banner/UpdateBanner";
-import Toaster from "../toaster/Toaster";
-import Login from "../login/Login";
-import Loading from "../ui/Loading";
-import Menu from "../menu/Menu";
-import PanelHost from "./PanelHost";
-import ChatPanes from "./ChatPanes";
-import { isPanelOpen, togglePanel } from "../../lib/stores/ui";
-import { user } from "../../lib/stores/users";
-import { authChecked } from "../../lib/stores/auth";
-import { selectedChannel } from "../../lib/stores/channels";
-import { toasts, removeToast } from "../../lib/stores/toasts";
-import type { AppController } from "../../lib/primitives/createAppController";
+import TitleBar from "../title-bar/TitleBar.tsx";
+import UpdateBanner from "../update-banner/UpdateBanner.tsx";
+import Toaster from "../toaster/Toaster.tsx";
+import Login from "../login/Login.tsx";
+import Loading from "../ui/Loading.tsx";
+import Menu from "../menu/Menu.tsx";
+import PanelHost from "./PanelHost.tsx";
+import ChatPanes from "./ChatPanes.tsx";
+import { isPanelOpen, togglePanel } from "../../lib/stores/ui.ts";
+import { user } from "../../lib/stores/users.ts";
+import { authChecked } from "../../lib/stores/auth.ts";
+import { selectedChannel } from "../../lib/stores/channels.ts";
+import { toasts, removeToast } from "../../lib/stores/toasts.ts";
+import type { AppController } from "../../lib/primitives/createAppController.ts";
 
 type AppLayoutProps = {
   controller: AppController;

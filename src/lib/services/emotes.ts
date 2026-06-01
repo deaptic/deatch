@@ -1,8 +1,8 @@
-import { bttvGetChannelEmotes, bttvGetGlobalEmotes } from "../api/external/bttv";
-import { ffzGetChannelEmotes, ffzGetGlobalEmotes } from "../api/external/ffz";
-import { seventvGetGlobalEmotes } from "../api/external/seventv";
-import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat";
-import { fetchAllPages } from "../api/utils";
+import { bttvGetChannelEmotes, bttvGetGlobalEmotes } from "../api/external/bttv.ts";
+import { ffzGetChannelEmotes, ffzGetGlobalEmotes } from "../api/external/ffz.ts";
+import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
+import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat.ts";
+import { fetchAllPages } from "../api/utils.ts";
 import {
   dedupeById,
   setBttvChannel,
@@ -12,11 +12,11 @@ import {
   setGlobalEmotes,
   setSevenTvGlobal,
   setUserEmotes,
-} from "../stores/emotes";
-import { user } from "../stores/users";
-import type { EmoteEntry } from "../types/external/emote";
-import type { Emote, UserEmote } from "../types/twitch/chat";
-import { loadCache, saveCache } from "../utils/cache";
+} from "../stores/emotes.ts";
+import { user } from "../stores/users.ts";
+import type { EmoteEntry } from "../types/external/emote.ts";
+import type { Emote, UserEmote } from "../types/twitch/chat.ts";
+import { loadCache, saveCache } from "../utils/cache.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";

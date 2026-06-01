@@ -2,8 +2,8 @@ import { Copy, Inbox, Minus, Settings, Square, User, X } from "lucide-solid";
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
-import { selectedChannel } from "../../lib/stores/channels";
-import { unreadMentionCount } from "../../lib/stores/inbox";
+import { selectedChannel } from "../../lib/stores/channels.ts";
+import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 
 const win = getCurrentWindow();
 

@@ -1,8 +1,8 @@
-import { Manager } from "./Manager";
+import { Manager } from "./Manager.ts";
 import defaultKeymap from "../../default-keymap.json";
-import { comboFor, MODIFIER_KEYS } from "../utils/keyboard";
-import { compile as compileWhen, type Predicate as WhenFn } from "../utils/boolExpr";
-import { readKeymap, writeKeymap } from "../api/keymap";
+import { comboFor, MODIFIER_KEYS } from "../utils/keyboard.ts";
+import { compile as compileWhen, type Predicate as WhenFn } from "../utils/boolExpr.ts";
+import { readKeymap, writeKeymap } from "../api/keymap.ts";
 
 type Handler = () => boolean | void;
 type ActionEntry = { handler: Handler; when?: WhenFn };

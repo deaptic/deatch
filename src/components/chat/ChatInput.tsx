@@ -8,21 +8,21 @@ import {
   onMount,
   onCleanup,
 } from "solid-js";
-import { shortcutManager } from "../../lib/managers/ShortcutManager";
-import { sendChatMessage } from "../../lib/api/twitch/chat";
-import type { Command } from "../command-composer/types";
-import CommandComposer from "../command-composer/CommandComposer";
-import { ensureUserEmotesLoaded } from "../../lib/services/emotes";
-import { pushSentHistory, getSentHistory } from "../../lib/stores/chatHistory";
-import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui";
-import TextArea, { type TextAreaApi } from "../ui/TextArea";
-import Banner from "../ui/Banner";
-import CharCounter from "../ui/CharCounter";
-import Button from "../ui/Button";
-const EmotePicker = lazy(() => import("../emotes/EmotePicker"));
-import ChatAutocomplete, { type ChatAutocompleteHandle } from "./autocomplete/ChatAutocomplete";
-import { createInputHistory } from "./createInputHistory";
-import { createUsernameTabComplete } from "./createUsernameTabComplete";
+import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
+import type { Command } from "../command-composer/types.ts";
+import CommandComposer from "../command-composer/CommandComposer.tsx";
+import { ensureUserEmotesLoaded } from "../../lib/services/emotes.ts";
+import { pushSentHistory, getSentHistory } from "../../lib/stores/chatHistory.ts";
+import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui.ts";
+import TextArea, { type TextAreaApi } from "../ui/TextArea.tsx";
+import Banner from "../ui/Banner.tsx";
+import CharCounter from "../ui/CharCounter.tsx";
+import Button from "../ui/Button.tsx";
+const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
+import ChatAutocomplete, { type ChatAutocompleteHandle } from "./autocomplete/ChatAutocomplete.tsx";
+import { createInputHistory } from "./createInputHistory.ts";
+import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 
 const MAX_LEN = 500;
 

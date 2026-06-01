@@ -1,11 +1,11 @@
 import { Show, Suspense, lazy } from "solid-js";
-import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui";
-import { markMentionRead } from "../../lib/stores/inbox";
-import Boundary from "../ui/Boundary";
+import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui.ts";
+import { markMentionRead } from "../../lib/stores/inbox.ts";
+import Boundary from "../ui/Boundary.tsx";
 
-const Settings = lazy(() => import("../settings/Settings"));
-const Inbox = lazy(() => import("../inbox/Inbox"));
-const Account = lazy(() => import("../account/Account"));
+const Settings = lazy(() => import("../settings/Settings.tsx"));
+const Inbox = lazy(() => import("../inbox/Inbox.tsx"));
+const Account = lazy(() => import("../account/Account.tsx"));
 
 type PanelHostProps = {
   onJump: (channelId: string, messageId: string) => void;

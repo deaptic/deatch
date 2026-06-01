@@ -1,7 +1,7 @@
 import { Check } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
-import TextInput from "./TextInput";
-import Button from "./Button";
+import TextInput from "./TextInput.tsx";
+import Button from "./Button.tsx";
 
 type Props = {
   placeholder?: string;

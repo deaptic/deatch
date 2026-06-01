@@ -1,8 +1,8 @@
 import { createEffect } from "solid-js";
-import type { Mention } from "../../lib/stores/inbox";
-import { userCache } from "../../lib/stores/users";
-import { getUsers } from "../../lib/api/twitch/users";
-import Avatar from "../ui/Avatar";
+import type { Mention } from "../../lib/stores/inbox.ts";
+import { userCache } from "../../lib/stores/users.ts";
+import { getUsers } from "../../lib/api/twitch/users.ts";
+import Avatar from "../ui/Avatar.tsx";
 
 type Props = {
   mention: Mention;

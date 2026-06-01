@@ -1,19 +1,19 @@
 import { Check, X } from "lucide-solid";
 import { For, Show, createSignal } from "solid-js";
-import { EmoteMap } from "../../lib/stores/emotes";
-import FeedMessageToolbar from "./FeedMessageToolbar";
-import FeedMessageFragment from "./FeedMessageFragment";
-import BadgeBox from "../ui/BadgeBox";
-import DisplayName from "../ui/DisplayName";
-import Timestamp from "../ui/Timestamp";
-import RichNotice from "./RichNotice";
-import type { FeedMessage as Message, BadgeMap } from "../../lib/types";
-import { matchesAnyKeyword } from "../../lib/stores/preferences";
-import { setAutomodHoldStatus } from "../../lib/stores/feeds";
+import { EmoteMap } from "../../lib/stores/emotes.ts";
+import FeedMessageToolbar from "./FeedMessageToolbar.tsx";
+import FeedMessageFragment from "./FeedMessageFragment.tsx";
+import BadgeBox from "../ui/BadgeBox.tsx";
+import DisplayName from "../ui/DisplayName.tsx";
+import Timestamp from "../ui/Timestamp.tsx";
+import RichNotice from "./RichNotice.tsx";
+import type { FeedMessage as Message, BadgeMap } from "../../lib/types/index.ts";
+import { matchesAnyKeyword } from "../../lib/stores/preferences.ts";
+import { setAutomodHoldStatus } from "../../lib/stores/feeds.ts";
 import {
   approveHeldAutomodMessage,
   denyHeldAutomodMessage,
-} from "../../lib/api/twitch/moderation";
+} from "../../lib/api/twitch/moderation.ts";
 
 type Reaction = { label: string; value: string; url: string };
 

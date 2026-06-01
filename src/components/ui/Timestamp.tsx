@@ -1,4 +1,4 @@
-import { Time, type TimeFormat } from "../../lib/utils/time";
+import { Time, type TimeFormat } from "../../lib/utils/time.ts";
 
 type Props = {
   ts: string | number;

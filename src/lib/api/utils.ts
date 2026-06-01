@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { advancedShowLogs } from "../stores/preferences";
-import { addToast } from "../stores/toasts";
-import type { PaginatedResponse } from "../types/pagination";
+import { advancedShowLogs } from "../stores/preferences.ts";
+import { addToast } from "../stores/toasts.ts";
+import type { PaginatedResponse } from "../types/pagination.ts";
 
-export type { PaginatedResponse } from "../types/pagination";
+export type { PaginatedResponse } from "../types/pagination.ts";
 
 export type InvokeOptions = { silent?: boolean; successMessage?: string };
 

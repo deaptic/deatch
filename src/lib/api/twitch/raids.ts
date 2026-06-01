@@ -1,4 +1,4 @@
-import { invokeCommand, type InvokeOptions } from "../utils";
+import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export type StartRaidParams = {
   fromBroadcasterId: string;

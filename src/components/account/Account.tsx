@@ -1,9 +1,9 @@
 import { LogOut } from "lucide-solid";
 import { Show } from "solid-js";
-import { user } from "../../lib/stores/users";
-import { sessionManager } from "../../lib/managers/SessionManager";
-import Avatar from "../ui/Avatar";
-import Panel from "../ui/Panel";
+import { user } from "../../lib/stores/users.ts";
+import { sessionManager } from "../../lib/managers/SessionManager.ts";
+import Avatar from "../ui/Avatar.tsx";
+import Panel from "../ui/Panel.tsx";
 
 type Props = {
   onClose: () => void;

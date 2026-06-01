@@ -3,8 +3,8 @@ import {
   unbanUser,
   deleteChatMessages,
   warnUser,
-} from "../../../lib/api/twitch/moderation";
-import { startRaid, cancelRaid } from "../../../lib/api/twitch/raids";
+} from "../../../lib/api/twitch/moderation.ts";
+import { startRaid, cancelRaid } from "../../../lib/api/twitch/raids.ts";
 import {
   sendShoutout,
   sendChatAnnouncement,
@@ -13,16 +13,16 @@ import {
   updateUserChatColor,
   type AnnouncementColor,
   type NamedUserColor,
-} from "../../../lib/api/twitch/chat";
-import { createStreamMarker } from "../../../lib/api/twitch/streams";
+} from "../../../lib/api/twitch/chat.ts";
+import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
 import {
   modifyChannelInformation,
   startCommercial,
   addChannelVip,
   removeChannelVip,
   type CommercialLength,
-} from "../../../lib/api/twitch/channels";
-import type { Command } from "../types";
+} from "../../../lib/api/twitch/channels.ts";
+import type { Command } from "../types.ts";
 
 const ANNOUNCEMENT_COLORS: AnnouncementColor[] = ["primary", "blue", "green", "orange", "purple"];
 

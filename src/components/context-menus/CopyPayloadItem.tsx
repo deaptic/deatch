@@ -1,7 +1,7 @@
 import { Copy } from "lucide-solid";
 import { Show } from "solid-js";
-import ContextMenuItem from "../ui/ContextMenuItem";
-import ContextMenuDivider from "../ui/ContextMenuDivider";
+import ContextMenuItem from "../ui/ContextMenuItem.tsx";
+import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
 
 type Props = {
   show: boolean;

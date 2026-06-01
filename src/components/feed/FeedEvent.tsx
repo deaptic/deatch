@@ -1,9 +1,9 @@
 import { ExternalLink } from "lucide-solid";
 import { Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { FeedEvent as Event } from "../../lib/types";
-import Timestamp from "../ui/Timestamp";
-import RichNotice from "./RichNotice";
+import type { FeedEvent as Event } from "../../lib/types/index.ts";
+import Timestamp from "../ui/Timestamp.tsx";
+import RichNotice from "./RichNotice.tsx";
 
 const SUB = "var(--color-event-sub)";
 const RAID = "var(--color-event-raid)";

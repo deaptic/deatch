@@ -1,4 +1,4 @@
-import { addToast } from "../stores/toasts";
+import { addToast } from "../stores/toasts.ts";
 
 export function copyField(text: string) {
   navigator.clipboard.writeText(text).then(

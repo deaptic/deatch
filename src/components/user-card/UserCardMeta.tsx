@@ -1,9 +1,9 @@
 import { AtSign, Calendar, Hash, Heart } from "lucide-solid";
 import { Show } from "solid-js";
-import type { User } from "../../lib/api/twitch/users";
-import type { Follow } from "../../lib/api/twitch/channels";
-import CopyableField from "../ui/CopyableField";
-import Timestamp from "../ui/Timestamp";
+import type { User } from "../../lib/api/twitch/users.ts";
+import type { Follow } from "../../lib/api/twitch/channels.ts";
+import CopyableField from "../ui/CopyableField.tsx";
+import Timestamp from "../ui/Timestamp.tsx";
 
 type Follower = Follow;
 

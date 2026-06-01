@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
-import { notificationsMentionSound } from "./preferences";
-import { selectedChannel } from "./channels";
+import { notificationsMentionSound } from "./preferences.ts";
+import { selectedChannel } from "./channels.ts";
 
 const audio = new Audio(notificationSound);
 

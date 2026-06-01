@@ -1,6 +1,6 @@
 import { createEffect } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
-import { unreadMentionCount } from "../stores/inbox";
+import { unreadMentionCount } from "../stores/inbox.ts";
 
 async function renderBadgeBytes(count: number): Promise<number[] | null> {
   if (count === 0) return null;

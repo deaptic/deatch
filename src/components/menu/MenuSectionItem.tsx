@@ -1,9 +1,9 @@
 import { createSignal, onCleanup, onMount, Show, type JSX } from "solid-js";
-import StreamTooltip from "./StreamTooltip";
-import { streamForUserId } from "../../lib/stores/channels";
-import type { User } from "../../lib/types/twitch/user";
-import { useNavigationOptional } from "../ui/Navigation";
-import Avatar from "../ui/Avatar";
+import StreamTooltip from "./StreamTooltip.tsx";
+import { streamForUserId } from "../../lib/stores/channels.ts";
+import type { User } from "../../lib/types/twitch/user.ts";
+import { useNavigationOptional } from "../ui/Navigation.tsx";
+import Avatar from "../ui/Avatar.tsx";
 
 type Props = {
   channel: User;

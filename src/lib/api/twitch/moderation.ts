@@ -1,8 +1,8 @@
-import type { Ban, BannedUser } from "../../types/twitch/moderation";
-import type { UserRef } from "../../types/twitch/user";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils";
+import type { Ban, BannedUser } from "../../types/twitch/moderation.ts";
+import type { UserRef } from "../../types/twitch/user.ts";
+import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
 
-export type { Ban, BannedUser } from "../../types/twitch/moderation";
+export type { Ban, BannedUser } from "../../types/twitch/moderation.ts";
 
 export type DeleteChatMessagesParams = {
   broadcasterId: string;

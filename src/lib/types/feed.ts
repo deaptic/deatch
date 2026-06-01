@@ -1,4 +1,4 @@
-import type { MessageBadge } from "./twitch/eventsub";
+import type { MessageBadge } from "./twitch/eventsub.ts";
 
 export type Fragment =
   | { type: "text"; text: string }

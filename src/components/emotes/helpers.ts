@@ -1,4 +1,4 @@
-import type { EmoteGridItem } from "./types";
+import type { EmoteGridItem } from "./types.ts";
 
 export const COLUMNS = 8;
 

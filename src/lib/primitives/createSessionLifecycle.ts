@@ -1,24 +1,24 @@
 import { createEffect, onMount } from "solid-js";
-import { getModeratedChannels } from "../api/twitch/moderation";
-import { fetchAllPages } from "../api/utils";
-import type { UserRef } from "../types/twitch/user";
-import { setModeratedChannels, user } from "../stores/users";
-import { setGlobalEmotes } from "../stores/emotes";
+import { getModeratedChannels } from "../api/twitch/moderation.ts";
+import { fetchAllPages } from "../api/utils.ts";
+import type { UserRef } from "../types/twitch/user.ts";
+import { setModeratedChannels, user } from "../stores/users.ts";
+import { setGlobalEmotes } from "../stores/emotes.ts";
 import {
   loadGlobalEmotes,
   loadThirdPartyGlobalEmotes,
   resetChannelThirdPartyEmoteCache,
   resetUserEmotes,
-} from "../services/emotes";
-import { resetChannelBadgeCache } from "../services/badges";
-import { sessionManager } from "../managers/SessionManager";
+} from "../services/emotes.ts";
+import { resetChannelBadgeCache } from "../services/badges.ts";
+import { sessionManager } from "../managers/SessionManager.ts";
 import {
   selectedChannel,
   setSelectedChannel,
   loadLastChannel,
-} from "../stores/channels";
-import { watchMode } from "../stores/watch";
-import type { ChannelNavigation } from "./createChannelNavigation";
+} from "../stores/channels.ts";
+import { watchMode } from "../stores/watch.ts";
+import type { ChannelNavigation } from "./createChannelNavigation.ts";
 
 let userScopedFetched = false;
 

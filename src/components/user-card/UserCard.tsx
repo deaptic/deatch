@@ -1,11 +1,11 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { Portal } from "solid-js/web";
-import { captureFocusForRestore } from "../../lib/utils/focus";
-import { shortcutManager } from "../../lib/managers/ShortcutManager";
-import UserCardHeader from "./UserCardHeader";
-import UserCardModActions from "./UserCardModActions";
-import UserCardFeed from "./UserCardFeed";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
+import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import UserCardHeader from "./UserCardHeader.tsx";
+import UserCardModActions from "./UserCardModActions.tsx";
+import UserCardFeed from "./UserCardFeed.tsx";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 
 type Props = {
   x: number;

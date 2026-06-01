@@ -1,14 +1,14 @@
-import { addToast } from "../../stores/toasts";
-import type { RecentMessage } from "../../types/external/robotty";
+import { addToast } from "../../stores/toasts.ts";
+import type { RecentMessage } from "../../types/external/robotty.ts";
 import type {
   BadgeSet,
   Emote,
   SendMessageResult,
   UserEmote,
-} from "../../types/twitch/chat";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils";
+} from "../../types/twitch/chat.ts";
+import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
 
-export type { BadgeSet, Emote, SendMessageResult, UserEmote } from "../../types/twitch/chat";
+export type { BadgeSet, Emote, SendMessageResult, UserEmote } from "../../types/twitch/chat.ts";
 
 export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
   return invokeCommand("get_global_emotes", undefined, options);

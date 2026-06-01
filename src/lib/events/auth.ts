@@ -1,8 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
-import type { User } from "../api/twitch/users";
-import { addToast } from "../stores/toasts";
-import { setUser } from "../stores/users";
-import { setWaiting, setDeviceCode } from "../stores/auth";
+import type { User } from "../api/twitch/users.ts";
+import { addToast } from "../stores/toasts.ts";
+import { setUser } from "../stores/users.ts";
+import { setWaiting, setDeviceCode } from "../stores/auth.ts";
 
 listen<User>("twitch-auth-success", (e) => {
   setWaiting(false);

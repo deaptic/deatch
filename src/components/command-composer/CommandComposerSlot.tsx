@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import type { CommandOption } from "./types";
+import type { CommandOption } from "./types.ts";
 
 type Props = {
   option: CommandOption;

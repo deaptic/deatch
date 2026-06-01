@@ -3,27 +3,27 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   selectedChannel,
   rememberUser,
-} from "../../lib/stores/channels";
+} from "../../lib/stores/channels.ts";
 import {
   advancedDeveloperMode,
   menuChannelPinned,
   pinChannel,
   unpinChannel,
-} from "../../lib/stores/preferences";
-import { addToast } from "../../lib/stores/toasts";
-import { getUsers } from "../../lib/api/twitch/users";
-import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance";
-import { createMenuChannels } from "./createMenuChannels";
-import MenuSection from "./MenuSection";
-import MenuAddButton from "./MenuAddButton";
-import MenuPinnedList from "./MenuPinnedList";
-import MenuLiveList from "./MenuLiveList";
-import MenuWatchedList from "./MenuWatchedList";
-import MenuWatchToggle from "./MenuWatchToggle";
-import ScrollChevron from "../ui/ScrollChevron";
-import InputPopover from "../ui/InputPopover";
-import ChannelContextMenu from "../context-menus/ChannelContextMenu";
-import type { User } from "../../lib/types/twitch/user";
+} from "../../lib/stores/preferences.ts";
+import { addToast } from "../../lib/stores/toasts.ts";
+import { getUsers } from "../../lib/api/twitch/users.ts";
+import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
+import { createMenuChannels } from "./createMenuChannels.ts";
+import MenuSection from "./MenuSection.tsx";
+import MenuAddButton from "./MenuAddButton.tsx";
+import MenuPinnedList from "./MenuPinnedList.tsx";
+import MenuLiveList from "./MenuLiveList.tsx";
+import MenuWatchedList from "./MenuWatchedList.tsx";
+import MenuWatchToggle from "./MenuWatchToggle.tsx";
+import ScrollChevron from "../ui/ScrollChevron.tsx";
+import InputPopover from "../ui/InputPopover.tsx";
+import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
+import type { User } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   onSelect: (ch: User, fromWatched?: boolean) => void;

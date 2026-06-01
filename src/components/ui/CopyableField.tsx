@@ -1,5 +1,5 @@
 import type { JSX } from "solid-js";
-import { copyField } from "../../lib/utils/clipboard";
+import { copyField } from "../../lib/utils/clipboard.ts";
 
 type Props = {
   copy?: string;

@@ -1,14 +1,14 @@
 import { listen } from "@tauri-apps/api/event";
-import type { RawChatMessage } from "../types";
-import type { EventEnvelope } from "../types/twitch/eventsub";
-import { appendItem } from "../stores/feeds";
-import { user, isModOfChannel } from "../stores/users";
-import { usersById } from "../stores/channels";
-import { recordMention } from "../stores/inbox";
-import { feedKeywords, matchesAnyKeyword } from "../stores/preferences";
-import { mapChatMessage } from "./chat-mapper";
-import { handleFollowageCommand } from "./followage";
-import { noteChatRedemption } from "./channelPointsCorrelator";
+import type { RawChatMessage } from "../types/index.ts";
+import type { EventEnvelope } from "../types/twitch/eventsub.ts";
+import { appendItem } from "../stores/feeds.ts";
+import { user, isModOfChannel } from "../stores/users.ts";
+import { usersById } from "../stores/channels.ts";
+import { recordMention } from "../stores/inbox.ts";
+import { feedKeywords, matchesAnyKeyword } from "../stores/preferences.ts";
+import { mapChatMessage } from "./chat-mapper.ts";
+import { handleFollowageCommand } from "./followage.ts";
+import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 
 listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
   const raw = e.payload.event;

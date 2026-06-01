@@ -1,13 +1,13 @@
 import { Ban, Megaphone, Palette, ScrollText, Settings as SettingsIcon } from "lucide-solid";
 import { createSignal, For, Show, type JSX } from "solid-js";
-import Panel from "../ui/Panel";
-import Navigation from "../ui/Navigation";
-import NavigationItem from "../ui/NavigationItem";
-import NotificationsSection from "./sections/NotificationsSection";
-import ModerationSection from "./sections/ModerationSection";
-import FeedSection from "./sections/FeedSection";
-import AppearanceSection from "./sections/AppearanceSection";
-import AdvancedSection from "./sections/AdvancedSection";
+import Panel from "../ui/Panel.tsx";
+import Navigation from "../ui/Navigation.tsx";
+import NavigationItem from "../ui/NavigationItem.tsx";
+import NotificationsSection from "./sections/NotificationsSection.tsx";
+import ModerationSection from "./sections/ModerationSection.tsx";
+import FeedSection from "./sections/FeedSection.tsx";
+import AppearanceSection from "./sections/AppearanceSection.tsx";
+import AdvancedSection from "./sections/AdvancedSection.tsx";
 
 type SectionKey = "feed" | "notifications" | "moderation" | "appearance" | "advanced";
 

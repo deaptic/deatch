@@ -1,7 +1,7 @@
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { pendingUpdate, setPendingUpdate, installing } from "../stores/updater";
+import { pendingUpdate, setPendingUpdate, installing } from "../stores/updater.ts";
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const THROTTLE_MS = 60 * 60 * 1000;

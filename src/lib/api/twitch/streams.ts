@@ -1,7 +1,7 @@
-import type { Stream } from "../../types/twitch/stream";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils";
+import type { Stream } from "../../types/twitch/stream.ts";
+import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
 
-export type { Stream } from "../../types/twitch/stream";
+export type { Stream } from "../../types/twitch/stream.ts";
 
 export type GetStreamsParams = {
   userIds?: string[];

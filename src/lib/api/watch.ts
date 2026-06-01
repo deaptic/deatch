@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { invokeCommand } from "./utils";
+import { invokeCommand } from "./utils.ts";
 
 export async function watchSetMuted(channel: string, muted: boolean): Promise<void> {
   await invokeCommand<void>(

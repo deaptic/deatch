@@ -1,8 +1,8 @@
 import { listen } from "@tauri-apps/api/event";
-import { Manager } from "./Manager";
-import { eventsubState, setEventsubState } from "../stores/eventsub";
-import { subscribe, unsubscribe } from "../api/twitch/eventsub";
-import type { EventKind, SubStatus } from "../types/twitch/eventsub";
+import { Manager } from "./Manager.ts";
+import { eventsubState, setEventsubState } from "../stores/eventsub.ts";
+import { subscribe, unsubscribe } from "../api/twitch/eventsub.ts";
+import type { EventKind, SubStatus } from "../types/twitch/eventsub.ts";
 
 type Payload = { broadcaster_id: string; kind: EventKind };
 type FailedPayload = Payload & { error: string };

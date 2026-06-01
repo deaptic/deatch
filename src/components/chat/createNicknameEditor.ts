@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
-import { createPopover } from "./createPopover";
-import { feedUserNickname, setUserNickname, removeUserNickname } from "../../lib/stores/preferences";
+import { createPopover } from "./createPopover.ts";
+import { feedUserNickname, setUserNickname, removeUserNickname } from "../../lib/stores/preferences.ts";
 
 export function createNicknameEditor() {
   const popover = createPopover<{ login: string }>();

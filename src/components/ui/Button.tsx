@@ -1,5 +1,5 @@
 import { splitProps, type JSX } from "solid-js";
-import { isPanelOpen, togglePanel, type Panel } from "../../lib/stores/ui";
+import { isPanelOpen, togglePanel, type Panel } from "../../lib/stores/ui.ts";
 
 type Variant = "primary" | "secondary" | "danger";
 

@@ -1,9 +1,9 @@
 import { Ban } from "lucide-solid";
 import { For, Show } from "solid-js";
-import { banUser, unbanUser } from "../../lib/api/twitch/moderation";
-import { user as currentUser, moderatedChannels } from "../../lib/stores/users";
-import { moderationActionsDisabled } from "../../lib/stores/preferences";
-import Button from "../ui/Button";
+import { banUser, unbanUser } from "../../lib/api/twitch/moderation.ts";
+import { user as currentUser, moderatedChannels } from "../../lib/stores/users.ts";
+import { moderationActionsDisabled } from "../../lib/stores/preferences.ts";
+import Button from "../ui/Button.tsx";
 
 type Timeout = { label: string; seconds: number };
 

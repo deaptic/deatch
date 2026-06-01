@@ -1,7 +1,7 @@
 import { type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
-import { captureFocusForRestore } from "../../lib/utils/focus";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 
 type Props = {
   title: string;

@@ -1,5 +1,5 @@
-import type { Command } from "./types";
-import { twitchCommands } from "./definitions/twitch";
-import { deatchCommands } from "./definitions/deatch";
+import type { Command } from "./types.ts";
+import { twitchCommands } from "./definitions/twitch.ts";
+import { deatchCommands } from "./definitions/deatch.ts";
 
 export const commands: Command[] = [...twitchCommands, ...deatchCommands];

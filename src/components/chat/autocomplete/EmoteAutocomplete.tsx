@@ -1,5 +1,5 @@
 import { createMemo, onCleanup, Show } from "solid-js";
-import Suggestions from "../../suggestions/Suggestions";
+import Suggestions from "../../suggestions/Suggestions.tsx";
 import {
   globalEmotes,
   userEmotes,
@@ -9,8 +9,8 @@ import {
   sevenTvChannel,
   bttvChannel,
   ffzChannel,
-} from "../../../lib/stores/emotes";
-import type { ChatAutocompleteController } from "./controller";
+} from "../../../lib/stores/emotes.ts";
+import type { ChatAutocompleteController } from "./controller.ts";
 
 type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
 type EmoteEntry = { url: string; source: Source };

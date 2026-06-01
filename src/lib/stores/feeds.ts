@@ -1,10 +1,10 @@
 import { createStore, produce } from "solid-js/store";
-import type { FeedItem, BadgeMap } from "../types/feed";
-import { NOTICE_TO_EVENT } from "../constants";
-import { selectedChannel } from "./channels";
-import { recordChatter, user } from "./users";
-import { feedEvents, feedUserMuted } from "./preferences";
-import { pushSentHistory, appendSentHistoryOlder } from "./chatHistory";
+import type { FeedItem, BadgeMap } from "../types/feed.ts";
+import { NOTICE_TO_EVENT } from "../constants.ts";
+import { selectedChannel } from "./channels.ts";
+import { recordChatter, user } from "./users.ts";
+import { feedEvents, feedUserMuted } from "./preferences.ts";
+import { pushSentHistory, appendSentHistoryOlder } from "./chatHistory.ts";
 
 function ownMessageText(item: FeedItem): string | null {
   if (item.kind !== "message") return null;
@@ -297,7 +297,7 @@ export function setChannelPointsRewardTitle(
 export function setAutomodHoldStatus(
   broadcasterId: string,
   messageId: string,
-  status: import("../types").AutomodHoldStatus,
+  status: import("../types/index.ts").AutomodHoldStatus,
 ) {
   if (!feeds[broadcasterId]) return;
   setFeeds(

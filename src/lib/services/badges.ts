@@ -1,8 +1,8 @@
-import { getGlobalChatBadges, getChannelChatBadges } from "../api/twitch/chat";
-import { loadCache, saveCache } from "../utils/cache";
-import { setBadges } from "../stores/feeds";
-import type { BadgeSet } from "../types/twitch/chat";
-import type { BadgeMap } from "../types/feed";
+import { getGlobalChatBadges, getChannelChatBadges } from "../api/twitch/chat.ts";
+import { loadCache, saveCache } from "../utils/cache.ts";
+import { setBadges } from "../stores/feeds.ts";
+import type { BadgeSet } from "../types/twitch/chat.ts";
+import type { BadgeMap } from "../types/feed.ts";
 
 const GLOBAL_BADGES_CACHE_KEY = "cache:global_badges";
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;

@@ -1,7 +1,7 @@
-import SettingsContent from "../SettingsContent";
-import SettingsContentSection from "../SettingsContentSection";
-import SettingsContentSectionItem from "../SettingsContentSectionItem";
-import Toggle from "../../ui/Toggle";
+import SettingsContent from "../SettingsContent.tsx";
+import SettingsContentSection from "../SettingsContentSection.tsx";
+import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import Toggle from "../../ui/Toggle.tsx";
 import {
   advancedDeveloperMode,
   setAdvancedDeveloperMode,
@@ -13,7 +13,7 @@ import {
   setAdvancedAutostart,
   advancedDiscordRichPresence,
   setAdvancedDiscordRichPresence,
-} from "../../../lib/stores/preferences";
+} from "../../../lib/stores/preferences.ts";
 
 export default function AdvancedSection() {
   return (
