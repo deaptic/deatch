@@ -95,7 +95,7 @@ export default function FeedSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Show deleted message contents"
-          description="Display the original text of deleted messages, greyed out. When off, deleted messages render as <deleted>."
+          description="Show deleted messages greyed out instead of <deleted>."
         >
           <Toggle
             size="md"
@@ -105,7 +105,7 @@ export default function FeedSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Copypasta button"
-          description="Show a toolbar button on each message that re-sends the same text as your own."
+          description="Add a button to re-send a message as your own."
         >
           <Toggle
             size="md"
@@ -118,7 +118,7 @@ export default function FeedSection() {
       <SettingsContentSection title="Highlights">
         <SettingsContentSectionItem
           label="Keywords"
-          description="Highlight messages containing any of these words and add them to your inbox, just like a mention."
+          description="Highlight these words and add them to your inbox, like mentions."
           stacked
         >
           <ChipInput placeholder="Add keyword..." onAdd={addFeedKeyword} />
@@ -140,7 +140,7 @@ export default function FeedSection() {
       <SettingsContentSection title="Users">
         <SettingsContentSectionItem
           label="Show display names in chat"
-          description="Show users' chosen display names instead of their login."
+          description="Use display names instead of logins."
         >
           <Toggle
             size="md"
@@ -150,7 +150,7 @@ export default function FeedSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Override name colors"
-          description="Use a single color for all chatter names. Reset to keep each user's color."
+          description="One color for all names. Reset to restore per-user."
         >
           <ColorPicker
             swatchColor={feedUserOverrideNameColor() || "transparent"}
@@ -186,7 +186,7 @@ export default function FeedSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Nicknames"
-          description="Custom names that override how users appear in the feed and user cards."
+          description="Override how users' names show in chat and cards."
           stacked
         >
           <KeyValueEditor

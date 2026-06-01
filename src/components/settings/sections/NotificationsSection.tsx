@@ -13,7 +13,7 @@ export default function NotificationsSection() {
       <SettingsContentSection>
         <SettingsContentSectionItem
           label="Mention ping sound"
-          description="Play a sound when someone mentions you or a keyword matches."
+          description="Play a sound on mentions and keyword matches."
         >
           <Toggle
             size="md"

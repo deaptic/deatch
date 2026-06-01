@@ -51,7 +51,7 @@ export default function AdvancedSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Launch at startup"
-          description="Start the app automatically when you sign in."
+          description="Launch when you sign in."
         >
           <Toggle
             size="md"
@@ -61,7 +61,7 @@ export default function AdvancedSection() {
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Discord Rich Presence"
-          description="Show what you're watching on your Discord profile. Requires Discord to be running."
+          description="Show your channel on Discord. Requires Discord running."
         >
           <Toggle
             size="md"

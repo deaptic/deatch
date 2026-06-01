@@ -13,9 +13,9 @@ export default function EmptyState() {
     if (watchMode() === null) return "Select a channel to view chat";
     if (watchConnected()) return "Open a Twitch channel in your browser.";
     if (watchSeen()) {
-      return "Waiting for the browser. Open Firefox and a Twitch tab.";
+      return "Waiting for your browser — open Firefox with a Twitch tab.";
     }
-    return "Install the Deatch Link browser extension and open a Twitch channel to use Watch.";
+    return "Install the Deatch Link extension, then open a Twitch channel.";
   };
   return (
     <div class="flex items-center justify-center flex-1 px-6">
