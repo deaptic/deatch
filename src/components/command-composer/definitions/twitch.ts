@@ -79,7 +79,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "timeout",
-    description: "Temporarily ban a user from chat",
+    description: "Time a user out",
     role: "mod",
     options: [
       {
@@ -143,7 +143,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "announce",
-    description: "Send a highlighted announcement to chat",
+    description: "Post a highlighted announcement",
     role: "mod",
     options: [
       {
@@ -308,7 +308,7 @@ export const twitchCommands: Command[] = [
   {
     name: "shoutout",
     aliases: ["so"],
-    description: "Highlight another channel for viewers to follow",
+    description: "Shout out another channel",
     role: "mod",
     options: [
       {
@@ -438,7 +438,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "marker",
-    description: "Add a stream marker at the current point",
+    description: "Add a stream marker",
     role: "broadcaster",
     options: [
       {
