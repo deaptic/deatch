@@ -1,5 +1,6 @@
-import { For, Show, onCleanup, onMount } from "solid-js";
+import { For, Show } from "solid-js";
 import { Portal } from "solid-js/web";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 import InboxItem from "./InboxItem";
 import { mentions, markAllMentionsRead } from "../../lib/stores/inbox";
 import { captureFocusForRestore } from "../../lib/utils/focus";
@@ -13,18 +14,10 @@ export default function Inbox(props: Props) {
   captureFocusForRestore();
   let panelRef: HTMLDivElement | undefined;
 
-  const onDocumentClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (panelRef?.contains(target)) return;
-    if (target.closest("[data-inbox-toggle]")) return;
-    props.onClose();
-  };
-
-  onMount(() => {
-    document.addEventListener("mousedown", onDocumentClick, { capture: true });
-    onCleanup(() => {
-      document.removeEventListener("mousedown", onDocumentClick, { capture: true });
-    });
+  dismissOnOutside({
+    ref: () => panelRef,
+    onDismiss: props.onClose,
+    ignoreSelector: "[data-inbox-toggle]",
   });
 
   return (

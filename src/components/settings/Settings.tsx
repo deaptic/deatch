@@ -1,5 +1,6 @@
-import { createSignal, For, onCleanup, onMount, Show, type JSX } from "solid-js";
+import { createSignal, For, Show, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 import Navigation from "../ui/Navigation";
 import NavigationItem from "../ui/NavigationItem";
 import NotificationsSection from "./sections/NotificationsSection";
@@ -37,18 +38,10 @@ export default function Settings(props: Props) {
   const [section, setSection] = createSignal<SectionKey>("notifications");
   let panelRef: HTMLDivElement | undefined;
 
-  const onDocumentClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (panelRef?.contains(target)) return;
-    if (target.closest("[data-settings-toggle]")) return;
-    props.onClose();
-  };
-
-  onMount(() => {
-    document.addEventListener("mousedown", onDocumentClick, { capture: true });
-    onCleanup(() => {
-      document.removeEventListener("mousedown", onDocumentClick, { capture: true });
-    });
+  dismissOnOutside({
+    ref: () => panelRef,
+    onDismiss: props.onClose,
+    ignoreSelector: "[data-settings-toggle]",
   });
 
   return (

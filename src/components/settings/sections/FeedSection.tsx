@@ -4,7 +4,7 @@ import { getUsers, type User } from "../../../lib/api/twitch/users";
 import SettingsContent from "../SettingsContent";
 import SettingsContentSection from "../SettingsContentSection";
 import SettingsContentSectionItem from "../SettingsContentSectionItem";
-import Button from "../../ui/Button";
+import ColorPicker from "../../ui/ColorPicker";
 import Stepper from "../../ui/Stepper";
 import Toggle from "../../ui/Toggle";
 import Chip from "../../ui/Chip";
@@ -128,27 +128,13 @@ export default function FeedSection() {
           label="Override name colors"
           description="Use a single color for all chatter names. Reset to keep each user's color."
         >
-          <div class="flex items-center gap-2">
-            <label
-              class="relative w-8 h-8 rounded border border-border cursor-pointer overflow-hidden"
-              style={{ "background-color": feedUserOverrideNameColor() || "transparent" }}
-              title="Pick color"
-            >
-              <input
-                type="color"
-                class="absolute inset-0 opacity-0 cursor-pointer"
-                value={feedUserOverrideNameColor() || "#9481ff"}
-                onInput={(e) => setFeedUserOverrideNameColor(e.currentTarget.value)}
-              />
-            </label>
-            <Button
-              variant="secondary"
-              disabled={!feedUserOverrideNameColor()}
-              onClick={() => setFeedUserOverrideNameColor("")}
-            >
-              Reset
-            </Button>
-          </div>
+          <ColorPicker
+            swatchColor={feedUserOverrideNameColor() || "transparent"}
+            value={feedUserOverrideNameColor() || "#9481ff"}
+            onInput={setFeedUserOverrideNameColor}
+            onReset={() => setFeedUserOverrideNameColor("")}
+            resetDisabled={!feedUserOverrideNameColor()}
+          />
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Muted users"

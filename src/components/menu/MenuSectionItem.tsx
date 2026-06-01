@@ -3,9 +3,9 @@ import StreamTooltip from "./StreamTooltip";
 import { streamForUserId } from "../../lib/stores/channels";
 import type { User } from "../../lib/types/twitch/user";
 import { useNavigationOptional } from "../ui/Navigation";
+import { DEFAULT_AVATAR_URL } from "../../lib/constants";
 
-const DEFAULT_AVATAR =
-  "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
+const DEFAULT_AVATAR = DEFAULT_AVATAR_URL;
 
 type Props = {
   channel: User;

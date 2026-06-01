@@ -1,3 +1,6 @@
+export const DEFAULT_AVATAR_URL =
+  "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
+
 export const EVENTS = [
   {
     key: "message",
