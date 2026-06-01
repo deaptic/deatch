@@ -13,7 +13,7 @@ type Props = {
   follower: Follower | null;
 };
 
-const ICON_CLASS = "w-3 h-3 shrink-0";
+const ICON_CLASS = "size-3 shrink-0";
 
 export default function UserCardMeta(props: Props) {
   return (

@@ -66,7 +66,7 @@ export default function ToasterItem(props: Props) {
       <div
         class={`shrink-0 w-14 flex items-center justify-center ${palette.fill}`}
       >
-        <Icon class="w-6 h-6 stroke-white" />
+        <Icon class="size-6 stroke-white" />
       </div>
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-0.5 px-3 py-3">
         <p class="text-text text-sm font-semibold leading-tight break-words">
@@ -82,7 +82,7 @@ export default function ToasterItem(props: Props) {
         onClick={dismiss}
         class="shrink-0 w-9 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer"
       >
-        <X class="w-2.5 h-2.5" />
+        <X class="size-2.5" />
       </button>
     </div>
   );

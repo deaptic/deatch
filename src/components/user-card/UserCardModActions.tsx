@@ -59,7 +59,7 @@ export default function UserCardModActions(props: Props) {
           onClick={unban}
           title="Unban"
           aria-label="Unban"
-          icon={<Ban class="w-4 h-4 text-success" />}
+          icon={<Ban class="size-4 text-success" />}
         />
         <div class="flex-1 grid grid-cols-6 gap-1.5 min-w-0">
           <For each={TIMEOUTS}>
@@ -81,7 +81,7 @@ export default function UserCardModActions(props: Props) {
           onClick={ban}
           title="Ban"
           aria-label="Ban"
-          icon={<Ban class="w-4 h-4 text-danger" />}
+          icon={<Ban class="size-4 text-danger" />}
         />
       </div>
     </Show>

@@ -40,7 +40,7 @@ export default function EmoteGrid(props: Props) {
               <img
                 src={item.url}
                 alt={item.label}
-                class="w-7 h-7 object-contain"
+                class="size-7 object-contain"
               />
             </button>
           );

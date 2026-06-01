@@ -47,10 +47,10 @@ export default function ChipInput(props: Props) {
         <Show
           when={!busy()}
           fallback={
-            <div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
+            <div class="size-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
           }
         >
-          <Check class="w-4 h-4" />
+          <Check class="size-4" />
         </Show>
       </Button>
     </div>

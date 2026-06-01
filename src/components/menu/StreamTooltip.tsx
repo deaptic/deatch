@@ -44,7 +44,7 @@ export default function StreamTooltip(props: Props) {
         </Show>
         <Show when={props.stream}>
           <div class="flex items-center gap-1.5 mt-1">
-            <div class="w-1.5 h-1.5 rounded-full bg-danger" />
+            <div class="size-1.5 rounded-full bg-danger" />
             <span class="text-danger text-xs font-medium whitespace-nowrap">
               Live | {formatViewers(props.stream!.viewerCount)} viewers
             </span>

@@ -24,7 +24,7 @@ export default function Account(props: Props) {
               <Avatar
                 src={u().profileImageUrl}
                 alt={u().displayName}
-                class="w-10 h-10 rounded-lg shrink-0"
+                class="size-10 rounded-lg shrink-0"
               />
               <div class="flex flex-col min-w-0 flex-1">
                 <span class="text-text text-sm font-semibold truncate">
@@ -35,7 +35,7 @@ export default function Account(props: Props) {
                 </span>
               </div>
               <button
-                class="shrink-0 w-8 h-8 flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-bg-dark cursor-pointer transition-colors"
+                class="shrink-0 size-8 flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-bg-dark cursor-pointer transition-colors"
                 onClick={() => {
                   props.onClose();
                   sessionManager.logout();
@@ -43,7 +43,7 @@ export default function Account(props: Props) {
                 aria-label="Log out"
                 title="Log out"
               >
-                <LogOut class="w-4 h-4" />
+                <LogOut class="size-4" />
               </button>
             </div>
           )}

@@ -9,7 +9,7 @@ export default function Login() {
     <main class="flex-1 bg-bg-dark flex items-center justify-center">
       <div class="flex flex-col items-center gap-8">
         <div class="flex items-center gap-3">
-          <TwitchIcon class="w-12 h-12 fill-primary" />
+          <TwitchIcon class="size-12 fill-primary" />
           <span class="text-text text-3xl font-bold tracking-tight">
             Deatch
           </span>
@@ -68,7 +68,7 @@ export default function Login() {
                   onClick={() => sessionManager.login()}
                   class="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/85 active:bg-primary/70 transition-colors duration-150 text-text font-semibold py-3 px-6 rounded-lg cursor-pointer"
                 >
-                  <TwitchIcon class="w-5 h-5 fill-text" />
+                  <TwitchIcon class="size-5 fill-text" />
                   Login with Twitch
                 </button>
                 <p class="text-text-muted text-xs text-center">

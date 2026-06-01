@@ -28,7 +28,7 @@ export default function MenuLiveList(props: Props) {
           <>
             {Array.from({ length: 4 }).map(() => (
               <div class="w-full flex items-center justify-center p-2">
-                <div class="w-8 h-8 rounded-lg bg-bg-light animate-pulse" />
+                <div class="size-8 rounded-lg bg-bg-light animate-pulse" />
               </div>
             ))}
           </>

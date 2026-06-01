@@ -27,7 +27,7 @@ export default function UpdateBanner() {
           disabled={installing()}
           class="shrink-0 w-full flex items-center gap-2 h-8 px-3 bg-primary/20 hover:bg-primary/30 disabled:hover:bg-primary/20 border-b border-primary/40 text-xs text-left transition-colors cursor-pointer disabled:cursor-default"
         >
-          <span class="w-2 h-2 rounded-full bg-primary shrink-0" />
+          <span class="size-2 rounded-full bg-primary shrink-0" />
           <span class="text-text truncate">
             <Show
               when={!installing()}

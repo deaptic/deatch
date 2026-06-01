@@ -37,7 +37,7 @@ export default function InboxItem(props: Props) {
       <Avatar
         src={avatar()}
         alt={props.mention.chatterName}
-        class="w-11 h-11 rounded-lg shrink-0"
+        class="size-11 rounded-lg shrink-0"
       />
       <div class="flex-1 min-w-0 flex flex-col gap-0.5">
         <div class="flex items-baseline gap-2">

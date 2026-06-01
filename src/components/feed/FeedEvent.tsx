@@ -80,7 +80,7 @@ export default function FeedEvent(props: Props) {
           actions={[
             {
               title: "View clip",
-              icon: () => <ExternalLink class="w-3.5 h-3.5" />,
+              icon: () => <ExternalLink class="size-3.5" />,
               variant: "success",
               onClick: () =>
                 openUrl(`https://clips.twitch.tv/${props.item.clip!.id}`),

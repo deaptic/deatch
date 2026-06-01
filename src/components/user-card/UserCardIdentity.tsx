@@ -64,7 +64,7 @@ export default function UserCardIdentity(props: Props) {
         </Show>
       </div>
       <button
-        class="shrink-0 w-8 h-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+        class="shrink-0 size-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={() =>
           props.user && openUrl(`https://twitch.tv/${props.user.login}`)}
@@ -72,10 +72,10 @@ export default function UserCardIdentity(props: Props) {
         title="Open channel on Twitch"
         aria-label="Open channel on Twitch"
       >
-        <ExternalLink class="w-2.5 h-2.5" />
+        <ExternalLink class="size-2.5" />
       </button>
       <button
-        class={`shrink-0 w-8 h-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
+        class={`shrink-0 size-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
           props.pinned
             ? "text-text bg-highlight"
             : "text-text-muted hover:text-text hover:bg-bg"
@@ -85,7 +85,7 @@ export default function UserCardIdentity(props: Props) {
         title={props.pinned ? "Unpin" : "Pin"}
         aria-label={props.pinned ? "Unpin" : "Pin"}
       >
-        <Pin class="w-3 h-3" fill={props.pinned ? "currentColor" : "none"} />
+        <Pin class="size-3" fill={props.pinned ? "currentColor" : "none"} />
       </button>
     </div>
   );

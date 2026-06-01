@@ -26,7 +26,7 @@ export default function ToolbarItem(props: Props) {
         e.stopPropagation();
         props.onClick(e);
       }}
-      class={`w-8 h-8 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+      class={`size-8 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
         VARIANTS[props.variant ?? "default"]
       }`}
     >
