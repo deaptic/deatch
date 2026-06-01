@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-solid";
 import { createSignal, For, Show } from "solid-js";
-import TextInput from "./TextInput";
-import Button from "./Button";
+import TextInput from "./TextInput.tsx";
+import Button from "./Button.tsx";
 
 export type KeyValueEntry = { key: string; value: string };
 

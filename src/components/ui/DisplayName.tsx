@@ -3,7 +3,7 @@ import {
   feedUserNickname,
   feedUserShowDisplayName,
   feedUserOverrideNameColor,
-} from "../../lib/stores/preferences";
+} from "../../lib/stores/preferences.ts";
 
 export type UserIdentity = { userId?: string; login: string; displayName: string };
 

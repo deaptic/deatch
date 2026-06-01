@@ -1,4 +1,4 @@
-import type { EmoteEntry } from "./emote";
+import type { EmoteEntry } from "./emote.ts";
 
 export type ChannelResult = {
   emotes: EmoteEntry[];

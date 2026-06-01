@@ -1,11 +1,11 @@
 import { ClipboardPaste, Copy, Reply, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
-import { deleteChatMessages } from "../../lib/api/twitch/moderation";
-import ContextMenu from "../ui/ContextMenu";
-import ContextMenuItem from "../ui/ContextMenuItem";
-import ContextMenuDivider from "../ui/ContextMenuDivider";
-import CopyPayloadItem from "./CopyPayloadItem";
-import type { FeedMessage } from "../../lib/types";
+import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
+import ContextMenu from "../ui/ContextMenu.tsx";
+import ContextMenuItem from "../ui/ContextMenuItem.tsx";
+import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
+import CopyPayloadItem from "./CopyPayloadItem.tsx";
+import type { FeedMessage } from "../../lib/types/index.ts";
 
 type Props = {
   x: number;

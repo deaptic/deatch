@@ -1,10 +1,10 @@
 import { Show, For } from "solid-js";
-import Navigation from "../ui/Navigation";
-import MenuSectionItem from "./MenuSectionItem";
-import { watchMode } from "../../lib/stores/watch";
-import { hasUnread } from "../../lib/stores/feeds";
-import { channelMentionCount } from "../../lib/stores/inbox";
-import type { User } from "../../lib/types/twitch/user";
+import Navigation from "../ui/Navigation.tsx";
+import MenuSectionItem from "./MenuSectionItem.tsx";
+import { watchMode } from "../../lib/stores/watch.ts";
+import { hasUnread } from "../../lib/stores/feeds.ts";
+import { channelMentionCount } from "../../lib/stores/inbox.ts";
+import type { User } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   channels: User[];

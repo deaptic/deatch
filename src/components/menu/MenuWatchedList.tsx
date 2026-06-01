@@ -1,18 +1,18 @@
 import { Volume2, VolumeOff } from "lucide-solid";
 import { Show, For, createEffect } from "solid-js";
-import Navigation from "../ui/Navigation";
-import MenuSection from "./MenuSection";
-import MenuSectionItem from "./MenuSectionItem";
-import ScrollChevron from "../ui/ScrollChevron";
+import Navigation from "../ui/Navigation.tsx";
+import MenuSection from "./MenuSection.tsx";
+import MenuSectionItem from "./MenuSectionItem.tsx";
+import ScrollChevron from "../ui/ScrollChevron.tsx";
 import {
   watchWarmedChannels,
   watchMutedByLogin,
-} from "../../lib/stores/watch";
-import { watchSetMuted } from "../../lib/api/watch";
-import { hasUnread } from "../../lib/stores/feeds";
-import { channelMentionCount } from "../../lib/stores/inbox";
-import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance";
-import type { User } from "../../lib/types/twitch/user";
+} from "../../lib/stores/watch.ts";
+import { watchSetMuted } from "../../lib/api/watch.ts";
+import { hasUnread } from "../../lib/stores/feeds.ts";
+import { channelMentionCount } from "../../lib/stores/inbox.ts";
+import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
+import type { User } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   selectedId: string | null;

@@ -1,8 +1,8 @@
-import { cacheUsers, pendingUserById, userCache } from "../../stores/users";
-import type { User } from "../../types/twitch/user";
-import { invokeCommand, type InvokeOptions } from "../utils";
+import { cacheUsers, pendingUserById, userCache } from "../../stores/users.ts";
+import type { User } from "../../types/twitch/user.ts";
+import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type { User } from "../../types/twitch/user";
+export type { User } from "../../types/twitch/user.ts";
 
 export type GetUsersParams = {
   ids?: string[];

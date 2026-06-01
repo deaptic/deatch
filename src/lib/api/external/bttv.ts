@@ -1,5 +1,5 @@
-import type { EmoteEntry } from "../../types/external/emote";
-import { invokeCommand, type InvokeOptions } from "../utils";
+import type { EmoteEntry } from "../../types/external/emote.ts";
+import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export function bttvGetGlobalEmotes(options?: InvokeOptions): Promise<EmoteEntry[]> {
   return invokeCommand("bttv_get_global_emotes", undefined, options);

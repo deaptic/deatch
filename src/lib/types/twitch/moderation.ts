@@ -1,5 +1,5 @@
-import type { UserId } from "./ids";
-import type { UserRef } from "./user";
+import type { UserId } from "./ids.ts";
+import type { UserRef } from "./user.ts";
 
 export type Ban = {
   userId: UserId;

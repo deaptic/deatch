@@ -1,9 +1,9 @@
 import { Eye } from "lucide-solid";
 import { Show } from "solid-js";
-import MenuSection from "./MenuSection";
-import { selectedChannel } from "../../lib/stores/channels";
-import { watchMode, setWatchMode } from "../../lib/stores/watch";
-import Avatar from "../ui/Avatar";
+import MenuSection from "./MenuSection.tsx";
+import { selectedChannel } from "../../lib/stores/channels.ts";
+import { watchMode, setWatchMode } from "../../lib/stores/watch.ts";
+import Avatar from "../ui/Avatar.tsx";
 
 export default function MenuWatchToggle() {
   return (

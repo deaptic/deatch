@@ -1,7 +1,7 @@
 import { createMemo, Show } from "solid-js";
-import { feeds } from "../../lib/stores/feeds";
-import type { FeedMessage } from "../../lib/types";
-import Feed from "../feed/Feed";
+import { feeds } from "../../lib/stores/feeds.ts";
+import type { FeedMessage } from "../../lib/types/index.ts";
+import Feed from "../feed/Feed.tsx";
 
 type Props = {
   chatterId: string;

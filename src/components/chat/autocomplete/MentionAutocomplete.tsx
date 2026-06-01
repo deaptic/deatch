@@ -1,8 +1,8 @@
 import { onCleanup, Show } from "solid-js";
-import Suggestions from "../../suggestions/Suggestions";
-import { chattersByChannel } from "../../../lib/stores/users";
-import { feedUserNickname } from "../../../lib/stores/preferences";
-import type { ChatAutocompleteController } from "./controller";
+import Suggestions from "../../suggestions/Suggestions.tsx";
+import { chattersByChannel } from "../../../lib/stores/users.ts";
+import { feedUserNickname } from "../../../lib/stores/preferences.ts";
+import type { ChatAutocompleteController } from "./controller.ts";
 
 type MentionSuggestion = { login: string; displayName: string; color: string; nickname?: string };
 

@@ -1,4 +1,4 @@
-import type { UserId } from "./ids";
+import type { UserId } from "./ids.ts";
 
 export type BroadcasterType = "" | "affiliate" | "partner";
 

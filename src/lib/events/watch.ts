@@ -1,7 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
-import { getUsers } from "../api/twitch/users";
-import { watchRequestState } from "../api/watch";
-import { rememberUser } from "../stores/channels";
+import { getUsers } from "../api/twitch/users.ts";
+import { watchRequestState } from "../api/watch.ts";
+import { rememberUser } from "../stores/channels.ts";
 import {
   watchConnected,
   setWatchConnected,
@@ -10,7 +10,7 @@ import {
   watchWarmedChannels,
   setWatchWarmedChannels,
   setWatchMutedByLogin,
-} from "../stores/watch";
+} from "../stores/watch.ts";
 
 type StatePayload = {
   channels: { login: string; muted: boolean }[];

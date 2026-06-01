@@ -1,6 +1,6 @@
-import type { GameRef } from "./game";
-import type { StreamId } from "./ids";
-import type { UserRef } from "./user";
+import type { GameRef } from "./game.ts";
+import type { StreamId } from "./ids.ts";
+import type { UserRef } from "./user.ts";
 
 export type Thumbnail = {
   small: string;

@@ -1,10 +1,10 @@
 import { onMount, onCleanup } from "solid-js";
-import { shortcutManager } from "../managers/ShortcutManager";
-import { openPanel, setOpenPanel, togglePanel } from "../stores/ui";
-import { advancedAlwaysOnTop, setAdvancedAlwaysOnTop } from "../stores/preferences";
-import { channelsInOrder } from "../stores/channels";
-import type { ChannelNavigation } from "./createChannelNavigation";
-import type { WatchControls } from "./createWatchControls";
+import { shortcutManager } from "../managers/ShortcutManager.ts";
+import { openPanel, setOpenPanel, togglePanel } from "../stores/ui.ts";
+import { advancedAlwaysOnTop, setAdvancedAlwaysOnTop } from "../stores/preferences.ts";
+import { channelsInOrder } from "../stores/channels.ts";
+import type { ChannelNavigation } from "./createChannelNavigation.ts";
+import type { WatchControls } from "./createWatchControls.ts";
 
 export function createAppShortcuts(
   nav: ChannelNavigation,

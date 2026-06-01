@@ -1,8 +1,8 @@
 import { createSignal } from "solid-js";
-import type { Stream } from "../types/twitch/stream";
-import type { User } from "../types/twitch/user";
-import { menuChannelPinned } from "./preferences";
-import { watchWarmedChannels } from "./watch";
+import type { Stream } from "../types/twitch/stream.ts";
+import type { User } from "../types/twitch/user.ts";
+import { menuChannelPinned } from "./preferences.ts";
+import { watchWarmedChannels } from "./watch.ts";
 
 const LAST_CHANNEL_KEY = "last_selected_channel";
 

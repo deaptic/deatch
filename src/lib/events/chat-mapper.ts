@@ -3,7 +3,7 @@
 // can use it for backlog hydration without creating a cycle with the
 // chat-event listener in `./chat.ts`.
 
-import type { FeedMessage, Fragment, RawFragment, RawChatMessage } from "../types";
+import type { FeedMessage, Fragment, RawFragment, RawChatMessage } from "../types/index.ts";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",

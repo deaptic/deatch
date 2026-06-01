@@ -8,15 +8,15 @@ import type {
   RawChatClear,
   RawChatClearUserMessages,
   RawModerate,
-} from "../types";
-import type { EventEnvelope } from "../types/twitch/eventsub";
+} from "../types/index.ts";
+import type { EventEnvelope } from "../types/twitch/eventsub.ts";
 import {
   appendItem,
   markMessageDeleted,
   markUserMessagesDeleted,
   markAllMessagesDeleted,
-} from "../stores/feeds";
-import { isModOfChannel } from "../stores/users";
+} from "../stores/feeds.ts";
+import { isModOfChannel } from "../stores/users.ts";
 
 function formatDuration(seconds: number): string {
   if (seconds <= 0) return "0s";

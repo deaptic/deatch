@@ -4,11 +4,11 @@ import {
   getBannedUsers,
   unbanUser,
   type BannedUser,
-} from "../../lib/api/twitch/moderation";
-import Button from "../ui/Button";
-import TextInput from "../ui/TextInput";
-import { user } from "../../lib/stores/users";
-import { shortcutManager } from "../../lib/managers/ShortcutManager";
+} from "../../lib/api/twitch/moderation.ts";
+import Button from "../ui/Button.tsx";
+import TextInput from "../ui/TextInput.tsx";
+import { user } from "../../lib/stores/users.ts";
+import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 
 const DURATIONS = [
   { label: "1s", value: 1 },

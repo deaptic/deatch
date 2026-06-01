@@ -1,11 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
-import type { FeedEvent, RawNotification, RawShoutout, RawFollow } from "../types";
-import type { EventEnvelope, RawChannelPointsRedemption } from "../types/twitch/eventsub";
-import { appendItem } from "../stores/feeds";
-import { isModOfChannel } from "../stores/users";
-import { moderationAutoShoutoutOnRaid } from "../stores/preferences";
-import { sendShoutout } from "../api/twitch/chat";
-import { correlateRedemption } from "./channelPointsCorrelator";
+import type { FeedEvent, RawNotification, RawShoutout, RawFollow } from "../types/index.ts";
+import type { EventEnvelope, RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
+import { appendItem } from "../stores/feeds.ts";
+import { isModOfChannel } from "../stores/users.ts";
+import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
+import { sendShoutout } from "../api/twitch/chat.ts";
+import { correlateRedemption } from "./channelPointsCorrelator.ts";
 
 // Most notices ship a complete `system_message` that already starts with the
 // chatter name (e.g. resub: "viewer23 subscribed at Tier 1..."). A few

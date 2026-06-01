@@ -1,5 +1,5 @@
 import { For, onMount, createSignal, createEffect, type JSX } from "solid-js";
-import SuggestionItem from "./SuggestionItem";
+import SuggestionItem from "./SuggestionItem.tsx";
 
 type Props<T> = {
   suggestions: () => T[];

@@ -1,8 +1,8 @@
 import { createMemo, createRoot, createSignal } from "solid-js";
-import type { EmoteEntry } from "../types/external/emote";
-import type { Emote, UserEmote } from "../types/twitch/chat";
-import type { User } from "../types/twitch/user";
-import { userCache } from "./users";
+import type { EmoteEntry } from "../types/external/emote.ts";
+import type { Emote, UserEmote } from "../types/twitch/chat.ts";
+import type { User } from "../types/twitch/user.ts";
+import { userCache } from "./users.ts";
 
 export type { EmoteEntry };
 export type EmoteMap = Record<string, string>;

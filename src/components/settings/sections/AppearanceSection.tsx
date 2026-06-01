@@ -1,20 +1,20 @@
 import { For } from "solid-js";
-import SettingsContent from "../SettingsContent";
-import SettingsContentSection from "../SettingsContentSection";
-import SettingsContentSectionItem from "../SettingsContentSectionItem";
-import Button from "../../ui/Button";
-import ColorPicker from "../../ui/ColorPicker";
+import SettingsContent from "../SettingsContent.tsx";
+import SettingsContentSection from "../SettingsContentSection.tsx";
+import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import Button from "../../ui/Button.tsx";
+import ColorPicker from "../../ui/ColorPicker.tsx";
 import {
   appearanceColors,
   setAppearanceColor,
   resetAppearanceColor,
   resetAppearanceColors,
-} from "../../../lib/stores/preferences";
+} from "../../../lib/stores/preferences.ts";
 import {
   APPEARANCE_COLOR_GROUPS,
   readAppearanceColorHex,
   type AppearanceColorKey,
-} from "../../../lib/services/appearance";
+} from "../../../lib/services/appearance.ts";
 
 function AppearanceColorRow(props: { colorKey: AppearanceColorKey }) {
   const override = () => appearanceColors()[props.colorKey];

@@ -1,12 +1,12 @@
 import { ExternalLink, Pin } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { User } from "../../lib/api/twitch/users";
-import { feedUserNickname } from "../../lib/stores/preferences";
-import { feeds } from "../../lib/stores/feeds";
-import type { FeedMessage } from "../../lib/types";
-import BadgeBox from "../ui/BadgeBox";
-import DisplayName from "../ui/DisplayName";
+import type { User } from "../../lib/api/twitch/users.ts";
+import { feedUserNickname } from "../../lib/stores/preferences.ts";
+import { feeds } from "../../lib/stores/feeds.ts";
+import type { FeedMessage } from "../../lib/types/index.ts";
+import BadgeBox from "../ui/BadgeBox.tsx";
+import DisplayName from "../ui/DisplayName.tsx";
 
 type Props = {
   chatterId: string;

@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
-import type { User } from "../api/twitch/users";
-import type { UserRef } from "../types/twitch/user";
+import type { User } from "../api/twitch/users.ts";
+import type { UserRef } from "../types/twitch/user.ts";
 
 export const [user, setUser] = createSignal<User | null>(null);
 export const [moderatedChannels, setModeratedChannels] = createSignal<UserRef[]>([]);

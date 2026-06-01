@@ -1,9 +1,9 @@
 import { ClipboardPaste, Ellipsis, Reply } from "lucide-solid";
 import { For, Show } from "solid-js";
-import type { FeedMessage } from "../../lib/types";
-import Toolbar from "../ui/Toolbar";
-import ToolbarItem from "../ui/ToolbarItem";
-import { feedShowCopypasta } from "../../lib/stores/preferences";
+import type { FeedMessage } from "../../lib/types/index.ts";
+import Toolbar from "../ui/Toolbar.tsx";
+import ToolbarItem from "../ui/ToolbarItem.tsx";
+import { feedShowCopypasta } from "../../lib/stores/preferences.ts";
 
 type Reaction = { label: string; value: string; url: string };
 

@@ -1,8 +1,8 @@
 import { Copy } from "lucide-solid";
-import ContextMenu from "../ui/ContextMenu";
-import ContextMenuItem from "../ui/ContextMenuItem";
-import CopyPayloadItem from "./CopyPayloadItem";
-import type { FeedEvent } from "../../lib/types";
+import ContextMenu from "../ui/ContextMenu.tsx";
+import ContextMenuItem from "../ui/ContextMenuItem.tsx";
+import CopyPayloadItem from "./CopyPayloadItem.tsx";
+import type { FeedEvent } from "../../lib/types/index.ts";
 
 type Props = {
   x: number;

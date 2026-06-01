@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
-import InboxItem from "./InboxItem";
-import { mentions, markAllMentionsRead } from "../../lib/stores/inbox";
-import Panel from "../ui/Panel";
+import InboxItem from "./InboxItem.tsx";
+import { mentions, markAllMentionsRead } from "../../lib/stores/inbox.ts";
+import Panel from "../ui/Panel.tsx";
 
 type Props = {
   onClose: () => void;

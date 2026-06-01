@@ -6,7 +6,7 @@
 // Order isn't guaranteed: whichever side arrives first waits ~3s for the
 // other.
 
-import { setChannelPointsRewardTitle } from "../stores/feeds";
+import { setChannelPointsRewardTitle } from "../stores/feeds.ts";
 
 const WINDOW_MS = 3000;
 

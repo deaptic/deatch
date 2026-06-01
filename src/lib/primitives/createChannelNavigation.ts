@@ -1,20 +1,20 @@
 import { batch, createEffect } from "solid-js";
-import type { User } from "../types/twitch/user";
+import type { User } from "../types/twitch/user.ts";
 import {
   selectedChannel,
   setSelectedChannel,
   usersById,
   rememberUser,
-} from "../stores/channels";
+} from "../stores/channels.ts";
 import {
   watchMode,
   watchedChannel,
   watchWarmedChannels,
   setWatchMode,
-} from "../stores/watch";
-import { snapshotDivider, ensureFeed, markSeen } from "../stores/feeds";
-import { markChannelMentionsRead } from "../stores/inbox";
-import { scrollToMessage } from "../services/feeds";
+} from "../stores/watch.ts";
+import { snapshotDivider, ensureFeed, markSeen } from "../stores/feeds.ts";
+import { markChannelMentionsRead } from "../stores/inbox.ts";
+import { scrollToMessage } from "../services/feeds.ts";
 
 export type ChannelNavigation = {
   applySelection(ch: User): void;

@@ -1,9 +1,9 @@
 import { For, Show } from "solid-js";
-import type { User } from "../../lib/types/twitch/user";
-import { selectedChannel } from "../../lib/stores/channels";
-import Chat from "../chat/Chat";
-import EmptyState from "./EmptyState";
-import Boundary from "../ui/Boundary";
+import type { User } from "../../lib/types/twitch/user.ts";
+import { selectedChannel } from "../../lib/stores/channels.ts";
+import Chat from "../chat/Chat.tsx";
+import EmptyState from "./EmptyState.tsx";
+import Boundary from "../ui/Boundary.tsx";
 
 type ChatPanesProps = {
   channels: User[];

@@ -1,4 +1,4 @@
-import type { CommandOption } from "./types";
+import type { CommandOption } from "./types.ts";
 
 export type Slot = {
   raw: string;

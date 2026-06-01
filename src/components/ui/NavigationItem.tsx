@@ -1,5 +1,5 @@
 import { onCleanup, onMount, Show, type JSX } from "solid-js";
-import { useNavigation } from "./Navigation";
+import { useNavigation } from "./Navigation.tsx";
 
 type Props = {
   label: string;

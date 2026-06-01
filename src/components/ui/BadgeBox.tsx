@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
-import { badgeCategoryFor } from "../../lib/constants";
-import { feedBadges } from "../../lib/stores/preferences";
-import type { BadgeMap } from "../../lib/types";
+import { badgeCategoryFor } from "../../lib/constants.ts";
+import { feedBadges } from "../../lib/stores/preferences.ts";
+import type { BadgeMap } from "../../lib/types/index.ts";
 
 type Badge = { set_id: string; id: string; info?: string };
 

@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
-import { pendingUpdate, installing, setInstalling } from "../../lib/stores/updater";
-import { installUpdate } from "../../lib/services/updater";
+import { pendingUpdate, installing, setInstalling } from "../../lib/stores/updater.ts";
+import { installUpdate } from "../../lib/services/updater.ts";
 
 export default function UpdateBanner() {
   async function onInstall() {

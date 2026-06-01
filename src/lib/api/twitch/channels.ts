@@ -1,7 +1,7 @@
-import type { Follow } from "../../types/twitch/channel";
-import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils";
+import type { Follow } from "../../types/twitch/channel.ts";
+import { invokeCommand, type InvokeOptions, type PaginatedResponse } from "../utils.ts";
 
-export type { Follow } from "../../types/twitch/channel";
+export type { Follow } from "../../types/twitch/channel.ts";
 
 export type GetChannelFollowersParams = {
   broadcasterId: string;

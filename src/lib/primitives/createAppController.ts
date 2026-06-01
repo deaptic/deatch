@@ -1,13 +1,13 @@
 import type { Accessor } from "solid-js";
-import type { User } from "../types/twitch/user";
-import { createChannelNavigation } from "./createChannelNavigation";
-import { createWatchControls } from "./createWatchControls";
-import { createChannelSubscriptions } from "./createChannelSubscriptions";
-import { createSelectedChannelEffects } from "./createSelectedChannelEffects";
-import { createMentionsBadge } from "./createMentionsBadge";
-import { createSystemIntegration } from "./createSystemIntegration";
-import { createSessionLifecycle } from "./createSessionLifecycle";
-import { createAppShortcuts } from "./createAppShortcuts";
+import type { User } from "../types/twitch/user.ts";
+import { createChannelNavigation } from "./createChannelNavigation.ts";
+import { createWatchControls } from "./createWatchControls.ts";
+import { createChannelSubscriptions } from "./createChannelSubscriptions.ts";
+import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
+import { createMentionsBadge } from "./createMentionsBadge.ts";
+import { createSystemIntegration } from "./createSystemIntegration.ts";
+import { createSessionLifecycle } from "./createSessionLifecycle.ts";
+import { createAppShortcuts } from "./createAppShortcuts.ts";
 
 export type AppController = {
   renderedChannels: Accessor<User[]>;

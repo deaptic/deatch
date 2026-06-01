@@ -1,7 +1,7 @@
 import { createStore, produce, unwrap } from "solid-js/store";
-import type { EventKey, BadgeCategoryKey } from "../constants";
+import type { EventKey, BadgeCategoryKey } from "../constants.ts";
 import defaults from "./default-preferences.json";
-import { addToast } from "./toasts";
+import { addToast } from "./toasts.ts";
 
 export type EventPref = { show: boolean };
 export type BadgePref = { show: boolean };

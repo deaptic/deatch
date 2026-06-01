@@ -1,15 +1,15 @@
 import { listen } from "@tauri-apps/api/event";
-import { Manager } from "./Manager";
-import { seventvGetChannelEmotes } from "../api/external/seventv";
+import { Manager } from "./Manager.ts";
+import { seventvGetChannelEmotes } from "../api/external/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
   seventvUnsubscribeEmoteSet,
-} from "../api/external/seventv_events";
-import { setSevenTvChannel } from "../stores/emotes";
-import { appendItem } from "../stores/feeds";
-import type { EmoteEntry } from "../types/external/emote";
-import type { Delta } from "../types/external/seventv";
-import type { FeedEvent } from "../types/feed";
+} from "../api/external/seventv_events.ts";
+import { setSevenTvChannel } from "../stores/emotes.ts";
+import { appendItem } from "../stores/feeds.ts";
+import type { EmoteEntry } from "../types/external/emote.ts";
+import type { Delta } from "../types/external/seventv.ts";
+import type { FeedEvent } from "../types/feed.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 

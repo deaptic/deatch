@@ -15,23 +15,23 @@ import {
   toggleFavorite,
   computeChannelSections,
   computeGlobalSections,
-} from "../../lib/stores/emotes";
-import { selectedChannel } from "../../lib/stores/channels";
-import { getUsers } from "../../lib/api/twitch/users";
-import EmoteGrid from "./EmoteGrid";
-import EmotePickerSection from "./EmotePickerSection";
-import Navigation from "../ui/Navigation";
-import NavigationItem from "../ui/NavigationItem";
-import { captureFocusForRestore } from "../../lib/utils/focus";
-import { shortcutManager } from "../../lib/managers/ShortcutManager";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
-import type { EmoteGridItem } from "./types";
+} from "../../lib/stores/emotes.ts";
+import { selectedChannel } from "../../lib/stores/channels.ts";
+import { getUsers } from "../../lib/api/twitch/users.ts";
+import EmoteGrid from "./EmoteGrid.tsx";
+import EmotePickerSection from "./EmotePickerSection.tsx";
+import Navigation from "../ui/Navigation.tsx";
+import NavigationItem from "../ui/NavigationItem.tsx";
+import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import type { EmoteGridItem } from "./types.ts";
 import {
   type RenderSection,
   emojiUrl,
   toItem,
   nextVerticalIndex,
-} from "./helpers";
+} from "./helpers.ts";
 import emojiGroups from "unicode-emoji-json/data-by-group.json";
 
 type Tab = "channel" | "global" | "emoji";

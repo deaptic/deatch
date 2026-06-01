@@ -10,13 +10,13 @@ import {
   advancedAutostart,
   advancedDiscordRichPresence,
   appearanceColors,
-} from "../stores/preferences";
-import { applyAppearanceColors } from "../services/appearance";
-import { applyDiscordPresence } from "../services/discord";
-import { startUpdateChecker } from "../services/updater";
-import { user } from "../stores/users";
-import { selectedChannel, liveStreams } from "../stores/channels";
-import { isPanelOpen } from "../stores/ui";
+} from "../stores/preferences.ts";
+import { applyAppearanceColors } from "../services/appearance.ts";
+import { applyDiscordPresence } from "../services/discord.ts";
+import { startUpdateChecker } from "../services/updater.ts";
+import { user } from "../stores/users.ts";
+import { selectedChannel, liveStreams } from "../stores/channels.ts";
+import { isPanelOpen } from "../stores/ui.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {

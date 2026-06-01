@@ -1,5 +1,5 @@
 import { type JSX, createSignal, onMount } from "solid-js";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 
 type Props = {
   x: number;

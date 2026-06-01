@@ -1,14 +1,14 @@
 import { batch } from "solid-js";
-import type { ChannelNavigation } from "./createChannelNavigation";
-import { selectedChannel, channelsInOrder } from "../stores/channels";
+import type { ChannelNavigation } from "./createChannelNavigation.ts";
+import { selectedChannel, channelsInOrder } from "../stores/channels.ts";
 import {
   watchMode,
   watchedChannel,
   watchWarmedChannels,
   watchMutedByLogin,
   setWatchMode,
-} from "../stores/watch";
-import { watchSetMuted } from "../api/watch";
+} from "../stores/watch.ts";
+import { watchSetMuted } from "../api/watch.ts";
 
 export type WatchControls = {
   cycleChannel(direction: 1 | -1): void;

@@ -1,6 +1,6 @@
-import { getRecentMessages } from "../api/twitch/chat";
-import { mapChatMessage } from "../events/chat-mapper";
-import { feeds, prependItems } from "../stores/feeds";
+import { getRecentMessages } from "../api/twitch/chat.ts";
+import { mapChatMessage } from "../events/chat-mapper.ts";
+import { feeds, prependItems } from "../stores/feeds.ts";
 
 /// One-time hydration of a channel feed with recent history from robotty.
 /// The `backfilled` flag in `ChannelFeed` prevents repeats across remounts.

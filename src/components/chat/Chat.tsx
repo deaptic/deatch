@@ -7,36 +7,36 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { sendChatMessage } from "../../lib/api/twitch/chat";
-import { loadBacklog } from "../../lib/services/feeds";
-import { shortcutManager } from "../../lib/managers/ShortcutManager";
-import { copyField } from "../../lib/utils/clipboard";
-import Feed, { type FeedApi } from "../feed/Feed";
-import ChatInput from "./ChatInput";
-import MessageContextMenu from "../context-menus/MessageContextMenu";
-import UserContextMenu from "../context-menus/UserContextMenu";
-import UserCard from "../user-card/UserCard";
-import { getUsers } from "../../lib/api/twitch/users";
-import EventContextMenu from "../context-menus/EventContextMenu";
-import BanModal from "../ban-modal/BanModal";
-import InputPopover from "../ui/InputPopover";
-import { moderatedChannels } from "../../lib/stores/users";
-import type { FeedMessage as Message, FeedEvent as EventItem } from "../../lib/types";
+import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
+import { loadBacklog } from "../../lib/services/feeds.ts";
+import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import { copyField } from "../../lib/utils/clipboard.ts";
+import Feed, { type FeedApi } from "../feed/Feed.tsx";
+import ChatInput from "./ChatInput.tsx";
+import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
+import UserContextMenu from "../context-menus/UserContextMenu.tsx";
+import UserCard from "../user-card/UserCard.tsx";
+import { getUsers } from "../../lib/api/twitch/users.ts";
+import EventContextMenu from "../context-menus/EventContextMenu.tsx";
+import BanModal from "../ban-modal/BanModal.tsx";
+import InputPopover from "../ui/InputPopover.tsx";
+import { moderatedChannels } from "../../lib/stores/users.ts";
+import type { FeedMessage as Message, FeedEvent as EventItem } from "../../lib/types/index.ts";
 import {
   setPaused as setFeedPaused,
   trimToLatest,
   markSeen,
   clearDivider,
-} from "../../lib/stores/feeds";
+} from "../../lib/stores/feeds.ts";
 import {
   feedFontSize,
   advancedDeveloperMode,
   feedShowCopypasta,
   moderationActionsDisabled,
-} from "../../lib/stores/preferences";
-import { createPopover } from "./createPopover";
-import { createNicknameEditor } from "./createNicknameEditor";
-import { createFontSizeWheel } from "./createFontSizeWheel";
+} from "../../lib/stores/preferences.ts";
+import { createPopover } from "./createPopover.ts";
+import { createNicknameEditor } from "./createNicknameEditor.ts";
+import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 
 type Identity = { userId?: string; login?: string; displayName?: string };
 type ResolvedIdentity = { userId: string; login: string; displayName: string };

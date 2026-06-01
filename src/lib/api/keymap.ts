@@ -1,4 +1,4 @@
-import { invokeCommand, type InvokeOptions } from "./utils";
+import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
 export function readKeymap(options?: InvokeOptions): Promise<string> {
   return invokeCommand<string>("read_keymap", undefined, options);

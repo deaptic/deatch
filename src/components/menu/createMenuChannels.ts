@@ -11,14 +11,14 @@ import {
   getFollowedStreams,
   getStreams,
   type Stream,
-} from "../../lib/api/twitch/streams";
-import { getUsers } from "../../lib/api/twitch/users";
-import { fetchAllPages } from "../../lib/api/utils";
-import { addToast } from "../../lib/stores/toasts";
-import { rememberUser, setLiveStreams } from "../../lib/stores/channels";
-import { menuChannelPinned } from "../../lib/stores/preferences";
-import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch";
-import type { User } from "../../lib/types/twitch/user";
+} from "../../lib/api/twitch/streams.ts";
+import { getUsers } from "../../lib/api/twitch/users.ts";
+import { fetchAllPages } from "../../lib/api/utils.ts";
+import { addToast } from "../../lib/stores/toasts.ts";
+import { rememberUser, setLiveStreams } from "../../lib/stores/channels.ts";
+import { menuChannelPinned } from "../../lib/stores/preferences.ts";
+import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
+import type { User } from "../../lib/types/twitch/user.ts";
 
 export type MenuChannels = {
   loadingPinned: () => boolean;

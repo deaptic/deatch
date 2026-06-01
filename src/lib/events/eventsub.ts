@@ -1,7 +1,7 @@
 import { listen } from "@tauri-apps/api/event";
-import { appendItem } from "../stores/feeds";
-import type { FeedEvent } from "../types/feed";
-import type { EventKind } from "../types/twitch/eventsub";
+import { appendItem } from "../stores/feeds.ts";
+import type { FeedEvent } from "../types/feed.ts";
+import type { EventKind } from "../types/twitch/eventsub.ts";
 
 type Payload = { broadcaster_id: string; kind: EventKind };
 type FailedPayload = Payload & { error: string };

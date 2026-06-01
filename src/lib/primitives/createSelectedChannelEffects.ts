@@ -1,10 +1,10 @@
 import { createEffect } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { selectedChannel } from "../stores/channels";
-import { sevenTvManager } from "../managers/SevenTvManager";
-import { clearChannelThirdPartyEmotes } from "../stores/emotes";
-import { loadChannelThirdPartyEmotes } from "../services/emotes";
-import { loadChannelBadges } from "../services/badges";
+import { selectedChannel } from "../stores/channels.ts";
+import { sevenTvManager } from "../managers/SevenTvManager.ts";
+import { clearChannelThirdPartyEmotes } from "../stores/emotes.ts";
+import { loadChannelThirdPartyEmotes } from "../services/emotes.ts";
+import { loadChannelBadges } from "../services/badges.ts";
 
 export function createSelectedChannelEffects(): void {
   createEffect(() => {

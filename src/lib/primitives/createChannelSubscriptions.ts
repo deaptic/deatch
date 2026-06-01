@@ -1,18 +1,18 @@
 import { createSignal, createEffect, on, type Accessor } from "solid-js";
-import type { User } from "../types/twitch/user";
-import { selectedChannel } from "../stores/channels";
-import { menuChannelPinned } from "../stores/preferences";
-import { user, isModOfChannel } from "../stores/users";
-import { watchWarmedChannels } from "../stores/watch";
-import { eventSubManager } from "../managers/EventSubManager";
-import { sevenTvManager } from "../managers/SevenTvManager";
+import type { User } from "../types/twitch/user.ts";
+import { selectedChannel } from "../stores/channels.ts";
+import { menuChannelPinned } from "../stores/preferences.ts";
+import { user, isModOfChannel } from "../stores/users.ts";
+import { watchWarmedChannels } from "../stores/watch.ts";
+import { eventSubManager } from "../managers/EventSubManager.ts";
+import { sevenTvManager } from "../managers/SevenTvManager.ts";
 import {
   CHAT_KINDS,
   MOD_KINDS,
   OWN_KINDS,
   ALL_KINDS,
-} from "../types/twitch/eventsub";
-import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds";
+} from "../types/twitch/eventsub.ts";
+import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
 export type ChannelSubscriptions = {
   renderedChannels: Accessor<User[]>;

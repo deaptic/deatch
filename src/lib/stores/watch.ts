@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import type { User } from "../types/twitch/user";
+import type { User } from "../types/twitch/user.ts";
 
 export const [watchConnected, setWatchConnected] = createSignal(false);
 export const [watchedChannel, setWatchedChannel] = createSignal<User | null>(null);

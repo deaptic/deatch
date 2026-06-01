@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import type { Stream } from "../../lib/types/twitch/stream";
-import type { User } from "../../lib/types/twitch/user";
+import type { Stream } from "../../lib/types/twitch/stream.ts";
+import type { User } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   x: number;

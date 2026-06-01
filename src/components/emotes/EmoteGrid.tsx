@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import type { EmoteGridItem } from "./types";
+import type { EmoteGridItem } from "./types.ts";
 
 type Props = {
   items: EmoteGridItem[];

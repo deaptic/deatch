@@ -1,7 +1,7 @@
 import { CircleAlert, CircleCheck, Info, ScrollText, TriangleAlert, X } from "lucide-solid";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
 import type { Component } from "solid-js";
-import type { Toast, ToastType } from "../../lib/stores/toasts";
+import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
 
 const TYPE: Record<ToastType, { fill: string }> = {
   error: { fill: "bg-danger" },

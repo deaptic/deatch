@@ -1,4 +1,4 @@
-import { DEFAULT_AVATAR_URL } from "../../lib/constants";
+import { DEFAULT_AVATAR_URL } from "../../lib/constants.ts";
 
 type Props = {
   src?: string;

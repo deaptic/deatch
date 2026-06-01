@@ -1,9 +1,9 @@
 import { onMount } from "solid-js";
-import { createChatAutocompleteController } from "./controller";
-import EmoteAutocomplete from "./EmoteAutocomplete";
-import MentionAutocomplete from "./MentionAutocomplete";
-import CommandAutocomplete from "./CommandAutocomplete";
-import type { Command } from "../../command-composer/types";
+import { createChatAutocompleteController } from "./controller.ts";
+import EmoteAutocomplete from "./EmoteAutocomplete.tsx";
+import MentionAutocomplete from "./MentionAutocomplete.tsx";
+import CommandAutocomplete from "./CommandAutocomplete.tsx";
+import type { Command } from "../../command-composer/types.ts";
 
 export type ChatAutocompleteHandle = {
   update: (value: string, cursor: number) => void;

@@ -1,7 +1,7 @@
-import { setUser } from "../stores/users";
-import { setWaiting, setDeviceCode, setAuthChecked } from "../stores/auth";
-import { getDeviceCode, revokeSession, restoreSession } from "../api/twitch/auth";
-import { Manager } from "./Manager";
+import { setUser } from "../stores/users.ts";
+import { setWaiting, setDeviceCode, setAuthChecked } from "../stores/auth.ts";
+import { getDeviceCode, revokeSession, restoreSession } from "../api/twitch/auth.ts";
+import { Manager } from "./Manager.ts";
 
 export class SessionManager extends Manager {
   public async login(): Promise<void> {

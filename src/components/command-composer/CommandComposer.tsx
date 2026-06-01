@@ -1,12 +1,12 @@
 import { createSignal, createMemo, createEffect, For, Show, onCleanup } from "solid-js";
-import type { Command, CommandContext } from "./types";
-import { chattersByChannel } from "../../lib/stores/users";
-import { feedUserNickname } from "../../lib/stores/preferences";
-import { getUsers } from "../../lib/api/twitch/users";
-import Suggestions from "../suggestions/Suggestions";
-import Banner from "../ui/Banner";
-import CommandComposerSlot from "./CommandComposerSlot";
-import { type Slot, parseDuration, slotSatisfied } from "./parse";
+import type { Command, CommandContext } from "./types.ts";
+import { chattersByChannel } from "../../lib/stores/users.ts";
+import { feedUserNickname } from "../../lib/stores/preferences.ts";
+import { getUsers } from "../../lib/api/twitch/users.ts";
+import Suggestions from "../suggestions/Suggestions.tsx";
+import Banner from "../ui/Banner.tsx";
+import CommandComposerSlot from "./CommandComposerSlot.tsx";
+import { type Slot, parseDuration, slotSatisfied } from "./parse.ts";
 
 type UserSuggestion = {
   id: string;

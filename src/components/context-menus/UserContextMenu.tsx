@@ -1,16 +1,16 @@
 import { AtSign, Ban, Hash, Megaphone, User, VolumeX } from "lucide-solid";
 import { Show } from "solid-js";
-import { sendShoutout } from "../../lib/api/twitch/chat";
-import ContextMenu from "../ui/ContextMenu";
-import ContextMenuItem from "../ui/ContextMenuItem";
-import ContextMenuDivider from "../ui/ContextMenuDivider";
-import CopyPayloadItem from "./CopyPayloadItem";
+import { sendShoutout } from "../../lib/api/twitch/chat.ts";
+import ContextMenu from "../ui/ContextMenu.tsx";
+import ContextMenuItem from "../ui/ContextMenuItem.tsx";
+import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
+import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import {
   feedUserMuted,
   feedUserNickname,
   muteUser,
   unmuteUser,
-} from "../../lib/stores/preferences";
+} from "../../lib/stores/preferences.ts";
 
 export type UserContextTarget = {
   userId: string;
