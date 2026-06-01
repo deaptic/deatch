@@ -1,18 +1,12 @@
 import { createSignal, createMemo, createEffect, For, Show, onCleanup } from "solid-js";
-import type { Command, CommandContext, CommandOption } from "./types";
+import type { Command, CommandContext } from "./types";
 import { chattersByChannel } from "../../lib/stores/users";
 import { feedUserNickname } from "../../lib/stores/preferences";
 import { getUsers } from "../../lib/api/twitch/users";
 import Suggestions from "../suggestions/Suggestions";
 import Banner from "../ui/Banner";
 import CommandComposerSlot from "./CommandComposerSlot";
-
-type Slot = {
-  raw: string;
-  resolved: unknown | null;
-  displayLabel: string;
-  error: string | null;
-};
+import { type Slot, parseDuration, slotSatisfied } from "./parse";
 
 type UserSuggestion = {
   id: string;
@@ -28,19 +22,6 @@ type Props = {
   onSubmit: (values: Record<string, unknown>) => void;
   onCancel: () => void;
 };
-
-const DURATION_UNITS: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400, w: 604800 };
-
-function parseDuration(raw: string): number | null {
-  const m = raw.match(/^(\d+)([smhdw]?)$/);
-  if (!m) return null;
-  return parseInt(m[1], 10) * (DURATION_UNITS[m[2]] ?? 1);
-}
-
-function slotSatisfied(opt: CommandOption, slot: Slot): boolean {
-  if (slot.error) return false;
-  return !opt.required || slot.resolved !== null;
-}
 
 export default function CommandComposer(props: Props) {
   const options = props.command.options;
