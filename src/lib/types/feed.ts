@@ -20,7 +20,8 @@ export type AutomodHoldStatus =
   | "approving"
   | "denying"
   | "approved"
-  | "denied";
+  | "denied"
+  | "expired";
 
 export type AutomodHoldInfo = {
   reason: string;

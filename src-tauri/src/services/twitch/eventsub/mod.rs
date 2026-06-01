@@ -27,6 +27,8 @@ pub enum EventKind {
     ChannelModerate,
     #[serde(rename = "automod.message.hold")]
     AutomodMessageHold,
+    #[serde(rename = "automod.message.update")]
+    AutomodMessageUpdate,
     #[serde(rename = "channel.channel_points_custom_reward_redemption.add")]
     ChannelPointsCustomRewardRedemptionAdd,
 }
@@ -39,6 +41,7 @@ impl EventKind {
                 | Self::ChannelFollow
                 | Self::ChannelModerate
                 | Self::AutomodMessageHold
+                | Self::AutomodMessageUpdate
         )
     }
 }

@@ -1,9 +1,11 @@
 import { listen } from "@tauri-apps/api/event";
 import type {
+  AutomodHoldStatus,
   FeedEvent,
   FeedMessage,
   Fragment,
   RawAutomodMessageHold,
+  RawAutomodMessageUpdate,
   RawChatClear,
   RawChatClearUserMessages,
   RawChatMessageDelete,
@@ -15,6 +17,7 @@ import {
   markAllMessagesDeleted,
   markMessageDeleted,
   markUserMessagesDeleted,
+  setAutomodHoldStatus,
 } from "../stores/feeds.ts";
 import { isModOfChannel } from "../stores/users.ts";
 
@@ -183,3 +186,17 @@ listen<EventEnvelope<RawAutomodMessageHold>>("automod-message-hold", (e) => {
   };
   appendItem(p.broadcaster_user_id, item);
 });
+
+listen<EventEnvelope<RawAutomodMessageUpdate>>(
+  "automod-message-update",
+  (e) => {
+    const p = e.payload.event;
+    const s = p.status.toLowerCase();
+    const status: AutomodHoldStatus = s.startsWith("appro")
+      ? "approved"
+      : s.startsWith("den")
+      ? "denied"
+      : "expired";
+    setAutomodHoldStatus(p.broadcaster_user_id, p.message_id, status);
+  },
+);

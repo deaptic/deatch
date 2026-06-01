@@ -56,7 +56,7 @@ export default function FeedMessage(props: Props) {
   const holdPending = () => hold()?.status === "pending";
   const holdResolved = () => {
     const s = hold()?.status;
-    return s === "approved" || s === "denied";
+    return s === "approved" || s === "denied" || s === "expired";
   };
   const [holdBusy, setHoldBusy] = createSignal(false);
   const [hovered, setHovered] = createSignal(false);
@@ -179,7 +179,11 @@ export default function FeedMessage(props: Props) {
             class="col-start-2 row-start-1 text-warning text-[0.82em] leading-tight font-medium"
             label={hold()!.reason}
             suffix={holdResolved()
-              ? (hold()!.status === "approved" ? "approved" : "denied")
+              ? (hold()!.status === "approved"
+                ? "approved"
+                : hold()!.status === "denied"
+                ? "denied"
+                : "expired")
               : undefined}
             actions={holdPending()
               ? [

@@ -1,6 +1,6 @@
 use tauri::Emitter;
 use twitch_api::eventsub::{
-    automod::message::hold::AutomodMessageHoldV2,
+    automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
     channel::chat::{
         ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
         ChannelChatMessageV1, ChannelChatNotificationV1,
@@ -80,6 +80,15 @@ pub(super) async fn create_subscription(
                 helix,
                 token,
                 AutomodMessageHoldV2::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
+        }
+        EventKind::AutomodMessageUpdate => {
+            create(
+                helix,
+                token,
+                AutomodMessageUpdateV2::new(broadcaster_id, user_id),
                 transport,
             )
             .await
