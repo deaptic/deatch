@@ -168,7 +168,7 @@ export const deatchCommands: Command[] = [
   },
   {
     name: "nickname",
-    description: "Set a custom display name for a user (only visible to you)",
+    description: "Set a private nickname for a user",
     role: "regular",
     options: [
       {
