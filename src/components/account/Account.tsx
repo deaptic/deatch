@@ -1,36 +1,23 @@
 import { Show } from "solid-js";
-import { Portal } from "solid-js/web";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 import { user } from "../../lib/stores/users";
 import { sessionManager } from "../../lib/managers/SessionManager";
-import { captureFocusForRestore } from "../../lib/utils/focus";
 import LogoutIcon from "../icons/LogoutIcon";
 import { DEFAULT_AVATAR_URL } from "../../lib/constants";
+import Panel from "../ui/Panel";
 
 type Props = {
   onClose: () => void;
 };
 
 export default function Account(props: Props) {
-  captureFocusForRestore();
-  let panelRef: HTMLDivElement | undefined;
-
-  dismissOnOutside({
-    ref: () => panelRef,
-    onDismiss: props.onClose,
-    ignoreSelector: "[data-account-toggle]",
-  });
-
   return (
-    <Portal>
-      <div
-        ref={panelRef}
-        class="fixed top-12 right-2 z-40 w-72 max-w-[calc(100vw-1rem)] max-h-[calc(100vh-4rem)] bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col overflow-hidden"
-      >
-        <div class="flex items-center px-4 h-11 border-b border-border-muted shrink-0">
-          <span class="text-text text-sm font-semibold flex-1">Accounts</span>
-        </div>
-        <div class="flex flex-col p-2 gap-1">
+    <Panel
+      title="Accounts"
+      onClose={props.onClose}
+      ignoreSelector="[data-account-toggle]"
+      sizeClass="w-72 max-w-[calc(100vw-1rem)] max-h-[calc(100vh-4rem)]"
+    >
+      <div class="flex flex-col p-2 gap-1">
           <Show when={user()}>
             {(u) => (
               <div class="group flex items-center gap-3 px-2 py-2 rounded-md bg-bg transition-colors">
@@ -62,7 +49,6 @@ export default function Account(props: Props) {
             )}
           </Show>
         </div>
-      </div>
-    </Portal>
+    </Panel>
   );
 }
