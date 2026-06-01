@@ -1,15 +1,9 @@
+import { Copy, Inbox, Minus, Settings, Square, User, X } from "lucide-solid";
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
 import { selectedChannel } from "../../lib/stores/channels";
 import { unreadMentionCount } from "../../lib/stores/inbox";
-import InboxIcon from "../icons/InboxIcon";
-import GearIcon from "../icons/GearIcon";
-import UserIcon from "../icons/UserIcon";
-import MinusIcon from "../icons/MinusIcon";
-import SquareIcon from "../icons/SquareIcon";
-import RestoreIcon from "../icons/RestoreIcon";
-import CloseIcon from "../icons/CloseIcon";
 
 const win = getCurrentWindow();
 
@@ -102,7 +96,7 @@ export default function TitleBar(props: Props) {
           aria-label="Inbox"
           title="Inbox"
         >
-          <InboxIcon class="w-3.5 h-3.5" />
+          <Inbox class="w-3.5 h-3.5" />
           <Show when={unreadMentionCount() > 0}>
             <span class="absolute top-1.5 right-1.5 min-w-3.5 h-3.5 px-1 bg-primary rounded-full flex items-center justify-center">
               <span class="text-[9px] font-bold text-text leading-none tabular-nums">
@@ -121,7 +115,7 @@ export default function TitleBar(props: Props) {
           aria-label="Settings"
           title="Settings"
         >
-          <GearIcon class="w-3.5 h-3.5" />
+          <Settings class="w-3.5 h-3.5" />
         </button>
         <button
           data-account-toggle
@@ -135,7 +129,7 @@ export default function TitleBar(props: Props) {
           aria-label="Accounts"
           title="Accounts"
         >
-          <UserIcon class="w-3.5 h-3.5" />
+          <User class="w-3.5 h-3.5" />
         </button>
         <div class="h-5 w-px bg-border-muted self-center" />
         <div class="flex items-stretch h-full">
@@ -144,7 +138,7 @@ export default function TitleBar(props: Props) {
             onClick={() => win.minimize()}
             aria-label="Minimize"
           >
-            <MinusIcon class="w-2.5 h-2.5" />
+            <Minus class="w-2.5 h-2.5" />
           </button>
           <button
             class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg hover:text-text transition-colors cursor-pointer"
@@ -152,9 +146,9 @@ export default function TitleBar(props: Props) {
             aria-label={maximized() ? "Restore" : "Maximize"}
           >
             {maximized() ? (
-              <RestoreIcon class="w-2.5 h-2.5" />
+              <Copy class="w-2.5 h-2.5" />
             ) : (
-              <SquareIcon class="w-2.5 h-2.5" />
+              <Square class="w-2.5 h-2.5" />
             )}
           </button>
           <button
@@ -162,7 +156,7 @@ export default function TitleBar(props: Props) {
             onClick={() => win.close()}
             aria-label="Close"
           >
-            <CloseIcon class="w-2.5 h-2.5" />
+            <X class="w-2.5 h-2.5" />
           </button>
         </div>
       </div>

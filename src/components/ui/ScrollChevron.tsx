@@ -1,5 +1,4 @@
-import ChevronUpIcon from "../icons/ChevronUpIcon";
-import ChevronDownIcon from "../icons/ChevronDownIcon";
+import { ChevronDown, ChevronUp } from "lucide-solid";
 
 interface Props {
   direction: "up" | "down";
@@ -18,9 +17,9 @@ export default function ScrollChevron(props: Props) {
       }`}
     >
       {props.direction === "up" ? (
-        <ChevronUpIcon class="w-3 h-3" />
+        <ChevronUp class="w-3 h-3" />
       ) : (
-        <ChevronDownIcon class="w-3 h-3" />
+        <ChevronDown class="w-3 h-3" />
       )}
     </button>
   );

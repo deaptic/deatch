@@ -1,11 +1,6 @@
+import { CircleAlert, CircleCheck, Info, ScrollText, TriangleAlert, X } from "lucide-solid";
 import { Show, createSignal, onCleanup, onMount } from "solid-js";
 import type { Component } from "solid-js";
-import CloseIcon from "../icons/CloseIcon";
-import ErrorIcon from "../icons/ErrorIcon";
-import SuccessIcon from "../icons/SuccessIcon";
-import InfoIcon from "../icons/InfoIcon";
-import WarnIcon from "../icons/WarnIcon";
-import LogIcon from "../icons/LogIcon";
 import type { Toast, ToastType } from "../../lib/stores/toasts";
 
 const TYPE: Record<ToastType, { fill: string }> = {
@@ -17,11 +12,11 @@ const TYPE: Record<ToastType, { fill: string }> = {
 };
 
 const ICONS: Record<ToastType, Component<{ class?: string }>> = {
-  error: ErrorIcon,
-  info: InfoIcon,
-  success: SuccessIcon,
-  warn: WarnIcon,
-  log: LogIcon,
+  error: CircleAlert,
+  info: Info,
+  success: CircleCheck,
+  warn: TriangleAlert,
+  log: ScrollText,
 };
 
 type Props = {
@@ -74,7 +69,7 @@ export default function ToasterItem(props: Props) {
         onClick={dismiss}
         class="shrink-0 w-9 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer"
       >
-        <CloseIcon class="w-2.5 h-2.5" />
+        <X class="w-2.5 h-2.5" />
       </button>
     </div>
   );

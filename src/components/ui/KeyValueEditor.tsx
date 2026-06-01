@@ -1,8 +1,7 @@
+import { Check, X } from "lucide-solid";
 import { createSignal, For, Show } from "solid-js";
 import TextInput from "./TextInput";
 import Button from "./Button";
-import CloseIcon from "../icons/CloseIcon";
-import CheckIcon from "../icons/CheckIcon";
 
 export type KeyValueEntry = { key: string; value: string };
 
@@ -79,7 +78,7 @@ export default function KeyValueEditor(props: Props) {
                     aria-label="Remove"
                     title="Remove"
                   >
-                    <CloseIcon class="w-2 h-2" />
+                    <X class="w-2 h-2" />
                   </button>
                 </div>
               );
@@ -112,7 +111,7 @@ export default function KeyValueEditor(props: Props) {
             when={!busy()}
             fallback={<div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />}
           >
-            <CheckIcon class="w-4 h-4" />
+            <Check class="w-4 h-4" />
           </Show>
         </Button>
       </div>

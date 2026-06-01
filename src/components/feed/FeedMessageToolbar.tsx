@@ -1,10 +1,8 @@
+import { ClipboardPaste, Ellipsis, Reply } from "lucide-solid";
 import { For, Show } from "solid-js";
 import type { FeedMessage } from "../../lib/types";
 import Toolbar from "../ui/Toolbar";
 import ToolbarItem from "../ui/ToolbarItem";
-import ReplyIcon from "../icons/ReplyIcon";
-import DotsIcon from "../icons/DotsIcon";
-import PastaIcon from "../icons/PastaIcon";
 import { feedShowCopypasta } from "../../lib/stores/preferences";
 
 type Reaction = { label: string; value: string; url: string };
@@ -29,11 +27,11 @@ export default function FeedMessageToolbar(props: Props) {
         )}
       </For>
       <ToolbarItem title="Reply" onClick={() => props.onReply(props.item)}>
-        <ReplyIcon class="w-3.5 h-3.5" />
+        <Reply class="w-3.5 h-3.5" />
       </ToolbarItem>
       <Show when={feedShowCopypasta()}>
         <ToolbarItem title="Copypasta" onClick={() => props.onCopypasta(props.item)}>
-          <PastaIcon class="w-3.5 h-3.5" />
+          <ClipboardPaste class="w-3.5 h-3.5" />
         </ToolbarItem>
       </Show>
       <ToolbarItem
@@ -43,7 +41,7 @@ export default function FeedMessageToolbar(props: Props) {
           props.onMore(rect.left, rect.bottom + 4, props.item);
         }}
       >
-        <DotsIcon class="w-3.5 h-3.5" />
+        <Ellipsis class="w-3.5 h-3.5" />
       </ToolbarItem>
     </Toolbar>
   );

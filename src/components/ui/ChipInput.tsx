@@ -1,7 +1,7 @@
+import { Check } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
 import TextInput from "./TextInput";
 import Button from "./Button";
-import CheckIcon from "../icons/CheckIcon";
 
 type Props = {
   placeholder?: string;
@@ -50,7 +50,7 @@ export default function ChipInput(props: Props) {
             <div class="w-3.5 h-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
           }
         >
-          <CheckIcon class="w-4 h-4" />
+          <Check class="w-4 h-4" />
         </Show>
       </Button>
     </div>

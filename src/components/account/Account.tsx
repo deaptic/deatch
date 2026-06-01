@@ -1,7 +1,7 @@
+import { LogOut } from "lucide-solid";
 import { Show } from "solid-js";
 import { user } from "../../lib/stores/users";
 import { sessionManager } from "../../lib/managers/SessionManager";
-import LogoutIcon from "../icons/LogoutIcon";
 import Avatar from "../ui/Avatar";
 import Panel from "../ui/Panel";
 
@@ -43,7 +43,7 @@ export default function Account(props: Props) {
                   aria-label="Log out"
                   title="Log out"
                 >
-                  <LogoutIcon class="w-4 h-4" />
+                  <LogOut class="w-4 h-4" />
                 </button>
               </div>
             )}

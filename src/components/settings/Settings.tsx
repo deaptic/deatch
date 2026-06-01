@@ -1,3 +1,4 @@
+import { Ban, Megaphone, Palette, ScrollText, Settings as SettingsIcon } from "lucide-solid";
 import { createSignal, For, Show, type JSX } from "solid-js";
 import Panel from "../ui/Panel";
 import Navigation from "../ui/Navigation";
@@ -7,11 +8,6 @@ import ModerationSection from "./sections/ModerationSection";
 import FeedSection from "./sections/FeedSection";
 import AppearanceSection from "./sections/AppearanceSection";
 import AdvancedSection from "./sections/AdvancedSection";
-import MegaphoneIcon from "../icons/MegaphoneIcon";
-import LogIcon from "../icons/LogIcon";
-import PaletteIcon from "../icons/PaletteIcon";
-import GearIcon from "../icons/GearIcon";
-import BanIcon from "../icons/BanIcon";
 
 type SectionKey = "feed" | "notifications" | "moderation" | "appearance" | "advanced";
 
@@ -20,11 +16,11 @@ const SECTIONS: {
   label: string;
   Icon: (p: { class?: string }) => JSX.Element;
 }[] = [
-  { key: "notifications", label: "Notifications", Icon: MegaphoneIcon },
-  { key: "feed", label: "Feed", Icon: LogIcon },
-  { key: "moderation", label: "Moderation", Icon: BanIcon },
-  { key: "appearance", label: "Appearance", Icon: PaletteIcon },
-  { key: "advanced", label: "Advanced", Icon: GearIcon },
+  { key: "notifications", label: "Notifications", Icon: Megaphone },
+  { key: "feed", label: "Feed", Icon: ScrollText },
+  { key: "moderation", label: "Moderation", Icon: Ban },
+  { key: "appearance", label: "Appearance", Icon: Palette },
+  { key: "advanced", label: "Advanced", Icon: SettingsIcon },
 ];
 
 type Props = {

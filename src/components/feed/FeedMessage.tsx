@@ -1,3 +1,4 @@
+import { Check, X } from "lucide-solid";
 import { For, Show, createSignal } from "solid-js";
 import { EmoteMap } from "../../lib/stores/emotes";
 import FeedMessageToolbar from "./FeedMessageToolbar";
@@ -6,8 +7,6 @@ import BadgeBox from "../ui/BadgeBox";
 import DisplayName from "../ui/DisplayName";
 import Timestamp from "../ui/Timestamp";
 import RichNotice from "./RichNotice";
-import CheckIcon from "../icons/CheckIcon";
-import CloseIcon from "../icons/CloseIcon";
 import type { FeedMessage as Message, BadgeMap } from "../../lib/types";
 import { matchesAnyKeyword } from "../../lib/stores/preferences";
 import { setAutomodHoldStatus } from "../../lib/stores/feeds";
@@ -169,14 +168,14 @@ export default function FeedMessage(props: Props) {
               ? [
                   {
                     title: "Approve",
-                    icon: () => <CheckIcon class="w-4 h-4" />,
+                    icon: () => <Check class="w-4 h-4" />,
                     variant: "success",
                     disabled: holdBusy,
                     onClick: () => handleHold("approve"),
                   },
                   {
                     title: "Deny",
-                    icon: () => <CloseIcon class="w-3 h-3" />,
+                    icon: () => <X class="w-3 h-3" />,
                     variant: "danger",
                     disabled: holdBusy,
                     onClick: () => handleHold("deny"),

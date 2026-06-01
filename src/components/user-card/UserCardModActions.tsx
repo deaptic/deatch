@@ -1,9 +1,9 @@
+import { Ban } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { banUser, unbanUser } from "../../lib/api/twitch/moderation";
 import { user as currentUser, moderatedChannels } from "../../lib/stores/users";
 import { moderationActionsDisabled } from "../../lib/stores/preferences";
 import Button from "../ui/Button";
-import BanIcon from "../icons/BanIcon";
 
 type Timeout = { label: string; seconds: number };
 
@@ -56,7 +56,7 @@ export default function UserCardModActions(props: Props) {
           onClick={unban}
           title="Unban"
           aria-label="Unban"
-          icon={<BanIcon class="w-4 h-4 text-success" />}
+          icon={<Ban class="w-4 h-4 text-success" />}
         />
         <div class="flex-1 grid grid-cols-6 gap-1.5 min-w-0">
           <For each={TIMEOUTS}>
@@ -78,7 +78,7 @@ export default function UserCardModActions(props: Props) {
           onClick={ban}
           title="Ban"
           aria-label="Ban"
-          icon={<BanIcon class="w-4 h-4 text-danger" />}
+          icon={<Ban class="w-4 h-4 text-danger" />}
         />
       </div>
     </Show>

@@ -1,12 +1,9 @@
+import { AtSign, Calendar, Hash, Heart } from "lucide-solid";
 import { Show } from "solid-js";
 import type { User } from "../../lib/api/twitch/users";
 import type { Follow } from "../../lib/api/twitch/channels";
 import CopyableField from "../ui/CopyableField";
 import Timestamp from "../ui/Timestamp";
-import AtIcon from "../icons/AtIcon";
-import CalendarIcon from "../icons/CalendarIcon";
-import HashIcon from "../icons/HashIcon";
-import HeartIcon from "../icons/HeartIcon";
 
 type Follower = Follow;
 
@@ -24,7 +21,7 @@ export default function UserCardMeta(props: Props) {
       <Show when={props.user}>
         <CopyableField
           copy={props.user!.login}
-          icon={<AtIcon class={ICON_CLASS} />}
+          icon={<AtSign class={ICON_CLASS} />}
         >
           {props.user!.login}
         </CopyableField>
@@ -32,14 +29,14 @@ export default function UserCardMeta(props: Props) {
       <CopyableField
         copy={props.chatterId}
         title="Click to copy ID"
-        icon={<HashIcon class={ICON_CLASS} />}
+        icon={<Hash class={ICON_CLASS} />}
       >
         {props.chatterId}
       </CopyableField>
       <Show when={props.user?.createdAt}>
         <CopyableField
           copy={props.user!.createdAt}
-          icon={<CalendarIcon class={ICON_CLASS} />}
+          icon={<Calendar class={ICON_CLASS} />}
         >
           <Timestamp ts={props.user!.createdAt} format="D" />
         </CopyableField>
@@ -49,7 +46,7 @@ export default function UserCardMeta(props: Props) {
         fallback={
           <CopyableField
             copy="Unknown"
-            icon={<HeartIcon class={ICON_CLASS} />}
+            icon={<Heart class={ICON_CLASS} />}
             title="Mod permission required to view follow status"
           >
             Unknown
@@ -58,7 +55,7 @@ export default function UserCardMeta(props: Props) {
       >
         <CopyableField
           copy={props.follower!.followedAt}
-          icon={<HeartIcon class={ICON_CLASS} />}
+          icon={<Heart class={ICON_CLASS} />}
         >
           <Timestamp ts={props.follower!.followedAt} format="D" />
         </CopyableField>

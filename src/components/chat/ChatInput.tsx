@@ -1,3 +1,4 @@
+import { Smile } from "lucide-solid";
 import {
   createSignal,
   createEffect,
@@ -18,7 +19,6 @@ import TextArea, { type TextAreaApi } from "../ui/TextArea";
 import Banner from "../ui/Banner";
 import CharCounter from "../ui/CharCounter";
 import Button from "../ui/Button";
-import SmileIcon from "../icons/SmileIcon";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker"));
 import ChatAutocomplete, { type ChatAutocompleteHandle } from "./autocomplete/ChatAutocomplete";
 import { createInputHistory } from "./createInputHistory";
@@ -204,7 +204,7 @@ export default function ChatInput(props: Props) {
             ref={(api) => { textAreaApi = api; }}
             addons={
               <div class="self-stretch flex flex-col items-center mx-2 py-3 shrink-0">
-                <Button toggle="emotePicker" icon={<SmileIcon class="w-5 h-5" />} title="Emote picker" />
+                <Button toggle="emotePicker" icon={<Smile class="w-5 h-5" />} title="Emote picker" />
                 <CharCounter value={input} max={MAX_LEN} class="mt-auto" />
               </div>
             }

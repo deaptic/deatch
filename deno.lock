@@ -896,6 +896,7 @@
         "npm:@tauri-apps/plugin-opener@^2.5.4",
         "npm:@tauri-apps/plugin-process@^2.3.1",
         "npm:@tauri-apps/plugin-updater@^2.10.1",
+        "npm:lucide-solid@^1.3.0",
         "npm:solid-js@^1.9.13",
         "npm:tailwindcss@^4.3.0",
         "npm:typescript@^6.0.3",
