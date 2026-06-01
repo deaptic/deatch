@@ -1,6 +1,5 @@
-import { ExternalLink, Pin } from "lucide-solid";
+import { Pin } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import type { User } from "../../lib/api/twitch/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import { feeds } from "../../lib/stores/feeds.ts";
@@ -63,17 +62,6 @@ export default function UserCardIdentity(props: Props) {
           </span>
         </Show>
       </div>
-      <button
-        class="shrink-0 size-8 flex items-center justify-center text-text-muted hover:text-text hover:bg-bg rounded transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={() =>
-          props.user && openUrl(`https://twitch.tv/${props.user.login}`)}
-        disabled={!props.user}
-        title="Open channel on Twitch"
-        aria-label="Open channel on Twitch"
-      >
-        <ExternalLink class="size-2.5" />
-      </button>
       <button
         class={`shrink-0 size-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
           props.pinned
