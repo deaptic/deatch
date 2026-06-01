@@ -1,9 +1,11 @@
-import { Show, onCleanup, onMount } from "solid-js";
+import { Show } from "solid-js";
 import { Portal } from "solid-js/web";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 import { user } from "../../lib/stores/users";
 import { sessionManager } from "../../lib/managers/SessionManager";
 import { captureFocusForRestore } from "../../lib/utils/focus";
 import LogoutIcon from "../icons/LogoutIcon";
+import { DEFAULT_AVATAR_URL } from "../../lib/constants";
 
 type Props = {
   onClose: () => void;
@@ -13,18 +15,10 @@ export default function Account(props: Props) {
   captureFocusForRestore();
   let panelRef: HTMLDivElement | undefined;
 
-  const onDocumentClick = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (panelRef?.contains(target)) return;
-    if (target.closest("[data-account-toggle]")) return;
-    props.onClose();
-  };
-
-  onMount(() => {
-    document.addEventListener("mousedown", onDocumentClick, { capture: true });
-    onCleanup(() => {
-      document.removeEventListener("mousedown", onDocumentClick, { capture: true });
-    });
+  dismissOnOutside({
+    ref: () => panelRef,
+    onDismiss: props.onClose,
+    ignoreSelector: "[data-account-toggle]",
   });
 
   return (
@@ -41,10 +35,7 @@ export default function Account(props: Props) {
             {(u) => (
               <div class="group flex items-center gap-3 px-2 py-2 rounded-md bg-bg transition-colors">
                 <img
-                  src={
-                    u().profileImageUrl ||
-                    "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
-                  }
+                  src={u().profileImageUrl || DEFAULT_AVATAR_URL}
                   alt={u().displayName}
                   class="w-10 h-10 rounded-lg shrink-0"
                 />

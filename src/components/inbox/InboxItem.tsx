@@ -2,9 +2,9 @@ import { createEffect } from "solid-js";
 import type { Mention } from "../../lib/stores/inbox";
 import { userCache } from "../../lib/stores/users";
 import { getUsers } from "../../lib/api/twitch/users";
+import { DEFAULT_AVATAR_URL } from "../../lib/constants";
 
-const DEFAULT_AVATAR =
-  "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png";
+const DEFAULT_AVATAR = DEFAULT_AVATAR_URL;
 
 type Props = {
   mention: Mention;

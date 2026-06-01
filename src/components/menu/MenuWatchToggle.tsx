@@ -3,6 +3,7 @@ import MenuSection from "./MenuSection";
 import WatchIcon from "../icons/WatchIcon";
 import { selectedChannel } from "../../lib/stores/channels";
 import { watchMode, setWatchMode } from "../../lib/stores/watch";
+import { DEFAULT_AVATAR_URL } from "../../lib/constants";
 
 export default function MenuWatchToggle() {
   return (
@@ -28,10 +29,7 @@ export default function MenuWatchToggle() {
           >
             {(ch) => (
               <img
-                src={
-                  ch()?.profileImageUrl ||
-                  "https://static-cdn.jtvnw.net/user-default-pictures-uec5k4/13e5fa74-defa-11e9-809c-784f43822e80-profile_image-70x70.png"
-                }
+                src={ch()?.profileImageUrl || DEFAULT_AVATAR_URL}
                 alt={ch()?.displayName}
                 class="w-8 h-8 rounded-lg"
               />

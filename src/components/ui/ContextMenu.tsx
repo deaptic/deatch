@@ -1,4 +1,5 @@
-import { type JSX, createSignal, onCleanup, onMount } from "solid-js";
+import { type JSX, createSignal, onMount } from "solid-js";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 
 type Props = {
   x: number;
@@ -21,15 +22,10 @@ export default function ContextMenu(props: Props) {
     }
   });
 
-  const close = (e: Event) => {
-    if (menuRef?.contains(e.target as Node)) return;
-    props.onClose();
-  };
-  document.addEventListener("click", close, { capture: true });
-  document.addEventListener("contextmenu", close, { capture: true });
-  onCleanup(() => {
-    document.removeEventListener("click", close, { capture: true });
-    document.removeEventListener("contextmenu", close, { capture: true });
+  dismissOnOutside({
+    ref: () => menuRef,
+    onDismiss: props.onClose,
+    events: ["click", "contextmenu"],
   });
 
   return (

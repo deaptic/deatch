@@ -3,6 +3,7 @@ import SettingsContent from "../SettingsContent";
 import SettingsContentSection from "../SettingsContentSection";
 import SettingsContentSectionItem from "../SettingsContentSectionItem";
 import Button from "../../ui/Button";
+import ColorPicker from "../../ui/ColorPicker";
 import {
   appearanceColors,
   setAppearanceColor,
@@ -19,27 +20,13 @@ function AppearanceColorRow(props: { colorKey: AppearanceColorKey }) {
   const override = () => appearanceColors()[props.colorKey];
   const pickerValue = () => override() ?? readAppearanceColorHex(props.colorKey);
   return (
-    <div class="flex items-center gap-2">
-      <label
-        class="relative w-8 h-8 rounded border border-border cursor-pointer overflow-hidden"
-        style={{ "background-color": `var(--color-${props.colorKey})` }}
-        title="Pick color"
-      >
-        <input
-          type="color"
-          class="absolute inset-0 opacity-0 cursor-pointer"
-          value={pickerValue()}
-          onInput={(e) => setAppearanceColor(props.colorKey, e.currentTarget.value)}
-        />
-      </label>
-      <Button
-        variant="secondary"
-        disabled={!override()}
-        onClick={() => resetAppearanceColor(props.colorKey)}
-      >
-        Reset
-      </Button>
-    </div>
+    <ColorPicker
+      swatchColor={`var(--color-${props.colorKey})`}
+      value={pickerValue()}
+      onInput={(hex) => setAppearanceColor(props.colorKey, hex)}
+      onReset={() => resetAppearanceColor(props.colorKey)}
+      resetDisabled={!override()}
+    />
   );
 }
 

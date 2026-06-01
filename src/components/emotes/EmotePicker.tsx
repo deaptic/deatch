@@ -24,6 +24,7 @@ import Navigation from "../ui/Navigation";
 import NavigationItem from "../ui/NavigationItem";
 import { captureFocusForRestore } from "../../lib/utils/focus";
 import { shortcutManager } from "../../lib/managers/ShortcutManager";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 import type { EmoteGridItem } from "./types";
 import {
   type RenderSection,
@@ -160,17 +161,13 @@ export default function EmotePicker(props: Props) {
   const onToggleFavorite = (item: EmoteGridItem) =>
     toggleFavorite({ value: item.value, url: item.url, label: item.label });
 
-  const onDocumentMouseDown = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (panelRef?.contains(target)) return;
-    if (target.closest('[data-panel-toggle="emotePicker"]')) return;
-    props.onClose();
-  };
+  dismissOnOutside({
+    ref: () => panelRef,
+    onDismiss: props.onClose,
+    ignoreSelector: '[data-panel-toggle="emotePicker"]',
+  });
   onMount(() => {
     queueMicrotask(() => searchRef?.focus());
-    document.addEventListener("mousedown", onDocumentMouseDown, {
-      capture: true,
-    });
     const unbind = shortcutManager.bindScope("emotePickerOpen", {
       left: () => {
         setActiveIndex(Math.max(activeIndex() - 1, 0));
@@ -186,9 +183,6 @@ export default function EmotePicker(props: Props) {
       "shift-enter": () => selectActive(true),
     });
     onCleanup(() => {
-      document.removeEventListener("mousedown", onDocumentMouseDown, {
-        capture: true,
-      });
       unbind();
     });
 

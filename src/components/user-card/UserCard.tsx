@@ -5,6 +5,7 @@ import { shortcutManager } from "../../lib/managers/ShortcutManager";
 import UserCardHeader from "./UserCardHeader";
 import UserCardModActions from "./UserCardModActions";
 import UserCardFeed from "./UserCardFeed";
+import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside";
 
 type Props = {
   x: number;
@@ -57,12 +58,11 @@ export default function UserCard(props: Props) {
     onCleanup(() => observer.disconnect());
   });
 
-  const onDocumentMouseDown = (e: MouseEvent) => {
-    if (pinned()) return;
-    if (cardRef?.contains(e.target as Node)) return;
-    props.onClose();
-  };
-  document.addEventListener("mousedown", onDocumentMouseDown, { capture: true });
+  dismissOnOutside({
+    ref: () => cardRef,
+    onDismiss: props.onClose,
+    shouldDismiss: () => !pinned(),
+  });
   shortcutManager.setContext("userCardOpen", true);
   const unbindEsc = shortcutManager.registerLocal(
     "escape",
@@ -70,7 +70,6 @@ export default function UserCard(props: Props) {
     "userCardOpen",
   );
   onCleanup(() => {
-    document.removeEventListener("mousedown", onDocumentMouseDown, { capture: true });
     unbindEsc();
     shortcutManager.setContext("userCardOpen", false);
   });
