@@ -13,6 +13,8 @@ import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput from "./ChatInput.tsx";
+import RaidBanner from "./RaidBanner.tsx";
+import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu from "../context-menus/UserContextMenu.tsx";
 import UserCard from "../user-card/UserCard.tsx";
@@ -252,6 +254,9 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex flex-col h-full bg-bg-dark">
+      <Show when={props.isActive && pendingRaid()}>
+        {(raid) => <RaidBanner raid={raid()} />}
+      </Show>
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}

@@ -10,6 +10,8 @@ import {
 import { addToast } from "../../lib/stores/toasts.ts";
 import { dashboardOpen, setDashboardOpen } from "../../lib/stores/ui.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
+import { beginRaid } from "../../lib/stores/raid.ts";
+import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createMenuChannels } from "./createMenuChannels.ts";
 import MenuSection from "./MenuSection.tsx";
@@ -77,6 +79,12 @@ export default function Menu(props: Props) {
 
   function openInBrowser(ch: User) {
     openUrl(`https://twitch.tv/${ch?.login}`);
+  }
+
+  function raidChannel(ch: User) {
+    const self = user();
+    if (!self) return;
+    beginRaid(self.id, ch).catch(() => {});
   }
 
   function openAdd() {
@@ -184,6 +192,9 @@ export default function Menu(props: Props) {
             onOpenInBrowser={openInBrowser}
             onPin={(ch) => pinChannel(ch?.id)}
             onUnpin={unpinChannel}
+            onRaid={user() && m().ch?.id !== user()?.id
+              ? raidChannel
+              : undefined}
           />
         )}
       </Show>
