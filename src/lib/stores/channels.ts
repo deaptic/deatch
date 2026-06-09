@@ -16,7 +16,6 @@ export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 export const usersById = new Map<string, User>();
 
 const [usersVersion, setUsersVersion] = createSignal(0);
-export { usersVersion };
 
 export function setSelectedChannel(u: User | null) {
   setSelectedChannelSig(u);
