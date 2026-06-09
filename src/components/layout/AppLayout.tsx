@@ -11,12 +11,14 @@ import ChatPanes from "./ChatPanes.tsx";
 import {
   dashboardOpen,
   isPanelOpen,
+  setDashboardOpen,
   togglePanel,
 } from "../../lib/stores/ui.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
 import { selectedChannel } from "../../lib/stores/channels.ts";
 import { removeToast, toasts } from "../../lib/stores/toasts.ts";
+import type { User } from "../../lib/types/twitch/user.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
 
 type AppLayoutProps = {
@@ -25,6 +27,12 @@ type AppLayoutProps = {
 
 export default function AppLayout(props: AppLayoutProps) {
   const c = props.controller;
+
+  function selectChannel(channel: User) {
+    setDashboardOpen(false);
+    c.selectChannel(channel);
+  }
+
   return (
     <div class="flex flex-col h-screen bg-bg-dark relative">
       <TitleBar
@@ -74,7 +82,7 @@ export default function AppLayout(props: AppLayoutProps) {
                   />
                 }
               >
-                <Dashboard />
+                <Dashboard onSelectChannel={selectChannel} />
               </Show>
             </div>
           )}

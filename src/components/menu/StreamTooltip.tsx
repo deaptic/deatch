@@ -2,6 +2,7 @@ import { Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import type { Stream } from "../../lib/types/twitch/stream.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
+import { formatViewers } from "../../lib/format/stream.ts";
 
 type Props = {
   x: number;
@@ -9,12 +10,6 @@ type Props = {
   user: User;
   stream?: Stream;
 };
-
-function formatViewers(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return String(n);
-}
 
 export default function StreamTooltip(props: Props) {
   return (

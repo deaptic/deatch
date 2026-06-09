@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import type { Stream } from "../types/twitch/stream.ts";
-import type { User } from "../types/twitch/user.ts";
+import type { User, UserRef } from "../types/twitch/user.ts";
 import { menuChannelPinned } from "./preferences.ts";
 import { watchWarmedChannels } from "./watch.ts";
 
@@ -14,6 +14,9 @@ export const selectedChannel = selectedChannelSig;
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 
 export const usersById = new Map<string, User>();
+
+const [usersVersion, setUsersVersion] = createSignal(0);
+export { usersVersion };
 
 export function setSelectedChannel(u: User | null) {
   setSelectedChannelSig(u);
@@ -40,6 +43,7 @@ export function rememberUser(u: User) {
     if (oldest === undefined) break;
     usersById.delete(oldest);
   }
+  setUsersVersion((v) => v + 1);
 }
 
 export function streamForUserId(userId: string): Stream | undefined {
@@ -58,7 +62,7 @@ export function channelsInOrder(): User[] {
   }
   for (const s of live) {
     if (pinnedSet.has(s.user.id) || warmedSet.has(s.user.id)) continue;
-    const u = usersById.get(s.user.id) ?? streamUserAsUser(s);
+    const u = usersById.get(s.user.id) ?? userFromRef(s.user);
     ordered.push(u);
   }
   return ordered;
@@ -66,19 +70,24 @@ export function channelsInOrder(): User[] {
 
 function userFromStream(streams: Stream[], userId: string): User | undefined {
   const s = streams.find((x) => x.user.id === userId);
-  return s ? streamUserAsUser(s) : undefined;
+  return s ? userFromRef(s.user) : undefined;
 }
 
-function streamUserAsUser(s: Stream): User {
+export function userFromRef(ref: UserRef): User {
   return {
-    id: s.user.id,
-    login: s.user.login,
-    displayName: s.user.displayName,
+    id: ref.id,
+    login: ref.login,
+    displayName: ref.displayName,
     profileImageUrl: "",
     description: "",
     broadcasterType: "",
     createdAt: "",
   };
+}
+
+export function resolveUser(ref: UserRef): User {
+  usersVersion();
+  return usersById.get(ref.id) ?? userFromRef(ref);
 }
 
 export function loadLastChannel(): User | null {
