@@ -81,6 +81,8 @@ pub fn run() {
             commands::twitch::streams::get_streams,
             commands::twitch::streams::create_stream_marker,
             commands::twitch::users::get_users,
+            commands::twitch::search::search_channels,
+            commands::twitch::search::search_categories,
             commands::twitch::chat::send_shoutout,
             commands::twitch::chat::send_chat_message,
             commands::twitch::chat::send_chat_announcement,

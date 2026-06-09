@@ -5,5 +5,6 @@ pub mod clips;
 pub mod eventsub;
 pub mod moderation;
 pub mod raids;
+pub mod search;
 pub mod streams;
 pub mod users;
