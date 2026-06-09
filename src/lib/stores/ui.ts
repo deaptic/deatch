@@ -9,4 +9,4 @@ export const togglePanel = (p: Panel): void => {
   setOpenPanel(openPanel() === p ? null : p);
 };
 
-export const [dashboardOpen, setDashboardOpen] = createSignal(false);
+export const [dashboardOpen, setDashboardOpen] = createSignal(true);

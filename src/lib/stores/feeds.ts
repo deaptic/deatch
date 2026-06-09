@@ -3,6 +3,7 @@ import type { BadgeMap, FeedItem } from "../types/feed.ts";
 import { NOTICE_TO_EVENT } from "../constants.ts";
 import { selectedChannel } from "./channels.ts";
 import { recordChatter, user } from "./users.ts";
+import { recordChatMessage } from "./chatActivity.ts";
 import { feedEvents, feedUserMuted } from "./preferences.ts";
 import { appendSentHistoryOlder, pushSentHistory } from "./chatHistory.ts";
 
@@ -172,6 +173,7 @@ export function appendItem(id: string, item: FeedItem) {
     }),
   );
   if (added) {
+    if (item.kind === "message") recordChatMessage(id, Date.now());
     const text = ownMessageText(item);
     if (text) pushSentHistory(id, text);
   }
