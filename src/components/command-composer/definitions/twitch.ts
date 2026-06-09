@@ -4,7 +4,8 @@ import {
   unbanUser,
   warnUser,
 } from "../../../lib/api/twitch/moderation.ts";
-import { cancelRaid, startRaid } from "../../../lib/api/twitch/raids.ts";
+import { getUsers } from "../../../lib/api/twitch/users.ts";
+import { beginRaid, cancelActiveRaid } from "../../../lib/stores/raid.ts";
 import {
   type AnnouncementColor,
   type NamedUserColor,
@@ -376,9 +377,12 @@ export const twitchCommands: Command[] = [
       },
     ],
     execute: async ({ channel }, ctx) => {
-      await startRaid({
-        fromBroadcasterId: ctx.broadcasterId,
-        toBroadcasterId: channel as string,
+      const id = channel as string;
+      const user = (await getUsers({ ids: [id] }))[0];
+      await beginRaid(ctx.broadcasterId, {
+        id,
+        login: user?.login ?? "",
+        displayName: user?.displayName ?? id,
       });
     },
   },
@@ -388,7 +392,7 @@ export const twitchCommands: Command[] = [
     role: "broadcaster",
     options: [],
     execute: async (_, ctx) => {
-      await cancelRaid({ broadcasterId: ctx.broadcasterId });
+      await cancelActiveRaid(ctx.broadcasterId);
     },
   },
   {
