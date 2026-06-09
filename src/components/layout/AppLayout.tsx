@@ -5,9 +5,14 @@ import Toaster from "../toaster/Toaster.tsx";
 import Login from "../login/Login.tsx";
 import Loading from "../ui/Loading.tsx";
 import Menu from "../menu/Menu.tsx";
+import Dashboard from "../dashboard/Dashboard.tsx";
 import PanelHost from "./PanelHost.tsx";
 import ChatPanes from "./ChatPanes.tsx";
-import { isPanelOpen, togglePanel } from "../../lib/stores/ui.ts";
+import {
+  dashboardOpen,
+  isPanelOpen,
+  togglePanel,
+} from "../../lib/stores/ui.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
 import { selectedChannel } from "../../lib/stores/channels.ts";
@@ -52,17 +57,25 @@ export default function AppLayout(props: AppLayoutProps) {
             <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
               <Menu
                 onSelect={c.selectChannel}
-                selectedId={selectedChannel()?.id ?? null}
+                selectedId={dashboardOpen() ? null : selectedChannel()?.id ??
+                  null}
                 onLiveChange={(data) => {
                   c.setLiveStreams(data);
                   c.setLiveLoaded(true);
                 }}
               />
-              <ChatPanes
-                channels={c.renderedChannels()}
-                userLogin={u().login}
-                onJumpToMessage={c.jumpToMessage}
-              />
+              <Show
+                when={dashboardOpen()}
+                fallback={
+                  <ChatPanes
+                    channels={c.renderedChannels()}
+                    userLogin={u().login}
+                    onJumpToMessage={c.jumpToMessage}
+                  />
+                }
+              >
+                <Dashboard />
+              </Show>
             </div>
           )}
         </Show>

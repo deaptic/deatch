@@ -8,10 +8,12 @@ import {
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
+import { dashboardOpen, setDashboardOpen } from "../../lib/stores/ui.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createMenuChannels } from "./createMenuChannels.ts";
 import MenuSection from "./MenuSection.tsx";
+import MenuDashboardButton from "./MenuDashboardButton.tsx";
 import MenuAddButton from "./MenuAddButton.tsx";
 import MenuPinnedList from "./MenuPinnedList.tsx";
 import MenuLiveList from "./MenuLiveList.tsx";
@@ -68,6 +70,11 @@ export default function Menu(props: Props) {
     });
   });
 
+  function select(ch: User, fromWatched?: boolean) {
+    setDashboardOpen(false);
+    props.onSelect(ch, fromWatched);
+  }
+
   function openInBrowser(ch: User) {
     openUrl(`https://twitch.tv/${ch?.login}`);
   }
@@ -123,12 +130,19 @@ export default function Menu(props: Props) {
           class="h-full overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
         >
           <MenuSection divider="bottom">
+            <MenuDashboardButton
+              active={dashboardOpen()}
+              onClick={() => setDashboardOpen(true)}
+            />
+          </MenuSection>
+
+          <MenuSection divider="bottom">
             <MenuPinnedList
               resolveChannel={channels.resolveChannel}
               isLive={channels.isLive}
               loading={channels.loadingPinned()}
               selectedId={props.selectedId}
-              onSelect={(ch) => props.onSelect(ch)}
+              onSelect={(ch) => select(ch)}
               onOpenInBrowser={openInBrowser}
               onContextMenu={(ch, x, y) => setChMenu({ ch, x, y })}
             />
@@ -140,7 +154,7 @@ export default function Menu(props: Props) {
               channels={channels.onlineList()}
               loading={channels.loadingLive()}
               selectedId={props.selectedId}
-              onSelect={(ch) => props.onSelect(ch)}
+              onSelect={(ch) => select(ch)}
               onOpenInBrowser={openInBrowser}
               onContextMenu={(ch, x, y) => setChMenu({ ch, x, y })}
             />
@@ -151,7 +165,7 @@ export default function Menu(props: Props) {
       <MenuWatchedList
         selectedId={props.selectedId}
         isLive={channels.isLive}
-        onSelect={props.onSelect}
+        onSelect={select}
         onOpenInBrowser={openInBrowser}
         onContextMenu={(ch, x, y) => setChMenu({ ch, x, y })}
       />
