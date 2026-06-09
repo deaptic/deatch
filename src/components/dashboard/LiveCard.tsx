@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { Clock, MessageSquare, User as UserIcon } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { Stream } from "../../lib/types/twitch/stream.ts";
@@ -13,9 +13,15 @@ type Props = {
   onSelect: (channel: User) => void;
 };
 
+const THUMBNAIL_REFRESH_MS = 5 * 60_000;
+const [thumbnailVersion, setThumbnailVersion] = createSignal(0);
+setInterval(() => setThumbnailVersion((v) => v + 1), THUMBNAIL_REFRESH_MS);
+
 export default function LiveCard(props: Props) {
   const channel = () => resolveUser(props.stream.user);
   const rate = () => messageRate(props.stream.user.id);
+  const thumbnail = () =>
+    `${props.stream.thumbnail.medium}?v=${thumbnailVersion()}`;
 
   return (
     <button
@@ -34,7 +40,7 @@ export default function LiveCard(props: Props) {
     >
       <div class="relative aspect-video overflow-hidden rounded-xl bg-bg-light">
         <img
-          src={props.stream.thumbnail.medium}
+          src={thumbnail()}
           alt=""
           loading="lazy"
           decoding="async"
