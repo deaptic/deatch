@@ -99,7 +99,7 @@ export type PresenceContext = {
   userId: string | null;
   channel: User | null;
   inboxOpen: boolean;
-  dashboardOpen: boolean;
+  exploreOpen: boolean;
   liveStreams: Stream[];
 };
 
@@ -109,7 +109,7 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
     void disconnectDiscord();
     return;
   }
-  const ch = ctx.dashboardOpen ? null : ctx.channel;
+  const ch = ctx.exploreOpen ? null : ctx.channel;
   const mode = ctx.inboxOpen ? "inbox" : ch ? `ch:${ch?.id}` : "browsing";
   if (mode !== activityMode) {
     activityMode = mode;

@@ -6,7 +6,7 @@ type Props = {
   onInput: (value: string) => void;
 };
 
-export default function DashboardSearch(props: Props) {
+export default function ExploreSearch(props: Props) {
   return (
     <div class="mb-6 flex items-center gap-2 rounded-lg border border-border-muted bg-bg px-3">
       <Search class="size-4 shrink-0 text-text-muted" />
