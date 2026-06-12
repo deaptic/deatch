@@ -4,7 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
 import { selectedChannel } from "../../lib/stores/channels.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
-import { dashboardOpen } from "../../lib/stores/ui.ts";
+import { exploreOpen } from "../../lib/stores/ui.ts";
 
 const win = getCurrentWindow();
 
@@ -86,12 +86,12 @@ export default function TitleBar(props: Props) {
           </Show>
         </div>
         <div data-tauri-drag-region class="flex-1" />
-        <Show when={dashboardOpen() || selectedChannel()}>
+        <Show when={exploreOpen() || selectedChannel()}>
           <div
             data-tauri-drag-region
             class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-text text-base font-semibold pointer-events-none truncate max-w-[40%]"
           >
-            {dashboardOpen() ? "Dashboard" : selectedChannel()?.displayName}
+            {exploreOpen() ? "Explore" : selectedChannel()?.displayName}
           </div>
         </Show>
         <button

@@ -8,14 +8,14 @@ import {
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { dashboardOpen, setDashboardOpen } from "../../lib/stores/ui.ts";
+import { exploreOpen, setExploreOpen } from "../../lib/stores/ui.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import { beginRaid } from "../../lib/stores/raid.ts";
 import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createMenuChannels } from "./createMenuChannels.ts";
 import MenuSection from "./MenuSection.tsx";
-import MenuDashboardButton from "./MenuDashboardButton.tsx";
+import MenuExploreButton from "./MenuExploreButton.tsx";
 import MenuAddButton from "./MenuAddButton.tsx";
 import MenuPinnedList from "./MenuPinnedList.tsx";
 import MenuLiveList from "./MenuLiveList.tsx";
@@ -73,7 +73,7 @@ export default function Menu(props: Props) {
   });
 
   function select(ch: User, fromWatched?: boolean) {
-    setDashboardOpen(false);
+    setExploreOpen(false);
     props.onSelect(ch, fromWatched);
   }
 
@@ -138,9 +138,9 @@ export default function Menu(props: Props) {
           class="h-full overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
         >
           <MenuSection divider="bottom">
-            <MenuDashboardButton
-              active={dashboardOpen()}
-              onClick={() => setDashboardOpen(true)}
+            <MenuExploreButton
+              active={exploreOpen()}
+              onClick={() => setExploreOpen(true)}
             />
           </MenuSection>
 

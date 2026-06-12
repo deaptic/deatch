@@ -16,7 +16,7 @@ import { applyDiscordPresence } from "../services/discord.ts";
 import { startUpdateChecker } from "../services/updater.ts";
 import { user } from "../stores/users.ts";
 import { liveStreams, selectedChannel } from "../stores/channels.ts";
-import { dashboardOpen, isPanelOpen } from "../stores/ui.ts";
+import { exploreOpen, isPanelOpen } from "../stores/ui.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
@@ -46,7 +46,7 @@ export function createSystemIntegration(): void {
       userId: u?.id ?? null,
       channel: selectedChannel(),
       inboxOpen: isPanelOpen("inbox"),
-      dashboardOpen: dashboardOpen(),
+      exploreOpen: exploreOpen(),
       liveStreams: liveStreams(),
     });
   });

@@ -1,4 +1,4 @@
-import { LayoutDashboard } from "lucide-solid";
+import { Compass } from "lucide-solid";
 import { Show } from "solid-js";
 
 type Props = {
@@ -6,12 +6,12 @@ type Props = {
   onClick: () => void;
 };
 
-export default function MenuDashboardButton(props: Props) {
+export default function MenuExploreButton(props: Props) {
   return (
     <button
       type="button"
       onClick={props.onClick}
-      title="Dashboard"
+      title="Explore"
       class={`group relative w-full flex items-center justify-center p-2 transition-colors cursor-pointer ${
         props.active ? "text-text" : "text-text-muted hover:text-text"
       } ${props.active ? "" : "hover:bg-bg"}`}
@@ -26,7 +26,7 @@ export default function MenuDashboardButton(props: Props) {
           "bg-bg group-hover:bg-bg-light": !props.active,
         }}
       >
-        <LayoutDashboard class="size-4" />
+        <Compass class="size-4" />
       </div>
     </button>
   );

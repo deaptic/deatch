@@ -10,7 +10,7 @@ function timeGreeting(): string {
   return "Good evening";
 }
 
-export default function DashboardGreeting() {
+export default function ExploreGreeting() {
   const liveCount = () => liveStreams().length;
 
   return (

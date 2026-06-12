@@ -5,13 +5,13 @@ import Toaster from "../toaster/Toaster.tsx";
 import Login from "../login/Login.tsx";
 import Loading from "../ui/Loading.tsx";
 import Menu from "../menu/Menu.tsx";
-import Dashboard from "../dashboard/Dashboard.tsx";
+import Explore from "../explore/Explore.tsx";
 import PanelHost from "./PanelHost.tsx";
 import ChatPanes from "./ChatPanes.tsx";
 import {
-  dashboardOpen,
+  exploreOpen,
   isPanelOpen,
-  setDashboardOpen,
+  setExploreOpen,
   togglePanel,
 } from "../../lib/stores/ui.ts";
 import { user } from "../../lib/stores/users.ts";
@@ -29,7 +29,7 @@ export default function AppLayout(props: AppLayoutProps) {
   const c = props.controller;
 
   function selectChannel(channel: User) {
-    setDashboardOpen(false);
+    setExploreOpen(false);
     c.selectChannel(channel);
   }
 
@@ -65,7 +65,7 @@ export default function AppLayout(props: AppLayoutProps) {
             <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
               <Menu
                 onSelect={c.selectChannel}
-                selectedId={dashboardOpen() ? null : selectedChannel()?.id ??
+                selectedId={exploreOpen() ? null : selectedChannel()?.id ??
                   null}
                 onLiveChange={(data) => {
                   c.setLiveStreams(data);
@@ -73,7 +73,7 @@ export default function AppLayout(props: AppLayoutProps) {
                 }}
               />
               <Show
-                when={dashboardOpen()}
+                when={exploreOpen()}
                 fallback={
                   <ChatPanes
                     channels={c.renderedChannels()}
@@ -82,7 +82,7 @@ export default function AppLayout(props: AppLayoutProps) {
                   />
                 }
               >
-                <Dashboard onSelectChannel={selectChannel} />
+                <Explore onSelectChannel={selectChannel} />
               </Show>
             </div>
           )}
