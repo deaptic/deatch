@@ -1,6 +1,6 @@
 import { createSignal, Show } from "solid-js";
 import type { User } from "../../lib/types/twitch/user.ts";
-import type { Category } from "../../lib/api/twitch/search.ts";
+import { setExploreFilters } from "../../lib/stores/explore.ts";
 import ExploreGreeting from "./ExploreGreeting.tsx";
 import ExploreSearch from "./ExploreSearch.tsx";
 import SearchResults from "./SearchResults.tsx";
@@ -12,7 +12,6 @@ type Props = {
 
 export default function Explore(props: Props) {
   const [query, setQuery] = createSignal("");
-  const [category, setCategory] = createSignal<Category | null>(null);
 
   return (
     <div class="@container min-w-0 flex-1 min-h-0 overflow-y-auto bg-bg-dark">
@@ -21,19 +20,13 @@ export default function Explore(props: Props) {
         <ExploreSearch value={query()} onInput={setQuery} />
         <Show
           when={query().trim()}
-          fallback={
-            <LiveNow
-              onSelect={props.onSelectChannel}
-              category={category()}
-              onClearCategory={() => setCategory(null)}
-            />
-          }
+          fallback={<LiveNow onSelect={props.onSelectChannel} />}
         >
           <SearchResults
             query={query()}
             onSelect={props.onSelectChannel}
             onSelectGame={(game) => {
-              setCategory(game);
+              setExploreFilters("category", game);
               setQuery("");
             }}
           />

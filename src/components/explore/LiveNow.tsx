@@ -1,8 +1,8 @@
 import { createEffect, createSignal, For, on, onCleanup, Show } from "solid-js";
 import type { User } from "../../lib/types/twitch/user.ts";
 import type { Stream } from "../../lib/types/twitch/stream.ts";
-import type { Category } from "../../lib/api/twitch/search.ts";
 import { liveStreams, rememberUser } from "../../lib/stores/channels.ts";
+import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import { getStreams } from "../../lib/api/twitch/streams.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import LiveCard from "./LiveCard.tsx";
@@ -11,29 +11,26 @@ import Chip from "../ui/Chip.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
-  category: Category | null;
-  onClearCategory: () => void;
 };
 
 const PAGE_SIZE = 40;
 
 export default function LiveNow(props: Props) {
-  const [followingOnly, setFollowingOnly] = createSignal(true);
-  const [language, setLanguage] = createSignal("");
-
   const [remote, setRemote] = createSignal<Stream[]>([]);
   const [cursor, setCursor] = createSignal<string | null>(null);
   const [fetching, setFetching] = createSignal(false);
   const [exhausted, setExhausted] = createSignal(false);
 
   async function fetchPage(reset: boolean) {
-    if (followingOnly() || fetching()) return;
+    if (exploreFilters.followingOnly || fetching()) return;
     if (!reset && exhausted()) return;
     setFetching(true);
     try {
       const { data, pagination } = await getStreams({
-        gameIds: props.category ? [props.category.id] : undefined,
-        language: language() || undefined,
+        gameIds: exploreFilters.category
+          ? [exploreFilters.category.id]
+          : undefined,
+        language: exploreFilters.language || undefined,
         first: PAGE_SIZE,
         after: reset ? undefined : cursor() ?? undefined,
       });
@@ -53,18 +50,25 @@ export default function LiveNow(props: Props) {
   }
 
   createEffect(
-    on([followingOnly, language, () => props.category], () => {
-      setRemote([]);
-      setCursor(null);
-      setExhausted(false);
-      if (!followingOnly()) fetchPage(true);
-    }),
+    on(
+      () => [
+        exploreFilters.followingOnly,
+        exploreFilters.language,
+        exploreFilters.category,
+      ],
+      () => {
+        setRemote([]);
+        setCursor(null);
+        setExhausted(false);
+        if (!exploreFilters.followingOnly) fetchPage(true);
+      },
+    ),
   );
 
   const source = () => {
-    if (!followingOnly()) return remote();
-    const lang = language();
-    const category = props.category;
+    if (!exploreFilters.followingOnly) return remote();
+    const lang = exploreFilters.language;
+    const category = exploreFilters.category;
     return liveStreams().filter((s) =>
       (!lang || s.language === lang) && (!category || s.game.id === category.id)
     );
@@ -74,7 +78,7 @@ export default function LiveNow(props: Props) {
     [...source()].sort((a, b) => b.viewerCount - a.viewerCount);
 
   const initialLoading = () =>
-    !followingOnly() && fetching() && remote().length === 0;
+    !exploreFilters.followingOnly && fetching() && remote().length === 0;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -95,25 +99,31 @@ export default function LiveNow(props: Props) {
             {source().length}
           </span>
         </Show>
-        <Show when={props.category}>
+        <Show when={exploreFilters.category}>
           {(category) => (
-            <Chip label={category().name} onRemove={props.onClearCategory} />
+            <Chip
+              label={category().name}
+              onRemove={() => setExploreFilters("category", null)}
+            />
           )}
         </Show>
 
         <div class="ml-auto flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setFollowingOnly((v) => !v)}
+            onClick={() => setExploreFilters("followingOnly", (v) => !v)}
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             classList={{
-              "bg-bg-light text-text": followingOnly(),
-              "text-text-muted hover:text-text": !followingOnly(),
+              "bg-bg-light text-text": exploreFilters.followingOnly,
+              "text-text-muted hover:text-text": !exploreFilters.followingOnly,
             }}
           >
             Following
           </button>
-          <LanguageSelect value={language()} onChange={setLanguage} />
+          <LanguageSelect
+            value={exploreFilters.language}
+            onChange={(v) => setExploreFilters("language", v)}
+          />
         </div>
       </div>
 
@@ -130,7 +140,7 @@ export default function LiveNow(props: Props) {
           fallback={
             <p class="rounded-lg border border-dashed border-border-muted px-4 py-8 text-center text-sm text-text-muted">
               <Show
-                when={followingOnly()}
+                when={exploreFilters.followingOnly}
                 fallback="No live channels match these filters right now."
               >
                 None of the channels you follow are live right now.
@@ -148,7 +158,10 @@ export default function LiveNow(props: Props) {
         </Show>
 
         <div ref={(el) => observer.observe(el)} class="h-px" />
-        <Show when={!followingOnly() && fetching() && remote().length > 0}>
+        <Show
+          when={!exploreFilters.followingOnly && fetching() &&
+            remote().length > 0}
+        >
           <p class="py-4 text-center text-sm text-text-muted">Loading more…</p>
         </Show>
       </Show>
