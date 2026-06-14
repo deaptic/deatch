@@ -5,7 +5,6 @@
   "alt-a": ["watch::toggleMuteAll"],
   "alt-s": ["watch::muteOthers"],
   "alt-w": ["watch::toggle"],
-  "alt-f": ["watch::resetFocus"],
   "ctrl-,": ["settings::toggle"],
   "ctrl-1": ["channel::select1"],
   "ctrl-2": ["channel::select2"],

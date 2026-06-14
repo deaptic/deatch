@@ -45,7 +45,7 @@ export default function MenuItem(props: Props) {
         class="relative w-full h-12 flex items-center justify-center"
       >
         <Show when={props.selected}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-primary rounded-r-full" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-1 bg-text rounded-r-full" />
         </Show>
         <span
           class="peer relative shrink-0 cursor-pointer"
@@ -65,10 +65,10 @@ export default function MenuItem(props: Props) {
           </Show>
         </span>
         <Show when={props.bar && !props.selected && props.unread}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-2 w-1 bg-highlight rounded-r-full peer-hover:hidden" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-2 w-1 bg-text rounded-r-full peer-hover:hidden" />
         </Show>
         <Show when={props.bar && !props.selected}>
-          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-highlight rounded-r-full hidden peer-hover:block" />
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-text rounded-r-full hidden peer-hover:block" />
         </Show>
       </button>
       <Show when={tooltip()}>

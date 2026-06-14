@@ -1,7 +1,12 @@
 import { createEffect, on } from "solid-js";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import { channelsInOrder } from "../stores/channels.ts";
-import { selectedChannel, setWatchMode, watchMode } from "../stores/view.ts";
+import {
+  pendingChannel,
+  selectedChannel,
+  setWatchMode,
+  watchMode,
+} from "../stores/view.ts";
 import {
   watchedChannel,
   watchMutedByLogin,
@@ -12,7 +17,6 @@ import { watchSetMuted } from "../api/watch.ts";
 export type WatchControls = {
   cycleChannel(direction: 1 | -1): void;
   toggleWatch(): void;
-  resetWatchFocus(): void;
   muteOtherWatched(): void;
   toggleMuteAllWatched(): void;
   toggleWatchMute(): void;
@@ -30,7 +34,7 @@ export function createWatchControls(nav: ChannelNavigation): WatchControls {
     // The Watch toggle decides which set alt+up/down walks.
     const list = watchMode() ? watchWarmedChannels() : channelsInOrder();
     if (list.length === 0) return;
-    const i = list.findIndex((c) => c?.id === selectedChannel()?.id);
+    const i = list.findIndex((c) => c?.id === pendingChannel()?.id);
     const nextIdx = i === -1
       ? direction === 1 ? 0 : list.length - 1
       : (i + direction + list.length) % list.length;
@@ -91,19 +95,9 @@ export function createWatchControls(nav: ChannelNavigation): WatchControls {
     else nav.selectChannel(list[0], null);
   }
 
-  // Re-engage auto after cycling pulled focus into manual, snapping back to
-  // whatever the browser tab is on.
-  function resetWatchFocus() {
-    if (watchMode() !== "manual") return;
-    const wc = watchedChannel();
-    if (wc) nav.selectChannel(wc, "auto");
-    else setWatchMode("auto");
-  }
-
   return {
     cycleChannel,
     toggleWatch,
-    resetWatchFocus,
     muteOtherWatched,
     toggleMuteAllWatched,
     toggleWatchMute,

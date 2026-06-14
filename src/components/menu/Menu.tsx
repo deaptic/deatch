@@ -19,7 +19,7 @@ import { watchSetMuted } from "../../lib/api/watch.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import {
   activeView,
-  selectedChannel,
+  pendingChannel,
   showExplore,
   watchMode,
 } from "../../lib/stores/view.ts";
@@ -153,6 +153,7 @@ function Skeleton() {
 export default function Menu(props: Props) {
   const channels = createMenuChannels(props.onLiveChange);
   const main = createScrollAffordance();
+  const watch = createScrollAffordance();
 
   const selectedId = () => {
     const v = activeView();
@@ -174,7 +175,6 @@ export default function Menu(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
-  let scrollEl: HTMLDivElement | undefined;
 
   createEffect(() => {
     menuChannelPinned();
@@ -183,10 +183,15 @@ export default function Menu(props: Props) {
   });
 
   createEffect(() => {
-    const sel = selectedChannel();
-    if (!sel || !scrollEl) return;
+    watchWarmedChannels().length;
+    queueMicrotask(watch.update);
+  });
+
+  createEffect(() => {
+    const sel = pendingChannel();
+    if (!sel) return;
     queueMicrotask(() => {
-      const targets = scrollEl!.querySelectorAll(
+      const targets = document.querySelectorAll(
         `[data-channel-id="${sel.id}"]`,
       );
       for (const t of targets) {
@@ -311,10 +316,7 @@ export default function Menu(props: Props) {
           <ScrollChevron direction="down" onClick={() => main.scrollByOne(1)} />
         </Show>
         <div
-          ref={(el) => {
-            main.setRef(el);
-            scrollEl = el;
-          }}
+          ref={main.setRef}
           onScroll={main.update}
           class="flex flex-col h-full overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
         >
@@ -432,26 +434,44 @@ export default function Menu(props: Props) {
               <Eye class="size-5" />
             </div>
           </MenuItem>
-          <div class="flex max-h-[40vh] flex-col overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden">
-            <For each={watchWarmedChannels()}>
-              {(ch) => (
-                <div data-channel-id={ch?.id}>
-                  <ChannelItem
-                    ch={ch}
-                    selected={selectedId() === ch?.id}
-                    muted={watchMutedByLogin()[ch?.login] === true}
-                    onToggleMute={() =>
-                      void watchSetMuted(
-                        ch?.login,
-                        watchMutedByLogin()[ch?.login] !== true,
-                      )}
-                    onSelect={() => select(ch)}
-                    onOpenInBrowser={() => openInBrowser(ch)}
-                    onContextMenu={(x, y) => setChMenu({ ch, x, y })}
-                  />
-                </div>
-              )}
-            </For>
+          <div class="relative">
+            <Show when={watch.canUp()}>
+              <ScrollChevron
+                direction="up"
+                onClick={() => watch.scrollByOne(-1)}
+              />
+            </Show>
+            <Show when={watch.canDown()}>
+              <ScrollChevron
+                direction="down"
+                onClick={() => watch.scrollByOne(1)}
+              />
+            </Show>
+            <div
+              ref={watch.setRef}
+              onScroll={watch.update}
+              class="flex max-h-36 flex-col overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden"
+            >
+              <For each={watchWarmedChannels()}>
+                {(ch) => (
+                  <div data-channel-id={ch?.id}>
+                    <ChannelItem
+                      ch={ch}
+                      selected={selectedId() === ch?.id}
+                      muted={watchMutedByLogin()[ch?.login] === true}
+                      onToggleMute={() =>
+                        void watchSetMuted(
+                          ch?.login,
+                          watchMutedByLogin()[ch?.login] !== true,
+                        )}
+                      onSelect={() => select(ch)}
+                      onOpenInBrowser={() => openInBrowser(ch)}
+                      onContextMenu={(x, y) => setChMenu({ ch, x, y })}
+                    />
+                  </div>
+                )}
+              </For>
+            </div>
           </div>
         </div>
       </Show>

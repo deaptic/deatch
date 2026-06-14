@@ -142,6 +142,7 @@ export default function Feed(props: Props) {
   });
 
   function scrollInstant() {
+    setIsPaused(false);
     isProgrammaticScroll = true;
     bottomRef?.scrollIntoView({ behavior: "instant" });
   }
