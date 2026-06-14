@@ -64,7 +64,6 @@ export default function AppLayout(props: AppLayoutProps) {
                 when={activeView() === "explore"}
                 fallback={
                   <ChatPanes
-                    channels={c.renderedChannels()}
                     userLogin={u().login}
                     onJumpToMessage={c.jumpToMessage}
                   />

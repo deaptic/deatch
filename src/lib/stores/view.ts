@@ -8,10 +8,14 @@ export type ActiveView = "explore" | User;
 const [activeView, setActiveView] = createSignal<ActiveView>("explore");
 export { activeView };
 
-export const selectedChannel = createMemo<User | null>(() => {
-  const v = activeView();
-  return v === "explore" ? null : v;
-});
+export const selectedChannel = createMemo<User | null>(
+  () => {
+    const v = activeView();
+    return v === "explore" ? null : v;
+  },
+  null,
+  { equals: (a, b) => (a?.id ?? null) === (b?.id ?? null) },
+);
 
 export function showExplore() {
   setActiveView("explore");

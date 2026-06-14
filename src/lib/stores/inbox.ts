@@ -55,9 +55,17 @@ export function recordMention(m: Omit<Mention, "unread">) {
 }
 
 function markRead(match: (m: Mention) => boolean) {
-  setMentions((prev) =>
-    save(prev.map((m) => (m.unread && match(m) ? { ...m, unread: false } : m)))
-  );
+  setMentions((prev) => {
+    let changed = false;
+    const next = prev.map((m) => {
+      if (m.unread && match(m)) {
+        changed = true;
+        return { ...m, unread: false };
+      }
+      return m;
+    });
+    return changed ? save(next) : prev;
+  });
 }
 
 export const markMentionRead = (id: string) => markRead((m) => m.id === id);

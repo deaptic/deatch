@@ -1,4 +1,3 @@
-import type { Accessor } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
 import { createChannelNavigation } from "./createChannelNavigation.ts";
 import { createWatchControls } from "./createWatchControls.ts";
@@ -10,7 +9,6 @@ import { createSessionLifecycle } from "./createSessionLifecycle.ts";
 import { createAppShortcuts } from "./createAppShortcuts.ts";
 
 export type AppController = {
-  renderedChannels: Accessor<User[]>;
   selectChannel: (ch: User) => void;
   toggleWatch: () => void;
   jumpToMessage: (channelId: string, messageId: string) => void;
@@ -33,7 +31,6 @@ export function createAppController(): AppController {
   createAppShortcuts(nav, watch);
 
   return {
-    renderedChannels: subs.renderedChannels,
     selectChannel: nav.selectChannel,
     toggleWatch: watch.toggleWatch,
     jumpToMessage: nav.jumpToMessage,
