@@ -8,5 +8,3 @@ export const isPanelOpen = (p: Panel) => openPanel() === p;
 export const togglePanel = (p: Panel): void => {
   setOpenPanel(openPanel() === p ? null : p);
 };
-
-export const [exploreOpen, setExploreOpen] = createSignal(true);

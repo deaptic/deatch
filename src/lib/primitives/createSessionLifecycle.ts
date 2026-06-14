@@ -12,13 +12,7 @@ import {
 } from "../services/emotes.ts";
 import { resetChannelBadgeCache } from "../services/badges.ts";
 import { sessionManager } from "../managers/SessionManager.ts";
-import {
-  loadLastChannel,
-  selectedChannel,
-  setSelectedChannel,
-} from "../stores/channels.ts";
-import { watchMode } from "../stores/watch.ts";
-import type { ChannelNavigation } from "./createChannelNavigation.ts";
+import { showExplore } from "../stores/view.ts";
 
 let userScopedFetched = false;
 
@@ -42,7 +36,6 @@ function resetUserScopedCaches() {
 }
 
 export type SessionDeps = {
-  selectChannel: ChannelNavigation["selectChannel"];
   setLiveLoaded: (loaded: boolean) => void;
   leaveAll(): void;
 };
@@ -56,15 +49,11 @@ export function createSessionLifecycle(deps: SessionDeps): void {
   createEffect(() => {
     if (user() !== null) {
       fetchUserScopedData();
-      if (selectedChannel() === null && watchMode() === null) {
-        const last = loadLastChannel();
-        if (last) deps.selectChannel(last);
-      }
       return;
     }
     deps.leaveAll();
     resetUserScopedCaches();
-    setSelectedChannel(null);
+    showExplore();
     deps.setLiveLoaded(false);
   });
 }

@@ -8,17 +8,11 @@ import Menu from "../menu/Menu.tsx";
 import Explore from "../explore/Explore.tsx";
 import PanelHost from "./PanelHost.tsx";
 import ChatPanes from "./ChatPanes.tsx";
-import {
-  exploreOpen,
-  isPanelOpen,
-  setExploreOpen,
-  togglePanel,
-} from "../../lib/stores/ui.ts";
+import { isPanelOpen, togglePanel } from "../../lib/stores/ui.ts";
+import { activeView } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
-import { selectedChannel } from "../../lib/stores/channels.ts";
 import { removeToast, toasts } from "../../lib/stores/toasts.ts";
-import type { User } from "../../lib/types/twitch/user.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
 
 type AppLayoutProps = {
@@ -27,11 +21,6 @@ type AppLayoutProps = {
 
 export default function AppLayout(props: AppLayoutProps) {
   const c = props.controller;
-
-  function selectChannel(channel: User) {
-    setExploreOpen(false);
-    c.selectChannel(channel);
-  }
 
   return (
     <div class="flex flex-col h-screen bg-bg-dark relative">
@@ -65,15 +54,14 @@ export default function AppLayout(props: AppLayoutProps) {
             <div class="flex flex-1 min-h-0 bg-bg-dark overflow-hidden">
               <Menu
                 onSelect={c.selectChannel}
-                selectedId={exploreOpen() ? null : selectedChannel()?.id ??
-                  null}
+                onToggleWatch={c.toggleWatch}
                 onLiveChange={(data) => {
                   c.setLiveStreams(data);
                   c.setLiveLoaded(true);
                 }}
               />
               <Show
-                when={exploreOpen()}
+                when={activeView() === "explore"}
                 fallback={
                   <ChatPanes
                     channels={c.renderedChannels()}
@@ -82,7 +70,7 @@ export default function AppLayout(props: AppLayoutProps) {
                   />
                 }
               >
-                <Explore onSelectChannel={selectChannel} />
+                <Explore onSelectChannel={c.selectChannel} />
               </Show>
             </div>
           )}

@@ -1,6 +1,6 @@
 import { For, Show } from "solid-js";
 import type { User } from "../../lib/types/twitch/user.ts";
-import { selectedChannel } from "../../lib/stores/channels.ts";
+import { selectedChannel } from "../../lib/stores/view.ts";
 import Chat from "../chat/Chat.tsx";
 import EmptyState from "./EmptyState.tsx";
 import Boundary from "../ui/Boundary.tsx";
