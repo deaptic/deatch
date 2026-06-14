@@ -18,6 +18,7 @@ import { addToast } from "../../lib/stores/toasts.ts";
 import { rememberUser, setLiveStreams } from "../../lib/stores/channels.ts";
 import { menuChannelPinned } from "../../lib/stores/preferences.ts";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
+import { selectedChannel } from "../../lib/stores/view.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
 
 export type MenuChannels = {
@@ -91,6 +92,10 @@ export function createMenuChannels(
           extraIds.add(ch?.id);
         }
       }
+      const sel = selectedChannel();
+      if (sel && !followedIds.has(sel.id) && !pinnedSet.has(sel.id)) {
+        extraIds.add(sel.id);
+      }
       const extraIdList = [...extraIds];
       const extraStreams = extraIdList.length > 0
         ? await fetchAllPages<Stream>(
@@ -106,7 +111,7 @@ export function createMenuChannels(
         const users = await getUsers({ ids: streams.map((s) => s.user.id) });
         const byId = new Map(users.map((u) => [u.id, u]));
         for (const u of users) rememberUser(u);
-        for (const s of streams) {
+        for (const s of followed) {
           const u = byId.get(s.user.id);
           if (u) data.push(u);
         }
@@ -147,6 +152,7 @@ export function createMenuChannels(
   });
 
   createEffect(on(watchedChannel, () => fetchLive(), { defer: true }));
+  createEffect(on(selectedChannel, () => fetchLive(), { defer: true }));
 
   return {
     loadingPinned,
