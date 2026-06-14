@@ -11,7 +11,8 @@ import { createAppShortcuts } from "./createAppShortcuts.ts";
 
 export type AppController = {
   renderedChannels: Accessor<User[]>;
-  selectChannel: (ch: User, fromWatched?: boolean) => void;
+  selectChannel: (ch: User) => void;
+  toggleWatch: () => void;
   jumpToMessage: (channelId: string, messageId: string) => void;
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
@@ -26,7 +27,6 @@ export function createAppController(): AppController {
   createMentionsBadge();
   createSystemIntegration();
   createSessionLifecycle({
-    selectChannel: nav.selectChannel,
     setLiveLoaded: subs.setLiveLoaded,
     leaveAll: subs.leaveAll,
   });
@@ -35,6 +35,7 @@ export function createAppController(): AppController {
   return {
     renderedChannels: subs.renderedChannels,
     selectChannel: nav.selectChannel,
+    toggleWatch: watch.toggleWatch,
     jumpToMessage: nav.jumpToMessage,
     setLiveStreams: subs.setLiveStreams,
     setLiveLoaded: subs.setLiveLoaded,

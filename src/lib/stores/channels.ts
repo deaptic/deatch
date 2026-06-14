@@ -4,34 +4,11 @@ import type { User, UserRef } from "../types/twitch/user.ts";
 import { menuChannelPinned } from "./preferences.ts";
 import { watchWarmedChannels } from "./watch.ts";
 
-const LAST_CHANNEL_KEY = "last_selected_channel";
-
-const [selectedChannelSig, setSelectedChannelSig] = createSignal<User | null>(
-  null,
-);
-export const selectedChannel = selectedChannelSig;
-
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 
 export const usersById = new Map<string, User>();
 
 const [usersVersion, setUsersVersion] = createSignal(0);
-
-export function setSelectedChannel(u: User | null) {
-  setSelectedChannelSig(u);
-  if (!u) return;
-  try {
-    localStorage.setItem(
-      LAST_CHANNEL_KEY,
-      JSON.stringify({
-        id: u.id,
-        login: u.login,
-        displayName: u.displayName,
-        profileImageUrl: u.profileImageUrl,
-      }),
-    );
-  } catch {}
-}
 
 const MAX_REMEMBERED_USERS = 5000;
 
@@ -55,14 +32,19 @@ export function channelsInOrder(): User[] {
   const warmedSet = new Set(watchWarmedChannels().map((c) => c?.id));
   const live = liveStreams();
   const ordered: User[] = [];
+  const seen = new Set<string>();
+  const push = (u: User | undefined) => {
+    if (u && !seen.has(u.id) && !warmedSet.has(u.id)) {
+      seen.add(u.id);
+      ordered.push(u);
+    }
+  };
   for (const id of pinnedIds) {
-    const u = usersById.get(id) ?? userFromStream(live, id);
-    if (u) ordered.push(u);
+    push(usersById.get(id) ?? userFromStream(live, id));
   }
   for (const s of live) {
-    if (pinnedSet.has(s.user.id) || warmedSet.has(s.user.id)) continue;
-    const u = usersById.get(s.user.id) ?? userFromRef(s.user);
-    ordered.push(u);
+    if (pinnedSet.has(s.user.id)) continue;
+    push(usersById.get(s.user.id) ?? userFromRef(s.user));
   }
   return ordered;
 }
@@ -87,24 +69,4 @@ export function userFromRef(ref: UserRef): User {
 export function resolveUser(ref: UserRef): User {
   usersVersion();
   return usersById.get(ref.id) ?? userFromRef(ref);
-}
-
-export function loadLastChannel(): User | null {
-  try {
-    const raw = localStorage.getItem(LAST_CHANNEL_KEY);
-    if (!raw) return null;
-    const v = JSON.parse(raw);
-    if (!v || typeof v.id !== "string") return null;
-    return {
-      id: v.id,
-      login: v.login ?? "",
-      displayName: v.displayName ?? "",
-      profileImageUrl: v.profileImageUrl ?? "",
-      description: "",
-      broadcasterType: "",
-      createdAt: "",
-    };
-  } catch {
-    return null;
-  }
 }

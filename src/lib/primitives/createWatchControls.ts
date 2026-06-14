@@ -1,10 +1,9 @@
-import { batch } from "solid-js";
+import { createEffect, on } from "solid-js";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
-import { channelsInOrder, selectedChannel } from "../stores/channels.ts";
+import { channelsInOrder } from "../stores/channels.ts";
+import { selectedChannel, setWatchMode, watchMode } from "../stores/view.ts";
 import {
-  setWatchMode,
   watchedChannel,
-  watchMode,
   watchMutedByLogin,
   watchWarmedChannels,
 } from "../stores/watch.ts";
@@ -20,35 +19,22 @@ export type WatchControls = {
 };
 
 export function createWatchControls(nav: ChannelNavigation): WatchControls {
+  // In auto mode the app mirrors whichever channel the browser tab is on.
+  createEffect(
+    on(watchedChannel, (wc) => {
+      if (watchMode() === "auto" && wc) nav.selectChannel(wc, "auto");
+    }, { defer: true }),
+  );
+
   function cycleChannel(direction: 1 | -1) {
-    if (watchMode() !== null) {
-      const watched = watchWarmedChannels();
-      if (watched.length === 0) return;
-      const i = watched.findIndex((c) => c?.id === selectedChannel()?.id);
-      const nextIdx = i === -1
-        ? direction === 1 ? 0 : watched.length - 1
-        : (i + direction + watched.length) % watched.length;
-      batch(() => {
-        setWatchMode("manual");
-        nav.applySelection(watched[nextIdx]);
-      });
-      return;
-    }
-    const ordered = channelsInOrder();
-    if (ordered.length === 0) return;
-    const i = ordered.findIndex((c) => c?.id === selectedChannel()?.id);
+    // The Watch toggle decides which set alt+up/down walks.
+    const list = watchMode() ? watchWarmedChannels() : channelsInOrder();
+    if (list.length === 0) return;
+    const i = list.findIndex((c) => c?.id === selectedChannel()?.id);
     const nextIdx = i === -1
-      ? direction === 1 ? 0 : ordered.length - 1
-      : (i + direction + ordered.length) % ordered.length;
-    nav.selectChannel(ordered[nextIdx]);
-  }
-
-  function toggleWatch() {
-    setWatchMode(watchMode() === null ? "auto" : null);
-  }
-
-  function resetWatchFocus() {
-    if (watchMode() === "manual") setWatchMode("auto");
+      ? direction === 1 ? 0 : list.length - 1
+      : (i + direction + list.length) % list.length;
+    nav.selectChannel(list[nextIdx]);
   }
 
   function muteOtherWatched() {
@@ -82,16 +68,36 @@ export function createWatchControls(nav: ChannelNavigation): WatchControls {
   }
 
   function toggleWatchMute() {
-    const target = watchMode() !== null
-      ? watchMode() === "manual" ? selectedChannel() : watchedChannel()
-      : (() => {
-        const sel = selectedChannel();
-        if (!sel) return null;
-        return watchWarmedChannels().some((c) => c?.id === sel.id) ? sel : null;
-      })();
+    const sel = selectedChannel();
+    const target = sel && watchWarmedChannels().some((c) => c?.id === sel.id)
+      ? sel
+      : null;
     if (!target?.login) return;
     const muted = watchMutedByLogin()[target.login] === true;
     void watchSetMuted(target.login, !muted);
+  }
+
+  function toggleWatch() {
+    // Only auto turns off; null and manual both (re-)engage auto.
+    const turningOn = watchMode() !== "auto";
+    const list = turningOn ? watchWarmedChannels() : channelsInOrder();
+    if (list.length === 0) {
+      setWatchMode(turningOn ? "auto" : null);
+      return;
+    }
+    // Jump focus into the new scope immediately. Turning on enters auto so we
+    // follow the browser tab; turning off lands on a non-watched channel (null).
+    if (turningOn) nav.selectChannel(watchedChannel() ?? list[0], "auto");
+    else nav.selectChannel(list[0], null);
+  }
+
+  // Re-engage auto after cycling pulled focus into manual, snapping back to
+  // whatever the browser tab is on.
+  function resetWatchFocus() {
+    if (watchMode() !== "manual") return;
+    const wc = watchedChannel();
+    if (wc) nav.selectChannel(wc, "auto");
+    else setWatchMode("auto");
   }
 
   return {

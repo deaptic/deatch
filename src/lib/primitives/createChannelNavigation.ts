@@ -1,43 +1,27 @@
-import { batch, createEffect } from "solid-js";
+import { createEffect, on } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
+import { rememberUser, usersById } from "../stores/channels.ts";
 import {
-  rememberUser,
   selectedChannel,
   setSelectedChannel,
-  usersById,
-} from "../stores/channels.ts";
-import {
   setWatchMode,
-  watchedChannel,
-  watchMode,
-  watchWarmedChannels,
-} from "../stores/watch.ts";
-import { ensureFeed, markSeen, snapshotDivider } from "../stores/feeds.ts";
+  type WatchMode,
+} from "../stores/view.ts";
+import { watchWarmedChannels } from "../stores/watch.ts";
+import { ensureFeed, markSeen } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
 import { scrollToMessage } from "../services/feeds.ts";
 
 export type ChannelNavigation = {
-  applySelection(ch: User): void;
-  selectChannel(ch: User, fromWatched?: boolean): void;
+  selectChannel(ch: User, mode?: WatchMode): void;
   jumpToMessage(channelId: string, messageId: string): void;
 };
 
 export function createChannelNavigation(): ChannelNavigation {
-  function applySelection(ch: User) {
-    const prev = selectedChannel();
-    if (prev && prev.id !== ch.id) snapshotDivider(prev.id);
-    rememberUser(ch);
+  function selectChannel(ch: User, mode?: WatchMode) {
+    const watched = watchWarmedChannels().some((c) => c?.id === ch.id);
+    setWatchMode(mode !== undefined ? mode : watched ? "manual" : null);
     setSelectedChannel(ch);
-    ensureFeed(ch.id);
-    markSeen(ch.id);
-    markChannelMentionsRead(ch.id);
-  }
-
-  function selectChannel(ch: User, fromWatched = false) {
-    batch(() => {
-      setWatchMode(fromWatched ? "manual" : null);
-      applySelection(ch);
-    });
   }
 
   function jumpToMessage(channelId: string, messageId: string) {
@@ -48,24 +32,17 @@ export function createChannelNavigation(): ChannelNavigation {
     else scrollToMessage(messageId);
   }
 
-  createEffect(() => {
-    if (watchMode() !== "auto") return;
-    const ch = watchedChannel();
-    if (!ch) {
-      if (selectedChannel() !== null) setSelectedChannel(null);
-      return;
-    }
-    if (selectedChannel()?.id === ch.id) return;
-    applySelection(ch);
-  });
+  // Whatever channel is shown — picked manually or mirrored from the browser
+  // tab in Watch mode — gets its feed prepared and marked seen.
+  createEffect(
+    on(selectedChannel, (ch) => {
+      if (!ch) return;
+      rememberUser(ch);
+      ensureFeed(ch.id);
+      markSeen(ch.id);
+      markChannelMentionsRead(ch.id);
+    }),
+  );
 
-  createEffect(() => {
-    if (watchMode() !== "manual") return;
-    const sel = selectedChannel();
-    if (sel && !watchWarmedChannels().some((c) => c?.id === sel.id)) {
-      setWatchMode("auto");
-    }
-  });
-
-  return { applySelection, selectChannel, jumpToMessage };
+  return { selectChannel, jumpToMessage };
 }

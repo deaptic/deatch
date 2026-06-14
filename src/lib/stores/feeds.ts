@@ -1,7 +1,7 @@
 import { createStore, produce } from "solid-js/store";
 import type { BadgeMap, FeedItem } from "../types/feed.ts";
 import { NOTICE_TO_EVENT } from "../constants.ts";
-import { selectedChannel } from "./channels.ts";
+import { selectedChannel } from "./view.ts";
 import { recordChatter, user } from "./users.ts";
 import { recordChatMessage } from "./chatActivity.ts";
 import { feedEvents, feedUserMuted } from "./preferences.ts";

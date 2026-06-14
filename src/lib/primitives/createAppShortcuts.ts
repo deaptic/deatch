@@ -24,8 +24,8 @@ export function createAppShortcuts(
         () => watch.cycleChannel(-1),
       ),
       shortcutManager.register("watch::toggle", watch.toggleWatch),
-      shortcutManager.register("watch::toggleMute", watch.toggleWatchMute),
       shortcutManager.register("watch::resetFocus", watch.resetWatchFocus),
+      shortcutManager.register("watch::toggleMute", watch.toggleWatchMute),
       shortcutManager.register("watch::muteOthers", watch.muteOtherWatched),
       shortcutManager.register(
         "watch::toggleMuteAll",

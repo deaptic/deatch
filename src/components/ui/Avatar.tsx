@@ -1,4 +1,4 @@
-import { DEFAULT_AVATAR_URL } from "../../lib/constants.ts";
+import { createEffect, createSignal, Show } from "solid-js";
 
 type Props = {
   src?: string;
@@ -7,18 +7,37 @@ type Props = {
 };
 
 export default function Avatar(props: Props) {
+  const [failed, setFailed] = createSignal(false);
+  const initial = () => (props.alt?.trim()?.[0] ?? "?").toUpperCase();
+
+  createEffect(() => {
+    props.src;
+    setFailed(false);
+  });
+
   return (
-    <img
-      src={props.src || DEFAULT_AVATAR_URL}
-      alt={props.alt ?? ""}
-      class={props.class}
-      loading="lazy"
-      decoding="async"
-      onError={(e) => {
-        if (e.currentTarget.src !== DEFAULT_AVATAR_URL) {
-          e.currentTarget.src = DEFAULT_AVATAR_URL;
+    <div
+      class={`relative flex items-center justify-center overflow-hidden bg-bg ${
+        props.class ?? ""
+      }`}
+    >
+      <Show
+        when={props.src && !failed()}
+        fallback={
+          <span class="text-sm font-semibold text-text-muted">
+            {initial()}
+          </span>
         }
-      }}
-    />
+      >
+        <img
+          src={props.src}
+          alt={props.alt ?? ""}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+          class="absolute inset-0 size-full object-cover"
+        />
+      </Show>
+    </div>
   );
 }
