@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, createSignal, on } from "solid-js";
+import { createEffect, createSignal, on } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
 import { selectedChannel } from "../stores/view.ts";
 import { menuChannelPinned } from "../stores/preferences.ts";
@@ -15,7 +15,6 @@ import {
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
 export type ChannelSubscriptions = {
-  renderedChannels: Accessor<User[]>;
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
   leaveAll(): void;
@@ -25,12 +24,10 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
   const [liveStreams, setLiveStreams] = createSignal<User[]>([]);
   const [liveLoaded, setLiveLoaded] = createSignal(false);
   const joinedIds = new Set<string>();
-  const [renderedChannels, setRenderedChannels] = createSignal<User[]>([]);
 
   function leaveChannel(broadcasterId: string) {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
-    setRenderedChannels((prev) => prev.filter((p) => p.id !== broadcasterId));
     for (const k of ALL_KINDS) {
       void eventSubManager.unsubscribe(broadcasterId, k);
     }
@@ -44,11 +41,6 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
       selectedChannel,
       (curr, prev) => {
         if (prev && prev.id !== curr?.id) snapshotDivider(prev.id);
-        if (curr) {
-          setRenderedChannels((list) =>
-            list.some((p) => p.id === curr.id) ? list : [...list, curr]
-          );
-        }
       },
       { defer: true },
     ),
@@ -91,5 +83,5 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     for (const id of [...joinedIds]) leaveChannel(id);
   }
 
-  return { renderedChannels, setLiveStreams, setLiveLoaded, leaveAll };
+  return { setLiveStreams, setLiveLoaded, leaveAll };
 }

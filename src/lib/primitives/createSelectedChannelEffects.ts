@@ -7,9 +7,12 @@ import { loadChannelThirdPartyEmotes } from "../services/emotes.ts";
 import { loadChannelBadges } from "../services/badges.ts";
 
 export function createSelectedChannelEffects(): void {
+  let lastTitle: string | null = null;
   createEffect(() => {
     const ch = selectedChannel();
     const title = ch?.displayName ? `${ch.displayName} - Deatch` : "Deatch";
+    if (title === lastTitle) return;
+    lastTitle = title;
     getCurrentWindow()
       .setTitle(title)
       .catch(() => {});

@@ -30,8 +30,11 @@ async function renderBadgeBytes(count: number): Promise<number[] | null> {
 }
 
 export function createMentionsBadge(): void {
+  let last = -1;
   createEffect(() => {
     const count = unreadMentionCount();
+    if (count === last) return;
+    last = count;
     void (async () => {
       try {
         const bytes = await renderBadgeBytes(count);
