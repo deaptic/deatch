@@ -1,5 +1,5 @@
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
-import { Compass, Eye, Plus, Volume2, VolumeOff } from "lucide-solid";
+import { Compass, Eye, Pin, Plus, Volume2, VolumeOff } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { rememberUser, streamForUserId } from "../../lib/stores/channels.ts";
 import {
@@ -20,6 +20,7 @@ import { addToast } from "../../lib/stores/toasts.ts";
 import {
   activeView,
   pendingChannel,
+  selectedChannel,
   showExplore,
   watchMode,
 } from "../../lib/stores/view.ts";
@@ -81,7 +82,9 @@ function ChannelItem(props: {
   mentions?: number;
   dimmed?: boolean;
   muted?: boolean;
+  ephemeral?: boolean;
   onToggleMute?: () => void;
+  onPin?: () => void;
   onSelect: () => void;
   onOpenInBrowser: () => void;
   onContextMenu: (x: number, y: number) => void;
@@ -103,7 +106,13 @@ function ChannelItem(props: {
       onMiddleClick={props.onOpenInBrowser}
       onContextMenu={props.onContextMenu}
     >
-      <div class="relative size-10">
+      <div
+        class="relative size-10"
+        classList={{
+          "rounded-xl outline-2 outline-dashed outline-offset-2 outline-border-muted":
+            props.ephemeral,
+        }}
+      >
         <Avatar
           src={props.ch?.profileImageUrl}
           alt={props.ch?.displayName}
@@ -116,6 +125,21 @@ function ChannelItem(props: {
             "bg-highlight": !streamForUserId(props.ch.id),
           }}
         />
+        <Show when={props.onPin}>
+          <div
+            role="button"
+            tabindex="0"
+            title="Pin channel"
+            onClick={(e) => {
+              e.stopPropagation();
+              props.onPin!();
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            class="absolute -top-1 -right-1 size-4.5 rounded-full border-2 border-bg-dark bg-bg-light text-text hover:bg-border-muted flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <Pin class="size-3" />
+          </div>
+        </Show>
         <Show when={props.onToggleMute}>
           <div
             role="button"
@@ -163,6 +187,17 @@ export default function Menu(props: Props) {
   const warmedIds = createMemo(
     () => new Set(watchWarmedChannels().map((c) => c?.id)),
   );
+
+  const isListed = (id: string) =>
+    new Set(menuChannelPinned()).has(id) ||
+    warmedIds().has(id) ||
+    channels.isLive(id) ||
+    id === user()?.id;
+
+  const nowViewing = createMemo(() => {
+    const sel = selectedChannel();
+    return sel && !isListed(sel.id) ? sel : null;
+  });
 
   const [chMenu, setChMenu] = createSignal<
     { ch: User; x: number; y: number } | null
@@ -474,6 +509,33 @@ export default function Menu(props: Props) {
             </div>
           </div>
         </div>
+      </Show>
+
+      <Show when={nowViewing()}>
+        {(nv) => (
+          <>
+            <Divider />
+            <MenuGroup>
+              <div data-channel-id={nv().id}>
+                <ChannelItem
+                  ch={nv()}
+                  selected={selectedId() === nv().id}
+                  unread={hasUnread(nv().id)}
+                  mentions={channelMentionCount(nv().id)}
+                  ephemeral
+                  onPin={() => {
+                    channels.cachePinned(nv());
+                    rememberUser(nv());
+                    pinChannel(nv().id);
+                  }}
+                  onSelect={() => select(nv())}
+                  onOpenInBrowser={() => openInBrowser(nv())}
+                  onContextMenu={(x, y) => setChMenu({ ch: nv(), x, y })}
+                />
+              </div>
+            </MenuGroup>
+          </>
+        )}
       </Show>
 
       <Show when={user()}>
