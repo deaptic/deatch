@@ -11,6 +11,7 @@ import {
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
 import type { Command } from "../command-composer/types.ts";
+import type { FeedMessage as Message } from "../../lib/types/index.ts";
 import CommandComposer from "../command-composer/CommandComposer.tsx";
 import { ensureUserEmotesLoaded } from "../../lib/services/emotes.ts";
 import {
@@ -39,6 +40,8 @@ type Props = {
   isActive: boolean;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
+  getMentions: () => Message[];
+  onReplyMention: (msg: Message) => void;
   openUserCard: (userId: string) => void;
   ref?: (api: { focus: () => void; insert: (text: string) => void }) => void;
 };
@@ -50,6 +53,7 @@ export default function ChatInput(props: Props) {
   const [autocomplete, setAutocomplete] = createSignal<
     ChatAutocompleteHandle | null
   >(null);
+  const [mentionIdx, setMentionIdx] = createSignal(0);
   let textAreaApi: TextAreaApi | undefined;
 
   const focus = () => textAreaApi?.focus();
@@ -89,6 +93,7 @@ export default function ChatInput(props: Props) {
       if (ok) {
         pushSentHistory(props.broadcasterId, text);
         history.reset();
+        setMentionIdx(0);
         setInput("");
         props.onClearReply();
       }
@@ -123,6 +128,7 @@ export default function ChatInput(props: Props) {
   function onInputChange(value: string) {
     tabComplete.reset();
     history.reset();
+    setMentionIdx(0);
     setInput(value);
     autocomplete()?.update(value, getCursor());
   }
@@ -153,6 +159,14 @@ export default function ChatInput(props: Props) {
         void sendMessage();
       }, WHEN),
       shortcutManager.register("chat::tabComplete", () => {
+        if (input().trim() === "") {
+          const mentions = props.getMentions();
+          if (mentions.length === 0) return;
+          const idx = Math.min(mentionIdx(), mentions.length - 1);
+          props.onReplyMention(mentions[idx]);
+          setMentionIdx(idx + 1);
+          return;
+        }
         tabComplete.complete();
       }, WHEN),
       shortcutManager.register("chat::recallPrev", () => {

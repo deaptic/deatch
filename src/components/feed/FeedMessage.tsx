@@ -31,6 +31,7 @@ type Props = {
   showName?: boolean;
   showBadges?: boolean;
   showToolbar?: boolean;
+  selected?: boolean;
   reactions: Reaction[];
   onContextMenu?: (x: number, y: number, msg: Message) => void;
   onReply?: (msg: Message) => void;
@@ -127,8 +128,8 @@ export default function FeedMessage(props: Props) {
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
       class={`relative group leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-bg ${
-        props.item.deleted || holdResolved() ? "opacity-50 " : ""
-      }${
+        props.selected ? "ring-2 ring-primary bg-primary/25! " : ""
+      }${props.item.deleted || holdResolved() ? "opacity-50 " : ""}${
         hold()
           ? ""
           : mentioned()

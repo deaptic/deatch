@@ -29,6 +29,7 @@ import type {
 } from "../../lib/types/index.ts";
 import {
   clearDivider,
+  feeds,
   markSeen,
   setPaused as setFeedPaused,
   trimToLatest,
@@ -36,7 +37,9 @@ import {
 import {
   advancedDeveloperMode,
   feedFontSize,
+  feedKeywords,
   feedShowCopypasta,
+  matchesAnyKeyword,
   moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";
@@ -137,6 +140,30 @@ export default function Chat(props: Props) {
     setReplyTo(null);
   }
 
+  function getMentions(): Message[] {
+    const me = props.userLogin.toLowerCase();
+    const kws = feedKeywords();
+    const msgs = feeds[props.broadcasterId]?.messages ?? [];
+    const out: Message[] = [];
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      const m = msgs[i];
+      if (m.kind !== "message") continue;
+      const mentionsMe = m.fragments.some((f) =>
+        f.type === "mention" && f.user_login.toLowerCase() === me
+      ) ||
+        m.reply?.parent_user_login.toLowerCase() === me ||
+        (kws.length > 0 &&
+          matchesAnyKeyword(
+            m.fragments.map((f) =>
+              f.text
+            ).join(" "),
+            kws,
+          ));
+      if (mentionsMe) out.push(m);
+    }
+    return out;
+  }
+
   function react(msg: Message, value: string) {
     sendChatMessage({
       broadcasterId: props.broadcasterId,
@@ -230,6 +257,11 @@ export default function Chat(props: Props) {
         "feedSelected",
       ),
       shortcutManager.registerLocal(
+        "r",
+        withSelected(startReply),
+        "feedSelected",
+      ),
+      shortcutManager.registerLocal(
         "c",
         withSelected((m) => {
           copyField(m.fragments.map((f) => f.text).join(""));
@@ -299,6 +331,8 @@ export default function Chat(props: Props) {
         isActive={props.isActive}
         replyTo={replyTo}
         onClearReply={clearReply}
+        getMentions={getMentions}
+        onReplyMention={startReply}
         openUserCard={openUserCardFromInput}
         ref={(api) => {
           inputApi = api;
