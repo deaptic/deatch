@@ -51,6 +51,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     if (!u) return;
     if (!liveLoaded()) return;
     const desired = new Set<string>();
+    desired.add(u.id);
     for (const id of menuChannelPinned()) desired.add(id);
     for (const ch of liveStreams()) desired.add(ch.id);
     for (const ch of watchWarmedChannels()) desired.add(ch.id);

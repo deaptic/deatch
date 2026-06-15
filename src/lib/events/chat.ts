@@ -9,6 +9,7 @@ import { feedKeywords, matchesAnyKeyword } from "../stores/preferences.ts";
 import { mapChatMessage } from "./chat-mapper.ts";
 import { handleFollowageCommand } from "./followage.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
+import { triggerManager } from "../managers/TriggerManager.ts";
 
 listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
   const raw = e.payload.event;
@@ -33,6 +34,13 @@ listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
 
   const me = user();
   if (!me || raw.chatter_user_id === me.id) return;
+
+  triggerManager.handle({
+    text: raw.message.text,
+    broadcasterId: raw.broadcaster_user_id,
+    messageId: raw.message_id,
+  });
+
   const myLogin = me.login.toLowerCase();
   const isMention = raw.message.fragments.some(
     (f) =>

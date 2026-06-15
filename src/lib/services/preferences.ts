@@ -6,12 +6,14 @@ import {
   setUserNickname,
 } from "../stores/preferences.ts";
 
-async function resolveUser(login: string): Promise<User | null> {
+export async function resolveUserByLogin(login: string): Promise<User | null> {
+  const key = login.trim().toLowerCase();
+  if (!key) return null;
   try {
-    const users = await getUsers({ logins: [login] });
+    const users = await getUsers({ logins: [key] });
     const u = users[0];
     if (!u) {
-      addToast(`User "${login}" not found`, "error");
+      addToast(`User "${key}" not found`, "error");
       return null;
     }
     return u;
@@ -22,7 +24,7 @@ async function resolveUser(login: string): Promise<User | null> {
 }
 
 export async function muteUserByLogin(login: string): Promise<User | null> {
-  const u = await resolveUser(login);
+  const u = await resolveUserByLogin(login);
   if (!u || feedUserMuted().includes(u.id)) return null;
   muteUser(u.id);
   return u;
@@ -32,9 +34,7 @@ export async function setUserNicknameByLogin(
   login: string,
   nickname: string,
 ): Promise<User | null> {
-  const key = login.trim().toLowerCase();
-  if (!key) return null;
-  const u = await resolveUser(key);
+  const u = await resolveUserByLogin(login);
   if (!u) return null;
   setUserNickname(u.login, nickname);
   return u;

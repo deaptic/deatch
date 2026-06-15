@@ -6,6 +6,31 @@ import { addToast } from "./toasts.ts";
 export type EventPref = { show: boolean };
 export type BadgePref = { show: boolean };
 
+export const MIN_TRIGGER_COOLDOWN = 5;
+export const MAX_TRIGGER_COOLDOWN = 600;
+
+export function clampCooldown(value: number): number {
+  if (!Number.isFinite(value)) return MIN_TRIGGER_COOLDOWN;
+  return Math.min(
+    MAX_TRIGGER_COOLDOWN,
+    Math.max(MIN_TRIGGER_COOLDOWN, Math.floor(value)),
+  );
+}
+
+export type TriggerLocation = "start" | "exact" | "anywhere";
+export type TriggerAction = "send" | "reply";
+export type Trigger = {
+  id: string;
+  enabled: boolean;
+  name: string;
+  phrase: string;
+  location: TriggerLocation;
+  caseSensitive: boolean;
+  cooldown: number;
+  action: TriggerAction;
+  response: string;
+};
+
 export type UserPreferences = {
   feed: {
     fontSize: number;
@@ -44,6 +69,7 @@ export type UserPreferences = {
       pinned: string[];
     };
   };
+  triggers: Trigger[];
 };
 
 const DEFAULT_PREFERENCES = defaults as UserPreferences;
@@ -71,6 +97,32 @@ function sanitizeNicknames(raw: unknown): Record<string, string> {
     const trimmedNick = nickname.trim();
     if (!trimmedLogin || !trimmedNick) continue;
     out[trimmedLogin] = trimmedNick;
+  }
+  return out;
+}
+
+function sanitizeTriggers(raw: unknown): Trigger[] {
+  if (!Array.isArray(raw)) return [];
+  const out: Trigger[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const t = item as Partial<Trigger>;
+    if (typeof t.id !== "string" || typeof t.phrase !== "string") continue;
+    out.push({
+      id: t.id,
+      enabled: t.enabled !== false,
+      name: typeof t.name === "string" ? t.name : "",
+      phrase: t.phrase,
+      location: t.location === "start" || t.location === "exact"
+        ? t.location
+        : "anywhere",
+      caseSensitive: t.caseSensitive === true,
+      cooldown: typeof t.cooldown === "number"
+        ? clampCooldown(t.cooldown)
+        : MIN_TRIGGER_COOLDOWN,
+      action: t.action === "send" ? "send" : "reply",
+      response: typeof t.response === "string" ? t.response : "",
+    });
   }
   return out;
 }
@@ -138,6 +190,7 @@ function load(): UserPreferences {
       menu: {
         channels: { pinned },
       },
+      triggers: sanitizeTriggers(stored.triggers),
     };
   } catch {
     return DEFAULT_PREFERENCES;
@@ -272,6 +325,37 @@ export function addFeedKeyword(keyword: string) {
 
 export function removeFeedKeyword(keyword: string) {
   setPrefs("feed", "keywords", (k) => k.filter((x) => x !== keyword));
+  persist();
+}
+
+export const triggers = () => prefs.triggers;
+
+export function blankTrigger(): Trigger {
+  return {
+    id: crypto.randomUUID(),
+    enabled: true,
+    name: "",
+    phrase: "",
+    location: "start",
+    caseSensitive: false,
+    cooldown: MIN_TRIGGER_COOLDOWN,
+    action: "reply",
+    response: "",
+  };
+}
+
+export function saveTrigger(trigger: Trigger) {
+  const value = { ...trigger };
+  if (prefs.triggers.some((t) => t.id === trigger.id)) {
+    setPrefs("triggers", (t) => t.id === trigger.id, value);
+  } else {
+    setPrefs("triggers", (t) => [...t, value]);
+  }
+  persist();
+}
+
+export function removeTrigger(id: string) {
+  setPrefs("triggers", (t) => t.filter((x) => x.id !== id));
   persist();
 }
 
