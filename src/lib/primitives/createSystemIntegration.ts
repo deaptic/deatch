@@ -17,7 +17,6 @@ import { startUpdateChecker } from "../services/updater.ts";
 import { user } from "../stores/users.ts";
 import { liveStreams } from "../stores/channels.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
-import { isPanelOpen } from "../stores/ui.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
@@ -46,7 +45,6 @@ export function createSystemIntegration(): void {
       authenticated: u !== null,
       userId: u?.id ?? null,
       channel: selectedChannel(),
-      inboxOpen: isPanelOpen("inbox"),
       exploreOpen: activeView() === "explore",
       liveStreams: liveStreams(),
     });
