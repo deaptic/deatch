@@ -98,7 +98,6 @@ export type PresenceContext = {
   authenticated: boolean;
   userId: string | null;
   channel: User | null;
-  inboxOpen: boolean;
   exploreOpen: boolean;
   liveStreams: Stream[];
 };
@@ -110,7 +109,7 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
     return;
   }
   const ch = ctx.exploreOpen ? null : ctx.channel;
-  const mode = ctx.inboxOpen ? "inbox" : ch ? `ch:${ch?.id}` : "browsing";
+  const mode = ch ? `ch:${ch?.id}` : "browsing";
   if (mode !== activityMode) {
     activityMode = mode;
     activityStartedAt = Math.floor(Date.now() / 1000);
@@ -118,16 +117,7 @@ export function applyDiscordPresence(ctx: PresenceContext): void {
       SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
   }
 
-  if (mode === "inbox") {
-    scheduleActivity({
-      details: "Reading mentions",
-      largeImage: "app_logo",
-      largeText: "Deatch",
-      startedAt: activityStartedAt,
-      activityType: "watching",
-      statusDisplayType: "details",
-    });
-  } else if (ch) {
+  if (ch) {
     const stream = ctx.liveStreams.find((s) => s.user.id === ch.id);
     const isOwnChannel = ch.id === ctx.userId;
     const gameName = stream?.game.name;
