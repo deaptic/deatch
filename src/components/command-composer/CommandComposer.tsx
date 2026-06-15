@@ -1,12 +1,14 @@
 import {
   createEffect,
   createMemo,
+  createResource,
   createSignal,
   For,
+  type JSX,
   onCleanup,
   Show,
 } from "solid-js";
-import type { Command, CommandContext } from "./types.ts";
+import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
@@ -22,6 +24,47 @@ type UserSuggestion = {
   color: string;
   nickname?: string;
 };
+
+type Popup = {
+  items: () => unknown[];
+  select: (item: unknown) => void;
+  render: (item: unknown) => JSX.Element;
+};
+
+function renderUserItem(s: UserSuggestion): JSX.Element {
+  return (
+    <>
+      <span
+        class="font-semibold text-left truncate"
+        style={{ color: s.color || "var(--color-text)" }}
+      >
+        {s.nickname ?? s.displayName}
+      </span>
+      <Show when={s.nickname}>
+        <span class="text-text-muted text-sm truncate">({s.displayName})</span>
+      </Show>
+      <span class="flex-1" />
+      <span class="text-xs font-semibold shrink-0 text-text-muted">
+        {s.displayName.toLowerCase() !== s.login ? s.login : ""}
+      </span>
+    </>
+  );
+}
+
+function renderSearchItem(s: OptionSuggestion): JSX.Element {
+  return (
+    <>
+      <Show when={s.image}>
+        <img
+          src={s.image}
+          alt=""
+          class="size-7 shrink-0 rounded object-cover"
+        />
+      </Show>
+      <span class="text-text truncate">{s.label}</span>
+    </>
+  );
+}
 
 type Props = {
   command: Command;
@@ -108,10 +151,6 @@ export default function CommandComposer(props: Props) {
       .map(({ lastSeen: _, ...rest }) => rest);
   });
 
-  const showUserPopup = createMemo(
-    () => activeOption()?.type === "user" && userSuggestions().length > 0,
-  );
-
   const enumSuggestions = createMemo<string[]>(() => {
     const opt = activeOption();
     if (opt?.type !== "enum" || !opt.values) return [];
@@ -121,14 +160,63 @@ export default function CommandComposer(props: Props) {
     return opt.values.filter((v) => v.toLowerCase().includes(q));
   });
 
-  const showEnumPopup = createMemo(
-    () => activeOption()?.type === "enum" && enumSuggestions().length > 0,
+  const [searchQuery, setSearchQuery] = createSignal("");
+  createEffect(() => {
+    if (activeOption()?.type !== "search") return;
+    const q = activeRaw().trim();
+    const timer = setTimeout(() => setSearchQuery(q), 250);
+    onCleanup(() => clearTimeout(timer));
+  });
+
+  const [searchResults] = createResource(
+    () => (activeOption()?.type === "search" ? searchQuery() : ""),
+    async (q) => {
+      const search = activeOption()?.search;
+      if (!q || !search) return [];
+      return await search(q).catch(() => []);
+    },
   );
+
+  const searchSuggestions = createMemo<OptionSuggestion[]>(() => {
+    if (activeOption()?.type !== "search" || activeSlot()?.resolved !== null) {
+      return [];
+    }
+    return searchResults() ?? [];
+  });
+
+  const activePopup = createMemo<Popup | null>(() => {
+    switch (activeOption()?.type) {
+      case "user":
+        return userSuggestions().length === 0 ? null : {
+          items: userSuggestions,
+          select: (i) => selectUser(i as UserSuggestion),
+          render: (i) => renderUserItem(i as UserSuggestion),
+        };
+      case "enum":
+        return enumSuggestions().length === 0 ? null : {
+          items: enumSuggestions,
+          select: (i) => selectEnum(i as string),
+          render: (i) => <span class="text-text">{i as string}</span>,
+        };
+      case "search":
+        return searchSuggestions().length === 0 ? null : {
+          items: searchSuggestions,
+          select: (i) => selectSearch(i as OptionSuggestion),
+          render: (i) => renderSearchItem(i as OptionSuggestion),
+        };
+      default:
+        return null;
+    }
+  });
 
   const errorActive = createMemo(() => !!activeSlot()?.error);
 
   const hintBody = createMemo(() => {
-    if (resolving()) return "Looking up user…";
+    if (resolving()) {
+      return activeOption()?.type === "search"
+        ? "Searching…"
+        : "Looking up user…";
+    }
     const opt = activeOption();
     const slot = activeSlot();
     if (!opt || !slot) return hasSlots ? "" : props.command.description;
@@ -161,6 +249,33 @@ export default function CommandComposer(props: Props) {
     }
   }
 
+  async function resolveSearchSlot(idx: number): Promise<boolean> {
+    const opt = options[idx];
+    const query = slots()[idx].raw.trim();
+    if (!opt?.search || !query) return false;
+    setResolving(true);
+    try {
+      const match = (await opt.search(query))[0];
+      if (!match) {
+        patchSlot(idx, { error: `No match for: ${query}` });
+        return false;
+      }
+      patchSlot(idx, {
+        raw: match.label,
+        resolved: match,
+        displayLabel: match.label,
+        error: null,
+      });
+      return true;
+    } catch (e) {
+      console.error("search lookup failed", e);
+      patchSlot(idx, { error: "Lookup failed" });
+      return false;
+    } finally {
+      setResolving(false);
+    }
+  }
+
   async function advance(): Promise<boolean> {
     const idx = activeIdx();
     const opt = options[idx];
@@ -170,6 +285,12 @@ export default function CommandComposer(props: Props) {
       opt.type === "user" && slot.raw && slot.resolved === null && !slot.error
     ) {
       if (!(await resolveUserSlot(idx))) return false;
+      slot = slots()[idx];
+    }
+    if (
+      opt.type === "search" && slot.raw && slot.resolved === null && !slot.error
+    ) {
+      if (!(await resolveSearchSlot(idx))) return false;
       slot = slots()[idx];
     }
     if (!slotSatisfied(opt, slot)) return false;
@@ -220,7 +341,7 @@ export default function CommandComposer(props: Props) {
           ? `Try ${opt.hint ?? "30s, 5m, 1h"}`
           : null,
       });
-    } else if (opt.type === "user") {
+    } else if (opt.type === "user" || opt.type === "search") {
       patchSlot(idx, {
         raw: value,
         resolved: null,
@@ -250,6 +371,16 @@ export default function CommandComposer(props: Props) {
 
   function selectUser(s: UserSuggestion) {
     fillUserSlot(activeIdx(), s.displayName, s.id, s.nickname ?? s.displayName);
+    void advance();
+  }
+
+  function selectSearch(s: OptionSuggestion) {
+    patchSlot(activeIdx(), {
+      raw: s.label,
+      resolved: s,
+      displayLabel: s.label,
+      error: null,
+    });
     void advance();
   }
 
@@ -307,41 +438,12 @@ export default function CommandComposer(props: Props) {
       onKeyDown={hasSlots ? undefined : onKeyDown}
       class="relative flex-1 self-stretch flex flex-col min-w-0 outline-none"
     >
-      <Show when={showUserPopup()}>
-        <Suggestions<UserSuggestion>
-          suggestions={userSuggestions}
-          onSelect={selectUser}
+      <Show when={activePopup()}>
+        <Suggestions<unknown>
+          suggestions={() => activePopup()?.items() ?? []}
+          onSelect={(i) => activePopup()?.select(i)}
           onDismiss={props.onCancel}
-          renderItem={(s) => (
-            <>
-              <span
-                class="font-semibold text-left truncate"
-                style={{ color: s.color || "var(--color-text)" }}
-              >
-                {s.nickname ?? s.displayName}
-              </span>
-              <Show when={s.nickname}>
-                <span class="text-text-muted text-sm truncate">
-                  ({s.displayName})
-                </span>
-              </Show>
-              <span class="flex-1" />
-              <span class="text-xs font-semibold shrink-0 text-text-muted">
-                {s.displayName.toLowerCase() !== s.login ? s.login : ""}
-              </span>
-            </>
-          )}
-          ref={(api) => {
-            popupHandleKey = api.handleKey;
-          }}
-        />
-      </Show>
-      <Show when={showEnumPopup()}>
-        <Suggestions<string>
-          suggestions={enumSuggestions}
-          onSelect={selectEnum}
-          onDismiss={props.onCancel}
-          renderItem={(v) => <span class="text-text">{v}</span>}
+          renderItem={(i) => <>{activePopup()?.render(i)}</>}
           ref={(api) => {
             popupHandleKey = api.handleKey;
           }}

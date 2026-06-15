@@ -4,7 +4,9 @@ export type CommandContext = {
   openUserCard: (userId: string) => void;
 };
 
-export type OptionType = "user" | "string" | "duration" | "enum";
+export type OptionType = "user" | "string" | "duration" | "enum" | "search";
+
+export type OptionSuggestion = { id: string; label: string; image?: string };
 
 export type CommandOption = {
   name: string;
@@ -14,6 +16,8 @@ export type CommandOption = {
   default?: unknown;
   hint?: string;
   values?: string[];
+  // For `search` options: async provider returning ranked suggestions.
+  search?: (query: string) => Promise<OptionSuggestion[]>;
 };
 
 export type CommandRole = "broadcaster" | "mod" | "regular";

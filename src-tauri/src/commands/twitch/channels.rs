@@ -51,6 +51,7 @@ pub async fn get_followed_channels(
 pub struct ModifyChannelInformationParams {
     pub broadcaster_id: String,
     pub title: Option<String>,
+    pub game_id: Option<String>,
 }
 
 #[tauri::command]
@@ -59,7 +60,13 @@ pub async fn modify_channel_information(
     params: ModifyChannelInformationParams,
 ) -> Result<(), String> {
     let token = get_token(&app).await?;
-    services::twitch::channels::modify_channel_information(&token, params.broadcaster_id, params.title).await
+    services::twitch::channels::modify_channel_information(
+        &token,
+        params.broadcaster_id,
+        params.title,
+        params.game_id,
+    )
+    .await
 }
 
 #[derive(Deserialize)]

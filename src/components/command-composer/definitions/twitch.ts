@@ -16,6 +16,7 @@ import {
   updateUserChatColor,
 } from "../../../lib/api/twitch/chat.ts";
 import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
+import { searchCategories } from "../../../lib/api/twitch/search.ts";
 import {
   addChannelVip,
   type CommercialLength,
@@ -23,7 +24,7 @@ import {
   removeChannelVip,
   startCommercial,
 } from "../../../lib/api/twitch/channels.ts";
-import type { Command } from "../types.ts";
+import type { Command, OptionSuggestion } from "../types.ts";
 
 const ANNOUNCEMENT_COLORS: AnnouncementColor[] = [
   "primary",
@@ -507,6 +508,36 @@ export const twitchCommands: Command[] = [
         broadcasterId: ctx.broadcasterId,
         title: title as string,
       });
+    },
+  },
+  {
+    name: "game",
+    aliases: ["category"],
+    description: "Set the stream category",
+    role: "broadcaster",
+    options: [
+      {
+        name: "game",
+        description: "Category to search for",
+        type: "search",
+        required: true,
+        hint: "e.g. Just Chatting",
+        search: async (query) => {
+          const results = await searchCategories({ query, first: 8 });
+          return results.map((c) => ({
+            id: c.id,
+            label: c.name,
+            image: c.boxArtUrl,
+          }));
+        },
+      },
+    ],
+    execute: async ({ game }, ctx) => {
+      const match = game as OptionSuggestion;
+      await modifyChannelInformation(
+        { broadcasterId: ctx.broadcasterId, gameId: match.id },
+        { successMessage: `Category set to ${match.label}` },
+      );
     },
   },
   {
