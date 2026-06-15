@@ -214,6 +214,7 @@ export default function Feed(props: Props) {
             emotes={thirdPartyEmoteMap()}
             badges={badges()}
             userLogin={props.userLogin ?? ""}
+            selected={selectedId() === item.message_id}
             keywords={feedKeywords()}
             showTimestamp={feedShowTimestamp()}
             showDeletedContent={feedShowDeletedContent()}
@@ -241,6 +242,10 @@ export default function Feed(props: Props) {
       ref={rootRef}
       class={`flex-1 relative min-h-0 ${props.class ?? ""}`}
       style={props.style}
+      onFocusOut={(e) => {
+        const next = e.relatedTarget as Node | null;
+        if (!next || !rootRef?.contains(next)) clearSelection();
+      }}
     >
       {props.header}
       <div
@@ -266,11 +271,7 @@ export default function Feed(props: Props) {
                   ? item.message_id
                   : undefined}
                 tabIndex={-1}
-                class={`outline-none rounded ${
-                  item.kind === "message" && selectedId() === item.message_id
-                    ? "bg-primary/25 ring-2 ring-primary"
-                    : ""
-                }`}
+                class="outline-none"
               >
                 {render(item, index)}
               </div>
