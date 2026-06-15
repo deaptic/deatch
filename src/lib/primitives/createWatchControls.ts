@@ -30,6 +30,14 @@ export function createWatchControls(nav: ChannelNavigation): WatchControls {
     }, { defer: true }),
   );
 
+  createEffect(
+    on(watchWarmedChannels, (warmed) => {
+      if (watchMode() !== null) return;
+      const sel = selectedChannel();
+      if (sel && warmed.some((c) => c?.id === sel.id)) setWatchMode("manual");
+    }, { defer: true }),
+  );
+
   function cycleChannel(direction: 1 | -1) {
     // The Watch toggle decides which set alt+up/down walks.
     const list = watchMode() ? watchWarmedChannels() : channelsInOrder();
