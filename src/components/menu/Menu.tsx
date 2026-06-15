@@ -546,6 +546,8 @@ export default function Menu(props: Props) {
               <ChannelItem
                 ch={u()}
                 selected={selectedId() === u().id}
+                unread={hasUnread(u().id)}
+                mentions={channelMentionCount(u().id)}
                 onSelect={() => select(u())}
                 onOpenInBrowser={() => openInBrowser(u())}
                 onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}

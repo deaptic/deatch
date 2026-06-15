@@ -50,5 +50,6 @@
     "channels": {
       "pinned": []
     }
-  }
+  },
+  "triggers": []
 }

@@ -4,6 +4,7 @@ import {
   Palette,
   ScrollText,
   Settings as SettingsIcon,
+  Zap,
 } from "lucide-solid";
 import { createSignal, For, type JSX, Show } from "solid-js";
 import Panel from "../ui/Panel.tsx";
@@ -14,11 +15,13 @@ import ModerationSection from "./sections/ModerationSection.tsx";
 import FeedSection from "./sections/FeedSection.tsx";
 import AppearanceSection from "./sections/AppearanceSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
+import TriggersSection from "./sections/TriggersSection.tsx";
 
 type SectionKey =
   | "feed"
   | "notifications"
   | "moderation"
+  | "triggers"
   | "appearance"
   | "advanced";
 
@@ -30,6 +33,7 @@ const SECTIONS: {
   { key: "notifications", label: "Notifications", Icon: Megaphone },
   { key: "feed", label: "Feed", Icon: ScrollText },
   { key: "moderation", label: "Moderation", Icon: Ban },
+  { key: "triggers", label: "Triggers", Icon: Zap },
   { key: "appearance", label: "Appearance", Icon: Palette },
   { key: "advanced", label: "Advanced", Icon: SettingsIcon },
 ];
@@ -69,6 +73,9 @@ export default function Settings(props: Props) {
         </Show>
         <Show when={section() === "moderation"}>
           <ModerationSection />
+        </Show>
+        <Show when={section() === "triggers"}>
+          <TriggersSection />
         </Show>
         <Show when={section() === "feed"}>
           <FeedSection />

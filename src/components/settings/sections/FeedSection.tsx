@@ -1,6 +1,4 @@
-import { createEffect, For, Show } from "solid-js";
-import { createStore } from "solid-js/store";
-import { getUsers, type User } from "../../../lib/api/twitch/users.ts";
+import { For, Show } from "solid-js";
 import SettingsContent from "../SettingsContent.tsx";
 import SettingsContentSection from "../SettingsContentSection.tsx";
 import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
@@ -10,12 +8,10 @@ import Toggle from "../../ui/Toggle.tsx";
 import Chip from "../../ui/Chip.tsx";
 import ChipList from "../../ui/ChipList.tsx";
 import ChipInput from "../../ui/ChipInput.tsx";
+import LoginListEditor from "../../ui/LoginListEditor.tsx";
 import KeyValueEditor from "../../ui/KeyValueEditor.tsx";
 import { BADGE_CATEGORIES, EVENTS } from "../../../lib/constants.ts";
-import {
-  muteUserByLogin,
-  setUserNicknameByLogin,
-} from "../../../lib/services/preferences.ts";
+import { setUserNicknameByLogin } from "../../../lib/services/preferences.ts";
 import {
   addFeedKeyword,
   feedBadges,
@@ -29,6 +25,7 @@ import {
   feedUserNicknames,
   feedUserOverrideNameColor,
   feedUserShowDisplayName,
+  muteUser,
   removeFeedKeyword,
   removeUserNickname,
   setFeedBadge,
@@ -43,30 +40,11 @@ import {
 } from "../../../lib/stores/preferences.ts";
 
 export default function FeedSection() {
-  const [mutedMeta, setMutedMeta] = createStore<Record<string, User>>({});
-
-  createEffect(() => {
-    const missing = feedUserMuted().filter((id) => !mutedMeta[id]);
-    if (missing.length === 0) return;
-    getUsers({ ids: missing })
-      .then((users) => {
-        const updates: Record<string, User> = {};
-        for (const u of users) updates[u.id] = u;
-        setMutedMeta(updates);
-      })
-      .catch(() => {});
-  });
-
   async function applyNickname(
     login: string,
     nickname: string,
   ): Promise<boolean> {
     return !!(await setUserNicknameByLogin(login, nickname));
-  }
-
-  async function muteByLogin(login: string) {
-    const u = await muteUserByLogin(login);
-    if (u) setMutedMeta(u.id, u);
   }
 
   return (
@@ -165,24 +143,12 @@ export default function FeedSection() {
           description="Hide messages from these users."
           stacked
         >
-          <ChipInput
+          <LoginListEditor
+            ids={feedUserMuted()}
             placeholder="Mute username..."
-            normalize={(v) => v.trim().toLowerCase()}
-            onAdd={muteByLogin}
+            onAdd={(u) => muteUser(u.id)}
+            onRemove={unmuteUser}
           />
-          <Show when={feedUserMuted().length > 0}>
-            <ChipList>
-              <For each={feedUserMuted()}>
-                {(id) => (
-                  <Chip
-                    label={mutedMeta[id]?.displayName ?? mutedMeta[id]?.login ??
-                      id}
-                    onRemove={() => unmuteUser(id)}
-                  />
-                )}
-              </For>
-            </ChipList>
-          </Show>
         </SettingsContentSectionItem>
         <SettingsContentSectionItem
           label="Nicknames"
