@@ -6,6 +6,7 @@ type Props<T> = {
   onSelect: (item: T) => void;
   onDismiss: () => void;
   renderItem: (item: T) => JSX.Element;
+  selectOnSpace?: boolean;
   ref?: (api: { handleKey: (e: KeyboardEvent) => boolean }) => void;
 };
 
@@ -38,7 +39,10 @@ export default function Suggestions<T>(props: Props<T>) {
           setAcIndex((i) => Math.max(i - 1, 0));
           return true;
         }
-        if (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey)) {
+        if (
+          e.key === "Tab" || (e.key === "Enter" && !e.shiftKey) ||
+          (props.selectOnSpace && e.key === " ")
+        ) {
           e.preventDefault();
           props.onSelect(s[acIndex()]);
           return true;

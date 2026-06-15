@@ -44,30 +44,7 @@ export default function SearchResults(props: Props) {
     (q) => (q ? searchCategories({ query: q, first: 8 }) : []),
   );
 
-  const matchRank = (value: string, q: string) => {
-    const v = value.toLowerCase();
-    if (v === q) return 0;
-    if (v.startsWith(q)) return 1;
-    if (v.includes(q)) return 2;
-    return 3;
-  };
-
-  const ranked = () => {
-    const q = debounced().toLowerCase();
-    return [...(results() ?? [])].sort((a, b) => {
-      const ra = Math.min(
-        matchRank(a.user.login, q),
-        matchRank(a.user.displayName, q),
-      );
-      const rb = Math.min(
-        matchRank(b.user.login, q),
-        matchRank(b.user.displayName, q),
-      );
-      if (ra !== rb) return ra - rb;
-      if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
-      return 0;
-    });
-  };
+  const ranked = () => results() ?? [];
 
   function open(channel: SearchChannel) {
     const user: User = {

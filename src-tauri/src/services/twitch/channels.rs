@@ -10,7 +10,7 @@ use twitch_api::helix::channels::{
 };
 use twitch_api::helix::{Cursor, EmptyBody};
 use twitch_api::twitch_oauth2::UserToken;
-use twitch_api::types::{CommercialLength, UserId};
+use twitch_api::types::{CategoryId, CommercialLength, UserId};
 
 pub async fn get_channel_followers(
     token: &UserToken,
@@ -57,11 +57,15 @@ pub async fn modify_channel_information(
     token: &UserToken,
     broadcaster_id: String,
     title: Option<String>,
+    game_id: Option<String>,
 ) -> Result<(), String> {
     let request = ModifyChannelInformationRequest::broadcaster_id(broadcaster_id.as_str());
     let mut body = ModifyChannelInformationBody::default();
     if let Some(t) = title.as_deref().filter(|s| !s.is_empty()) {
         body.title = Some(Cow::Borrowed(t));
+    }
+    if let Some(g) = game_id.filter(|s| !s.is_empty()) {
+        body.game_id = Some(Cow::Owned(CategoryId::new(g)));
     }
     helix()
         .req_patch(request, body, token)

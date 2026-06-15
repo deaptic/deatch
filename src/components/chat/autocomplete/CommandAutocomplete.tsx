@@ -72,6 +72,7 @@ export default function CommandAutocomplete(props: Props) {
         onSelect={select}
         onDismiss={props.controller.dismiss}
         renderItem={render}
+        selectOnSpace
         ref={(api) => {
           props.controller.registerKeyHandler("command", api.handleKey);
           onCleanup(() => props.controller.unregisterKeyHandler("command"));

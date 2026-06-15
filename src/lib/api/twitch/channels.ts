@@ -36,6 +36,7 @@ export function getFollowedChannels(
 export type ModifyChannelInformationParams = {
   broadcasterId: string;
   title?: string;
+  gameId?: string;
 };
 
 export function modifyChannelInformation(
