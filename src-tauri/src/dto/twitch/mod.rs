@@ -7,4 +7,5 @@ pub mod ids;
 pub mod moderation;
 pub mod search;
 pub mod stream;
+pub mod template;
 pub mod user;

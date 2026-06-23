@@ -40,16 +40,8 @@ pub struct BannedUser {
 impl From<HelixBannedUser> for BannedUser {
     fn from(b: HelixBannedUser) -> Self {
         Self {
-            user: UserRef {
-                id: UserId(b.user_id.to_string()),
-                login: b.user_login.to_string(),
-                display_name: b.user_name.to_string(),
-            },
-            moderator: UserRef {
-                id: UserId(b.moderator_id.to_string()),
-                login: b.moderator_login.to_string(),
-                display_name: b.moderator_name.to_string(),
-            },
+            user: UserRef::new(b.user_id, b.user_login, b.user_name),
+            moderator: UserRef::new(b.moderator_id, b.moderator_login, b.moderator_name),
             reason: b.reason.unwrap_or_default(),
             expires_at: b.expires_at.map(|t| t.to_string()).unwrap_or_default(),
         }
@@ -58,20 +50,12 @@ impl From<HelixBannedUser> for BannedUser {
 
 impl From<HelixModerator> for UserRef {
     fn from(m: HelixModerator) -> Self {
-        Self {
-            id: UserId(m.user_id.to_string()),
-            login: m.user_login.to_string(),
-            display_name: m.user_name.to_string(),
-        }
+        UserRef::new(m.user_id, m.user_login, m.user_name)
     }
 }
 
 impl From<HelixModeratedChannel> for UserRef {
     fn from(m: HelixModeratedChannel) -> Self {
-        Self {
-            id: UserId(m.broadcaster_id.to_string()),
-            login: m.broadcaster_login.to_string(),
-            display_name: m.broadcaster_name.to_string(),
-        }
+        UserRef::new(m.broadcaster_id, m.broadcaster_login, m.broadcaster_name)
     }
 }

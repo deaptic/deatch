@@ -24,13 +24,39 @@ fn keyring_entry() -> Result<keyring_core::Entry, String> {
 }
 
 fn save_credentials(token: &UserToken) {
-    let Ok(entry) = keyring_entry() else { return };
+    let entry = match keyring_entry() {
+        Ok(entry) => entry,
+        Err(e) => {
+            eprintln!("[auth] keyring unavailable, credentials not persisted: {e}");
+            return;
+        }
+    };
     let creds = StoredCredentials {
         access_token: token.access_token.secret().to_string(),
         refresh_token: token.refresh_token.as_ref().map(|r| r.secret().to_string()),
     };
-    if let Ok(json) = serde_json::to_string(&creds) {
-        let _ = entry.set_password(&json);
+    let json = match serde_json::to_string(&creds) {
+        Ok(json) => json,
+        Err(e) => {
+            eprintln!("[auth] failed to serialize credentials: {e}");
+            return;
+        }
+    };
+    if let Err(e) = entry.set_password(&json) {
+        eprintln!("[auth] failed to persist credentials: {e}");
+    }
+}
+
+fn delete_stored_credentials() {
+    let entry = match keyring_entry() {
+        Ok(entry) => entry,
+        Err(e) => {
+            eprintln!("[auth] keyring unavailable, stored credentials not cleared: {e}");
+            return;
+        }
+    };
+    if let Err(e) = entry.delete_credential() {
+        eprintln!("[auth] failed to clear stored credentials: {e}");
     }
 }
 
@@ -225,9 +251,7 @@ pub async fn restore_session(app: &tauri::AppHandle) -> Result<Option<User>, Str
     let token_scopes = token.scopes();
     for scope in &required {
         if !token_scopes.contains(scope) {
-            if let Ok(entry) = keyring_entry() {
-                let _ = entry.delete_credential();
-            }
+            delete_stored_credentials();
             return Err(format!(
                 "Token missing scope: {scope}, please re-authenticate"
             ));
@@ -246,9 +270,7 @@ pub async fn revoke_session(app: &tauri::AppHandle) -> Result<(), String> {
         let http_client = reqwest::Client::new();
         let _ = t.revoke_token(&http_client).await;
     }
-    if let Ok(entry) = keyring_entry() {
-        let _ = entry.delete_credential();
-    }
+    delete_stored_credentials();
     *app.state::<TwitchState>().token.lock().unwrap() = None;
     *app.state::<TwitchState>().eventsub_tx.lock().unwrap() = None;
     Ok(())

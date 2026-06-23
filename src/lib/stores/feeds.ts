@@ -293,8 +293,11 @@ export function setChannelPointsRewardTitle(
       const item = f.messages.find(
         (m) => m.kind === "message" && m.message_id === messageId,
       );
-      if (item && item.kind === "message") {
-        item.channel_points_reward_title = title;
+      if (
+        item?.kind === "message" &&
+        item.channel_points?.kind === "custom_reward"
+      ) {
+        item.channel_points.title = title;
       }
     }),
   );

@@ -12,13 +12,13 @@ import type {
   FeedMessage as Message,
 } from "../../lib/types/index.ts";
 import { matchesAnyKeyword } from "../../lib/stores/preferences.ts";
+import type { Reaction } from "./reaction.ts";
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 import { setAutomodHoldStatus } from "../../lib/stores/feeds.ts";
 import {
   approveHeldAutomodMessage,
   denyHeldAutomodMessage,
 } from "../../lib/api/twitch/moderation.ts";
-
-type Reaction = { label: string; value: string; url: string };
 
 type Props = {
   item: Message;
@@ -38,15 +38,11 @@ type Props = {
   onReact?: (msg: Message, value: string) => void;
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
-  onShowUserCard?: (
-    x: number,
-    y: number,
-    identity: { userId?: string; login?: string },
-  ) => void;
+  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
   onUserContextMenu?: (
     x: number,
     y: number,
-    identity: { userId?: string; login?: string; displayName?: string },
+    identity: Partial<UserRef>,
   ) => void;
 };
 
@@ -206,13 +202,19 @@ export default function FeedMessage(props: Props) {
               : undefined}
           />
         </Show>
-        <Show when={props.item.channel_points_custom_reward}>
-          <RichNotice
-            class="col-start-2 row-start-1 text-event-channel-points text-[0.82em] leading-tight font-medium"
-            label={props.item.channel_points_reward_title
-              ? `Redeemed ${props.item.channel_points_reward_title}`
-              : "Channel point redemption"}
-          />
+        <Show
+          when={props.item.channel_points?.kind === "custom_reward"
+            ? props.item.channel_points
+            : undefined}
+        >
+          {(cp) => (
+            <RichNotice
+              class="col-start-2 row-start-1 text-event-channel-points text-[0.82em] leading-tight font-medium"
+              label={cp().title
+                ? `Redeemed ${cp().title}`
+                : "Channel point redemption"}
+            />
+          )}
         </Show>
         <Show when={props.showTimestamp}>
           <Timestamp

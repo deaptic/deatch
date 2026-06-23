@@ -6,6 +6,7 @@ import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   x: number;
@@ -16,7 +17,7 @@ type Props = {
   getBoundsElement?: () => HTMLElement | null;
   onClose: () => void;
   onJumpToMessage?: (channelId: string, messageId: string) => void;
-  onSwitchUser?: (identity: { userId?: string; login?: string }) => void;
+  onSwitchUser?: (identity: Partial<UserRef>) => void;
 };
 
 const CARD_W = 384;

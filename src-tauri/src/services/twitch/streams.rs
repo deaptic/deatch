@@ -6,7 +6,6 @@ use twitch_api::helix::streams::{
     create_stream_marker::{CreateStreamMarkerBody, CreateStreamMarkerRequest},
     GetFollowedStreamsRequest, GetStreamsRequest,
 };
-use twitch_api::helix::Cursor;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{CategoryId, UserId, UserName};
 
@@ -39,18 +38,15 @@ pub async fn get_streams(
     request.game_id = (&*game_ids).into();
     request.language = filters.language.map(Cow::Owned);
     request.first = first;
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
-    request.before = before.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
+    request.before = super::cursor(before);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(Stream::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, Stream::from))
 }
 
 pub async fn get_followed_streams(
@@ -60,17 +56,14 @@ pub async fn get_followed_streams(
 ) -> Result<PaginatedResponse<Stream>, String> {
     let mut request = GetFollowedStreamsRequest::user_id(token.user_id.clone());
     request.first = first;
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(Stream::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, Stream::from))
 }
 
 pub async fn create_stream_marker(

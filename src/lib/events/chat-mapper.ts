@@ -49,9 +49,11 @@ export function mapChatMessage(
     badges: raw.badges,
     reply: raw.reply ?? undefined,
     timestamp,
-    channel_points: !!raw.channel_points_custom_reward_id ||
-      CHANNEL_POINT_TYPES.has(raw.message_type),
-    channel_points_custom_reward: !!raw.channel_points_custom_reward_id,
+    channel_points: raw.channel_points_custom_reward_id
+      ? { kind: "custom_reward" }
+      : CHANNEL_POINT_TYPES.has(raw.message_type)
+      ? { kind: "highlight" }
+      : undefined,
     first_message: raw.message_type === "user_intro",
     deleted: raw.deleted,
   };

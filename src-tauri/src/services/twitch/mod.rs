@@ -9,13 +9,15 @@ pub mod search;
 pub mod streams;
 pub mod users;
 
+use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::user::UserRef;
+use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::Mutex;
 use std::time::Duration;
 use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
-use twitch_api::helix::RequestGet;
+use twitch_api::helix::{Cursor, Response};
 use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
 
 pub struct TwitchState {
@@ -64,46 +66,22 @@ pub fn helix() -> twitch_api::HelixClient<'static, reqwest::Client> {
     twitch_api::HelixClient::new()
 }
 
+pub fn cursor(after: Option<String>) -> Option<Cow<'static, Cursor>> {
+    after.map(|s| Cow::Owned(Cursor::from(s)))
+}
+
+pub fn into_paginated<R, U, T>(
+    response: Response<R, Vec<U>>,
+    map: impl FnMut(U) -> T,
+) -> PaginatedResponse<T> {
+    PaginatedResponse::new(
+        response.data.into_iter().map(map).collect(),
+        response.pagination.map(|c| c.as_str().to_string()),
+    )
+}
+
 pub fn cache_moderated_channel_ids(app: &tauri::AppHandle, channels: &[UserRef]) {
     let ids: HashSet<String> = channels.iter().map(|ch| ch.id.0.clone()).collect();
     *app.state::<TwitchState>().moderated_channel_ids.lock().unwrap() = ids;
 }
 
-// Helix gives user tokens 800 points/minute (~13 req/sec). We pace at ~10
-// req/sec so a long paginator can't blow the budget on its own and so
-// concurrent calls have headroom. Single-page fetches don't pay this —
-// the sleep only runs when there's another page to retrieve.
-const PAGE_INTERVAL: Duration = Duration::from_millis(100);
-
-/// Drives a Helix paginated GET to completion. `make_request` is called once
-/// per page; it receives the previous page's cursor (or `None` on the first
-/// call) and returns a fresh request with that cursor applied. Pages are
-/// concatenated into the returned `Vec`.
-pub async fn fetch_all_pages<R, T, F>(
-    token: &UserToken,
-    mut make_request: F,
-) -> Result<Vec<T>, String>
-where
-    F: FnMut(Option<String>) -> R,
-    R: RequestGet<Response = Vec<T>>,
-    T: serde::de::DeserializeOwned + PartialEq,
-{
-    let helix = helix();
-    let mut all: Vec<T> = Vec::new();
-    let mut after: Option<String> = None;
-    loop {
-        let request = make_request(after.take());
-        let response = helix
-            .req_get(request, token)
-            .await
-            .map_err(|e| e.to_string())?;
-        all.extend(response.data);
-        match response.pagination {
-            Some(cursor) => {
-                after = Some(cursor.as_str().to_string());
-                tokio::time::sleep(PAGE_INTERVAL).await;
-            }
-            None => return Ok(all),
-        }
-    }
-}

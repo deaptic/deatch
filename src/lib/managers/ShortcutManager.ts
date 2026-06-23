@@ -1,4 +1,3 @@
-import { Manager } from "./Manager.ts";
 import defaultKeymap from "../../default-keymap.json" with { type: "json" };
 import { comboFor, MODIFIER_KEYS } from "../utils/keyboard.ts";
 import {
@@ -11,7 +10,7 @@ type Handler = () => boolean | void;
 type ActionEntry = { handler: Handler; when?: WhenFn };
 type Overrides = Map<string, string[] | null>;
 
-export class ShortcutManager extends Manager {
+export class ShortcutManager {
   private static readonly CHORD_TIMEOUT_MS = 1000;
   private static readonly DEFAULTS = new Map<string, string[]>(
     Object.entries(defaultKeymap as Record<string, string[]>),
@@ -26,7 +25,6 @@ export class ShortcutManager extends Manager {
   private pending: { seq: string; timer: number } | null = null;
 
   constructor() {
-    super();
     this.rebuild();
   }
 
@@ -115,13 +113,13 @@ export class ShortcutManager extends Manager {
   }
 
   private dispatch(seq: string): boolean {
-    if (this.tryRun(this.localBindings.get(seq))) return true;
+    if (this.run(this.localBindings.get(seq))) return true;
     const names = this.keymap.get(seq);
     if (!names) return false;
-    return this.tryRun(names.map((n) => this.actions.get(n)));
+    return this.run(names.map((n) => this.actions.get(n)));
   }
 
-  private tryRun(
+  private run(
     entries: Iterable<ActionEntry | undefined> | undefined,
   ): boolean {
     if (!entries) return false;

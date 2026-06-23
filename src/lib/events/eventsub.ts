@@ -1,10 +1,10 @@
 import { listen } from "@tauri-apps/api/event";
 import { appendItem } from "../stores/feeds.ts";
 import type { FeedEvent } from "../types/feed.ts";
-import type { EventKind } from "../types/twitch/eventsub.ts";
-
-type Payload = { broadcaster_id: string; kind: EventKind };
-type FailedPayload = Payload & { error: string };
+import type {
+  EventSubFailure,
+  EventSubNotice,
+} from "../types/twitch/eventsub.ts";
 
 const CHAT = "channel.chat.message" as const;
 
@@ -29,12 +29,12 @@ function pushNotice(
   appendItem(broadcasterId, notice);
 }
 
-listen<Payload>("eventsub-subscribed", (e) => {
+listen<EventSubNotice>("eventsub-subscribed", (e) => {
   if (e.payload.kind !== CHAT) return;
   pushNotice(e.payload.broadcaster_id, "chat_connected", "Connected to chat");
 });
 
-listen<Payload>("eventsub-unsubscribed", (e) => {
+listen<EventSubNotice>("eventsub-unsubscribed", (e) => {
   if (e.payload.kind !== CHAT) return;
   pushNotice(
     e.payload.broadcaster_id,
@@ -43,7 +43,7 @@ listen<Payload>("eventsub-unsubscribed", (e) => {
   );
 });
 
-listen<FailedPayload>("eventsub-subscribe-failed", (e) => {
+listen<EventSubFailure>("eventsub-subscribe-failed", (e) => {
   if (e.payload.kind !== CHAT) return;
   pushNotice(
     e.payload.broadcaster_id,

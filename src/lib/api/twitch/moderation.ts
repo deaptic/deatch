@@ -68,19 +68,6 @@ export function getBannedUsers(
   return invokeCommand("get_banned_users", params, options);
 }
 
-export type GetModeratorsParams = {
-  broadcasterId: string;
-  first?: number;
-  after?: string;
-};
-
-export function getModerators(
-  params: GetModeratorsParams,
-  options?: InvokeOptions,
-): Promise<PaginatedResponse<UserRef>> {
-  return invokeCommand("get_moderators", params, options);
-}
-
 export type GetModeratedChannelsParams = {
   first?: number;
   after?: string;

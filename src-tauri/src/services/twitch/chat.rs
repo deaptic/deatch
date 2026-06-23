@@ -11,7 +11,7 @@ use twitch_api::helix::chat::{
     GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetGlobalEmotesRequest,
     GetUserEmotesRequest,
 };
-use twitch_api::helix::{Cursor, EmptyBody};
+use twitch_api::helix::EmptyBody;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{MsgId, NamedUserColor, UserId};
 
@@ -40,17 +40,14 @@ pub async fn get_user_emotes(
 ) -> Result<PaginatedResponse<UserEmote>, String> {
     let mut request = GetUserEmotesRequest::user_id(token.user_id.clone());
     request.broadcaster_id = broadcaster_id.map(|s| Cow::Owned(UserId::from(s)));
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(UserEmote::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, UserEmote::from))
 }
 
 pub async fn get_global_chat_badges(token: &UserToken) -> Result<Vec<BadgeSet>, String> {

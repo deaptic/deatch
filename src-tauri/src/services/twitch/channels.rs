@@ -8,7 +8,7 @@ use twitch_api::helix::channels::{
     start_commercial::{StartCommercialBody, StartCommercialRequest},
     AddChannelVipRequest, GetChannelFollowersRequest, RemoveChannelVipRequest,
 };
-use twitch_api::helix::{Cursor, EmptyBody};
+use twitch_api::helix::EmptyBody;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{CategoryId, CommercialLength, UserId};
 
@@ -24,17 +24,14 @@ pub async fn get_channel_followers(
         request.user_id = Some(UserId::from(uid).into());
     }
     request.first = first;
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(Follow::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, Follow::from))
 }
 
 pub async fn get_followed_channels(

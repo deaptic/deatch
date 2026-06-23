@@ -30,6 +30,16 @@ pub struct UserRef {
     pub display_name: String,
 }
 
+impl UserRef {
+    pub fn new(id: impl ToString, login: impl ToString, display_name: impl ToString) -> Self {
+        Self {
+            id: UserId(id.to_string()),
+            login: login.to_string(),
+            display_name: display_name.to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct User {

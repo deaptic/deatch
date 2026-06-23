@@ -4,12 +4,7 @@ import {
   feedUserOverrideNameColor,
   feedUserShowDisplayName,
 } from "../../lib/stores/preferences.ts";
-
-export type UserIdentity = {
-  userId?: string;
-  login: string;
-  displayName: string;
-};
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   login: string;
@@ -17,13 +12,13 @@ type Props = {
   color?: string;
   userId?: string;
   class?: string;
-  onShowUserCard?: (x: number, y: number, id: UserIdentity) => void;
-  onUserContextMenu?: (x: number, y: number, id: UserIdentity) => void;
+  onShowUserCard?: (x: number, y: number, id: Partial<UserRef>) => void;
+  onUserContextMenu?: (x: number, y: number, id: Partial<UserRef>) => void;
 };
 
 export default function DisplayName(props: Props) {
-  const id = (): UserIdentity => ({
-    userId: props.userId,
+  const id = (): Partial<UserRef> => ({
+    id: props.userId,
     login: props.login,
     displayName: props.displayName,
   });

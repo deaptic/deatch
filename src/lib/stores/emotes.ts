@@ -66,14 +66,6 @@ export function isFavorite(value: string): boolean {
   return favorites().some((e) => e.value === value);
 }
 
-export function appendUserEmotes(page: UserEmote[]) {
-  setUserEmotes((prev) => {
-    const ids = new Set(prev.map((e) => e.id));
-    const fresh = page.filter((e) => !ids.has(e.id));
-    return fresh.length ? [...prev, ...fresh] : prev;
-  });
-}
-
 /// Deduplicate a list of user emotes by id. Twitch's `Get User Emotes`
 /// endpoint returns the same emote once per emote-set it belongs to, so
 /// callers ingesting the raw response (e.g. the cache loader) must run

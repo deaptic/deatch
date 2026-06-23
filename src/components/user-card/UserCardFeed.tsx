@@ -2,16 +2,13 @@ import { createMemo, Show } from "solid-js";
 import { feeds } from "../../lib/stores/feeds.ts";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import Feed from "../feed/Feed.tsx";
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   chatterId: string;
   broadcasterId: string;
   onJumpToMessage?: (messageId: string) => void;
-  onShowUserCard?: (
-    x: number,
-    y: number,
-    identity: { userId?: string; login?: string },
-  ) => void;
+  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
 };
 
 export default function UserCardFeed(props: Props) {

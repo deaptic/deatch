@@ -10,6 +10,7 @@ import {
   sevenTvGlobal,
   userEmotes,
 } from "../../../lib/stores/emotes.ts";
+import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
 type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
@@ -40,20 +41,14 @@ export default function EmoteAutocomplete(props: Props) {
   const suggestions = (): EmoteSuggestion[] => {
     const q = props.controller.queryFor("emote");
     if (!q) return [];
-    const lower = q.toLowerCase();
-    const starts: EmoteSuggestion[] = [];
-    const contains: EmoteSuggestion[] = [];
-    for (const [name, entry] of Object.entries(allEmotes())) {
-      const n = name.toLowerCase();
-      if (n.startsWith(lower)) {
-        starts.push({ name, url: entry.url, source: entry.source });
-      } else if (n.includes(lower)) {
-        contains.push({ name, url: entry.url, source: entry.source });
-      }
-    }
-    starts.sort((a, b) => a.name.localeCompare(b.name));
-    contains.sort((a, b) => a.name.localeCompare(b.name));
-    return [...starts, ...contains].slice(0, 10);
+    const items: EmoteSuggestion[] = Object.entries(allEmotes()).map(
+      ([name, entry]) => ({ name, url: entry.url, source: entry.source }),
+    );
+    return rankSuggestions(items, q, {
+      keys: (s) => [s.name.toLowerCase()],
+      compare: (a, b) => a.name.localeCompare(b.name),
+      limit: 10,
+    });
   };
 
   function select(s: EmoteSuggestion) {

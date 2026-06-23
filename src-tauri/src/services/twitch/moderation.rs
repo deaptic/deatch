@@ -1,6 +1,6 @@
 use crate::dto::twitch::moderation::{Ban, BannedUser};
 use crate::dto::twitch::user::UserRef;
-use super::{fetch_all_pages, helix};
+use super::helix;
 use crate::dto::pagination::PaginatedResponse;
 use std::borrow::Cow;
 use twitch_api::helix::moderation::{
@@ -10,9 +10,8 @@ use twitch_api::helix::moderation::{
     },
     warn_chat_user::{WarnChatUserBody, WarnChatUserRequest},
     BanUserBody, BanUserRequest, GetBannedUsersRequest, GetModeratedChannelsRequest,
-    GetModeratorsRequest, ModeratedChannel as HelixModeratedChannel, UnbanUserRequest,
+    GetModeratorsRequest, UnbanUserRequest,
 };
-use twitch_api::helix::Cursor;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{MsgId, UserId};
 
@@ -59,17 +58,14 @@ pub async fn get_banned_users(
         request.user_id = vec![UserId::from(uid)].into();
     }
     request.first = first;
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(BannedUser::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, BannedUser::from))
 }
 
 pub async fn unban_user(
@@ -97,17 +93,14 @@ pub async fn get_moderators(
 ) -> Result<PaginatedResponse<UserRef>, String> {
     let mut request = GetModeratorsRequest::broadcaster_id(broadcaster_id.as_str());
     request.first = first;
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(UserRef::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, UserRef::from))
 }
 
 pub async fn get_moderated_channels(
@@ -117,30 +110,41 @@ pub async fn get_moderated_channels(
 ) -> Result<PaginatedResponse<UserRef>, String> {
     let mut request = GetModeratedChannelsRequest::user_id(token.user_id.clone());
     request.first = first;
-    request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
+    request.after = super::cursor(after);
 
     let response = helix()
         .req_get(request, token)
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(PaginatedResponse::new(
-        response.data.into_iter().map(UserRef::from).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
-    ))
+    Ok(super::into_paginated(response, UserRef::from))
 }
 
 /// Internal helper for the eventsub runner — fetches every moderated channel
 /// for the authenticated user so the `is_mod` cache can be refreshed. Not
 /// exposed as a Tauri command.
 pub async fn get_all_moderated_channels(token: &UserToken) -> Result<Vec<UserRef>, String> {
-    let channels: Vec<HelixModeratedChannel> = fetch_all_pages(token, |after| {
+    let helix = helix();
+    let mut all: Vec<UserRef> = Vec::new();
+    let mut after: Option<String> = None;
+    loop {
         let mut request = GetModeratedChannelsRequest::user_id(token.user_id.clone());
-        request.after = after.map(|s| Cow::Owned(Cursor::from(s)));
-        request
-    })
-    .await?;
-    Ok(channels.into_iter().map(UserRef::from).collect())
+        request.after = super::cursor(after.take());
+        let response = helix
+            .req_get(request, token)
+            .await
+            .map_err(|e| e.to_string())?;
+        all.extend(response.data.into_iter().map(UserRef::from));
+        match response.pagination {
+            // Pace under Helix's ~13 req/sec budget so a long paginator
+            // can't exhaust it; only paid when another page follows.
+            Some(cursor) => {
+                after = Some(cursor.as_str().to_string());
+                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            }
+            None => return Ok(all),
+        }
+    }
 }
 
 pub async fn warn_user(

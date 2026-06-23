@@ -1,4 +1,3 @@
-use super::ids::UserId;
 use super::user::UserRef;
 use serde::Serialize;
 use twitch_api::helix::channels::{get_followed_channels::FollowedBroadcaster, Follower};
@@ -13,11 +12,7 @@ pub struct Follow {
 impl From<Follower> for Follow {
     fn from(f: Follower) -> Self {
         Self {
-            user: UserRef {
-                id: UserId(f.user_id.to_string()),
-                login: f.user_login.to_string(),
-                display_name: f.user_name.to_string(),
-            },
+            user: UserRef::new(f.user_id, f.user_login, f.user_name),
             followed_at: f.followed_at.to_string(),
         }
     }
@@ -26,11 +21,7 @@ impl From<Follower> for Follow {
 impl From<FollowedBroadcaster> for Follow {
     fn from(f: FollowedBroadcaster) -> Self {
         Self {
-            user: UserRef {
-                id: UserId(f.broadcaster_id.to_string()),
-                login: f.broadcaster_login.to_string(),
-                display_name: f.broadcaster_name.to_string(),
-            },
+            user: UserRef::new(f.broadcaster_id, f.broadcaster_login, f.broadcaster_name),
             followed_at: f.followed_at.to_string(),
         }
     }

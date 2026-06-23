@@ -7,6 +7,7 @@ import {
   isModOfChannel,
 } from "../../../lib/stores/users.ts";
 import { moderationActionsDisabled } from "../../../lib/stores/preferences.ts";
+import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
 type CommandSuggestion = { name: string; usage?: string; description: string };
@@ -28,21 +29,18 @@ export default function CommandAutocomplete(props: Props) {
   const suggestions = (): CommandSuggestion[] => {
     const q = props.controller.queryFor("command");
     if (q === null) return [];
-    const lower = q.toLowerCase();
-    const starts: CommandSuggestion[] = [];
-    const contains: CommandSuggestion[] = [];
+    const items: CommandSuggestion[] = [];
     for (const c of commands) {
       if (!canRunCommand(c, props.broadcasterId)) continue;
       const usage = c.options
         .map((o) => (o.required === false ? `[${o.name}?]` : `[${o.name}]`))
         .join(" ");
-      const item = { name: c.name, usage, description: c.description };
-      if (lower === "" || c.name.startsWith(lower)) starts.push(item);
-      else if (c.name.includes(lower)) contains.push(item);
+      items.push({ name: c.name, usage, description: c.description });
     }
-    starts.sort((a, b) => a.name.localeCompare(b.name));
-    contains.sort((a, b) => a.name.localeCompare(b.name));
-    return [...starts, ...contains];
+    return rankSuggestions(items, q, {
+      keys: (s) => [s.name.toLowerCase()],
+      compare: (a, b) => a.name.localeCompare(b.name),
+    });
   };
 
   function select(s: CommandSuggestion) {

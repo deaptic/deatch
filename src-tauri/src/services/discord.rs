@@ -19,6 +19,44 @@ pub struct Button {
     pub url: String,
 }
 
+#[derive(Clone, Copy, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ActivityType {
+    Playing,
+    Listening,
+    Watching,
+    Competing,
+}
+
+impl From<ActivityType> for activity::ActivityType {
+    fn from(t: ActivityType) -> Self {
+        match t {
+            ActivityType::Playing => Self::Playing,
+            ActivityType::Listening => Self::Listening,
+            ActivityType::Watching => Self::Watching,
+            ActivityType::Competing => Self::Competing,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum StatusDisplayType {
+    Name,
+    State,
+    Details,
+}
+
+impl From<StatusDisplayType> for activity::StatusDisplayType {
+    fn from(t: StatusDisplayType) -> Self {
+        match t {
+            StatusDisplayType::Name => Self::Name,
+            StatusDisplayType::State => Self::State,
+            StatusDisplayType::Details => Self::Details,
+        }
+    }
+}
+
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct ActivityInput {
@@ -32,8 +70,8 @@ pub struct ActivityInput {
     pub small_image: Option<String>,
     pub small_text: Option<String>,
     pub started_at: Option<i64>,
-    pub activity_type: Option<String>,
-    pub status_display_type: Option<String>,
+    pub activity_type: Option<ActivityType>,
+    pub status_display_type: Option<StatusDisplayType>,
     pub buttons: Option<Vec<Button>>,
 }
 
@@ -63,7 +101,12 @@ pub async fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<
     let client = guard
         .as_mut()
         .ok_or_else(|| "discord not connected".to_string())?;
+    client
+        .set_activity(build_activity(&input))
+        .map_err(|e| e.to_string())
+}
 
+fn build_activity(input: &ActivityInput) -> activity::Activity<'_> {
     let mut activity = activity::Activity::new();
     if let Some(d) = input.details.as_deref().filter(|s| !s.is_empty()) {
         activity = activity.details(d);
@@ -77,28 +120,11 @@ pub async fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<
     if let Some(u) = input.state_url.as_deref().filter(|s| !s.is_empty()) {
         activity = activity.state_url(u);
     }
-    if let Some(kind) = input.activity_type.as_deref() {
-        let parsed = match kind {
-            "playing" => Some(activity::ActivityType::Playing),
-            "listening" => Some(activity::ActivityType::Listening),
-            "watching" => Some(activity::ActivityType::Watching),
-            "competing" => Some(activity::ActivityType::Competing),
-            _ => None,
-        };
-        if let Some(t) = parsed {
-            activity = activity.activity_type(t);
-        }
+    if let Some(kind) = input.activity_type {
+        activity = activity.activity_type(kind.into());
     }
-    if let Some(kind) = input.status_display_type.as_deref() {
-        let parsed = match kind {
-            "name" => Some(activity::StatusDisplayType::Name),
-            "state" => Some(activity::StatusDisplayType::State),
-            "details" => Some(activity::StatusDisplayType::Details),
-            _ => None,
-        };
-        if let Some(t) = parsed {
-            activity = activity.status_display_type(t);
-        }
+    if let Some(kind) = input.status_display_type {
+        activity = activity.status_display_type(kind.into());
     }
 
     let mut assets = activity::Assets::new();
@@ -148,7 +174,7 @@ pub async fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<
         activity = activity.buttons(btns);
     }
 
-    client.set_activity(activity).map_err(|e| e.to_string())
+    activity
 }
 
 pub async fn clear_activity(state: &DiscordState) -> Result<(), String> {

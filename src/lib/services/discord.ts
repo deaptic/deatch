@@ -102,64 +102,86 @@ export type PresenceContext = {
   liveStreams: Stream[];
 };
 
+type PresenceSession = { startedAt: number; lurkPhrase: string };
+
+function activeChannel(ctx: PresenceContext): User | null {
+  return ctx.exploreOpen ? null : ctx.channel;
+}
+
+function presenceMode(ctx: PresenceContext): string | null {
+  if (!ctx.enabled || !ctx.authenticated) return null;
+  const ch = activeChannel(ctx);
+  return ch ? `ch:${ch.id}` : "browsing";
+}
+
+function buildPresence(
+  ctx: PresenceContext,
+  session: PresenceSession,
+): DiscordActivity {
+  const ch = activeChannel(ctx);
+  if (!ch) {
+    return {
+      details: "Browsing channels",
+      stateText: "On Twitch",
+      largeImage: "app_logo",
+      largeText: "Deatch",
+      startedAt: session.startedAt,
+      activityType: "watching",
+      statusDisplayType: "details",
+    };
+  }
+  const stream = ctx.liveStreams.find((s) => s.user.id === ch.id);
+  const isOwnChannel = ch.id === ctx.userId;
+  const gameName = stream?.game.name;
+  const stateText = gameName
+    ? `${gameName} · ${viewerFormatter.format(stream!.viewerCount)} viewers`
+    : isOwnChannel
+    ? session.lurkPhrase
+    : "Offline";
+  const streamStartedAt = stream
+    ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
+    : null;
+  const channelUrl = `https://twitch.tv/${ch.login}`;
+  const categoryUrl = gameName
+    ? `https://www.twitch.tv/directory/game/${encodeURIComponent(gameName)}`
+    : undefined;
+  return {
+    details: ch.displayName || ch.login,
+    detailsUrl: channelUrl,
+    stateText,
+    stateUrl: categoryUrl,
+    largeImage: ch.profileImageUrl || "app_logo",
+    largeText: stream?.title
+      ? clamp(stream.title, 128)
+      : ch.displayName || ch.login,
+    largeUrl: channelUrl,
+    smallImage: "app_logo",
+    smallText: "Deatch",
+    startedAt: streamStartedAt ?? session.startedAt,
+    activityType: "watching",
+    statusDisplayType: "details",
+    buttons: [{ label: "Open on Twitch", url: channelUrl }],
+  };
+}
+
 export function applyDiscordPresence(ctx: PresenceContext): void {
-  if (!ctx.enabled || !ctx.authenticated) {
+  const mode = presenceMode(ctx);
+  if (mode === null) {
     activityMode = null;
     void disconnectDiscord();
     return;
   }
-  const ch = ctx.exploreOpen ? null : ctx.channel;
-  const mode = ch ? `ch:${ch?.id}` : "browsing";
   if (mode !== activityMode) {
     activityMode = mode;
     activityStartedAt = Math.floor(Date.now() / 1000);
     selfLurkPhrase =
       SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
   }
-
-  if (ch) {
-    const stream = ctx.liveStreams.find((s) => s.user.id === ch.id);
-    const isOwnChannel = ch.id === ctx.userId;
-    const gameName = stream?.game.name;
-    const stateText = gameName
-      ? `${gameName} · ${viewerFormatter.format(stream!.viewerCount)} viewers`
-      : isOwnChannel
-      ? selfLurkPhrase
-      : "Offline";
-    const streamStartedAt = stream
-      ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
-      : null;
-    const channelUrl = `https://twitch.tv/${ch.login}`;
-    const categoryUrl = gameName
-      ? `https://www.twitch.tv/directory/game/${encodeURIComponent(gameName)}`
-      : undefined;
-    scheduleActivity({
-      details: ch.displayName || ch.login,
-      detailsUrl: channelUrl,
-      stateText,
-      stateUrl: categoryUrl,
-      largeImage: ch.profileImageUrl || "app_logo",
-      largeText: stream?.title
-        ? clamp(stream.title, 128)
-        : ch.displayName || ch.login,
-      largeUrl: channelUrl,
-      smallImage: "app_logo",
-      smallText: "Deatch",
-      startedAt: streamStartedAt ?? activityStartedAt,
-      activityType: "watching",
-      statusDisplayType: "details",
-      buttons: [{ label: "Open on Twitch", url: channelUrl }],
-    });
-  } else {
-    scheduleActivity({
-      details: "Browsing channels",
-      stateText: "On Twitch",
-      largeImage: "app_logo",
-      largeText: "Deatch",
+  scheduleActivity(
+    buildPresence(ctx, {
       startedAt: activityStartedAt,
-      activityType: "watching",
-      statusDisplayType: "details",
-    });
-  }
+      lurkPhrase: selfLurkPhrase,
+    }),
+  );
   void connect();
 }
