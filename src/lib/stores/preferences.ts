@@ -360,8 +360,10 @@ export function removeTrigger(id: string) {
 }
 
 export function matchesAnyKeyword(text: string, keywords: string[]): boolean {
-  if (keywords.length === 0) return false;
-  const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const escaped = keywords
+    .filter((k) => k.trim().length > 0)
+    .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (escaped.length === 0) return false;
   return new RegExp(`\\b(${escaped.join("|")})\\b`, "i").test(text);
 }
 
