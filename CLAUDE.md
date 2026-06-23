@@ -38,6 +38,8 @@ When unsure, optimize for the next reader.
 
 Group by feature, not by technical type. A change to one feature should touch one place.
 
+One concern per file; the filename is the concern. When a file accumulates unrelated groups, split it along those seams into a folder of small files, with a barrel (`index`/`mod`/same-named file) re-exporting them so import sites stay stable. Private helpers live with their only caller. A file with many entries that all serve one concern (a resource's API calls, one type's variants) is fine — don't atomize it; split by concern, not by count.
+
 Keep the dependency flow one-directional: entry points call services, services call clients, clients talk to the outside world. Lower layers never reach back up.
 
 - **Backend** — handlers stay thin: parse input, call a service, return a result. Business logic and long-lived state live in services. Upstream clients are isolated from the rest of the app.
