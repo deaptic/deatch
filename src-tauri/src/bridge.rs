@@ -54,20 +54,3 @@ pub fn register() -> io::Result<()> {
 
     Ok(())
 }
-
-#[allow(dead_code)]
-pub fn unregister() -> io::Result<()> {
-    #[cfg(windows)]
-    {
-        use winreg::enums::HKEY_CURRENT_USER;
-        use winreg::RegKey;
-        let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-        let _ = hkcu.delete_subkey(FIREFOX_REGISTRY_KEY);
-    }
-
-    let path = manifest_path()?;
-    if path.exists() {
-        fs::remove_file(path)?;
-    }
-    Ok(())
-}

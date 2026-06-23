@@ -47,13 +47,15 @@ export const ALL_KINDS: EventKind[] = [
 /// Per-channel subscription status tracked by the EventSubManager.
 export type SubStatus = "pending" | "active" | "failed" | "disconnected";
 
+export type EventSubNotice = { broadcaster_id: string; kind: EventKind };
+export type EventSubFailure = EventSubNotice & { error: string };
+
 export type EventEnvelope<T> = {
   timestamp: string;
   event: T;
 };
 
-// ── channel.chat.message ──────────────────────────────────────────────
-
+// channel.chat.message
 export type RawFragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; emote: { id: string } }
@@ -93,8 +95,7 @@ export type RawChatMessage = {
   deleted?: boolean;
 };
 
-// ── channel.chat.notification / shoutout / follow ────────────────────
-
+// channel.chat.notification / shoutout / follow
 export type RawNotification = {
   broadcaster_user_id: string;
   notice_type: string;
@@ -117,8 +118,7 @@ export type RawFollow = {
   user_name: string;
 };
 
-// ── channel.channel_points_custom_reward_redemption.add ──────────────
-
+// channel.channel_points_custom_reward_redemption.add
 export type RawChannelPointsRedemption = {
   broadcaster_user_id: string;
   id: string;
@@ -136,8 +136,7 @@ export type RawChannelPointsRedemption = {
   redeemed_at: string;
 };
 
-// ── channel.chat.message_delete / clear / clear_user_messages ────────
-
+// channel.chat.message_delete / clear / clear_user_messages
 export type RawChatMessageDelete = {
   broadcaster_user_id: string;
   message_id: string;
@@ -157,8 +156,7 @@ export type RawChatClearUserMessages = {
   target_user_name: string;
 };
 
-// ── channel.moderate ─────────────────────────────────────────────────
-
+// channel.moderate
 type RawModerateBase = {
   broadcaster_user_id: string;
   broadcaster_user_login: string;
@@ -204,8 +202,7 @@ export type RawModerate =
     | { action: "warn"; warn: RawModUser & { reason: string | null } }
   );
 
-// ── automod.message.hold ─────────────────────────────────────────────
-
+// automod.message.hold
 export type AutomodHeldReason =
   | {
     reason: "automod";
@@ -242,7 +239,7 @@ export type RawAutomodMessageHold = {
   held_at: string;
 } & AutomodHeldReason;
 
-// ── automod.message.update ───────────────────────────────────────────
+// automod.message.update
 export type RawAutomodMessageUpdate = {
   broadcaster_user_id: string;
   message_id: string;

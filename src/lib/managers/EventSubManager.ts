@@ -1,29 +1,29 @@
 import { listen } from "@tauri-apps/api/event";
-import { Manager } from "./Manager.ts";
 import { eventsubState, setEventsubState } from "../stores/eventsub.ts";
 import { subscribe, unsubscribe } from "../api/twitch/eventsub.ts";
-import type { EventKind, SubStatus } from "../types/twitch/eventsub.ts";
+import type {
+  EventKind,
+  EventSubFailure,
+  EventSubNotice,
+  SubStatus,
+} from "../types/twitch/eventsub.ts";
 
-type Payload = { broadcaster_id: string; kind: EventKind };
-type FailedPayload = Payload & { error: string };
-
-export class EventSubManager extends Manager {
+export class EventSubManager {
   private static readonly RETRY_DELAY_MS = 3000;
 
   private retryTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private retried = new Set<string>();
 
   constructor() {
-    super();
-    void listen<Payload>(
+    void listen<EventSubNotice>(
       "eventsub-subscribed",
       (e) => this.onSubscribed(e.payload),
     );
-    void listen<FailedPayload>(
+    void listen<EventSubFailure>(
       "eventsub-subscribe-failed",
       (e) => this.onFailed(e.payload),
     );
-    void listen<Payload>(
+    void listen<EventSubNotice>(
       "eventsub-unsubscribed",
       (e) =>
         this.setStatus(
@@ -53,12 +53,12 @@ export class EventSubManager extends Manager {
     );
   }
 
-  private onSubscribed({ broadcaster_id, kind }: Payload): void {
+  private onSubscribed({ broadcaster_id, kind }: EventSubNotice): void {
     this.cancelRetry(broadcaster_id, kind);
     this.setStatus(broadcaster_id, kind, "active");
   }
 
-  private onFailed({ broadcaster_id, kind }: FailedPayload): void {
+  private onFailed({ broadcaster_id, kind }: EventSubFailure): void {
     const key = EventSubManager.keyOf(broadcaster_id, kind);
     if (this.retried.has(key)) {
       this.retried.delete(key);

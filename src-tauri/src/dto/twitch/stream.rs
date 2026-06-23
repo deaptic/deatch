@@ -1,5 +1,5 @@
 use super::game::GameRef;
-use super::ids::{GameId, StreamId, UserId};
+use super::ids::{GameId, StreamId};
 use super::user::UserRef;
 use serde::Serialize;
 use twitch_api::helix::streams as helix_streams;
@@ -14,18 +14,13 @@ pub struct Thumbnail {
 
 impl Thumbnail {
     pub fn from_template(template: &str) -> Self {
+        use super::template::render_size;
         Self {
-            small: render(template, 320, 180),
-            medium: render(template, 640, 360),
-            large: render(template, 1280, 720),
+            small: render_size(template, 320, 180),
+            medium: render_size(template, 640, 360),
+            large: render_size(template, 1280, 720),
         }
     }
-}
-
-fn render(template: &str, width: u32, height: u32) -> String {
-    template
-        .replace("{width}", &width.to_string())
-        .replace("{height}", &height.to_string())
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -47,11 +42,7 @@ impl From<helix_streams::Stream> for Stream {
     fn from(s: helix_streams::Stream) -> Self {
         Self {
             id: StreamId(s.id.to_string()),
-            user: UserRef {
-                id: UserId(s.user_id.to_string()),
-                login: s.user_login.to_string(),
-                display_name: s.user_name.to_string(),
-            },
+            user: UserRef::new(s.user_id, s.user_login, s.user_name),
             game: GameRef {
                 id: GameId(s.game_id.to_string()),
                 name: s.game_name,

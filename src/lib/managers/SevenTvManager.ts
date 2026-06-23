@@ -1,5 +1,4 @@
 import { listen } from "@tauri-apps/api/event";
-import { Manager } from "./Manager.ts";
 import { seventvGetChannelEmotes } from "../api/external/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
@@ -13,13 +12,12 @@ import type { FeedEvent } from "../types/feed.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 
-export class SevenTvManager extends Manager {
+export class SevenTvManager {
   private byBroadcaster = new Map<string, Entry>();
   private bySetId = new Map<string, Entry>();
   private activeChannelId: string | null = null;
 
   constructor() {
-    super();
     void listen<Delta>(
       "seventv-emote-set-updated",
       (e) => this.onDelta(e.payload),

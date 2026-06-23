@@ -44,9 +44,3 @@ export async function discordSetActivity(
 ): Promise<void> {
   await invokeCommand("discord_set_activity", params, options);
 }
-
-export async function discordClearActivity(
-  options?: InvokeOptions,
-): Promise<void> {
-  await invokeCommand("discord_clear_activity", undefined, options);
-}

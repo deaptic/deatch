@@ -26,10 +26,6 @@ export function useNavigation(): NavigationContextValue {
   return ctx;
 }
 
-export function useNavigationOptional(): NavigationContextValue | undefined {
-  return useContext(NavigationContext);
-}
-
 type Props = {
   orientation?: NavigationOrientation;
   fill?: boolean;

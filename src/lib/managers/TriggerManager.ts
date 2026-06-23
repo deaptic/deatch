@@ -1,4 +1,3 @@
-import { Manager } from "./Manager.ts";
 import { sendChatMessage } from "../api/twitch/chat.ts";
 import { user } from "../stores/users.ts";
 import {
@@ -13,7 +12,7 @@ export type IncomingMessage = {
   messageId: string;
 };
 
-export class TriggerManager extends Manager {
+export class TriggerManager {
   private lastFiredAt = new Map<string, number>();
 
   match(message: IncomingMessage): Trigger | null {

@@ -57,20 +57,12 @@ pub async fn get_channel_emotes(channel_id: String) -> Result<ChannelResult, Str
         .await
         .map_err(|e| e.to_string())?;
 
+    let (emotes, emote_set_id) = match response.emote_set {
+        Some(s) => (s.emotes.into_iter().map(to_entry).collect(), Some(s.id)),
+        None => (Vec::new(), None),
+    };
     Ok(ChannelResult {
-        emotes: response
-            .emote_set
-            .as_ref()
-            .map(|s| {
-                s.emotes
-                    .iter()
-                    .map(|e| EmoteEntry {
-                        name: e.name.clone(),
-                        url: emote_url(&e.id),
-                    })
-                    .collect()
-            })
-            .unwrap_or_default(),
-        emote_set_id: response.emote_set.map(|s| s.id),
+        emotes,
+        emote_set_id,
     })
 }

@@ -194,8 +194,17 @@ async fn handle_cmd(
             entry.requested.remove(&kind);
             if let Some(sub_id) = entry.sub_ids.remove(&kind) {
                 println!("[eventsub] unsubscribe kind={kind:?} broadcaster={broadcaster_id}");
-                if let Ok(token) = get_token(app).await {
-                    let _ = delete_subscription(helix, &token, &sub_id).await;
+                match get_token(app).await {
+                    Ok(token) => {
+                        if let Err(e) = delete_subscription(helix, &token, &sub_id).await {
+                            eprintln!(
+                                "[eventsub] failed to delete subscription {sub_id}, leaked remotely: {e}"
+                            );
+                        }
+                    }
+                    Err(e) => eprintln!(
+                        "[eventsub] no token to delete subscription {sub_id}, leaked remotely: {e}"
+                    ),
                 }
             }
             if entry.requested.is_empty() && entry.sub_ids.is_empty() {

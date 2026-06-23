@@ -39,7 +39,9 @@ export function createMentionsBadge(): void {
       try {
         const bytes = await renderBadgeBytes(count);
         await invoke("set_mentions_badge", { count, iconBytes: bytes });
-      } catch {}
+      } catch (e) {
+        console.error("failed to update mentions badge", e);
+      }
     })();
   });
 }

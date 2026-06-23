@@ -40,9 +40,9 @@ export type FeedMessage = {
   badges: MessageBadge[];
   reply?: FeedReply;
   timestamp: number;
-  channel_points?: boolean;
-  channel_points_custom_reward?: boolean;
-  channel_points_reward_title?: string;
+  channel_points?:
+    | { kind: "highlight" }
+    | { kind: "custom_reward"; title?: string };
   first_message?: boolean;
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;

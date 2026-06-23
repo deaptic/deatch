@@ -1,4 +1,3 @@
-use super::ids::UserId;
 use super::user::UserRef;
 use serde::Serialize;
 use twitch_api::helix::search::search_channels::Channel as HelixSearchChannel;
@@ -18,18 +17,11 @@ pub struct SearchChannel {
 impl From<HelixSearchChannel> for SearchChannel {
     fn from(c: HelixSearchChannel) -> Self {
         Self {
-            user: UserRef {
-                id: UserId(c.id.to_string()),
-                login: c.broadcaster_login.to_string(),
-                display_name: c.display_name.to_string(),
-            },
+            user: UserRef::new(c.id, c.broadcaster_login, c.display_name),
             game_name: c.game_name,
             title: c.title,
             is_live: c.is_live,
-            profile_image_url: c
-                .thumbnail_url
-                .replace("{width}", "300")
-                .replace("{height}", "300"),
+            profile_image_url: super::template::render_size(&c.thumbnail_url, 300, 300),
             started_at: c.started_at.map(|t| t.to_string()).unwrap_or_default(),
         }
     }
@@ -48,10 +40,7 @@ impl From<TwitchCategory> for Category {
         Self {
             id: c.id.to_string(),
             name: c.name,
-            box_art_url: c
-                .box_art_url
-                .replace("{width}", "285")
-                .replace("{height}", "380")
+            box_art_url: super::template::render_size(&c.box_art_url, 285, 380)
                 .replace("-52x72.", "-285x380."),
         }
     }

@@ -2,23 +2,22 @@ import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../lib/stores/emotes.ts";
 import type { Fragment } from "../../lib/types/index.ts";
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 const INLINE_EMOTE =
   "inline-block h-[1.4em] w-auto max-w-[4em] object-contain align-top mt-[0.1em] mx-0.5";
 
 const URL_RE = /^https?:\/\/\S+$/;
 
-type UserIdentity = { userId?: string; login?: string; displayName?: string };
-
 type Props = {
   frag: Fragment;
   emotes: EmoteMap;
-  onShowUserCard?: (
+  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
+  onUserContextMenu?: (
     x: number,
     y: number,
-    identity: { userId?: string; login?: string },
+    identity: Partial<UserRef>,
   ) => void;
-  onUserContextMenu?: (x: number, y: number, identity: UserIdentity) => void;
 };
 
 function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {

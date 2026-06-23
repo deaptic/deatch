@@ -5,9 +5,8 @@ import {
   restoreSession,
   revokeSession,
 } from "../api/twitch/auth.ts";
-import { Manager } from "./Manager.ts";
 
-export class SessionManager extends Manager {
+export class SessionManager {
   public async login(): Promise<void> {
     setDeviceCode(null);
     const code = await getDeviceCode();

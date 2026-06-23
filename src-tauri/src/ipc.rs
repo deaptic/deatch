@@ -16,6 +16,20 @@ fn writer_slot() -> &'static tokio::sync::Mutex<Option<HostWriter>> {
     HOST_WRITER.get_or_init(|| tokio::sync::Mutex::new(None))
 }
 
+pub async fn set_muted(channel: &str, muted: bool) -> std::io::Result<()> {
+    let line = serde_json::json!({
+        "type": "set_muted",
+        "channel": channel.to_lowercase(),
+        "muted": muted,
+    })
+    .to_string();
+    send_to_host(&line).await
+}
+
+pub async fn request_state() -> std::io::Result<()> {
+    send_to_host(r#"{"type":"get_state"}"#).await
+}
+
 pub async fn send_to_host(line: &str) -> std::io::Result<()> {
     use tokio::io::AsyncWriteExt;
     let mut slot = writer_slot().lock().await;

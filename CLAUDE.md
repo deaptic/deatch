@@ -1,0 +1,66 @@
+# Deatch
+
+Native Twitch chat client. Tauri 2 (Rust backend) + Solid.js / Vite / Tailwind 4 frontend. Windows-only.
+
+This file defines how the code *should* be structured. When code and this file disagree, fix the code.
+
+## Commands
+
+```powershell
+deno install            # frontend deps
+deno task tauri dev     # run app in dev
+deno task build         # vite build
+deno fmt                # format src/
+deno lint               # lint src/
+deno task release       # patch bump + commit + tag + push (also: minor | major | 1.2.3)
+```
+
+Run `deno fmt` and `deno lint` before every commit.
+
+## Guiding principles
+
+Two rules win every tie:
+
+- **DRY** — every piece of knowledge has one home. Extract logic, constants, and shapes the moment they would exist in two places.
+- **Clean Code** — small functions that do one thing, names that say what they mean, no dead code.
+
+Then:
+
+- **Make illegal states unrepresentable** — let the type system carry the rules. Reach for enums and discriminated unions over loose combinations of booleans and strings, so the compiler rejects states that should never exist.
+- **Errors are values — handle them or propagate them, never silently swallow.** Surface failures at the boundary. Ignoring an error is a deliberate, visible choice, not a default.
+- **YAGNI** — build for the need in front of you. Don't generalize on a single occurrence; abstraction earns its place on the third.
+- **Composition over inheritance** — prefer small pieces that combine. A base class has to earn its existence by carrying real shared behavior.
+- **Pure core, effects at the edge** — keep transformation and decision logic free of IO and global state; push side effects (network, storage, DOM, presence) to the boundary. Pure logic is easier to reason about and move.
+
+When unsure, optimize for the next reader.
+
+## Structure
+
+Group by feature, not by technical type. A change to one feature should touch one place.
+
+Keep the dependency flow one-directional: entry points call services, services call clients, clients talk to the outside world. Lower layers never reach back up.
+
+- **Backend** — handlers stay thin: parse input, call a service, return a result. Business logic and long-lived state live in services. Upstream clients are isolated from the rest of the app.
+- **Frontend** — components render; they reach the backend through a service or manager, never directly. Shared state, types, and lifecycles each live in their own layer.
+
+## Boundaries
+
+Map external shapes to your own types at the edge, once. Past the boundary, the app sees only its own types — never a third-party library's. Define each shape a single time and share it.
+
+When mapping an external shape would merely re-type a large external schema you don't control, let it pass through as-is and own the type definition on one side only. One home for the shape is the goal; a redundant copy is the thing to avoid.
+
+## Naming
+
+- Name a thing for what it is or does. Let success and failure ride the return type.
+- Keep names free of their surrounding context — the module or type already supplies it.
+- Choose one word per concept and use it everywhere.
+
+## Comments
+
+Make the code explain itself. Reserve comments for the non-obvious *why* — and prefer reshaping the code until even that is unnecessary.
+
+## Patterns
+
+- **Entities** wrap plain data and derive from it on read. Keep them free of caches and side effects; behavior that touches the outside world belongs in a service.
+- **Managers** are stateful singletons that own a feature's runtime lifecycle — the counterpart to stateless service modules. Their shape is a convention, not an inherited contract.
+- **State and rendering stay decoupled** — data lives independently of what is currently mounted on screen.

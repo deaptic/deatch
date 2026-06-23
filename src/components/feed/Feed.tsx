@@ -25,6 +25,7 @@ import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import FeedMessage from "./FeedMessage.tsx";
 import FeedEvent from "./FeedEvent.tsx";
 import FeedDivider from "./FeedDivider.tsx";
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 export type FeedApi = {
   scrollToBottom: () => void;
@@ -34,12 +35,6 @@ export type FeedApi = {
   moveSelection: (direction: 1 | -1) => void;
   clearSelection: () => void;
   getSelectedMessage: () => Message | null;
-};
-
-type UserIdentity = {
-  userId?: string;
-  login?: string;
-  displayName?: string;
 };
 
 type Props = {
@@ -56,12 +51,12 @@ type Props = {
   onReact?: (msg: Message, value: string) => void;
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
-  onShowUserCard?: (
+  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
+  onUserContextMenu?: (
     x: number,
     y: number,
-    identity: { userId?: string; login?: string },
+    identity: Partial<UserRef>,
   ) => void;
-  onUserContextMenu?: (x: number, y: number, identity: UserIdentity) => void;
   onEventContextMenu?: (x: number, y: number, item: EventItem) => void;
   header?: JSX.Element;
   footer?: JSX.Element;

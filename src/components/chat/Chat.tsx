@@ -45,9 +45,7 @@ import {
 import { createPopover } from "./createPopover.ts";
 import { createNicknameEditor } from "./createNicknameEditor.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-
-type Identity = { userId?: string; login?: string; displayName?: string };
-type ResolvedIdentity = { userId: string; login: string; displayName: string };
+import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   broadcasterId: string;
@@ -58,21 +56,17 @@ type Props = {
 };
 
 async function resolveIdentity(
-  identity: Identity,
-): Promise<ResolvedIdentity | null> {
-  const { userId, login, displayName } = identity;
-  if (userId && login && displayName) return { userId, login, displayName };
+  identity: Partial<UserRef>,
+): Promise<UserRef | null> {
+  const { id, login, displayName } = identity;
+  if (id && login && displayName) return { id, login, displayName };
   try {
-    const params = userId
-      ? { ids: [userId] }
-      : login
-      ? { logins: [login] }
-      : null;
+    const params = id ? { ids: [id] } : login ? { logins: [login] } : null;
     if (!params) return null;
     const users = await getUsers(params);
     const u = users[0];
     if (!u) return null;
-    return { userId: u.id, login: u.login, displayName: u.displayName };
+    return { id: u.id, login: u.login, displayName: u.displayName };
   } catch {
     return null;
   }
@@ -204,16 +198,24 @@ export default function Chat(props: Props) {
     feedApi()?.scrollToBottom();
   }
 
-  async function openUserCard(x: number, y: number, identity: Identity) {
-    const id = identity.userId ?? (await resolveIdentity(identity))?.userId;
+  async function openUserCard(
+    x: number,
+    y: number,
+    identity: Partial<UserRef>,
+  ) {
+    const id = identity.id ?? (await resolveIdentity(identity))?.id;
     if (id) userCard.open(x, y, { chatterId: id });
   }
 
-  async function openUserContextMenu(x: number, y: number, identity: Identity) {
+  async function openUserContextMenu(
+    x: number,
+    y: number,
+    identity: Partial<UserRef>,
+  ) {
     const r = await resolveIdentity(identity);
     if (r) {
       userMenu.open(x, y, {
-        userId: r.userId,
+        userId: r.id,
         userLogin: r.login,
         userDisplayName: r.displayName,
       });
@@ -388,8 +390,8 @@ export default function Chat(props: Props) {
             onClose={userCard.close}
             onJumpToMessage={props.onJumpToMessage}
             onSwitchUser={async (identity) => {
-              const id = identity.userId ??
-                (await resolveIdentity(identity))?.userId;
+              const id = identity.id ??
+                (await resolveIdentity(identity))?.id;
               if (id) userCard.update({ chatterId: id });
             }}
           />

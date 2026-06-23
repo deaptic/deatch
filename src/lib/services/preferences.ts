@@ -1,10 +1,6 @@
 import { getUsers, type User } from "../api/twitch/users.ts";
 import { addToast } from "../stores/toasts.ts";
-import {
-  feedUserMuted,
-  muteUser,
-  setUserNickname,
-} from "../stores/preferences.ts";
+import { setUserNickname } from "../stores/preferences.ts";
 
 export async function resolveUserByLogin(login: string): Promise<User | null> {
   const key = login.trim().toLowerCase();
@@ -21,13 +17,6 @@ export async function resolveUserByLogin(login: string): Promise<User | null> {
     addToast(String(e), "error");
     return null;
   }
-}
-
-export async function muteUserByLogin(login: string): Promise<User | null> {
-  const u = await resolveUserByLogin(login);
-  if (!u || feedUserMuted().includes(u.id)) return null;
-  muteUser(u.id);
-  return u;
 }
 
 export async function setUserNicknameByLogin(
