@@ -17,7 +17,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
-use twitch_api::helix::{Cursor, Response};
+use twitch_api::helix::{Cursor, CursorRef, Request, Response};
 use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
 
 pub struct TwitchState {
@@ -66,14 +66,18 @@ pub fn helix() -> twitch_api::HelixClient<'static, reqwest::Client> {
     twitch_api::HelixClient::new()
 }
 
-pub fn cursor(after: Option<String>) -> Option<Cow<'static, Cursor>> {
+pub fn cursor(after: Option<String>) -> Option<Cow<'static, CursorRef>> {
     after.map(|s| Cow::Owned(Cursor::from(s)))
 }
 
 pub fn into_paginated<R, U, T>(
     response: Response<R, Vec<U>>,
     map: impl FnMut(U) -> T,
-) -> PaginatedResponse<T> {
+) -> PaginatedResponse<T>
+where
+    R: Request,
+    U: serde::de::DeserializeOwned + PartialEq,
+{
     PaginatedResponse::new(
         response.data.into_iter().map(map).collect(),
         response.pagination.map(|c| c.as_str().to_string()),
