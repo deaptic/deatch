@@ -1,18 +1,13 @@
 # Deatch
 
-Twitch chat, done right. Multi-channel, native desktop, no browser tab tax.
+A native Twitch chat client for Windows.
 
-A native Twitch chat client built with Tauri.
-
-## Features
-
-- Multi-channel chat with a mentions inbox across all followed channels
-- Full 7TV, BetterTTV, and FrankerFaceZ emote support (channel and global)
-- Mod actions (ban, timeout, VIP, nickname) and per-user message history
-- Discord Rich Presence showing the streamer you're watching
-- Optional Firefox extension that links the app to your browser's active Twitch
-  tab
-- Signed auto-updates
+Deatch runs your Twitch chat outside the browser. Follow many channels at once,
+watch mentions across all of them from a single inbox, and moderate your own
+channel without a stack of open tabs. It renders the emotes chat actually uses —
+7TV, BetterTTV, and FrankerFaceZ, both global and per-channel — and stays out of
+the way while you watch, with Discord presence and an optional browser link for
+the Twitch tab you already have open.
 
 ## Install
 
