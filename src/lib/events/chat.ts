@@ -11,6 +11,8 @@ import { handleFollowageCommand } from "./followage.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import { triggerManager } from "../managers/TriggerManager.ts";
 
+const FOLLOWAGE_CHANNEL_ID = "1091892807";
+
 listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
   const raw = e.payload.event;
   const ts = Date.now();
@@ -26,6 +28,7 @@ listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
 
   if (
     user()?.id === "52679773" &&
+    raw.broadcaster_user_id === FOLLOWAGE_CHANNEL_ID &&
     raw.message.text.trim().toLowerCase() === "!followage" &&
     isModOfChannel(raw.broadcaster_user_id)
   ) {
