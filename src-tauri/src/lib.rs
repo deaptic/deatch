@@ -56,9 +56,9 @@ pub fn run() {
             services::external::seventv_events::spawn(app.handle().clone());
 
             if let Some(w) = tauri::Manager::get_webview_window(app, "main") {
-                if let Ok(icon) = tauri::image::Image::from_bytes(include_bytes!(
-                    "../icons/taskbar.png"
-                )) {
+                if let Ok(icon) =
+                    tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))
+                {
                     let _ = w.set_icon(icon);
                 }
             }

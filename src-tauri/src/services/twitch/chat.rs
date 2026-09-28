@@ -1,6 +1,6 @@
-use crate::dto::twitch::chat::{BadgeSet, Emote, SendMessageResult, UserEmote};
 use super::helix;
 use crate::dto::pagination::PaginatedResponse;
+use crate::dto::twitch::chat::{BadgeSet, Emote, SendMessageResult, UserEmote};
 use std::borrow::Cow;
 use twitch_api::helix::chat::{
     send_a_shoutout::SendAShoutoutRequest,
@@ -113,8 +113,7 @@ pub async fn send_chat_announcement(
     message: String,
     color: Option<String>,
 ) -> Result<(), String> {
-    let request =
-        SendChatAnnouncementRequest::new(broadcaster_id.as_str(), token.user_id.as_str());
+    let request = SendChatAnnouncementRequest::new(broadcaster_id.as_str(), token.user_id.as_str());
     let color = color.as_deref().unwrap_or("primary");
     let body = SendChatAnnouncementBody::new(message.as_str(), color)
         .map_err(|e| format!("invalid announcement color: {e}"))?;

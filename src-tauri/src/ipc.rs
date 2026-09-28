@@ -79,10 +79,7 @@ async fn run_server(app: tauri::AppHandle) -> std::io::Result<()> {
     }
 }
 
-async fn handle_connection(
-    app: tauri::AppHandle,
-    conn: interprocess::local_socket::tokio::Stream,
-) {
+async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_socket::tokio::Stream) {
     use tauri::Emitter;
     use tokio::io::AsyncBufReadExt;
 

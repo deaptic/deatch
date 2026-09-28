@@ -8,11 +8,11 @@ use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
 
 use twitch_api::twitch_oauth2::UserToken;
 
+use super::super::moderation::get_all_moderated_channels;
+use super::super::{cache_moderated_channel_ids, get_token, helix, TwitchState};
 use super::dispatch::handle_ws_message;
 use super::subscribe::{create_subscription, delete_subscription, emit_failed};
 use super::{EventKind, EventSubCmd, WS_URL};
-use super::super::moderation::get_all_moderated_channels;
-use super::super::{cache_moderated_channel_ids, get_token, helix, TwitchState};
 
 pub(super) struct ChannelSub {
     pub(super) is_mod: bool,
@@ -45,7 +45,10 @@ pub(super) async fn ensure_task(app: &tauri::AppHandle) -> Result<(), String> {
     match get_all_moderated_channels(&token).await {
         Ok(channels) => cache_moderated_channel_ids(app, &channels),
         Err(e) => {
-            let _ = app.emit("eventsub-error", format!("fetch moderated channels failed: {e}"));
+            let _ = app.emit(
+                "eventsub-error",
+                format!("fetch moderated channels failed: {e}"),
+            );
         }
     }
 
@@ -143,7 +146,10 @@ async fn handle_cmd(
     cmd: EventSubCmd,
 ) {
     match cmd {
-        EventSubCmd::Subscribe { broadcaster_id, kind } => {
+        EventSubCmd::Subscribe {
+            broadcaster_id,
+            kind,
+        } => {
             let token = match get_token(app).await {
                 Ok(t) => t,
                 Err(e) => {
@@ -152,11 +158,13 @@ async fn handle_cmd(
                 }
             };
 
-            let entry = subs.entry(broadcaster_id.clone()).or_insert_with(|| ChannelSub {
-                is_mod: is_mod_of(app, &token, &broadcaster_id),
-                requested: HashSet::new(),
-                sub_ids: HashMap::new(),
-            });
+            let entry = subs
+                .entry(broadcaster_id.clone())
+                .or_insert_with(|| ChannelSub {
+                    is_mod: is_mod_of(app, &token, &broadcaster_id),
+                    requested: HashSet::new(),
+                    sub_ids: HashMap::new(),
+                });
 
             if entry.requested.contains(&kind) {
                 return;
@@ -189,8 +197,13 @@ async fn handle_cmd(
                 }
             }
         }
-        EventSubCmd::Unsubscribe { broadcaster_id, kind } => {
-            let Some(entry) = subs.get_mut(&broadcaster_id) else { return };
+        EventSubCmd::Unsubscribe {
+            broadcaster_id,
+            kind,
+        } => {
+            let Some(entry) = subs.get_mut(&broadcaster_id) else {
+                return;
+            };
             entry.requested.remove(&kind);
             if let Some(sub_id) = entry.sub_ids.remove(&kind) {
                 println!("[eventsub] unsubscribe kind={kind:?} broadcaster={broadcaster_id}");

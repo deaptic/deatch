@@ -9,6 +9,8 @@ pub struct CreatedClip {
 
 impl From<HelixCreatedClip> for CreatedClip {
     fn from(c: HelixCreatedClip) -> Self {
-        Self { id: c.id.to_string() }
+        Self {
+            id: c.id.to_string(),
+        }
     }
 }

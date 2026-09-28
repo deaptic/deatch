@@ -1,6 +1,6 @@
-use crate::dto::twitch::channel::Follow;
 use super::helix;
 use crate::dto::pagination::PaginatedResponse;
+use crate::dto::twitch::channel::Follow;
 use std::borrow::Cow;
 use twitch_api::helix::channels::{
     get_followed_channels::GetFollowedChannels,

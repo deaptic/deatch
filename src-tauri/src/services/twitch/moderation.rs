@@ -1,7 +1,7 @@
-use crate::dto::twitch::moderation::{Ban, BannedUser};
-use crate::dto::twitch::user::UserRef;
 use super::helix;
 use crate::dto::pagination::PaginatedResponse;
+use crate::dto::twitch::moderation::{Ban, BannedUser};
+use crate::dto::twitch::user::UserRef;
 use std::borrow::Cow;
 use twitch_api::helix::moderation::{
     delete_chat_messages::DeleteChatMessagesRequest,
@@ -135,7 +135,7 @@ pub async fn get_all_moderated_channels(token: &UserToken) -> Result<Vec<UserRef
             .await
             .map_err(|e| e.to_string())?;
         all.extend(response.data.into_iter().map(UserRef::from));
-        match response.pagination {
+        match response.pagination_data.cursor {
             // Pace under Helix's ~13 req/sec budget so a long paginator
             // can't exhaust it; only paid when another page follows.
             Some(cursor) => {

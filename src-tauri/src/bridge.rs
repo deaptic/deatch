@@ -10,13 +10,11 @@ const EXTENSION_ID: &str = "deatch-link@deaptic.com";
 const MANIFEST_FILENAME: &str = "deatch-host.json";
 
 #[cfg(windows)]
-const FIREFOX_REGISTRY_KEY: &str =
-    r"Software\Mozilla\NativeMessagingHosts\com.deaptic.deatch";
+const FIREFOX_REGISTRY_KEY: &str = r"Software\Mozilla\NativeMessagingHosts\com.deaptic.deatch";
 
 fn manifest_dir() -> io::Result<PathBuf> {
-    let local = std::env::var("LOCALAPPDATA").map_err(|_| {
-        io::Error::new(io::ErrorKind::NotFound, "LOCALAPPDATA env var not set")
-    })?;
+    let local = std::env::var("LOCALAPPDATA")
+        .map_err(|_| io::Error::new(io::ErrorKind::NotFound, "LOCALAPPDATA env var not set"))?;
     let dir = PathBuf::from(local).join("Deatch");
     fs::create_dir_all(&dir)?;
     Ok(dir)

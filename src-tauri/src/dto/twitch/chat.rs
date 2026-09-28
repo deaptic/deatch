@@ -2,8 +2,8 @@ use super::ids::UserId;
 use serde::Serialize;
 use twitch_api::helix::chat::{
     send_chat_message::{ChatMessageDropCode, SendChatMessageResponse},
-    BadgeSet as HelixBadgeSet,
-    ChatBadge as HelixChatBadge, GlobalEmote, UserEmote as HelixUserEmote,
+    BadgeSet as HelixBadgeSet, ChatBadge as HelixChatBadge, GlobalEmote,
+    UserEmote as HelixUserEmote,
 };
 
 fn emote_url(id: &str) -> String {

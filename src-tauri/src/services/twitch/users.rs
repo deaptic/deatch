@@ -1,5 +1,5 @@
-use crate::dto::twitch::user::User;
 use super::helix;
+use crate::dto::twitch::user::User;
 use twitch_api::helix::users::GetUsersRequest;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{UserId, UserName};

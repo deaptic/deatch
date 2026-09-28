@@ -1,7 +1,7 @@
+use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::chat::{BadgeSet, Emote, SendMessageResult, UserEmote};
 use crate::services;
 use crate::services::twitch::chat::ChatSettings;
-use crate::dto::pagination::PaginatedResponse;
 use crate::services::twitch::get_token;
 use serde::Deserialize;
 
