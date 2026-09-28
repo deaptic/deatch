@@ -15,7 +15,9 @@ pub fn set_mentions_badge(
             ),
             _ => None,
         };
-        window.set_overlay_icon(overlay).map_err(|e| e.to_string())?;
+        window
+            .set_overlay_icon(overlay)
+            .map_err(|e| e.to_string())?;
     }
     #[cfg(not(target_os = "windows"))]
     {

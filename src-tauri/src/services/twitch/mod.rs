@@ -17,7 +17,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
-use twitch_api::helix::{Cursor, CursorRef, Request, Response};
+use twitch_api::helix::{Cursor, CursorRef, Paginated, Response};
 use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
 
 pub struct TwitchState {
@@ -75,17 +75,22 @@ pub fn into_paginated<R, U, T>(
     map: impl FnMut(U) -> T,
 ) -> PaginatedResponse<T>
 where
-    R: Request,
+    R: Paginated,
     U: serde::de::DeserializeOwned + PartialEq,
 {
     PaginatedResponse::new(
         response.data.into_iter().map(map).collect(),
-        response.pagination.map(|c| c.as_str().to_string()),
+        response
+            .pagination_data
+            .cursor
+            .map(|c| c.as_str().to_string()),
     )
 }
 
 pub fn cache_moderated_channel_ids(app: &tauri::AppHandle, channels: &[UserRef]) {
     let ids: HashSet<String> = channels.iter().map(|ch| ch.id.0.clone()).collect();
-    *app.state::<TwitchState>().moderated_channel_ids.lock().unwrap() = ids;
+    *app.state::<TwitchState>()
+        .moderated_channel_ids
+        .lock()
+        .unwrap() = ids;
 }
-

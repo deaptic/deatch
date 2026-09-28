@@ -8,8 +8,7 @@ pub async fn start_raid(
     from_broadcaster_id: String,
     to_broadcaster_id: String,
 ) -> Result<(), String> {
-    let request =
-        StartARaidRequest::new(from_broadcaster_id.as_str(), to_broadcaster_id.as_str());
+    let request = StartARaidRequest::new(from_broadcaster_id.as_str(), to_broadcaster_id.as_str());
     helix()
         .req_post(request, EmptyBody, token)
         .await

@@ -1,8 +1,8 @@
+use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::stream::Stream;
 use crate::services;
-use crate::services::twitch::streams::Filters;
-use crate::dto::pagination::PaginatedResponse;
 use crate::services::twitch::get_token;
+use crate::services::twitch::streams::Filters;
 use serde::Deserialize;
 
 #[derive(Default, Deserialize)]
@@ -29,7 +29,14 @@ pub async fn get_streams(
         game_ids: params.game_ids,
         language: params.language,
     };
-    services::twitch::streams::get_streams(&token, filters, params.first, params.after, params.before).await
+    services::twitch::streams::get_streams(
+        &token,
+        filters,
+        params.first,
+        params.after,
+        params.before,
+    )
+    .await
 }
 
 #[derive(Default, Deserialize)]

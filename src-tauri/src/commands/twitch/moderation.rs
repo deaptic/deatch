@@ -1,7 +1,7 @@
+use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::moderation::{Ban, BannedUser};
 use crate::dto::twitch::user::UserRef;
 use crate::services;
-use crate::dto::pagination::PaginatedResponse;
 use crate::services::twitch::get_token;
 use serde::Deserialize;
 

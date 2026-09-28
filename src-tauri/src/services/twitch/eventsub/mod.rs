@@ -47,8 +47,14 @@ impl EventKind {
 }
 
 pub enum EventSubCmd {
-    Subscribe { broadcaster_id: String, kind: EventKind },
-    Unsubscribe { broadcaster_id: String, kind: EventKind },
+    Subscribe {
+        broadcaster_id: String,
+        kind: EventKind,
+    },
+    Unsubscribe {
+        broadcaster_id: String,
+        kind: EventKind,
+    },
 }
 
 pub async fn subscribe(
@@ -57,7 +63,13 @@ pub async fn subscribe(
     kind: EventKind,
 ) -> Result<(), String> {
     runner::ensure_task(app).await?;
-    send_cmd(app, EventSubCmd::Subscribe { broadcaster_id, kind })
+    send_cmd(
+        app,
+        EventSubCmd::Subscribe {
+            broadcaster_id,
+            kind,
+        },
+    )
 }
 
 pub async fn unsubscribe(
@@ -65,7 +77,13 @@ pub async fn unsubscribe(
     broadcaster_id: String,
     kind: EventKind,
 ) -> Result<(), String> {
-    send_cmd(app, EventSubCmd::Unsubscribe { broadcaster_id, kind })
+    send_cmd(
+        app,
+        EventSubCmd::Unsubscribe {
+            broadcaster_id,
+            kind,
+        },
+    )
 }
 
 fn send_cmd(app: &tauri::AppHandle, cmd: EventSubCmd) -> Result<(), String> {

@@ -1,6 +1,6 @@
+use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::channel::Follow;
 use crate::services;
-use crate::dto::pagination::PaginatedResponse;
 use crate::services::twitch::get_token;
 use serde::Deserialize;
 
@@ -43,7 +43,8 @@ pub async fn get_followed_channels(
     params: GetFollowedChannelsParams,
 ) -> Result<Vec<Follow>, String> {
     let token = get_token(&app).await?;
-    services::twitch::channels::get_followed_channels(&token, params.user_id, params.broadcaster_id).await
+    services::twitch::channels::get_followed_channels(&token, params.user_id, params.broadcaster_id)
+        .await
 }
 
 #[derive(Default, Deserialize)]

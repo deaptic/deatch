@@ -1,6 +1,6 @@
-use crate::dto::twitch::stream::Stream;
 use super::helix;
 use crate::dto::pagination::PaginatedResponse;
+use crate::dto::twitch::stream::Stream;
 use std::borrow::Cow;
 use twitch_api::helix::streams::{
     create_stream_marker::{CreateStreamMarkerBody, CreateStreamMarkerRequest},
@@ -71,10 +71,8 @@ pub async fn create_stream_marker(
     description: Option<String>,
 ) -> Result<(), String> {
     let request = CreateStreamMarkerRequest::new();
-    let body = CreateStreamMarkerBody::new(
-        token.user_id.as_str(),
-        description.as_deref().unwrap_or(""),
-    );
+    let body =
+        CreateStreamMarkerBody::new(token.user_id.as_str(), description.as_deref().unwrap_or(""));
     helix()
         .req_post(request, body, token)
         .await

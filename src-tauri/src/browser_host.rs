@@ -91,11 +91,7 @@ fn spawn_reader_pump(
     });
 }
 
-fn connection_manager(
-    rx: mpsc::Receiver<String>,
-    stdout_lock: Arc<Mutex<()>>,
-    log_path: PathBuf,
-) {
+fn connection_manager(rx: mpsc::Receiver<String>, stdout_lock: Arc<Mutex<()>>, log_path: PathBuf) {
     let mut log = OpenOptions::new()
         .create(true)
         .append(true)
@@ -191,8 +187,7 @@ pub fn run() {
                 break;
             }
         };
-        let len =
-            u32::from_le_bytes([len_buf[0], len_buf[1], len_buf[2], len_buf[3]]) as usize;
+        let len = u32::from_le_bytes([len_buf[0], len_buf[1], len_buf[2], len_buf[3]]) as usize;
         if len == 0 || len > MAX_MESSAGE_SIZE {
             let _ = writeln!(log, "{} bad message length: {len}", timestamp_ms());
             break;

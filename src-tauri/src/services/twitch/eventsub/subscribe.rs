@@ -28,7 +28,13 @@ pub(super) async fn create_subscription(
 
     let result = match kind {
         EventKind::ChannelChatMessage => {
-            create(helix, token, ChannelChatMessageV1::new(broadcaster_id, user_id), transport).await
+            create(
+                helix,
+                token,
+                ChannelChatMessageV1::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
         }
         EventKind::ChannelChatNotification => {
             create(
@@ -49,7 +55,13 @@ pub(super) async fn create_subscription(
             .await
         }
         EventKind::ChannelChatClear => {
-            create(helix, token, ChannelChatClearV1::new(broadcaster_id, user_id), transport).await
+            create(
+                helix,
+                token,
+                ChannelChatClearV1::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
         }
         EventKind::ChannelChatClearUserMessages => {
             create(
@@ -70,10 +82,22 @@ pub(super) async fn create_subscription(
             .await
         }
         EventKind::ChannelFollow => {
-            create(helix, token, ChannelFollowV2::new(broadcaster_id, user_id), transport).await
+            create(
+                helix,
+                token,
+                ChannelFollowV2::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
         }
         EventKind::ChannelModerate => {
-            create(helix, token, ChannelModerateV2::new(broadcaster_id, user_id), transport).await
+            create(
+                helix,
+                token,
+                ChannelModerateV2::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
         }
         EventKind::AutomodMessageHold => {
             create(
@@ -127,7 +151,9 @@ pub(super) fn emit_failed(
     error: impl Into<String>,
 ) {
     let error = error.into();
-    println!("[eventsub] subscribe-failed kind={kind:?} broadcaster={broadcaster_id} error={error}");
+    println!(
+        "[eventsub] subscribe-failed kind={kind:?} broadcaster={broadcaster_id} error={error}"
+    );
     let _ = app.emit(
         "eventsub-subscribe-failed",
         serde_json::json!({

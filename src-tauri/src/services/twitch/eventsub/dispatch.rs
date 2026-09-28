@@ -4,11 +4,11 @@ use futures_util::StreamExt;
 use tauri::Emitter;
 use twitch_api::eventsub::{Event, EventsubWebsocketData};
 
+use super::super::get_token;
 use super::runner::ChannelSub;
 use super::subscribe::create_subscription;
 use super::EventKind;
 use crate::dto::twitch::eventsub::EventEnvelope;
-use super::super::get_token;
 
 /// Forwards an EventSub notification to the frontend wrapped in
 /// `EventEnvelope { timestamp, event }` if the broadcaster is one we care
@@ -42,7 +42,9 @@ pub(super) async fn handle_ws_message(
             resubscribe_pending(app, helix, subs, &sid).await?;
             Ok(None)
         }
-        EventsubWebsocketData::Notification { payload, metadata, .. } => {
+        EventsubWebsocketData::Notification {
+            payload, metadata, ..
+        } => {
             dispatch_notification(app, subs, payload, &metadata.message_timestamp.to_string());
             Ok(None)
         }
@@ -61,16 +63,28 @@ fn dispatch_notification(
 ) {
     match payload {
         Event::ChannelChatMessageV1(n) => forward!(app, subs, n, "channel-chat-message", timestamp),
-        Event::ChannelChatNotificationV1(n) => forward!(app, subs, n, "channel-chat-notification", timestamp),
-        Event::ChannelChatMessageDeleteV1(n) => forward!(app, subs, n, "channel-chat-message-delete", timestamp),
+        Event::ChannelChatNotificationV1(n) => {
+            forward!(app, subs, n, "channel-chat-notification", timestamp)
+        }
+        Event::ChannelChatMessageDeleteV1(n) => {
+            forward!(app, subs, n, "channel-chat-message-delete", timestamp)
+        }
         Event::ChannelChatClearV1(n) => forward!(app, subs, n, "channel-chat-clear", timestamp),
-        Event::ChannelChatClearUserMessagesV1(n) => forward!(app, subs, n, "channel-chat-clear-user-messages", timestamp),
-        Event::ChannelShoutoutCreateV1(n) => forward!(app, subs, n, "channel-shoutout-create", timestamp),
+        Event::ChannelChatClearUserMessagesV1(n) => {
+            forward!(app, subs, n, "channel-chat-clear-user-messages", timestamp)
+        }
+        Event::ChannelShoutoutCreateV1(n) => {
+            forward!(app, subs, n, "channel-shoutout-create", timestamp)
+        }
         Event::ChannelFollowV2(n) => forward!(app, subs, n, "channel-follow", timestamp),
         Event::ChannelModerateV2(n) => forward!(app, subs, n, "channel-moderate", timestamp),
         Event::AutomodMessageHoldV2(n) => forward!(app, subs, n, "automod-message-hold", timestamp),
-        Event::AutomodMessageUpdateV2(n) => forward!(app, subs, n, "automod-message-update", timestamp),
-        Event::ChannelPointsCustomRewardRedemptionAddV1(n) => forward!(app, subs, n, "channel-points-redemption-add", timestamp),
+        Event::AutomodMessageUpdateV2(n) => {
+            forward!(app, subs, n, "automod-message-update", timestamp)
+        }
+        Event::ChannelPointsCustomRewardRedemptionAddV1(n) => {
+            forward!(app, subs, n, "channel-points-redemption-add", timestamp)
+        }
         _ => {}
     }
 }
@@ -149,7 +163,9 @@ fn forward_unparsed(
     parse_err: impl std::fmt::Display,
 ) -> Result<Option<String>, String> {
     if let Ok(value) = serde_json::from_str::<serde_json::Value>(text) {
-        let sub_type = value.pointer("/metadata/subscription_type").and_then(|v| v.as_str());
+        let sub_type = value
+            .pointer("/metadata/subscription_type")
+            .and_then(|v| v.as_str());
         let evt = value.pointer("/payload/event");
         let timestamp = value
             .pointer("/metadata/message_timestamp")
