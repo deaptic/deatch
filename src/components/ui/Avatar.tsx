@@ -19,11 +19,11 @@ const PRESENCE: Record<Presence, { dot: string; label: string }> = {
 };
 
 const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
-  24: { box: "size-6 text-micro", dot: "size-2" },
-  32: { box: "size-8 text-small", dot: "size-2.5" },
-  36: { box: "size-9 text-small", dot: "size-3" },
-  40: { box: "size-10 text-body", dot: "size-3.5" },
-  64: { box: "size-16 text-heading", dot: "size-4" },
+  24: { box: "size-6 text-micro", dot: "size-1.5" },
+  32: { box: "size-8 text-small", dot: "size-2" },
+  36: { box: "size-9 text-small", dot: "size-2.5" },
+  40: { box: "size-10 text-body", dot: "size-2.5" },
+  64: { box: "size-16 text-heading", dot: "size-3" },
 };
 
 export default function Avatar(props: Props) {

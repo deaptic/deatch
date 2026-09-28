@@ -340,7 +340,7 @@ they live in the title bar.
 ```
 ▎ (avatar)●          ▎  selection bar: 4px wide, full row height, `ink`, round ends, left edge
    40px   ◦          ●  mention badge: negative fill, micro 700, top-right, 2px surface ring
-                     ◦  presence dot: 14px circle on the avatar's bottom-right edge, 2px surface ring.
+                     ◦  presence dot: 10px circle on the avatar's bottom-right edge, 2px surface ring.
                         `live` when streaming, `positive` when the person is online in Deatch, `ink-faint` when neither.
 ```
 
@@ -355,7 +355,7 @@ they live in the title bar.
 | Mentioned           |                     | badge with count, single bounce on arrival         |
 | Dragging (reorder)  |                     | 40% opacity; drop line 2px `accent` between rows   |
 | Viewing, not pinned |                     | dashed 2px `line` ring; pin via the context menu   |
-| Watch, muted        |                     | small `negative` mute badge, top-right             |
+| Watch, muted        |                     | 16px `negative` mute badge, top-right, 2px ring    |
 
 Tool tiles (Explore, "+", Watch) are 40px `round` tiles on `raised` with a 20px
 `ink-soft` icon. Hover: `overlay` tone, `ink`. Active: `accent-soft` with
