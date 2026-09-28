@@ -15,7 +15,7 @@ export function emojiUrl(emoji: string): string {
     const cp = char.codePointAt(0);
     if (cp !== undefined && cp !== 0xfe0f) points.push(cp.toString(16));
   }
-  return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${
+  return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/${
     points.join("-")
   }.png`;
 }
