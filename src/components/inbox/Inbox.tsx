@@ -1,7 +1,8 @@
 import { AtSign } from "lucide-solid";
-import { For, Show } from "solid-js";
+import { createEffect, For, Show } from "solid-js";
 import InboxItem from "./InboxItem.tsx";
 import { markAllMentionsRead, mentions } from "../../lib/stores/inbox.ts";
+import { getUsers } from "../../lib/api/twitch/users.ts";
 import Button from "../ui/Button.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import Popover from "../ui/Popover.tsx";
@@ -14,6 +15,11 @@ type Props = {
 };
 
 export default function Inbox(props: Props) {
+  createEffect(() => {
+    const ids = [...new Set(mentions().map((m) => m.chatterId))];
+    if (ids.length) getUsers({ ids }).catch(() => {});
+  });
+
   return (
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div class="w-120 max-w-full max-h-160 flex flex-col">
