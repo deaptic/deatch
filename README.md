@@ -2,12 +2,31 @@
 
 A native Twitch chat client for Windows.
 
-Deatch runs your Twitch chat outside the browser. Follow many channels at once,
-watch mentions across all of them from a single inbox, and moderate your own
-channel without a stack of open tabs. It renders the emotes chat actually uses —
-7TV, BetterTTV, and FrankerFaceZ, both global and per-channel — and stays out of
-the way while you watch, with Discord presence and an optional browser link for
-the Twitch tab you already have open.
+Deatch runs your Twitch chat outside the browser. Keep every channel you care
+about one keystroke away, catch mentions from all of them in a single inbox, and
+moderate without a stack of open tabs.
+
+## Features
+
+- **Channel rail.** Pinned channels, live follows, and whatever you're currently
+  viewing, as avatars with presence dots. `Ctrl+B` expands it into a full
+  roster. `Ctrl+K` fuzzy-switches between channels.
+- **Inbox.** Mentions and keyword hits from every channel in one list. Click one
+  to jump to the message in its channel.
+- **Moderation.** Ban, timeout, warn, purge, delete, VIP, chat modes, and
+  AutoMod approve/deny from the user card, the message context menu, or slash
+  commands with autocomplete. Held messages are marked in the feed.
+- **Chat.** Replies, reply-by-`Tab` to recent mentions, username and emote
+  completion, message history recall, keyboard message selection, clip and
+  marker creation, raids and shoutouts.
+- **Watch.** Pair with the
+  [Deatch Link](https://github.com/Deaptic/deatch/tree/main/extension) Firefox
+  extension and the app follows the Twitch tab you have open, with per-tab mute
+  from inside Deatch.
+- **Explore.** Live followed channels and search, without leaving the app.
+- **Appearance.** Dark and light themes, one accent colour of your choosing,
+  adjustable chat size. Flat, warm, no clutter.
+- **Extras.** Discord rich presence, always-on-top, autostart, silent updates.
 
 ## Install
 
@@ -25,7 +44,14 @@ Tauri prerequisites for your platform.
 ```powershell
 deno install            # frontend deps
 deno task tauri dev     # run the app in dev mode
+deno task build         # vite build
+deno fmt                # format src/
+deno lint               # lint src/
+deno task lint:ui       # design-system lint (@shadcn/lint via oxlint)
 ```
+
+`docs/design-system.md` is the source of truth for how the UI looks and behaves.
+`CLAUDE.md` describes how the code is structured.
 
 ### Releasing
 
