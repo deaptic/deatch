@@ -887,7 +887,7 @@ dependencies = [
 
 [[package]]
 name = "deatch"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "apple-native-keyring-store",
  "dbus-secret-service-keyring-store",
