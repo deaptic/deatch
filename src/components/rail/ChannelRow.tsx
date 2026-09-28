@@ -86,14 +86,14 @@ export default function ChannelRow(props: Props) {
               props.onToggleMute!();
             }}
             onMouseDown={(e) => e.stopPropagation()}
-            class={`absolute -top-1 -right-1 size-4.5 rounded-full ring-2 ring-surface grid place-items-center cursor-pointer transition-colors duration-snap ${
+            class={`absolute -top-0.5 -right-0.5 size-4 rounded-full ring-2 ring-surface grid place-items-center cursor-pointer transition-colors duration-snap ${
               props.muted
                 ? "bg-negative text-on-accent"
                 : "bg-raised text-ink hover:bg-overlay"
             }`}
           >
-            <Show when={props.muted} fallback={<Volume2 class="size-2.5" />}>
-              <VolumeOff class="size-2.5" />
+            <Show when={props.muted} fallback={<Volume2 class="size-2" />}>
+              <VolumeOff class="size-2" />
             </Show>
           </button>
         </Show>

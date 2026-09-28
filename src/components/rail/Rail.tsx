@@ -422,6 +422,8 @@ export default function Rail(props: Props) {
                     <ChannelRow
                       ch={ch}
                       selected={selectedId() === ch?.id}
+                      unread={hasUnread(ch?.id)}
+                      mentions={channelMentionCount(ch?.id)}
                       muted={watchMutedByLogin()[ch?.login] === true}
                       onToggleMute={() =>
                         void watchSetMuted(

@@ -38,6 +38,14 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
                     e.preventDefault();
                     openUrl(token);
                   }}
+                  onAuxClick={(e) => {
+                    if (e.button !== 1) return;
+                    e.preventDefault();
+                    openUrl(token);
+                  }}
+                  onMouseDown={(e) => {
+                    if (e.button === 1) e.preventDefault();
+                  }}
                   class="text-accent-ink hover:underline break-all"
                 >
                   {token}
