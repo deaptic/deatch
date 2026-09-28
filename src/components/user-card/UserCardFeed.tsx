@@ -25,8 +25,8 @@ export default function UserCardFeed(props: Props) {
     <Show
       when={messages().length > 0}
       fallback={
-        <div class="flex-1 min-h-0 flex items-center justify-center text-text-muted text-sm p-3 text-center">
-          No messages from this user in this channel yet.
+        <div class="flex-1 min-h-0 flex items-center justify-center text-ink-soft text-body p-4 text-center">
+          Nothing from them in this channel yet.
         </div>
       }
     >
@@ -40,7 +40,7 @@ export default function UserCardFeed(props: Props) {
         showDivider={false}
         onJumpToMessage={props.onJumpToMessage}
         onShowUserCard={props.onShowUserCard}
-        scrollClass="p-1 text-base"
+        scrollClass="px-2 py-1 text-sm"
       />
     </Show>
   );

@@ -1,5 +1,6 @@
 import { createStore, unwrap } from "solid-js/store";
 import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
+import { type Theme, THEMES } from "../../services/appearance.ts";
 import defaults from "../default-preferences.json" with { type: "json" };
 import { addToast } from "../toasts.ts";
 
@@ -62,7 +63,9 @@ export type UserPreferences = {
     discordRichPresence: boolean;
   };
   appearance: {
-    colors: Record<string, string>;
+    theme: Theme;
+    accent: string | null;
+    railExpanded: boolean;
   };
   menu: {
     channels: {
@@ -74,16 +77,18 @@ export type UserPreferences = {
 
 const DEFAULT_PREFERENCES = defaults as UserPreferences;
 
-function sanitizeAppearanceColors(raw: unknown): Record<string, string> {
-  if (!raw || typeof raw !== "object") return {};
-  const out: Record<string, string> = {};
-  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (typeof value !== "string") continue;
-    const trimmed = value.trim();
-    if (!trimmed) continue;
-    out[key] = trimmed;
-  }
-  return out;
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+
+function sanitizeHex(raw: unknown): string | null {
+  return typeof raw === "string" && HEX_COLOR.test(raw.trim())
+    ? raw.trim().toLowerCase()
+    : null;
+}
+
+function sanitizeTheme(raw: unknown): Theme {
+  return THEMES.includes(raw as Theme)
+    ? (raw as Theme)
+    : DEFAULT_PREFERENCES.appearance.theme;
 }
 
 function sanitizeNicknames(raw: unknown): Record<string, string> {
@@ -185,7 +190,10 @@ function load(): UserPreferences {
           DEFAULT_PREFERENCES.advanced.discordRichPresence,
       },
       appearance: {
-        colors: sanitizeAppearanceColors(stored.appearance?.colors),
+        theme: sanitizeTheme(stored.appearance?.theme),
+        accent: sanitizeHex(stored.appearance?.accent),
+        railExpanded: stored.appearance?.railExpanded ??
+          DEFAULT_PREFERENCES.appearance.railExpanded,
       },
       menu: {
         channels: { pinned },

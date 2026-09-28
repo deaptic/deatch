@@ -10,6 +10,7 @@ import {
   user as currentUser,
 } from "../../lib/stores/users.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import Avatar from "../ui/Avatar.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta from "./UserCardMeta.tsx";
 
@@ -69,20 +70,24 @@ export default function UserCardHeader(props: Props) {
 
   return (
     <div
-      class="flex gap-3 p-3 border-b border-border-muted cursor-move select-none"
+      class="flex gap-3.5 p-4 border-b border-line-soft cursor-move select-none"
       onMouseDown={props.onStartDrag}
     >
-      <img
-        src={user()?.profileImageUrl || ""}
-        alt={user()?.displayName ?? ""}
+      <button
+        type="button"
         title="Open channel on Twitch"
-        class="size-20 shrink-0 self-start rounded-lg bg-bg-light cursor-pointer object-cover"
-        loading="lazy"
-        decoding="async"
+        class="shrink-0 self-start rounded-full cursor-pointer"
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={() =>
           user()?.login && openUrl(`https://twitch.tv/${user()!.login}`)}
-      />
-      <div class="flex-1 min-w-0 flex flex-col gap-1">
+      >
+        <Avatar
+          src={user()?.profileImageUrl}
+          alt={user()?.displayName ?? ""}
+          size={64}
+        />
+      </button>
+      <div class="flex-1 min-w-0 flex flex-col gap-2">
         <UserCardIdentity
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}

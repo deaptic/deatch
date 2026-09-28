@@ -1,9 +1,12 @@
 import { onCleanup, onMount } from "solid-js";
 import { shortcutManager } from "../managers/ShortcutManager.ts";
-import { openPanel, setOpenPanel, togglePanel } from "../stores/ui.ts";
+import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
+import { showExplore, toggleSettings } from "../stores/view.ts";
 import {
   advancedAlwaysOnTop,
+  appearanceRailExpanded,
   setAdvancedAlwaysOnTop,
+  setAppearanceRailExpanded,
 } from "../stores/preferences.ts";
 import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
@@ -30,19 +33,28 @@ export function createAppShortcuts(
         "watch::toggleMuteAll",
         watch.toggleMuteAllWatched,
       ),
+      shortcutManager.register("settings::toggle", toggleSettings),
+      shortcutManager.register("explore::show", showExplore),
       shortcutManager.register(
-        "settings::toggle",
-        () => togglePanel("settings"),
+        "rail::toggle",
+        () => setAppearanceRailExpanded(!appearanceRailExpanded()),
       ),
-      shortcutManager.register("inbox::toggle", () => togglePanel("inbox")),
-      shortcutManager.register("account::toggle", () => togglePanel("account")),
+      shortcutManager.register("inbox::toggle", () => toggleOverlay("inbox")),
+      shortcutManager.register(
+        "quickSwitch::toggle",
+        () => toggleOverlay("quickSwitch"),
+      ),
+      shortcutManager.register(
+        "account::toggle",
+        () => toggleOverlay("account"),
+      ),
       shortcutManager.register(
         "emotePicker::toggle",
-        () => togglePanel("emotePicker"),
+        () => toggleOverlay("emotePicker"),
       ),
       shortcutManager.register("panel::close", () => {
-        if (!openPanel()) return false;
-        setOpenPanel(null);
+        if (!openOverlay()) return false;
+        closeOverlay();
       }),
       shortcutManager.register("view::toggleAlwaysOnTop", () => {
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());

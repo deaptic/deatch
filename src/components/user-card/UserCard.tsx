@@ -102,12 +102,14 @@ export default function UserCard(props: Props) {
     <Portal>
       <div
         ref={cardRef}
-        class="fixed z-50 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-hidden flex flex-col size-96 min-w-72 min-h-64 resize"
+        role="dialog"
+        aria-label="User card"
+        class="fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col size-96 min-w-72 min-h-64 resize transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
         style={{
-          top: `${pos().y}px`,
-          left: `${pos().x}px`,
-          "max-width": `calc(100vw - ${pos().x}px - ${PAD}px)`,
-          "max-height": `calc(100vh - ${pos().y}px - ${PAD}px)`,
+          "--x": `${pos().x}px`,
+          "--y": `${pos().y}px`,
+          "--max-w": `calc(100vw - ${pos().x}px - ${PAD}px)`,
+          "--max-h": `calc(100vh - ${pos().y}px - ${PAD}px)`,
         }}
       >
         <UserCardHeader

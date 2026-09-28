@@ -2,9 +2,8 @@ import { createMemo, createRoot, createSignal } from "solid-js";
 import type { User } from "../types/twitch/user.ts";
 import { createDebounced } from "../primitives/createDebounced.ts";
 
-// The single source of truth for what the app is showing: the Explore page or
-// a specific channel.
-export type ActiveView = "explore" | User;
+// The single source of truth for what the app is showing: a page or a channel.
+export type ActiveView = "explore" | "settings" | User;
 
 const [activeView, setActiveView] = createSignal<ActiveView>("explore");
 export { activeView };
@@ -15,7 +14,7 @@ const sameId = (a: User | null, b: User | null) =>
 export const pendingChannel = createMemo<User | null>(
   () => {
     const v = activeView();
-    return v === "explore" ? null : v;
+    return typeof v === "string" ? null : v;
   },
   null,
   { equals: sameId },
@@ -29,6 +28,10 @@ export const selectedChannel: () => User | null = createRoot(() =>
   })
 );
 
+export const isSettingsOpen = () => activeView() === "settings";
+
+let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
+
 export function showExplore() {
   setActiveView("explore");
   setWatchMode(null);
@@ -36,6 +39,16 @@ export function showExplore() {
 
 export function setSelectedChannel(channel: User) {
   setActiveView(channel);
+}
+
+export function toggleSettings() {
+  const v = activeView();
+  if (v === "settings") {
+    setActiveView(beforeSettings);
+    return;
+  }
+  beforeSettings = v;
+  setActiveView("settings");
 }
 
 // null: not watching. "auto": mirror whatever the browser tab is watching.

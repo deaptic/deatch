@@ -46,7 +46,16 @@ type Props = {
   ) => void;
 };
 
-const HOLD_COLOR = "var(--color-warning)";
+type Treatment = "held" | "mention" | "redemption" | "first" | "plain";
+
+const TREATMENTS: Record<Treatment, string> = {
+  held: "border-caution bg-caution/12 hover:bg-caution/16",
+  mention: "border-accent bg-accent-soft hover:bg-accent/18",
+  redemption:
+    "border-event-channel-points bg-event-channel-points/10 hover:bg-event-channel-points/14",
+  first: "border-line bg-surface hover:bg-raised",
+  plain: "border-transparent hover:bg-surface",
+};
 
 export default function FeedMessage(props: Props) {
   const hold = () => props.item.automod_hold;
@@ -100,6 +109,17 @@ export default function FeedMessage(props: Props) {
     return matchesAnyKeyword(text, kws);
   };
 
+  const treatment = (): Treatment =>
+    hold()
+      ? "held"
+      : mentioned()
+      ? "mention"
+      : props.item.channel_points
+      ? "redemption"
+      : props.item.first_message
+      ? "first"
+      : "plain";
+
   const visibleFragments = () => {
     const item = props.item;
     if (!item.reply) return item.fragments;
@@ -123,26 +143,13 @@ export default function FeedMessage(props: Props) {
     <div
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
-      class={`relative group leading-[1.6] pl-2 pr-3 py-1 -mx-2 border-l-4 border-transparent rounded-r-md hover:bg-bg ${
-        props.selected ? "ring-2 ring-primary bg-primary/25! " : ""
-      }${props.item.deleted || holdResolved() ? "opacity-50 " : ""}${
-        hold()
-          ? ""
-          : mentioned()
-          ? "bg-primary/10 border-primary! hover:bg-primary/15"
-          : props.item.channel_points
-          ? "bg-event-channel-points/10 border-event-channel-points! hover:bg-event-channel-points/15"
-          : props.item.first_message
-          ? "bg-border/25 border-highlight! hover:bg-border/40"
+      class={`relative group leading-normal pl-3 pr-2 py-1 border-l-3 rounded-r-sm transition-colors duration-snap ${
+        TREATMENTS[treatment()]
+      } ${
+        props.selected
+          ? "bg-accent-soft! outline outline-2 -outline-offset-2 outline-accent rounded-sm"
           : ""
-      }`}
-      style={hold()
-        ? {
-          "background-color":
-            `color-mix(in oklab, ${HOLD_COLOR} 25%, transparent)`,
-          "border-left-color": HOLD_COLOR,
-        }
-        : undefined}
+      } ${props.item.deleted || holdResolved() ? "opacity-50" : ""}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onContextMenu={(e) => {
@@ -170,84 +177,75 @@ export default function FeedMessage(props: Props) {
           onMore={props.onContextMenu!}
         />
       </Show>
-      <div class="grid grid-cols-[auto_1fr]">
-        <Show when={hold()}>
-          <RichNotice
-            class="col-start-2 row-start-1 text-warning text-[0.82em] leading-tight font-medium"
-            label={hold()!.reason}
-            suffix={holdResolved()
-              ? (hold()!.status === "approved"
-                ? "approved"
-                : hold()!.status === "denied"
-                ? "denied"
-                : "expired")
-              : undefined}
-            actions={holdPending()
-              ? [
-                {
-                  title: "Approve",
-                  icon: () => <Check class="size-4" />,
-                  variant: "success",
-                  disabled: holdBusy,
-                  onClick: () => handleHold("approve"),
-                },
-                {
-                  title: "Deny",
-                  icon: () => <X class="size-3" />,
-                  variant: "danger",
-                  disabled: holdBusy,
-                  onClick: () => handleHold("deny"),
-                },
-              ]
-              : undefined}
-          />
-        </Show>
-        <Show
-          when={props.item.channel_points?.kind === "custom_reward"
-            ? props.item.channel_points
-            : undefined}
-        >
-          {(cp) => (
-            <RichNotice
-              class="col-start-2 row-start-1 text-event-channel-points text-[0.82em] leading-tight font-medium"
-              label={cp().title
-                ? `Redeemed ${cp().title}`
-                : "Channel point redemption"}
-            />
-          )}
-        </Show>
+      <div class="flex items-start">
         <Show when={props.showTimestamp}>
-          <Timestamp
-            ts={props.item.timestamp}
-            class="col-start-1 row-start-2 self-start text-text-muted select-none shrink-0 mr-2"
-          />
+          <Timestamp ts={props.item.timestamp} feed />
         </Show>
-        <div class="col-start-2 row-start-2 wrap-break-word min-w-0">
+        <div class="flex-1 min-w-0 wrap-break-word">
+          <Show when={hold()}>
+            <RichNotice
+              class="text-caution"
+              label={`Held by AutoMod · ${hold()!.reason}`}
+              suffix={holdResolved()
+                ? (hold()!.status === "approved"
+                  ? "approved"
+                  : hold()!.status === "denied"
+                  ? "denied"
+                  : "expired")
+                : undefined}
+              actions={holdPending()
+                ? [
+                  {
+                    title: "Approve",
+                    icon: () => <Check class="size-4" />,
+                    tone: "success",
+                    disabled: holdBusy,
+                    onClick: () => handleHold("approve"),
+                  },
+                  {
+                    title: "Deny",
+                    icon: () => <X class="size-4" />,
+                    tone: "danger",
+                    disabled: holdBusy,
+                    onClick: () => handleHold("deny"),
+                  },
+                ]
+                : undefined}
+            />
+          </Show>
+          <Show
+            when={props.item.channel_points?.kind === "custom_reward"
+              ? props.item.channel_points
+              : undefined}
+          >
+            {(cp) => (
+              <RichNotice
+                class="text-event-channel-points"
+                label={cp().title
+                  ? `Redeemed ${cp().title}`
+                  : "Redeemed channel points"}
+              />
+            )}
+          </Show>
           <Show when={props.item.reply}>
             <div
-              class={`text-text-muted/70 leading-[1.6em] truncate transition-colors ${
+              class={`text-ink-faint feed-meta truncate transition-colors duration-snap ${
                 props.onJumpToMessage
-                  ? "cursor-pointer hover:text-text-muted"
+                  ? "cursor-pointer hover:text-ink-soft"
                   : ""
               }`}
               onClick={() =>
                 props.onJumpToMessage?.(props.item.reply!.parent_message_id)}
             >
-              <span class="text-[0.78em]">⌐ Replying to</span>
-              <span class="text-[0.78em] font-semibold text-primary">
+              ↰ Replying to{" "}
+              <span class="font-semibold text-accent-ink">
                 @{props.item.reply!.parent_user_name}
               </span>
-              <span class="text-[0.78em]">
-                : {props.item.reply!.parent_message_body}
-              </span>
+              : {props.item.reply!.parent_message_body}
             </div>
           </Show>
           <Show when={props.showBadges !== false}>
-            <BadgeBox
-              badges={props.item.badges}
-              channelBadges={props.badges}
-              class="mr-1.5 align-text-bottom"
-            />
+            <BadgeBox badges={props.item.badges} channelBadges={props.badges} />
           </Show>
           <Show when={props.showName !== false}>
             <DisplayName
@@ -258,19 +256,24 @@ export default function FeedMessage(props: Props) {
               onShowUserCard={props.onShowUserCard}
               onUserContextMenu={props.onUserContextMenu}
             />
-            <span class="text-text-muted">:</span>
+            <Show when={props.item.first_message && !hold()}>
+              <span class="feed-chip inline-flex items-center ml-1.5 rounded-full bg-raised text-ink-soft font-semibold">
+                First message
+              </span>
+            </Show>
+            <span class="text-ink-soft">:</span>
+            {" "}
           </Show>
           <Show
             when={!props.item.deleted || props.showDeletedContent}
-            fallback={
-              <span class="italic text-text-muted">&lt;deleted&gt;</span>
-            }
+            fallback={<span class="italic text-ink-soft">Message deleted</span>}
           >
             <For each={visibleFragments()}>
               {(frag) => (
                 <FeedMessageFragment
                   frag={frag}
                   emotes={props.emotes}
+                  mentionsYou={mentioned()}
                   onShowUserCard={props.onShowUserCard}
                   onUserContextMenu={props.onUserContextMenu}
                 />

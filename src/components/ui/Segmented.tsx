@@ -8,16 +8,21 @@ type Props<T extends string> = {
 
 export default function Segmented<T extends string>(props: Props<T>) {
   return (
-    <div class="flex rounded border border-border-muted overflow-hidden text-sm">
+    <div
+      role="radiogroup"
+      class="inline-flex gap-0.5 p-0.75 bg-canvas border border-line rounded-sm"
+    >
       <For each={props.options}>
         {(o) => (
           <button
             type="button"
+            role="radio"
+            aria-checked={props.value === o.value}
             onClick={() => props.onChange(o.value)}
-            class={`px-3 py-1 cursor-pointer transition-colors ${
+            class={`h-7 px-3 rounded-xs text-small font-semibold cursor-pointer transition-colors duration-snap ${
               props.value === o.value
-                ? "bg-primary text-text"
-                : "bg-bg text-text-muted hover:text-text hover:bg-bg-light"
+                ? "bg-raised text-ink [[data-theme=light]_&]:bg-surface"
+                : "text-ink-soft hover:text-ink"
             }`}
           >
             {o.label}

@@ -12,10 +12,11 @@ deno task tauri dev     # run app in dev
 deno task build         # vite build
 deno fmt                # format src/
 deno lint               # lint src/
+deno task lint:ui       # design-system lint (@shadcn/lint via oxlint, config in .oxlintrc.json)
 deno task release       # patch bump + commit + tag + push (also: minor | major | 1.2.3)
 ```
 
-Run `deno fmt` and `deno lint` before every commit.
+Run `deno fmt`, `deno lint`, and `deno task lint:ui` before every commit.
 
 ## Guiding principles
 
@@ -44,6 +45,7 @@ Keep the dependency flow one-directional: entry points call services, services c
 
 - **Backend** — handlers stay thin: parse input, call a service, return a result. Business logic and long-lived state live in services. Upstream clients are isolated from the rest of the app.
 - **Frontend** — components render; they reach the backend through a service or manager, never directly. Shared state, types, and lifecycles each live in their own layer.
+- **UI** — `docs/design-system.md` is the source of truth for look and behaviour; `docs/mockup/index.html` shows it. Primitives live in `src/components/ui/` and feature components compose them without restyling. Colours, type, radii, sizes, and motion come from `@theme` tokens in `src/App.css`; no raw hex, no shadows.
 
 ## Boundaries
 

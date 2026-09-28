@@ -8,7 +8,6 @@ type Badge = { set_id: string; id: string; info?: string };
 type Props = {
   badges: Badge[];
   channelBadges: BadgeMap;
-  class?: string;
 };
 
 export default function BadgeBox(props: Props) {
@@ -21,18 +20,14 @@ export default function BadgeBox(props: Props) {
 
   return (
     <Show when={items().length > 0}>
-      <span
-        class={`inline-flex items-center gap-1.5 bg-bg border border-border-muted rounded-md px-1.5 py-1 ${
-          props.class ?? ""
-        }`}
-      >
+      <span class="feed-badge-box inline-flex items-center mr-1.5 rounded-xs bg-raised align-text-bottom">
         <For each={items()}>
           {(b) => (
             <img
               src={b.url}
               alt={b.title}
               title={`${b.title}${b.info ? ` (${b.info})` : ""}`}
-              class="w-[0.85em] h-[0.85em]"
+              class="feed-badge"
             />
           )}
         </For>

@@ -1,56 +1,79 @@
-import { type JSX, splitProps } from "solid-js";
-import { isPanelOpen, type Panel, togglePanel } from "../../lib/stores/ui.ts";
+import { type JSX, Show, splitProps } from "solid-js";
+import Loading from "./Loading.tsx";
 
-type Variant = "primary" | "secondary" | "danger";
+export type ButtonVariant = "accent" | "neutral" | "ghost" | "danger";
+export type ButtonSize = "sm" | "md" | "lg";
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: Variant;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   icon?: JSX.Element;
-  toggle?: Panel;
+  loading?: boolean;
+  pressed?: boolean;
 };
 
-const VARIANTS: Record<Variant, string> = {
-  primary: "text-text bg-primary hover:bg-primary/80",
-  secondary:
-    "text-text-muted hover:text-text bg-bg hover:bg-bg-light border border-border-muted",
-  danger: "text-text bg-danger hover:bg-danger/80",
+const VARIANTS: Record<ButtonVariant, string> = {
+  accent: "bg-accent text-on-accent hover:bg-accent-hover active:opacity-90",
+  neutral:
+    "bg-surface text-ink border border-line hover:bg-raised active:bg-overlay",
+  ghost: "text-ink-soft hover:bg-raised hover:text-ink active:bg-overlay",
+  danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
 };
 
-const TOGGLE_ACTIVE = "text-text bg-bg-light";
-const TOGGLE_INACTIVE = "text-text-muted hover:bg-bg hover:text-text";
+const PRESSED = "bg-raised text-ink";
+
+const SIZES: Record<ButtonSize, { box: string; pad: string; text: string }> = {
+  sm: { box: "h-control-sm", pad: "px-2.5", text: "text-small font-semibold" },
+  md: { box: "h-control-md", pad: "px-3.5", text: "text-body font-semibold" },
+  lg: { box: "h-control-lg", pad: "px-5", text: "text-body font-semibold" },
+};
+
+const SQUARE: Record<ButtonSize, string> = {
+  sm: "w-control-sm",
+  md: "w-control-md",
+  lg: "w-control-lg",
+};
 
 export default function Button(props: Props) {
   const [local, others] = splitProps(props, [
     "class",
     "variant",
+    "size",
     "icon",
+    "loading",
+    "pressed",
     "children",
-    "toggle",
+    "disabled",
   ]);
+  const size = () => local.size ?? "md";
+  const variant = () => local.variant ?? "accent";
   const iconOnly = () => local.icon !== undefined && local.children == null;
-  const isToggle = () => local.toggle !== undefined;
-  const styleClass = () =>
-    isToggle()
-      ? (isPanelOpen(local.toggle!) ? TOGGLE_ACTIVE : TOGGLE_INACTIVE)
-      : VARIANTS[local.variant ?? "primary"];
+  const style = () =>
+    local.pressed && variant() === "ghost" ? PRESSED : VARIANTS[variant()];
 
   return (
     <button
       type="button"
+      aria-pressed={local.pressed}
       {...others}
-      {...(isToggle()
-        ? {
-          onClick: () => togglePanel(local.toggle!),
-          onMouseDown: (e: MouseEvent) => e.preventDefault(),
-          "data-panel-toggle": local.toggle,
-        }
-        : {})}
-      class={`shrink-0 h-8 flex items-center justify-center text-sm rounded cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-        iconOnly() ? "w-8" : "px-3 gap-1.5"
-      } ${styleClass()} ${local.class ?? ""}`}
+      disabled={local.disabled || local.loading}
+      class={`relative shrink-0 inline-flex items-center justify-center gap-1.5 rounded-sm cursor-pointer select-none transition-colors duration-snap disabled:opacity-40 disabled:cursor-not-allowed ${
+        SIZES[size()].box
+      } ${SIZES[size()].text} ${
+        iconOnly() ? SQUARE[size()] : SIZES[size()].pad
+      } ${style()} ${local.class ?? ""}`}
     >
-      {local.icon}
-      {local.children}
+      <Show when={local.loading}>
+        <span class="absolute inset-0 grid place-items-center">
+          <Loading size={16} />
+        </span>
+      </Show>
+      <span
+        class={`contents ${local.loading ? "invisible" : ""}`}
+      >
+        {local.icon}
+        {local.children}
+      </span>
     </button>
   );
 }

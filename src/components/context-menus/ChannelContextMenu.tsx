@@ -1,13 +1,14 @@
 import { Show } from "solid-js";
-import ContextMenu from "../ui/ContextMenu.tsx";
-import ContextMenuItem from "../ui/ContextMenuItem.tsx";
-import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
+import Menu from "../ui/Menu.tsx";
+import MenuDivider from "../ui/MenuDivider.tsx";
+import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { User } from "../../lib/types/twitch/user.ts";
 
 type Props = {
   x: number;
   y: number;
+  align?: "start" | "center" | "end";
   ch: User;
   isPinned: boolean;
   developerMode: boolean;
@@ -20,8 +21,8 @@ type Props = {
 
 export default function ChannelContextMenu(props: Props) {
   return (
-    <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
-      <ContextMenuItem
+    <Menu x={props.x} y={props.y} align={props.align} onClose={props.onClose}>
+      <MenuItem
         label="Open in browser"
         onClick={() => {
           props.onOpenInBrowser(props.ch);
@@ -31,7 +32,7 @@ export default function ChannelContextMenu(props: Props) {
       <Show
         when={props.isPinned}
         fallback={
-          <ContextMenuItem
+          <MenuItem
             label="Pin"
             onClick={() => {
               props.onPin(props.ch);
@@ -40,17 +41,17 @@ export default function ChannelContextMenu(props: Props) {
           />
         }
       >
-        <ContextMenuItem
+        <MenuItem
           label="Unpin"
           onClick={() => {
-            props.onUnpin(props.ch?.id);
+            props.onUnpin(props.ch.id);
             props.onClose();
           }}
         />
       </Show>
       <Show when={props.onRaid}>
-        <ContextMenuDivider />
-        <ContextMenuItem
+        <MenuDivider />
+        <MenuItem
           label="Raid"
           onClick={() => {
             props.onRaid?.(props.ch);
@@ -63,6 +64,6 @@ export default function ChannelContextMenu(props: Props) {
         data={props.ch}
         onClose={props.onClose}
       />
-    </ContextMenu>
+    </Menu>
   );
 }

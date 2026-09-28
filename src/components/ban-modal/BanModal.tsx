@@ -6,7 +6,8 @@ import {
   unbanUser,
 } from "../../lib/api/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
-import TextInput from "../ui/TextInput.tsx";
+import Dialog from "../ui/Dialog.tsx";
+import Field from "../ui/Field.tsx";
 import { user } from "../../lib/stores/users.ts";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 
@@ -127,106 +128,93 @@ export default function BanModal(props: Props) {
   });
 
   return (
-    <div
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) props.onClose();
-      }}
-    >
-      <div class="bg-bg border border-border-muted rounded-lg shadow-2xl w-96 p-4 flex flex-col gap-4">
-        <div class="flex flex-col gap-1">
-          <span class="text-text text-sm font-semibold">
-            Ban / Timeout {props.userName}
-          </span>
-          <span class="text-text-muted text-xs">
-            Pick a timeout duration, ban, or remove an existing ban.
-          </span>
-        </div>
-
-        <Show when={banInfo()}>
-          {(info) => (
-            <div class="bg-danger/10 border border-danger/40 rounded p-2.5 flex flex-col gap-1 text-xs">
-              <span class="text-text">
-                {info().expiresAt ? "Timed out" : "Banned"} by{" "}
-                <span class="font-semibold">
-                  {info().moderator.displayName}
-                </span>
-              </span>
-              <Show when={info().reason}>
-                <span class="text-text-muted">Reason: {info().reason}</span>
-              </Show>
-              <Show when={info().expiresAt}>
-                <span class="text-text-muted">
-                  Expires: {formatDate(info().expiresAt)}
-                </span>
-              </Show>
-            </div>
-          )}
-        </Show>
-
-        <TextInput
-          placeholder="Reason (optional)"
-          value={reason()}
-          onInput={(e) => setReason(e.currentTarget.value)}
-          autofocus
-        />
-
-        <div class="flex flex-col gap-1.5">
-          <span class="text-text-muted text-xs">Timeout</span>
-          <div class="grid grid-cols-4 gap-1.5">
-            <For each={DURATIONS}>
-              {(d) => (
-                <button
-                  onClick={() => timeout(d.value)}
-                  disabled={pending() !== null}
-                  class="text-sm px-2 py-1 rounded border bg-bg-light border-border text-text-muted hover:text-text hover:border-highlight disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
-                >
-                  {pending() === d.value ? "…" : d.label}
-                </button>
-              )}
-            </For>
-          </div>
-        </div>
-
-        <div class="flex gap-2 justify-end">
-          <Button variant="secondary" onClick={props.onClose}>Cancel</Button>
+    <Dialog
+      title={`Ban or time out ${props.userName}`}
+      description="Pick a timeout, ban outright, or lift an existing ban."
+      onClose={props.onClose}
+      actions={
+        <>
+          <Button variant="neutral" onClick={props.onClose}>Cancel</Button>
           <Show
             when={isBroadcaster()}
             fallback={
               <>
                 <Button
-                  variant="secondary"
+                  variant="neutral"
                   onClick={unban}
+                  loading={pending() === "unban"}
                   disabled={pending() !== null}
                 >
-                  {pending() === "unban" ? "…" : "Unban"}
+                  Unban
                 </Button>
                 <Button
                   variant="danger"
                   onClick={ban}
+                  loading={pending() === "ban"}
                   disabled={pending() !== null}
                 >
-                  {pending() === "ban" ? "…" : "Ban"}
+                  Ban
                 </Button>
               </>
             }
           >
             <Button
-              variant={banInfo() ? "secondary" : "danger"}
+              variant={banInfo() ? "neutral" : "danger"}
               onClick={banInfo() ? unban : ban}
-              disabled={pending() !== null || banInfo() === undefined}
+              loading={pending() === "ban" || pending() === "unban" ||
+                banInfo() === undefined}
+              disabled={pending() !== null}
             >
-              {pending() === "ban" || pending() === "unban"
-                ? "…"
-                : banInfo() === undefined
-                ? "…"
-                : banInfo()
-                ? "Unban"
-                : "Ban"}
+              {banInfo() ? "Unban" : "Ban"}
             </Button>
           </Show>
+        </>
+      }
+    >
+      <Show when={banInfo()}>
+        {(info) => (
+          <div class="bg-negative/10 border-l-3 border-negative rounded-sm px-3 py-2.5 flex flex-col gap-0.5 text-small">
+            <span class="text-ink">
+              {info().expiresAt ? "Timed out" : "Banned"} by{" "}
+              <span class="font-semibold">{info().moderator.displayName}</span>
+            </span>
+            <Show when={info().reason}>
+              <span class="text-ink-soft">Reason: {info().reason}</span>
+            </Show>
+            <Show when={info().expiresAt}>
+              <span class="text-ink-soft">
+                Expires: {formatDate(info().expiresAt)}
+              </span>
+            </Show>
+          </div>
+        )}
+      </Show>
+
+      <Field
+        placeholder="Reason (optional)"
+        value={reason()}
+        onInput={(e) => setReason(e.currentTarget.value)}
+        autofocus
+      />
+
+      <div class="flex flex-col gap-2">
+        <span class="text-small text-ink-soft">Time out for</span>
+        <div class="grid grid-cols-4 gap-1.5">
+          <For each={DURATIONS}>
+            {(d) => (
+              <Button
+                variant="neutral"
+                size="sm"
+                onClick={() => timeout(d.value)}
+                loading={pending() === d.value}
+                disabled={pending() !== null}
+              >
+                {d.label}
+              </Button>
+            )}
+          </For>
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

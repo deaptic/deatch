@@ -10,12 +10,12 @@ import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { Component } from "solid-js";
 import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
 
-const TYPE: Record<ToastType, { fill: string }> = {
-  error: { fill: "bg-danger" },
-  info: { fill: "bg-info" },
-  success: { fill: "bg-success" },
-  warn: { fill: "bg-warning" },
-  log: { fill: "bg-text-muted" },
+const TONE: Record<ToastType, string> = {
+  error: "text-negative",
+  info: "text-info",
+  success: "text-positive",
+  warn: "text-caution",
+  log: "text-ink-soft",
 };
 
 const ICONS: Record<ToastType, Component<{ class?: string }>> = {
@@ -33,7 +33,6 @@ type Props = {
 
 export default function ToasterItem(props: Props) {
   const toast = props.toast;
-  const palette = TYPE[toast.type];
   const Icon = ICONS[toast.type];
   const [visible, setVisible] = createSignal(false);
   const [leaving, setLeaving] = createSignal(false);
@@ -41,7 +40,7 @@ export default function ToasterItem(props: Props) {
   function dismiss() {
     if (leaving()) return;
     setLeaving(true);
-    setTimeout(() => props.onDismiss(toast.id), 200);
+    setTimeout(() => props.onDismiss(toast.id), 240);
   }
 
   onMount(() => {
@@ -56,34 +55,29 @@ export default function ToasterItem(props: Props) {
 
   return (
     <div
-      class="flex items-stretch bg-bg-dark border border-border-muted rounded-sm shadow-2xl w-80 overflow-hidden"
-      style={{
-        opacity: shown() ? "1" : "0",
-        transform: shown() ? "translateX(0)" : "translateX(24px)",
-        transition: "opacity 200ms ease, transform 200ms ease",
+      role="status"
+      class="flex items-center gap-3 w-90 pl-4 pr-2 py-3 bg-overlay border border-line rounded-md transition duration-settle ease-out"
+      classList={{
+        "opacity-0 -translate-y-2": !shown(),
+        "opacity-100 translate-y-0": shown(),
       }}
     >
-      <div
-        class={`shrink-0 w-14 flex items-center justify-center ${palette.fill}`}
-      >
-        <Icon class="size-6 stroke-white" />
-      </div>
-      <div class="flex-1 min-w-0 flex flex-col justify-center gap-0.5 px-3 py-3">
-        <p class="text-text text-sm font-semibold leading-tight break-words">
-          {toast.title}
-        </p>
+      <Icon class={`size-4 shrink-0 ${TONE[toast.type]}`} />
+      <div class="flex-1 min-w-0 flex flex-col">
+        <p class="text-body text-ink break-words">{toast.title}</p>
         <Show when={toast.description}>
-          <p class="text-text-muted text-xs leading-snug break-words line-clamp-3">
+          <p class="text-small text-ink-soft break-words line-clamp-3">
             {toast.description}
           </p>
         </Show>
       </div>
       <button
+        type="button"
         onClick={dismiss}
         aria-label="Dismiss"
-        class="shrink-0 w-9 flex items-center justify-center text-text-muted hover:text-text transition-colors cursor-pointer"
+        class="shrink-0 size-7 grid place-items-center rounded-sm text-ink-faint hover:text-ink hover:bg-raised transition-colors duration-snap cursor-pointer"
       >
-        <X class="size-2.5" />
+        <X class="size-3.5" />
       </button>
     </div>
   );

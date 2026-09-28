@@ -1,7 +1,7 @@
 import { Copy } from "lucide-solid";
 import { Show } from "solid-js";
-import ContextMenuItem from "../ui/ContextMenuItem.tsx";
-import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
+import MenuDivider from "../ui/MenuDivider.tsx";
+import MenuItem from "../ui/MenuItem.tsx";
 
 type Props = {
   show: boolean;
@@ -12,8 +12,8 @@ type Props = {
 export default function CopyPayloadItem(props: Props) {
   return (
     <Show when={props.show}>
-      <ContextMenuDivider />
-      <ContextMenuItem
+      <MenuDivider />
+      <MenuItem
         label="Copy Payload"
         icon={<Copy class="size-3.5" />}
         onClick={() => {

@@ -1,4 +1,4 @@
-import { Smile } from "lucide-solid";
+import { SendHorizontal, Smile, X } from "lucide-solid";
 import {
   createEffect,
   createSignal,
@@ -9,6 +9,7 @@ import {
   Suspense,
 } from "solid-js";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
 import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
@@ -18,11 +19,15 @@ import {
   getSentHistory,
   pushSentHistory,
 } from "../../lib/stores/chatHistory.ts";
-import { isPanelOpen, setOpenPanel } from "../../lib/stores/ui.ts";
-import TextArea, { type TextAreaApi } from "../ui/TextArea.tsx";
-import Banner from "../ui/Banner.tsx";
-import CharCounter from "../ui/CharCounter.tsx";
+import {
+  closeOverlay,
+  isOverlayOpen,
+  toggleOverlay,
+} from "../../lib/stores/ui.ts";
+import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import Button from "../ui/Button.tsx";
+import CharCounter from "./CharCounter.tsx";
+import IconButton from "../ui/IconButton.tsx";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
@@ -54,7 +59,7 @@ export default function ChatInput(props: Props) {
     ChatAutocompleteHandle | null
   >(null);
   const [mentionIdx, setMentionIdx] = createSignal(0);
-  let textAreaApi: TextAreaApi | undefined;
+  let textAreaApi: ComposerFieldApi | undefined;
 
   const focus = () => textAreaApi?.focus();
   const getCursor = () =>
@@ -85,12 +90,12 @@ export default function ChatInput(props: Props) {
     setSending(true);
     try {
       const reply = props.replyTo();
-      const ok = await sendChatMessage({
+      const outcome = await sendChatMessage({
         broadcasterId: props.broadcasterId,
         message: text,
         replyParentMessageId: reply?.messageId ?? null,
       });
-      if (ok) {
+      if (outcome !== "failed") {
         pushSentHistory(props.broadcasterId, text);
         history.reset();
         setMentionIdx(0);
@@ -139,7 +144,7 @@ export default function ChatInput(props: Props) {
 
   function onEmoteSelect(value: string, opts?: { keepOpen?: boolean }) {
     textAreaApi?.insert(value);
-    if (!opts?.keepOpen) setOpenPanel(null);
+    if (!opts?.keepOpen) closeOverlay();
   }
 
   function hasNewlineBeforeCursor() {
@@ -211,39 +216,60 @@ export default function ChatInput(props: Props) {
   });
 
   return (
-    <div class="shrink-0 border-t border-border-muted">
+    <div class="shrink-0 bg-surface border-t border-line-soft px-4 pt-3 pb-4">
       <Show when={props.replyTo()}>
-        <Banner onDismiss={props.onClearReply}>
-          ⌐ Replying to{" "}
-          <span class="text-primary font-semibold">
-            @{props.replyTo()!.name}
-          </span>
-          {": "}
-          {props.replyTo()!.text}
-        </Banner>
+        {(reply) => (
+          <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft">
+            <span class="shrink-0">
+              Replying to{" "}
+              <span class="font-semibold text-ink">{reply().name}</span>
+            </span>
+            <span class="flex-1 min-w-0 truncate">{reply().text}</span>
+            <IconButton
+              label="Cancel reply"
+              size="sm"
+              onClick={props.onClearReply}
+            >
+              <X class="size-3.5" />
+            </IconButton>
+          </div>
+        )}
       </Show>
       <Show
         when={commandMode()}
         fallback={
-          <TextArea
+          <ComposerField
             value={input()}
             onInput={onInputChange}
             onKeyDown={onKeyDown}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             maxLength={MAX_LEN}
-            placeholder={`Message #${props.broadcasterLogin}`}
+            placeholder={`Say something in ${props.broadcasterLogin}…`}
             ref={(api) => {
               textAreaApi = api;
             }}
             addons={
-              <div class="self-stretch flex flex-col items-center mx-2 py-3 shrink-0">
+              <div class="flex items-center gap-1 shrink-0 self-end pb-0.5">
+                <CharCounter value={input} max={MAX_LEN} />
+                <IconButton
+                  label="Emote picker"
+                  pressed={isOverlayOpen("emotePicker")}
+                  {...{ [POPOVER_TOGGLE]: "" }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => toggleOverlay("emotePicker")}
+                >
+                  <Smile class="size-5" />
+                </IconButton>
                 <Button
-                  toggle="emotePicker"
-                  icon={<Smile class="size-5" />}
-                  title="Emote picker"
+                  variant={input().trim() ? "accent" : "ghost"}
+                  icon={<SendHorizontal class="size-4" />}
+                  aria-label="Send"
+                  title="Send"
+                  loading={sending()}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => void sendMessage()}
                 />
-                <CharCounter value={input} max={MAX_LEN} class="mt-auto" />
               </div>
             }
           >
@@ -256,20 +282,20 @@ export default function ChatInput(props: Props) {
               onCommandSelected={setCommandMode}
               ref={setAutocomplete}
             />
-            <Show when={isPanelOpen("emotePicker") && props.isActive}>
+            <Show when={isOverlayOpen("emotePicker") && props.isActive}>
               <Suspense>
                 <EmotePicker
                   onSelect={onEmoteSelect}
-                  onClose={() => setOpenPanel(null)}
+                  onClose={closeOverlay}
                   anchorEl={textAreaApi?.anchorEl()}
                 />
               </Suspense>
             </Show>
-          </TextArea>
+          </ComposerField>
         }
       >
         {(cmd) => (
-          <div class="relative flex items-end min-h-14">
+          <div class="relative flex items-end min-h-control-lg bg-surface border border-line rounded-md pl-1 pr-1.5 py-1">
             <CommandComposer
               command={cmd()}
               ctx={{

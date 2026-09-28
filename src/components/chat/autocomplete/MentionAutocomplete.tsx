@@ -51,16 +51,16 @@ export default function MentionAutocomplete(props: Props) {
   const render = (s: MentionSuggestion) => (
     <>
       <span
-        class="font-semibold text-left truncate"
-        style={{ color: s.color || "var(--color-text)" }}
+        class="font-semibold text-left truncate text-(--name)"
+        style={{ "--name": s.color || "var(--color-ink)" }}
       >
         {s.nickname ?? s.displayName}
       </span>
       <Show when={s.nickname}>
-        <span class="text-text-muted text-sm truncate">({s.displayName})</span>
+        <span class="text-ink-soft text-small truncate">({s.displayName})</span>
       </Show>
       <span class="flex-1" />
-      <span class="text-xs font-semibold shrink-0 text-text-muted">
+      <span class="text-small font-semibold shrink-0 text-ink-soft">
         {s.displayName.toLowerCase() !== s.login ? s.login : ""}
       </span>
     </>

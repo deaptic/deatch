@@ -23,18 +23,19 @@ export default function UpdateBanner() {
     <Show when={pendingUpdate()}>
       {(u) => (
         <button
+          type="button"
           onClick={onInstall}
           disabled={installing()}
-          class="shrink-0 w-full flex items-center gap-2 h-8 px-3 bg-primary/20 hover:bg-primary/30 disabled:hover:bg-primary/20 border-b border-primary/40 text-xs text-left transition-colors cursor-pointer disabled:cursor-default"
+          class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 border-b border-line-soft text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
         >
-          <span class="size-2 rounded-full bg-primary shrink-0" />
-          <span class="text-text truncate">
-            <Show
-              when={!installing()}
-              fallback={<>Installing update…</>}
-            >
-              <span class="font-semibold">Update available</span>
-              <span class="text-text-muted">· v{u().version}</span>
+          <span class="size-2 rounded-full bg-accent shrink-0" />
+          <span class="text-ink truncate">
+            <Show when={!installing()} fallback={<>Installing update…</>}>
+              <span class="font-semibold">Update ready</span>
+              <span class="text-ink-soft">
+                {" "}
+                · {u().version} · click to install
+              </span>
             </Show>
           </span>
         </button>

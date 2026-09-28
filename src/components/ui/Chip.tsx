@@ -1,21 +1,31 @@
+import { X } from "lucide-solid";
+
 type Props = {
   label: string;
+  selected?: boolean;
   onRemove?: () => void;
 };
 
 export default function Chip(props: Props) {
-  const base =
-    "inline-flex items-center bg-primary/15 border border-primary/40 rounded-md px-2.5 py-1 text-sm font-medium text-text";
+  const tone = () =>
+    props.selected
+      ? "bg-accent-soft text-accent-ink"
+      : "bg-raised text-ink-soft";
+  const base = () =>
+    `inline-flex items-center gap-1 h-control-sm px-3 rounded-full text-small font-semibold ${tone()}`;
+
   if (!props.onRemove) {
-    return <span class={base}>{props.label}</span>;
+    return <span class={base()}>{props.label}</span>;
   }
   return (
     <button
+      type="button"
       onClick={props.onRemove}
       title="Remove"
-      class={`${base} cursor-pointer hover:bg-primary/30 hover:border-primary/70 transition-colors`}
+      class={`${base()} pr-2 cursor-pointer hover:text-ink hover:bg-overlay transition-colors duration-snap`}
     >
       {props.label}
+      <X class="size-3.5" />
     </button>
   );
 }

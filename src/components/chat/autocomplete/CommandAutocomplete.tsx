@@ -54,12 +54,12 @@ export default function CommandAutocomplete(props: Props) {
   const render = (s: CommandSuggestion) => (
     <div class="flex flex-col flex-1 min-w-0 text-left">
       <div class="flex items-baseline gap-2 min-w-0">
-        <span class="font-semibold text-text truncate">/{s.name}</span>
+        <span class="font-semibold text-ink truncate">/{s.name}</span>
         <Show when={s.usage}>
-          <span class="text-xs text-text-muted truncate">{s.usage}</span>
+          <span class="text-small text-ink-soft truncate">{s.usage}</span>
         </Show>
       </div>
-      <span class="text-xs text-text-muted truncate">{s.description}</span>
+      <span class="text-small text-ink-soft truncate">{s.description}</span>
     </div>
   );
 

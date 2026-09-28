@@ -1,14 +1,14 @@
 import { Check } from "lucide-solid";
-import { Show } from "solid-js";
-import { Portal } from "solid-js/web";
-import Button from "./Button.tsx";
+import Field from "./Field.tsx";
+import IconButton from "./IconButton.tsx";
+import Popover from "./Popover.tsx";
 
 type Props = {
   x: number;
   y: number;
   value: string;
   loading?: boolean;
-  placeholder?: string;
+  placeholder: string;
   onInput: (v: string) => void;
   onSubmit: () => void;
   onClose: () => void;
@@ -16,40 +16,28 @@ type Props = {
 
 export default function InputPopover(props: Props) {
   return (
-    <Portal>
-      <div class="fixed inset-0 z-40" onClick={props.onClose} />
-      <div
-        style={{ position: "fixed", left: `${props.x}px`, top: `${props.y}px` }}
-        class="z-50 w-64 bg-bg border border-border-muted rounded-lg shadow-2xl p-2 flex gap-2 items-center"
-      >
-        <input
+    <Popover x={props.x} y={props.y} onClose={props.onClose}>
+      <div class="w-72 p-2 flex gap-2 items-center">
+        <Field
+          class="flex-1 min-w-0"
           ref={(el) => setTimeout(() => el.focus())}
-          type="text"
-          placeholder={props.placeholder ?? ""}
+          placeholder={props.placeholder}
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") props.onSubmit();
             if (e.key === "Escape") props.onClose();
           }}
-          class="flex-1 min-w-0 bg-bg-light text-text text-sm rounded px-2 py-1.5 border border-border focus:outline-none focus:border-primary"
         />
-        <Button
+        <IconButton
+          label="Apply"
+          variant="neutral"
           onClick={props.onSubmit}
-          disabled={props.loading}
-          title="Apply"
-          aria-label="Apply"
+          loading={props.loading}
         >
-          <Show
-            when={!props.loading}
-            fallback={
-              <div class="size-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
-            }
-          >
-            <Check class="size-4" />
-          </Show>
-        </Button>
+          <Check class="size-4" />
+        </IconButton>
       </div>
-    </Portal>
+    </Popover>
   );
 }

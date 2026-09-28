@@ -16,13 +16,14 @@ type Props = {
 
 export default function EmoteGrid(props: Props) {
   return (
-    <div class="grid grid-cols-8 gap-0.5">
+    <div class="grid grid-cols-8 gap-1">
       <For each={props.items}>
         {(item, i) => {
           const idx = () => props.startIndex + i();
           const active = () => idx() === props.activeIndex;
           return (
             <button
+              type="button"
               data-emote-index={idx()}
               onMouseDown={(e) => e.preventDefault()}
               onClick={(e) =>
@@ -33,8 +34,10 @@ export default function EmoteGrid(props: Props) {
                 props.onToggleFavorite(item);
               }}
               title={item.label}
-              class={`relative flex items-center justify-center p-1 rounded cursor-pointer ${
-                active() ? "bg-primary/20 ring-2 ring-primary" : "hover:bg-bg"
+              class={`relative aspect-square grid place-items-center rounded-sm cursor-pointer transition-colors duration-snap ${
+                active()
+                  ? "bg-accent-soft outline outline-2 -outline-offset-2 outline-accent"
+                  : "hover:bg-raised"
               }`}
             >
               <img

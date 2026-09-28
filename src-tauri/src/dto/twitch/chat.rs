@@ -1,7 +1,8 @@
 use super::ids::UserId;
 use serde::Serialize;
 use twitch_api::helix::chat::{
-    send_chat_message::SendChatMessageResponse, BadgeSet as HelixBadgeSet,
+    send_chat_message::{ChatMessageDropCode, SendChatMessageResponse},
+    BadgeSet as HelixBadgeSet,
     ChatBadge as HelixChatBadge, GlobalEmote, UserEmote as HelixUserEmote,
 };
 
@@ -96,14 +97,21 @@ impl From<HelixBadgeSet> for BadgeSet {
 pub struct SendMessageResult {
     pub message_id: Option<String>,
     pub is_sent: bool,
+    /// AutoMod is holding the message for a moderator to approve or deny.
+    pub held: bool,
     pub drop_reason: Option<String>,
 }
 
 impl From<SendChatMessageResponse> for SendMessageResult {
     fn from(r: SendChatMessageResponse) -> Self {
+        let held = r
+            .drop_reason
+            .as_ref()
+            .is_some_and(|d| matches!(d.code, ChatMessageDropCode::MsgRejected));
         Self {
             message_id: r.message_id.map(|m| m.to_string()),
             is_sent: r.is_sent,
+            held,
             drop_reason: r.drop_reason.map(|d| d.message),
         }
     }

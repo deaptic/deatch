@@ -11,8 +11,9 @@ export default function Tooltip(props: Props) {
   return (
     <Portal>
       <div
-        style={{ left: `${props.x}px`, top: `${props.y}px` }}
-        class="pointer-events-none fixed z-50 -translate-y-1/2 w-max max-w-xs rounded-lg border border-border-muted bg-bg-dark px-3 py-2 shadow-xl"
+        role="tooltip"
+        style={{ "--x": `${props.x}px`, "--y": `${props.y}px` }}
+        class="pointer-events-none fixed left-(--x) top-(--y) z-50 -translate-y-1/2 w-max max-w-75 rounded-sm border border-line bg-overlay px-2.5 py-2 text-small text-ink"
       >
         {props.children}
       </div>

@@ -1,82 +1,86 @@
+import { Copy } from "lucide-solid";
 import { Show } from "solid-js";
-import TwitchIcon from "../ui/TwitchIcon.tsx";
+import TwitchIcon from "./TwitchIcon.tsx";
+import Button from "../ui/Button.tsx";
+import Loading from "../ui/Loading.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
 import { sessionManager } from "../../lib/managers/SessionManager.ts";
-import Loading from "../ui/Loading.tsx";
+import { copyField } from "../../lib/utils/clipboard.ts";
 
 export default function Login() {
   return (
-    <main class="flex-1 bg-bg-dark flex items-center justify-center">
-      <div class="flex flex-col items-center gap-8">
-        <div class="flex items-center gap-3">
-          <TwitchIcon class="size-12 fill-primary" />
-          <span class="text-text text-3xl font-bold tracking-tight">
-            Deatch
-          </span>
+    <main class="flex-1 flex items-center justify-center px-6">
+      <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
+        <div class="flex items-center gap-2.5 text-heading text-ink">
+          <span class="size-3.5 rounded-full bg-accent" />
+          Deatch
         </div>
+        <h1 class="text-hero text-ink">Welcome to Deatch</h1>
+        <p class="text-body text-ink-soft">
+          Every Twitch chat you care about, in one warm little window.
+        </p>
 
-        <div class="bg-bg border border-border-muted rounded-2xl p-10 flex flex-col items-center gap-6 w-80 shadow-2xl">
-          {waiting()
-            ? (
-              <>
-                <Show when={deviceCode()} fallback={<Loading size={56} />}>
-                  {(code) => (
-                    <div class="flex flex-col items-center gap-4 w-full">
-                      <div class="text-center flex flex-col gap-1">
-                        <p class="text-text font-semibold">
-                          Activate on Twitch
-                        </p>
-                        <p class="text-text-muted text-sm">
-                          Go to{" "}
-                          <span class="text-primary">twitch.tv/activate</span>
-                          {" "}
-                          and enter this code:
-                        </p>
-                      </div>
-                      <div class="bg-bg-dark border border-primary rounded-xl px-6 py-4 w-full text-center">
-                        <span class="text-text text-2xl font-mono font-bold tracking-[0.25em]">
-                          {code().user_code}
-                        </span>
-                      </div>
-                      <a
-                        href={code().verification_uri}
-                        target="_blank"
-                        class="text-primary hover:text-primary/80 text-sm underline transition-colors"
-                      >
-                        Open twitch.tv/activate
-                      </a>
-                    </div>
-                  )}
-                </Show>
-                <button
-                  onClick={() => sessionManager.abort()}
-                  class="text-text-muted hover:text-text text-sm transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-              </>
-            )
-            : (
-              <>
-                <div class="text-center flex flex-col gap-1">
-                  <h2 class="text-text text-xl font-semibold">Welcome back</h2>
-                  <p class="text-text-muted text-sm">
-                    Connect your Twitch account to get started
+        <Show
+          when={waiting()}
+          fallback={
+            <>
+              <Button
+                size="lg"
+                class="mt-2"
+                icon={<TwitchIcon class="size-5" />}
+                onClick={() => sessionManager.login()}
+              >
+                Log in with Twitch
+              </Button>
+              <p class="text-small text-ink-faint">
+                Deatch never sees your password. Twitch handles the login.
+              </p>
+            </>
+          }
+        >
+          <div class="mt-4 w-full bg-surface rounded-lg border border-transparent [[data-theme=light]_&]:border-line-soft p-5 flex flex-col items-center gap-3">
+            <Show
+              when={deviceCode()}
+              fallback={
+                <>
+                  <Loading size={24} />
+                  <p class="text-small text-ink-soft">
+                    Asking Twitch for a code…
                   </p>
-                </div>
-                <button
-                  onClick={() => sessionManager.login()}
-                  class="w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/85 active:bg-primary/70 transition-colors duration-150 text-text font-semibold py-3 px-6 rounded-lg cursor-pointer"
-                >
-                  <TwitchIcon class="size-5 fill-text" />
-                  Login with Twitch
-                </button>
-                <p class="text-text-muted text-xs text-center">
-                  Your credentials are never stored by this app
-                </p>
-              </>
-            )}
-        </div>
+                </>
+              }
+            >
+              {(code) => (
+                <>
+                  <p class="text-small text-ink-soft">
+                    Enter this code at{" "}
+                    <a
+                      href={code().verification_uri}
+                      target="_blank"
+                      class="text-accent-ink hover:underline"
+                    >
+                      twitch.tv/activate
+                    </a>
+                  </p>
+                  <p class="font-mono text-3xl font-semibold tracking-widest text-ink">
+                    {code().user_code}
+                  </p>
+                  <Button
+                    variant="neutral"
+                    size="sm"
+                    icon={<Copy class="size-4" />}
+                    onClick={() => copyField(code().user_code)}
+                  >
+                    Copy code
+                  </Button>
+                </>
+              )}
+            </Show>
+          </div>
+          <Button variant="ghost" onClick={() => sessionManager.abort()}>
+            Cancel
+          </Button>
+        </Show>
       </div>
     </main>
   );

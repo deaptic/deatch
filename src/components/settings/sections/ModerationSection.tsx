@@ -1,6 +1,6 @@
-import SettingsContent from "../SettingsContent.tsx";
-import SettingsContentSection from "../SettingsContentSection.tsx";
-import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import PageBody from "../../ui/PageBody.tsx";
+import Card from "../../ui/Card.tsx";
+import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import {
   moderationActionsDisabled,
@@ -11,29 +11,32 @@ import {
 
 export default function ModerationSection() {
   return (
-    <SettingsContent title="Moderation">
-      <SettingsContentSection>
-        <SettingsContentSectionItem
-          label="Auto-shoutout on raid"
-          description="Shout out raiders in channels you own or mod."
+    <PageBody
+      title="Moderation"
+      lede="Tools for channels you own or moderate."
+    >
+      <Card>
+        <SettingsRow
+          label="Shout out raiders"
+          description="Automatically shout out incoming raids in channels you own or mod."
         >
           <Toggle
-            size="md"
+            label="Shout out raiders"
             checked={moderationAutoShoutoutOnRaid()}
             onChange={setModerationAutoShoutoutOnRaid}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
-          label="Disable moderation actions"
-          description="Hide all mod controls (ban, timeout, delete) everywhere."
+        </SettingsRow>
+        <SettingsRow
+          label="Hide moderation actions"
+          description="Remove ban, timeout, and delete controls everywhere."
         >
           <Toggle
-            size="md"
+            label="Hide moderation actions"
             checked={moderationActionsDisabled()}
             onChange={setModerationActionsDisabled}
           />
-        </SettingsContentSectionItem>
-      </SettingsContentSection>
-    </SettingsContent>
+        </SettingsRow>
+      </Card>
+    </PageBody>
   );
 }

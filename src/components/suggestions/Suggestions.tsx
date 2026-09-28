@@ -60,7 +60,8 @@ export default function Suggestions<T>(props: Props<T>) {
   return (
     <div
       ref={containerRef}
-      class="absolute bottom-full inset-x-0 mb-3 z-30 bg-bg-dark border border-border-muted rounded-lg shadow-2xl overflow-y-auto max-h-60"
+      role="listbox"
+      class="absolute bottom-full inset-x-0 mb-2 z-30 p-1.5 bg-overlay border border-line rounded-md overflow-y-auto max-h-60 transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
     >
       <For each={props.suggestions()}>
         {(s, i) => (

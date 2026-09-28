@@ -1,3 +1,4 @@
+import { Search } from "lucide-solid";
 import {
   createEffect,
   createMemo,
@@ -20,8 +21,8 @@ import { selectedChannel } from "../../lib/stores/view.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
-import Navigation from "../ui/Navigation.tsx";
-import NavigationItem from "../ui/NavigationItem.tsx";
+import Field from "../ui/Field.tsx";
+import NavItem from "../ui/NavItem.tsx";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
@@ -126,13 +127,13 @@ export default function EmotePicker(props: Props) {
       });
     } else {
       add({
-        label: "Favorites",
+        label: "Favourites",
         items: favorites().map((f) => ({
           value: f.value,
           url: f.url,
           label: f.label,
         })),
-        emptyHint: "Right-click any emote to add it as a favorite.",
+        emptyHint: "Right-click any emote to keep it here.",
       });
       for (const s of tabSections()) add(s);
     }
@@ -142,6 +143,15 @@ export default function EmotePicker(props: Props) {
   const totalItems = createMemo(() =>
     sections().reduce((n, s) => n + s.items.length, 0)
   );
+
+  const activeItem = createMemo<EmoteGridItem | undefined>(() => {
+    const idx = activeIndex();
+    for (const s of sections()) {
+      const pos = idx - s.startIndex;
+      if (pos >= 0 && pos < s.items.length) return s.items[pos];
+    }
+    return undefined;
+  });
 
   createEffect(() => {
     tab();
@@ -168,7 +178,6 @@ export default function EmotePicker(props: Props) {
   dismissOnOutside({
     ref: () => panelRef,
     onDismiss: props.onClose,
-    ignoreSelector: '[data-panel-toggle="emotePicker"]',
   });
   onMount(() => {
     queueMicrotask(() => searchRef?.focus());
@@ -217,14 +226,8 @@ export default function EmotePicker(props: Props) {
   }
 
   function selectActive(keepOpen: boolean) {
-    const secs = sections();
-    for (const s of secs) {
-      const pos = activeIndex() - s.startIndex;
-      if (pos >= 0 && pos < s.items.length) {
-        props.onSelect(s.items[pos].value, { keepOpen });
-        return;
-      }
-    }
+    const item = activeItem();
+    if (item) props.onSelect(item.value, { keepOpen });
   }
 
   const renderGrid = (section: RenderSection) => (
@@ -245,13 +248,27 @@ export default function EmotePicker(props: Props) {
     <Portal>
       <div
         ref={panelRef}
-        class="fixed right-2 z-40 w-80 h-96 bg-bg-dark border border-border-muted rounded-lg shadow-2xl flex flex-col"
-        style={{ bottom: `${bottomOffset()}px` }}
+        role="dialog"
+        aria-label="Emotes"
+        class="fixed right-4 bottom-(--bottom) z-40 w-100 h-110 max-w-full bg-overlay border border-line rounded-lg flex flex-col overflow-hidden transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+        style={{ "--bottom": `${bottomOffset()}px` }}
       >
-        <Navigation fill class="border-b border-border-muted shrink-0">
+        <div class="px-2.5 pt-2.5 pb-1.5 shrink-0">
+          <Field
+            size="sm"
+            class="w-full"
+            icon={<Search />}
+            ref={(el) => (searchRef = el)}
+            placeholder="Search emotes"
+            value={search()}
+            onInput={(e) => setSearch(e.currentTarget.value)}
+          />
+        </div>
+        <div class="flex px-2.5 border-b border-line-soft shrink-0">
           <For each={TABS}>
             {(t) => (
-              <NavigationItem
+              <NavItem
+                orientation="horizontal"
                 label={t.label}
                 active={tab() === t.id}
                 onClick={() => {
@@ -262,20 +279,9 @@ export default function EmotePicker(props: Props) {
               />
             )}
           </For>
-        </Navigation>
-
-        <div class="p-2 border-b border-border-muted shrink-0">
-          <input
-            ref={searchRef}
-            type="text"
-            placeholder="Search emotes…"
-            value={search()}
-            onInput={(e) => setSearch(e.currentTarget.value)}
-            class="w-full bg-bg-dark text-text text-sm px-3 py-1.5 rounded outline-none placeholder-text-muted"
-          />
         </div>
 
-        <div class="overflow-y-auto flex-1 pl-2 pr-3 py-1 flex flex-col gap-2 scrollbar-gutter-stable">
+        <div class="overflow-y-auto flex-1 px-2.5 py-1.5 flex flex-col gap-1 scrollbar-gutter-stable">
           <For each={sections()}>
             {(section) => (
               <Show when={section.label} fallback={renderGrid(section)}>
@@ -284,9 +290,9 @@ export default function EmotePicker(props: Props) {
                     when={section.items.length > 0}
                     fallback={
                       <Show when={section.emptyHint}>
-                        <div class="text-text-muted text-xs px-2 py-2 text-center">
+                        <p class="text-small text-ink-faint px-1 py-2">
                           {section.emptyHint}
-                        </div>
+                        </p>
                       </Show>
                     }
                   >
@@ -296,6 +302,27 @@ export default function EmotePicker(props: Props) {
               </Show>
             )}
           </For>
+        </div>
+
+        <div class="shrink-0 h-11 flex items-center gap-2.5 px-3.5 border-t border-line-soft text-small">
+          <Show
+            when={activeItem()}
+            fallback={
+              <span class="text-ink-faint">Shift + Enter keeps this open</span>
+            }
+          >
+            {(item) => (
+              <>
+                <img src={item().url} alt="" class="size-6 object-contain" />
+                <span class="font-semibold text-ink truncate">
+                  {item().label}
+                </span>
+                <span class="ml-auto text-ink-faint whitespace-nowrap">
+                  Enter to insert
+                </span>
+              </>
+            )}
+          </Show>
         </div>
       </div>
     </Portal>

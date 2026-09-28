@@ -1,67 +1,67 @@
-import { For } from "solid-js";
-import SettingsContent from "../SettingsContent.tsx";
-import SettingsContentSection from "../SettingsContentSection.tsx";
-import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
-import Button from "../../ui/Button.tsx";
+import PageBody from "../../ui/PageBody.tsx";
+import Card from "../../ui/Card.tsx";
+import SettingsRow from "../../ui/SettingsRow.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
+import Segmented from "../../ui/Segmented.tsx";
+import Slider from "../../ui/Slider.tsx";
 import {
-  appearanceColors,
-  resetAppearanceColor,
-  resetAppearanceColors,
-  setAppearanceColor,
+  appearanceAccent,
+  appearanceTheme,
+  feedFontSize,
+  setAppearanceAccent,
+  setAppearanceTheme,
+  setFeedFontSize,
 } from "../../../lib/stores/preferences.ts";
 import {
-  APPEARANCE_COLOR_GROUPS,
-  type AppearanceColorKey,
-  readAppearanceColorHex,
+  defaultAccentHex,
+  type Theme,
 } from "../../../lib/services/appearance.ts";
 
-function AppearanceColorRow(props: { colorKey: AppearanceColorKey }) {
-  const override = () => appearanceColors()[props.colorKey];
-  const pickerValue = () =>
-    override() ?? readAppearanceColorHex(props.colorKey);
-  return (
-    <ColorPicker
-      swatchColor={`var(--color-${props.colorKey})`}
-      value={pickerValue()}
-      onInput={(hex) => setAppearanceColor(props.colorKey, hex)}
-      onReset={() => resetAppearanceColor(props.colorKey)}
-      resetDisabled={!override()}
-    />
-  );
-}
+const THEME_OPTIONS: { value: Theme; label: string }[] = [
+  { value: "system", label: "System" },
+  { value: "dark", label: "Dark" },
+  { value: "light", label: "Light" },
+];
 
 export default function AppearanceSection() {
   return (
-    <SettingsContent title="Appearance">
-      <SettingsContentSection>
-        <div class="flex items-center justify-between">
-          <span class="text-text-muted text-xs">
-            Customize the colors used throughout the app. Click a swatch to pick
-            a new color.
-          </span>
-          <Button
-            variant="secondary"
-            disabled={Object.keys(appearanceColors()).length === 0}
-            onClick={() => resetAppearanceColors()}
-          >
-            Reset all
-          </Button>
-        </div>
-      </SettingsContentSection>
-      <For each={APPEARANCE_COLOR_GROUPS}>
-        {(group) => (
-          <SettingsContentSection title={group.label}>
-            <For each={group.colors}>
-              {(c) => (
-                <SettingsContentSectionItem label={c.label}>
-                  <AppearanceColorRow colorKey={c.key} />
-                </SettingsContentSectionItem>
-              )}
-            </For>
-          </SettingsContentSection>
-        )}
-      </For>
-    </SettingsContent>
+    <PageBody
+      title="Appearance"
+      lede="How Deatch looks. Changes apply immediately."
+    >
+      <Card>
+        <SettingsRow label="Theme" description="Follow Windows, or pick one.">
+          <Segmented
+            value={appearanceTheme()}
+            options={THEME_OPTIONS}
+            onChange={setAppearanceTheme}
+          />
+        </SettingsRow>
+        <SettingsRow
+          label="Accent"
+          description="Used for selection, buttons, and mentions of you."
+        >
+          <ColorPicker
+            swatchColor="var(--color-accent)"
+            value={appearanceAccent() ?? defaultAccentHex}
+            onInput={setAppearanceAccent}
+            onReset={() => setAppearanceAccent(null)}
+            resetDisabled={appearanceAccent() === null}
+          />
+        </SettingsRow>
+        <SettingsRow
+          label="Chat text size"
+          description="Also Ctrl + scroll over the chat."
+        >
+          <Slider
+            label="Chat text size"
+            value={feedFontSize()}
+            min={12}
+            max={22}
+            onChange={setFeedFontSize}
+          />
+        </SettingsRow>
+      </Card>
+    </PageBody>
   );
 }

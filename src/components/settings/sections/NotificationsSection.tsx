@@ -1,6 +1,6 @@
-import SettingsContent from "../SettingsContent.tsx";
-import SettingsContentSection from "../SettingsContentSection.tsx";
-import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import PageBody from "../../ui/PageBody.tsx";
+import Card from "../../ui/Card.tsx";
+import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import {
   notificationsMentionSound,
@@ -9,19 +9,22 @@ import {
 
 export default function NotificationsSection() {
   return (
-    <SettingsContent title="Notifications">
-      <SettingsContentSection>
-        <SettingsContentSectionItem
-          label="Mention ping sound"
+    <PageBody
+      title="Notifications"
+      lede="How Deatch gets your attention when something needs it."
+    >
+      <Card>
+        <SettingsRow
+          label="Mention sound"
           description="Play a sound on mentions and keyword matches."
         >
           <Toggle
-            size="md"
+            label="Mention sound"
             checked={notificationsMentionSound()}
             onChange={setNotificationsMentionSound}
           />
-        </SettingsContentSectionItem>
-      </SettingsContentSection>
-    </SettingsContent>
+        </SettingsRow>
+      </Card>
+    </PageBody>
   );
 }

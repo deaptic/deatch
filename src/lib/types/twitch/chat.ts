@@ -32,5 +32,8 @@ export type BadgeSet = {
 export type SendMessageResult = {
   messageId: string | null;
   isSent: boolean;
+  held: boolean;
   dropReason: string | null;
 };
+
+export type SendOutcome = "sent" | "held" | "failed";

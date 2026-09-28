@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import type { Stream } from "../types/twitch/stream.ts";
 import type { User, UserRef } from "../types/twitch/user.ts";
-import { menuChannelPinned } from "./preferences.ts";
+import { pinnedChannels } from "./preferences.ts";
 import { watchWarmedChannels } from "./watch.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
@@ -27,7 +27,7 @@ export function streamForUserId(userId: string): Stream | undefined {
 }
 
 export function channelsInOrder(): User[] {
-  const pinnedIds = menuChannelPinned();
+  const pinnedIds = pinnedChannels();
   const pinnedSet = new Set(pinnedIds);
   const warmedSet = new Set(watchWarmedChannels().map((c) => c?.id));
   const live = liveStreams();

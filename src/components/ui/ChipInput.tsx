@@ -1,11 +1,10 @@
-import { Check } from "lucide-solid";
-import { createSignal, Show } from "solid-js";
-import TextInput from "./TextInput.tsx";
-import Button from "./Button.tsx";
+import { Plus } from "lucide-solid";
+import { createSignal } from "solid-js";
+import Field from "./Field.tsx";
+import IconButton from "./IconButton.tsx";
 
 type Props = {
-  placeholder?: string;
-  normalize?: (v: string) => string;
+  placeholder: string;
   onAdd: (value: string) => void | Promise<void>;
 };
 
@@ -14,10 +13,8 @@ export default function ChipInput(props: Props) {
   const [busy, setBusy] = createSignal(false);
 
   async function submit() {
-    if (busy()) return;
-    const raw = value();
-    const v = (props.normalize ?? ((s) => s.trim()))(raw);
-    if (!v) return;
+    const v = value().trim();
+    if (!v || busy()) return;
     setBusy(true);
     try {
       await props.onAdd(v);
@@ -29,7 +26,7 @@ export default function ChipInput(props: Props) {
 
   return (
     <div class="flex gap-2 items-center">
-      <TextInput
+      <Field
         class="flex-1 min-w-0"
         placeholder={props.placeholder}
         value={value()}
@@ -38,21 +35,15 @@ export default function ChipInput(props: Props) {
           if (e.key === "Enter") submit();
         }}
       />
-      <Button
+      <IconButton
+        label="Add"
+        variant="neutral"
         onClick={submit}
-        disabled={busy() || !value().trim()}
-        title="Add"
-        aria-label="Add"
+        loading={busy()}
+        disabled={!value().trim()}
       >
-        <Show
-          when={!busy()}
-          fallback={
-            <div class="size-3.5 rounded-full border-2 border-text/30 border-t-text animate-spin" />
-          }
-        >
-          <Check class="size-4" />
-        </Show>
-      </Button>
+        <Plus class="size-4" />
+      </IconButton>
     </div>
   );
 }

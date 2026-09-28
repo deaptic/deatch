@@ -1,6 +1,6 @@
 import { persist, prefs, setPrefs } from "./core.ts";
 
-export const menuChannelPinned = () => prefs.menu.channels.pinned;
+export const pinnedChannels = () => prefs.menu.channels.pinned;
 
 export function pinChannel(user_id: string) {
   if (prefs.menu.channels.pinned.includes(user_id)) return;

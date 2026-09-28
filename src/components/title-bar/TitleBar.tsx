@@ -1,9 +1,20 @@
-import { Copy, Inbox, Minus, Settings, Square, User, X } from "lucide-solid";
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import {
+  Copy,
+  Inbox as InboxIcon,
+  Minus,
+  Settings,
+  Square,
+  X,
+} from "lucide-solid";
+import { createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
-import { activeView, selectedChannel } from "../../lib/stores/view.ts";
+import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
+import { isSettingsOpen, toggleSettings } from "../../lib/stores/view.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
+import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
+import Badge from "../ui/Badge.tsx";
+import Inbox from "../inbox/Inbox.tsx";
 
 const win = getCurrentWindow();
 
@@ -31,18 +42,19 @@ function ResizeHandle(props: { dir: ResizeDir; class: string }) {
   );
 }
 
+const CONTROL =
+  "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
+const PRESSED = "bg-raised text-ink";
+
 type Props = {
-  settingsOpen: boolean;
-  inboxOpen: boolean;
-  accountOpen: boolean;
-  onToggleSettings: () => void;
-  onToggleInbox: () => void;
-  onToggleAccount: () => void;
+  onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
 export default function TitleBar(props: Props) {
   const [maximized, setMaximized] = createSignal(false);
   const [version, setVersion] = createSignal("");
+  const [inboxAnchor, setInboxAnchor] = createSignal({ x: 0, y: 0 });
+  let inboxBtn: HTMLButtonElement | undefined;
 
   onMount(() => {
     getVersion().then(setVersion).catch(() => {});
@@ -65,112 +77,91 @@ export default function TitleBar(props: Props) {
     })();
   });
 
+  createEffect(() => {
+    if (!isOverlayOpen("inbox") || !inboxBtn) return;
+    const r = inboxBtn.getBoundingClientRect();
+    setInboxAnchor({ x: r.left + r.width / 2, y: r.bottom + 4 });
+  });
+
   return (
     <>
       <div
         data-tauri-drag-region
-        class="relative h-10 shrink-0 flex items-center bg-bg-dark border-b border-border-muted select-none"
+        class="relative h-titlebar shrink-0 flex items-center bg-canvas select-none"
       >
         <div
           data-tauri-drag-region
-          class="flex items-baseline gap-1.5 px-3 pointer-events-none"
+          class="flex items-center gap-2 pl-4 pointer-events-none"
         >
-          <span class="text-text text-xs font-semibold tracking-tight">
-            Deatch
-          </span>
+          <span class="size-2.5 rounded-full bg-accent" />
+          <span class="text-body font-semibold text-ink">Deatch</span>
           <Show when={version()}>
-            <span class="text-text-muted text-[10px] tabular-nums">
-              v{version()}
+            <span class="text-micro text-ink-faint tabular-nums">
+              {version()}
             </span>
           </Show>
         </div>
-        <div data-tauri-drag-region class="flex-1" />
-        <Show when={activeView() === "explore" || selectedChannel()}>
-          <div
-            data-tauri-drag-region
-            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-text text-base font-semibold pointer-events-none truncate max-w-[40%]"
-          >
-            {activeView() === "explore"
-              ? "Explore"
-              : selectedChannel()?.displayName}
-          </div>
-        </Show>
-        <button
-          data-inbox-toggle
-          class={`relative w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.inboxOpen
-              ? "text-text bg-bg-light"
-              : "text-text-muted hover:bg-bg hover:text-text"
-          }`}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={props.onToggleInbox}
-          aria-label="Inbox"
-          title="Inbox"
-        >
-          <Inbox class="size-3.5" />
-          <Show when={unreadMentionCount() > 0}>
-            <span class="absolute top-1.5 right-1.5 min-w-3.5 h-3.5 px-1 bg-primary rounded-full flex items-center justify-center">
-              <span class="text-[9px] font-bold text-text leading-none tabular-nums">
-                {unreadMentionCount() > 99 ? "99+" : unreadMentionCount()}
-              </span>
-            </span>
-          </Show>
-        </button>
-        <button
-          data-settings-toggle
-          class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.settingsOpen
-              ? "text-text bg-bg-light"
-              : "text-text-muted hover:bg-bg hover:text-text"
-          }`}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={props.onToggleSettings}
-          aria-label="Settings"
-          title="Settings"
-        >
-          <Settings class="size-3.5" />
-        </button>
-        <button
-          data-account-toggle
-          class={`w-11 h-full flex items-center justify-center transition-colors cursor-pointer ${
-            props.accountOpen
-              ? "text-text bg-bg-light"
-              : "text-text-muted hover:bg-bg hover:text-text"
-          }`}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={props.onToggleAccount}
-          aria-label="Accounts"
-          title="Accounts"
-        >
-          <User class="size-3.5" />
-        </button>
-        <div class="h-5 w-px bg-border-muted self-center" />
+        <div data-tauri-drag-region class="flex-1 h-full" />
         <div class="flex items-stretch h-full">
           <button
-            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg hover:text-text transition-colors cursor-pointer"
+            ref={inboxBtn}
+            class={`${CONTROL} ${isOverlayOpen("inbox") ? PRESSED : ""}`}
+            aria-label="Inbox"
+            title="Inbox"
+            aria-pressed={isOverlayOpen("inbox")}
+            {...{ [POPOVER_TOGGLE]: "" }}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => toggleOverlay("inbox")}
+          >
+            <InboxIcon class="size-4" />
+            <Show when={unreadMentionCount() > 0}>
+              <span class="absolute top-1 right-1.5">
+                <Badge count={unreadMentionCount()} />
+              </span>
+            </Show>
+          </button>
+          <button
+            class={`${CONTROL} ${isSettingsOpen() ? PRESSED : ""}`}
+            aria-label="Settings"
+            title="Settings"
+            aria-pressed={isSettingsOpen()}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={toggleSettings}
+          >
+            <Settings class="size-4" />
+          </button>
+          <div class="w-px h-5 self-center mx-1 bg-line-soft" />
+          <button
+            class={CONTROL}
             onClick={() => win.minimize()}
             aria-label="Minimize"
           >
-            <Minus class="size-2.5" />
+            <Minus class="size-3" />
           </button>
           <button
-            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-bg hover:text-text transition-colors cursor-pointer"
+            class={CONTROL}
             onClick={() => win.toggleMaximize()}
             aria-label={maximized() ? "Restore" : "Maximize"}
           >
-            {maximized()
-              ? <Copy class="size-2.5" />
-              : <Square class="size-2.5" />}
+            {maximized() ? <Copy class="size-3" /> : <Square class="size-3" />}
           </button>
           <button
-            class="w-11 h-full flex items-center justify-center text-text-muted hover:bg-danger hover:text-text transition-colors cursor-pointer"
+            class={`${CONTROL} hover:bg-negative! hover:text-on-accent!`}
             onClick={() => win.close()}
             aria-label="Close"
           >
-            <X class="size-2.5" />
+            <X class="size-3" />
           </button>
         </div>
       </div>
+      <Show when={isOverlayOpen("inbox")}>
+        <Inbox
+          x={inboxAnchor().x}
+          y={inboxAnchor().y}
+          onClose={() => toggleOverlay("inbox")}
+          onJump={props.onJumpToMessage}
+        />
+      </Show>
       {!maximized() && (
         <>
           <ResizeHandle

@@ -1,31 +1,21 @@
-import { produce } from "solid-js/store";
+import type { Theme } from "../../services/appearance.ts";
 import { persist, prefs, setPrefs } from "./core.ts";
 
-export const appearanceColors = () => prefs.appearance.colors;
+export const appearanceTheme = () => prefs.appearance.theme;
+export const appearanceAccent = () => prefs.appearance.accent;
+export const appearanceRailExpanded = () => prefs.appearance.railExpanded;
 
-export function setAppearanceColor(key: string, value: string) {
-  setPrefs("appearance", "colors", key, value);
+export function setAppearanceTheme(theme: Theme) {
+  setPrefs("appearance", "theme", theme);
   persist();
 }
 
-export function resetAppearanceColor(key: string) {
-  setPrefs(
-    "appearance",
-    "colors",
-    produce((c) => {
-      delete c[key];
-    }),
-  );
+export function setAppearanceAccent(hex: string | null) {
+  setPrefs("appearance", "accent", hex);
   persist();
 }
 
-export function resetAppearanceColors() {
-  setPrefs(
-    "appearance",
-    "colors",
-    produce((c) => {
-      for (const k of Object.keys(c)) delete c[k];
-    }),
-  );
+export function setAppearanceRailExpanded(expanded: boolean) {
+  setPrefs("appearance", "railExpanded", expanded);
   persist();
 }

@@ -35,16 +35,16 @@ function renderUserItem(s: UserSuggestion): JSX.Element {
   return (
     <>
       <span
-        class="font-semibold text-left truncate"
-        style={{ color: s.color || "var(--color-text)" }}
+        class="font-semibold text-left truncate text-(--name)"
+        style={{ "--name": s.color || "var(--color-ink)" }}
       >
         {s.nickname ?? s.displayName}
       </span>
       <Show when={s.nickname}>
-        <span class="text-text-muted text-sm truncate">({s.displayName})</span>
+        <span class="text-ink-soft text-small truncate">({s.displayName})</span>
       </Show>
       <span class="flex-1" />
-      <span class="text-xs font-semibold shrink-0 text-text-muted">
+      <span class="text-small font-semibold shrink-0 text-ink-soft">
         {s.displayName.toLowerCase() !== s.login ? s.login : ""}
       </span>
     </>
@@ -61,7 +61,7 @@ function renderSearchItem(s: OptionSuggestion): JSX.Element {
           class="size-7 shrink-0 rounded object-cover"
         />
       </Show>
-      <span class="text-text truncate">{s.label}</span>
+      <span class="text-ink truncate">{s.label}</span>
     </>
   );
 }
@@ -196,7 +196,7 @@ export default function CommandComposer(props: Props) {
         return enumSuggestions().length === 0 ? null : {
           items: enumSuggestions,
           select: (i) => selectEnum(i as string),
-          render: (i) => <span class="text-text">{i as string}</span>,
+          render: (i) => <span class="text-ink">{i as string}</span>,
         };
       case "search":
         return searchSuggestions().length === 0 ? null : {
@@ -449,26 +449,26 @@ export default function CommandComposer(props: Props) {
           }}
         />
       </Show>
-      <Banner tone={errorActive() ? "danger" : "info"}>
-        <span class="text-text-muted">/{props.command.name}</span>
+      <Banner danger={errorActive()}>
+        <span class="text-ink-soft">/{props.command.name}</span>
         <Show when={activeOption()?.name}>
-          <span class="text-text-muted">·</span>
+          <span class="text-ink-soft">·</span>
           <span
             class={`font-semibold ${
-              errorActive() ? "text-danger" : "text-primary"
+              errorActive() ? "text-negative" : "text-accent-ink"
             }`}
           >
             {activeOption()!.name}
           </span>
         </Show>
         <Show when={hintBody()}>
-          <span class={errorActive() ? "text-danger" : "text-text-muted"}>
+          <span class={errorActive() ? "text-negative" : "text-ink-soft"}>
             — {hintBody()}
           </span>
         </Show>
       </Banner>
       <div class="flex items-center flex-wrap gap-2 px-4 min-h-14 py-2 min-w-0">
-        <span class="inline-flex items-center px-2 py-1 rounded bg-primary/15 text-primary text-base font-semibold shrink-0">
+        <span class="inline-flex items-center px-2 py-1 rounded-sm bg-accent-soft text-accent-ink text-body font-semibold shrink-0">
           /{props.command.name}
         </span>
         <For each={options}>

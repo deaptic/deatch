@@ -53,23 +53,24 @@ export default function UserCardModActions(props: Props) {
 
   return (
     <Show when={canModerate()}>
-      <div class="flex gap-1.5 p-2 border-b border-border-muted bg-bg-dark shrink-0">
+      <div class="flex gap-1.5 p-2.5 border-b border-line-soft shrink-0">
         <Button
-          variant="secondary"
+          variant="neutral"
+          size="sm"
           onClick={unban}
           title="Unban"
           aria-label="Unban"
-          icon={<Ban class="size-4 text-success" />}
+          icon={<Ban class="size-4 text-positive" />}
         />
         <div class="flex-1 grid grid-cols-6 gap-1.5 min-w-0">
           <For each={TIMEOUTS}>
             {(t) => (
               <Button
-                variant="secondary"
+                variant="neutral"
+                size="sm"
                 onClick={() => timeout(t.seconds)}
-                title={`Timeout ${t.label}`}
-                aria-label={`Timeout ${t.label}`}
-                class="px-0 text-xs font-medium tabular-nums"
+                title={`Time out ${t.label}`}
+                aria-label={`Time out ${t.label}`}
               >
                 {t.label}
               </Button>
@@ -77,11 +78,12 @@ export default function UserCardModActions(props: Props) {
           </For>
         </div>
         <Button
-          variant="secondary"
+          variant="neutral"
+          size="sm"
           onClick={ban}
           title="Ban"
           aria-label="Ban"
-          icon={<Ban class="size-4 text-danger" />}
+          icon={<Ban class="size-4 text-negative" />}
         />
       </div>
     </Show>
