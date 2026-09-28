@@ -287,15 +287,16 @@ export default function Chat(props: Props) {
   });
 
   return (
-    <div class="flex flex-col h-full bg-bg-dark">
+    <div class="flex-1 min-h-0 flex flex-col">
       <Show when={props.isActive && pendingRaid()}>
         {(raid) => <RaidBanner raid={raid()} />}
       </Show>
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
-        scrollClass="pl-2 pr-3"
-        style={{ "font-size": `${feedFontSize()}px` }}
+        scrollClass="pl-3.25 pr-4 py-2"
+        class="text-(length:--chat-size)"
+        style={{ "--chat-size": `${feedFontSize()}px` }}
         onWheel={fontSize.onWheel}
         onContextMenu={(x, y, msg) => messageMenu.open(x, y, { msg })}
         onReply={startReply}
@@ -308,7 +309,7 @@ export default function Chat(props: Props) {
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
         header={
           <Show when={fontSize.flash()}>
-            <div class="absolute top-3 right-3 z-20 bg-bg border border-border-muted text-text text-base font-semibold px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
+            <div class="absolute top-3 right-4 z-20 bg-overlay border border-line text-ink text-title px-3 py-1.5 rounded-md pointer-events-none">
               {feedFontSize()}px
             </div>
           </Show>
@@ -317,10 +318,10 @@ export default function Chat(props: Props) {
           <Show when={feedApi()?.isPaused()}>
             <button
               onClick={jumpToLatest}
-              class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-primary hover:bg-primary/80 text-text text-xs font-medium px-3 py-1.5 rounded-full shadow-lg transition-colors cursor-pointer"
+              class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 h-8 pl-2.5 pr-3.5 bg-accent hover:bg-accent-hover text-on-accent text-small font-semibold rounded-full transition-colors duration-snap cursor-pointer"
             >
-              <ChevronDown class="size-3" />
-              Latest messages
+              <ChevronDown class="size-4" />
+              New messages
             </button>
           </Show>
         }

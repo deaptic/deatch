@@ -1,22 +1,19 @@
 import { For, Show } from "solid-js";
-import SettingsContent from "../SettingsContent.tsx";
-import SettingsContentSection from "../SettingsContentSection.tsx";
-import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import PageBody from "../../ui/PageBody.tsx";
+import Card from "../../ui/Card.tsx";
+import SettingsRow from "../../ui/SettingsRow.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
-import Stepper from "../../ui/Stepper.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import Chip from "../../ui/Chip.tsx";
-import ChipList from "../../ui/ChipList.tsx";
 import ChipInput from "../../ui/ChipInput.tsx";
-import LoginListEditor from "../../ui/LoginListEditor.tsx";
-import KeyValueEditor from "../../ui/KeyValueEditor.tsx";
+import UserListEditor from "../UserListEditor.tsx";
+import NicknameEditor from "../NicknameEditor.tsx";
 import { BADGE_CATEGORIES, EVENTS } from "../../../lib/constants.ts";
 import { setUserNicknameByLogin } from "../../../lib/services/preferences.ts";
 import {
   addFeedKeyword,
   feedBadges,
   feedEvents,
-  feedFontSize,
   feedKeywords,
   feedShowCopypasta,
   feedShowDeletedContent,
@@ -30,7 +27,6 @@ import {
   removeUserNickname,
   setFeedBadge,
   setFeedEvent,
-  setFeedFontSize,
   setFeedShowCopypasta,
   setFeedShowDeletedContent,
   setFeedShowTimestamp,
@@ -48,60 +44,46 @@ export default function FeedSection() {
   }
 
   return (
-    <SettingsContent title="Feed">
-      <SettingsContentSection title="General">
-        <SettingsContentSectionItem
-          label="Text size in chat"
-          description="Adjust how big chat messages appear."
-        >
-          <Stepper
-            size="md"
-            label={String(feedFontSize())}
-            onDecrement={() => setFeedFontSize(feedFontSize() - 1)}
-            onIncrement={() => setFeedFontSize(feedFontSize() + 1)}
-          />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
+    <PageBody title="Feed" lede="What shows up in chat, and how.">
+      <Card>
+        <SettingsRow
           label="Show timestamps"
-          description="Display the time next to each chat message."
+          description="Time next to every message."
         >
           <Toggle
-            size="md"
+            label="Show timestamps"
             checked={feedShowTimestamp()}
             onChange={setFeedShowTimestamp}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
-          label="Show deleted message contents"
-          description="Show deleted messages greyed out instead of <deleted>."
+        </SettingsRow>
+        <SettingsRow
+          label="Show deleted messages"
+          description="Keep the text visible, dimmed, instead of hiding it."
         >
           <Toggle
-            size="md"
+            label="Show deleted messages"
             checked={feedShowDeletedContent()}
             onChange={setFeedShowDeletedContent}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
+        </SettingsRow>
+        <SettingsRow
           label="Copypasta button"
-          description="Add a button to re-send a message as your own."
+          description="Re-send any message as your own from its toolbar."
         >
           <Toggle
-            size="md"
+            label="Copypasta button"
             checked={feedShowCopypasta()}
             onChange={setFeedShowCopypasta}
           />
-        </SettingsContentSectionItem>
-      </SettingsContentSection>
-
-      <SettingsContentSection title="Highlights">
-        <SettingsContentSectionItem
-          label="Keywords"
-          description="Highlight these words and add them to your inbox, like mentions."
+        </SettingsRow>
+        <SettingsRow
+          label="Highlight keywords"
+          description="Messages containing these light up like mentions and land in your inbox."
           stacked
         >
-          <ChipInput placeholder="Add keyword..." onAdd={addFeedKeyword} />
+          <ChipInput placeholder="Add a keyword" onAdd={addFeedKeyword} />
           <Show when={feedKeywords().length > 0}>
-            <ChipList>
+            <div class="flex flex-wrap gap-1.5">
               <For each={feedKeywords()}>
                 {(kw) => (
                   <Chip
@@ -110,25 +92,25 @@ export default function FeedSection() {
                   />
                 )}
               </For>
-            </ChipList>
+            </div>
           </Show>
-        </SettingsContentSectionItem>
-      </SettingsContentSection>
+        </SettingsRow>
+      </Card>
 
-      <SettingsContentSection title="Users">
-        <SettingsContentSectionItem
-          label="Show display names in chat"
-          description="Use display names instead of logins."
+      <Card>
+        <SettingsRow
+          label="Show display names"
+          description="Display names instead of logins."
         >
           <Toggle
-            size="md"
+            label="Show display names"
             checked={feedUserShowDisplayName()}
             onChange={setFeedUserShowDisplayName}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
-          label="Override name colors"
-          description="One color for all names. Reset to restore per-user."
+        </SettingsRow>
+        <SettingsRow
+          label="One colour for all names"
+          description="Reset to bring back each chatter's own colour."
         >
           <ColorPicker
             swatchColor={feedUserOverrideNameColor() || "transparent"}
@@ -137,69 +119,61 @@ export default function FeedSection() {
             onReset={() => setFeedUserOverrideNameColor("")}
             resetDisabled={!feedUserOverrideNameColor()}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
+        </SettingsRow>
+        <SettingsRow
           label="Muted users"
-          description="Hide messages from these users."
+          description="Hide messages from these users everywhere."
           stacked
         >
-          <LoginListEditor
+          <UserListEditor
             ids={feedUserMuted()}
-            placeholder="Mute username..."
+            placeholder="Mute a username"
             onAdd={(u) => muteUser(u.id)}
             onRemove={unmuteUser}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
+        </SettingsRow>
+        <SettingsRow
           label="Nicknames"
-          description="Override how users' names show in chat and cards."
+          description="Show your own name for someone in chat and cards."
           stacked
         >
-          <KeyValueEditor
-            entries={Object.entries(feedUserNicknames()).map((
-              [key, value],
-            ) => ({ key, value }))}
-            keyPlaceholder="Username"
-            valuePlaceholder="Nickname"
+          <NicknameEditor
+            entries={feedUserNicknames()}
             onApply={applyNickname}
             onRemove={removeUserNickname}
           />
-        </SettingsContentSectionItem>
-      </SettingsContentSection>
+        </SettingsRow>
+      </Card>
 
-      <SettingsContentSection title="Events">
+      <Card>
+        <div class="px-5 pt-4 pb-1 text-small text-ink-faint">Events</div>
         <For each={EVENTS}>
           {(e) => (
-            <SettingsContentSectionItem
-              label={e.label}
-              description={e.description}
-            >
+            <SettingsRow label={e.label} description={e.description}>
               <Toggle
-                size="md"
+                label={e.label}
                 checked={feedEvents()[e.key]?.show !== false}
                 onChange={(v) => setFeedEvent(e.key, v)}
               />
-            </SettingsContentSectionItem>
+            </SettingsRow>
           )}
         </For>
-      </SettingsContentSection>
+      </Card>
 
-      <SettingsContentSection title="Badges">
+      <Card>
+        <div class="px-5 pt-4 pb-1 text-small text-ink-faint">Badges</div>
         <For each={BADGE_CATEGORIES}>
           {(c) => (
-            <SettingsContentSectionItem
-              label={c.label}
-              description={c.description}
-            >
+            <SettingsRow label={c.label} description={c.description}>
               <Toggle
-                size="md"
+                label={c.label}
                 checked={feedBadges()[c.key]?.show !== false}
                 onChange={(v) => setFeedBadge(c.key, v)}
               />
-            </SettingsContentSectionItem>
+            </SettingsRow>
           )}
         </For>
-      </SettingsContentSection>
-    </SettingsContent>
+      </Card>
+    </PageBody>
   );
 }

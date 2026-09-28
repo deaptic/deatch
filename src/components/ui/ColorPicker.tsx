@@ -12,9 +12,9 @@ export default function ColorPicker(props: Props) {
   return (
     <div class="flex items-center gap-2">
       <label
-        class="relative size-8 rounded border border-border cursor-pointer overflow-hidden"
-        style={{ "background-color": props.swatchColor }}
-        title="Pick color"
+        class="relative size-7 rounded-full border border-line cursor-pointer overflow-hidden bg-(--swatch)"
+        style={{ "--swatch": props.swatchColor }}
+        title="Pick colour"
       >
         <input
           type="color"
@@ -24,7 +24,8 @@ export default function ColorPicker(props: Props) {
         />
       </label>
       <Button
-        variant="secondary"
+        variant="ghost"
+        size="sm"
         disabled={props.resetDisabled}
         onClick={() => props.onReset()}
       >

@@ -1,41 +1,61 @@
-import { ExternalLink } from "lucide-solid";
-import { Show } from "solid-js";
+import {
+  Clapperboard,
+  Eraser,
+  ExternalLink,
+  Gem,
+  Gift,
+  Heart,
+  Info,
+  Megaphone,
+  Plug,
+  Radio,
+  Shield,
+  Sparkles,
+  Star,
+  Swords,
+  TriangleAlert,
+  Unplug,
+  UserPlus,
+} from "lucide-solid";
+import { type Component, Show } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { NOTICE_TO_EVENT } from "../../lib/constants.ts";
 import type { FeedEvent as Event } from "../../lib/types/index.ts";
 import Timestamp from "../ui/Timestamp.tsx";
-import RichNotice from "./RichNotice.tsx";
+import Toolbar from "../ui/Toolbar.tsx";
+import ToolbarItem from "../ui/ToolbarItem.tsx";
 
-const SUB = "var(--color-event-sub)";
-const RAID = "var(--color-event-raid)";
-const ANNOUNCE = "var(--color-event-announce)";
+type Look = { color: string; Icon: Component<{ class?: string }> };
 
-const COLORS: Record<string, string> = {
-  sub: SUB,
-  resub: SUB,
-  sub_gift: SUB,
-  community_sub_gift: SUB,
-  gift_paid_upgrade: SUB,
-  pay_it_forward: SUB,
-  prime_paid_upgrade: SUB,
-  shared_chat_sub: SUB,
-  shared_chat_resub: SUB,
-  shared_chat_sub_gift: SUB,
-  shared_chat_community_sub_gift: SUB,
-  shared_chat_gift_paid_upgrade: SUB,
-  shared_chat_pay_it_forward: SUB,
-  shared_chat_prime_paid_upgrade: SUB,
-  raid: RAID,
-  unraid: RAID,
-  shared_chat_raid: RAID,
-  announcement: ANNOUNCE,
-  shared_chat_announcement: ANNOUNCE,
-  charity_donation: "var(--color-event-charity)",
-  shoutout: "var(--color-event-shoutout)",
-  follow: "var(--color-event-follow)",
-  bits_badge_tier: "var(--color-event-bits)",
-  channel_points_redemption: "var(--color-event-channel-points)",
-  clip_created: "var(--color-primary)",
+const LOOKS: Record<string, Look> = {
+  sub: { color: "var(--color-event-sub)", Icon: Gift },
+  raid: { color: "var(--color-event-raid)", Icon: Swords },
+  announcement: { color: "var(--color-event-announce)", Icon: Megaphone },
+  charity_donation: { color: "var(--color-event-charity)", Icon: Heart },
+  shoutout: { color: "var(--color-event-shoutout)", Icon: Radio },
+  follow: { color: "var(--color-event-follow)", Icon: UserPlus },
+  bits_badge_tier: { color: "var(--color-event-bits)", Icon: Gem },
+  channel_points_redemption: {
+    color: "var(--color-event-channel-points)",
+    Icon: Star,
+  },
+  clip_created: { color: "var(--color-accent-ink)", Icon: Clapperboard },
+  chat_connected: { color: "var(--color-positive)", Icon: Plug },
+  chat_disconnected: { color: "var(--color-ink-faint)", Icon: Unplug },
+  chat_connect_failed: { color: "var(--color-negative)", Icon: TriangleAlert },
+  chat_cleared: { color: "var(--color-caution)", Icon: Eraser },
+  moderate: { color: "var(--color-caution)", Icon: Shield },
+  seventv_update: { color: "var(--color-info)", Icon: Sparkles },
+  local: { color: "var(--color-ink-faint)", Icon: Info },
 };
+
+function lookFor(noticeType: string): Look {
+  const key = noticeType.startsWith("moderate_")
+    ? "moderate"
+    : NOTICE_TO_EVENT[noticeType] ?? noticeType;
+  return LOOKS[key] ?? LOOKS.local;
+}
 
 type Props = {
   item: Event;
@@ -44,15 +64,12 @@ type Props = {
 };
 
 export default function FeedEvent(props: Props) {
-  const color = () => COLORS[props.item.notice_type] ?? SUB;
+  const look = () => lookFor(props.item.notice_type);
   return (
     <div
       data-item-id={props.item.id}
-      class="relative group flex gap-2 items-stretch leading-[1.6] px-2 py-1 -mx-2 border-l-4 rounded-r-md"
-      style={{
-        "background-color": `color-mix(in oklab, ${color()} 10%, transparent)`,
-        "border-left-color": color(),
-      }}
+      class="relative group flex items-start leading-normal pl-3 pr-2 py-1 border-l-3 border-(--event) bg-(--event)/10 rounded-r-sm"
+      style={{ "--event": look().color }}
       onContextMenu={(e) => {
         if (!props.onContextMenu) return;
         e.preventDefault();
@@ -61,32 +78,26 @@ export default function FeedEvent(props: Props) {
       }}
     >
       <Show when={props.showTimestamp}>
-        <Timestamp
-          ts={props.item.timestamp}
-          class="text-text-muted select-none shrink-0"
-        />
+        <Timestamp ts={props.item.timestamp} feed />
       </Show>
-      <Show
-        when={props.item.clip}
-        fallback={
-          <span class="text-text font-semibold wrap-break-word min-w-0">
-            {props.item.system_message}
-          </span>
-        }
-      >
-        <RichNotice
-          class="text-text font-semibold wrap-break-word min-w-0"
-          label={props.item.system_message}
-          actions={[
-            {
-              title: "View clip",
-              icon: () => <ExternalLink class="size-3.5" />,
-              variant: "success",
-              onClick: () =>
-                openUrl(`https://clips.twitch.tv/${props.item.clip!.id}`),
-            },
-          ]}
-        />
+      <div class="flex-1 min-w-0 wrap-break-word text-ink">
+        <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--event)">
+          <Dynamic component={look().Icon} />
+        </span>
+        {props.item.system_message}
+      </div>
+      <Show when={props.item.clip}>
+        {(clip) => (
+          <Toolbar alwaysVisible>
+            <ToolbarItem
+              title="View clip"
+              tone="success"
+              onClick={() => openUrl(`https://clips.twitch.tv/${clip().id}`)}
+            >
+              <ExternalLink />
+            </ToolbarItem>
+          </Toolbar>
+        )}
       </Show>
     </div>
   );

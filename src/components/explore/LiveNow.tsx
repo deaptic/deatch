@@ -8,12 +8,16 @@ import { getUsers } from "../../lib/api/twitch/users.ts";
 import LiveCard from "./LiveCard.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
 import Chip from "../ui/Chip.tsx";
+import Segmented from "../ui/Segmented.tsx";
+import Skeleton from "../ui/Skeleton.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
 };
 
 const PAGE_SIZE = 40;
+
+type Scope = "following" | "all";
 
 export default function LiveNow(props: Props) {
   const [remote, setRemote] = createSignal<Stream[]>([]);
@@ -89,13 +93,15 @@ export default function LiveNow(props: Props) {
   onCleanup(() => observer.disconnect());
 
   return (
-    <section class="mb-8">
-      <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-text">
-          Live now
-        </h2>
+    <section>
+      <div class="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
+        <h2 class="text-heading text-ink">Live now</h2>
         <Show when={source().length > 0}>
-          <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-muted">
+          <span class="text-small text-ink-soft">
+            {exploreFilters.followingOnly
+              ? "from channels you follow"
+              : "on Twitch"}
+            {" · "}
             {source().length}
           </span>
         </Show>
@@ -103,23 +109,22 @@ export default function LiveNow(props: Props) {
           {(category) => (
             <Chip
               label={category().name}
+              selected
               onRemove={() => setExploreFilters("category", null)}
             />
           )}
         </Show>
 
-        <div class="ml-auto flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setExploreFilters("followingOnly", (v) => !v)}
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            classList={{
-              "bg-bg-light text-text": exploreFilters.followingOnly,
-              "text-text-muted hover:text-text": !exploreFilters.followingOnly,
-            }}
-          >
-            Following
-          </button>
+        <div class="ml-auto flex items-center gap-2 self-center">
+          <Segmented<Scope>
+            value={exploreFilters.followingOnly ? "following" : "all"}
+            options={[
+              { value: "following", label: "Following" },
+              { value: "all", label: "Everyone" },
+            ]}
+            onChange={(v) =>
+              setExploreFilters("followingOnly", v === "following")}
+          />
           <LanguageSelect
             value={exploreFilters.language}
             onChange={(v) => setExploreFilters("language", v)}
@@ -130,25 +135,38 @@ export default function LiveNow(props: Props) {
       <Show
         when={!initialLoading()}
         fallback={
-          <p class="rounded-lg border border-dashed border-border-muted px-4 py-8 text-center text-sm text-text-muted">
-            Loading streams…
-          </p>
+          <div class="grid grid-cards gap-4">
+            <For each={Array.from({ length: 6 })}>
+              {() => (
+                <div class="flex flex-col gap-3">
+                  <Skeleton shape="card" class="aspect-video" />
+                  <div class="flex gap-3">
+                    <Skeleton shape="circle" class="size-9 shrink-0" />
+                    <div class="flex-1 flex flex-col gap-2 pt-1">
+                      <Skeleton shape="line" class="h-3.5 w-32" />
+                      <Skeleton shape="line" class="h-3 w-48" />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </For>
+          </div>
         }
       >
         <Show
           when={sorted().length > 0}
           fallback={
-            <p class="rounded-lg border border-dashed border-border-muted px-4 py-8 text-center text-sm text-text-muted">
+            <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
               <Show
                 when={exploreFilters.followingOnly}
                 fallback="No live channels match these filters right now."
               >
-                None of the channels you follow are live right now.
+                Nobody you follow is live right now. Try "Everyone".
               </Show>
             </p>
           }
         >
-          <div class="grid auto-rows-fr grid-cols-1 gap-x-4 gap-y-6 @[440px]:grid-cols-2 @[820px]:grid-cols-3 @[1180px]:grid-cols-4">
+          <div class="grid grid-cards gap-4">
             <For each={sorted()}>
               {(stream) => (
                 <LiveCard stream={stream} onSelect={props.onSelect} />
@@ -162,7 +180,7 @@ export default function LiveNow(props: Props) {
           when={!exploreFilters.followingOnly && fetching() &&
             remote().length > 0}
         >
-          <p class="py-4 text-center text-sm text-text-muted">Loading more…</p>
+          <p class="py-4 text-center text-small text-ink-soft">Loading more…</p>
         </Show>
       </Show>
     </section>

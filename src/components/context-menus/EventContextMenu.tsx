@@ -1,6 +1,6 @@
 import { Copy } from "lucide-solid";
-import ContextMenu from "../ui/ContextMenu.tsx";
-import ContextMenuItem from "../ui/ContextMenuItem.tsx";
+import Menu from "../ui/Menu.tsx";
+import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedEvent } from "../../lib/types/index.ts";
 
@@ -14,8 +14,8 @@ type Props = {
 
 export default function EventContextMenu(props: Props) {
   return (
-    <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
-      <ContextMenuItem
+    <Menu x={props.x} y={props.y} onClose={props.onClose}>
+      <MenuItem
         label="Copy Text"
         icon={<Copy class="size-3.5" />}
         onClick={() => {
@@ -28,6 +28,6 @@ export default function EventContextMenu(props: Props) {
         data={props.item}
         onClose={props.onClose}
       />
-    </ContextMenu>
+    </Menu>
   );
 }

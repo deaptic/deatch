@@ -1,9 +1,9 @@
 import { ClipboardPaste, Copy, Reply, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
-import ContextMenu from "../ui/ContextMenu.tsx";
-import ContextMenuItem from "../ui/ContextMenuItem.tsx";
-import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
+import Menu from "../ui/Menu.tsx";
+import MenuDivider from "../ui/MenuDivider.tsx";
+import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
 
@@ -22,8 +22,8 @@ type Props = {
 
 export default function MessageContextMenu(props: Props) {
   return (
-    <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
-      <ContextMenuItem
+    <Menu x={props.x} y={props.y} onClose={props.onClose}>
+      <MenuItem
         label="Reply"
         icon={<Reply class="size-3.5" />}
         onClick={() => {
@@ -31,7 +31,7 @@ export default function MessageContextMenu(props: Props) {
           props.onClose();
         }}
       />
-      <ContextMenuItem
+      <MenuItem
         label="Copy Text"
         icon={<Copy class="size-3.5" />}
         onClick={() => {
@@ -42,8 +42,8 @@ export default function MessageContextMenu(props: Props) {
         }}
       />
       <Show when={props.showCopypasta}>
-        <ContextMenuDivider />
-        <ContextMenuItem
+        <MenuDivider />
+        <MenuItem
           label="Copypasta"
           icon={<ClipboardPaste class="size-3.5" />}
           onClick={() => {
@@ -53,8 +53,8 @@ export default function MessageContextMenu(props: Props) {
         />
       </Show>
       <Show when={props.isMod}>
-        <ContextMenuDivider />
-        <ContextMenuItem
+        <MenuDivider />
+        <MenuItem
           label="Delete Message"
           danger
           icon={<Trash2 class="size-3.5" />}
@@ -72,6 +72,6 @@ export default function MessageContextMenu(props: Props) {
         data={props.msg}
         onClose={props.onClose}
       />
-    </ContextMenu>
+    </Menu>
   );
 }

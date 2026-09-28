@@ -17,7 +17,7 @@ export const feedEvents = () =>
   prefs.feed.events as Record<EventKey, EventPref>;
 
 export function setFeedFontSize(value: number) {
-  setPrefs("feed", "fontSize", Math.min(24, Math.max(11, value)));
+  setPrefs("feed", "fontSize", Math.min(22, Math.max(12, value)));
   persist();
 }
 

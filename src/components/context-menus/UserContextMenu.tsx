@@ -1,9 +1,9 @@
 import { AtSign, Ban, Hash, Megaphone, User, VolumeX } from "lucide-solid";
 import { Show } from "solid-js";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
-import ContextMenu from "../ui/ContextMenu.tsx";
-import ContextMenuItem from "../ui/ContextMenuItem.tsx";
-import ContextMenuDivider from "../ui/ContextMenuDivider.tsx";
+import Menu from "../ui/Menu.tsx";
+import MenuDivider from "../ui/MenuDivider.tsx";
+import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import {
   feedUserMuted,
@@ -41,8 +41,8 @@ export default function UserContextMenu(props: Props) {
   const nickname = () => feedUserNickname(props.userLogin);
 
   return (
-    <ContextMenu x={props.x} y={props.y} onClose={props.onClose}>
-      <ContextMenuItem
+    <Menu x={props.x} y={props.y} onClose={props.onClose}>
+      <MenuItem
         label="Profile"
         icon={<User class="size-3.5" />}
         onClick={() => {
@@ -50,7 +50,7 @@ export default function UserContextMenu(props: Props) {
           props.onClose();
         }}
       />
-      <ContextMenuItem
+      <MenuItem
         label="Mention"
         icon={<AtSign class="size-3.5" />}
         onClick={() => {
@@ -59,7 +59,7 @@ export default function UserContextMenu(props: Props) {
         }}
       />
       <Show when={props.isMod}>
-        <ContextMenuItem
+        <MenuItem
           label="Shoutout"
           icon={<Megaphone class="size-3.5" />}
           onClick={() => {
@@ -71,8 +71,8 @@ export default function UserContextMenu(props: Props) {
           }}
         />
       </Show>
-      <ContextMenuDivider />
-      <ContextMenuItem
+      <MenuDivider />
+      <MenuItem
         label={nickname() ? "Edit nickname" : "Set nickname"}
         icon={<Hash class="size-3.5" />}
         onClick={() => {
@@ -85,7 +85,7 @@ export default function UserContextMenu(props: Props) {
           props.onClose();
         }}
       />
-      <ContextMenuItem
+      <MenuItem
         label={muted()
           ? `Unmute ${props.userDisplayName}`
           : `Mute ${props.userDisplayName}`}
@@ -98,8 +98,8 @@ export default function UserContextMenu(props: Props) {
         }}
       />
       <Show when={props.isMod}>
-        <ContextMenuDivider />
-        <ContextMenuItem
+        <MenuDivider />
+        <MenuItem
           label="Ban / Timeout"
           danger
           icon={<Ban class="size-3.5" />}
@@ -121,6 +121,6 @@ export default function UserContextMenu(props: Props) {
         }}
         onClose={props.onClose}
       />
-    </ContextMenu>
+    </Menu>
   );
 }

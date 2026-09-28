@@ -1,4 +1,5 @@
 import { ErrorBoundary, type JSX } from "solid-js";
+import Button from "./Button.tsx";
 
 type Props = {
   label?: string;
@@ -10,19 +11,15 @@ export default function Boundary(props: Props) {
     <ErrorBoundary
       fallback={(err, reset) => (
         <div class="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
-          <p class="text-text text-sm font-semibold">
+          <p class="text-title text-ink">
             {props.label ?? "Something went wrong"}
           </p>
-          <p class="text-text-muted text-xs max-w-xs break-words">
+          <p class="text-small text-ink-soft max-w-90 break-words">
             {err instanceof Error ? err.message : String(err)}
           </p>
-          <button
-            type="button"
-            onClick={reset}
-            class="mt-1 text-xs text-primary hover:underline cursor-pointer"
-          >
+          <Button variant="neutral" size="sm" class="mt-2" onClick={reset}>
             Try again
-          </button>
+          </Button>
         </div>
       )}
     >

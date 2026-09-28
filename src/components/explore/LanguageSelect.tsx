@@ -25,19 +25,20 @@ export default function LanguageSelect(props: Props) {
   return (
     <div class="relative">
       <select
+        aria-label="Language"
         value={props.value}
         onChange={(e) => props.onChange(e.currentTarget.value)}
-        class="cursor-pointer appearance-none rounded-md border border-border-muted bg-bg py-1.5 pl-3 pr-8 text-xs font-medium text-text transition-colors hover:bg-bg-light focus:outline-none"
+        class="h-control-sm cursor-pointer appearance-none rounded-sm border border-line bg-surface pl-3 pr-8 text-small font-semibold text-ink transition-colors duration-snap hover:bg-raised focus:outline-none focus:border-accent"
       >
         <For each={LANGUAGES}>
           {(lang) => (
-            <option value={lang.code} class="bg-bg text-text">
+            <option value={lang.code} class="bg-surface text-ink">
               {lang.label}
             </option>
           )}
         </For>
       </select>
-      <ChevronDown class="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-text-muted" />
+      <ChevronDown class="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-soft" />
     </div>
   );
 }

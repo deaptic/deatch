@@ -44,7 +44,9 @@
     "discordRichPresence": true
   },
   "appearance": {
-    "colors": {}
+    "theme": "system",
+    "accent": null,
+    "railExpanded": false
   },
   "menu": {
     "channels": {

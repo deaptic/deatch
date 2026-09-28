@@ -1,5 +1,6 @@
 import { Pin } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
+import IconButton from "../ui/IconButton.tsx";
 import type { User } from "../../lib/api/twitch/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import { feeds } from "../../lib/stores/feeds.ts";
@@ -34,11 +35,11 @@ export default function UserCardIdentity(props: Props) {
 
   return (
     <div class="flex items-center gap-1 min-w-0">
-      <div class="flex items-center gap-1.5 flex-1 min-w-0 text-lg leading-tight">
+      <div class="flex items-center gap-1.5 flex-1 min-w-0 text-title">
         <Show
           when={props.user}
           fallback={
-            <span class="font-semibold text-text truncate min-w-0">
+            <span class="font-semibold text-ink truncate min-w-0">
               {props.chatterId}
             </span>
           }
@@ -48,33 +49,25 @@ export default function UserCardIdentity(props: Props) {
             displayName={props.user!.displayName}
             color={messageColor()}
             userId={props.chatterId}
-            class="truncate min-w-0"
+            truncate
           />
         </Show>
-        <BadgeBox
-          badges={latestBadges()}
-          channelBadges={channelBadges()}
-          class="shrink-0"
-        />
+        <BadgeBox badges={latestBadges()} channelBadges={channelBadges()} />
         <Show when={props.user && feedUserNickname(props.user!.login)}>
-          <span class="text-text-muted/70 text-sm font-normal truncate min-w-0">
+          <span class="text-ink-faint text-small font-medium truncate min-w-0">
             ({props.user!.displayName})
           </span>
         </Show>
       </div>
-      <button
-        class={`shrink-0 size-8 flex items-center justify-center rounded transition-colors cursor-pointer ${
-          props.pinned
-            ? "text-text bg-highlight"
-            : "text-text-muted hover:text-text hover:bg-bg"
-        }`}
+      <IconButton
+        label={props.pinned ? "Unpin card" : "Keep card open"}
+        size="sm"
+        pressed={props.pinned}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={props.onTogglePin}
-        title={props.pinned ? "Unpin" : "Pin"}
-        aria-label={props.pinned ? "Unpin" : "Pin"}
       >
-        <Pin class="size-3" fill={props.pinned ? "currentColor" : "none"} />
-      </button>
+        <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
+      </IconButton>
     </div>
   );
 }

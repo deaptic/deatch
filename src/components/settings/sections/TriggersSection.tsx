@@ -1,6 +1,6 @@
 import { Plus } from "lucide-solid";
 import { createSignal, For } from "solid-js";
-import SettingsContent from "../SettingsContent.tsx";
+import PageBody from "../../ui/PageBody.tsx";
 import Button from "../../ui/Button.tsx";
 import TriggerCard from "./TriggerCard.tsx";
 import {
@@ -23,45 +23,38 @@ export default function TriggersSection() {
   };
 
   return (
-    <SettingsContent>
-      <div class="flex flex-col gap-1">
-        <h2 class="text-text text-lg font-semibold">Triggers</h2>
-        <p class="text-text-muted text-sm">
-          Automatically send or reply with a message when a chat message in your
-          own channel matches a phrase. Changes apply when you save.
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <For each={triggers()}>
-          {(t) => (
-            <TriggerCard
-              source={t}
-              persisted
-              onSave={saveTrigger}
-              onDelete={() => removeTrigger(t.id)}
-            />
-          )}
-        </For>
-        <For each={drafts()}>
-          {(t) => (
-            <TriggerCard
-              source={t}
-              persisted={false}
-              onSave={commitDraft}
-              onDelete={() => discardDraft(t.id)}
-            />
-          )}
-        </For>
-        <Button
-          variant="secondary"
-          class="self-start"
-          icon={<Plus class="size-4" />}
-          onClick={addDraft}
-        >
-          Add trigger
-        </Button>
-      </div>
-    </SettingsContent>
+    <PageBody
+      title="Triggers"
+      lede="Send or reply automatically when a message in your own channel matches a phrase. Changes apply when you save."
+    >
+      <For each={triggers()}>
+        {(t) => (
+          <TriggerCard
+            source={t}
+            persisted
+            onSave={saveTrigger}
+            onDelete={() => removeTrigger(t.id)}
+          />
+        )}
+      </For>
+      <For each={drafts()}>
+        {(t) => (
+          <TriggerCard
+            source={t}
+            persisted={false}
+            onSave={commitDraft}
+            onDelete={() => discardDraft(t.id)}
+          />
+        )}
+      </For>
+      <Button
+        variant="neutral"
+        class="self-start"
+        icon={<Plus class="size-4" />}
+        onClick={addDraft}
+      >
+        Add trigger
+      </Button>
+    </PageBody>
   );
 }

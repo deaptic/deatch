@@ -1,12 +1,12 @@
 import { For, type JSX, Show } from "solid-js";
 import Toolbar from "../ui/Toolbar.tsx";
-import ToolbarItem from "../ui/ToolbarItem.tsx";
+import ToolbarItem, { type ToolbarTone } from "../ui/ToolbarItem.tsx";
 
 export type RichNoticeAction = {
   title: string;
   icon: () => JSX.Element;
   onClick: () => void;
-  variant?: "default" | "success" | "danger";
+  tone?: ToolbarTone;
   disabled?: () => boolean;
 };
 
@@ -20,10 +20,12 @@ type Props = {
 export default function RichNotice(props: Props) {
   return (
     <>
-      <div class={props.class}>
+      <div
+        class={`feed-meta leading-tight font-semibold mb-0.5 wrap-break-word ${props.class}`}
+      >
         {props.label}
         <Show when={props.suffix}>
-          <span class="text-text-muted">· {props.suffix}</span>
+          <span class="text-ink-soft font-medium">{` · ${props.suffix}`}</span>
         </Show>
       </div>
       <Show when={props.actions?.length}>
@@ -32,7 +34,7 @@ export default function RichNotice(props: Props) {
             {(action) => (
               <ToolbarItem
                 title={action.title}
-                variant={action.variant}
+                tone={action.tone}
                 disabled={action.disabled?.()}
                 onClick={action.onClick}
               >

@@ -1,8 +1,4 @@
-import { createEffect } from "solid-js";
 import type { Mention } from "../../lib/stores/inbox.ts";
-import { userCache } from "../../lib/stores/users.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
-import Avatar from "../ui/Avatar.tsx";
 
 type Props = {
   mention: Mention;
@@ -18,46 +14,29 @@ function formatRelative(ms: number): string {
 }
 
 export default function InboxItem(props: Props) {
-  createEffect(() => {
-    const id = props.mention.chatterId;
-    if (id) getUsers({ ids: [id] }, { silent: true }).catch(() => {});
-  });
-
-  const avatar = () => userCache()[props.mention.chatterId]?.profileImageUrl;
-
   return (
     <button
+      type="button"
       onClick={props.onClick}
-      class={`w-full flex gap-3 pl-4 pr-5 py-3 cursor-pointer hover:bg-bg transition-colors text-left border-l-4 ${
+      class={`w-full flex gap-2.5 items-start pl-3 pr-2.5 py-2 rounded-sm border-l-3 text-left text-sm leading-normal cursor-pointer transition-colors duration-snap hover:bg-raised ${
         props.mention.unread
-          ? "bg-primary/10 hover:bg-primary/15 border-primary"
+          ? "border-accent bg-accent-soft"
           : "border-transparent"
       }`}
     >
-      <Avatar
-        src={avatar()}
-        alt={props.mention.chatterName}
-        class="size-11 rounded-lg shrink-0"
-      />
-      <div class="flex-1 min-w-0 flex flex-col gap-0.5">
-        <div class="flex items-baseline gap-2">
-          <span
-            class="text-sm font-semibold truncate"
-            style={{ color: props.mention.chatterColor || "var(--color-text)" }}
-          >
-            {props.mention.chatterName}
-          </span>
-          <span class="text-text-muted text-xs shrink-0 truncate">
-            #{props.mention.channelLogin}
-          </span>
-          <span class="text-text-muted text-xs shrink-0 ml-auto">
-            {formatRelative(props.mention.timestamp)}
-          </span>
-        </div>
-        <p class="text-text-muted text-sm leading-snug line-clamp-2">
-          {props.mention.message}
-        </p>
-      </div>
+      <span class="shrink-0 text-ink-soft text-micro font-medium tabular-nums pt-0.5">
+        {formatRelative(props.mention.timestamp)}
+      </span>
+      <span class="flex-1 min-w-0 wrap-break-word line-clamp-2 text-ink">
+        <span
+          class="font-semibold text-(--name)"
+          style={{ "--name": props.mention.chatterColor || "var(--color-ink)" }}
+        >
+          {props.mention.chatterName}
+        </span>
+        <span class="text-ink-soft mr-1">:</span>
+        <span>{props.mention.message}</span>
+      </span>
     </button>
   );
 }

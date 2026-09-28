@@ -2,7 +2,7 @@ import { Check, ChevronRight, Trash2 } from "lucide-solid";
 import { createSignal, type JSX, Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Toggle from "../../ui/Toggle.tsx";
-import TextInput from "../../ui/TextInput.tsx";
+import Field from "../../ui/Field.tsx";
 import Button from "../../ui/Button.tsx";
 import Segmented from "../../ui/Segmented.tsx";
 import {
@@ -13,18 +13,14 @@ import {
 } from "../../../lib/stores/preferences.ts";
 
 function SectionLabel(props: { children: string }) {
-  return (
-    <span class="text-text-muted text-[0.7rem] font-semibold uppercase tracking-wider">
-      {props.children}
-    </span>
-  );
+  return <span class="text-small text-ink-faint">{props.children}</span>;
 }
 
-function Field(props: { label: string; children: JSX.Element }) {
+function Row(props: { label: string; children: JSX.Element }) {
   return (
-    <div class="grid grid-cols-[6rem_1fr] items-center gap-x-3">
-      <span class="text-text-muted text-xs font-medium">{props.label}</span>
-      <div class="justify-self-start">{props.children}</div>
+    <div class="flex items-center gap-3">
+      <span class="w-24 shrink-0 text-small text-ink-soft">{props.label}</span>
+      <div>{props.children}</div>
     </div>
   );
 }
@@ -45,13 +41,12 @@ export default function TriggerCard(props: {
 
   return (
     <div
-      class={`flex flex-col gap-4 rounded-lg border bg-bg-dark p-4 transition-opacity ${
-        canSave() ? "border-primary/40" : "border-border-muted"
+      class={`flex flex-col gap-4 rounded-lg border bg-surface p-4 transition-opacity duration-snap ${
+        canSave() ? "border-accent/40" : "border-line-soft"
       } ${draft.enabled ? "" : "opacity-60"}`}
     >
       <div class="flex items-center gap-3">
         <Toggle
-          size="md"
           checked={draft.enabled}
           onChange={(v) => setDraft("enabled", v)}
         />
@@ -61,24 +56,24 @@ export default function TriggerCard(props: {
           class="flex-1 flex items-center gap-2 min-w-0 cursor-pointer text-left group"
         >
           <span
-            class={`flex-1 truncate text-sm min-w-0 ${
-              draft.enabled ? "text-text" : "text-text-muted"
+            class={`flex-1 truncate text-body font-semibold min-w-0 ${
+              draft.enabled ? "text-ink" : "text-ink-soft"
             }`}
           >
             {draft.name.trim() || "Untitled trigger"}
             <Show when={canSave()}>
-              <span class="text-primary ml-1">*</span>
+              <span class="text-accent-ink ml-1">*</span>
             </Show>
           </span>
           <ChevronRight
-            class={`size-4 shrink-0 text-text-muted transition-transform group-hover:text-text ${
+            class={`size-4 shrink-0 text-ink-soft transition-transform duration-quick group-hover:text-ink ${
               expanded() ? "rotate-90" : ""
             }`}
           />
         </button>
         <Show when={canSave()}>
           <Button
-            variant="primary"
+            variant="accent"
             icon={<Check class="size-4" />}
             title={valid()
               ? "Save trigger"
@@ -97,11 +92,11 @@ export default function TriggerCard(props: {
 
       <Show when={expanded()}>
         <div class="flex flex-col gap-4">
-          <div class="h-px -mx-4 bg-border-muted" />
+          <div class="h-px -mx-4 bg-line-soft" />
 
           <div class="flex flex-col gap-3">
             <SectionLabel>Name</SectionLabel>
-            <TextInput
+            <Field
               placeholder="Trigger name..."
               value={draft.name}
               onInput={(e) => setDraft("name", e.currentTarget.value)}
@@ -115,9 +110,9 @@ export default function TriggerCard(props: {
               placeholder="Phrases to match, one per line..."
               value={draft.phrase}
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
-              class="bg-bg-light text-text text-sm rounded px-2.5 py-2 border border-border focus:outline-none focus:border-primary resize-y leading-snug"
+              class="bg-surface text-ink text-body rounded-sm px-3 py-2 border border-line hover:border-ink-faint focus:outline-none focus:border-accent resize-y placeholder:text-ink-faint transition-colors duration-snap"
             />
-            <Field label="Location">
+            <Row label="Location">
               <Segmented
                 value={draft.location}
                 options={[
@@ -127,24 +122,23 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("location", v)}
               />
-            </Field>
-            <Field label="Case sensitive">
+            </Row>
+            <Row label="Case sensitive">
               <Toggle
-                size="md"
                 checked={draft.caseSensitive}
                 onChange={(v) => setDraft("caseSensitive", v)}
               />
-            </Field>
+            </Row>
           </div>
 
           <div class="flex flex-col gap-3">
             <SectionLabel>Response</SectionLabel>
-            <TextInput
+            <Field
               placeholder="Response message..."
               value={draft.response}
               onInput={(e) => setDraft("response", e.currentTarget.value)}
             />
-            <Field label="Action">
+            <Row label="Action">
               <Segmented
                 value={draft.action}
                 options={[
@@ -153,10 +147,10 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("action", v)}
               />
-            </Field>
-            <Field label="Cooldown">
+            </Row>
+            <Row label="Cooldown">
               <div class="flex items-center gap-2">
-                <TextInput
+                <Field
                   type="number"
                   min={MIN_TRIGGER_COOLDOWN}
                   max={MAX_TRIGGER_COOLDOWN}
@@ -169,9 +163,9 @@ export default function TriggerCard(props: {
                     setDraft("cooldown", clampCooldown(draft.cooldown))}
                   class="w-20"
                 />
-                <span class="text-text-muted text-xs">seconds</span>
+                <span class="text-small text-ink-soft">seconds</span>
               </div>
-            </Field>
+            </Row>
           </div>
         </div>
       </Show>

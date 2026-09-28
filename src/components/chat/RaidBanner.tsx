@@ -5,6 +5,7 @@ import {
   type PendingRaid,
   RAID_DURATION_MS,
 } from "../../lib/stores/raid.ts";
+import Button from "../ui/Button.tsx";
 
 type Props = {
   raid: PendingRaid;
@@ -24,21 +25,21 @@ export default function RaidBanner(props: Props) {
     );
 
   return (
-    <div class="flex h-12 items-center gap-3 border-b border-primary/40 bg-primary/15 px-4">
-      <Swords class="size-5 shrink-0 text-primary" />
-      <span class="min-w-0 truncate text-sm text-text">
-        Raiding <b class="font-semibold">{props.raid.target.displayName}</b>
+    <div class="flex items-center gap-3 px-4 py-2.5 bg-raised border-b border-line-soft">
+      <Swords class="size-4 shrink-0 text-event-raid" />
+      <span class="min-w-0 truncate text-body text-ink">
+        Raiding <b class="font-semibold">{props.raid.target.displayName}</b> in
+        {" "}
+        <span class="font-semibold tabular-nums">{remaining()}s</span>
       </span>
-      <span class="shrink-0 rounded-md bg-bg-dark/40 px-2.5 py-1 text-sm font-bold tabular-nums text-text">
-        {remaining()}s
-      </span>
-      <button
-        type="button"
+      <Button
+        variant="neutral"
+        size="sm"
+        class="ml-auto"
         onClick={() => cancelActiveRaid()}
-        class="ml-auto shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-text-muted transition-colors hover:bg-bg hover:text-text"
       >
-        Cancel
-      </button>
+        Cancel raid
+      </Button>
     </div>
   );
 }

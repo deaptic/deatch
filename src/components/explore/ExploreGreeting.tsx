@@ -4,7 +4,7 @@ import { liveStreams } from "../../lib/stores/channels.ts";
 
 function timeGreeting(): string {
   const hour = new Date().getHours();
-  if (hour < 5) return "Late night";
+  if (hour < 5) return "Still up";
   if (hour < 12) return "Good morning";
   if (hour < 18) return "Good afternoon";
   return "Good evening";
@@ -14,25 +14,20 @@ export default function ExploreGreeting() {
   const liveCount = () => liveStreams().length;
 
   return (
-    <div class="mb-6 @[620px]:mb-7">
-      <h1 class="text-2xl font-semibold tracking-tight text-text @[620px]:text-3xl">
+    <div class="mb-6">
+      <h1 class="text-hero text-ink">
         {timeGreeting()}
-        <Show when={user()}>
-          {(u) => (
-            <>
-              , <span class="text-primary">{u().displayName}</span>
-            </>
-          )}
-        </Show>
+        <Show when={user()}>{(u) => <>, {u().displayName}</>}</Show>
       </h1>
-      <p class="mt-2 text-sm text-text-muted">
+      <p class="mt-2 text-body text-ink-soft max-w-prose">
         <Show
           when={liveCount() > 0}
-          fallback="None of the channels you follow are live right now."
+          fallback="Nobody you follow is live right now. Search for a channel, or browse what's on."
         >
-          <span class="font-semibold text-primary">{liveCount()}</span>{" "}
-          {liveCount() === 1 ? "channel" : "channels"} you follow{" "}
-          {liveCount() === 1 ? "is" : "are"} live right now.
+          {liveCount() === 1
+            ? "One channel you follow is live. "
+            : `${liveCount()} channels you follow are live. `}
+          Find a chat to settle into.
         </Show>
       </p>
     </div>

@@ -9,9 +9,10 @@ import {
   advancedAlwaysOnTop,
   advancedAutostart,
   advancedDiscordRichPresence,
-  appearanceColors,
+  appearanceAccent,
 } from "../stores/preferences.ts";
-import { applyAppearanceColors } from "../services/appearance.ts";
+import { resolvedTheme } from "../stores/theme.ts";
+import { applyAppearance } from "../services/appearance.ts";
 import { applyDiscordPresence } from "../services/discord.ts";
 import { startUpdateChecker } from "../services/updater.ts";
 import { user } from "../stores/users.ts";
@@ -20,7 +21,7 @@ import { activeView, selectedChannel } from "../stores/view.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
-    applyAppearanceColors(appearanceColors());
+    applyAppearance({ theme: resolvedTheme(), accent: appearanceAccent() });
   });
 
   createEffect(() => {

@@ -1,5 +1,6 @@
 import {
   Ban,
+  Keyboard,
   Megaphone,
   Palette,
   ScrollText,
@@ -7,86 +8,94 @@ import {
   Zap,
 } from "lucide-solid";
 import { createSignal, For, type JSX, Show } from "solid-js";
-import Panel from "../ui/Panel.tsx";
-import Navigation from "../ui/Navigation.tsx";
-import NavigationItem from "../ui/NavigationItem.tsx";
+import NavItem from "../ui/NavItem.tsx";
 import NotificationsSection from "./sections/NotificationsSection.tsx";
 import ModerationSection from "./sections/ModerationSection.tsx";
 import FeedSection from "./sections/FeedSection.tsx";
 import AppearanceSection from "./sections/AppearanceSection.tsx";
+import KeyboardSection from "./sections/KeyboardSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
 import TriggersSection from "./sections/TriggersSection.tsx";
 
 type SectionKey =
-  | "feed"
   | "notifications"
+  | "feed"
   | "moderation"
   | "triggers"
   | "appearance"
+  | "keyboard"
   | "advanced";
 
 const SECTIONS: {
   key: SectionKey;
   label: string;
   Icon: (p: { class?: string }) => JSX.Element;
+  Section: () => JSX.Element;
 }[] = [
-  { key: "notifications", label: "Notifications", Icon: Megaphone },
-  { key: "feed", label: "Feed", Icon: ScrollText },
-  { key: "moderation", label: "Moderation", Icon: Ban },
-  { key: "triggers", label: "Triggers", Icon: Zap },
-  { key: "appearance", label: "Appearance", Icon: Palette },
-  { key: "advanced", label: "Advanced", Icon: SettingsIcon },
+  {
+    key: "notifications",
+    label: "Notifications",
+    Icon: Megaphone,
+    Section: NotificationsSection,
+  },
+  { key: "feed", label: "Feed", Icon: ScrollText, Section: FeedSection },
+  {
+    key: "moderation",
+    label: "Moderation",
+    Icon: Ban,
+    Section: ModerationSection,
+  },
+  { key: "triggers", label: "Triggers", Icon: Zap, Section: TriggersSection },
+  {
+    key: "appearance",
+    label: "Appearance",
+    Icon: Palette,
+    Section: AppearanceSection,
+  },
+  {
+    key: "keyboard",
+    label: "Keyboard",
+    Icon: Keyboard,
+    Section: KeyboardSection,
+  },
+  {
+    key: "advanced",
+    label: "Advanced",
+    Icon: SettingsIcon,
+    Section: AdvancedSection,
+  },
 ];
 
-type Props = {
-  onClose: () => void;
-};
-
-export default function Settings(props: Props) {
+export default function Settings() {
   const [section, setSection] = createSignal<SectionKey>("notifications");
 
   return (
-    <Panel
-      title="Settings"
-      onClose={props.onClose}
-      ignoreSelector="[data-settings-toggle]"
-      sizeClass="w-[640px] h-[70vh] max-w-[calc(100vw-1rem)] max-h-[calc(100vh-4rem)]"
-    >
-      <div class="flex-1 flex min-h-0">
-        <Navigation
-          orientation="vertical"
-          class="w-48 shrink-0 border-r border-border-muted bg-bg-dark py-3"
-        >
-          <For each={SECTIONS}>
-            {(s) => (
-              <NavigationItem
-                label={s.label}
-                icon={<s.Icon class="size-3.5" />}
-                active={section() === s.key}
-                onClick={() => setSection(s.key)}
-              />
-            )}
-          </For>
-        </Navigation>
-        <Show when={section() === "notifications"}>
-          <NotificationsSection />
-        </Show>
-        <Show when={section() === "moderation"}>
-          <ModerationSection />
-        </Show>
-        <Show when={section() === "triggers"}>
-          <TriggersSection />
-        </Show>
-        <Show when={section() === "feed"}>
-          <FeedSection />
-        </Show>
-        <Show when={section() === "appearance"}>
-          <AppearanceSection />
-        </Show>
-        <Show when={section() === "advanced"}>
-          <AdvancedSection />
-        </Show>
+    <div class="flex-1 flex min-h-0 min-w-0">
+      <nav
+        aria-label="Settings sections"
+        class="basis-55 shrink min-w-16 flex flex-col gap-0.5 px-3 pt-8 border-r border-line-soft overflow-hidden"
+      >
+        <h1 class="text-heading text-ink px-3 pb-4 truncate">Settings</h1>
+        <For each={SECTIONS}>
+          {(s) => (
+            <NavItem
+              label={s.label}
+              icon={<s.Icon />}
+              active={section() === s.key}
+              onClick={() => setSection(s.key)}
+            />
+          )}
+        </For>
+      </nav>
+      <div class="flex-1 min-w-96 flex flex-col min-h-0">
+        <For each={SECTIONS}>
+          {(s) => (
+            <Show when={section() === s.key}>
+              <s.Section />
+            </Show>
+          )}
+        </For>
       </div>
-    </Panel>
+    </div>
   );
 }

@@ -1,12 +1,13 @@
 import { createSignal, Show } from "solid-js";
-import { Clock, MessageSquare, User as UserIcon } from "lucide-solid";
+import { MessageSquare } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { Stream } from "../../lib/types/twitch/stream.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
 import { messageRate } from "../../lib/stores/chatActivity.ts";
-import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
+import { formatUptime } from "../../lib/format/stream.ts";
 import Avatar from "../ui/Avatar.tsx";
+import LivePill from "../ui/LivePill.tsx";
 
 type Props = {
   stream: Stream;
@@ -16,6 +17,9 @@ type Props = {
 const THUMBNAIL_REFRESH_MS = 5 * 60_000;
 const [thumbnailVersion, setThumbnailVersion] = createSignal(0);
 setInterval(() => setThumbnailVersion((v) => v + 1), THUMBNAIL_REFRESH_MS);
+
+const OVERLAY_CHIP =
+  "flex items-center gap-1 rounded-xs bg-black/55 px-1.5 py-0.5 text-micro text-white tabular-nums";
 
 export default function LiveCard(props: Props) {
   const channel = () => resolveUser(props.stream.user);
@@ -36,59 +40,50 @@ export default function LiveCard(props: Props) {
         if (e.button === 1) e.preventDefault();
       }}
       title="Open chat · middle-click for browser"
-      class="group flex h-full w-full flex-col text-left"
+      class="group flex flex-col text-left bg-surface rounded-lg overflow-hidden border border-transparent [[data-theme=light]_&]:border-line-soft transition-colors duration-snap hover:bg-raised cursor-pointer"
     >
-      <div class="relative aspect-video overflow-hidden rounded-xl bg-bg-light">
+      <div class="relative aspect-video overflow-hidden bg-raised">
         <img
           src={thumbnail()}
           alt=""
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 size-full object-cover transition-transform duration-200 group-hover:scale-[1.03]"
+          class="absolute inset-0 size-full object-cover"
         />
-        <div class="absolute bottom-2 right-2 flex items-center gap-1">
+        <span class="absolute left-2.5 top-2.5">
+          <LivePill viewers={props.stream.viewerCount} solid />
+        </span>
+        <div class="absolute bottom-2.5 right-2.5 flex items-center gap-1">
           <Show when={rate() > 0}>
-            <span
-              class="flex items-center gap-1 rounded bg-bg-dark/80 px-1.5 py-0.5 text-[11px] font-semibold backdrop-blur-sm"
-              classList={{
-                "text-danger": rate() >= 200,
-                "text-warning": rate() >= 50 && rate() < 200,
-                "text-text": rate() < 50,
-              }}
-            >
+            <span class={OVERLAY_CHIP}>
               <MessageSquare class="size-3" />
               {rate()}/min
             </span>
           </Show>
-          <span class="flex items-center gap-1 rounded bg-bg-dark/80 px-1.5 py-0.5 text-[11px] font-semibold text-text backdrop-blur-sm">
-            <UserIcon class="size-3" />
-            {formatViewers(props.stream.viewerCount)}
-          </span>
-          <span class="flex items-center gap-1 rounded bg-bg-dark/80 px-1.5 py-0.5 text-[11px] font-medium text-text backdrop-blur-sm">
-            <Clock class="size-3" />
+          <span class={OVERLAY_CHIP}>
             {formatUptime(props.stream.startedAt)}
           </span>
         </div>
       </div>
 
-      <div class="mt-3 flex gap-3">
+      <div class="flex gap-3 px-3.5 pt-3 pb-3.5 items-start">
         <Avatar
           src={channel().profileImageUrl}
           alt={channel().displayName}
-          class="size-9 shrink-0 rounded-lg"
+          size={36}
         />
         <div class="min-w-0 flex-1">
-          <p class="line-clamp-2 text-sm font-semibold leading-snug text-text">
-            {props.stream.title}
-          </p>
-          <p class="mt-1 truncate text-xs text-text-muted">
+          <p class="truncate text-body font-semibold text-ink">
             {channel().displayName}
           </p>
           <Show when={props.stream.game.name}>
-            <p class="mt-1 truncate text-xs font-medium text-primary">
+            <p class="truncate text-small text-ink-soft">
               {props.stream.game.name}
             </p>
           </Show>
+          <p class="mt-0.5 truncate text-small text-ink-faint">
+            {props.stream.title}
+          </p>
         </div>
       </div>
     </button>

@@ -1,15 +1,9 @@
 export default function FeedDivider() {
   return (
-    <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 leading-[1.6] px-2 py-1 -mx-2 border-l-4 border-transparent select-none pointer-events-none">
-      <div class="h-[1em] flex items-center">
-        <div class="w-full border-t border-danger/60" />
-      </div>
-      <span class="text-[0.65em] font-bold text-danger uppercase tracking-wider leading-none">
-        New
-      </span>
-      <div class="h-[1em] flex items-center">
-        <div class="w-full border-t border-danger/60" />
-      </div>
+    <div class="flex items-center gap-3 my-1.5 pl-3 select-none pointer-events-none">
+      <div class="flex-1 border-t border-dotted border-accent" />
+      <span class="text-micro text-accent-ink px-2">New messages</span>
+      <div class="flex-1 border-t border-dotted border-accent" />
     </div>
   );
 }

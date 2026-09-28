@@ -1,6 +1,6 @@
-import SettingsContent from "../SettingsContent.tsx";
-import SettingsContentSection from "../SettingsContentSection.tsx";
-import SettingsContentSectionItem from "../SettingsContentSectionItem.tsx";
+import PageBody from "../../ui/PageBody.tsx";
+import Card from "../../ui/Card.tsx";
+import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import {
   advancedAlwaysOnTop,
@@ -17,59 +17,61 @@ import {
 
 export default function AdvancedSection() {
   return (
-    <SettingsContent title="Advanced">
-      <SettingsContentSection>
-        <SettingsContentSectionItem
-          label="Developer mode"
-          description="Show extra debug info and developer tools."
-        >
-          <Toggle
-            size="md"
-            checked={advancedDeveloperMode()}
-            onChange={setAdvancedDeveloperMode}
-          />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
-          label="Show logs"
-          description="Surface log messages as toasts."
-        >
-          <Toggle
-            size="md"
-            checked={advancedShowLogs()}
-            onChange={setAdvancedShowLogs}
-          />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
+    <PageBody title="Advanced" lede="Window behaviour and developer tools.">
+      <Card>
+        <SettingsRow
           label="Always on top"
           description="Keep the window above other applications."
         >
           <Toggle
-            size="md"
+            label="Always on top"
             checked={advancedAlwaysOnTop()}
             onChange={setAdvancedAlwaysOnTop}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
+        </SettingsRow>
+        <SettingsRow
           label="Launch at startup"
-          description="Launch when you sign in."
+          description="Open Deatch when you sign in to Windows."
         >
           <Toggle
-            size="md"
+            label="Launch at startup"
             checked={advancedAutostart()}
             onChange={setAdvancedAutostart}
           />
-        </SettingsContentSectionItem>
-        <SettingsContentSectionItem
-          label="Discord Rich Presence"
-          description="Show your channel on Discord. Requires Discord running."
+        </SettingsRow>
+        <SettingsRow
+          label="Discord presence"
+          description="Show the channel you're watching on Discord. Needs Discord running."
         >
           <Toggle
-            size="md"
+            label="Discord presence"
             checked={advancedDiscordRichPresence()}
             onChange={setAdvancedDiscordRichPresence}
           />
-        </SettingsContentSectionItem>
-      </SettingsContentSection>
-    </SettingsContent>
+        </SettingsRow>
+      </Card>
+      <Card>
+        <SettingsRow
+          label="Developer mode"
+          description="Extra debug info and copy-payload actions in menus."
+        >
+          <Toggle
+            label="Developer mode"
+            checked={advancedDeveloperMode()}
+            onChange={setAdvancedDeveloperMode}
+          />
+        </SettingsRow>
+        <SettingsRow
+          label="Show logs"
+          description="Surface log messages as toasts."
+        >
+          <Toggle
+            label="Show logs"
+            checked={advancedShowLogs()}
+            onChange={setAdvancedShowLogs}
+          />
+        </SettingsRow>
+      </Card>
+    </PageBody>
   );
 }

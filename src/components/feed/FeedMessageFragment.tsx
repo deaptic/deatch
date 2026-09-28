@@ -5,13 +5,14 @@ import type { Fragment } from "../../lib/types/index.ts";
 import type { UserRef } from "../../lib/types/twitch/user.ts";
 
 const INLINE_EMOTE =
-  "inline-block h-[1.4em] w-auto max-w-[4em] object-contain align-top mt-[0.1em] mx-0.5";
+  "inline-block feed-emote w-auto object-contain align-middle mx-px";
 
 const URL_RE = /^https?:\/\/\S+$/;
 
 type Props = {
   frag: Fragment;
   emotes: EmoteMap;
+  mentionsYou?: boolean;
   onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
   onUserContextMenu?: (
     x: number,
@@ -37,12 +38,12 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
                     e.preventDefault();
                     openUrl(token);
                   }}
-                  class="text-primary hover:underline break-all"
+                  class="text-accent-ink hover:underline break-all"
                 >
                   {token}
                 </a>
               )
-              : <span class="text-text">{token}</span>}
+              : <span class="text-ink">{token}</span>}
           >
             <img
               src={emoteUrl()!}
@@ -74,7 +75,11 @@ export default function FeedMessageFragment(props: Props) {
     case "mention":
       return (
         <span
-          class="text-primary font-medium cursor-pointer hover:underline"
+          class={`cursor-pointer hover:underline ${
+            props.mentionsYou
+              ? "text-accent-ink font-semibold"
+              : "text-ink font-medium"
+          }`}
           onClick={(e) =>
             props.onShowUserCard?.(e.clientX, e.clientY, {
               login: frag.user_login,

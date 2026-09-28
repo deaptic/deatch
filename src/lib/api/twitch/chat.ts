@@ -1,9 +1,11 @@
+import { appendLocalNotice } from "../../stores/feeds.ts";
 import { addToast } from "../../stores/toasts.ts";
 import type { RecentMessage } from "../../types/external/robotty.ts";
 import type {
   BadgeSet,
   Emote,
   SendMessageResult,
+  SendOutcome,
   UserEmote,
 } from "../../types/twitch/chat.ts";
 import {
@@ -76,20 +78,25 @@ export type SendChatMessageParams = {
 export async function sendChatMessage(
   params: SendChatMessageParams,
   options?: InvokeOptions,
-): Promise<boolean> {
+): Promise<SendOutcome> {
   try {
     const res = await invokeCommand<SendMessageResult>(
       "send_chat_message",
       params,
       options,
     );
-    if (!res.isSent) {
-      addToast(res.dropReason ?? "Message dropped", "error");
-      return false;
+    if (res.isSent) return "sent";
+    if (res.held) {
+      appendLocalNotice(
+        params.broadcasterId,
+        "Your message is with the mods for review.",
+      );
+      return "held";
     }
-    return true;
+    addToast(res.dropReason ?? "Message dropped", "error");
+    return "failed";
   } catch {
-    return false;
+    return "failed";
   }
 }
 
