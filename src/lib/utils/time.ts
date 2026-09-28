@@ -47,7 +47,7 @@ export class Time {
   private dateLong(date: Date): string {
     return new Intl.DateTimeFormat(this.locale, {
       day: "numeric",
-      month: "long",
+      month: "short",
       year: "numeric",
     }).format(date);
   }
