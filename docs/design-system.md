@@ -424,10 +424,12 @@ Feed, Moderation, Triggers, Appearance, Keyboard, Advanced.
 **Inbox.** A popover opening 4px below the title bar, centred on the Inbox
 button and sliding inward only as far as the 8px viewport margin demands, 480px
 wide, capped at 640px tall, scrolling inside. Header 56px with "Inbox" in
-`title` and a "Mark all read" ghost button. Items grouped by channel: channel
-row (avatar 24 + name in `strong`), then mentions as compact message rows.
-Clicking a mention jumps to it in that channel and closes the popover. Outside
-click or Escape closes it.
+`title` and a "Mark all read" ghost button. One flat list, newest first, so a
+busy channel never buries the others. Each row: channel avatar 32 on the left,
+then a `small` meta line (chatter name in their colour, "in channel" in
+`ink-faint`, relative time right-aligned) above the message in `body` clamped to
+two lines. Unread rows sit on `accent-soft`. Clicking a mention jumps to it in
+that channel and closes the popover. Outside click or Escape closes it.
 
 **Login.** Centred column 400px wide on `canvas`. Wordmark, `hero` "Welcome to
 Deatch", one `body ink-soft` line, `lg` accent button "Log in with Twitch". The
