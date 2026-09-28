@@ -197,6 +197,10 @@ export default function ChatInput(props: Props) {
   });
 
   createEffect(() => {
+    if (props.replyTo() === null) setMentionIdx(0);
+  });
+
+  createEffect(() => {
     if (!props.isActive) return;
     shortcutManager.setContext("chat:replyActive", props.replyTo() !== null);
     onCleanup(() => shortcutManager.setContext("chat:replyActive", false));
