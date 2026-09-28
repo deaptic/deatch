@@ -1,5 +1,5 @@
 import type { Mention } from "../../lib/stores/inbox.ts";
-import { resolveUser } from "../../lib/stores/channels.ts";
+import { userCache } from "../../lib/stores/users.ts";
 import Avatar from "../ui/Avatar.tsx";
 
 type Props = {
@@ -16,12 +16,7 @@ function formatRelative(ms: number): string {
 }
 
 export default function InboxItem(props: Props) {
-  const channel = () =>
-    resolveUser({
-      id: props.mention.channelId,
-      login: props.mention.channelLogin,
-      displayName: props.mention.channelName,
-    });
+  const avatarUrl = () => userCache()[props.mention.chatterId]?.profileImageUrl;
 
   return (
     <button
@@ -31,11 +26,7 @@ export default function InboxItem(props: Props) {
         props.mention.unread ? "bg-accent-soft" : ""
       }`}
     >
-      <Avatar
-        src={channel().profileImageUrl}
-        alt={props.mention.channelName}
-        size={32}
-      />
+      <Avatar src={avatarUrl()} alt={props.mention.chatterName} size={32} />
       <span class="flex-1 min-w-0 flex flex-col gap-0.5">
         <span class="flex items-baseline gap-1.5 text-small">
           <span
