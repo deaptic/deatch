@@ -318,12 +318,13 @@ Regions from left to right, top to bottom:
   `title`; stream title in `body ink-soft`, truncated with the full title on
   hover; the same three icon-led stats as the rail tooltip in a fixed order
   (game, viewers, uptime) at `small`, 20px apart. Viewers and uptime never
-  truncate; the game name ellipsises first. Every text item is click-to-copy
-  like the user card's fields: name copies the display name, title copies the
-  title, stats copy their raw value; hover lifts the item to `ink`. Confirmation
-  is inline, not a toast: the text turns `positive` for 1.2s; icons keep their
-  tone. The user card's copyable fields (login, id, dates) behave the same way.
-  No buttons; right-click anywhere on the header for the channel menu (open in
+  truncate; the game name ellipsises first. The avatar opens the channel on
+  Twitch on left or middle click. Every text item is click-to-copy like the user
+  card's fields: name copies the display name, title copies the title, stats
+  copy their raw value; hover lifts the item to `ink`. Confirmation is inline,
+  not a toast: the text turns `positive` for 1.2s; icons keep their tone. The
+  user card's copyable fields (login, id, dates) behave the same way. No
+  buttons; right-click anywhere on the header for the channel menu (open in
   browser, pin, raid). Cross-fades on channel switch.
 - **Feed** (fills, `canvas`). Rows bleed to the left edge so their status bar
   and hover fill touch the rail's border; 16px padding on the right.

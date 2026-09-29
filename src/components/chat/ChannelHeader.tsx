@@ -52,13 +52,26 @@ export default function ChannelHeader(props: Props) {
         setMenu({ x: e.clientX, y: e.clientY });
       }}
     >
-      <Avatar
-        src={props.channel.profileImageUrl}
-        alt={props.channel.displayName}
-        size={80}
-        square
-        presence={stream() ? "live" : "offline"}
-      />
+      <button
+        type="button"
+        title="Open channel on Twitch"
+        class="shrink-0 flex rounded-sm cursor-pointer"
+        onClick={() => openInBrowser(props.channel)}
+        onAuxClick={(e) => {
+          if (e.button !== 1) return;
+          e.preventDefault();
+          openInBrowser(props.channel);
+        }}
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        <Avatar
+          src={props.channel.profileImageUrl}
+          alt={props.channel.displayName}
+          size={80}
+          square
+          presence={stream() ? "live" : "offline"}
+        />
+      </button>
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
         <h1
           class={`text-title truncate cursor-pointer transition-colors duration-snap ${
