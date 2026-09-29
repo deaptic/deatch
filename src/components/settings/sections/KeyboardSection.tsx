@@ -19,7 +19,6 @@ const ACTION_LABELS: Record<string, string> = {
   "settings::toggle": "Open or close Settings",
   "rail::toggle": "Expand or collapse the rail",
   "inbox::toggle": "Open or close Inbox",
-  "account::toggle": "Account menu",
   "emotePicker::toggle": "Emote picker",
   "quickSwitch::toggle": "Quick switch",
   "watch::toggle": "Watch: follow browser tab",

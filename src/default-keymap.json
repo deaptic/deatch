@@ -21,7 +21,6 @@
   "ctrl-e": ["emotePicker::toggle"],
   "ctrl-i": ["inbox::toggle"],
   "alt-t": ["view::toggleAlwaysOnTop"],
-  "ctrl-u": ["account::toggle"],
   "down": ["chat::recallNext"],
   "enter": ["chat::send"],
   "escape": ["panel::close"],

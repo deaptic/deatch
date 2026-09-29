@@ -275,24 +275,23 @@ keypress.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ ● Deatch                                                 ✉2  ⚙ │ ─  □  ✕  │  40  title bar, canvas
+│ ● Deatch                                                     ✉2 │ ─  □  ✕  │  40  title bar, canvas
 ├──────┬─────────────────────────────────────────────────────────────────────┤
-│  ⌕   │  (avatar) streamer   ● Live · 4.2K   Just Chatting   ⋯  ↗  ⊟      │  56  channel header, canvas
-│──────│─────────────────────────────────────────────────────────────────────│
-│ (◎)  │                                                                     │
-│ (◎)3 │  12:01  name: message with emotes                                   │
-│ (◎)  │  12:01  name: message                                               │
-│  +   │ ▎12:02  name: @you mentioned here                                   │
-│──────│  ····················  new messages  ·························       │
+│  ‹   │  (avatar) streamer   ● Live · 4.2K   Just Chatting   ⋯  ↗  ⊟      │  56  channel header, canvas
+│ (◎)  │─────────────────────────────────────────────────────────────────────│
+│ (◎)3 │                                                                     │
+│ (◎)  │  12:01  name: message with emotes                                   │
+│  +   │  12:01  name: message                                               │
+│──────│ ▎12:02  name: @you mentioned here                                   │
+│ (◎)  │  ····················  new messages  ·························       │
 │ (◎)  │  12:03  name: message                                               │
-│ (◎)  │                                                                     │
 │ (◎)  │                                                                     │
 │──────│                                                                     │
 │  👁  │                                                                     │
 │ (◎)  │                                                                     │
-│      │                                                                     │
-│      │  ┌──────────────────────────────────────────────────────────────┐   │
-│──────│  │ Say something…                                        ☺  ➤ │   │  composer, surface
+│──────│                                                                     │
+│  ⌕   │  ┌──────────────────────────────────────────────────────────────┐   │
+│  ⚙   │  │ Say something…                                        ☺  ➤ │   │  composer, surface
 │ (me) │  └──────────────────────────────────────────────────────────────┘   │
 └──────┴─────────────────────────────────────────────────────────────────────┘
   72                                  chat pane
@@ -301,11 +300,11 @@ keypress.
 Regions from left to right, top to bottom:
 
 - **Title bar** (40px, `canvas`). Wordmark and version left, drag region, then
-  on the right the app toggles (Inbox with its unread badge, Settings), a 1px
-  `line-soft` divider, and the window controls. Toggles and controls share one
-  46px-wide button style: `ink-soft`, `raised` + `ink` on hover, held in that
-  state while open. Close turns `negative` on hover. The channel name belongs to
-  the channel header, where it has room.
+  on the right the Inbox toggle with its unread badge, a 1px `line-soft`
+  divider, and the window controls. Toggle and controls share one 46px-wide
+  button style: `ink-soft`, `raised` + `ink` on hover, held in that state while
+  open. Close turns `negative` on hover. The channel name belongs to the channel
+  header, where it has room.
 - **Rail** (72px collapsed, 280px expanded, `surface`, 1px `line-soft` on the
   right). The switcher. Detailed in §3.2.
 - **Channel header** (56px, `canvas`, 1px `line-soft` below). Avatar 32, name in
@@ -317,23 +316,22 @@ Regions from left to right, top to bottom:
   send buttons inside on the right. Reply chip appears above the field inside
   the same padding.
 - **Inbox** opens as a popover under the title bar, centred on its button.
-  **Settings** and **Explore** open as full pages replacing the chat pane.
-  **Account** opens as a popover from the bottom rail avatar.
+  **Settings** and **Explore** open as full pages replacing the chat pane. Your
+  account row has no page; right-click it for Log out.
 
 ### 3.2 The rail
 
 The rail is a vertical list of round 40px avatars in 56px rows, grouped:
 
-1. Explore (search icon tile)
-2. Pinned channels, then "+"
-3. Live followed channels not pinned
-4. Watch channels (browser-linked), headed by the Watch mode tile
-5. The channel you are viewing but have not pinned (dashed ring)
-6. Your account
+1. Pinned channels, then "+"
+2. Live followed channels not pinned
+3. Watch channels (browser-linked), headed by the Watch mode tile
+4. The channel you are viewing but have not pinned (dashed ring)
+5. Explore, Settings, your account
 
-Groups are separated by a 1px `line-soft` inset 20px each side. Groups 2 through
-5 scroll together; 1 and 6 stay fixed. Inbox and Settings are not rail rows;
-they live in the title bar.
+Groups are separated by a 1px `line-soft` inset 20px each side. Groups 1 through
+4 scroll together; the collapse chevron above them and group 5 stay fixed. Inbox
+is not a rail row; it lives in the title bar.
 
 #### Row anatomy
 
@@ -357,9 +355,9 @@ they live in the title bar.
 | Viewing, not pinned |                     | dashed 2px `line` ring; pin via the context menu   |
 | Watch, muted        |                     | 16px `negative` mute badge, top-right, 2px ring    |
 
-Tool tiles (Explore, "+", Watch) are 40px `round` tiles on `raised` with a 20px
-`ink-soft` icon. Hover: `overlay` tone, `ink`. Active: `accent-soft` with
-`accent-ink` icon. Watch tints `positive` in auto and `caution` in manual.
+Tool tiles (Explore, Settings, "+", Watch) are 40px `round` tiles on `raised`
+with a 20px `ink-soft` icon. Hover: `overlay` tone, `ink`. Active: `accent-soft`
+with `accent-ink` icon. Watch tints `positive` in auto and `caution` in manual.
 
 #### Expanded rail
 
@@ -608,7 +606,6 @@ Everything reachable by mouse has a key. Shortcuts show in tooltips and menus.
 | Alt+↑ / Alt+↓                 | Previous / next channel in rail order                                                                                       |
 | Ctrl+B                        | Expand or collapse the rail                                                                                                 |
 | Ctrl+I                        | Open or close Inbox                                                                                                         |
-| Ctrl+U                        | Account popover                                                                                                             |
 | Ctrl+,                        | Settings                                                                                                                    |
 | Ctrl+Shift+E                  | Explore                                                                                                                     |
 | Ctrl+E                        | Emote picker                                                                                                                |
@@ -724,8 +721,8 @@ accent colour, and chat text size. Everything else derives.
 - **Rail expands** with Ctrl+B and persists. Tooltips only in collapsed mode.
 - **Channel name lives in a channel header**, not the title bar, so it has room
   for live status and actions.
-- **Settings and Explore are pages**; Inbox and Account are popovers. No
-  floating settings window.
+- **Settings and Explore are pages**; Inbox is a popover. No floating settings
+  window.
 - **Quick switch (Ctrl+K)** is a first-class feature because "switch quickly" is
   the product's promise.
 - **Bundled typeface** chosen for long-session legibility over native look.

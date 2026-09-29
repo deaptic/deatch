@@ -1,16 +1,8 @@
-import {
-  Copy,
-  Inbox as InboxIcon,
-  Minus,
-  Settings,
-  Square,
-  X,
-} from "lucide-solid";
+import { Copy, Inbox as InboxIcon, Minus, Square, X } from "lucide-solid";
 import { createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
-import { isSettingsOpen, toggleSettings } from "../../lib/stores/view.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
@@ -119,16 +111,6 @@ export default function TitleBar(props: Props) {
                 <Badge count={unreadMentionCount()} />
               </span>
             </Show>
-          </button>
-          <button
-            class={`${CONTROL} ${isSettingsOpen() ? PRESSED : ""}`}
-            aria-label="Settings"
-            title="Settings"
-            aria-pressed={isSettingsOpen()}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={toggleSettings}
-          >
-            <Settings class="size-4" />
           </button>
           <div class="w-px h-5 self-center mx-1 bg-line-soft" />
           <button
