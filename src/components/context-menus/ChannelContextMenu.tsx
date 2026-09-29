@@ -1,3 +1,4 @@
+import { LogOut } from "lucide-solid";
 import { Show } from "solid-js";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -17,6 +18,7 @@ type Props = {
   onPin: (ch: User) => void;
   onUnpin: (userId: string) => void;
   onRaid?: (ch: User) => void;
+  onLogout?: () => void;
 };
 
 export default function ChannelContextMenu(props: Props) {
@@ -64,6 +66,18 @@ export default function ChannelContextMenu(props: Props) {
         data={props.ch}
         onClose={props.onClose}
       />
+      <Show when={props.onLogout}>
+        <MenuDivider />
+        <MenuItem
+          label="Log out"
+          icon={<LogOut />}
+          danger
+          onClick={() => {
+            props.onClose();
+            props.onLogout?.();
+          }}
+        />
+      </Show>
     </Menu>
   );
 }

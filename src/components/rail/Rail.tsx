@@ -1,5 +1,5 @@
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
-import { ChevronRight, Eye, Plus, Search } from "lucide-solid";
+import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { rememberUser } from "../../lib/stores/channels.ts";
 import {
@@ -22,12 +22,13 @@ import { watchSetMuted } from "../../lib/api/watch.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import {
   activeView,
+  isSettingsOpen,
   pendingChannel,
   selectedChannel,
   showExplore,
+  toggleSettings,
   watchMode,
 } from "../../lib/stores/view.ts";
-import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import { beginRaid } from "../../lib/stores/raid.ts";
 import { user } from "../../lib/stores/users.ts";
@@ -42,7 +43,7 @@ import ScrollChevron from "./ScrollChevron.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
-import Account from "../account/Account.tsx";
+import { sessionManager } from "../../lib/managers/SessionManager.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
 
 type Props = {
@@ -111,9 +112,7 @@ export default function Rail(props: Props) {
   const [addLoading, setAddLoading] = createSignal(false);
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
-  const [accountAnchor, setAccountAnchor] = createSignal({ x: 0, y: 0 });
   let addBtn: HTMLButtonElement | undefined;
-  let accountBtn: HTMLButtonElement | undefined;
 
   createEffect(() => {
     pinnedChannels();
@@ -141,12 +140,6 @@ export default function Rail(props: Props) {
         });
       }
     });
-  });
-
-  createEffect(() => {
-    if (!isOverlayOpen("account") || !accountBtn) return;
-    const r = accountBtn.getBoundingClientRect();
-    setAccountAnchor({ x: r.right + 8, y: r.top - 8 });
   });
 
   function openInBrowser(ch: User) {
@@ -241,35 +234,24 @@ export default function Rail(props: Props) {
         aria-label={expanded() ? "Collapse rail" : "Expand rail"}
         aria-expanded={expanded()}
         onClick={() => setAppearanceRailExpanded(!expanded())}
-        class={`shrink-0 h-9 mx-2 mt-2 mb-0.5 flex items-center gap-2 rounded-sm text-ink-faint hover:bg-raised hover:text-ink cursor-pointer transition-colors duration-snap ${
-          expanded() ? "px-2.5" : "justify-center"
-        }`}
+        class="shrink-0 h-9 mx-2 mt-2 mb-0.5 pl-2 flex items-center gap-3 rounded-sm text-ink-faint hover:bg-raised hover:text-ink cursor-pointer transition-colors duration-snap overflow-hidden"
       >
-        <ChevronRight
-          class={`size-4 transition-transform duration-quick ${
-            expanded() ? "rotate-180" : ""
+        <span class="w-10 shrink-0 grid place-items-center">
+          <ChevronRight
+            class={`size-4 transition-transform duration-quick ${
+              expanded() ? "rotate-180" : ""
+            }`}
+          />
+        </span>
+        <span
+          aria-hidden={!expanded()}
+          class={`text-small whitespace-nowrap transition-opacity duration-settle ${
+            expanded() ? "opacity-100" : "opacity-0"
           }`}
-        />
-        <Show when={expanded()}>
-          <span class="text-small">Collapse</span>
-        </Show>
-      </button>
-
-      <div class="shrink-0 py-1.5">
-        <RailRow
-          label="Explore"
-          sub="Find live channels"
-          tooltip={<p class="font-semibold whitespace-nowrap">Explore</p>}
-          selected={activeView() === "explore"}
-          onClick={showExplore}
         >
-          <RailTile active={activeView() === "explore" && "accent"}>
-            <Search />
-          </RailTile>
-        </RailRow>
-      </div>
-
-      <RailDivider />
+          Collapse
+        </span>
+      </button>
 
       <div class="relative flex-1 min-h-0">
         <Show when={main.canUp()}>
@@ -464,10 +446,31 @@ export default function Rail(props: Props) {
 
       <RailDivider />
       <div class="flex flex-col py-1.5 shrink-0">
+        <RailRow
+          label="Explore"
+          sub="Find live channels"
+          tooltip={<p class="font-semibold whitespace-nowrap">Explore</p>}
+          selected={activeView() === "explore"}
+          onClick={showExplore}
+        >
+          <RailTile active={activeView() === "explore" && "accent"}>
+            <Search />
+          </RailTile>
+        </RailRow>
+        <RailRow
+          label="Settings"
+          sub="Preferences and keys"
+          tooltip={<p class="font-semibold whitespace-nowrap">Settings</p>}
+          selected={isSettingsOpen()}
+          onClick={toggleSettings}
+        >
+          <RailTile active={isSettingsOpen() && "accent"}>
+            <Settings />
+          </RailTile>
+        </RailRow>
         <Show when={user()}>
           {(u) => (
             <RailRow
-              ref={(el) => (accountBtn = el)}
               label={u().displayName}
               sub="Your channel"
               tooltip={
@@ -493,14 +496,6 @@ export default function Rail(props: Props) {
         </Show>
       </div>
 
-      <Show when={isOverlayOpen("account")}>
-        <Account
-          x={accountAnchor().x}
-          y={accountAnchor().y}
-          onClose={() => toggleOverlay("account")}
-        />
-      </Show>
-
       <Show when={chMenu()}>
         {(m) => (
           <ChannelContextMenu
@@ -515,6 +510,9 @@ export default function Rail(props: Props) {
             onUnpin={unpinChannel}
             onRaid={user() && m().ch?.id !== user()?.id
               ? raidChannel
+              : undefined}
+            onLogout={m().ch?.id === user()?.id
+              ? () => sessionManager.logout()
               : undefined}
           />
         )}
