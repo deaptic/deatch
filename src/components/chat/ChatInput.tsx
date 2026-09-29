@@ -215,17 +215,6 @@ export default function ChatInput(props: Props) {
   });
 
   onMount(() => {
-    props.ref?.({
-      focus,
-      insert: (t) => textAreaApi?.insert(t),
-      replace: (t) => {
-        onInputChange(t);
-        queueMicrotask(() => {
-          focus();
-          setCursor(t.length);
-        });
-      },
-    });
     ensureUserEmotesLoaded();
   });
 
@@ -270,6 +259,17 @@ export default function ChatInput(props: Props) {
             placeholder={`Say something in ${props.broadcasterLogin}…`}
             ref={(api) => {
               textAreaApi = api;
+              props.ref?.({
+                focus,
+                insert: (t) => api.insert(t),
+                replace: (t) => {
+                  onInputChange(t);
+                  queueMicrotask(() => {
+                    focus();
+                    setCursor(t.length);
+                  });
+                },
+              });
             }}
             addons={
               <div class="flex items-center gap-1 shrink-0 self-end pb-0.5">
