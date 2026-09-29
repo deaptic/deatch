@@ -53,8 +53,8 @@ const TREATMENTS: Record<Treatment, string> = {
   mention: "border-accent bg-accent-soft hover:bg-accent/18",
   redemption:
     "border-event-channel-points bg-event-channel-points/10 hover:bg-event-channel-points/14",
-  first: "border-line bg-surface hover:bg-raised",
-  plain: "border-transparent hover:bg-surface",
+  first: "border-line bg-surface hover:bg-overlay",
+  plain: "border-transparent hover:bg-raised",
 };
 
 export default function FeedMessage(props: Props) {

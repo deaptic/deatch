@@ -20,7 +20,7 @@ export default function BadgeBox(props: Props) {
 
   return (
     <Show when={items().length > 0}>
-      <span class="feed-badge-box inline-flex items-center mr-1.5 rounded-xs bg-raised align-text-bottom">
+      <span class="feed-badge-box inline-flex items-center mr-1.5 rounded-xs bg-ink/15">
         <For each={items()}>
           {(b) => (
             <img
