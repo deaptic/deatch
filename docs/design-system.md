@@ -382,7 +382,9 @@ The expanded state persists across restarts.
 
 The feed uses a two-column grid: timestamp column (auto, hidden if the setting
 is off), then content. Rows have 4px vertical padding, 12px left padding after a
-3px status bar, `sm` radius on the right corners. Row hover tone is `surface`.
+3px status bar, `sm` radius on the right corners. Row hover is `raised`, two
+tones above the canvas the feed sits on, so it reads at a glance; a row that
+already sits on `surface` hovers to `overlay`.
 
 Row treatments, one at a time, in this precedence:
 
@@ -583,13 +585,18 @@ Spinner 20px 2px `ink-soft` only for indeterminate whole-screen waits.
 
 ### Message row, Event row, Unread divider
 
-Specified in §3.3. Chat badges sit together in one small `raised` container with
-`xs` radius before the name, so a row reads as "badges · name · message" instead
-of loose images. An event row has exactly the anatomy of a message row so the
-columns line up: timestamp in the same left column, then an event-coloured icon
-where a message would show badges, then the system text at regular weight and
-feed size. The tint and 3px bar carry the event colour; the text does not shout.
-Attached messages render below at feed size.
+Specified in §3.3. Chat badges sit together in one small container with `xs`
+radius before the name, filled with `ink` at 15% rather than a fixed tone so it
+lifts the same amount on canvas, hovered, first-message, and mention rows in
+both themes, so a row reads as "badges · name · message" instead of loose
+images. Badges are 0.95em squares from the 4x asset so they stay crisp on scaled
+displays; the container is 1.25em tall, never taller than the text line, and
+hangs 0.15em below the baseline to centre on x-height. An event row has exactly
+the anatomy of a message row so the columns line up: timestamp in the same left
+column, then an event-coloured icon where a message would show badges, then the
+system text at regular weight and feed size. The tint and 3px bar carry the
+event colour; the text does not shout. Attached messages render below at feed
+size.
 
 ---
 

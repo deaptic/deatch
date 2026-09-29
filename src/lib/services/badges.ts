@@ -47,14 +47,9 @@ export function loadChannelBadges(broadcasterId: string): Promise<BadgeMap> {
     getChannelChatBadges({ broadcasterId }).catch(() => [] as BadgeSet[]),
   ]).then(([global, channel]) => {
     const map: BadgeMap = {};
-    for (const set of global) {
+    for (const set of [...global, ...channel]) {
       for (const v of set.versions) {
-        map[`${set.setId}/${v.id}`] = { url: v.url1x, title: v.title };
-      }
-    }
-    for (const set of channel) {
-      for (const v of set.versions) {
-        map[`${set.setId}/${v.id}`] = { url: v.url1x, title: v.title };
+        map[`${set.setId}/${v.id}`] = { url: v.url4x, title: v.title };
       }
     }
     setBadges(broadcasterId, map);
