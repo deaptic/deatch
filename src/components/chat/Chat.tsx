@@ -12,7 +12,7 @@ import { loadBacklog } from "../../lib/services/feeds.ts";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
-import ChatInput from "./ChatInput.tsx";
+import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
 import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
@@ -89,9 +89,7 @@ export default function Chat(props: Props) {
     { userId: string; userName: string } | null
   >(null);
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
-  let inputApi:
-    | { focus: () => void; insert: (text: string) => void }
-    | undefined;
+  let inputApi: ChatInputApi | undefined;
 
   const isMod = createMemo(() =>
     !moderationActionsDisabled() &&
@@ -180,13 +178,8 @@ export default function Chat(props: Props) {
         }
       }
     }
-    const text = fragments.map((f) => f.text).join("");
-    if (!text.trim()) return;
-    sendChatMessage({
-      broadcasterId: props.broadcasterId,
-      message: text,
-      replyParentMessageId: null,
-    });
+    const text = fragments.map((f) => f.text).join("").trim();
+    if (text) inputApi?.replace(text);
   }
 
   function jumpToLatest() {

@@ -40,6 +40,12 @@ const MAX_LEN = 500;
 
 export type ReplyTo = { messageId: string; name: string; text: string };
 
+export type ChatInputApi = {
+  focus: () => void;
+  insert: (text: string) => void;
+  replace: (text: string) => void;
+};
+
 type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
@@ -49,7 +55,7 @@ type Props = {
   getMentions: () => Message[];
   onReplyMention: (msg: Message) => void;
   openUserCard: (userId: string) => void;
-  ref?: (api: { focus: () => void; insert: (text: string) => void }) => void;
+  ref?: (api: ChatInputApi) => void;
 };
 
 export default function ChatInput(props: Props) {
@@ -209,7 +215,17 @@ export default function ChatInput(props: Props) {
   });
 
   onMount(() => {
-    props.ref?.({ focus, insert: (t) => textAreaApi?.insert(t) });
+    props.ref?.({
+      focus,
+      insert: (t) => textAreaApi?.insert(t),
+      replace: (t) => {
+        onInputChange(t);
+        queueMicrotask(() => {
+          focus();
+          setCursor(t.length);
+        });
+      },
+    });
     ensureUserEmotesLoaded();
   });
 
