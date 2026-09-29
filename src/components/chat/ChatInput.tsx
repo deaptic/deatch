@@ -19,6 +19,7 @@ import {
   getSentHistory,
   pushSentHistory,
 } from "../../lib/stores/chatHistory.ts";
+import { getDraft, setDraft } from "../../lib/stores/drafts.ts";
 import {
   closeOverlay,
   isOverlayOpen,
@@ -52,7 +53,8 @@ type Props = {
 };
 
 export default function ChatInput(props: Props) {
-  const [input, setInput] = createSignal("");
+  const [input, setInput] = createSignal(getDraft(props.broadcasterId));
+  onCleanup(() => setDraft(props.broadcasterId, input()));
   const [sending, setSending] = createSignal(false);
   const [commandMode, setCommandMode] = createSignal<Command | null>(null);
   const [autocomplete, setAutocomplete] = createSignal<
