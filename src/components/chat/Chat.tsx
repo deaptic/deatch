@@ -283,7 +283,7 @@ export default function Chat(props: Props) {
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
-        scrollClass="pl-3.25 pr-4 py-2"
+        scrollClass="pr-4 py-2"
         class="text-(length:--chat-size)"
         style={{ "--chat-size": `${feedFontSize()}px` }}
         onWheel={fontSize.onWheel}

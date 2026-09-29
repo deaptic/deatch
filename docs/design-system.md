@@ -310,7 +310,8 @@ Regions from left to right, top to bottom:
 - **Channel header** (56px, `canvas`, 1px `line-soft` below). Avatar 32, name in
   `title`, live pill with viewer count, game in `ink-soft`, right-aligned
   actions. Cross-fades on channel switch.
-- **Feed** (fills, `canvas`). 16px side padding.
+- **Feed** (fills, `canvas`). Rows bleed to the left edge so their status bar
+  and hover fill touch the rail's border; 16px padding on the right.
 - **Composer** (min 44px field inside 12px padding, `surface` top edge with 1px
   `line-soft`). Field is `surface` with `line` border, `md` radius. Emote and
   send buttons inside on the right. Reply chip appears above the field inside
