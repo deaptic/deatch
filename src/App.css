@@ -253,15 +253,15 @@
 }
 
 @utility feed-badge-box {
-  gap: 0.25em;
-  padding: 0.15em 0.3em;
+  gap: 0.2em;
   vertical-align: -0.15em;
 }
 
 @utility feed-badge {
-  width: 0.95em;
-  height: 0.95em;
-  border-radius: 2px;
+  width: 1.25em;
+  height: 1.25em;
+  padding: 0.15em;
+  object-fit: contain;
 }
 
 @utility feed-icon {

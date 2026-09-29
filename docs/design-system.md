@@ -586,12 +586,12 @@ Spinner 20px 2px `ink-soft` only for indeterminate whole-screen waits.
 
 ### Message row, Event row, Unread divider
 
-Specified in §3.3. Chat badges sit together in one small container with `xs`
+Specified in §3.3. Each chat badge sits in its own 1.25em square tile with `xs`
 radius before the name, filled with `ink` at 15% rather than a fixed tone so it
 lifts the same amount on canvas, hovered, first-message, and mention rows in
 both themes, so a row reads as "badges · name · message" instead of loose
-images. Badges are 0.95em squares from the 4x asset so they stay crisp on scaled
-displays; the container is 1.25em tall, never taller than the text line, and
+images. Tiles sit 0.2em apart; the artwork is the 4x asset inset 0.15em so it
+stays crisp on scaled displays. The tile is never taller than the text line and
 hangs 0.15em below the baseline to centre on x-height. An event row has exactly
 the anatomy of a message row so the columns line up: timestamp in the same left
 column, then an event-coloured icon where a message would show badges, then the
