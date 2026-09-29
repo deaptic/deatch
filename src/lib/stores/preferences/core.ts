@@ -2,7 +2,6 @@ import { createStore, unwrap } from "solid-js/store";
 import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
 import { type Theme, THEMES } from "../../services/appearance.ts";
 import defaults from "../default-preferences.json" with { type: "json" };
-import { addToast } from "../toasts.ts";
 
 export type EventPref = { show: boolean };
 export type BadgePref = { show: boolean };
@@ -207,12 +206,6 @@ function load(): UserPreferences {
 
 export const [prefs, setPrefs] = createStore<UserPreferences>(load());
 
-let toastTimer: number | undefined;
 export function persist() {
   localStorage.setItem("user_preferences", JSON.stringify(unwrap(prefs)));
-  clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(
-    () => addToast("Preferences saved", "success"),
-    800,
-  );
 }
