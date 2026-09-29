@@ -14,6 +14,7 @@ export default function ExploreSearch(props: Props) {
       size="lg"
       class="w-full mb-8"
       icon={<Search />}
+      ref={(el) => queueMicrotask(() => el.focus())}
       value={props.value}
       onInput={(e) => props.onInput(e.currentTarget.value)}
       placeholder="Search channels and categories"

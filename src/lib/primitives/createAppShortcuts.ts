@@ -1,7 +1,7 @@
 import { onCleanup, onMount } from "solid-js";
 import { shortcutManager } from "../managers/ShortcutManager.ts";
 import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
-import { showExplore, toggleSettings } from "../stores/view.ts";
+import { leavePage, showExplore, toggleSettings } from "../stores/view.ts";
 import {
   advancedAlwaysOnTop,
   appearanceRailExpanded,
@@ -53,8 +53,11 @@ export function createAppShortcuts(
         () => toggleOverlay("emotePicker"),
       ),
       shortcutManager.register("panel::close", () => {
-        if (!openOverlay()) return false;
-        closeOverlay();
+        if (openOverlay()) {
+          closeOverlay();
+          return;
+        }
+        return leavePage();
       }),
       shortcutManager.register("view::toggleAlwaysOnTop", () => {
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());

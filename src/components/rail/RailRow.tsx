@@ -49,9 +49,7 @@ export default function RailRow(props: Props) {
           setTip(null);
           props.onMiddleClick();
         }}
-        onMouseDown={(e) => {
-          if (e.button === 1) e.preventDefault();
-        }}
+        onMouseDown={(e) => e.preventDefault()}
         onContextMenu={(e) => {
           if (!props.onContextMenu) return;
           e.preventDefault();

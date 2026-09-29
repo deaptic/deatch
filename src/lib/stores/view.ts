@@ -31,6 +31,7 @@ export const selectedChannel: () => User | null = createRoot(() =>
 export const isSettingsOpen = () => activeView() === "settings";
 
 let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
+let lastChannel: User | null = null;
 
 export function showExplore() {
   setActiveView("explore");
@@ -38,6 +39,7 @@ export function showExplore() {
 }
 
 export function setSelectedChannel(channel: User) {
+  lastChannel = channel;
   setActiveView(channel);
 }
 
@@ -49,6 +51,19 @@ export function toggleSettings() {
   }
   beforeSettings = v;
   setActiveView("settings");
+}
+
+export function leavePage(): boolean {
+  const v = activeView();
+  if (v === "settings") {
+    setActiveView(beforeSettings);
+    return true;
+  }
+  if (v === "explore" && lastChannel) {
+    setActiveView(lastChannel);
+    return true;
+  }
+  return false;
 }
 
 // null: not watching. "auto": mirror whatever the browser tab is watching.

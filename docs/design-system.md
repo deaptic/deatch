@@ -601,27 +601,29 @@ Attached messages render below at feed size.
 
 Everything reachable by mouse has a key. Shortcuts show in tooltips and menus.
 
-| Keys                          | Action                                                                                      |
-| ----------------------------- | ------------------------------------------------------------------------------------------- |
-| Ctrl+K                        | Quick switch: fuzzy search across pinned, live, and recent channels                         |
-| Ctrl+1 … Ctrl+9               | Jump to the nth channel in rail order                                                       |
-| Alt+↑ / Alt+↓                 | Previous / next channel in rail order                                                       |
-| Ctrl+B                        | Expand or collapse the rail                                                                 |
-| Ctrl+I                        | Open or close Inbox                                                                         |
-| Ctrl+U                        | Account popover                                                                             |
-| Ctrl+,                        | Settings                                                                                    |
-| Ctrl+Shift+E                  | Explore                                                                                     |
-| Ctrl+E                        | Emote picker                                                                                |
-| Alt+W / Alt+M / Alt+A / Alt+S | Watch: toggle, mute current, mute all, mute others                                          |
-| Alt+T                         | Always on top                                                                               |
-| Shift+↑ / ↓                   | Enter message selection, then ↑/↓ to move                                                   |
-| Enter or R                    | Reply to selected message                                                                   |
-| C                             | Copy selected message text                                                                  |
-| Escape                        | Close topmost overlay, else clear selection, else clear unread divider, else focus composer |
-| Ctrl + wheel                  | Chat text size, with a transient readout                                                    |
+| Keys                          | Action                                                                                                                      |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Ctrl+K                        | Quick switch: fuzzy search across pinned, live, and recent channels                                                         |
+| Ctrl+1 … Ctrl+9               | Jump to the nth channel in rail order                                                                                       |
+| Alt+↑ / Alt+↓                 | Previous / next channel in rail order                                                                                       |
+| Ctrl+B                        | Expand or collapse the rail                                                                                                 |
+| Ctrl+I                        | Open or close Inbox                                                                                                         |
+| Ctrl+U                        | Account popover                                                                                                             |
+| Ctrl+,                        | Settings                                                                                                                    |
+| Ctrl+Shift+E                  | Explore                                                                                                                     |
+| Ctrl+E                        | Emote picker                                                                                                                |
+| Alt+W / Alt+M / Alt+A / Alt+S | Watch: toggle, mute current, mute all, mute others                                                                          |
+| Alt+T                         | Always on top                                                                                                               |
+| Shift+↑ / ↓                   | Enter message selection, then ↑/↓ to move                                                                                   |
+| Enter or R                    | Reply to selected message                                                                                                   |
+| C                             | Copy selected message text                                                                                                  |
+| Escape                        | Close topmost overlay, else clear selection, else clear unread divider, else leave Settings or Explore for the last channel |
+| Ctrl + wheel                  | Chat text size, with a transient readout                                                                                    |
 
 Focus returns to the composer whenever an overlay closes, unless the user opened
-it from the feed with the keyboard.
+it from the feed with the keyboard. Opening a channel focuses its composer;
+opening Explore focuses its search field. Rail rows and icon buttons never take
+focus on click, so typing continues where it was.
 
 ### 5.2 Pointer
 
