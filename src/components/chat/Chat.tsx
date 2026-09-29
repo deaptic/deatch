@@ -102,10 +102,6 @@ export default function Chat(props: Props) {
   onMount(() => loadBacklog(props.broadcasterId, props.broadcasterLogin));
 
   createEffect(() => {
-    if (props.isActive) inputApi?.focus();
-  });
-
-  createEffect(() => {
     const api = feedApi();
     if (!api) return;
     setFeedPaused(props.broadcasterId, api.isPaused());
@@ -339,6 +335,7 @@ export default function Chat(props: Props) {
         openUserCard={openUserCardFromInput}
         ref={(api) => {
           inputApi = api;
+          if (props.isActive) api.focus();
         }}
       />
 

@@ -14,6 +14,7 @@ export default function IconButton(props: Props) {
   const [local, others] = splitProps(props, ["label", "variant", "children"]);
   return (
     <Button
+      onMouseDown={(e) => e.preventDefault()}
       {...others}
       variant={local.variant ?? "ghost"}
       icon={local.children}

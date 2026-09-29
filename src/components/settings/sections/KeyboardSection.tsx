@@ -27,7 +27,7 @@ const ACTION_LABELS: Record<string, string> = {
   "watch::toggleMuteAll": "Watch: mute all tabs",
   "watch::muteOthers": "Watch: mute other tabs",
   "view::toggleAlwaysOnTop": "Always on top",
-  "panel::close": "Close the open overlay",
+  "panel::close": "Close the open overlay, or leave Settings and Explore",
   "chat::send": "Send message",
   "chat::tabComplete": "Complete a name",
   "chat::recallPrev": "Previous sent message",
