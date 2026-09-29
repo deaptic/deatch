@@ -68,7 +68,7 @@ export default function FeedSection() {
         </SettingsRow>
         <SettingsRow
           label="Copypasta button"
-          description="Re-send any message as your own from its toolbar."
+          description="Copy any message into your composer from its toolbar."
         >
           <Toggle
             label="Copypasta button"
