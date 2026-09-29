@@ -33,7 +33,6 @@ type Props = {
 export default function RailRow(props: Props) {
   const expanded = appearanceRailExpanded;
   const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
-  const showDot = () => props.unread && !props.mentions;
 
   return (
     <>
@@ -92,11 +91,8 @@ export default function RailRow(props: Props) {
             }`}
           >
             <span class="flex-1 min-w-0 flex flex-col">
-              <span class="flex items-center gap-1.5 text-body font-semibold text-ink truncate">
-                <span class="truncate">{props.label}</span>
-                <Show when={showDot()}>
-                  <span class="size-1.5 rounded-full bg-ink shrink-0" />
-                </Show>
+              <span class="text-body font-semibold text-ink truncate">
+                {props.label}
               </span>
               <Show when={props.sub}>
                 <span
