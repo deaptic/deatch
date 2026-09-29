@@ -20,14 +20,14 @@ export default function BadgeBox(props: Props) {
 
   return (
     <Show when={items().length > 0}>
-      <span class="feed-badge-box inline-flex items-center mr-1.5 rounded-xs bg-ink/15">
+      <span class="feed-badge-box inline-flex items-center mr-1.5">
         <For each={items()}>
           {(b) => (
             <img
               src={b.url}
               alt={b.title}
               title={`${b.title}${b.info ? ` (${b.info})` : ""}`}
-              class="feed-badge"
+              class="feed-badge rounded-xs bg-ink/15"
             />
           )}
         </For>
