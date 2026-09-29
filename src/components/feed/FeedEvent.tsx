@@ -60,6 +60,7 @@ function lookFor(noticeType: string): Look {
 type Props = {
   item: Event;
   showTimestamp?: boolean;
+  flush?: boolean;
   onContextMenu?: (x: number, y: number, item: Event) => void;
 };
 
@@ -68,7 +69,9 @@ export default function FeedEvent(props: Props) {
   return (
     <div
       data-item-id={props.item.id}
-      class="relative group flex items-start leading-normal pl-3 pr-2 py-1 border-l-3 border-(--event) bg-(--event)/10 rounded-r-sm"
+      class={`relative group flex items-start leading-normal pl-3 pr-2 py-1 border-l-3 border-(--event) bg-(--event)/10 ${
+        props.flush ? "rounded-r-sm" : "rounded-sm"
+      }`}
       style={{ "--event": look().color }}
       onContextMenu={(e) => {
         if (!props.onContextMenu) return;

@@ -40,7 +40,7 @@ export default function UserCardFeed(props: Props) {
         showDivider={false}
         onJumpToMessage={props.onJumpToMessage}
         onShowUserCard={props.onShowUserCard}
-        scrollClass="px-2 py-1 text-sm"
+        scrollClass="px-2 py-1 text-small"
       />
     </Show>
   );

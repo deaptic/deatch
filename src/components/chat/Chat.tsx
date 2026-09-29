@@ -284,6 +284,7 @@ export default function Chat(props: Props) {
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
         scrollClass="pr-4 py-2"
+        flush
         class="text-(length:--chat-size)"
         style={{ "--chat-size": `${feedFontSize()}px` }}
         onWheel={fontSize.onWheel}
