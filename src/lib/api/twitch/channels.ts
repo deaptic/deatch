@@ -1,11 +1,25 @@
-import type { Follow } from "../../types/twitch/channel.ts";
+import type { ChannelInfo, Follow } from "../../types/twitch/channel.ts";
 import {
   invokeCommand,
   type InvokeOptions,
   type PaginatedResponse,
 } from "../utils.ts";
 
-export type { Follow } from "../../types/twitch/channel.ts";
+export type { ChannelInfo, Follow } from "../../types/twitch/channel.ts";
+
+export type GetChannelInformationParams = {
+  broadcasterIds: string[];
+};
+
+export function getChannelInformation(
+  params: GetChannelInformationParams,
+  options?: InvokeOptions,
+): Promise<ChannelInfo[]> {
+  return invokeCommand("get_channel_information", params, {
+    silent: true,
+    ...options,
+  });
+}
 
 export type GetChannelFollowersParams = {
   broadcasterId: string;

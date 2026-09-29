@@ -10,7 +10,9 @@ import {
   user as currentUser,
 } from "../../lib/stores/users.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { Pin } from "lucide-solid";
 import Avatar from "../ui/Avatar.tsx";
+import IconButton from "../ui/IconButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta from "./UserCardMeta.tsx";
 
@@ -70,13 +72,13 @@ export default function UserCardHeader(props: Props) {
 
   return (
     <div
-      class="flex gap-3.5 p-4 border-b border-line-soft cursor-move select-none"
+      class="flex gap-4 p-4 border-b border-line-soft cursor-move select-none"
       onMouseDown={props.onStartDrag}
     >
       <button
         type="button"
         title="Open channel on Twitch"
-        class="shrink-0 self-start rounded-full cursor-pointer"
+        class="shrink-0 self-start flex rounded-sm cursor-pointer"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={() =>
           user()?.login && openUrl(`https://twitch.tv/${user()!.login}`)}
@@ -84,16 +86,15 @@ export default function UserCardHeader(props: Props) {
         <Avatar
           src={user()?.profileImageUrl}
           alt={user()?.displayName ?? ""}
-          size={64}
+          size={80}
+          square
         />
       </button>
-      <div class="flex-1 min-w-0 flex flex-col gap-2">
+      <div class="flex-1 min-w-0 h-20 flex flex-col justify-center gap-2">
         <UserCardIdentity
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
           user={user()}
-          pinned={props.pinned}
-          onTogglePin={props.onTogglePin}
         />
         <UserCardMeta
           chatterId={props.chatterId}
@@ -101,6 +102,16 @@ export default function UserCardHeader(props: Props) {
           follower={follower()}
         />
       </div>
+      <IconButton
+        label={props.pinned ? "Unpin card" : "Keep card open"}
+        size="sm"
+        pressed={props.pinned}
+        class="self-start"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={props.onTogglePin}
+      >
+        <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
+      </IconButton>
     </div>
   );
 }

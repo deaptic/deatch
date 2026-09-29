@@ -96,8 +96,7 @@ export default function QuickSwitch(props: Props) {
 
   async function open(row: Row, pin: boolean) {
     if (row.kind === "channel") {
-      if (pin) {
-        pinChannel(row.user.id);
+      if (pin && pinChannel(row.user.id)) {
         addToast(`Pinned ${row.user.displayName}`, "success");
       }
       props.onSelect(row.user);

@@ -15,7 +15,7 @@ type Props = {
   developerMode: boolean;
   onClose: () => void;
   onOpenInBrowser: (ch: User) => void;
-  onPin: (ch: User) => void;
+  onPin?: (ch: User) => void;
   onUnpin: (userId: string) => void;
   onRaid?: (ch: User) => void;
   onLogout?: () => void;
@@ -34,13 +34,15 @@ export default function ChannelContextMenu(props: Props) {
       <Show
         when={props.isPinned}
         fallback={
-          <MenuItem
-            label="Pin"
-            onClick={() => {
-              props.onPin(props.ch);
-              props.onClose();
-            }}
-          />
+          <Show when={props.onPin}>
+            <MenuItem
+              label="Pin"
+              onClick={() => {
+                props.onPin?.(props.ch);
+                props.onClose();
+              }}
+            />
+          </Show>
         }
       >
         <MenuItem

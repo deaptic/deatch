@@ -277,7 +277,9 @@ keypress.
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ ● Deatch                                                     ✉2 │ ─  □  ✕  │  40  title bar, canvas
 ├──────┬─────────────────────────────────────────────────────────────────────┤
-│  ‹   │  (avatar) streamer   ● Live · 4.2K   Just Chatting   ⋯  ↗  ⊟      │  56  channel header, canvas
+│  ‹   │  (avatar)● streamer                                                 │ 112  channel header, canvas
+│ (◎)  │           stream title truncated…                                   │
+│ (◎)  │           🎮 Just Chatting   👥 4.2K   🕒 2h                          │
 │ (◎)  │─────────────────────────────────────────────────────────────────────│
 │ (◎)3 │                                                                     │
 │ (◎)  │  12:01  name: message with emotes                                   │
@@ -299,17 +301,30 @@ keypress.
 
 Regions from left to right, top to bottom:
 
-- **Title bar** (40px, `canvas`). Wordmark and version left, drag region, then
-  on the right the Inbox toggle with its unread badge, a 1px `line-soft`
-  divider, and the window controls. Toggle and controls share one 46px-wide
-  button style: `ink-soft`, `raised` + `ink` on hover, held in that state while
-  open. Close turns `negative` on hover. The channel name belongs to the channel
-  header, where it has room.
+- **Title bar** (40px, `canvas`, 1px `line-soft` below so it reads as window
+  chrome rather than part of the rail and header). Wordmark and version left,
+  drag region, then on the right the Inbox toggle with its unread badge, a 1px
+  `line-soft` divider, and the window controls. Toggle and controls share one
+  46px-wide button style: `ink-soft`, `raised` + `ink` on hover, held in that
+  state while open. Close turns `negative` on hover. The channel name belongs to
+  the channel header, where it has room.
 - **Rail** (72px collapsed, 280px expanded, `surface`, 1px `line-soft` on the
   right). The switcher. Detailed in §3.2.
-- **Channel header** (56px, `canvas`, 1px `line-soft` below). Avatar 32, name in
-  `title`, live pill with viewer count, game in `ink-soft`, right-aligned
-  actions. Cross-fades on channel switch.
+- **Channel header** (112px, `canvas`, 1px `line-soft` below). 16px padding on
+  the left, top, and bottom so the 80px avatar sits in an even 16px frame; 16px
+  to the text; 24px on the right. Square avatar 80 (`sm` radius), matching the
+  height of the text block, with the same presence dot as the rail (`live` or
+  `ink-faint`), then three lines 8px apart that each own the full width: name in
+  `title`; stream title in `body ink-soft`, truncated with the full title on
+  hover; the same three icon-led stats as the rail tooltip in a fixed order
+  (game, viewers, uptime) at `small`, 20px apart. Viewers and uptime never
+  truncate; the game name ellipsises first. Every text item is click-to-copy
+  like the user card's fields: name copies the display name, title copies the
+  title, stats copy their raw value; hover lifts the item to `ink`. Confirmation
+  is inline, not a toast: the text turns `positive` for 1.2s; icons keep their
+  tone. The user card's copyable fields (login, id, dates) behave the same way.
+  No buttons; right-click anywhere on the header for the channel menu (open in
+  browser, pin, raid). Cross-fades on channel switch.
 - **Feed** (fills, `canvas`). Rows bleed to the left edge so their status bar
   and hover fill touch the rail's border; 16px padding on the right.
 - **Composer** (min 44px field inside 12px padding, `surface` top edge with 1px
@@ -373,9 +388,9 @@ either direction:
 ```
 
 Line one: name in `strong`, right side mention badge. Line two: game and viewer
-count in `small ink-soft`; offline channels show "Offline" or last-live time.
-Live channels keep the presence dot. Unread is shown only by the left pill, the
-same as when collapsed. Tooltips are off when expanded.
+count in `small ink-soft`; offline channels show the category they last set, or
+"Offline" if unknown. Live channels keep the presence dot. Unread is shown only
+by the left pill, the same as when collapsed. Tooltips are off when expanded.
 
 The expanded state persists across restarts.
 
@@ -480,8 +495,7 @@ held. One `accent` button per view.
 
 ### Icon button
 
-Square `ghost` or `neutral` button. Always has a tooltip and an `aria-label`. In
-the channel header uses `lg` size.
+Square `ghost` or `neutral` button. Always has a tooltip and an `aria-label`.
 
 ### Toggle
 
@@ -525,10 +539,12 @@ text, dot 6px, "Live · 4.2K".
 
 ### Avatar
 
-Always round. 24, 32, 36, 40, 64. Fallback `raised` with initial in
-`ink-soft strong`. An optional presence dot (`live`, `online`, `offline`; sized
-to the avatar, cut out with a 2px `surface` ring) is part of the avatar
-component so every avatar in the app agrees.
+Round by default; `square` (`sm` radius) for the 80px avatars in the channel
+header and the user card, where a circle would float beside a multi-line text
+block. Everything smaller stays round. 24, 32, 36, 40, 64, 80. Fallback `raised`
+with initial in `ink-soft strong`. An optional presence dot (`live`, `online`,
+`offline`; sized to the avatar, cut out with a 2px `surface` ring) is part of
+the avatar component so every avatar in the app agrees.
 
 ### Navigation item
 
@@ -548,6 +564,18 @@ radius, icon 16 with 10px gap, shortcut hint right in `small ink-faint`. Hover
 
 `overlay`, 1px `line`, `sm` radius, 8px 10px padding, `small`. 300ms delay,
 instant hide. Shortcut on the right in `ink-faint`.
+
+Collapsed-rail channel tooltip, max 288px wide, 8px between blocks: name in
+`strong` at `body` size, then the stream title in `body ink` with relaxed
+leading clamped to three lines, then a 1px `line-soft` rule and three `ink-soft`
+stat rows, each led by a 14px `ink-faint` icon in a fixed column: game
+(controller), viewers (people), uptime (clock) as `h:mm:ss`, ticking every
+second in the header. Stacking keeps every value at the same x whatever the game
+name's length, so the eye finds each by its icon. No live pill: the presence dot
+already says live, and viewers and uptime are statistics, so they read as a
+footer. Offline channels keep the same shape from Get Channel Information: name,
+the title and category they last set, and a moon "Offline" row where viewers and
+uptime would be. The channel header does the same.
 
 ### Toast
 

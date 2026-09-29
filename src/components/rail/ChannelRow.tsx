@@ -1,33 +1,47 @@
-import { Volume2, VolumeOff } from "lucide-solid";
+import { Clock, Gamepad2, Moon, Users, Volume2, VolumeOff } from "lucide-solid";
 import { Show } from "solid-js";
-import { streamForUserId } from "../../lib/stores/channels.ts";
-import { formatViewers } from "../../lib/format/stream.ts";
+import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
+import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
+import type { ChannelInfo } from "../../lib/types/twitch/channel.ts";
 import type { Stream } from "../../lib/types/twitch/stream.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
 import Avatar from "../ui/Avatar.tsx";
-import LivePill from "../ui/LivePill.tsx";
+import Stat from "../ui/Stat.tsx";
 import RailRow from "./RailRow.tsx";
 
-function StreamTooltip(props: { user: User; stream?: Stream }) {
+function StreamTooltip(props: {
+  user: User;
+  stream?: Stream;
+  info?: ChannelInfo;
+}) {
+  const title = () => props.stream?.title ?? props.info?.title ?? "";
+  const game = () => props.stream?.game.name ?? props.info?.game.name ?? "";
+
   return (
-    <div class="flex flex-col gap-1">
-      <p class="font-semibold whitespace-nowrap truncate">
-        {props.user.displayName}
-        <Show when={props.stream?.game.name}>
-          <span class="text-ink-soft font-medium">
-            {" "}
-            · {props.stream!.game.name}
-          </span>
-        </Show>
-      </p>
-      <Show when={props.stream} fallback={<p class="text-ink-soft">Offline</p>}>
-        <div>
-          <LivePill viewers={props.stream!.viewerCount} />
-        </div>
-        <Show when={props.stream?.title}>
-          <p class="text-ink-soft wrap-break-word">{props.stream!.title}</p>
-        </Show>
+    <div class="flex flex-col gap-2 max-w-72 px-0.5 py-0.5">
+      <p class="text-body font-semibold truncate">{props.user.displayName}</p>
+      <Show when={title()}>
+        <p class="text-body leading-relaxed text-ink wrap-break-word line-clamp-3">
+          {title()}
+        </p>
       </Show>
+      <div class="pt-2 border-t border-line-soft flex flex-col gap-1">
+        <Stat icon={<Gamepad2 />} value={game()} truncate />
+        <Show
+          when={props.stream}
+          fallback={<Stat icon={<Moon />} value="Offline" />}
+        >
+          {(s) => (
+            <>
+              <Stat
+                icon={<Users />}
+                value={`${formatViewers(s().viewerCount)} viewers`}
+              />
+              <Stat icon={<Clock />} value={formatUptime(s().startedAt)} />
+            </>
+          )}
+        </Show>
+      </div>
     </div>
   );
 }
@@ -48,11 +62,11 @@ type Props = {
 
 export default function ChannelRow(props: Props) {
   const stream = () => streamForUserId(props.ch.id);
+  const info = () => channelInfoFor(props.ch.id);
   const sub = () => {
     const s = stream();
-    return s
-      ? `${s.game.name || "Live"} · ${formatViewers(s.viewerCount)}`
-      : "Offline";
+    if (s) return `${s.game.name || "Live"} · ${formatViewers(s.viewerCount)}`;
+    return info()?.game.name || "Offline";
   };
 
   return (
@@ -60,7 +74,9 @@ export default function ChannelRow(props: Props) {
       label={props.ch.displayName}
       sub={sub()}
       subTone={stream() ? "live" : "soft"}
-      tooltip={<StreamTooltip user={props.ch} stream={stream()} />}
+      tooltip={
+        <StreamTooltip user={props.ch} stream={stream()} info={info()} />
+      }
       selected={props.selected}
       unread={props.unread}
       mentions={props.mentions}
