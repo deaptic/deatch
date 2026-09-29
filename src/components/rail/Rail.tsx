@@ -506,7 +506,7 @@ export default function Rail(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={() => setChMenu(null)}
             onOpenInBrowser={openInBrowser}
-            onPin={pin}
+            onPin={m().ch?.id === user()?.id ? undefined : pin}
             onUnpin={unpinChannel}
             onRaid={user() && m().ch?.id !== user()?.id
               ? raidChannel

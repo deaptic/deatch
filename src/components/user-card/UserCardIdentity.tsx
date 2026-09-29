@@ -1,6 +1,4 @@
-import { Pin } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
-import IconButton from "../ui/IconButton.tsx";
 import type { User } from "../../lib/api/twitch/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import { feeds } from "../../lib/stores/feeds.ts";
@@ -12,8 +10,6 @@ type Props = {
   chatterId: string;
   broadcasterId: string;
   user: User | null;
-  pinned: boolean;
-  onTogglePin: () => void;
 };
 
 export default function UserCardIdentity(props: Props) {
@@ -34,8 +30,8 @@ export default function UserCardIdentity(props: Props) {
   });
 
   return (
-    <div class="flex items-center gap-1 min-w-0">
-      <div class="flex items-center gap-1.5 flex-1 min-w-0 text-title">
+    <div class="h-6 flex items-center gap-1 min-w-0">
+      <div class="flex items-center gap-1.5 flex-1 min-w-0 text-title leading-none">
         <Show
           when={props.user}
           fallback={
@@ -59,15 +55,6 @@ export default function UserCardIdentity(props: Props) {
           </span>
         </Show>
       </div>
-      <IconButton
-        label={props.pinned ? "Unpin card" : "Keep card open"}
-        size="sm"
-        pressed={props.pinned}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={props.onTogglePin}
-      >
-        <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
-      </IconButton>
     </div>
   );
 }

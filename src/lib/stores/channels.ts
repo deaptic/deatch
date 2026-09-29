@@ -1,10 +1,27 @@
 import { createSignal } from "solid-js";
+import type { ChannelInfo } from "../types/twitch/channel.ts";
 import type { Stream } from "../types/twitch/stream.ts";
 import type { User, UserRef } from "../types/twitch/user.ts";
 import { pinnedChannels } from "./preferences.ts";
 import { watchWarmedChannels } from "./watch.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
+
+const [channelInfoById, setChannelInfoById] = createSignal<
+  Record<string, ChannelInfo>
+>({});
+
+export function rememberChannelInfo(infos: ChannelInfo[]) {
+  setChannelInfoById((prev) => {
+    const next = { ...prev };
+    for (const c of infos) next[c.broadcaster.id] = c;
+    return next;
+  });
+}
+
+export function channelInfoFor(userId: string): ChannelInfo | undefined {
+  return channelInfoById()[userId];
+}
 
 export const usersById = new Map<string, User>();
 

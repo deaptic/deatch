@@ -13,9 +13,9 @@ type Props = {
 
 export default function UserCardMeta(props: Props) {
   return (
-    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-small min-w-0">
-      <Show when={props.user}>
-        <CopyableField copy={props.user!.login} icon={<AtSign />}>
+    <div class="grid grid-meta gap-x-5 gap-y-2 text-small min-w-0">
+      <Show when={props.user} fallback={<span />}>
+        <CopyableField copy={props.user!.login} icon={<AtSign />} truncate>
           {props.user!.login}
         </CopyableField>
       </Show>
@@ -26,7 +26,7 @@ export default function UserCardMeta(props: Props) {
       >
         {props.chatterId}
       </CopyableField>
-      <Show when={props.user?.createdAt}>
+      <Show when={props.user?.createdAt} fallback={<span />}>
         <CopyableField copy={props.user!.createdAt} icon={<Calendar />}>
           <Timestamp ts={props.user!.createdAt} format="D" />
         </CopyableField>

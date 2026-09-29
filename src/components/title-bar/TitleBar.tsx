@@ -79,7 +79,7 @@ export default function TitleBar(props: Props) {
     <>
       <div
         data-tauri-drag-region
-        class="relative h-titlebar shrink-0 flex items-center bg-canvas select-none"
+        class="relative h-titlebar shrink-0 flex items-center bg-canvas border-b border-line-soft select-none"
       >
         <div
           data-tauri-drag-region

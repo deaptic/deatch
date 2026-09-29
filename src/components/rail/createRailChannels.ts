@@ -13,9 +13,15 @@ import {
   type Stream,
 } from "../../lib/api/twitch/streams.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getChannelInformation } from "../../lib/api/twitch/channels.ts";
+import { user } from "../../lib/stores/users.ts";
 import { fetchAllPages } from "../../lib/api/utils.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { rememberUser, setLiveStreams } from "../../lib/stores/channels.ts";
+import {
+  rememberChannelInfo,
+  rememberUser,
+  setLiveStreams,
+} from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
@@ -73,6 +79,22 @@ export function createRailChannels(
     }
   }
 
+  async function loadOfflineInfo(candidates: string[], streams: Stream[]) {
+    const liveIds = new Set(streams.map((s) => s.user.id));
+    const self = user();
+    const ids = [...candidates, ...(self ? [self.id] : [])].filter(
+      (id) => !liveIds.has(id),
+    );
+    if (ids.length === 0) return;
+    try {
+      rememberChannelInfo(
+        await getChannelInformation({ broadcasterIds: [...new Set(ids)] }),
+      );
+    } catch {
+      // Offline metadata is decorative; the rail works without it.
+    }
+  }
+
   async function fetchLive() {
     try {
       const followed = await fetchAllPages<Stream>(
@@ -106,6 +128,7 @@ export function createRailChannels(
       const streams = [...followed, ...extraStreams];
 
       setLiveStreams(streams);
+      void loadOfflineInfo(extraIdList, streams);
       const data: User[] = [];
       if (streams.length > 0) {
         const users = await getUsers({ ids: streams.map((s) => s.user.id) });

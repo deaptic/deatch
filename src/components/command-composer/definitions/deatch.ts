@@ -14,6 +14,7 @@ import {
   unmuteUser,
 } from "../../../lib/stores/preferences.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
+import { formatDuration } from "../../../lib/format/stream.ts";
 import { Time } from "../../../lib/utils/time.ts";
 import type { Command } from "../types.ts";
 
@@ -25,16 +26,6 @@ function loginFromUserId(userId: string): string | null {
     if (c) return c.login;
   }
   return null;
-}
-
-function formatUptime(ms: number): string {
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
 }
 
 export const deatchCommands: Command[] = [
@@ -130,7 +121,7 @@ export const deatchCommands: Command[] = [
           return;
         }
         const ms = Date.now() - new Date(s.startedAt).getTime();
-        appendLocalNotice(ctx.broadcasterId, `Uptime: ${formatUptime(ms)}`);
+        appendLocalNotice(ctx.broadcasterId, `Uptime: ${formatDuration(ms)}`);
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch uptime");
       }

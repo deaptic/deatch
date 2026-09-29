@@ -1,8 +1,23 @@
 use crate::dto::pagination::PaginatedResponse;
-use crate::dto::twitch::channel::Follow;
+use crate::dto::twitch::channel::{ChannelInfo, Follow};
 use crate::services;
 use crate::services::twitch::get_token;
 use serde::Deserialize;
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetChannelInformationParams {
+    pub broadcaster_ids: Vec<String>,
+}
+
+#[tauri::command]
+pub async fn get_channel_information(
+    app: tauri::AppHandle,
+    params: GetChannelInformationParams,
+) -> Result<Vec<ChannelInfo>, String> {
+    let token = get_token(&app).await?;
+    services::twitch::channels::get_channel_information(&token, params.broadcaster_ids).await
+}
 
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]

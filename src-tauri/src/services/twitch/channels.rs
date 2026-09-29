@@ -1,13 +1,33 @@
 use super::helix;
 use crate::dto::pagination::PaginatedResponse;
-use crate::dto::twitch::channel::Follow;
+use crate::dto::twitch::channel::{ChannelInfo, Follow};
 use std::borrow::Cow;
 use twitch_api::helix::channels::{
     get_followed_channels::GetFollowedChannels,
     modify_channel_information::{ModifyChannelInformationBody, ModifyChannelInformationRequest},
     start_commercial::{StartCommercialBody, StartCommercialRequest},
-    AddChannelVipRequest, GetChannelFollowersRequest, RemoveChannelVipRequest,
+    AddChannelVipRequest, GetChannelFollowersRequest, GetChannelInformationRequest,
+    RemoveChannelVipRequest,
 };
+
+const HELIX_ID_BATCH: usize = 100;
+
+pub async fn get_channel_information(
+    token: &UserToken,
+    broadcaster_ids: Vec<String>,
+) -> Result<Vec<ChannelInfo>, String> {
+    let mut out = Vec::with_capacity(broadcaster_ids.len());
+    for chunk in broadcaster_ids.chunks(HELIX_ID_BATCH) {
+        let ids: Vec<UserId> = chunk.iter().cloned().map(UserId::from).collect();
+        let request = GetChannelInformationRequest::broadcaster_ids(&*ids);
+        let response = helix()
+            .req_get(request, token)
+            .await
+            .map_err(|e| e.to_string())?;
+        out.extend(response.data.into_iter().map(ChannelInfo::from));
+    }
+    Ok(out)
+}
 use twitch_api::helix::EmptyBody;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{CategoryId, CommercialLength, UserId};
