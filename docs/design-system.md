@@ -374,8 +374,8 @@ either direction:
 
 Line one: name in `strong`, right side mention badge. Line two: game and viewer
 count in `small ink-soft`; offline channels show "Offline" or last-live time.
-Live channels keep the dot. Unread shows a 6px `ink` dot after the name when
-there is no mention badge. Tooltips are off when expanded.
+Live channels keep the presence dot. Unread is shown only by the left pill, the
+same as when collapsed. Tooltips are off when expanded.
 
 The expanded state persists across restarts.
 
