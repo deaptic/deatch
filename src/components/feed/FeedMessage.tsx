@@ -31,6 +31,7 @@ type Props = {
   showName?: boolean;
   showBadges?: boolean;
   showToolbar?: boolean;
+  flush?: boolean;
   selected?: boolean;
   reactions: Reaction[];
   onContextMenu?: (x: number, y: number, msg: Message) => void;
@@ -143,9 +144,9 @@ export default function FeedMessage(props: Props) {
     <div
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
-      class={`relative group leading-normal pl-3 pr-2 py-1 border-l-3 rounded-r-sm transition-colors duration-snap ${
-        TREATMENTS[treatment()]
-      } ${
+      class={`relative group leading-normal pl-3 pr-2 py-1 border-l-3 transition-colors duration-snap ${
+        props.flush ? "rounded-r-sm" : "rounded-sm"
+      } ${TREATMENTS[treatment()]} ${
         props.selected
           ? "bg-accent-soft! outline outline-2 -outline-offset-2 outline-accent rounded-sm"
           : ""

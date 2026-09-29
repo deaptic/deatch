@@ -46,6 +46,7 @@ type Props = {
   showBadges?: boolean;
   showToolbar?: boolean;
   showDivider?: boolean;
+  flush?: boolean;
   onContextMenu?: (x: number, y: number, msg: Message) => void;
   onReply?: (msg: Message) => void;
   onReact?: (msg: Message, value: string) => void;
@@ -200,6 +201,7 @@ export default function Feed(props: Props) {
           <FeedEvent
             item={item}
             showTimestamp={feedShowTimestamp()}
+            flush={props.flush}
             onContextMenu={props.onEventContextMenu}
           />
         )
@@ -216,6 +218,7 @@ export default function Feed(props: Props) {
             showName={props.showName}
             showBadges={props.showBadges}
             showToolbar={props.showToolbar}
+            flush={props.flush}
             reactions={reactions()}
             onContextMenu={props.onContextMenu}
             onReply={props.onReply}
