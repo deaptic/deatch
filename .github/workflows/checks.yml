@@ -1,0 +1,50 @@
+name: checks
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: windows-latest
+    env:
+      CARGO_INCREMENTAL: "0"
+    steps:
+      # Keep LF on checkout so fmt checks see the same bytes as local commits.
+      - run: git config --global core.autocrlf false
+        shell: bash
+
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+        with:
+          rust-components: rustfmt, clippy
+
+      - name: deno fmt
+        run: deno fmt --check
+      - name: deno lint
+        run: deno lint
+      - name: ui lint
+        run: deno task lint:ui
+      - name: deno check
+        run: deno check src/
+      - name: deno test
+        run: deno task test
+      - name: vite build
+        run: deno task build
+
+      - name: cargo fmt
+        working-directory: src-tauri
+        run: cargo fmt --check
+      - name: cargo clippy
+        working-directory: src-tauri
+        run: cargo clippy --no-default-features --all-targets -- -D warnings
+      - name: cargo test
+        working-directory: src-tauri
+        run: cargo test --no-default-features --lib
