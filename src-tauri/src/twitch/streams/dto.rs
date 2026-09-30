@@ -4,7 +4,7 @@ use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::streams as helix_streams;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Thumbnail {
     pub small: String,
@@ -23,7 +23,7 @@ impl Thumbnail {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Stream {
     pub id: StreamId,

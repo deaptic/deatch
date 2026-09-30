@@ -1,5 +1,5 @@
 import { createSignal, Show } from "solid-js";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { User } from "../../lib/types/index.ts";
 import { setExploreFilters } from "../../lib/stores/explore.ts";
 import ExploreGreeting from "./ExploreGreeting.tsx";
 import ExploreSearch from "./ExploreSearch.tsx";

@@ -1,18 +1,18 @@
 use serde::Serialize;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, specta::Type)]
 pub struct EmoteEntry {
     pub name: String,
     pub url: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, specta::Type)]
 pub struct ChannelResult {
     pub emotes: Vec<EmoteEntry>,
     pub emote_set_id: Option<String>,
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, specta::Type)]
 pub struct Delta {
     pub id: String,
     pub actor: Option<String>,
@@ -21,7 +21,7 @@ pub struct Delta {
     pub renamed: Vec<Rename>,
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, specta::Type)]
 pub struct Rename {
     pub from: String,
     pub to: String,

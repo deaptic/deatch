@@ -1,5 +1,5 @@
 import { createEffect, createSignal, on } from "solid-js";
-import type { User } from "../types/twitch/user.ts";
+import type { User } from "../types/index.ts";
 import { selectedChannel } from "../stores/view.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import { clearChatters, isModOfChannel, user } from "../stores/users.ts";

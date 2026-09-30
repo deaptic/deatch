@@ -1,19 +1,16 @@
-import type { EmoteEntry } from "../../types/external/emote.ts";
+import { commands } from "../../bindings.ts";
+import type { ChannelIdParams, EmoteEntry } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export function bttvGetGlobalEmotes(
   options?: InvokeOptions,
 ): Promise<EmoteEntry[]> {
-  return invokeCommand("bttv_get_global_emotes", undefined, options);
+  return invokeCommand(commands.bttvGetGlobalEmotes, [], options);
 }
 
-export type BttvGetChannelEmotesParams = {
-  channelId: string;
-};
-
 export function bttvGetChannelEmotes(
-  params: BttvGetChannelEmotesParams,
+  params: ChannelIdParams,
   options?: InvokeOptions,
 ): Promise<EmoteEntry[]> {
-  return invokeCommand("bttv_get_channel_emotes", params, options);
+  return invokeCommand(commands.bttvGetChannelEmotes, [params], options);
 }

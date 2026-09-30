@@ -16,14 +16,14 @@ impl DiscordState {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Button {
     pub label: String,
     pub url: String,
 }
 
-#[derive(Clone, Copy, Deserialize)]
+#[derive(Clone, Copy, Deserialize, specta::Type)]
 #[serde(rename_all = "lowercase")]
 pub enum ActivityType {
     Playing,
@@ -43,7 +43,7 @@ impl From<ActivityType> for activity::ActivityType {
     }
 }
 
-#[derive(Clone, Copy, Deserialize)]
+#[derive(Clone, Copy, Deserialize, specta::Type)]
 #[serde(rename_all = "lowercase")]
 pub enum StatusDisplayType {
     Name,
@@ -61,7 +61,7 @@ impl From<StatusDisplayType> for activity::StatusDisplayType {
     }
 }
 
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
 pub struct ActivityInput {
     pub details: Option<String>,

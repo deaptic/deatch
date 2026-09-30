@@ -8,6 +8,7 @@ use crate::twitch::Twitch;
 use tauri::State;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_streams(
     twitch: State<'_, Twitch>,
     params: GetStreamsParams,
@@ -16,6 +17,7 @@ pub async fn get_streams(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_streams_from_ids(
     twitch: State<'_, Twitch>,
     params: GetStreamsFromIdsParams,
@@ -24,11 +26,13 @@ pub async fn get_streams_from_ids(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_followed_streams(twitch: State<'_, Twitch>) -> Result<Vec<Stream>> {
     streams::get_followed_streams(&twitch.authed().await?).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn create_stream_marker(
     twitch: State<'_, Twitch>,
     params: CreateStreamMarkerParams,

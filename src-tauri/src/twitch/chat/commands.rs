@@ -8,21 +8,25 @@ use crate::twitch::Twitch;
 use tauri::State;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_global_emotes(twitch: State<'_, Twitch>) -> Result<Vec<Emote>> {
     chat::get_global_emotes(&twitch.authed().await?).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_user_emotes(twitch: State<'_, Twitch>) -> Result<Vec<UserEmote>> {
     chat::get_user_emotes(&twitch.authed().await?).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_global_chat_badges(twitch: State<'_, Twitch>) -> Result<Vec<BadgeSet>> {
     chat::get_global_chat_badges(&twitch.authed().await?).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_channel_chat_badges(
     twitch: State<'_, Twitch>,
     params: GetChannelChatBadgesParams,
@@ -31,11 +35,13 @@ pub async fn get_channel_chat_badges(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn send_shoutout(twitch: State<'_, Twitch>, params: SendShoutoutParams) -> Result<()> {
     chat::send_shoutout(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn send_chat_message(
     twitch: State<'_, Twitch>,
     params: SendChatMessageParams,
@@ -44,6 +50,7 @@ pub async fn send_chat_message(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn send_chat_announcement(
     twitch: State<'_, Twitch>,
     params: SendChatAnnouncementParams,
@@ -52,6 +59,7 @@ pub async fn send_chat_announcement(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn update_chat_settings(
     twitch: State<'_, Twitch>,
     params: UpdateChatSettingsParams,
@@ -60,6 +68,7 @@ pub async fn update_chat_settings(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn update_user_chat_color(
     twitch: State<'_, Twitch>,
     params: UpdateUserChatColorParams,

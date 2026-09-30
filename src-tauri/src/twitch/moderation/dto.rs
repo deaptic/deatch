@@ -6,7 +6,7 @@ use twitch_api::helix::moderation::{
     Moderator as HelixModerator,
 };
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Ban {
     pub user_id: UserId,
@@ -28,7 +28,7 @@ impl From<BanUser> for Ban {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct BannedUser {
     pub user: UserRef,

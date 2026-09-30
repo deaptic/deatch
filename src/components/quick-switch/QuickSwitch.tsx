@@ -23,7 +23,7 @@ import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Field from "../ui/Field.tsx";
 import Loading from "../ui/Loading.tsx";

@@ -4,7 +4,7 @@
   "categories": {
     "correctness": "off"
   },
-  "ignorePatterns": ["dist/**", "docs/**", "extension/**", "src-tauri/**"],
+  "ignorePatterns": ["dist/**", "docs/**", "extension/**", "src-tauri/**", "src/lib/bindings.ts"],
   "settings": {
     "shadcn": {
       "ui": "src/components/ui",

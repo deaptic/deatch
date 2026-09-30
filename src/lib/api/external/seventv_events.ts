@@ -1,19 +1,17 @@
+import { commands } from "../../bindings.ts";
+import type { EmoteSetParams } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type SeventvEmoteSetParams = {
-  emoteSetId: string;
-};
-
-export function seventvSubscribeEmoteSet(
-  params: SeventvEmoteSetParams,
+export async function seventvSubscribeEmoteSet(
+  params: EmoteSetParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("seventv_subscribe_emote_set", params, options);
+  await invokeCommand(commands.seventvSubscribeEmoteSet, [params], options);
 }
 
-export function seventvUnsubscribeEmoteSet(
-  params: SeventvEmoteSetParams,
+export async function seventvUnsubscribeEmoteSet(
+  params: EmoteSetParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("seventv_unsubscribe_emote_set", params, options);
+  await invokeCommand(commands.seventvUnsubscribeEmoteSet, [params], options);
 }

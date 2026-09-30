@@ -1,5 +1,5 @@
 import { createEffect } from "solid-js";
-import { invoke } from "@tauri-apps/api/core";
+import { setMentionsBadge } from "../api/notifications.ts";
 import { unreadMentionCount } from "../stores/inbox.ts";
 
 async function renderBadgeBytes(count: number): Promise<number[] | null> {
@@ -38,7 +38,7 @@ export function createMentionsBadge(): void {
     void (async () => {
       try {
         const bytes = await renderBadgeBytes(count);
-        await invoke("set_mentions_badge", { count, iconBytes: bytes });
+        await setMentionsBadge(count, bytes);
       } catch (e) {
         console.error("failed to update mentions badge", e);
       }

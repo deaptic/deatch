@@ -4,18 +4,9 @@
 // they live here (rather than in `dto/twitch/eventsub.rs`) because the
 // backend re-emits helix types as-is, so the frontend owns the wire spec.
 
-export type EventKind =
-  | "channel.chat.message"
-  | "channel.chat.notification"
-  | "channel.chat.message_delete"
-  | "channel.chat.clear"
-  | "channel.chat.clear_user_messages"
-  | "channel.shoutout.create"
-  | "channel.follow"
-  | "channel.moderate"
-  | "automod.message.hold"
-  | "automod.message.update"
-  | "channel.channel_points_custom_reward_redemption.add";
+import type { EventKind } from "../../bindings.ts";
+
+export type { EventKind };
 
 export const CHAT_KINDS: EventKind[] = [
   "channel.chat.message",

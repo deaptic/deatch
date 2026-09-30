@@ -7,7 +7,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { User } from "../../lib/types/index.ts";
 import {
   type Category,
   searchCategories,
@@ -55,7 +55,7 @@ export default function SearchResults(props: Props) {
       displayName: channel.user.displayName,
       profileImageUrl: channel.profileImageUrl,
       description: "",
-      broadcasterType: "",
+      broadcasterType: "normal",
       createdAt: "",
     };
     rememberUser(user);

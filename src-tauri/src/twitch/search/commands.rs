@@ -5,6 +5,7 @@ use crate::twitch::Twitch;
 use tauri::State;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn search_channels(
     twitch: State<'_, Twitch>,
     params: SearchChannelsParams,
@@ -13,6 +14,7 @@ pub async fn search_channels(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn search_categories(
     twitch: State<'_, Twitch>,
     params: SearchCategoriesParams,

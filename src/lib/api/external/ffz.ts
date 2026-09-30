@@ -1,19 +1,16 @@
-import type { EmoteEntry } from "../../types/external/emote.ts";
+import { commands } from "../../bindings.ts";
+import type { ChannelLoginParams, EmoteEntry } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export function ffzGetGlobalEmotes(
   options?: InvokeOptions,
 ): Promise<EmoteEntry[]> {
-  return invokeCommand("ffz_get_global_emotes", undefined, options);
+  return invokeCommand(commands.ffzGetGlobalEmotes, [], options);
 }
 
-export type FfzGetChannelEmotesParams = {
-  channelLogin: string;
-};
-
 export function ffzGetChannelEmotes(
-  params: FfzGetChannelEmotesParams,
+  params: ChannelLoginParams,
   options?: InvokeOptions,
 ): Promise<EmoteEntry[]> {
-  return invokeCommand("ffz_get_channel_emotes", params, options);
+  return invokeCommand(commands.ffzGetChannelEmotes, [params], options);
 }

@@ -3,10 +3,9 @@ use serde::Serialize;
 use twitch_api::helix::users as helix_users;
 use twitch_api::types;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "lowercase")]
 pub enum BroadcasterType {
-    #[serde(rename = "")]
     Normal,
     Affiliate,
     Partner,
@@ -22,7 +21,7 @@ impl From<types::BroadcasterType> for BroadcasterType {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UserRef {
     pub id: UserId,
@@ -40,7 +39,7 @@ impl UserRef {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: UserId,

@@ -1,76 +1,71 @@
+import { commands } from "../../bindings.ts";
 import { appendLocalNotice } from "../../stores/feeds.ts";
 import { addToast } from "../../stores/toasts.ts";
-import type { RecentMessage } from "../../types/external/robotty.ts";
 import type {
   BadgeSet,
   Emote,
-  SendMessageResult,
-  SendOutcome,
+  GetChannelChatBadgesParams,
+  GetRecentMessagesParams,
+  RecentMessage,
+  SendChatAnnouncementParams,
+  SendChatMessageParams,
+  SendShoutoutParams,
+  UpdateChatSettingsParams,
+  UpdateUserChatColorParams,
   UserEmote,
-} from "../../types/twitch/chat.ts";
+} from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export type {
+  AnnouncementColor,
   BadgeSet,
+  ChatColor,
   Emote,
   SendMessageResult,
   UserEmote,
-} from "../../types/twitch/chat.ts";
+} from "../../types/index.ts";
+
+export type SendOutcome = "sent" | "held" | "failed";
 
 export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
-  return invokeCommand("get_global_emotes", undefined, options);
+  return invokeCommand(commands.getGlobalEmotes, [], options);
 }
 
 export function getUserEmotes(options?: InvokeOptions): Promise<UserEmote[]> {
-  return invokeCommand("get_user_emotes", undefined, options);
+  return invokeCommand(commands.getUserEmotes, [], options);
 }
 
 export function getGlobalChatBadges(
   options?: InvokeOptions,
 ): Promise<BadgeSet[]> {
-  return invokeCommand("get_global_chat_badges", undefined, options);
+  return invokeCommand(commands.getGlobalChatBadges, [], options);
 }
-
-export type GetChannelChatBadgesParams = {
-  broadcasterId: string;
-};
 
 export function getChannelChatBadges(
   params: GetChannelChatBadgesParams,
   options?: InvokeOptions,
 ): Promise<BadgeSet[]> {
-  return invokeCommand("get_channel_chat_badges", params, options);
+  return invokeCommand(commands.getChannelChatBadges, [params], options);
 }
 
-export type SendShoutoutParams = {
-  fromBroadcasterId: string;
-  toBroadcasterId: string;
-};
-
-export function sendShoutout(
+export async function sendShoutout(
   params: SendShoutoutParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("send_shoutout", params, {
+  await invokeCommand(commands.sendShoutout, [params], {
     successMessage: "Shoutout sent",
     ...options,
   });
 }
-
-export type SendChatMessageParams = {
-  broadcasterId: string;
-  message: string;
-  replyParentMessageId?: string | null;
-};
 
 export async function sendChatMessage(
   params: SendChatMessageParams,
   options?: InvokeOptions,
 ): Promise<SendOutcome> {
   try {
-    const res = await invokeCommand<SendMessageResult>(
-      "send_chat_message",
-      params,
+    const res = await invokeCommand(
+      commands.sendChatMessage,
+      [params],
       options,
     );
     if (res.isSent) return "sent";
@@ -88,87 +83,38 @@ export async function sendChatMessage(
   }
 }
 
-export type GetRecentMessagesParams = {
-  channelLogin: string;
-  limit?: number;
-  after?: number;
-};
-
 export function getRecentMessages(
   params: GetRecentMessagesParams,
   options?: InvokeOptions,
 ): Promise<RecentMessage[]> {
-  return invokeCommand("get_recent_messages", params, options);
+  return invokeCommand(commands.getRecentMessages, [params], options);
 }
 
-export type AnnouncementColor =
-  | "primary"
-  | "blue"
-  | "green"
-  | "orange"
-  | "purple";
-
-export type SendChatAnnouncementParams = {
-  broadcasterId: string;
-  message: string;
-  color?: AnnouncementColor;
-};
-
-export function sendChatAnnouncement(
+export async function sendChatAnnouncement(
   params: SendChatAnnouncementParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("send_chat_announcement", params, {
+  await invokeCommand(commands.sendChatAnnouncement, [params], {
     successMessage: "Announcement sent",
     ...options,
   });
 }
 
-export type UpdateChatSettingsParams = {
-  broadcasterId: string;
-  emoteMode?: boolean;
-  followerMode?: boolean;
-  followerModeDuration?: number;
-  slowMode?: boolean;
-  slowModeWaitTime?: number;
-  subscriberMode?: boolean;
-  uniqueChatMode?: boolean;
-};
-
-export function updateChatSettings(
+export async function updateChatSettings(
   params: UpdateChatSettingsParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("update_chat_settings", params, {
+  await invokeCommand(commands.updateChatSettings, [params], {
     successMessage: "Chat settings updated",
     ...options,
   });
 }
 
-export type NamedUserColor =
-  | "blue"
-  | "blue_violet"
-  | "cadet_blue"
-  | "chocolate"
-  | "coral"
-  | "dodger_blue"
-  | "firebrick"
-  | "golden_rod"
-  | "green"
-  | "hot_pink"
-  | "orange_red"
-  | "red"
-  | "sea_green"
-  | "spring_green"
-  | "yellow_green";
-
-export type UpdateUserChatColorParams = { color: NamedUserColor };
-
-export function updateUserChatColor(
+export async function updateUserChatColor(
   params: UpdateUserChatColorParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("update_user_chat_color", params, {
+  await invokeCommand(commands.updateUserChatColor, [params], {
     successMessage: "Chat color updated",
     ...options,
   });

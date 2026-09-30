@@ -16,7 +16,7 @@ use twitch_api::helix::channels::{
 };
 use twitch_api::types;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct GetChannelInformationParams {
     pub broadcaster_ids: Vec<UserId>,
@@ -36,12 +36,15 @@ pub async fn get_channel_information(
         .await
 }
 
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct GetChannelFollowersParams {
     pub broadcaster_id: UserId,
+    #[serde(default)]
     pub user_id: Option<UserId>,
+    #[serde(default)]
     pub first: Option<usize>,
+    #[serde(default)]
     pub after: Option<String>,
 }
 
@@ -63,7 +66,7 @@ pub async fn get_channel_followers(
     ))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFollowedChannelsParams {
     pub user_id: UserId,
@@ -83,11 +86,13 @@ pub async fn get_followed_channels(
     Ok(response.data.into_iter().map(Follow::from).collect())
 }
 
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct ModifyChannelInformationParams {
     pub broadcaster_id: UserId,
+    #[serde(default)]
     pub title: Option<String>,
+    #[serde(default)]
     pub game_id: Option<GameId>,
 }
 
@@ -151,10 +156,11 @@ impl From<CommercialLength> for types::CommercialLength {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct StartCommercialParams {
     pub broadcaster_id: UserId,
+    #[specta(type = u64)]
     pub length: CommercialLength,
 }
 
@@ -170,7 +176,7 @@ pub async fn start_commercial(twitch: &Authed<'_>, params: StartCommercialParams
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelVipParams {
     pub broadcaster_id: UserId,
