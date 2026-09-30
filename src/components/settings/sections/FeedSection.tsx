@@ -78,7 +78,7 @@ export default function FeedSection() {
         </SettingsRow>
         <SettingsRow
           label="Highlight keywords"
-          description="Messages containing these light up like mentions and land in your inbox."
+          description="Messages containing these light up like mentions and land in your inbox. Use * as a wildcard: drop* matches drops and dropped."
           stacked
         >
           <ChipInput placeholder="Add a keyword" onAdd={addFeedKeyword} />
