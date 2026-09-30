@@ -65,7 +65,7 @@ Keep the dependency flow one-directional: entry points call services, services c
   - `types/`, `constants/`, `utils/` — shared leaves.
 
   Components may call an `api/` wrapper directly when it's a plain one-shot call; once caching, state, or outcome logic is involved, it belongs in a service or manager. Types always come from `types/`, never re-exported through `api/`.
-- **UI** — `docs/design-system.md` is the source of truth for look and behaviour; `docs/mockup/index.html` shows it. Primitives live in `src/components/ui/` and feature components compose them without restyling. Colours, type, radii, sizes, and motion come from `@theme` tokens in `src/App.css`; no raw hex, no shadows.
+- **UI** — `docs/design-system.md` is the source of truth for look and behaviour. Primitives live in `src/components/ui/` and feature components compose them without restyling. Colours, type, radii, sizes, and motion come from `@theme` tokens in `src/App.css`; no raw hex, no shadows.
 
 ### Backend layout
 
