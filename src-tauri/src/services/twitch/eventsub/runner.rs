@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::time::Duration;
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use futures_util::{SinkExt, StreamExt};
 use tauri::{Emitter, Manager};
@@ -66,6 +66,13 @@ pub(super) async fn ensure_task(app: &tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// Twitch sends a keepalive every 10s by default; silence beyond this means
+/// the socket is half-open and must be replaced.
+const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(30);
+/// Drops shorter than this are recovered silently; longer ones surface as
+/// disconnect/connect notices in the feed.
+const NOTICE_GRACE: Duration = Duration::from_secs(10);
+
 async fn run(
     app: tauri::AppHandle,
     mut cmd_rx: mpsc::UnboundedReceiver<EventSubCmd>,
@@ -74,8 +81,17 @@ async fn run(
     let mut url = WS_URL.to_string();
     let mut subs: HashMap<String, ChannelSub> = HashMap::new();
     let mut is_reconnect = false;
+    let mut outage: Option<Outage> = None;
+    let mut outage_notified = false;
 
     loop {
+        if let Some(Outage { started, .. }) = outage {
+            if !outage_notified && started.elapsed() >= NOTICE_GRACE {
+                emit_disconnected(&app, &subs);
+                outage_notified = true;
+            }
+        }
+
         let Ok((ws, _)) = connect_async(url.as_str()).await else {
             url = WS_URL.to_string();
             is_reconnect = false;
@@ -101,16 +117,41 @@ async fn run(
                     Some(cmd) => handle_cmd(&app, &helix, &mut subs, session_id.as_deref(), cmd).await,
                     None => return Ok(()),
                 },
-                msg = read.next() => match msg {
-                    Some(Ok(WsMessage::Text(text))) => {
-                        match handle_ws_message(&app, &helix, &mut subs, &mut session_id, &text).await {
+                msg = tokio::time::timeout(KEEPALIVE_TIMEOUT, read.next()) => match msg {
+                    Ok(Some(Ok(WsMessage::Text(text)))) => {
+                        let quiet = outage.is_some() && !outage_notified;
+                        let had_session = session_id.is_some();
+                        match handle_ws_message(&app, &helix, &mut subs, &mut session_id, &text, quiet).await {
                             Ok(Some(reconnect)) => { next_url = Some(reconnect); break; }
                             Err(e) => { let _ = app.emit("eventsub-error", e); }
                             _ => {}
                         }
+                        if !had_session && session_id.is_some() {
+                            emit_connection(&app, true);
+                            if let Some(o) = outage.take() {
+                                println!("[eventsub] recovered after {:?} (quiet={quiet})", o.started.elapsed());
+                                emit_recovered(&app, &subs, o.since_unix_ms);
+                            }
+                            outage_notified = false;
+                        }
                     }
-                    Some(Ok(_)) => {}
-                    _ => break,
+                    Ok(Some(Ok(WsMessage::Close(frame)))) => {
+                        println!("[eventsub] closed by server: {frame:?}");
+                        break;
+                    }
+                    Ok(Some(Ok(_))) => {}
+                    Ok(Some(Err(e))) => {
+                        println!("[eventsub] socket error: {e}");
+                        break;
+                    }
+                    Ok(None) => {
+                        println!("[eventsub] socket ended");
+                        break;
+                    }
+                    Err(_) => {
+                        println!("[eventsub] no keepalive for {KEEPALIVE_TIMEOUT:?}, reconnecting");
+                        break;
+                    }
                 }
             }
             let _ = write.flush().await;
@@ -119,21 +160,69 @@ async fn run(
         is_reconnect = next_url.is_some();
         url = next_url.unwrap_or_else(|| WS_URL.to_string());
         if !is_reconnect {
-            // Fresh disconnect — every live sub_id is dead. `requested` survives
-            // so resubscribe-on-Welcome will re-emit `eventsub-subscribed`.
-            for (broadcaster_id, sub) in subs.iter() {
-                for kind in sub.sub_ids.keys() {
-                    println!("[eventsub] unsubscribed kind={kind:?} broadcaster={broadcaster_id} (ws disconnect)");
-                    let _ = app.emit(
-                        "eventsub-unsubscribed",
-                        serde_json::json!({
-                            "broadcaster_id": broadcaster_id,
-                            "kind": kind,
-                        }),
-                    );
-                }
+            if outage.is_none() {
+                emit_connection(&app, false);
             }
-            tokio::time::sleep(Duration::from_secs(3)).await;
+            outage.get_or_insert_with(Outage::now);
+            let delay = if outage_notified { 5 } else { 1 };
+            tokio::time::sleep(Duration::from_secs(delay)).await;
+        }
+    }
+}
+
+struct Outage {
+    started: Instant,
+    since_unix_ms: u64,
+}
+
+impl Outage {
+    fn now() -> Self {
+        let since_unix_ms = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_millis() as u64)
+            .unwrap_or(0);
+        Self {
+            started: Instant::now(),
+            since_unix_ms,
+        }
+    }
+}
+
+fn emit_connection(app: &tauri::AppHandle, connected: bool) {
+    let _ = app.emit(
+        "eventsub-connection",
+        serde_json::json!({ "connected": connected }),
+    );
+}
+
+/// Tells the frontend which chats may have missed messages while the socket
+/// was down, so it can backfill the gap from recent-messages.
+fn emit_recovered(app: &tauri::AppHandle, subs: &HashMap<String, ChannelSub>, since_unix_ms: u64) {
+    let broadcaster_ids: Vec<&String> = subs
+        .iter()
+        .filter(|(_, s)| s.requested.contains(&EventKind::ChannelChatMessage))
+        .map(|(id, _)| id)
+        .collect();
+    if broadcaster_ids.is_empty() {
+        return;
+    }
+    let _ = app.emit(
+        "eventsub-recovered",
+        serde_json::json!({ "since": since_unix_ms, "broadcaster_ids": broadcaster_ids }),
+    );
+}
+
+fn emit_disconnected(app: &tauri::AppHandle, subs: &HashMap<String, ChannelSub>) {
+    for (broadcaster_id, sub) in subs {
+        for kind in &sub.requested {
+            println!("[eventsub] unsubscribed kind={kind:?} broadcaster={broadcaster_id} (ws disconnect)");
+            let _ = app.emit(
+                "eventsub-unsubscribed",
+                serde_json::json!({
+                    "broadcaster_id": broadcaster_id,
+                    "kind": kind,
+                }),
+            );
         }
     }
 }
@@ -183,7 +272,7 @@ async fn handle_cmd(
             // No session yet — Welcome handler will create the sub.
             let Some(sid) = session_id else { return };
 
-            match create_subscription(app, helix, &token, &broadcaster_id, kind, sid).await {
+            match create_subscription(app, helix, &token, &broadcaster_id, kind, sid, false).await {
                 Some(id) => {
                     entry.sub_ids.insert(kind, id);
                 }

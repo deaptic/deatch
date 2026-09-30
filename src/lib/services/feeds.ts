@@ -1,6 +1,32 @@
 import { getRecentMessages } from "../api/twitch/chat.ts";
 import { mapChatMessage } from "../events/chat-mapper.ts";
-import { appendItem, feeds, prependItems } from "../stores/feeds.ts";
+import {
+  appendItem,
+  feeds,
+  insertItems,
+  prependItems,
+} from "../stores/feeds.ts";
+
+const GAP_MARGIN_MS = 5_000;
+const GAP_LIMIT = 300;
+
+/// Backfills messages that arrived while the EventSub socket was down.
+/// Pulls from `since` minus a margin; duplicates are dropped on insert.
+export function fillGap(
+  broadcasterId: string,
+  channelLogin: string,
+  sinceMs: number,
+) {
+  getRecentMessages(
+    { channelLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
+    { silent: true },
+  )
+    .then((msgs) => {
+      const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
+      insertItems(broadcasterId, items);
+    })
+    .catch((e) => console.error("[feeds] gap fill failed", channelLogin, e));
+}
 
 /// One-time hydration of a channel feed with recent history from robotty.
 /// The `backfilled` flag in `ChannelFeed` prevents repeats across remounts;

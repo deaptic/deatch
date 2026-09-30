@@ -22,6 +22,7 @@ pub(super) async fn create_subscription(
     broadcaster_id: &str,
     kind: EventKind,
     session_id: &str,
+    quiet: bool,
 ) -> Option<String> {
     let user_id = token.user_id.as_str();
     let transport = Transport::websocket(session_id);
@@ -130,11 +131,15 @@ pub(super) async fn create_subscription(
 
     match result {
         Ok(id) => {
-            println!("[eventsub] subscribed kind={kind:?} broadcaster={broadcaster_id}");
-            let _ = app.emit(
-                "eventsub-subscribed",
-                serde_json::json!({ "broadcaster_id": broadcaster_id, "kind": kind }),
+            println!(
+                "[eventsub] subscribed kind={kind:?} broadcaster={broadcaster_id} quiet={quiet}"
             );
+            if !quiet {
+                let _ = app.emit(
+                    "eventsub-subscribed",
+                    serde_json::json!({ "broadcaster_id": broadcaster_id, "kind": kind }),
+                );
+            }
             Some(id)
         }
         Err(e) => {

@@ -103,6 +103,7 @@ export async function sendChatMessage(
 export type GetRecentMessagesParams = {
   channelLogin: string;
   limit?: number;
+  after?: number;
 };
 
 export function getRecentMessages(
