@@ -1,9 +1,11 @@
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::stream::Stream;
+use crate::error::Result;
 use crate::services;
-use crate::services::twitch::get_token;
 use crate::services::twitch::streams::Filters;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
@@ -19,10 +21,10 @@ pub struct GetStreamsParams {
 
 #[tauri::command]
 pub async fn get_streams(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetStreamsParams,
-) -> Result<PaginatedResponse<Stream>, String> {
-    let token = get_token(&app).await?;
+) -> Result<PaginatedResponse<Stream>> {
+    let twitch = twitch.authed().await?;
     let filters = Filters {
         user_ids: params.user_ids,
         user_logins: params.user_logins,
@@ -30,7 +32,7 @@ pub async fn get_streams(
         language: params.language,
     };
     services::twitch::streams::get_streams(
-        &token,
+        &twitch,
         filters,
         params.first,
         params.after,
@@ -48,11 +50,11 @@ pub struct GetFollowedStreamsParams {
 
 #[tauri::command]
 pub async fn get_followed_streams(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetFollowedStreamsParams,
-) -> Result<PaginatedResponse<Stream>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::streams::get_followed_streams(&token, params.first, params.after).await
+) -> Result<PaginatedResponse<Stream>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::streams::get_followed_streams(&twitch, params.first, params.after).await
 }
 
 #[derive(Default, Deserialize)]
@@ -63,9 +65,9 @@ pub struct CreateStreamMarkerParams {
 
 #[tauri::command]
 pub async fn create_stream_marker(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: CreateStreamMarkerParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::streams::create_stream_marker(&token, params.description).await
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::streams::create_stream_marker(&twitch, params.description).await
 }

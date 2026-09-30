@@ -17,6 +17,7 @@ import { getChannelInformation } from "../../lib/api/twitch/channels.ts";
 import { user } from "../../lib/stores/users.ts";
 import { fetchAllPages } from "../../lib/api/utils.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
+import { errorMessage } from "../../lib/utils/error.ts";
 import {
   rememberChannelInfo,
   rememberUser,
@@ -73,7 +74,7 @@ export function createRailChannels(
       }
       setPinnedMeta(reconcile(next));
     } catch (e) {
-      addToast(String(e), "error");
+      addToast(errorMessage(e), "error");
     } finally {
       setLoadingPinned(false);
     }
@@ -142,7 +143,7 @@ export function createRailChannels(
       setLive(reconcile(data, { key: "id" }));
       onLiveChange?.(data);
     } catch (e) {
-      addToast(String(e), "error");
+      addToast(errorMessage(e), "error");
       setLiveStreams([]);
       onLiveChange?.([]);
     } finally {

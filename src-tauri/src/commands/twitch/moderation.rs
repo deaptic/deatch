@@ -1,9 +1,11 @@
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::moderation::{Ban, BannedUser};
 use crate::dto::twitch::user::UserRef;
+use crate::error::Result;
 use crate::services;
-use crate::services::twitch::get_token;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,12 +16,12 @@ pub struct DeleteChatMessagesParams {
 
 #[tauri::command]
 pub async fn delete_chat_messages(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: DeleteChatMessagesParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
     services::twitch::moderation::delete_chat_messages(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.message_id,
     )
@@ -38,10 +40,10 @@ pub struct BanUserParams {
 }
 
 #[tauri::command]
-pub async fn ban_user(app: tauri::AppHandle, params: BanUserParams) -> Result<Ban, String> {
-    let token = get_token(&app).await?;
+pub async fn ban_user(twitch: State<'_, Twitch>, params: BanUserParams) -> Result<Ban> {
+    let twitch = twitch.authed().await?;
     services::twitch::moderation::ban_user(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.user_id,
         params.duration,
@@ -61,12 +63,12 @@ pub struct GetBannedUsersParams {
 
 #[tauri::command]
 pub async fn get_banned_users(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetBannedUsersParams,
-) -> Result<PaginatedResponse<BannedUser>, String> {
-    let token = get_token(&app).await?;
+) -> Result<PaginatedResponse<BannedUser>> {
+    let twitch = twitch.authed().await?;
     services::twitch::moderation::get_banned_users(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.user_id,
         params.first,
@@ -83,9 +85,9 @@ pub struct UnbanUserParams {
 }
 
 #[tauri::command]
-pub async fn unban_user(app: tauri::AppHandle, params: UnbanUserParams) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::moderation::unban_user(&token, params.broadcaster_id, params.user_id).await
+pub async fn unban_user(twitch: State<'_, Twitch>, params: UnbanUserParams) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::moderation::unban_user(&twitch, params.broadcaster_id, params.user_id).await
 }
 
 #[derive(Default, Deserialize)]
@@ -98,12 +100,12 @@ pub struct GetModeratorsParams {
 
 #[tauri::command]
 pub async fn get_moderators(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetModeratorsParams,
-) -> Result<PaginatedResponse<UserRef>, String> {
-    let token = get_token(&app).await?;
+) -> Result<PaginatedResponse<UserRef>> {
+    let twitch = twitch.authed().await?;
     services::twitch::moderation::get_moderators(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.first,
         params.after,
@@ -120,11 +122,11 @@ pub struct GetModeratedChannelsParams {
 
 #[tauri::command]
 pub async fn get_moderated_channels(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetModeratedChannelsParams,
-) -> Result<PaginatedResponse<UserRef>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::moderation::get_moderated_channels(&token, params.first, params.after).await
+) -> Result<PaginatedResponse<UserRef>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::moderation::get_moderated_channels(&twitch, params.first, params.after).await
 }
 
 #[derive(Deserialize)]
@@ -136,10 +138,10 @@ pub struct WarnUserParams {
 }
 
 #[tauri::command]
-pub async fn warn_user(app: tauri::AppHandle, params: WarnUserParams) -> Result<(), String> {
-    let token = get_token(&app).await?;
+pub async fn warn_user(twitch: State<'_, Twitch>, params: WarnUserParams) -> Result<()> {
+    let twitch = twitch.authed().await?;
     services::twitch::moderation::warn_user(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.user_id,
         params.reason,
@@ -155,18 +157,18 @@ pub struct ManageHeldAutomodMessageParams {
 
 #[tauri::command]
 pub async fn approve_held_automod_message(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: ManageHeldAutomodMessageParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::moderation::manage_held_automod_message(&token, params.msg_id, true).await
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::moderation::manage_held_automod_message(&twitch, params.msg_id, true).await
 }
 
 #[tauri::command]
 pub async fn deny_held_automod_message(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: ManageHeldAutomodMessageParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::moderation::manage_held_automod_message(&token, params.msg_id, false).await
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::moderation::manage_held_automod_message(&twitch, params.msg_id, false).await
 }

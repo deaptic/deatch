@@ -1,6 +1,8 @@
+use crate::error::{Error, Result};
 use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
 use serde::Deserialize;
-use std::sync::Mutex;
+use std::fmt::Display;
+use std::sync::{Mutex, MutexGuard};
 
 const DEFAULT_CLIENT_ID: &str = "1505340850853380239";
 
@@ -75,11 +77,11 @@ pub struct ActivityInput {
     pub buttons: Option<Vec<Button>>,
 }
 
-pub async fn connect(state: &DiscordState, client_id: Option<String>) -> Result<(), String> {
+pub async fn connect(state: &DiscordState, client_id: Option<String>) -> Result<()> {
     let id = client_id.unwrap_or_else(|| DEFAULT_CLIENT_ID.to_string());
     let mut client = DiscordIpcClient::new(&id);
-    client.connect().map_err(|e| e.to_string())?;
-    let mut guard = state.0.lock().map_err(|e| e.to_string())?;
+    client.connect().map_err(discord_error)?;
+    let mut guard = lock(state)?;
     if let Some(mut prev) = guard.take() {
         let _ = prev.close();
     }
@@ -87,23 +89,23 @@ pub async fn connect(state: &DiscordState, client_id: Option<String>) -> Result<
     Ok(())
 }
 
-pub async fn disconnect(state: &DiscordState) -> Result<(), String> {
-    let mut guard = state.0.lock().map_err(|e| e.to_string())?;
+pub async fn disconnect(state: &DiscordState) -> Result<()> {
+    let mut guard = lock(state)?;
     if let Some(mut client) = guard.take() {
         let _ = client.clear_activity();
-        client.close().map_err(|e| e.to_string())?;
+        client.close().map_err(discord_error)?;
     }
     Ok(())
 }
 
-pub async fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<(), String> {
-    let mut guard = state.0.lock().map_err(|e| e.to_string())?;
+pub async fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<()> {
+    let mut guard = lock(state)?;
     let client = guard
         .as_mut()
-        .ok_or_else(|| "discord not connected".to_string())?;
+        .ok_or_else(|| Error::Discord("not connected".into()))?;
     client
         .set_activity(build_activity(&input))
-        .map_err(|e| e.to_string())
+        .map_err(discord_error)
 }
 
 fn build_activity(input: &ActivityInput) -> activity::Activity<'_> {
@@ -177,10 +179,18 @@ fn build_activity(input: &ActivityInput) -> activity::Activity<'_> {
     activity
 }
 
-pub async fn clear_activity(state: &DiscordState) -> Result<(), String> {
-    let mut guard = state.0.lock().map_err(|e| e.to_string())?;
+pub async fn clear_activity(state: &DiscordState) -> Result<()> {
+    let mut guard = lock(state)?;
     if let Some(client) = guard.as_mut() {
-        client.clear_activity().map_err(|e| e.to_string())?;
+        client.clear_activity().map_err(discord_error)?;
     }
     Ok(())
+}
+
+fn lock(state: &DiscordState) -> Result<MutexGuard<'_, Option<DiscordIpcClient>>> {
+    state.0.lock().map_err(discord_error)
+}
+
+fn discord_error(e: impl Display) -> Error {
+    Error::Discord(e.to_string())
 }

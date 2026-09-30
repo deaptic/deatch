@@ -1,10 +1,12 @@
 use crate::dto::external::emote::EmoteEntry;
+use crate::error::Result;
 use crate::services;
 use serde::Deserialize;
+use tauri::State;
 
 #[tauri::command]
-pub async fn bttv_get_global_emotes() -> Result<Vec<EmoteEntry>, String> {
-    services::external::bttv::get_global_emotes().await
+pub async fn bttv_get_global_emotes(http: State<'_, reqwest::Client>) -> Result<Vec<EmoteEntry>> {
+    services::external::bttv::get_global_emotes(&http).await
 }
 
 #[derive(Deserialize)]
@@ -15,7 +17,8 @@ pub struct BttvGetChannelEmotesParams {
 
 #[tauri::command]
 pub async fn bttv_get_channel_emotes(
+    http: State<'_, reqwest::Client>,
     params: BttvGetChannelEmotesParams,
-) -> Result<Vec<EmoteEntry>, String> {
-    services::external::bttv::get_channel_emotes(params.channel_id).await
+) -> Result<Vec<EmoteEntry>> {
+    services::external::bttv::get_channel_emotes(&http, params.channel_id).await
 }

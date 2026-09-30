@@ -20,6 +20,7 @@ import {
 } from "../../lib/stores/watch.ts";
 import { watchSetMuted } from "../../lib/api/watch.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
+import { errorMessage } from "../../lib/utils/error.ts";
 import {
   activeView,
   isSettingsOpen,
@@ -210,7 +211,7 @@ export default function Rail(props: Props) {
       pinChannel(u.id);
       closeAdd();
     } catch (e) {
-      addToast(String(e), "error");
+      addToast(errorMessage(e), "error");
     } finally {
       setAddLoading(false);
     }

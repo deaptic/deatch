@@ -4,11 +4,13 @@ use futures_util::StreamExt;
 use tauri::Emitter;
 use twitch_api::eventsub::{Event, EventsubWebsocketData};
 
-use super::super::get_token;
+use super::super::Twitch;
 use super::runner::ChannelSub;
 use super::subscribe::create_subscription;
 use super::EventKind;
 use crate::dto::twitch::eventsub::EventEnvelope;
+use crate::error::Result;
+use tauri::Manager;
 
 /// Forwards an EventSub notification to the frontend wrapped in
 /// `EventEnvelope { timestamp, event }` if the broadcaster is one we care
@@ -26,12 +28,11 @@ macro_rules! forward {
 
 pub(super) async fn handle_ws_message(
     app: &tauri::AppHandle,
-    helix: &twitch_api::HelixClient<'_, reqwest::Client>,
     subs: &mut HashMap<String, ChannelSub>,
     session_id: &mut Option<String>,
     text: &str,
     quiet: bool,
-) -> Result<Option<String>, String> {
+) -> Result<Option<String>> {
     let event = match Event::parse_websocket(text) {
         Ok(e) => e,
         Err(e) => return forward_unparsed(app, subs, text, e),
@@ -40,7 +41,7 @@ pub(super) async fn handle_ws_message(
         EventsubWebsocketData::Welcome { payload, .. } => {
             let sid = payload.session.id.to_string();
             *session_id = Some(sid.clone());
-            resubscribe_pending(app, helix, subs, &sid, quiet).await?;
+            resubscribe_pending(app, subs, &sid, quiet).await?;
             Ok(None)
         }
         EventsubWebsocketData::Notification {
@@ -92,19 +93,19 @@ fn dispatch_notification(
 
 async fn resubscribe_pending(
     app: &tauri::AppHandle,
-    helix: &twitch_api::HelixClient<'_, reqwest::Client>,
     subs: &mut HashMap<String, ChannelSub>,
     sid: &str,
     quiet: bool,
-) -> Result<(), String> {
+) -> Result<()> {
     let has_pending = subs
         .values()
         .any(|s| s.requested.iter().any(|k| !s.sub_ids.contains_key(k)));
     if !has_pending {
         return Ok(());
     }
-    let token = get_token(app).await?;
-    let token = &token;
+    let twitch = app.state::<Twitch>();
+    let authed = twitch.authed().await?;
+    let authed = &authed;
 
     // Build the work queue in KIND_PRIORITY order so every channel's
     // chat.message HTTP call starts before any other-kind call —
@@ -123,7 +124,7 @@ async fn resubscribe_pending(
         futures_util::stream::iter(work.into_iter())
             .map(|item| async move {
                 let (kind, b) = item;
-                let id = create_subscription(app, helix, token, &b, kind, sid, quiet).await;
+                let id = create_subscription(app, authed, &b, kind, sid, quiet).await;
                 (kind, b, id)
             })
             .buffer_unordered(MAX_CONCURRENT)
@@ -163,7 +164,7 @@ fn forward_unparsed(
     subs: &HashMap<String, ChannelSub>,
     text: &str,
     parse_err: impl std::fmt::Display,
-) -> Result<Option<String>, String> {
+) -> Result<Option<String>> {
     if let Ok(value) = serde_json::from_str::<serde_json::Value>(text) {
         let sub_type = value
             .pointer("/metadata/subscription_type")

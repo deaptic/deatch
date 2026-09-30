@@ -21,6 +21,7 @@ import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchWarmedChannels } from "../../lib/stores/watch.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
+import { errorMessage } from "../../lib/utils/error.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/twitch/user.ts";
 import Avatar from "../ui/Avatar.tsx";
@@ -115,7 +116,7 @@ export default function QuickSwitch(props: Props) {
       props.onSelect(found);
       props.onClose();
     } catch (e) {
-      addToast(String(e), "error");
+      addToast(errorMessage(e), "error");
     } finally {
       setSearching(false);
     }

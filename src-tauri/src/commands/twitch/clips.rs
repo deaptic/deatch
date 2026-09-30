@@ -1,7 +1,9 @@
 use crate::dto::twitch::clip::CreatedClip;
+use crate::error::Result;
 use crate::services;
-use crate::services::twitch::get_token;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -13,12 +15,12 @@ pub struct CreateClipParams {
 
 #[tauri::command]
 pub async fn create_clip(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: CreateClipParams,
-) -> Result<CreatedClip, String> {
-    let token = get_token(&app).await?;
+) -> Result<CreatedClip> {
+    let twitch = twitch.authed().await?;
     services::twitch::clips::create_clip(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.title,
         params.duration,

@@ -1,12 +1,12 @@
-use super::helix;
+use super::Authed;
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::stream::Stream;
+use crate::error::Result;
 use std::borrow::Cow;
 use twitch_api::helix::streams::{
     create_stream_marker::{CreateStreamMarkerBody, CreateStreamMarkerRequest},
     GetFollowedStreamsRequest, GetStreamsRequest,
 };
-use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{CategoryId, UserId, UserName};
 
 #[derive(Default)]
@@ -18,12 +18,12 @@ pub struct Filters {
 }
 
 pub async fn get_streams(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     filters: Filters,
     first: Option<usize>,
     after: Option<String>,
     before: Option<String>,
-) -> Result<PaginatedResponse<Stream>, String> {
+) -> Result<PaginatedResponse<Stream>> {
     let user_ids: Vec<UserId> = filters.user_ids.into_iter().map(UserId::from).collect();
     let user_logins: Vec<UserName> = filters
         .user_logins
@@ -41,41 +41,29 @@ pub async fn get_streams(
     request.after = super::cursor(after);
     request.before = super::cursor(before);
 
-    let response = helix()
-        .req_get(request, token)
-        .await
-        .map_err(|e| e.to_string())?;
-
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(super::into_paginated(response, Stream::from))
 }
 
 pub async fn get_followed_streams(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     first: Option<usize>,
     after: Option<String>,
-) -> Result<PaginatedResponse<Stream>, String> {
-    let mut request = GetFollowedStreamsRequest::user_id(token.user_id.clone());
+) -> Result<PaginatedResponse<Stream>> {
+    let mut request = GetFollowedStreamsRequest::user_id(twitch.token.user_id.clone());
     request.first = first;
     request.after = super::cursor(after);
 
-    let response = helix()
-        .req_get(request, token)
-        .await
-        .map_err(|e| e.to_string())?;
-
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(super::into_paginated(response, Stream::from))
 }
 
-pub async fn create_stream_marker(
-    token: &UserToken,
-    description: Option<String>,
-) -> Result<(), String> {
+pub async fn create_stream_marker(twitch: &Authed<'_>, description: Option<String>) -> Result<()> {
     let request = CreateStreamMarkerRequest::new();
-    let body =
-        CreateStreamMarkerBody::new(token.user_id.as_str(), description.as_deref().unwrap_or(""));
-    helix()
-        .req_post(request, body, token)
-        .await
-        .map(|_| ())
-        .map_err(|e| e.to_string())
+    let body = CreateStreamMarkerBody::new(
+        twitch.token.user_id.as_str(),
+        description.as_deref().unwrap_or(""),
+    );
+    twitch.helix.req_post(request, body, &twitch.token).await?;
+    Ok(())
 }

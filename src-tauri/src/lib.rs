@@ -2,8 +2,12 @@ mod bridge;
 pub mod browser_host;
 mod commands;
 mod dto;
+mod error;
+mod http;
 pub mod ipc;
 mod services;
+
+use tauri::Manager;
 
 fn init_keyring_store() {
     #[cfg(target_os = "windows")]
@@ -49,6 +53,10 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
+            let http = http::client()?;
+            app.manage(services::twitch::Twitch::new(http.clone()));
+            app.manage(http);
+
             // A dev build must never become the browser's native-messaging
             // host: Firefox would keep spawning target/debug/deatch.exe and
             // hold the file lock cargo needs to relink.
@@ -70,7 +78,6 @@ pub fn run() {
 
             Ok(())
         })
-        .manage(services::twitch::TwitchState::new())
         .manage(services::discord::DiscordState::new())
         .invoke_handler(tauri::generate_handler![
             commands::discord::discord_connect,

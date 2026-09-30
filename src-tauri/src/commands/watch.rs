@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::error::Result;
 use crate::ipc;
 
 #[derive(Deserialize)]
@@ -10,13 +11,11 @@ pub struct SetMutedParams {
 }
 
 #[tauri::command]
-pub async fn watch_set_muted(params: SetMutedParams) -> Result<(), String> {
-    ipc::set_muted(&params.channel, params.muted)
-        .await
-        .map_err(|e| e.to_string())
+pub async fn watch_set_muted(params: SetMutedParams) -> Result<()> {
+    Ok(ipc::set_muted(&params.channel, params.muted).await?)
 }
 
 #[tauri::command]
-pub async fn watch_request_state() -> Result<(), String> {
-    ipc::request_state().await.map_err(|e| e.to_string())
+pub async fn watch_request_state() -> Result<()> {
+    Ok(ipc::request_state().await?)
 }

@@ -17,6 +17,7 @@ import {
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import { rememberUser } from "../../lib/stores/channels.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
+import { errorMessage } from "../../lib/utils/error.ts";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
 
@@ -74,7 +75,7 @@ export default function SearchResults(props: Props) {
       rememberUser(channel);
       props.onSelect(channel);
     } catch (e) {
-      addToast(String(e), "error");
+      addToast(errorMessage(e), "error");
     }
   }
 

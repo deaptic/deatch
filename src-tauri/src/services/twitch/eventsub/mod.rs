@@ -2,7 +2,8 @@ mod dispatch;
 mod runner;
 mod subscribe;
 
-use super::TwitchState;
+use super::Twitch;
+use crate::error::{Error, Result};
 use tauri::Manager;
 
 pub(super) const WS_URL: &str = "wss://eventsub.wss.twitch.tv/ws";
@@ -61,7 +62,7 @@ pub async fn subscribe(
     app: &tauri::AppHandle,
     broadcaster_id: String,
     kind: EventKind,
-) -> Result<(), String> {
+) -> Result<()> {
     runner::ensure_task(app).await?;
     send_cmd(
         app,
@@ -76,7 +77,7 @@ pub async fn unsubscribe(
     app: &tauri::AppHandle,
     broadcaster_id: String,
     kind: EventKind,
-) -> Result<(), String> {
+) -> Result<()> {
     send_cmd(
         app,
         EventSubCmd::Unsubscribe {
@@ -86,11 +87,12 @@ pub async fn unsubscribe(
     )
 }
 
-fn send_cmd(app: &tauri::AppHandle, cmd: EventSubCmd) -> Result<(), String> {
-    let state = app.state::<TwitchState>();
-    let tx_guard = state.eventsub_tx.lock().unwrap();
+fn send_cmd(app: &tauri::AppHandle, cmd: EventSubCmd) -> Result<()> {
+    let twitch = app.state::<Twitch>();
+    let tx_guard = twitch.eventsub_tx.lock().unwrap();
     if let Some(tx) = tx_guard.as_ref() {
-        tx.send(cmd).map_err(|e| e.to_string())?;
+        tx.send(cmd)
+            .map_err(|_| Error::Io("eventsub task stopped".into()))?;
     }
     Ok(())
 }

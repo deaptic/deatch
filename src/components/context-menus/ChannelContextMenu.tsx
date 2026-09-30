@@ -75,8 +75,8 @@ export default function ChannelContextMenu(props: Props) {
           icon={<LogOut />}
           danger
           onClick={() => {
-            props.onClose();
             props.onLogout?.();
+            props.onClose();
           }}
         />
       </Show>

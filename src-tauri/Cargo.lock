@@ -907,6 +907,7 @@ dependencies = [
  "tauri-plugin-process",
  "tauri-plugin-updater",
  "tauri-plugin-window-state",
+ "thiserror 2.0.18",
  "tokio",
  "tokio-tungstenite",
  "twitch_api",
