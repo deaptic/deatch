@@ -11,6 +11,7 @@ import * as chat from "../../lib/services/chat.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
+import { matchesAnyKeyword } from "../../lib/utils/wordMatch.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
@@ -41,7 +42,6 @@ import {
   feedFontSize,
   feedKeywords,
   feedShowCopypasta,
-  matchesAnyKeyword,
   moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";

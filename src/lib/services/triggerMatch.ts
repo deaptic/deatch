@@ -1,4 +1,5 @@
 import type { Trigger } from "../stores/preferences.ts";
+import { wordPattern } from "../utils/wordMatch.ts";
 
 export function firstMatch(text: string, triggers: Trigger[]): Trigger | null {
   const trimmed = text.trim();
@@ -35,15 +36,6 @@ function matchesPhrase(
       ? text === phrase
       : text.toLowerCase() === phrase.toLowerCase();
   }
-  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const pattern = trigger.location === "start"
-    ? `^${escaped}${NOT_WORD_AFTER}`
-    : `${NOT_WORD_BEFORE}${escaped}${NOT_WORD_AFTER}`;
+  const pattern = wordPattern([phrase], trigger.location);
   return new RegExp(pattern, trigger.caseSensitive ? "" : "i").test(text);
 }
-
-// `\b` needs a word character on one side, so it never matches around
-// phrases like "!socials"; lookarounds only forbid a word character touching
-// the phrase.
-const NOT_WORD_BEFORE = "(?<!\\w)";
-const NOT_WORD_AFTER = "(?!\\w)";

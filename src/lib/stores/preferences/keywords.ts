@@ -14,11 +14,3 @@ export function removeFeedKeyword(keyword: string) {
   setPrefs("feed", "keywords", (k) => k.filter((x) => x !== keyword));
   persist();
 }
-
-export function matchesAnyKeyword(text: string, keywords: string[]): boolean {
-  const escaped = keywords
-    .filter((k) => k.trim().length > 0)
-    .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  if (escaped.length === 0) return false;
-  return new RegExp(`\\b(${escaped.join("|")})\\b`, "i").test(text);
-}
