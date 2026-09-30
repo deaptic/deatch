@@ -1,4 +1,4 @@
-import { listenEventSub } from "./listenEventSub.ts";
+import { listenEventSub, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { isModOfChannel, user } from "../stores/users.ts";
@@ -12,57 +12,62 @@ import * as triggers from "../services/triggers.ts";
 
 const FOLLOWAGE_CHANNEL_ID = "1091892807";
 
-listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
-  const raw = e.payload.event;
-  const ts = Date.now();
-  appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
-  if (raw.channel_points_custom_reward_id) {
-    noteChatRedemption(
-      raw.broadcaster_user_id,
-      raw.chatter_user_id,
-      raw.channel_points_custom_reward_id,
-      raw.message_id,
-    );
-  }
+export function start(): () => void {
+  return unlistenAll([
+    listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
+      const raw = e.payload.event;
+      const ts = Date.now();
+      appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
+      if (raw.channel_points_custom_reward_id) {
+        noteChatRedemption(
+          raw.broadcaster_user_id,
+          raw.chatter_user_id,
+          raw.channel_points_custom_reward_id,
+          raw.message_id,
+        );
+      }
 
-  if (
-    user()?.id === "52679773" &&
-    raw.broadcaster_user_id === FOLLOWAGE_CHANNEL_ID &&
-    raw.message.text.trim().toLowerCase() === "!followage" &&
-    isModOfChannel(raw.broadcaster_user_id)
-  ) {
-    handleFollowageCommand(raw);
-  }
+      if (
+        user()?.id === "52679773" &&
+        raw.broadcaster_user_id === FOLLOWAGE_CHANNEL_ID &&
+        raw.message.text.trim().toLowerCase() === "!followage" &&
+        isModOfChannel(raw.broadcaster_user_id)
+      ) {
+        handleFollowageCommand(raw);
+      }
 
-  const me = user();
-  if (!me || raw.chatter_user_id === me.id) return;
+      const me = user();
+      if (!me || raw.chatter_user_id === me.id) return;
 
-  triggers.handle({
-    text: raw.message.text,
-    broadcasterId: raw.broadcaster_user_id,
-    messageId: raw.message_id,
-  });
+      triggers.handle({
+        text: raw.message.text,
+        broadcasterId: raw.broadcaster_user_id,
+        messageId: raw.message_id,
+      });
 
-  const myLogin = me.login.toLowerCase();
-  const isMention = raw.message.fragments.some(
-    (f) =>
-      f.type === "mention" && f.mention.user_login.toLowerCase() === myLogin,
-  );
-  const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
-  if (!isMention && !keywordHit) return;
+      const myLogin = me.login.toLowerCase();
+      const isMention = raw.message.fragments.some(
+        (f) =>
+          f.type === "mention" &&
+          f.mention.user_login.toLowerCase() === myLogin,
+      );
+      const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
+      if (!isMention && !keywordHit) return;
 
-  const ch = usersById.get(raw.broadcaster_user_id);
-  recordMention({
-    id: raw.message_id,
-    channelId: raw.broadcaster_user_id,
-    channelLogin: ch?.login ?? raw.broadcaster_user_id,
-    channelName: ch?.displayName ?? raw.broadcaster_user_id,
-    messageId: raw.message_id,
-    chatterId: raw.chatter_user_id,
-    chatterLogin: raw.chatter_user_login,
-    chatterName: raw.chatter_user_name,
-    chatterColor: raw.color,
-    message: raw.message.text,
-    timestamp: ts,
-  });
-});
+      const ch = usersById.get(raw.broadcaster_user_id);
+      recordMention({
+        id: raw.message_id,
+        channelId: raw.broadcaster_user_id,
+        channelLogin: ch?.login ?? raw.broadcaster_user_id,
+        channelName: ch?.displayName ?? raw.broadcaster_user_id,
+        messageId: raw.message_id,
+        chatterId: raw.chatter_user_id,
+        chatterLogin: raw.chatter_user_login,
+        chatterName: raw.chatter_user_name,
+        chatterColor: raw.color,
+        message: raw.message.text,
+        timestamp: ts,
+      });
+    }),
+  ]);
+}

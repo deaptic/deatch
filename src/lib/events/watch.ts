@@ -1,4 +1,5 @@
 import { events } from "../bindings.ts";
+import { unlistenAll } from "./listen.ts";
 import * as users from "../services/users.ts";
 import { watchRequestState } from "../api/watch.ts";
 import { rememberUser } from "../stores/channels.ts";
@@ -66,47 +67,50 @@ async function drainPending() {
   }
 }
 
-events.watchState.listen(async (e) => {
-  setWatchConnected(true);
-  const { channels, current } = e.payload;
+export function start(): () => void {
+  const stop = unlistenAll([
+    events.watchState.listen(async (e) => {
+      setWatchConnected(true);
+      const { channels, current } = e.payload;
 
-  const muted: Record<string, boolean> = {};
-  for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
-  setWatchMutedByLogin(muted);
+      const muted: Record<string, boolean> = {};
+      for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
+      setWatchMutedByLogin(muted);
 
-  const incomingLogins = channels.map((c) => c.login.toLowerCase());
-  const incomingSet = new Set(incomingLogins);
-  const currentList = watchWarmedChannels();
-  const keep = currentList.filter((c) => incomingSet.has(c?.login));
-  if (keep.length !== currentList.length) setWatchWarmedChannels(keep);
+      const incomingLogins = channels.map((c) => c.login.toLowerCase());
+      const incomingSet = new Set(incomingLogins);
+      const currentList = watchWarmedChannels();
+      const keep = currentList.filter((c) => incomingSet.has(c?.login));
+      if (keep.length !== currentList.length) setWatchWarmedChannels(keep);
 
-  const known = new Set(keep.map((c) => c.login));
-  pendingFetch = new Set(incomingLogins.filter((l) => !known.has(l)));
+      const known = new Set(keep.map((c) => c.login));
+      pendingFetch = new Set(incomingLogins.filter((l) => !known.has(l)));
 
-  const cur = current?.toLowerCase() ?? null;
-  if (cur) {
-    if (watchedChannel()?.login === cur) {
+      const cur = current?.toLowerCase() ?? null;
+      if (cur) {
+        if (watchedChannel()?.login === cur) {
+          pendingCurrent = null;
+        } else {
+          pendingCurrent = cur;
+        }
+      } else {
+        pendingCurrent = null;
+        if (watchedChannel() !== null) setWatchedChannel(null);
+      }
+
+      await drainPending();
+    }),
+    events.watchDisconnected.listen(() => {
+      setWatchConnected(false);
+      pendingFetch.clear();
       pendingCurrent = null;
-    } else {
-      pendingCurrent = cur;
-    }
-  } else {
-    pendingCurrent = null;
-    if (watchedChannel() !== null) setWatchedChannel(null);
-  }
-
-  await drainPending();
-});
-
-events.watchDisconnected.listen(() => {
-  setWatchConnected(false);
-  pendingFetch.clear();
-  pendingCurrent = null;
-  if (retryTimer != null) {
-    window.clearTimeout(retryTimer);
-    retryTimer = null;
-  }
-  retryDelay = 1000;
-});
-
-void watchRequestState();
+      if (retryTimer != null) {
+        window.clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      retryDelay = 1000;
+    }),
+  ]);
+  void watchRequestState();
+  return stop;
+}

@@ -1,4 +1,4 @@
-import { listenEventSub } from "./listenEventSub.ts";
+import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   AutomodHoldStatus,
   FeedEvent,
@@ -97,59 +97,6 @@ function buildModerateMessage(
   }
 }
 
-listenEventSub<RawChatMessageDelete>(
-  "channel.chat.message_delete",
-  (e) => {
-    const raw = e.payload.event;
-    markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
-  },
-);
-
-listenEventSub<RawChatClearUserMessages>(
-  "channel.chat.clear_user_messages",
-  (e) => {
-    const raw = e.payload.event;
-    markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
-  },
-);
-
-listenEventSub<RawChatClear>("channel.chat.clear", (e) => {
-  const broadcasterId = e.payload.event.broadcaster_user_id;
-  markAllMessagesDeleted(broadcasterId);
-  if (isModOfChannel(broadcasterId)) return;
-  const now = Date.now();
-  const notice: FeedEvent = {
-    kind: "event",
-    id: `chat-cleared-${broadcasterId}-${now}`,
-    notice_type: "chat_cleared",
-    system_message: "Chat has been cleared by a moderator.",
-    chatter_name: "",
-    color: "",
-    timestamp: now,
-  };
-  appendItem(broadcasterId, notice);
-});
-
-listenEventSub<RawModerate>("channel.moderate", (e) => {
-  const payload = e.payload.event;
-  const serverNowMs = new Date(e.payload.timestamp).getTime();
-  const msg = buildModerateMessage(payload, serverNowMs);
-  if (!msg) return;
-  const now = Date.now();
-  const notice: FeedEvent = {
-    kind: "event",
-    id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${
-      Math.random().toString(36).slice(2, 8)
-    }`,
-    notice_type: `moderate_${payload.action}`,
-    system_message: msg,
-    chatter_name: payload.moderator_user_name,
-    color: "",
-    timestamp: now,
-  };
-  appendItem(payload.broadcaster_user_id, notice);
-});
-
 function mapAutomodFragment(
   f: RawAutomodMessageHold["message"]["fragments"][number],
 ): Fragment {
@@ -165,37 +112,89 @@ function automodReasonLabel(p: RawAutomodMessageHold): string {
   return `AutoMod: ${p.automod.category} (level ${p.automod.level})`;
 }
 
-listenEventSub<RawAutomodMessageHold>("automod.message.hold", (e) => {
-  const p = e.payload.event;
-  const item: FeedMessage = {
-    kind: "message",
-    message_id: p.message_id,
-    chatter_user_id: p.user_id,
-    chatter_login: p.user_login,
-    chatter_name: p.user_name,
-    color: "",
-    fragments: p.message.fragments.map(mapAutomodFragment),
-    badges: [],
-    timestamp: new Date(p.held_at).getTime() || Date.now(),
-    automod_hold: {
-      reason: automodReasonLabel(p),
-      status: "pending",
-      broadcaster_user_id: p.broadcaster_user_id,
-    },
-  };
-  appendItem(p.broadcaster_user_id, item);
-});
-
-listenEventSub<RawAutomodMessageUpdate>(
-  "automod.message.update",
-  (e) => {
-    const p = e.payload.event;
-    const s = p.status.toLowerCase();
-    const status: AutomodHoldStatus = s.startsWith("appro")
-      ? "approved"
-      : s.startsWith("den")
-      ? "denied"
-      : "expired";
-    setAutomodHoldStatus(p.broadcaster_user_id, p.message_id, status);
-  },
-);
+export function start(): () => void {
+  return unlistenAll([
+    listenEventSub<RawChatMessageDelete>(
+      "channel.chat.message_delete",
+      (e) => {
+        const raw = e.payload.event;
+        markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
+      },
+    ),
+    listenEventSub<RawChatClearUserMessages>(
+      "channel.chat.clear_user_messages",
+      (e) => {
+        const raw = e.payload.event;
+        markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
+      },
+    ),
+    listenEventSub<RawChatClear>("channel.chat.clear", (e) => {
+      const broadcasterId = e.payload.event.broadcaster_user_id;
+      markAllMessagesDeleted(broadcasterId);
+      if (isModOfChannel(broadcasterId)) return;
+      const now = Date.now();
+      const notice: FeedEvent = {
+        kind: "event",
+        id: `chat-cleared-${broadcasterId}-${now}`,
+        notice_type: "chat_cleared",
+        system_message: "Chat has been cleared by a moderator.",
+        chatter_name: "",
+        color: "",
+        timestamp: now,
+      };
+      appendItem(broadcasterId, notice);
+    }),
+    listenEventSub<RawModerate>("channel.moderate", (e) => {
+      const payload = e.payload.event;
+      const serverNowMs = new Date(e.payload.timestamp).getTime();
+      const msg = buildModerateMessage(payload, serverNowMs);
+      if (!msg) return;
+      const now = Date.now();
+      const notice: FeedEvent = {
+        kind: "event",
+        id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${
+          Math.random().toString(36).slice(2, 8)
+        }`,
+        notice_type: `moderate_${payload.action}`,
+        system_message: msg,
+        chatter_name: payload.moderator_user_name,
+        color: "",
+        timestamp: now,
+      };
+      appendItem(payload.broadcaster_user_id, notice);
+    }),
+    listenEventSub<RawAutomodMessageHold>("automod.message.hold", (e) => {
+      const p = e.payload.event;
+      const item: FeedMessage = {
+        kind: "message",
+        message_id: p.message_id,
+        chatter_user_id: p.user_id,
+        chatter_login: p.user_login,
+        chatter_name: p.user_name,
+        color: "",
+        fragments: p.message.fragments.map(mapAutomodFragment),
+        badges: [],
+        timestamp: new Date(p.held_at).getTime() || Date.now(),
+        automod_hold: {
+          reason: automodReasonLabel(p),
+          status: "pending",
+          broadcaster_user_id: p.broadcaster_user_id,
+        },
+      };
+      appendItem(p.broadcaster_user_id, item);
+    }),
+    listenEventSub<RawAutomodMessageUpdate>(
+      "automod.message.update",
+      (e) => {
+        const p = e.payload.event;
+        const s = p.status.toLowerCase();
+        const status: AutomodHoldStatus = s.startsWith("appro")
+          ? "approved"
+          : s.startsWith("den")
+          ? "denied"
+          : "expired";
+        setAutomodHoldStatus(p.broadcaster_user_id, p.message_id, status);
+      },
+    ),
+  ]);
+}

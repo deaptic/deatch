@@ -1,14 +1,20 @@
-import { events } from "../bindings.ts";
+import * as auth from "./auth.ts";
+import * as chat from "./chat.ts";
+import * as eventsub from "./eventsub.ts";
+import * as moderation from "./moderation.ts";
+import * as notifications from "./notifications.ts";
+import * as watch from "./watch.ts";
 
-import "./auth.ts";
-import "./chat.ts";
-import "./notifications.ts";
-import "./moderation.ts";
-import "./eventsub.ts";
-import "./watch.ts";
-
-export { mapChatMessage } from "./chat-mapper.ts";
-
-events.eventSubFailed.listen((e) => {
-  console.error("EventSub error:", e.payload);
-});
+export function start(): () => void {
+  const stops = [
+    auth.start(),
+    chat.start(),
+    eventsub.start(),
+    moderation.start(),
+    notifications.start(),
+    watch.start(),
+  ];
+  return () => {
+    for (const stop of stops) stop();
+  };
+}
