@@ -61,6 +61,6 @@ fn persist(token: &UserToken) {
     // Losing persistence only costs a re-login next launch; failing the live
     // session over it would be worse.
     if let Err(e) = credentials::save(token) {
-        eprintln!("[auth] credentials not persisted: {e}");
+        log::warn!("credentials not persisted: {e}");
     }
 }

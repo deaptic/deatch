@@ -32,7 +32,7 @@ fn emit_notification<T: Serialize + Clone>(
     envelope: EventEnvelope<T>,
 ) {
     if let Err(e) = app.emit(kind.event_name(), envelope) {
-        eprintln!("[eventsub] emit {} failed: {e}", kind.event_name());
+        log::error!("emit {} failed: {e}", kind.event_name());
     }
 }
 
@@ -208,5 +208,5 @@ fn forward_unparsed(
             return;
         }
     }
-    eprintln!("[eventsub] parse_websocket skipped: {parse_err}\n  raw: {text}");
+    log::warn!("parse_websocket skipped: {parse_err}\n  raw: {text}");
 }

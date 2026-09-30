@@ -14,6 +14,9 @@ pub use watch::host as browser_host;
 
 use tauri::Manager;
 
+const LOG_FILE_BYTES: u128 = 5_000_000;
+const LOG_FILES_KEPT: usize = 3;
+
 fn bindings() -> tauri_specta::Builder<tauri::Wry> {
     tauri_specta::Builder::<tauri::Wry>::new()
         .error_handling(tauri_specta::ErrorHandlingMode::Throw)
@@ -95,8 +98,11 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
         ])
 }
 
-#[cfg(debug_assertions)]
-fn export_bindings(bindings: &tauri_specta::Builder<tauri::Wry>) {
+pub fn export_bindings() {
+    write_bindings(&bindings());
+}
+
+fn write_bindings(bindings: &tauri_specta::Builder<tauri::Wry>) {
     bindings
         .export(
             specta_typescript::Typescript::default(),
@@ -107,12 +113,18 @@ fn export_bindings(bindings: &tauri_specta::Builder<tauri::Wry>) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    keyring::init_store();
     let bindings = bindings();
     #[cfg(debug_assertions)]
-    export_bindings(&bindings);
+    write_bindings(&bindings);
     let invoke_handler = bindings.invoke_handler();
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Info)
+                .max_file_size(LOG_FILE_BYTES)
+                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepSome(LOG_FILES_KEPT))
+                .build(),
+        )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
@@ -129,6 +141,7 @@ pub fn run() {
                 .build(),
         )
         .setup(move |app| {
+            keyring::init_store();
             bindings.mount_events(app);
             let http = http::client()?;
             app.manage(twitch::Twitch::new(http.clone()));
@@ -139,7 +152,7 @@ pub fn run() {
             // hold the file lock cargo needs to relink.
             if !cfg!(debug_assertions) {
                 if let Err(e) = watch::bridge::register() {
-                    eprintln!("browser bridge registration failed: {e}");
+                    log::warn!("browser bridge registration failed: {e}");
                 }
             }
             watch::ipc::start_server(app.handle().clone());

@@ -39,6 +39,8 @@ interprocess = { version = "2", features = ["tokio"] }
 specta = { version = "=2.0.0-rc.25", features = ["derive"] }
 tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
 specta-typescript = "=0.0.12"
+log = "0.4"
+tauri-plugin-log = "2"
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.56"

@@ -8,7 +8,7 @@ pub async fn revoke_session(twitch: &Twitch) -> Result<()> {
         // Logging out must succeed locally even when Twitch is unreachable;
         // an unrevoked token just expires on its own.
         if let Err(e) = token.revoke_token(&twitch.http).await {
-            eprintln!("[auth] token revoke failed: {e}");
+            log::warn!("token revoke failed: {e}");
         }
     }
     twitch.session.clear();

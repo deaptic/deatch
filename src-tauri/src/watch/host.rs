@@ -73,7 +73,7 @@ fn spawn_reader_pump(
                     break;
                 }
             }
-            let trimmed = line.trim_end_matches(|c| c == '\r' || c == '\n');
+            let trimmed = line.trim_end_matches(['\r', '\n']);
             if trimmed.is_empty() {
                 continue;
             }

@@ -125,27 +125,27 @@ async fn run(
                         if !had_session && session_id.is_some() {
                             emit(app, EventSubConnection { connected: true });
                             if let Some(o) = outage.take() {
-                                println!("[eventsub] recovered after {:?} (quiet={quiet})", o.started.elapsed());
+                                log::info!("recovered after {:?} (quiet={quiet})", o.started.elapsed());
                                 emit_recovered(app, &subs, o.since_unix_ms);
                             }
                             outage_notified = false;
                         }
                     }
                     Ok(Some(Ok(WsMessage::Close(frame)))) => {
-                        println!("[eventsub] closed by server: {frame:?}");
+                        log::info!("closed by server: {frame:?}");
                         break;
                     }
                     Ok(Some(Ok(_))) => {}
                     Ok(Some(Err(e))) => {
-                        println!("[eventsub] socket error: {e}");
+                        log::warn!("socket error: {e}");
                         break;
                     }
                     Ok(None) => {
-                        println!("[eventsub] socket ended");
+                        log::info!("socket ended");
                         break;
                     }
                     Err(_) => {
-                        println!("[eventsub] no keepalive for {KEEPALIVE_TIMEOUT:?}, reconnecting");
+                        log::info!("no keepalive for {KEEPALIVE_TIMEOUT:?}, reconnecting");
                         break;
                     }
                 }
@@ -207,7 +207,7 @@ fn emit_recovered(app: &tauri::AppHandle, subs: &HashMap<String, ChannelSub>, si
 fn emit_disconnected(app: &tauri::AppHandle, subs: &HashMap<String, ChannelSub>) {
     for (broadcaster_id, sub) in subs {
         for &kind in &sub.requested {
-            println!("[eventsub] unsubscribed kind={kind:?} broadcaster={broadcaster_id} (ws disconnect)");
+            log::info!("unsubscribed kind={kind:?} broadcaster={broadcaster_id} (ws disconnect)");
             emit_status(app, broadcaster_id, kind, SubscriptionStatus::Unsubscribed);
         }
     }
@@ -285,18 +285,18 @@ async fn handle_cmd(
             };
             entry.requested.remove(&kind);
             if let Some(sub_id) = entry.sub_ids.remove(&kind) {
-                println!("[eventsub] unsubscribe kind={kind:?} broadcaster={broadcaster_id}");
+                log::info!("unsubscribe kind={kind:?} broadcaster={broadcaster_id}");
                 match twitch.authed().await {
                     Ok(authed) => {
                         if let Err(e) = delete_subscription(&authed, &sub_id).await {
-                            eprintln!(
-                                "[eventsub] failed to delete subscription {sub_id}, leaked remotely: {e}"
+                            log::warn!(
+                                "failed to delete subscription {sub_id}, leaked remotely: {e}"
                             );
                         }
                     }
-                    Err(e) => eprintln!(
-                        "[eventsub] no token to delete subscription {sub_id}, leaked remotely: {e}"
-                    ),
+                    Err(e) => {
+                        log::warn!("no token to delete subscription {sub_id}, leaked remotely: {e}")
+                    }
                 }
             }
             if entry.requested.is_empty() && entry.sub_ids.is_empty() {
