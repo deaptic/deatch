@@ -1,8 +1,8 @@
 import type { User } from "../../lib/types/index.ts";
 import { createEffect, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { getUsers } from "../../lib/services/users.ts";
-import { resolveUserByLogin } from "../../lib/services/preferences.ts";
+import * as users from "../../lib/services/users.ts";
+import * as preferences from "../../lib/services/preferences.ts";
 import Chip from "../ui/Chip.tsx";
 import ChipInput from "../ui/ChipInput.tsx";
 
@@ -19,7 +19,7 @@ export default function UserListEditor(props: Props) {
   createEffect(() => {
     const missing = props.ids.filter((id) => !meta[id]);
     if (missing.length === 0) return;
-    getUsers({ ids: missing })
+    users.get({ ids: missing })
       .then((users) => {
         for (const u of users) setMeta(u.id, u);
       })
@@ -27,7 +27,7 @@ export default function UserListEditor(props: Props) {
   });
 
   async function add(login: string) {
-    const u = await resolveUserByLogin(login.toLowerCase());
+    const u = await preferences.resolveUserByLogin(login.toLowerCase());
     if (!u) return;
     setMeta(u.id, u);
     props.onAdd(u);

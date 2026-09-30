@@ -1,6 +1,6 @@
 import type { Follow, User } from "../../lib/types/index.ts";
 import { createEffect, createSignal } from "solid-js";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import {
   getChannelFollowers,
   getFollowedChannels,
@@ -41,7 +41,7 @@ export default function UserCardHeader(props: Props) {
     const id = props.chatterId;
     setUser(null);
     setFollower(null);
-    getUsers({ ids: [id] })
+    users.get({ ids: [id] })
       .then((users) => setUser(users[0] ?? null))
       .catch(() => {});
     const me = currentUser();

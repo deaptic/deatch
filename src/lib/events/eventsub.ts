@@ -2,7 +2,7 @@ import { events } from "../bindings.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { usersById } from "../stores/channels.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
-import { fillGap } from "../services/feeds.ts";
+import * as backlog from "../services/backlog.ts";
 import type { FeedEvent } from "../types/feed.ts";
 
 const CHAT = "channel.chat.message" as const;
@@ -55,6 +55,6 @@ events.eventSubConnection.listen((e) => {
 events.eventSubRecovered.listen((e) => {
   for (const id of e.payload.broadcasterIds) {
     const login = usersById.get(id)?.login;
-    if (login) fillGap(id, login, e.payload.since);
+    if (login) backlog.fillGap(id, login, e.payload.since);
   }
 });

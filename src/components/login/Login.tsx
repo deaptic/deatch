@@ -4,7 +4,7 @@ import TwitchIcon from "./TwitchIcon.tsx";
 import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
-import { sessionManager } from "../../lib/managers/SessionManager.ts";
+import * as session from "../../lib/services/session.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
 
 export default function Login() {
@@ -28,7 +28,7 @@ export default function Login() {
                 size="lg"
                 class="mt-2"
                 icon={<TwitchIcon class="size-5" />}
-                onClick={() => sessionManager.login()}
+                onClick={() => session.login()}
               >
                 Log in with Twitch
               </Button>
@@ -77,7 +77,7 @@ export default function Login() {
               )}
             </Show>
           </div>
-          <Button variant="ghost" onClick={() => sessionManager.abort()}>
+          <Button variant="ghost" onClick={() => session.abort()}>
             Cancel
           </Button>
         </Show>

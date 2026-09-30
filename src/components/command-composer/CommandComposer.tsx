@@ -11,7 +11,7 @@ import {
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Banner from "../ui/Banner.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
@@ -233,7 +233,7 @@ export default function CommandComposer(props: Props) {
     if (!login) return false;
     setResolving(true);
     try {
-      const u = (await getUsers({ logins: [login] }))[0];
+      const u = (await users.get({ logins: [login] }))[0];
       if (!u) {
         patchSlot(idx, { error: `User not found: ${login}` });
         return false;

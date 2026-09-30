@@ -2,14 +2,9 @@ import { createEffect, onMount } from "solid-js";
 import { getModeratedChannels } from "../api/twitch/moderation.ts";
 import { setModeratedChannels, user } from "../stores/users.ts";
 import { setGlobalEmotes } from "../stores/emotes.ts";
-import {
-  loadGlobalEmotes,
-  loadThirdPartyGlobalEmotes,
-  resetChannelThirdPartyEmoteCache,
-  resetUserEmotes,
-} from "../services/emotes.ts";
-import { resetChannelBadgeCache } from "../services/badges.ts";
-import { sessionManager } from "../managers/SessionManager.ts";
+import * as emotes from "../services/emotes.ts";
+import * as badges from "../services/badges.ts";
+import * as session from "../services/session.ts";
 import { showExplore } from "../stores/view.ts";
 
 let userScopedFetched = false;
@@ -20,14 +15,14 @@ function fetchUserScopedData() {
   getModeratedChannels()
     .then(setModeratedChannels)
     .catch(() => {});
-  loadGlobalEmotes().then(setGlobalEmotes).catch(() => {});
+  emotes.loadGlobal().then(setGlobalEmotes).catch(() => {});
 }
 
 function resetUserScopedCaches() {
   userScopedFetched = false;
-  resetChannelBadgeCache();
-  resetChannelThirdPartyEmoteCache();
-  resetUserEmotes();
+  badges.resetChannelCache();
+  emotes.resetChannelThirdParty();
+  emotes.resetUser();
 }
 
 export type SessionDeps = {
@@ -37,8 +32,8 @@ export type SessionDeps = {
 
 export function createSessionLifecycle(deps: SessionDeps): void {
   onMount(() => {
-    sessionManager.restore();
-    loadThirdPartyGlobalEmotes();
+    session.restore();
+    emotes.loadThirdPartyGlobal();
   });
 
   createEffect(() => {

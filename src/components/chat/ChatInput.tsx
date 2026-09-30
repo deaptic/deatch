@@ -8,13 +8,13 @@ import {
   Show,
   Suspense,
 } from "solid-js";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
-import { sendChatMessage } from "../../lib/services/chat.ts";
+import * as chat from "../../lib/services/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
 import CommandComposer from "../command-composer/CommandComposer.tsx";
-import { ensureUserEmotesLoaded } from "../../lib/services/emotes.ts";
+import * as emotes from "../../lib/services/emotes.ts";
 import {
   getSentHistory,
   pushSentHistory,
@@ -74,8 +74,7 @@ export default function ChatInput(props: Props) {
     textAreaApi?.textareaEl()?.selectionStart ?? input().length;
   const setCursor = (pos: number) =>
     textAreaApi?.textareaEl()?.setSelectionRange(pos, pos);
-  const setFocused = (b: boolean) =>
-    shortcutManager.setContext("chat:focused", b);
+  const setFocused = (b: boolean) => shortcuts.setContext("chat:focused", b);
 
   const history = createInputHistory({
     history: () => getSentHistory(props.broadcasterId) ?? [],
@@ -98,7 +97,7 @@ export default function ChatInput(props: Props) {
     setSending(true);
     try {
       const reply = props.replyTo();
-      const outcome = await sendChatMessage({
+      const outcome = await chat.send({
         broadcasterId: props.broadcasterId,
         message: text,
         replyParentMessageId: reply?.messageId ?? null,
@@ -168,10 +167,10 @@ export default function ChatInput(props: Props) {
   function bindShortcuts() {
     const WHEN = "chat:focused && !chat:popupOpen";
     return [
-      shortcutManager.register("chat::send", () => {
+      shortcuts.register("chat::send", () => {
         void sendMessage();
       }, WHEN),
-      shortcutManager.register("chat::tabComplete", () => {
+      shortcuts.register("chat::tabComplete", () => {
         if (input().trim() === "") {
           const mentions = props.getMentions();
           if (mentions.length === 0) return;
@@ -182,15 +181,15 @@ export default function ChatInput(props: Props) {
         }
         tabComplete.complete();
       }, WHEN),
-      shortcutManager.register("chat::recallPrev", () => {
+      shortcuts.register("chat::recallPrev", () => {
         if (hasNewlineBeforeCursor()) return false;
         return history.step(1);
       }, WHEN),
-      shortcutManager.register("chat::recallNext", () => {
+      shortcuts.register("chat::recallNext", () => {
         if (hasNewlineAfterCursor()) return false;
         return history.step(-1);
       }, WHEN),
-      shortcutManager.registerLocal("escape", () => {
+      shortcuts.registerLocal("escape", () => {
         props.onClearReply();
       }, "chat:replyActive"),
     ];
@@ -198,7 +197,7 @@ export default function ChatInput(props: Props) {
 
   createEffect(() => {
     if (!props.isActive) return;
-    shortcutManager.setContext(
+    shortcuts.setContext(
       "chat:popupOpen",
       (autocomplete()?.isActive() ?? false) || commandMode() !== null,
     );
@@ -210,12 +209,12 @@ export default function ChatInput(props: Props) {
 
   createEffect(() => {
     if (!props.isActive) return;
-    shortcutManager.setContext("chat:replyActive", props.replyTo() !== null);
-    onCleanup(() => shortcutManager.setContext("chat:replyActive", false));
+    shortcuts.setContext("chat:replyActive", props.replyTo() !== null);
+    onCleanup(() => shortcuts.setContext("chat:replyActive", false));
   });
 
   onMount(() => {
-    ensureUserEmotesLoaded();
+    emotes.ensureUserLoaded();
   });
 
   createEffect(() => {

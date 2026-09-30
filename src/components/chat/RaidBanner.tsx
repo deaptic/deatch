@@ -1,7 +1,7 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { Swords } from "lucide-solid";
 import { type PendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
-import { raidManager } from "../../lib/managers/RaidManager.ts";
+import * as raid from "../../lib/services/raid.ts";
 import Button from "../ui/Button.tsx";
 
 type Props = {
@@ -33,7 +33,7 @@ export default function RaidBanner(props: Props) {
         variant="neutral"
         size="sm"
         class="ml-auto"
-        onClick={() => raidManager.cancel()}
+        onClick={() => raid.cancel()}
       >
         Cancel raid
       </Button>

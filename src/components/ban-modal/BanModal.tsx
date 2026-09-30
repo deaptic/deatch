@@ -9,7 +9,7 @@ import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import Field from "../ui/Field.tsx";
 import { user } from "../../lib/stores/users.ts";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 
 const DURATIONS = [
   { label: "1s", value: 1 },
@@ -100,8 +100,8 @@ export default function BanModal(props: Props) {
   }
 
   onMount(() => {
-    shortcutManager.setContext("banModalOpen", true);
-    const unbindEsc = shortcutManager.registerLocal(
+    shortcuts.setContext("banModalOpen", true);
+    const unbindEsc = shortcuts.registerLocal(
       "escape",
       () => {
         props.onClose();
@@ -110,7 +110,7 @@ export default function BanModal(props: Props) {
     );
     onCleanup(() => {
       unbindEsc();
-      shortcutManager.setContext("banModalOpen", false);
+      shortcuts.setContext("banModalOpen", false);
     });
 
     if (isBroadcaster()) {

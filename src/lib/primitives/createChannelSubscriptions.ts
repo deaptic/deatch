@@ -4,8 +4,8 @@ import { selectedChannel } from "../stores/view.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import { clearChatters, isModOfChannel, user } from "../stores/users.ts";
 import { watchWarmedChannels } from "../stores/watch.ts";
-import { eventSubManager } from "../managers/EventSubManager.ts";
-import { sevenTvManager } from "../managers/SevenTvManager.ts";
+import * as eventsub from "../services/eventsub.ts";
+import * as sevenTv from "../services/sevenTv.ts";
 import {
   ALL_KINDS,
   CHAT_KINDS,
@@ -29,9 +29,9 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     if (!joinedIds.has(broadcasterId)) return;
     joinedIds.delete(broadcasterId);
     for (const k of ALL_KINDS) {
-      void eventSubManager.unsubscribe(broadcasterId, k);
+      void eventsub.unsubscribe(broadcasterId, k);
     }
-    void sevenTvManager.unsubscribe(broadcasterId);
+    void sevenTv.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
     clearChatters(broadcasterId);
   }
@@ -66,14 +66,14 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
       newIds.push(id);
     }
     for (const id of newIds) {
-      for (const k of CHAT_KINDS) void eventSubManager.subscribe(id, k);
+      for (const k of CHAT_KINDS) void eventsub.subscribe(id, k);
       if (isModOfChannel(id)) {
-        for (const k of MOD_KINDS) void eventSubManager.subscribe(id, k);
+        for (const k of MOD_KINDS) void eventsub.subscribe(id, k);
       }
       if (id === u.id) {
-        for (const k of OWN_KINDS) void eventSubManager.subscribe(id, k);
+        for (const k of OWN_KINDS) void eventsub.subscribe(id, k);
       }
-      void sevenTvManager.subscribe(id);
+      void sevenTv.subscribe(id);
     }
     for (const id of [...joinedIds]) {
       if (!desired.has(id)) leaveChannel(id);

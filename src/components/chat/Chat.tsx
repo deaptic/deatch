@@ -7,9 +7,9 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { sendChatMessage } from "../../lib/services/chat.ts";
-import { loadBacklog } from "../../lib/services/feeds.ts";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as chat from "../../lib/services/chat.ts";
+import * as backlog from "../../lib/services/backlog.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
@@ -20,7 +20,7 @@ import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu from "../context-menus/UserContextMenu.tsx";
 import UserCard from "../user-card/UserCard.tsx";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
@@ -65,8 +65,7 @@ async function resolveIdentity(
   try {
     const params = id ? { ids: [id] } : login ? { logins: [login] } : null;
     if (!params) return null;
-    const users = await getUsers(params);
-    const u = users[0];
+    const [u] = await users.get(params);
     if (!u) return null;
     return { id: u.id, login: u.login, displayName: u.displayName };
   } catch {
@@ -99,7 +98,7 @@ export default function Chat(props: Props) {
       moderatedChannels().some((c) => c.id === props.broadcasterId))
   );
 
-  onMount(() => loadBacklog(props.broadcasterId, props.broadcasterLogin));
+  onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
 
   createEffect(() => {
     const api = feedApi();
@@ -155,7 +154,7 @@ export default function Chat(props: Props) {
   }
 
   function react(msg: Message, value: string) {
-    sendChatMessage({
+    chat.send({
       broadcasterId: props.broadcasterId,
       message: value,
       replyParentMessageId: msg.message_id,
@@ -228,33 +227,33 @@ export default function Chat(props: Props) {
       if (m) fn(m);
     };
     return [
-      shortcutManager.registerLocal("shift-up", () => {
+      shortcuts.registerLocal("shift-up", () => {
         feedApi()?.moveSelection(-1);
       }),
-      shortcutManager.registerLocal("shift-down", () => {
+      shortcuts.registerLocal("shift-down", () => {
         feedApi()?.moveSelection(1);
       }),
-      shortcutManager.registerLocal("up", () => {
+      shortcuts.registerLocal("up", () => {
         feedApi()?.moveSelection(-1);
       }, "feedSelected"),
-      shortcutManager.registerLocal("down", () => {
+      shortcuts.registerLocal("down", () => {
         feedApi()?.moveSelection(1);
       }, "feedSelected"),
-      shortcutManager.registerLocal("escape", () => {
+      shortcuts.registerLocal("escape", () => {
         feedApi()?.clearSelection();
         inputApi?.focus();
       }, "feedSelected"),
-      shortcutManager.registerLocal(
+      shortcuts.registerLocal(
         "enter",
         withSelected(startReply),
         "feedSelected",
       ),
-      shortcutManager.registerLocal(
+      shortcuts.registerLocal(
         "r",
         withSelected(startReply),
         "feedSelected",
       ),
-      shortcutManager.registerLocal(
+      shortcuts.registerLocal(
         "c",
         withSelected((m) => {
           copyField(m.fragments.map((f) => f.text).join(""));
@@ -266,7 +265,7 @@ export default function Chat(props: Props) {
 
   createEffect(() => {
     if (!props.isActive) return;
-    const unbindDivider = shortcutManager.registerLocal("escape", () => {
+    const unbindDivider = shortcuts.registerLocal("escape", () => {
       clearDivider(props.broadcasterId);
       return false;
     });

@@ -9,7 +9,7 @@ import ChipInput from "../../ui/ChipInput.tsx";
 import UserListEditor from "../UserListEditor.tsx";
 import NicknameEditor from "../NicknameEditor.tsx";
 import { BADGE_CATEGORIES, EVENTS } from "../../../lib/constants.ts";
-import { setUserNicknameByLogin } from "../../../lib/services/preferences.ts";
+import * as preferences from "../../../lib/services/preferences.ts";
 import {
   addFeedKeyword,
   feedBadges,
@@ -40,7 +40,7 @@ export default function FeedSection() {
     login: string,
     nickname: string,
   ): Promise<boolean> {
-    return !!(await setUserNicknameByLogin(login, nickname));
+    return !!(await preferences.setUserNicknameByLogin(login, nickname));
   }
 
   return (

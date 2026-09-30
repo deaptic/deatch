@@ -9,9 +9,9 @@ import {
   Show,
 } from "solid-js";
 import { Portal } from "solid-js/web";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import {
   channelsInOrder,
   rememberUser,
@@ -106,7 +106,7 @@ export default function QuickSwitch(props: Props) {
     }
     setSearching(true);
     try {
-      const found = (await getUsers({ logins: [row.query] }))[0];
+      const found = (await users.get({ logins: [row.query] }))[0];
       if (!found) {
         addToast("No channel with that name", "error");
         return;
@@ -124,7 +124,7 @@ export default function QuickSwitch(props: Props) {
 
   onMount(() => {
     queueMicrotask(() => inputRef?.focus());
-    const unbind = shortcutManager.bindScope("quickSwitchOpen", {
+    const unbind = shortcuts.bindScope("quickSwitchOpen", {
       up: () => move(-1),
       down: () => move(1),
       enter: () => {

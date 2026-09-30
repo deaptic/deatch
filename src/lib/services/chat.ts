@@ -6,7 +6,7 @@ import type { SendChatMessageParams } from "../types/index.ts";
 
 export type SendOutcome = "sent" | "held" | "failed";
 
-export async function sendChatMessage(
+export async function send(
   params: SendChatMessageParams,
   options?: InvokeOptions,
 ): Promise<SendOutcome> {

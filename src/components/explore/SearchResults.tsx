@@ -12,7 +12,7 @@ import {
   searchCategories,
   searchChannels,
 } from "../../lib/api/twitch/search.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import { rememberUser } from "../../lib/stores/channels.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
@@ -64,8 +64,7 @@ export default function SearchResults(props: Props) {
     const login = debounced().toLowerCase();
     if (!login) return;
     try {
-      const users = await getUsers({ logins: [login] });
-      const channel = users[0];
+      const [channel] = await users.get({ logins: [login] });
       if (!channel) {
         addToast("Channel not found", "error");
         return;

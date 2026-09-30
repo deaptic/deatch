@@ -4,7 +4,7 @@ import type { Stream } from "../../lib/types/index.ts";
 import { liveStreams, rememberUser } from "../../lib/stores/channels.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import { getStreams } from "../../lib/api/twitch/streams.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import LiveCard from "./LiveCard.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
 import Chip from "../ui/Chip.tsx";
@@ -39,7 +39,7 @@ export default function LiveNow(props: Props) {
         after: reset ? undefined : cursor() ?? undefined,
       });
       if (data.length) {
-        getUsers({ ids: data.map((s) => s.user.id) })
+        users.get({ ids: data.map((s) => s.user.id) })
           .then((users) => users.forEach(rememberUser))
           .catch(() => {});
       }

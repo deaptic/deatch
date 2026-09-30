@@ -21,7 +21,7 @@ import {
   feedShowDeletedContent,
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import FeedMessage from "./FeedMessage.tsx";
 import FeedEvent from "./FeedEvent.tsx";
 import FeedDivider from "./FeedDivider.tsx";
@@ -119,9 +119,9 @@ export default function Feed(props: Props) {
   }
 
   createEffect(() => {
-    shortcutManager.setContext("feedSelected", selectedId() !== null);
+    shortcuts.setContext("feedSelected", selectedId() !== null);
   });
-  onCleanup(() => shortcutManager.setContext("feedSelected", false));
+  onCleanup(() => shortcuts.setContext("feedSelected", false));
 
   // Scroll active message into view + give it focus so the chat input loses it
   // (otherwise chat::send would still fire on Enter).

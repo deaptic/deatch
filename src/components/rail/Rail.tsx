@@ -30,8 +30,8 @@ import {
   toggleSettings,
   watchMode,
 } from "../../lib/stores/view.ts";
-import { getUsers } from "../../lib/services/users.ts";
-import { raidManager } from "../../lib/managers/RaidManager.ts";
+import * as users from "../../lib/services/users.ts";
+import * as raid from "../../lib/services/raid.ts";
 import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
@@ -44,7 +44,7 @@ import ScrollChevron from "./ScrollChevron.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
-import { sessionManager } from "../../lib/managers/SessionManager.ts";
+import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
 
 type Props = {
@@ -150,7 +150,7 @@ export default function Rail(props: Props) {
   function raidChannel(ch: User) {
     const self = user();
     if (!self) return;
-    raidManager.begin(self.id, ch).catch(() => {});
+    raid.begin(self.id, ch).catch(() => {});
   }
 
   function startDrag(e: MouseEvent, idx: number) {
@@ -198,8 +198,7 @@ export default function Rail(props: Props) {
     if (!login) return;
     setAddLoading(true);
     try {
-      const users = await getUsers({ logins: [login] });
-      const u = users[0];
+      const [u] = await users.get({ logins: [login] });
       if (!u) throw new Error("User not found");
       if (pinnedChannels().includes(u.id)) {
         addToast("Already pinned", "error");
@@ -513,7 +512,7 @@ export default function Rail(props: Props) {
               ? raidChannel
               : undefined}
             onLogout={m().ch?.id === user()?.id
-              ? () => sessionManager.logout()
+              ? () => session.logout()
               : undefined}
           />
         )}

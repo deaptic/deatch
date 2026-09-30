@@ -8,7 +8,7 @@ import {
   pinnedChannels,
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
-import { raidManager } from "../../lib/managers/RaidManager.ts";
+import * as raid from "../../lib/services/raid.ts";
 import { user } from "../../lib/stores/users.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
@@ -133,7 +133,7 @@ export default function ChannelHeader(props: Props) {
             onRaid={user() && props.channel.id !== user()?.id
               ? (ch) => {
                 const self = user();
-                if (self) raidManager.begin(self.id, ch).catch(() => {});
+                if (self) raid.begin(self.id, ch).catch(() => {});
               }
               : undefined}
           />

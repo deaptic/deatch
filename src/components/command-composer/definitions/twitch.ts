@@ -5,15 +5,15 @@ import {
   unbanUser,
   warnUser,
 } from "../../../lib/api/twitch/moderation.ts";
-import { getUsers } from "../../../lib/services/users.ts";
-import { raidManager } from "../../../lib/managers/RaidManager.ts";
+import * as users from "../../../lib/services/users.ts";
+import * as raid from "../../../lib/services/raid.ts";
 import {
   sendChatAnnouncement,
   sendShoutout,
   updateChatSettings,
   updateUserChatColor,
 } from "../../../lib/api/twitch/chat.ts";
-import { sendChatMessage } from "../../../lib/services/chat.ts";
+import * as chat from "../../../lib/services/chat.ts";
 import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
 import { searchCategories } from "../../../lib/api/twitch/search.ts";
 import {
@@ -377,8 +377,8 @@ export const twitchCommands: Command[] = [
     ],
     execute: async ({ channel }, ctx) => {
       const id = channel as string;
-      const user = (await getUsers({ ids: [id] }))[0];
-      await raidManager.begin(ctx.broadcasterId, {
+      const user = (await users.get({ ids: [id] }))[0];
+      await raid.begin(ctx.broadcasterId, {
         id,
         login: user?.login ?? "",
         displayName: user?.displayName ?? id,
@@ -391,7 +391,7 @@ export const twitchCommands: Command[] = [
     role: "broadcaster",
     options: [],
     execute: async (_, ctx) => {
-      await raidManager.cancel(ctx.broadcasterId);
+      await raid.cancel(ctx.broadcasterId);
     },
   },
   {
@@ -407,7 +407,7 @@ export const twitchCommands: Command[] = [
       },
     ],
     execute: async ({ message }, ctx) => {
-      await sendChatMessage({
+      await chat.send({
         broadcasterId: ctx.broadcasterId,
         message: `/me ${message as string}`,
       });

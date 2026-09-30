@@ -1,6 +1,6 @@
 import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 
-export function applyEmoteSetUpdate(
+export function apply(
   emotes: EmoteEntry[],
   update: EmoteSetUpdated,
 ): EmoteEntry[] {
@@ -14,8 +14,8 @@ export function applyEmoteSetUpdate(
   return [...kept, ...update.added];
 }
 
-export function describeEmoteSetUpdate(update: EmoteSetUpdated): string[] {
-  const who = emoteSetActor(update);
+export function describe(update: EmoteSetUpdated): string[] {
+  const who = actor(update);
   return [
     ...update.added.map((e) => `${who} added 7TV emote ${e.name}`),
     ...update.removed.map((n) => `${who} removed 7TV emote ${n}`),
@@ -25,6 +25,6 @@ export function describeEmoteSetUpdate(update: EmoteSetUpdated): string[] {
   ];
 }
 
-export function emoteSetActor(update: EmoteSetUpdated): string {
+export function actor(update: EmoteSetUpdated): string {
   return update.actor ?? "Someone";
 }
