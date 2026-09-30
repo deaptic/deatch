@@ -1,4 +1,7 @@
 {
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1"
+  },
   "fmt": {
     "include": ["src/"],
     "exclude": ["src/lib/bindings.ts"]
