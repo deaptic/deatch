@@ -1,10 +1,11 @@
-mod credentials;
+pub(super) mod credentials;
 mod device_code;
-mod refresh;
-mod session;
+mod restore;
+mod revoke;
+mod scopes;
 
-pub(super) const CLIENT_ID: &str = "9zz5nm0knwecx9icd0xbkmkpnrdhjr";
+const CLIENT_ID: &str = "9zz5nm0knwecx9icd0xbkmkpnrdhjr";
 
 pub use device_code::{get_device_code, DcfAuthResponse};
-pub use refresh::refresh_token_now;
-pub use session::{restore_session, revoke_session};
+pub use restore::restore_session;
+pub use revoke::revoke_session;

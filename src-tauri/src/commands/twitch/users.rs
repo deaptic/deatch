@@ -1,7 +1,9 @@
 use crate::dto::twitch::user::User;
+use crate::error::Result;
 use crate::services;
-use crate::services::twitch::get_token;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
@@ -11,7 +13,7 @@ pub struct GetUsersParams {
 }
 
 #[tauri::command]
-pub async fn get_users(app: tauri::AppHandle, params: GetUsersParams) -> Result<Vec<User>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::users::get_users(&token, params.ids, params.logins).await
+pub async fn get_users(twitch: State<'_, Twitch>, params: GetUsersParams) -> Result<Vec<User>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::users::get_users(&twitch, params.ids, params.logins).await
 }

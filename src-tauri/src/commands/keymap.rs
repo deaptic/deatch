@@ -1,3 +1,4 @@
+use crate::error::Result;
 use crate::services;
 use serde::Deserialize;
 
@@ -8,11 +9,11 @@ pub struct WriteKeymapParams {
 }
 
 #[tauri::command]
-pub fn read_keymap(app: tauri::AppHandle) -> Result<String, String> {
+pub fn read_keymap(app: tauri::AppHandle) -> Result<String> {
     services::keymap::read(&app)
 }
 
 #[tauri::command]
-pub fn write_keymap(app: tauri::AppHandle, params: WriteKeymapParams) -> Result<(), String> {
+pub fn write_keymap(app: tauri::AppHandle, params: WriteKeymapParams) -> Result<()> {
     services::keymap::write(&app, params.contents)
 }

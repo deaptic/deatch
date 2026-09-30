@@ -26,6 +26,7 @@ tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+thiserror = "2"
 twitch_api = { version = "0.8", features = ["helix", "twitch_oauth2", "reqwest", "client", "eventsub", "beta"] }
 reqwest = { version = "0.13", features = ["json"] }
 keyring-core = "1"

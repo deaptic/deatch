@@ -1,4 +1,6 @@
 use crate::dto::external::emote::EmoteEntry;
+use crate::error::Result;
+use crate::http::get_json;
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -30,28 +32,20 @@ fn response_to_entries(response: FfzResponse) -> Vec<EmoteEntry> {
         .collect()
 }
 
-pub async fn get_global_emotes() -> Result<Vec<EmoteEntry>, String> {
-    let response: FfzResponse = reqwest::Client::new()
-        .get("https://api.frankerfacez.com/v1/set/global")
-        .send()
-        .await
-        .map_err(|e| e.to_string())?
-        .json()
-        .await
-        .map_err(|e| e.to_string())?;
+pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
+    let response: FfzResponse =
+        get_json(http, "https://api.frankerfacez.com/v1/set/global").await?;
     Ok(response_to_entries(response))
 }
 
-pub async fn get_channel_emotes(channel_login: String) -> Result<Vec<EmoteEntry>, String> {
-    let response: FfzResponse = reqwest::Client::new()
-        .get(format!(
-            "https://api.frankerfacez.com/v1/room/{channel_login}"
-        ))
-        .send()
-        .await
-        .map_err(|e| e.to_string())?
-        .json()
-        .await
-        .map_err(|e| e.to_string())?;
+pub async fn get_channel_emotes(
+    http: &reqwest::Client,
+    channel_login: String,
+) -> Result<Vec<EmoteEntry>> {
+    let response: FfzResponse = get_json(
+        http,
+        &format!("https://api.frankerfacez.com/v1/room/{channel_login}"),
+    )
+    .await?;
     Ok(response_to_entries(response))
 }

@@ -1,5 +1,6 @@
 import { getUsers, type User } from "../api/twitch/users.ts";
 import { addToast } from "../stores/toasts.ts";
+import { errorMessage } from "../utils/error.ts";
 import { setUserNickname } from "../stores/preferences.ts";
 
 export async function resolveUserByLogin(login: string): Promise<User | null> {
@@ -14,7 +15,7 @@ export async function resolveUserByLogin(login: string): Promise<User | null> {
     }
     return u;
   } catch (e) {
-    addToast(String(e), "error");
+    addToast(errorMessage(e), "error");
     return null;
   }
 }

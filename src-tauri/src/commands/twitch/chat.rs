@@ -1,14 +1,16 @@
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::chat::{BadgeSet, Emote, SendMessageResult, UserEmote};
+use crate::error::Result;
 use crate::services;
 use crate::services::twitch::chat::ChatSettings;
-use crate::services::twitch::get_token;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[tauri::command]
-pub async fn get_global_emotes(app: tauri::AppHandle) -> Result<Vec<Emote>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::chat::get_global_emotes(&token).await
+pub async fn get_global_emotes(twitch: State<'_, Twitch>) -> Result<Vec<Emote>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::chat::get_global_emotes(&twitch).await
 }
 
 #[derive(Default, Deserialize)]
@@ -20,17 +22,17 @@ pub struct GetUserEmotesParams {
 
 #[tauri::command]
 pub async fn get_user_emotes(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetUserEmotesParams,
-) -> Result<PaginatedResponse<UserEmote>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::chat::get_user_emotes(&token, params.broadcaster_id, params.after).await
+) -> Result<PaginatedResponse<UserEmote>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::chat::get_user_emotes(&twitch, params.broadcaster_id, params.after).await
 }
 
 #[tauri::command]
-pub async fn get_global_chat_badges(app: tauri::AppHandle) -> Result<Vec<BadgeSet>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::chat::get_global_chat_badges(&token).await
+pub async fn get_global_chat_badges(twitch: State<'_, Twitch>) -> Result<Vec<BadgeSet>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::chat::get_global_chat_badges(&twitch).await
 }
 
 #[derive(Deserialize)]
@@ -41,11 +43,11 @@ pub struct GetChannelChatBadgesParams {
 
 #[tauri::command]
 pub async fn get_channel_chat_badges(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetChannelChatBadgesParams,
-) -> Result<Vec<BadgeSet>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::chat::get_channel_chat_badges(&token, params.broadcaster_id).await
+) -> Result<Vec<BadgeSet>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::chat::get_channel_chat_badges(&twitch, params.broadcaster_id).await
 }
 
 #[derive(Deserialize)]
@@ -56,13 +58,10 @@ pub struct SendShoutoutParams {
 }
 
 #[tauri::command]
-pub async fn send_shoutout(
-    app: tauri::AppHandle,
-    params: SendShoutoutParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
+pub async fn send_shoutout(twitch: State<'_, Twitch>, params: SendShoutoutParams) -> Result<()> {
+    let twitch = twitch.authed().await?;
     services::twitch::chat::send_shoutout(
-        &token,
+        &twitch,
         params.from_broadcaster_id,
         params.to_broadcaster_id,
     )
@@ -79,12 +78,12 @@ pub struct SendChatMessageParams {
 
 #[tauri::command]
 pub async fn send_chat_message(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: SendChatMessageParams,
-) -> Result<SendMessageResult, String> {
-    let token = get_token(&app).await?;
+) -> Result<SendMessageResult> {
+    let twitch = twitch.authed().await?;
     services::twitch::chat::send_chat_message(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.message,
         params.reply_parent_message_id,
@@ -103,12 +102,12 @@ pub struct SendChatAnnouncementParams {
 
 #[tauri::command]
 pub async fn send_chat_announcement(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: SendChatAnnouncementParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
     services::twitch::chat::send_chat_announcement(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.message,
         params.color,
@@ -138,10 +137,10 @@ pub struct UpdateChatSettingsParams {
 
 #[tauri::command]
 pub async fn update_chat_settings(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: UpdateChatSettingsParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
     let settings = ChatSettings {
         emote_mode: params.emote_mode,
         follower_mode: params.follower_mode,
@@ -151,7 +150,7 @@ pub async fn update_chat_settings(
         subscriber_mode: params.subscriber_mode,
         unique_chat_mode: params.unique_chat_mode,
     };
-    services::twitch::chat::update_chat_settings(&token, params.broadcaster_id, settings).await
+    services::twitch::chat::update_chat_settings(&twitch, params.broadcaster_id, settings).await
 }
 
 #[derive(Deserialize)]
@@ -162,9 +161,9 @@ pub struct UpdateUserChatColorParams {
 
 #[tauri::command]
 pub async fn update_user_chat_color(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: UpdateUserChatColorParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::chat::update_user_chat_color(&token, params.color).await
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::chat::update_user_chat_color(&twitch, params.color).await
 }

@@ -1,6 +1,7 @@
-use super::helix;
+use super::Authed;
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::chat::{BadgeSet, Emote, SendMessageResult, UserEmote};
+use crate::error::{Error, Result};
 use std::borrow::Cow;
 use twitch_api::helix::chat::{
     send_a_shoutout::SendAShoutoutRequest,
@@ -12,7 +13,6 @@ use twitch_api::helix::chat::{
     GetUserEmotesRequest,
 };
 use twitch_api::helix::EmptyBody;
-use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::types::{MsgId, NamedUserColor, UserId};
 
 pub struct ChatSettings {
@@ -25,111 +25,100 @@ pub struct ChatSettings {
     pub unique_chat_mode: Option<bool>,
 }
 
-pub async fn get_global_emotes(token: &UserToken) -> Result<Vec<Emote>, String> {
-    helix()
-        .req_get(GetGlobalEmotesRequest::new(), token)
-        .await
-        .map_err(|e| e.to_string())
-        .map(|r| r.data.into_iter().map(Emote::from).collect())
+pub async fn get_global_emotes(twitch: &Authed<'_>) -> Result<Vec<Emote>> {
+    let response = twitch
+        .helix
+        .req_get(GetGlobalEmotesRequest::new(), &twitch.token)
+        .await?;
+    Ok(response.data.into_iter().map(Emote::from).collect())
 }
 
 pub async fn get_user_emotes(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     broadcaster_id: Option<String>,
     after: Option<String>,
-) -> Result<PaginatedResponse<UserEmote>, String> {
-    let mut request = GetUserEmotesRequest::user_id(token.user_id.clone());
+) -> Result<PaginatedResponse<UserEmote>> {
+    let mut request = GetUserEmotesRequest::user_id(twitch.token.user_id.clone());
     request.broadcaster_id = broadcaster_id.map(|s| Cow::Owned(UserId::from(s)));
     request.after = super::cursor(after);
 
-    let response = helix()
-        .req_get(request, token)
-        .await
-        .map_err(|e| e.to_string())?;
-
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(super::into_paginated(response, UserEmote::from))
 }
 
-pub async fn get_global_chat_badges(token: &UserToken) -> Result<Vec<BadgeSet>, String> {
-    helix()
-        .req_get(GetGlobalChatBadgesRequest::new(), token)
-        .await
-        .map_err(|e| e.to_string())
-        .map(|r| r.data.into_iter().map(BadgeSet::from).collect())
+pub async fn get_global_chat_badges(twitch: &Authed<'_>) -> Result<Vec<BadgeSet>> {
+    let response = twitch
+        .helix
+        .req_get(GetGlobalChatBadgesRequest::new(), &twitch.token)
+        .await?;
+    Ok(response.data.into_iter().map(BadgeSet::from).collect())
 }
 
 pub async fn get_channel_chat_badges(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     broadcaster_id: String,
-) -> Result<Vec<BadgeSet>, String> {
+) -> Result<Vec<BadgeSet>> {
     let request = GetChannelChatBadgesRequest::broadcaster_id(broadcaster_id.as_str());
-    helix()
-        .req_get(request, token)
-        .await
-        .map_err(|e| e.to_string())
-        .map(|r| r.data.into_iter().map(BadgeSet::from).collect())
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.into_iter().map(BadgeSet::from).collect())
 }
 
 pub async fn send_shoutout(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     from_broadcaster_id: String,
     to_broadcaster_id: String,
-) -> Result<(), String> {
+) -> Result<()> {
     let request = SendAShoutoutRequest::new(
         from_broadcaster_id.as_str(),
         to_broadcaster_id.as_str(),
-        token.user_id.as_str(),
+        twitch.token.user_id.as_str(),
     );
-    helix()
-        .req_post(request, EmptyBody, token)
-        .await
-        .map(|_| ())
-        .map_err(|e| e.to_string())
+    twitch
+        .helix
+        .req_post(request, EmptyBody, &twitch.token)
+        .await?;
+    Ok(())
 }
 
 pub async fn send_chat_message(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     broadcaster_id: String,
     message: String,
     reply_parent_message_id: Option<String>,
-) -> Result<SendMessageResult, String> {
+) -> Result<SendMessageResult> {
     let request = SendChatMessageRequest::new();
     let mut body = SendChatMessageBody::new(
         broadcaster_id.as_str(),
-        token.user_id.as_str(),
+        twitch.token.user_id.as_str(),
         message.as_str(),
     );
     body.reply_parent_message_id = reply_parent_message_id.map(|s| Cow::Owned(MsgId::from(s)));
-    helix()
-        .req_post(request, body, token)
-        .await
-        .map(|r| SendMessageResult::from(r.data))
-        .map_err(|e| e.to_string())
+    let response = twitch.helix.req_post(request, body, &twitch.token).await?;
+    Ok(SendMessageResult::from(response.data))
 }
 
 pub async fn send_chat_announcement(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     broadcaster_id: String,
     message: String,
     color: Option<String>,
-) -> Result<(), String> {
-    let request = SendChatAnnouncementRequest::new(broadcaster_id.as_str(), token.user_id.as_str());
+) -> Result<()> {
+    let request =
+        SendChatAnnouncementRequest::new(broadcaster_id.as_str(), twitch.token.user_id.as_str());
     let color = color.as_deref().unwrap_or("primary");
     let body = SendChatAnnouncementBody::new(message.as_str(), color)
-        .map_err(|e| format!("invalid announcement color: {e}"))?;
-    helix()
-        .req_post(request, body, token)
-        .await
-        .map(|_| ())
-        .map_err(|e| e.to_string())
+        .map_err(|e| Error::Invalid(format!("invalid announcement color: {e}")))?;
+    twitch.helix.req_post(request, body, &twitch.token).await?;
+    Ok(())
 }
 
 pub async fn update_chat_settings(
-    token: &UserToken,
+    twitch: &Authed<'_>,
     broadcaster_id: String,
     settings: ChatSettings,
-) -> Result<(), String> {
-    let request = UpdateChatSettingsRequest::new(broadcaster_id.as_str(), token.user_id.as_str());
+) -> Result<()> {
+    let request =
+        UpdateChatSettingsRequest::new(broadcaster_id.as_str(), twitch.token.user_id.as_str());
     let mut body = UpdateChatSettingsBody::default();
     body.emote_mode = settings.emote_mode;
     body.follower_mode = settings.follower_mode;
@@ -138,14 +127,11 @@ pub async fn update_chat_settings(
     body.slow_mode_wait_time = settings.slow_mode_wait_time;
     body.subscriber_mode = settings.subscriber_mode;
     body.unique_chat_mode = settings.unique_chat_mode;
-    helix()
-        .req_patch(request, body, token)
-        .await
-        .map(|_| ())
-        .map_err(|e| e.to_string())
+    twitch.helix.req_patch(request, body, &twitch.token).await?;
+    Ok(())
 }
 
-pub async fn update_user_chat_color(token: &UserToken, color: String) -> Result<(), String> {
+pub async fn update_user_chat_color(twitch: &Authed<'_>, color: String) -> Result<()> {
     let color: NamedUserColor<'static> = match color.to_lowercase().replace('-', "_").as_str() {
         "blue" => NamedUserColor::Blue,
         "blue_violet" => NamedUserColor::BlueViolet,
@@ -162,12 +148,12 @@ pub async fn update_user_chat_color(token: &UserToken, color: String) -> Result<
         "sea_green" => NamedUserColor::SeaGreen,
         "spring_green" => NamedUserColor::SpringGreen,
         "yellow_green" => NamedUserColor::YellowGreen,
-        other => return Err(format!("invalid color: {other}")),
+        other => return Err(Error::Invalid(format!("invalid color: {other}"))),
     };
-    let request = UpdateUserChatColorRequest::new(token.user_id.as_str(), color);
-    helix()
-        .req_put(request, EmptyBody, token)
-        .await
-        .map(|_| ())
-        .map_err(|e| e.to_string())
+    let request = UpdateUserChatColorRequest::new(twitch.token.user_id.as_str(), color);
+    twitch
+        .helix
+        .req_put(request, EmptyBody, &twitch.token)
+        .await?;
+    Ok(())
 }

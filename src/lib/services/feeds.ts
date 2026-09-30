@@ -1,5 +1,6 @@
 import { getRecentMessages } from "../api/twitch/chat.ts";
 import { mapChatMessage } from "../events/chat-mapper.ts";
+import { errorMessage } from "../utils/error.ts";
 import {
   appendItem,
   feeds,
@@ -43,7 +44,7 @@ export function loadBacklog(broadcasterId: string, channelLogin: string) {
         kind: "event",
         id: `backlog-failed-${broadcasterId}`,
         notice_type: "local",
-        system_message: `Couldn't load recent history: ${String(e)}`,
+        system_message: `Couldn't load recent history: ${errorMessage(e)}`,
         chatter_name: "",
         color: "",
         timestamp: Date.now(),

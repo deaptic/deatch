@@ -1,3 +1,4 @@
+use crate::error::Result;
 use crate::services;
 use crate::services::twitch::eventsub::EventKind;
 use serde::Deserialize;
@@ -10,11 +11,11 @@ pub struct SubscribeParams {
 }
 
 #[tauri::command]
-pub async fn subscribe(app: tauri::AppHandle, params: SubscribeParams) -> Result<(), String> {
+pub async fn subscribe(app: tauri::AppHandle, params: SubscribeParams) -> Result<()> {
     services::twitch::eventsub::subscribe(&app, params.broadcaster_id, params.kind).await
 }
 
 #[tauri::command]
-pub async fn unsubscribe(app: tauri::AppHandle, params: SubscribeParams) -> Result<(), String> {
+pub async fn unsubscribe(app: tauri::AppHandle, params: SubscribeParams) -> Result<()> {
     services::twitch::eventsub::unsubscribe(&app, params.broadcaster_id, params.kind).await
 }

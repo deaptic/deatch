@@ -1,5 +1,6 @@
 // Backend DTO shapes (primary — match Rust dto/*).
 export * from "./pagination.ts";
+export type { AppError } from "./error.ts";
 export * from "./twitch/index.ts";
 
 // External services (BTTV/FFZ/7TV/robotty). Only the widely-shared

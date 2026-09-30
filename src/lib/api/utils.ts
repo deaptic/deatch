@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { advancedShowLogs } from "../stores/preferences.ts";
 import { addToast } from "../stores/toasts.ts";
 import type { PaginatedResponse } from "../types/pagination.ts";
+import { errorMessage } from "../utils/error.ts";
 
 export type { PaginatedResponse } from "../types/pagination.ts";
 
@@ -29,7 +30,7 @@ export async function invokeCommand<T>(
     const ms = Math.round(performance.now() - start);
     console.error(`[cmd] ${cmd} failed`, { params, error: e, ms });
     if (!options.silent) {
-      addToast(`${humanizeCommand(cmd)} failed`, "error", humanizeError(e));
+      addToast(`${humanizeCommand(cmd)} failed`, "error", errorMessage(e));
     }
     throw e;
   }
@@ -38,13 +39,6 @@ export async function invokeCommand<T>(
 function humanizeCommand(cmd: string): string {
   const spaced = cmd.replace(/_/g, " ");
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
-
-function humanizeError(e: unknown): string {
-  const raw = String(e);
-  const helix = raw.match(/helix returned error \d+ - [^:]+:\s*"([^"]+)"/i);
-  if (helix) return helix[1];
-  return raw.replace(/^Error:\s*/, "");
 }
 
 function summarize(result: unknown, ms: number): string {

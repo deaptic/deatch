@@ -1,8 +1,10 @@
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::channel::{ChannelInfo, Follow};
+use crate::error::Result;
 use crate::services;
-use crate::services::twitch::get_token;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -12,11 +14,11 @@ pub struct GetChannelInformationParams {
 
 #[tauri::command]
 pub async fn get_channel_information(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetChannelInformationParams,
-) -> Result<Vec<ChannelInfo>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::channels::get_channel_information(&token, params.broadcaster_ids).await
+) -> Result<Vec<ChannelInfo>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::channels::get_channel_information(&twitch, params.broadcaster_ids).await
 }
 
 #[derive(Default, Deserialize)]
@@ -30,12 +32,12 @@ pub struct GetChannelFollowersParams {
 
 #[tauri::command]
 pub async fn get_channel_followers(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetChannelFollowersParams,
-) -> Result<PaginatedResponse<Follow>, String> {
-    let token = get_token(&app).await?;
+) -> Result<PaginatedResponse<Follow>> {
+    let twitch = twitch.authed().await?;
     services::twitch::channels::get_channel_followers(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.user_id,
         params.first,
@@ -54,12 +56,16 @@ pub struct GetFollowedChannelsParams {
 
 #[tauri::command]
 pub async fn get_followed_channels(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: GetFollowedChannelsParams,
-) -> Result<Vec<Follow>, String> {
-    let token = get_token(&app).await?;
-    services::twitch::channels::get_followed_channels(&token, params.user_id, params.broadcaster_id)
-        .await
+) -> Result<Vec<Follow>> {
+    let twitch = twitch.authed().await?;
+    services::twitch::channels::get_followed_channels(
+        &twitch,
+        params.user_id,
+        params.broadcaster_id,
+    )
+    .await
 }
 
 #[derive(Default, Deserialize)]
@@ -72,12 +78,12 @@ pub struct ModifyChannelInformationParams {
 
 #[tauri::command]
 pub async fn modify_channel_information(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: ModifyChannelInformationParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
     services::twitch::channels::modify_channel_information(
-        &token,
+        &twitch,
         params.broadcaster_id,
         params.title,
         params.game_id,
@@ -94,11 +100,12 @@ pub struct StartCommercialParams {
 
 #[tauri::command]
 pub async fn start_commercial(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: StartCommercialParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::channels::start_commercial(&token, params.broadcaster_id, params.length).await
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::channels::start_commercial(&twitch, params.broadcaster_id, params.length)
+        .await
 }
 
 #[derive(Deserialize)]
@@ -109,12 +116,10 @@ pub struct AddChannelVipParams {
 }
 
 #[tauri::command]
-pub async fn add_channel_vip(
-    app: tauri::AppHandle,
-    params: AddChannelVipParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::channels::add_channel_vip(&token, params.broadcaster_id, params.user_id).await
+pub async fn add_channel_vip(twitch: State<'_, Twitch>, params: AddChannelVipParams) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::channels::add_channel_vip(&twitch, params.broadcaster_id, params.user_id)
+        .await
 }
 
 #[derive(Deserialize)]
@@ -126,10 +131,10 @@ pub struct RemoveChannelVipParams {
 
 #[tauri::command]
 pub async fn remove_channel_vip(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: RemoveChannelVipParams,
-) -> Result<(), String> {
-    let token = get_token(&app).await?;
-    services::twitch::channels::remove_channel_vip(&token, params.broadcaster_id, params.user_id)
+) -> Result<()> {
+    let twitch = twitch.authed().await?;
+    services::twitch::channels::remove_channel_vip(&twitch, params.broadcaster_id, params.user_id)
         .await
 }

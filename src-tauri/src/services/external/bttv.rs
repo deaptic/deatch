@@ -1,4 +1,6 @@
 use crate::dto::external::emote::EmoteEntry;
+use crate::error::Result;
+use crate::http::get_json;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -22,29 +24,21 @@ fn to_entry(e: BttvEmote) -> EmoteEntry {
     }
 }
 
-pub async fn get_global_emotes() -> Result<Vec<EmoteEntry>, String> {
-    let emotes: Vec<BttvEmote> = reqwest::Client::new()
-        .get("https://api.betterttv.net/3/cached/emotes/global")
-        .send()
-        .await
-        .map_err(|e| e.to_string())?
-        .json()
-        .await
-        .map_err(|e| e.to_string())?;
+pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
+    let emotes: Vec<BttvEmote> =
+        get_json(http, "https://api.betterttv.net/3/cached/emotes/global").await?;
     Ok(emotes.into_iter().map(to_entry).collect())
 }
 
-pub async fn get_channel_emotes(channel_id: String) -> Result<Vec<EmoteEntry>, String> {
-    let response: BttvChannelResponse = reqwest::Client::new()
-        .get(format!(
-            "https://api.betterttv.net/3/cached/users/twitch/{channel_id}"
-        ))
-        .send()
-        .await
-        .map_err(|e| e.to_string())?
-        .json()
-        .await
-        .map_err(|e| e.to_string())?;
+pub async fn get_channel_emotes(
+    http: &reqwest::Client,
+    channel_id: String,
+) -> Result<Vec<EmoteEntry>> {
+    let response: BttvChannelResponse = get_json(
+        http,
+        &format!("https://api.betterttv.net/3/cached/users/twitch/{channel_id}"),
+    )
+    .await?;
     Ok(response
         .channel_emotes
         .into_iter()

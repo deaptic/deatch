@@ -1,3 +1,6 @@
+use super::super::Authed;
+use super::EventKind;
+use crate::error::Result;
 use tauri::Emitter;
 use twitch_api::eventsub::{
     automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
@@ -11,27 +14,22 @@ use twitch_api::eventsub::{
     },
     Transport,
 };
-use twitch_api::twitch_oauth2::UserToken;
-
-use super::EventKind;
 
 pub(super) async fn create_subscription(
     app: &tauri::AppHandle,
-    helix: &twitch_api::HelixClient<'_, reqwest::Client>,
-    token: &UserToken,
+    twitch: &Authed<'_>,
     broadcaster_id: &str,
     kind: EventKind,
     session_id: &str,
     quiet: bool,
 ) -> Option<String> {
-    let user_id = token.user_id.as_str();
+    let user_id = twitch.token.user_id.as_str();
     let transport = Transport::websocket(session_id);
 
     let result = match kind {
         EventKind::ChannelChatMessage => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelChatMessageV1::new(broadcaster_id, user_id),
                 transport,
             )
@@ -39,8 +37,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelChatNotification => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelChatNotificationV1::new(broadcaster_id, user_id),
                 transport,
             )
@@ -48,8 +45,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelChatMessageDelete => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelChatMessageDeleteV1::new(broadcaster_id, user_id),
                 transport,
             )
@@ -57,8 +53,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelChatClear => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelChatClearV1::new(broadcaster_id, user_id),
                 transport,
             )
@@ -66,8 +61,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelChatClearUserMessages => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelChatClearUserMessagesV1::new(broadcaster_id, user_id),
                 transport,
             )
@@ -75,8 +69,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelShoutoutCreate => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelShoutoutCreateV1::new(broadcaster_id, user_id),
                 transport,
             )
@@ -84,8 +77,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelFollow => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelFollowV2::new(broadcaster_id, user_id),
                 transport,
             )
@@ -93,8 +85,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelModerate => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelModerateV2::new(broadcaster_id, user_id),
                 transport,
             )
@@ -102,8 +93,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::AutomodMessageHold => {
             create(
-                helix,
-                token,
+                twitch,
                 AutomodMessageHoldV2::new(broadcaster_id, user_id),
                 transport,
             )
@@ -111,8 +101,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::AutomodMessageUpdate => {
             create(
-                helix,
-                token,
+                twitch,
                 AutomodMessageUpdateV2::new(broadcaster_id, user_id),
                 transport,
             )
@@ -120,8 +109,7 @@ pub(super) async fn create_subscription(
         }
         EventKind::ChannelPointsCustomRewardRedemptionAdd => {
             create(
-                helix,
-                token,
+                twitch,
                 ChannelPointsCustomRewardRedemptionAddV1::broadcaster_user_id(broadcaster_id),
                 transport,
             )
@@ -143,7 +131,7 @@ pub(super) async fn create_subscription(
             Some(id)
         }
         Err(e) => {
-            emit_failed(app, broadcaster_id, kind, format!("{e:?}"));
+            emit_failed(app, broadcaster_id, kind, e.to_string());
             None
         }
     }
@@ -169,36 +157,28 @@ pub(super) fn emit_failed(
     );
 }
 
-async fn create<E>(
-    helix: &twitch_api::HelixClient<'_, reqwest::Client>,
-    token: &UserToken,
-    condition: E,
-    transport: Transport,
-) -> Result<String, twitch_api::helix::ClientRequestError<reqwest::Error>>
+async fn create<E>(twitch: &Authed<'_>, condition: E, transport: Transport) -> Result<String>
 where
     E: twitch_api::eventsub::EventSubscription + Send + 'static,
 {
-    let resp = helix
+    let resp = twitch
+        .helix
         .req_post(
             twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<E>::new(),
             twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(condition, transport),
-            token,
+            &twitch.token,
         )
         .await?;
     Ok(resp.data.id.to_string())
 }
 
-pub(super) async fn delete_subscription(
-    helix: &twitch_api::HelixClient<'_, reqwest::Client>,
-    token: &UserToken,
-    subscription_id: &str,
-) -> Result<(), String> {
-    helix
+pub(super) async fn delete_subscription(twitch: &Authed<'_>, subscription_id: &str) -> Result<()> {
+    twitch
+        .helix
         .req_delete(
             twitch_api::helix::eventsub::DeleteEventSubSubscriptionRequest::id(subscription_id),
-            token,
+            &twitch.token,
         )
-        .await
-        .map_err(|e| e.to_string())?;
+        .await?;
     Ok(())
 }

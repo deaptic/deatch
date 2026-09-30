@@ -6,64 +6,68 @@ pub mod eventsub;
 pub mod moderation;
 pub mod raids;
 pub mod search;
+pub mod session;
 pub mod streams;
 pub mod users;
 
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::user::UserRef;
+use crate::error::Result;
+use session::Session;
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::Mutex;
-use std::time::Duration;
-use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
 use twitch_api::helix::{Cursor, CursorRef, Paginated, Response};
-use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
+use twitch_api::twitch_oauth2::UserToken;
+use twitch_api::HelixClient;
 
-pub struct TwitchState {
-    pub token: Mutex<Option<UserToken>>,
-    pub eventsub_tx: Mutex<Option<mpsc::UnboundedSender<eventsub::EventSubCmd>>>,
+pub type Helix = HelixClient<'static, reqwest::Client>;
+
+pub struct Twitch {
+    http: reqwest::Client,
+    helix: Helix,
+    session: Session,
+    eventsub_tx: Mutex<Option<mpsc::UnboundedSender<eventsub::EventSubCmd>>>,
     /// Serializes `eventsub::ensure_task` so concurrent `subscribe` calls
     /// can't race the auth check or spawn duplicate tasks.
-    pub eventsub_init: tokio::sync::Mutex<()>,
-    pub moderated_channel_ids: Mutex<HashSet<String>>,
+    eventsub_init: tokio::sync::Mutex<()>,
+    moderated_channel_ids: Mutex<HashSet<String>>,
 }
 
-impl TwitchState {
-    pub fn new() -> Self {
+pub struct Authed<'a> {
+    pub helix: &'a Helix,
+    pub token: UserToken,
+}
+
+impl Twitch {
+    pub fn new(http: reqwest::Client) -> Self {
         Self {
-            token: Mutex::new(None),
+            helix: HelixClient::with_client(http.clone()),
+            http,
+            session: Session::new(),
             eventsub_tx: Mutex::new(None),
             eventsub_init: tokio::sync::Mutex::new(()),
             moderated_channel_ids: Mutex::new(HashSet::new()),
         }
     }
-}
 
-pub async fn get_token(app: &tauri::AppHandle) -> Result<UserToken, String> {
-    let needs_refresh = {
-        let state = app.state::<TwitchState>();
-        let guard = state.token.lock().unwrap();
-        match guard.as_ref() {
-            None => return Err("Not authenticated".to_string()),
-            Some(t) => t.expires_in() < Duration::from_secs(60),
-        }
-    };
-    if needs_refresh {
-        if let Err(e) = auth::refresh_token_now(app).await {
-            let _ = app.emit("twitch-auth-error", format!("refresh failed: {e}"));
+    pub async fn authed(&self) -> Result<Authed<'_>> {
+        let token = self.session.valid(&self.http).await?;
+        Ok(self.with_token(token))
+    }
+
+    fn with_token(&self, token: UserToken) -> Authed<'_> {
+        Authed {
+            helix: &self.helix,
+            token,
         }
     }
-    app.state::<TwitchState>()
-        .token
-        .lock()
-        .unwrap()
-        .clone()
-        .ok_or_else(|| "Not authenticated".to_string())
-}
 
-pub fn helix() -> twitch_api::HelixClient<'static, reqwest::Client> {
-    twitch_api::HelixClient::new()
+    fn cache_moderated_channel_ids(&self, channels: &[UserRef]) {
+        *self.moderated_channel_ids.lock().unwrap() =
+            channels.iter().map(|ch| ch.id.0.clone()).collect();
+    }
 }
 
 pub fn cursor(after: Option<String>) -> Option<Cow<'static, CursorRef>> {
@@ -85,12 +89,4 @@ where
             .cursor
             .map(|c| c.as_str().to_string()),
     )
-}
-
-pub fn cache_moderated_channel_ids(app: &tauri::AppHandle, channels: &[UserRef]) {
-    let ids: HashSet<String> = channels.iter().map(|ch| ch.id.0.clone()).collect();
-    *app.state::<TwitchState>()
-        .moderated_channel_ids
-        .lock()
-        .unwrap() = ids;
 }

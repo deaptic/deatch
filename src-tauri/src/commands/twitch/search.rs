@@ -1,7 +1,9 @@
 use crate::dto::twitch::search::{Category, SearchChannel};
+use crate::error::Result;
 use crate::services;
-use crate::services::twitch::get_token;
+use crate::services::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Default, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
@@ -13,15 +15,15 @@ pub struct SearchChannelsParams {
 
 #[tauri::command]
 pub async fn search_channels(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: SearchChannelsParams,
-) -> Result<Vec<SearchChannel>, String> {
+) -> Result<Vec<SearchChannel>> {
     if params.query.trim().is_empty() {
         return Ok(Vec::new());
     }
-    let token = get_token(&app).await?;
+    let twitch = twitch.authed().await?;
     services::twitch::search::search_channels(
-        &token,
+        &twitch,
         params.query,
         params.live_only,
         params.first.or(Some(20)),
@@ -38,13 +40,13 @@ pub struct SearchCategoriesParams {
 
 #[tauri::command]
 pub async fn search_categories(
-    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
     params: SearchCategoriesParams,
-) -> Result<Vec<Category>, String> {
+) -> Result<Vec<Category>> {
     if params.query.trim().is_empty() {
         return Ok(Vec::new());
     }
-    let token = get_token(&app).await?;
-    services::twitch::search::search_categories(&token, params.query, params.first.or(Some(10)))
+    let twitch = twitch.authed().await?;
+    services::twitch::search::search_categories(&twitch, params.query, params.first.or(Some(10)))
         .await
 }
