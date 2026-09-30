@@ -206,3 +206,36 @@ pub async fn remove_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -
         .await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{GetChannelFollowersParams, StartCommercialParams};
+    use serde_json::json;
+    use twitch_api::types;
+
+    fn commercial(length: u64) -> serde_json::Result<StartCommercialParams> {
+        serde_json::from_value(json!({ "broadcasterId": "1", "length": length }))
+    }
+
+    #[test]
+    fn accepts_every_twitch_commercial_length() {
+        for seconds in [30, 60, 90, 120, 150, 180] {
+            let length = types::CommercialLength::from(commercial(seconds).unwrap().length);
+            assert_eq!(length as u64, seconds);
+        }
+    }
+
+    #[test]
+    fn rejects_other_commercial_lengths() {
+        assert!(commercial(45).is_err());
+        assert!(commercial(0).is_err());
+    }
+
+    #[test]
+    fn followers_require_broadcaster_but_not_filters() {
+        let params: GetChannelFollowersParams =
+            serde_json::from_value(json!({ "broadcasterId": "1" })).unwrap();
+        assert!(params.user_id.is_none() && params.first.is_none() && params.after.is_none());
+        assert!(serde_json::from_value::<GetChannelFollowersParams>(json!({})).is_err());
+    }
+}

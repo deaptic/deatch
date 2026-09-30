@@ -225,3 +225,76 @@ fn parse_update(text: &str) -> Option<EmoteSetUpdated> {
         renamed,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::parse_update;
+    use serde_json::{json, Value};
+
+    fn frame(body: Value) -> String {
+        json!({ "op": 0, "d": { "type": "emote_set.update", "body": body } }).to_string()
+    }
+
+    fn update_json(text: &str) -> Option<Value> {
+        parse_update(text).map(|u| serde_json::to_value(u).unwrap())
+    }
+
+    #[test]
+    fn collects_added_removed_and_renamed_emotes() {
+        let text = frame(json!({
+            "id": "set1",
+            "actor": { "username": "foo", "display_name": "Foo" },
+            "pushed": [{ "key": "emotes", "value": { "id": "e1", "name": "Pog" } }],
+            "pulled": [{ "key": "emotes", "old_value": { "id": "e2", "name": "Kek" } }],
+            "updated": [{
+                "key": "emotes",
+                "old_value": { "id": "e3", "name": "Old" },
+                "value": { "id": "e3", "name": "New" },
+            }],
+        }));
+        assert_eq!(
+            update_json(&text),
+            Some(json!({
+                "id": "set1",
+                "actor": "Foo",
+                "added": [{ "name": "Pog", "url": "https://cdn.7tv.app/emote/e1/1x.webp" }],
+                "removed": ["Kek"],
+                "renamed": [{ "from": "Old", "to": "New" }],
+            }))
+        );
+    }
+
+    #[test]
+    fn falls_back_to_username_for_actor() {
+        let text = frame(json!({
+            "id": "set1",
+            "actor": { "username": "foo" },
+            "pushed": [{ "key": "emotes", "value": { "id": "e1", "name": "Pog" } }],
+        }));
+        assert_eq!(update_json(&text).unwrap()["actor"], json!("foo"));
+    }
+
+    #[test]
+    fn ignores_non_emote_changes_and_unchanged_names() {
+        let text = frame(json!({
+            "id": "set1",
+            "pushed": [{ "key": "name", "value": { "id": "x", "name": "x" } }],
+            "updated": [{
+                "key": "emotes",
+                "old_value": { "id": "e3", "name": "Same" },
+                "value": { "id": "e3", "name": "Same" },
+            }],
+        }));
+        assert_eq!(update_json(&text), None);
+    }
+
+    #[test]
+    fn ignores_other_ops_and_event_types() {
+        let hello = json!({ "op": 1, "d": {} }).to_string();
+        let other =
+            json!({ "op": 0, "d": { "type": "user.update", "body": { "id": "u1" } } }).to_string();
+        assert_eq!(update_json(&hello), None);
+        assert_eq!(update_json(&other), None);
+        assert_eq!(update_json("not json"), None);
+    }
+}

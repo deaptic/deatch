@@ -918,6 +918,7 @@ dependencies = [
  "dbus-secret-service-keyring-store",
  "discord-rich-presence",
  "futures-util",
+ "http",
  "interprocess",
  "keyring-core",
  "log",

@@ -236,13 +236,16 @@ pub async fn fetch_recent_messages(
         url.push_str(&format!("&after={after}"));
     }
     let resp: RobottyResponse = get_json(http, &url).await?;
+    Ok(parse_messages(&resp.messages))
+}
 
+fn parse_messages(lines: &[String]) -> Vec<RecentMessage> {
     let mut messages: Vec<RecentMessage> = Vec::new();
     let mut deleted_ids: HashSet<String> = HashSet::new();
     let mut user_clears: Vec<(String, i64)> = Vec::new();
     let mut full_clears: Vec<i64> = Vec::new();
 
-    for line in &resp.messages {
+    for line in lines {
         let Some((tags, nick, command, body)) = split_irc(line) else {
             continue;
         };
@@ -275,5 +278,147 @@ pub async fn fetch_recent_messages(
             || full_clears.iter().any(|ts| m.timestamp_ms <= *ts);
     }
 
-    Ok(messages)
+    messages
+}
+#[cfg(test)]
+mod tests {
+    use super::parse_messages;
+    use crate::history::dto::RecentMessage;
+    use serde_json::{json, Value};
+
+    const PRIVMSG: &str = "@badge-info=subscriber/12;badges=subscriber/12,premium/1;color=#FF0000;\
+        display-name=Foo;emotes=25:6-10;first-msg=0;id=m1;room-id=111;tmi-sent-ts=1000;user-id=222 \
+        :foo!foo@foo.tmi.twitch.tv PRIVMSG #chan :hello Kappa @Bar";
+
+    fn parse(lines: &[&str]) -> Vec<RecentMessage> {
+        parse_messages(&lines.iter().map(|l| l.to_string()).collect::<Vec<_>>())
+    }
+
+    fn to_json<T: serde::Serialize>(value: &T) -> Value {
+        serde_json::to_value(value).unwrap()
+    }
+
+    #[test]
+    fn parses_privmsg_fields() {
+        let m = &parse(&[PRIVMSG])[0];
+        assert_eq!(m.message_id, "m1");
+        assert_eq!(m.broadcaster_user_id, "111");
+        assert_eq!(m.chatter_user_id, "222");
+        assert_eq!(m.chatter_user_login, "foo");
+        assert_eq!(m.chatter_user_name, "Foo");
+        assert_eq!(m.color, "#FF0000");
+        assert_eq!(m.message_type, "text");
+        assert_eq!(m.timestamp_ms, 1000);
+        assert!(!m.deleted);
+        assert_eq!(
+            to_json(&m.badges),
+            json!([
+                { "set_id": "subscriber", "id": "12", "info": "12" },
+                { "set_id": "premium", "id": "1", "info": "" },
+            ])
+        );
+    }
+
+    #[test]
+    fn splits_text_emote_and_mention_fragments() {
+        let m = &parse(&[PRIVMSG])[0];
+        assert_eq!(m.message.text, "hello Kappa @Bar");
+        assert_eq!(
+            to_json(&m.message.fragments),
+            json!([
+                { "type": "text", "text": "hello " },
+                { "type": "emote", "text": "Kappa", "emote": { "id": "25" } },
+                { "type": "text", "text": " " },
+                { "type": "mention", "text": "@Bar", "mention": { "user_login": "bar" } },
+            ])
+        );
+    }
+
+    #[test]
+    fn emote_positions_count_characters_not_bytes() {
+        let line = "@emotes=25:6-10;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :héllo Kappa";
+        assert_eq!(
+            to_json(&parse(&[line])[0].message.fragments),
+            json!([
+                { "type": "text", "text": "héllo " },
+                { "type": "emote", "text": "Kappa", "emote": { "id": "25" } },
+            ])
+        );
+    }
+
+    #[test]
+    fn strips_action_wrapper() {
+        let line = "@id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :\u{1}ACTION waves\u{1}";
+        assert_eq!(parse(&[line])[0].message.text, "waves");
+    }
+
+    #[test]
+    fn accepts_body_without_trailing_colon() {
+        let line = "@id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan Kappa";
+        assert_eq!(parse(&[line])[0].message.text, "Kappa");
+    }
+
+    #[test]
+    fn marks_first_message_as_intro() {
+        let line = "@first-msg=1;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :hi";
+        assert_eq!(parse(&[line])[0].message_type, "user_intro");
+    }
+
+    #[test]
+    fn falls_back_to_nick_and_unescapes_tags() {
+        let line = "@display-name=;reply-parent-msg-id=p1;reply-parent-msg-body=hey\\sthere;\
+            reply-parent-display-name=Bar;reply-parent-user-login=bar;id=m1;user-id=1 \
+            :foo!foo@foo PRIVMSG #chan :@bar yes";
+        let m = &parse(&[line])[0];
+        assert_eq!(m.chatter_user_name, "foo");
+        assert_eq!(
+            to_json(&m.reply),
+            json!({
+                "parent_message_id": "p1",
+                "parent_message_body": "hey there",
+                "parent_user_name": "Bar",
+                "parent_user_login": "bar",
+            })
+        );
+    }
+
+    #[test]
+    fn skips_malformed_lines() {
+        assert!(parse(&["not irc", ":no tags PRIVMSG #chan :hi", ""]).is_empty());
+    }
+
+    #[test]
+    fn applies_clearmsg_to_target_message() {
+        let messages = parse(&[
+            "@id=m1;user-id=1;tmi-sent-ts=100 :a!a@a PRIVMSG #chan :one",
+            "@id=m2;user-id=1;tmi-sent-ts=200 :a!a@a PRIVMSG #chan :two",
+            "@target-msg-id=m1;tmi-sent-ts=300 :tmi.twitch.tv CLEARMSG #chan :one",
+        ]);
+        let deleted: Vec<_> = messages.iter().map(|m| m.deleted).collect();
+        assert_eq!(deleted, [true, false]);
+    }
+
+    #[test]
+    fn applies_user_clearchat_only_to_earlier_messages_of_that_user() {
+        let messages = parse(&[
+            "@id=m1;user-id=1;tmi-sent-ts=100 :a!a@a PRIVMSG #chan :before",
+            "@id=m2;user-id=2;tmi-sent-ts=150 :b!b@b PRIVMSG #chan :other user",
+            "@target-user-id=1;tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #chan :a",
+            "@id=m3;user-id=1;tmi-sent-ts=300 :a!a@a PRIVMSG #chan :after",
+        ]);
+        let deleted: Vec<_> = messages.iter().map(|m| m.deleted).collect();
+        assert_eq!(deleted, [true, false, false]);
+    }
+
+    #[test]
+    fn applies_full_clearchat_to_every_earlier_message() {
+        let messages = parse(&[
+            "@id=m1;user-id=1;tmi-sent-ts=100 :a!a@a PRIVMSG #chan :one",
+            "@id=m2;user-id=2;tmi-sent-ts=150 :b!b@b PRIVMSG #chan :two",
+            "@tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #chan",
+            "@id=m3;user-id=1;tmi-sent-ts=300 :a!a@a PRIVMSG #chan :three",
+        ]);
+        let deleted: Vec<_> = messages.iter().map(|m| m.deleted).collect();
+        assert_eq!(deleted, [true, true, false]);
+    }
 }

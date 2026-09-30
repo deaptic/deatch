@@ -224,3 +224,20 @@ pub async fn manage_held_automod_message(
         .await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{AutomodAction, ManageHeldAutomodMessageParams};
+    use serde_json::json;
+
+    #[test]
+    fn automod_action_is_allow_or_deny() {
+        let params: ManageHeldAutomodMessageParams =
+            serde_json::from_value(json!({ "msgId": "m1", "action": "deny" })).unwrap();
+        assert!(matches!(params.action, AutomodAction::Deny));
+        assert!(serde_json::from_value::<ManageHeldAutomodMessageParams>(
+            json!({ "msgId": "m1", "action": "approve" })
+        )
+        .is_err());
+    }
+}
