@@ -173,40 +173,119 @@ async fn resubscribe_pending(
     Ok(())
 }
 
-/// Fallback for messages `twitch_api` can't parse — typically newer
-/// `channel.chat.notification` variants (watch_streak, modiversary) or
-/// `channel.moderate` action additions. We pluck the inner event JSON
-/// straight from the payload and forward it wrapped in the same envelope.
+/// Fallback for notifications `twitch_api` can't parse. Twitch keeps adding
+/// variants the crate doesn't know yet (new chat fragment types like `gif`,
+/// `channel.chat.notification` notice types, `channel.moderate` actions), and
+/// the crate rejects the whole message when any part is unknown. The frontend
+/// types are hand-written and tolerant, so we forward the raw event instead of
+/// dropping it.
 fn forward_unparsed(
     app: &tauri::AppHandle,
     subs: &HashMap<String, ChannelSub>,
     text: &str,
     parse_err: impl std::fmt::Display,
 ) {
-    if let Ok(value) = serde_json::from_str::<serde_json::Value>(text) {
-        let kind = value
-            .pointer("/metadata/subscription_type")
-            .and_then(|v| serde_json::from_value::<EventKind>(v.clone()).ok());
-        let evt = value.pointer("/payload/event");
-        let timestamp = value
-            .pointer("/metadata/message_timestamp")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-
-        if let (
-            Some(kind @ (EventKind::ChannelChatNotification | EventKind::ChannelModerate)),
-            Some(evt),
-        ) = (kind, evt)
-        {
-            let broadcaster = evt
-                .get("broadcaster_user_id")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            if subs.contains_key(broadcaster) {
-                emit_notification(app, kind, EventEnvelope::new(timestamp, evt.clone()));
-            }
-            return;
-        }
+    let Some(notification) = unparsed_notification(text) else {
+        log::warn!("parse_websocket skipped: {parse_err}\n  raw: {text}");
+        return;
+    };
+    log::debug!("forwarding unparsed {:?}: {parse_err}", notification.kind);
+    if subs.contains_key(&notification.broadcaster_id) {
+        emit_notification(
+            app,
+            notification.kind,
+            EventEnvelope::new(notification.timestamp, notification.event),
+        );
     }
-    log::warn!("parse_websocket skipped: {parse_err}\n  raw: {text}");
+}
+
+struct UnparsedNotification {
+    kind: EventKind,
+    broadcaster_id: String,
+    timestamp: String,
+    event: serde_json::Value,
+}
+
+fn unparsed_notification(text: &str) -> Option<UnparsedNotification> {
+    let mut value = serde_json::from_str::<serde_json::Value>(text).ok()?;
+    let str_at = |pointer: &str| value.pointer(pointer).and_then(|v| v.as_str());
+    if str_at("/metadata/message_type")? != "notification" {
+        return None;
+    }
+    let kind =
+        serde_json::from_value::<EventKind>(value.pointer("/metadata/subscription_type")?.clone())
+            .ok()?;
+    let timestamp = str_at("/metadata/message_timestamp")
+        .unwrap_or("")
+        .to_string();
+    let event = value.pointer_mut("/payload/event")?.take();
+    let broadcaster_id = event.get("broadcaster_user_id")?.as_str()?.to_string();
+    Some(UnparsedNotification {
+        kind,
+        broadcaster_id,
+        timestamp,
+        event,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::unparsed_notification;
+    use crate::twitch::eventsub::EventKind;
+
+    // Trimmed from a real channel.chat.message that twitch_api 0.8 rejects
+    // because of the `gif` fragment type.
+    const GIF_MESSAGE: &str = r#"{
+        "metadata": {
+            "message_id": "QFCMTLyqOT1ZTW-6A9IMEfZuG6KQgRyogpr0kU7zttE=",
+            "message_type": "notification",
+            "message_timestamp": "2026-09-30T20:39:40.240392291Z",
+            "subscription_type": "channel.chat.message",
+            "subscription_version": "1"
+        },
+        "payload": {
+            "subscription": { "id": "0c2f", "type": "channel.chat.message", "version": "1" },
+            "event": {
+                "broadcaster_user_id": "79615025",
+                "chatter_user_id": "1071073319",
+                "chatter_user_login": "gardenofeden701",
+                "message_id": "beae673d",
+                "message": {
+                    "text": "[Amy Poehler Hello GIF by Team Coco]",
+                    "fragments": [{
+                        "type": "gif",
+                        "text": "[Amy Poehler Hello GIF by Team Coco]",
+                        "gif": { "id": "WpIPS0DWNpMm4kfMVr", "url": "https://media0.giphy.com/x.gif" }
+                    }]
+                },
+                "message_type": "text"
+            }
+        }
+    }"#;
+
+    #[test]
+    fn twitch_api_still_rejects_the_gif_fragment() {
+        assert!(twitch_api::eventsub::Event::parse_websocket(GIF_MESSAGE).is_err());
+    }
+
+    #[test]
+    fn extracts_unparsed_chat_messages() {
+        let n = unparsed_notification(GIF_MESSAGE).expect("forwarded");
+        assert_eq!(n.kind, EventKind::ChannelChatMessage);
+        assert_eq!(n.broadcaster_id, "79615025");
+        assert_eq!(n.timestamp, "2026-09-30T20:39:40.240392291Z");
+        assert_eq!(n.event["message"]["fragments"][0]["type"], "gif");
+    }
+
+    #[test]
+    fn skips_non_notifications_and_unknown_subscriptions() {
+        let keepalive = GIF_MESSAGE.replace("\"notification\"", "\"session_keepalive\"");
+        let unknown = GIF_MESSAGE.replace(
+            "\"subscription_type\": \"channel.chat.message\"",
+            "\"subscription_type\": \"channel.brand.new\"",
+        );
+        assert!(unparsed_notification(&keepalive).is_none());
+        assert!(unparsed_notification(&unknown).is_none());
+        assert!(unparsed_notification("not json").is_none());
+    }
 }

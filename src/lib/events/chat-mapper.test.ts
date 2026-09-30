@@ -52,6 +52,19 @@ Deno.test("flattens every fragment kind", () => {
   ]);
 });
 
+Deno.test("shows fragment types it doesn't know as their text", () => {
+  const gif = {
+    type: "gif",
+    text: "[Hello GIF]",
+    gif: { id: "x", url: "https://media0.giphy.com/x.gif" },
+  } as unknown as RawChatMessage["message"]["fragments"][number];
+  const msg = mapChatMessage(
+    raw({ message: { text: "[Hello GIF]", fragments: [gif] } }),
+    0,
+  );
+  assertEquals(msg.fragments, [{ type: "text", text: "[Hello GIF]" }]);
+});
+
 Deno.test("classifies channel point messages", () => {
   const reward = mapChatMessage(
     raw({ channel_points_custom_reward_id: "r1" }),
