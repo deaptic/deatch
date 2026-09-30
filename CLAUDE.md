@@ -24,7 +24,7 @@ cargo test --no-default-features --lib
 cargo check                                        # release feature set
 ```
 
-Run `deno fmt`, `deno lint`, `deno task lint:ui`, `deno task test`, `cargo fmt`, `cargo clippy`, and `cargo test` before every commit.
+Run `deno fmt`, `deno lint`, `deno task lint:ui`, `deno task test`, `cargo fmt`, `cargo clippy`, and `cargo test` before every commit. CI (`.github/workflows/checks.yml`) runs the same set on every branch push and pull request, with clippy at `-D warnings`. `release.yml` runs it before building, so a failing check blocks the release. Shared CI setup lives in `.github/actions/setup`; change toolchains there, not per workflow.
 
 Frontend tests are `*.test.ts` files next to the module they cover. They start with `/// <reference lib="deno.ns" />`, because the shared `tsconfig.json` has no Deno types, and use `@std/assert`. Test modules with no side effects only. Importing a manager, store, or anything that touches Tauri at module load won't work under `deno test`, so pull the pure logic into its own file first (as with `services/emoteSetUpdate.ts`).
 

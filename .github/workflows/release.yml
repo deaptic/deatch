@@ -6,7 +6,11 @@ on:
       - "v*"
 
 jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
   build:
+    needs: checks
     permissions:
       contents: write
     strategy:
@@ -29,36 +33,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: setup deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      - name: cache deno
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/deno
-            ~/.deno
-            ${{ env.LOCALAPPDATA }}\deno
-          key: ${{ runner.os }}-deno-${{ hashFiles('package.json', 'deno.lock') }}
-          restore-keys: ${{ runner.os }}-deno-
-
-      - name: setup rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
-          cache-on-failure: true
-          cache-targets: false
-
       - name: sccache
         uses: mozilla-actions/sccache-action@v0.0.6
 
-      - name: install frontend deps
-        run: deno install
+      - uses: ./.github/actions/setup
 
       - name: build and release
         uses: tauri-apps/tauri-action@v0
