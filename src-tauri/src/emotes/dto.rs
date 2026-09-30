@@ -12,8 +12,8 @@ pub struct ChannelResult {
     pub emote_set_id: Option<String>,
 }
 
-#[derive(Serialize, Clone, specta::Type)]
-pub struct Delta {
+#[derive(Serialize, Clone, specta::Type, tauri_specta::Event)]
+pub struct EmoteSetUpdated {
     pub id: String,
     pub actor: Option<String>,
     pub added: Vec<EmoteEntry>,

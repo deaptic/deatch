@@ -6,8 +6,11 @@ use tauri::State;
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_device_code(app: tauri::AppHandle) -> Result<DcfAuthResponse> {
-    super::get_device_code(app).await
+pub async fn get_device_code(
+    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
+) -> Result<DcfAuthResponse> {
+    super::get_device_code(app, twitch.inner().clone()).await
 }
 
 #[tauri::command]

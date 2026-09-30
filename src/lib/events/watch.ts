@@ -1,4 +1,4 @@
-import { listen } from "@tauri-apps/api/event";
+import { events } from "../bindings.ts";
 import { getUsers } from "../api/twitch/users.ts";
 import { watchRequestState } from "../api/watch.ts";
 import { rememberUser } from "../stores/channels.ts";
@@ -11,11 +11,6 @@ import {
   watchedChannel,
   watchWarmedChannels,
 } from "../stores/watch.ts";
-
-type StatePayload = {
-  channels: { login: string; muted: boolean }[];
-  current: string | null;
-};
 
 let pendingFetch = new Set<string>();
 let pendingCurrent: string | null = null;
@@ -72,12 +67,12 @@ async function drainPending() {
   }
 }
 
-listen<StatePayload>("watch:state", async (e) => {
+events.watchState.listen(async (e) => {
   setWatchConnected(true);
   const { channels, current } = e.payload;
 
   const muted: Record<string, boolean> = {};
-  for (const c of channels) muted[c.login.toLowerCase()] = !!c.muted;
+  for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
   setWatchMutedByLogin(muted);
 
   const incomingLogins = channels.map((c) => c.login.toLowerCase());
@@ -104,7 +99,7 @@ listen<StatePayload>("watch:state", async (e) => {
   await drainPending();
 });
 
-listen("watch:disconnected", () => {
+events.watchDisconnected.listen(() => {
   setWatchConnected(false);
   pendingFetch.clear();
   pendingCurrent = null;

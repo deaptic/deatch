@@ -1,4 +1,4 @@
-import { listen } from "@tauri-apps/api/event";
+import { listenEventSub } from "./listenEventSub.ts";
 import type {
   AutomodHoldStatus,
   FeedEvent,
@@ -11,7 +11,6 @@ import type {
   RawChatMessageDelete,
   RawModerate,
 } from "../types/index.ts";
-import type { EventEnvelope } from "../types/twitch/eventsub.ts";
 import {
   appendItem,
   markAllMessagesDeleted,
@@ -98,23 +97,23 @@ function buildModerateMessage(
   }
 }
 
-listen<EventEnvelope<RawChatMessageDelete>>(
-  "channel-chat-message-delete",
+listenEventSub<RawChatMessageDelete>(
+  "channel.chat.message_delete",
   (e) => {
     const raw = e.payload.event;
     markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
   },
 );
 
-listen<EventEnvelope<RawChatClearUserMessages>>(
-  "channel-chat-clear-user-messages",
+listenEventSub<RawChatClearUserMessages>(
+  "channel.chat.clear_user_messages",
   (e) => {
     const raw = e.payload.event;
     markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
   },
 );
 
-listen<EventEnvelope<RawChatClear>>("channel-chat-clear", (e) => {
+listenEventSub<RawChatClear>("channel.chat.clear", (e) => {
   const broadcasterId = e.payload.event.broadcaster_user_id;
   markAllMessagesDeleted(broadcasterId);
   if (isModOfChannel(broadcasterId)) return;
@@ -131,7 +130,7 @@ listen<EventEnvelope<RawChatClear>>("channel-chat-clear", (e) => {
   appendItem(broadcasterId, notice);
 });
 
-listen<EventEnvelope<RawModerate>>("channel-moderate", (e) => {
+listenEventSub<RawModerate>("channel.moderate", (e) => {
   const payload = e.payload.event;
   const serverNowMs = new Date(e.payload.timestamp).getTime();
   const msg = buildModerateMessage(payload, serverNowMs);
@@ -166,7 +165,7 @@ function automodReasonLabel(p: RawAutomodMessageHold): string {
   return `AutoMod: ${p.automod.category} (level ${p.automod.level})`;
 }
 
-listen<EventEnvelope<RawAutomodMessageHold>>("automod-message-hold", (e) => {
+listenEventSub<RawAutomodMessageHold>("automod.message.hold", (e) => {
   const p = e.payload.event;
   const item: FeedMessage = {
     kind: "message",
@@ -187,8 +186,8 @@ listen<EventEnvelope<RawAutomodMessageHold>>("automod-message-hold", (e) => {
   appendItem(p.broadcaster_user_id, item);
 });
 
-listen<EventEnvelope<RawAutomodMessageUpdate>>(
-  "automod-message-update",
+listenEventSub<RawAutomodMessageUpdate>(
+  "automod.message.update",
   (e) => {
     const p = e.payload.event;
     const s = p.status.toLowerCase();

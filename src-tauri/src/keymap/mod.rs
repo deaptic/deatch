@@ -1,18 +1,19 @@
 pub mod commands;
 
 use crate::error::Result;
-use tauri::Manager;
+use std::path::Path;
 
-pub fn read(app: &tauri::AppHandle) -> Result<String> {
-    let path = app.path().app_config_dir()?.join("keymap.json");
+const FILE_NAME: &str = "keymap.json";
+
+pub fn read(dir: &Path) -> Result<String> {
+    let path = dir.join(FILE_NAME);
     if !path.exists() {
         return Ok(String::new());
     }
     Ok(std::fs::read_to_string(&path)?)
 }
 
-pub fn write(app: &tauri::AppHandle, contents: String) -> Result<()> {
-    let dir = app.path().app_config_dir()?;
-    std::fs::create_dir_all(&dir)?;
-    Ok(std::fs::write(dir.join("keymap.json"), contents)?)
+pub fn write(dir: &Path, contents: String) -> Result<()> {
+    std::fs::create_dir_all(dir)?;
+    Ok(std::fs::write(dir.join(FILE_NAME), contents)?)
 }

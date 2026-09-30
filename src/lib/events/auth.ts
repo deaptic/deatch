@@ -1,18 +1,18 @@
-import { listen } from "@tauri-apps/api/event";
-import type { User } from "../api/twitch/users.ts";
+import { events } from "../bindings.ts";
 import { addToast } from "../stores/toasts.ts";
 import { setUser } from "../stores/users.ts";
 import { setDeviceCode, setWaiting } from "../stores/auth.ts";
+import { errorMessage } from "../utils/error.ts";
 
-listen<User>("twitch-auth-success", (e) => {
+events.authSucceeded.listen((e) => {
   setWaiting(false);
   setDeviceCode(null);
   setUser(e.payload);
   addToast("Connected to Twitch!", "success");
 });
 
-listen<string>("twitch-auth-error", (e) => {
+events.authFailed.listen((e) => {
   setWaiting(false);
   setDeviceCode(null);
-  addToast(e.payload, "error");
+  addToast(errorMessage(e.payload), "error");
 });

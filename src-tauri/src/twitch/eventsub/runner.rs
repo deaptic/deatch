@@ -2,7 +2,6 @@ use std::collections::{HashMap, HashSet};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use futures_util::{SinkExt, StreamExt};
-use tauri::{Emitter, Manager};
 use tokio::sync::mpsc;
 use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
 
@@ -11,9 +10,12 @@ use twitch_api::twitch_oauth2::UserToken;
 use super::super::moderation::get_moderated_channels;
 use super::super::Twitch;
 use super::dispatch::handle_ws_message;
-use super::subscribe::{create_subscription, delete_subscription, emit_failed};
+use super::events::{EventSubConnection, EventSubFailed, EventSubRecovered, SubscriptionStatus};
+use super::subscribe::{create_subscription, delete_subscription, emit_failed, emit_status};
 use super::{EventKind, EventSubCmd, WS_URL};
-use crate::error::Result;
+use crate::emit::emit;
+use crate::error::{Error, Result};
+use crate::twitch::ids::UserId;
 
 pub(super) struct ChannelSub {
     pub(super) is_mod: bool,
@@ -23,16 +25,15 @@ pub(super) struct ChannelSub {
     pub(super) sub_ids: HashMap<EventKind, String>,
 }
 
-pub(super) async fn ensure_task(app: &tauri::AppHandle) -> Result<()> {
+pub(super) async fn ensure_task(app: &tauri::AppHandle, twitch: &Twitch) -> Result<()> {
     // Hold the init mutex for the entire setup so concurrent callers wait
     // here instead of racing through their own auth checks and clobbering
     // each other's tx slots. By the time we drop the guard, either a task
     // is running and the tx slot is committed, or initialization failed and
     // the slot is empty — concurrent callers re-check after acquiring.
-    let twitch = app.state::<Twitch>();
-    let _init_guard = twitch.eventsub_init.lock().await;
+    let _init_guard = twitch.eventsub.init.lock().await;
 
-    if twitch.eventsub_tx.lock().unwrap().is_some() {
+    if twitch.eventsub.tx.lock().unwrap().is_some() {
         return Ok(());
     }
 
@@ -45,22 +46,18 @@ pub(super) async fn ensure_task(app: &tauri::AppHandle) -> Result<()> {
     // false until the next refresh.
     match get_moderated_channels(&authed).await {
         Ok(channels) => twitch.cache_moderated_channel_ids(&channels),
-        Err(e) => {
-            let _ = app.emit(
-                "eventsub-error",
-                format!("fetch moderated channels failed: {e}"),
-            );
-        }
+        Err(e) => emit(app, EventSubFailed(e)),
     }
 
     let (tx, rx) = mpsc::unbounded_channel();
-    *twitch.eventsub_tx.lock().unwrap() = Some(tx);
+    *twitch.eventsub.tx.lock().unwrap() = Some(tx);
 
     let app = app.clone();
+    let twitch = twitch.clone();
     tauri::async_runtime::spawn(async move {
-        run(app.clone(), rx).await;
+        run(&app, &twitch, rx).await;
         // Clear the tx so the next subscribe call respawns the task.
-        *app.state::<Twitch>().eventsub_tx.lock().unwrap() = None;
+        twitch.eventsub.stop();
     });
     Ok(())
 }
@@ -72,7 +69,11 @@ const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(30);
 /// disconnect/connect notices in the feed.
 const NOTICE_GRACE: Duration = Duration::from_secs(10);
 
-async fn run(app: tauri::AppHandle, mut cmd_rx: mpsc::UnboundedReceiver<EventSubCmd>) {
+async fn run(
+    app: &tauri::AppHandle,
+    twitch: &Twitch,
+    mut cmd_rx: mpsc::UnboundedReceiver<EventSubCmd>,
+) {
     let mut url = WS_URL.to_string();
     let mut subs: HashMap<String, ChannelSub> = HashMap::new();
     let mut is_reconnect = false;
@@ -82,7 +83,7 @@ async fn run(app: tauri::AppHandle, mut cmd_rx: mpsc::UnboundedReceiver<EventSub
     loop {
         if let Some(Outage { started, .. }) = outage {
             if !outage_notified && started.elapsed() >= NOTICE_GRACE {
-                emit_disconnected(&app, &subs);
+                emit_disconnected(app, &subs);
                 outage_notified = true;
             }
         }
@@ -109,23 +110,23 @@ async fn run(app: tauri::AppHandle, mut cmd_rx: mpsc::UnboundedReceiver<EventSub
         loop {
             tokio::select! {
                 cmd = cmd_rx.recv() => match cmd {
-                    Some(cmd) => handle_cmd(&app, &mut subs, session_id.as_deref(), cmd).await,
+                    Some(cmd) => handle_cmd(app, twitch, &mut subs, session_id.as_deref(), cmd).await,
                     None => return,
                 },
                 msg = tokio::time::timeout(KEEPALIVE_TIMEOUT, read.next()) => match msg {
                     Ok(Some(Ok(WsMessage::Text(text)))) => {
                         let quiet = outage.is_some() && !outage_notified;
                         let had_session = session_id.is_some();
-                        match handle_ws_message(&app, &mut subs, &mut session_id, &text, quiet).await {
+                        match handle_ws_message(app, twitch, &mut subs, &mut session_id, &text, quiet).await {
                             Ok(Some(reconnect)) => { next_url = Some(reconnect); break; }
-                            Err(e) => { let _ = app.emit("eventsub-error", e.to_string()); }
+                            Err(e) => emit(app, EventSubFailed(e)),
                             _ => {}
                         }
                         if !had_session && session_id.is_some() {
-                            emit_connection(&app, true);
+                            emit(app, EventSubConnection { connected: true });
                             if let Some(o) = outage.take() {
                                 println!("[eventsub] recovered after {:?} (quiet={quiet})", o.started.elapsed());
-                                emit_recovered(&app, &subs, o.since_unix_ms);
+                                emit_recovered(app, &subs, o.since_unix_ms);
                             }
                             outage_notified = false;
                         }
@@ -156,7 +157,7 @@ async fn run(app: tauri::AppHandle, mut cmd_rx: mpsc::UnboundedReceiver<EventSub
         url = next_url.unwrap_or_else(|| WS_URL.to_string());
         if !is_reconnect {
             if outage.is_none() {
-                emit_connection(&app, false);
+                emit(app, EventSubConnection { connected: false });
             }
             outage.get_or_insert_with(Outage::now);
             let delay = if outage_notified { 5 } else { 1 };
@@ -183,52 +184,41 @@ impl Outage {
     }
 }
 
-fn emit_connection(app: &tauri::AppHandle, connected: bool) {
-    let _ = app.emit(
-        "eventsub-connection",
-        serde_json::json!({ "connected": connected }),
-    );
-}
-
 /// Tells the frontend which chats may have missed messages while the socket
 /// was down, so it can backfill the gap from recent-messages.
 fn emit_recovered(app: &tauri::AppHandle, subs: &HashMap<String, ChannelSub>, since_unix_ms: u64) {
-    let broadcaster_ids: Vec<&String> = subs
+    let broadcaster_ids: Vec<UserId> = subs
         .iter()
         .filter(|(_, s)| s.requested.contains(&EventKind::ChannelChatMessage))
-        .map(|(id, _)| id)
+        .map(|(id, _)| UserId::from(id.as_str()))
         .collect();
     if broadcaster_ids.is_empty() {
         return;
     }
-    let _ = app.emit(
-        "eventsub-recovered",
-        serde_json::json!({ "since": since_unix_ms, "broadcaster_ids": broadcaster_ids }),
+    emit(
+        app,
+        EventSubRecovered {
+            since: since_unix_ms,
+            broadcaster_ids,
+        },
     );
 }
 
 fn emit_disconnected(app: &tauri::AppHandle, subs: &HashMap<String, ChannelSub>) {
     for (broadcaster_id, sub) in subs {
-        for kind in &sub.requested {
+        for &kind in &sub.requested {
             println!("[eventsub] unsubscribed kind={kind:?} broadcaster={broadcaster_id} (ws disconnect)");
-            let _ = app.emit(
-                "eventsub-unsubscribed",
-                serde_json::json!({
-                    "broadcaster_id": broadcaster_id,
-                    "kind": kind,
-                }),
-            );
+            emit_status(app, broadcaster_id, kind, SubscriptionStatus::Unsubscribed);
         }
     }
 }
-
 async fn handle_cmd(
     app: &tauri::AppHandle,
+    twitch: &Twitch,
     subs: &mut HashMap<String, ChannelSub>,
     session_id: Option<&str>,
     cmd: EventSubCmd,
 ) {
-    let twitch = app.state::<Twitch>();
     match cmd {
         EventSubCmd::Subscribe {
             broadcaster_id,
@@ -237,7 +227,7 @@ async fn handle_cmd(
             let authed = match twitch.authed().await {
                 Ok(a) => a,
                 Err(e) => {
-                    emit_failed(app, &broadcaster_id, kind, e.to_string());
+                    emit_failed(app, &broadcaster_id, kind, e);
                     return;
                 }
             };
@@ -245,7 +235,7 @@ async fn handle_cmd(
             let entry = subs
                 .entry(broadcaster_id.clone())
                 .or_insert_with(|| ChannelSub {
-                    is_mod: is_mod_of(&twitch, &authed.token, &broadcaster_id),
+                    is_mod: is_mod_of(twitch, &authed.token, &broadcaster_id),
                     requested: HashSet::new(),
                     sub_ids: HashMap::new(),
                 });
@@ -255,7 +245,12 @@ async fn handle_cmd(
             }
 
             if kind.requires_mod() && !entry.is_mod {
-                emit_failed(app, &broadcaster_id, kind, "not a moderator");
+                emit_failed(
+                    app,
+                    &broadcaster_id,
+                    kind,
+                    Error::Invalid("not a moderator".into()),
+                );
                 if entry.requested.is_empty() && entry.sub_ids.is_empty() {
                     subs.remove(&broadcaster_id);
                 }

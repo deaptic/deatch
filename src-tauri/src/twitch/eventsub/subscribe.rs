@@ -1,7 +1,9 @@
 use super::super::Authed;
+use super::events::{EventSubSubscription, SubscriptionStatus};
 use super::EventKind;
-use crate::error::Result;
-use tauri::Emitter;
+use crate::emit::emit;
+use crate::error::{Error, Result};
+use crate::twitch::ids::UserId;
 use twitch_api::eventsub::{
     automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
     channel::chat::{
@@ -123,40 +125,51 @@ pub(super) async fn create_subscription(
                 "[eventsub] subscribed kind={kind:?} broadcaster={broadcaster_id} quiet={quiet}"
             );
             if !quiet {
-                let _ = app.emit(
-                    "eventsub-subscribed",
-                    serde_json::json!({ "broadcaster_id": broadcaster_id, "kind": kind }),
-                );
+                emit_status(app, broadcaster_id, kind, SubscriptionStatus::Subscribed);
             }
             Some(id)
         }
         Err(e) => {
-            emit_failed(app, broadcaster_id, kind, e.to_string());
+            emit_failed(app, broadcaster_id, kind, e);
             None
         }
     }
+}
+
+pub(super) fn emit_status(
+    app: &tauri::AppHandle,
+    broadcaster_id: &str,
+    kind: EventKind,
+    status: SubscriptionStatus,
+) {
+    emit(
+        app,
+        EventSubSubscription {
+            broadcaster_id: UserId::from(broadcaster_id),
+            kind,
+            status,
+        },
+    );
 }
 
 pub(super) fn emit_failed(
     app: &tauri::AppHandle,
     broadcaster_id: &str,
     kind: EventKind,
-    error: impl Into<String>,
+    error: Error,
 ) {
-    let error = error.into();
     println!(
         "[eventsub] subscribe-failed kind={kind:?} broadcaster={broadcaster_id} error={error}"
     );
-    let _ = app.emit(
-        "eventsub-subscribe-failed",
-        serde_json::json!({
-            "broadcaster_id": broadcaster_id,
-            "kind": kind,
-            "error": error,
-        }),
+    emit_status(
+        app,
+        broadcaster_id,
+        kind,
+        SubscriptionStatus::Failed {
+            error: error.to_string(),
+        },
     );
 }
-
 async fn create<E>(twitch: &Authed<'_>, condition: E, transport: Transport) -> Result<String>
 where
     E: twitch_api::eventsub::EventSubscription + Send + 'static,

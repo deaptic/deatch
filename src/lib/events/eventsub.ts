@@ -1,15 +1,9 @@
-import { listen } from "@tauri-apps/api/event";
+import { events } from "../bindings.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { usersById } from "../stores/channels.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
 import { fillGap } from "../services/feeds.ts";
 import type { FeedEvent } from "../types/feed.ts";
-import type {
-  EventSubConnection,
-  EventSubFailure,
-  EventSubNotice,
-  EventSubRecovered,
-} from "../types/twitch/eventsub.ts";
 
 const CHAT = "channel.chat.message" as const;
 
@@ -34,36 +28,33 @@ function pushNotice(
   appendItem(broadcasterId, notice);
 }
 
-listen<EventSubNotice>("eventsub-subscribed", (e) => {
-  if (e.payload.kind !== CHAT) return;
-  pushNotice(e.payload.broadcaster_id, "chat_connected", "Connected to chat");
-});
-
-listen<EventSubNotice>("eventsub-unsubscribed", (e) => {
-  if (e.payload.kind !== CHAT) return;
-  pushNotice(
-    e.payload.broadcaster_id,
-    "chat_disconnected",
-    "Disconnected from chat",
-  );
-});
-
-listen<EventSubConnection>("eventsub-connection", (e) => {
-  setChatConnected(e.payload.connected);
-});
-
-listen<EventSubRecovered>("eventsub-recovered", (e) => {
-  for (const id of e.payload.broadcaster_ids) {
-    const login = usersById.get(id)?.login;
-    if (login) fillGap(id, login, e.payload.since);
+events.eventSubSubscription.listen(({ payload }) => {
+  if (payload.kind !== CHAT) return;
+  const { broadcasterId, status } = payload;
+  switch (status.type) {
+    case "subscribed":
+      pushNotice(broadcasterId, "chat_connected", "Connected to chat");
+      break;
+    case "unsubscribed":
+      pushNotice(broadcasterId, "chat_disconnected", "Disconnected from chat");
+      break;
+    case "failed":
+      pushNotice(
+        broadcasterId,
+        "chat_connect_failed",
+        `Failed to connect to chat: ${status.error}`,
+      );
+      break;
   }
 });
 
-listen<EventSubFailure>("eventsub-subscribe-failed", (e) => {
-  if (e.payload.kind !== CHAT) return;
-  pushNotice(
-    e.payload.broadcaster_id,
-    "chat_connect_failed",
-    `Failed to connect to chat: ${e.payload.error}`,
-  );
+events.eventSubConnection.listen((e) => {
+  setChatConnected(e.payload.connected);
+});
+
+events.eventSubRecovered.listen((e) => {
+  for (const id of e.payload.broadcasterIds) {
+    const login = usersById.get(id)?.login;
+    if (login) fillGap(id, login, e.payload.since);
+  }
 });

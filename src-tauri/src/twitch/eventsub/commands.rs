@@ -1,6 +1,8 @@
 use super::EventKind;
 use crate::error::Result;
+use crate::twitch::Twitch;
 use serde::Deserialize;
+use tauri::State;
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
@@ -11,12 +13,16 @@ pub struct SubscribeParams {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn subscribe(app: tauri::AppHandle, params: SubscribeParams) -> Result<()> {
-    super::subscribe(&app, params.broadcaster_id, params.kind).await
+pub async fn subscribe(
+    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
+    params: SubscribeParams,
+) -> Result<()> {
+    super::subscribe(&app, &twitch, params.broadcaster_id, params.kind).await
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn unsubscribe(app: tauri::AppHandle, params: SubscribeParams) -> Result<()> {
-    super::unsubscribe(&app, params.broadcaster_id, params.kind).await
+pub fn unsubscribe(twitch: State<'_, Twitch>, params: SubscribeParams) -> Result<()> {
+    super::unsubscribe(&twitch, params.broadcaster_id, params.kind)
 }

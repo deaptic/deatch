@@ -6,7 +6,7 @@ use twitch_api::twitch_oauth2::tokens::errors::{
     DeviceUserTokenExchangeError, RefreshTokenError, RetrieveTokenError,
 };
 
-#[derive(Debug, thiserror::Error, serde::Serialize, specta::Type)]
+#[derive(Debug, Clone, thiserror::Error, serde::Serialize, specta::Type)]
 #[serde(tag = "kind", content = "message", rename_all = "camelCase")]
 pub enum Error {
     #[error("not authenticated")]

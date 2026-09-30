@@ -1,4 +1,5 @@
 mod discord;
+mod emit;
 mod emotes;
 mod error;
 mod history;
@@ -18,7 +19,21 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
         .error_handling(tauri_specta::ErrorHandlingMode::Throw)
         .dangerously_cast_bigints_to_number()
         .typ::<error::Error>()
-        .typ::<emotes::dto::Delta>()
+        .constant(
+            "EVENTSUB_EVENT_NAMES",
+            twitch::eventsub::EventKind::event_names(),
+        )
+        .events(tauri_specta::collect_events![
+            twitch::auth::events::AuthSucceeded,
+            twitch::auth::events::AuthFailed,
+            twitch::eventsub::events::EventSubConnection,
+            twitch::eventsub::events::EventSubRecovered,
+            twitch::eventsub::events::EventSubSubscription,
+            twitch::eventsub::events::EventSubFailed,
+            emotes::dto::EmoteSetUpdated,
+            watch::events::WatchState,
+            watch::events::WatchDisconnected,
+        ])
         .commands(tauri_specta::collect_commands![
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
@@ -142,20 +157,6 @@ pub fn run() {
         })
         .manage(discord::DiscordState::new())
         .invoke_handler(invoke_handler)
-        .build(tauri::generate_context!())
-        .expect("error while building tauri application")
-        .run(|_app, event| {
-            // ipc::start_server spawns a tokio task blocked on accept()
-            // forever; without an explicit exit, its worker threads keep the
-            // process alive after the window closes.
-            match event {
-                tauri::RunEvent::WindowEvent {
-                    event: tauri::WindowEvent::CloseRequested { .. },
-                    ..
-                }
-                | tauri::RunEvent::ExitRequested { .. }
-                | tauri::RunEvent::Exit => std::process::exit(0),
-                _ => {}
-            }
-        });
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }

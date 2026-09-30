@@ -1,5 +1,17 @@
+use std::collections::BTreeMap;
+
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize, specta::Type,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    specta::Type,
 )]
 pub enum EventKind {
     #[serde(rename = "channel.chat.message")]
@@ -27,6 +39,42 @@ pub enum EventKind {
 }
 
 impl EventKind {
+    /// Ordered by subscription priority: chat kinds first so every channel's
+    /// chat comes up before anything else on (re)connect.
+    pub const ALL: [Self; 11] = [
+        Self::ChannelChatMessage,
+        Self::ChannelChatNotification,
+        Self::ChannelChatMessageDelete,
+        Self::ChannelChatClear,
+        Self::ChannelChatClearUserMessages,
+        Self::ChannelShoutoutCreate,
+        Self::ChannelFollow,
+        Self::ChannelModerate,
+        Self::AutomodMessageHold,
+        Self::AutomodMessageUpdate,
+        Self::ChannelPointsCustomRewardRedemptionAdd,
+    ];
+
+    pub fn event_name(self) -> &'static str {
+        match self {
+            Self::ChannelChatMessage => "channel-chat-message",
+            Self::ChannelChatNotification => "channel-chat-notification",
+            Self::ChannelChatMessageDelete => "channel-chat-message-delete",
+            Self::ChannelChatClear => "channel-chat-clear",
+            Self::ChannelChatClearUserMessages => "channel-chat-clear-user-messages",
+            Self::ChannelShoutoutCreate => "channel-shoutout-create",
+            Self::ChannelFollow => "channel-follow",
+            Self::ChannelModerate => "channel-moderate",
+            Self::AutomodMessageHold => "automod-message-hold",
+            Self::AutomodMessageUpdate => "automod-message-update",
+            Self::ChannelPointsCustomRewardRedemptionAdd => "channel-points-redemption-add",
+        }
+    }
+
+    pub fn event_names() -> BTreeMap<Self, &'static str> {
+        Self::ALL.iter().map(|&k| (k, k.event_name())).collect()
+    }
+
     pub(super) fn requires_mod(self) -> bool {
         matches!(
             self,

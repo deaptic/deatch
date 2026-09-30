@@ -1,4 +1,4 @@
-import { listen } from "@tauri-apps/api/event";
+import { events } from "../bindings.ts";
 
 import "./auth.ts";
 import "./chat.ts";
@@ -9,6 +9,6 @@ import "./watch.ts";
 
 export { mapChatMessage } from "./chat-mapper.ts";
 
-listen<string>("eventsub-error", (e) => {
+events.eventSubFailed.listen((e) => {
   console.error("EventSub error:", e.payload);
 });

@@ -1,14 +1,11 @@
-import { listen } from "@tauri-apps/api/event";
+import { listenEventSub } from "./listenEventSub.ts";
 import type {
   FeedEvent,
   RawFollow,
   RawNotification,
   RawShoutout,
 } from "../types/index.ts";
-import type {
-  EventEnvelope,
-  RawChannelPointsRedemption,
-} from "../types/twitch/eventsub.ts";
+import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
@@ -88,7 +85,7 @@ function mapRedemption(
   };
 }
 
-listen<EventEnvelope<RawNotification>>("channel-chat-notification", (e) => {
+listenEventSub<RawNotification>("channel.chat.notification", (e) => {
   const raw = e.payload.event;
   const id = raw.broadcaster_user_id;
   if (!raw.system_message?.trim()) return;
@@ -111,18 +108,18 @@ listen<EventEnvelope<RawNotification>>("channel-chat-notification", (e) => {
   }
 });
 
-listen<EventEnvelope<RawShoutout>>("channel-shoutout-create", (e) => {
+listenEventSub<RawShoutout>("channel.shoutout.create", (e) => {
   const raw = e.payload.event;
   appendItem(raw.broadcaster_user_id, mapShoutout(raw, Date.now()));
 });
 
-listen<EventEnvelope<RawFollow>>("channel-follow", (e) => {
+listenEventSub<RawFollow>("channel.follow", (e) => {
   const raw = e.payload.event;
   appendItem(raw.broadcaster_user_id, mapFollow(raw, Date.now()));
 });
 
-listen<EventEnvelope<RawChannelPointsRedemption>>(
-  "channel-points-redemption-add",
+listenEventSub<RawChannelPointsRedemption>(
+  "channel.channel_points_custom_reward_redemption.add",
   (e) => {
     const raw = e.payload.event;
     const ts = Date.now();
