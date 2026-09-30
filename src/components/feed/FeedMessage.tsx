@@ -11,7 +11,7 @@ import type {
   BadgeMap,
   FeedMessage as Message,
 } from "../../lib/types/index.ts";
-import { matchesAnyKeyword } from "../../lib/stores/preferences.ts";
+import { matchesAnyKeyword } from "../../lib/utils/wordMatch.ts";
 import type { Reaction } from "./reaction.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 import { setAutomodHoldStatus } from "../../lib/stores/feeds.ts";
