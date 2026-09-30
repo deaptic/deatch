@@ -152,16 +152,15 @@ async fn resubscribe_pending(
         }
     }
 
-    let results: Vec<(EventKind, String, Option<String>)> =
-        futures_util::stream::iter(work.into_iter())
-            .map(|item| async move {
-                let (kind, b) = item;
-                let id = create_subscription(app, authed, &b, kind, sid, quiet).await;
-                (kind, b, id)
-            })
-            .buffer_unordered(MAX_CONCURRENT)
-            .collect()
-            .await;
+    let results: Vec<(EventKind, String, Option<String>)> = futures_util::stream::iter(work)
+        .map(|item| async move {
+            let (kind, b) = item;
+            let id = create_subscription(app, authed, &b, kind, sid, quiet).await;
+            (kind, b, id)
+        })
+        .buffer_unordered(MAX_CONCURRENT)
+        .collect()
+        .await;
 
     for (kind, broadcaster_id, id) in results {
         if let Some(id) = id {
