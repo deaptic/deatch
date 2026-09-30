@@ -8,11 +8,7 @@ import type {
   SendOutcome,
   UserEmote,
 } from "../../types/twitch/chat.ts";
-import {
-  invokeCommand,
-  type InvokeOptions,
-  type PaginatedResponse,
-} from "../utils.ts";
+import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export type {
   BadgeSet,
@@ -25,16 +21,8 @@ export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
   return invokeCommand("get_global_emotes", undefined, options);
 }
 
-export type GetUserEmotesParams = {
-  broadcasterId?: string;
-  after?: string;
-};
-
-export function getUserEmotes(
-  params: GetUserEmotesParams = {},
-  options?: InvokeOptions,
-): Promise<PaginatedResponse<UserEmote>> {
-  return invokeCommand("get_user_emotes", params, options);
+export function getUserEmotes(options?: InvokeOptions): Promise<UserEmote[]> {
+  return invokeCommand("get_user_emotes", undefined, options);
 }
 
 export function getGlobalChatBadges(

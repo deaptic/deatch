@@ -24,16 +24,19 @@ export function getStreams(
   return invokeCommand("get_streams", params, options);
 }
 
-export type GetFollowedStreamsParams = {
-  first?: number;
-  after?: string;
+export type GetStreamsFromIdsParams = {
+  userIds: string[];
 };
 
-export function getFollowedStreams(
-  params: GetFollowedStreamsParams = {},
+export function getStreamsFromIds(
+  params: GetStreamsFromIdsParams,
   options?: InvokeOptions,
-): Promise<PaginatedResponse<Stream>> {
-  return invokeCommand("get_followed_streams", params, options);
+): Promise<Stream[]> {
+  return invokeCommand("get_streams_from_ids", params, options);
+}
+
+export function getFollowedStreams(options?: InvokeOptions): Promise<Stream[]> {
+  return invokeCommand("get_followed_streams", undefined, options);
 }
 
 export type CreateStreamMarkerParams = {

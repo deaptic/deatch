@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { advancedShowLogs } from "../stores/preferences.ts";
 import { addToast } from "../stores/toasts.ts";
-import type { PaginatedResponse } from "../types/pagination.ts";
 import { errorMessage } from "../utils/error.ts";
 
 export type { PaginatedResponse } from "../types/pagination.ts";
@@ -56,29 +55,4 @@ function summarize(result: unknown, ms: number): string {
     return `${ms}ms · ${data.length} items${more ? " · more…" : ""}`;
   }
   return `${ms}ms`;
-}
-
-export async function fetchAllPages<T>(
-  cmd: string,
-  fetcher: (
-    after: string | undefined,
-    options: InvokeOptions,
-  ) => Promise<PaginatedResponse<T>>,
-): Promise<T[]> {
-  const start = performance.now();
-  const all: T[] = [];
-  let after: string | undefined;
-  let pages = 0;
-  while (true) {
-    const page = await fetcher(after, { silent: true });
-    all.push(...page.data);
-    pages++;
-    if (!page.pagination.cursor) break;
-    after = page.pagination.cursor;
-  }
-  const ms = Math.round(performance.now() - start);
-  if (advancedShowLogs()) {
-    addToast(cmd, "log", `${ms}ms · ${all.length} items · ${pages} pages`);
-  }
-  return all;
 }

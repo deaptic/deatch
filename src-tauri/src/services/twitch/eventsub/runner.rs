@@ -8,7 +8,7 @@ use tokio_tungstenite::{connect_async, tungstenite::Message as WsMessage};
 
 use twitch_api::twitch_oauth2::UserToken;
 
-use super::super::moderation::get_all_moderated_channels;
+use super::super::moderation::get_moderated_channels;
 use super::super::Twitch;
 use super::dispatch::handle_ws_message;
 use super::subscribe::{create_subscription, delete_subscription, emit_failed};
@@ -43,7 +43,7 @@ pub(super) async fn ensure_task(app: &tauri::AppHandle) -> Result<()> {
     // Refreshes the moderated_channel_ids cache so handle_cmd can read it
     // synchronously when deciding is_mod. Non-fatal — is_mod defaults to
     // false until the next refresh.
-    match get_all_moderated_channels(&authed).await {
+    match get_moderated_channels(&authed).await {
         Ok(channels) => twitch.cache_moderated_channel_ids(&channels),
         Err(e) => {
             let _ = app.emit(

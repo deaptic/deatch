@@ -1,7 +1,5 @@
 import { createEffect, onMount } from "solid-js";
 import { getModeratedChannels } from "../api/twitch/moderation.ts";
-import { fetchAllPages } from "../api/utils.ts";
-import type { UserRef } from "../types/twitch/user.ts";
 import { setModeratedChannels, user } from "../stores/users.ts";
 import { setGlobalEmotes } from "../stores/emotes.ts";
 import {
@@ -19,10 +17,7 @@ let userScopedFetched = false;
 function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
-  fetchAllPages<UserRef>(
-    "get_moderated_channels",
-    (after, opts) => getModeratedChannels({ after }, opts),
-  )
+  getModeratedChannels()
     .then(setModeratedChannels)
     .catch(() => {});
   loadGlobalEmotes().then(setGlobalEmotes).catch(() => {});

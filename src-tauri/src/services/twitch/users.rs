@@ -1,16 +1,21 @@
 use super::Authed;
+use crate::dto::twitch::ids::UserId;
 use crate::dto::twitch::user::User;
 use crate::error::{Error, Result};
+use serde::Deserialize;
 use twitch_api::helix::users::GetUsersRequest;
-use twitch_api::types::{UserId, UserName};
+use twitch_api::types;
 
-pub async fn get_users(
-    twitch: &Authed<'_>,
-    ids: Vec<String>,
-    logins: Vec<String>,
-) -> Result<Vec<User>> {
-    let ids: Vec<UserId> = ids.into_iter().map(UserId::from).collect();
-    let logins: Vec<UserName> = logins.into_iter().map(UserName::from).collect();
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetUsersParams {
+    pub ids: Vec<UserId>,
+    pub logins: Vec<String>,
+}
+
+pub async fn get_users(twitch: &Authed<'_>, params: GetUsersParams) -> Result<Vec<User>> {
+    let ids: Vec<types::UserId> = params.ids.into_iter().map(|id| id.0.into()).collect();
+    let logins: Vec<types::UserName> = params.logins.into_iter().map(Into::into).collect();
 
     let mut request = GetUsersRequest::new();
     request.id = (&*ids).into();

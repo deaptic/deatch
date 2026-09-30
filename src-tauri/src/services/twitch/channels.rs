@@ -1,114 +1,195 @@
 use super::Authed;
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::channel::{ChannelInfo, Follow};
+use crate::dto::twitch::ids::{GameId, UserId};
 use crate::error::{Error, Result};
+use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::channels::{
     get_followed_channels::GetFollowedChannels,
     modify_channel_information::{ModifyChannelInformationBody, ModifyChannelInformationRequest},
     start_commercial::{StartCommercialBody, StartCommercialRequest},
-    AddChannelVipRequest, GetChannelFollowersRequest, GetChannelInformationRequest,
-    RemoveChannelVipRequest,
+    GetChannelFollowersRequest,
 };
-use twitch_api::helix::EmptyBody;
-use twitch_api::types::{CategoryId, CommercialLength, UserId};
+use twitch_api::types;
 
-const HELIX_ID_BATCH: usize = 100;
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetChannelInformationParams {
+    pub broadcaster_ids: Vec<UserId>,
+}
 
 pub async fn get_channel_information(
     twitch: &Authed<'_>,
-    broadcaster_ids: Vec<String>,
+    params: GetChannelInformationParams,
 ) -> Result<Vec<ChannelInfo>> {
-    let mut out = Vec::with_capacity(broadcaster_ids.len());
-    for chunk in broadcaster_ids.chunks(HELIX_ID_BATCH) {
-        let ids: Vec<UserId> = chunk.iter().cloned().map(UserId::from).collect();
-        let request = GetChannelInformationRequest::broadcaster_ids(&*ids);
-        let response = twitch.helix.req_get(request, &twitch.token).await?;
-        out.extend(response.data.into_iter().map(ChannelInfo::from));
-    }
-    Ok(out)
+    let ids: Vec<types::UserId> = params
+        .broadcaster_ids
+        .into_iter()
+        .map(|id| id.0.into())
+        .collect();
+    let ids = ids.into();
+    super::collect(twitch.helix.get_channels_from_ids(&ids, &twitch.token)).await
+}
+
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetChannelFollowersParams {
+    pub broadcaster_id: UserId,
+    pub user_id: Option<UserId>,
+    pub first: Option<usize>,
+    pub after: Option<String>,
 }
 
 pub async fn get_channel_followers(
     twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: Option<String>,
-    first: Option<usize>,
-    after: Option<String>,
+    params: GetChannelFollowersParams,
 ) -> Result<PaginatedResponse<Follow>> {
-    let mut request = GetChannelFollowersRequest::broadcaster_id(UserId::from(broadcaster_id));
-    if let Some(uid) = user_id {
-        request.user_id = Some(UserId::from(uid).into());
-    }
-    request.first = first;
-    request.after = super::cursor(after);
+    let mut request = GetChannelFollowersRequest::broadcaster_id(params.broadcaster_id.as_str());
+    request.user_id = params
+        .user_id
+        .map(|id| Cow::Owned(types::UserId::from(id.0)));
+    request.first = params.first;
+    request.after = super::cursor(params.after);
 
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(super::into_paginated(response, Follow::from))
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetFollowedChannelsParams {
+    pub user_id: UserId,
+    #[serde(default)]
+    pub broadcaster_id: Option<UserId>,
+}
+
 pub async fn get_followed_channels(
     twitch: &Authed<'_>,
-    user_id: String,
-    broadcaster_id: Option<String>,
+    params: GetFollowedChannelsParams,
 ) -> Result<Vec<Follow>> {
-    let mut request = GetFollowedChannels::user_id(user_id.as_str());
-    if let Some(bid) = broadcaster_id.as_deref() {
-        request = request.broadcaster_id(bid);
+    let mut request = GetFollowedChannels::user_id(params.user_id.as_str());
+    if let Some(bid) = &params.broadcaster_id {
+        request = request.broadcaster_id(bid.as_str());
     }
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(response.data.into_iter().map(Follow::from).collect())
 }
 
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct ModifyChannelInformationParams {
+    pub broadcaster_id: UserId,
+    pub title: Option<String>,
+    pub game_id: Option<GameId>,
+}
+
 pub async fn modify_channel_information(
     twitch: &Authed<'_>,
-    broadcaster_id: String,
-    title: Option<String>,
-    game_id: Option<String>,
+    params: ModifyChannelInformationParams,
 ) -> Result<()> {
-    let request = ModifyChannelInformationRequest::broadcaster_id(broadcaster_id.as_str());
+    let request = ModifyChannelInformationRequest::broadcaster_id(params.broadcaster_id.as_str());
     let mut body = ModifyChannelInformationBody::default();
-    if let Some(t) = title.as_deref().filter(|s| !s.is_empty()) {
+    if let Some(t) = params.title.as_deref().filter(|s| !s.is_empty()) {
         body.title = Some(Cow::Borrowed(t));
     }
-    if let Some(g) = game_id.filter(|s| !s.is_empty()) {
-        body.game_id = Some(Cow::Owned(CategoryId::new(g)));
+    if let Some(g) = params.game_id.filter(|g| !g.as_str().is_empty()) {
+        body.game_id = Some(Cow::Owned(types::CategoryId::new(g.0)));
     }
     twitch.helix.req_patch(request, body, &twitch.token).await?;
     Ok(())
 }
 
-pub async fn start_commercial(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    length: u64,
-) -> Result<()> {
-    let length = CommercialLength::try_from(length).map_err(|e| Error::Invalid(e.to_string()))?;
-    let request = StartCommercialRequest::new();
-    let body = StartCommercialBody::new(broadcaster_id.as_str(), length);
-    twitch.helix.req_post(request, body, &twitch.token).await?;
-    Ok(())
+#[derive(Clone, Copy, Deserialize)]
+#[serde(try_from = "u64")]
+pub enum CommercialLength {
+    Seconds30,
+    Seconds60,
+    Seconds90,
+    Seconds120,
+    Seconds150,
+    Seconds180,
 }
 
-pub async fn add_channel_vip(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: String,
-) -> Result<()> {
-    let request = AddChannelVipRequest::new(broadcaster_id.as_str(), user_id.as_str());
+impl TryFrom<u64> for CommercialLength {
+    type Error = Error;
+
+    fn try_from(seconds: u64) -> Result<Self> {
+        Ok(match seconds {
+            30 => Self::Seconds30,
+            60 => Self::Seconds60,
+            90 => Self::Seconds90,
+            120 => Self::Seconds120,
+            150 => Self::Seconds150,
+            180 => Self::Seconds180,
+            other => {
+                return Err(Error::Invalid(format!(
+                    "invalid commercial length: {other}"
+                )))
+            }
+        })
+    }
+}
+
+impl From<CommercialLength> for types::CommercialLength {
+    fn from(length: CommercialLength) -> Self {
+        match length {
+            CommercialLength::Seconds30 => Self::Length30,
+            CommercialLength::Seconds60 => Self::Length60,
+            CommercialLength::Seconds90 => Self::Length90,
+            CommercialLength::Seconds120 => Self::Length120,
+            CommercialLength::Seconds150 => Self::Length150,
+            CommercialLength::Seconds180 => Self::Length180,
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StartCommercialParams {
+    pub broadcaster_id: UserId,
+    pub length: CommercialLength,
+}
+
+pub async fn start_commercial(twitch: &Authed<'_>, params: StartCommercialParams) -> Result<()> {
+    let body = StartCommercialBody::new(
+        params.broadcaster_id.as_str(),
+        types::CommercialLength::from(params.length),
+    );
     twitch
         .helix
-        .req_post(request, EmptyBody, &twitch.token)
+        .req_post(StartCommercialRequest::new(), body, &twitch.token)
         .await?;
     Ok(())
 }
 
-pub async fn remove_channel_vip(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: String,
-) -> Result<()> {
-    let request = RemoveChannelVipRequest::new(broadcaster_id.as_str(), user_id.as_str());
-    twitch.helix.req_delete(request, &twitch.token).await?;
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ChannelVipParams {
+    pub broadcaster_id: UserId,
+    pub user_id: UserId,
+}
+
+pub async fn add_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -> Result<()> {
+    twitch
+        .helix
+        .add_channel_vip(
+            params.broadcaster_id.as_str(),
+            params.user_id.as_str(),
+            &twitch.token,
+        )
+        .await?;
+    Ok(())
+}
+
+pub async fn remove_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -> Result<()> {
+    twitch
+        .helix
+        .remove_channel_vip(
+            params.broadcaster_id.as_str(),
+            params.user_id.as_str(),
+            &twitch.token,
+        )
+        .await?;
     Ok(())
 }

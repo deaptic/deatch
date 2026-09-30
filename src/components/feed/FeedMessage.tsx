@@ -15,10 +15,7 @@ import { matchesAnyKeyword } from "../../lib/stores/preferences.ts";
 import type { Reaction } from "./reaction.ts";
 import type { UserRef } from "../../lib/types/twitch/user.ts";
 import { setAutomodHoldStatus } from "../../lib/stores/feeds.ts";
-import {
-  approveHeldAutomodMessage,
-  denyHeldAutomodMessage,
-} from "../../lib/api/twitch/moderation.ts";
+import { manageHeldAutomodMessage } from "../../lib/api/twitch/moderation.ts";
 
 type Props = {
   item: Message;
@@ -79,11 +76,10 @@ export default function FeedMessage(props: Props) {
       action === "approve" ? "approving" : "denying",
     );
     try {
-      if (action === "approve") {
-        await approveHeldAutomodMessage({ msgId: props.item.message_id });
-      } else {
-        await denyHeldAutomodMessage({ msgId: props.item.message_id });
-      }
+      await manageHeldAutomodMessage({
+        msgId: props.item.message_id,
+        action: action === "approve" ? "allow" : "deny",
+      });
       setAutomodHoldStatus(
         broadcasterId,
         props.item.message_id,
