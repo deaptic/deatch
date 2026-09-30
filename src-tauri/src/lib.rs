@@ -49,8 +49,13 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
-            if let Err(e) = bridge::register() {
-                eprintln!("browser bridge registration failed: {e}");
+            // A dev build must never become the browser's native-messaging
+            // host: Firefox would keep spawning target/debug/deatch.exe and
+            // hold the file lock cargo needs to relink.
+            if !cfg!(debug_assertions) {
+                if let Err(e) = bridge::register() {
+                    eprintln!("browser bridge registration failed: {e}");
+                }
             }
             ipc::start_server(app.handle().clone());
             services::external::seventv_events::spawn(app.handle().clone());

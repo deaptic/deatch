@@ -30,6 +30,7 @@ pub(super) async fn handle_ws_message(
     subs: &mut HashMap<String, ChannelSub>,
     session_id: &mut Option<String>,
     text: &str,
+    quiet: bool,
 ) -> Result<Option<String>, String> {
     let event = match Event::parse_websocket(text) {
         Ok(e) => e,
@@ -39,7 +40,7 @@ pub(super) async fn handle_ws_message(
         EventsubWebsocketData::Welcome { payload, .. } => {
             let sid = payload.session.id.to_string();
             *session_id = Some(sid.clone());
-            resubscribe_pending(app, helix, subs, &sid).await?;
+            resubscribe_pending(app, helix, subs, &sid, quiet).await?;
             Ok(None)
         }
         EventsubWebsocketData::Notification {
@@ -94,6 +95,7 @@ async fn resubscribe_pending(
     helix: &twitch_api::HelixClient<'_, reqwest::Client>,
     subs: &mut HashMap<String, ChannelSub>,
     sid: &str,
+    quiet: bool,
 ) -> Result<(), String> {
     let has_pending = subs
         .values()
@@ -121,7 +123,7 @@ async fn resubscribe_pending(
         futures_util::stream::iter(work.into_iter())
             .map(|item| async move {
                 let (kind, b) = item;
-                let id = create_subscription(app, helix, token, &b, kind, sid).await;
+                let id = create_subscription(app, helix, token, &b, kind, sid, quiet).await;
                 (kind, b, id)
             })
             .buffer_unordered(MAX_CONCURRENT)

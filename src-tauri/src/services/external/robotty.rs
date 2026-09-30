@@ -223,10 +223,14 @@ struct RobottyResponse {
 pub async fn fetch_recent_messages(
     channel_login: &str,
     limit: usize,
+    after_unix_ms: Option<u64>,
 ) -> Result<Vec<RecentMessage>, String> {
-    let url = format!(
+    let mut url = format!(
         "https://recent-messages.robotty.de/api/v2/recent-messages/{channel_login}?limit={limit}"
     );
+    if let Some(after) = after_unix_ms {
+        url.push_str(&format!("&after={after}"));
+    }
     let resp: RobottyResponse = reqwest::Client::new()
         .get(&url)
         .send()

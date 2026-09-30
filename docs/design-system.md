@@ -589,7 +589,10 @@ text, one ghost action. 5s auto-dismiss except `negative`. Max 3 stacked.
 
 Full width above the feed, `raised`, 12px 16px padding, `body`, status icon
 left, actions right as `sm` buttons. One banner at a time: raid > connection >
-update.
+update. The connection banner appears the moment the EventSub socket drops
+(`caution` unplug icon, "Chat disconnected. Reconnecting…") and leaves when the
+session is back; the feed notices described in §3.3 only appear for outages over
+10s, and missed messages are backfilled afterwards.
 
 ### Dialog
 

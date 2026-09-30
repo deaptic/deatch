@@ -14,6 +14,8 @@ import { copyField } from "../../lib/utils/clipboard.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
+import ConnectionBanner from "./ConnectionBanner.tsx";
+import { chatConnected } from "../../lib/stores/eventsub.ts";
 import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu from "../context-menus/UserContextMenu.tsx";
@@ -277,7 +279,14 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex-1 min-h-0 flex flex-col">
-      <Show when={props.isActive && pendingRaid()}>
+      <Show
+        when={props.isActive && pendingRaid()}
+        fallback={
+          <Show when={!chatConnected()}>
+            <ConnectionBanner />
+          </Show>
+        }
+      >
         {(raid) => <RaidBanner raid={raid()} />}
       </Show>
       <Feed

@@ -60,6 +60,28 @@ export function appendLocalNotice(id: string, text: string) {
   });
 }
 
+/// Merges items into the feed by timestamp, skipping ones already present.
+/// Used to fill a gap after a dropped connection, where live messages may
+/// already have arrived after the missing ones.
+export function insertItems(id: string, items: FeedItem[]) {
+  ensureFeed(id);
+  setFeeds(
+    id,
+    produce((f) => {
+      const existing = new Set(f.messages.map(getItemId));
+      const fresh = items
+        .filter((it) => !existing.has(getItemId(it)))
+        .sort((a, b) => a.timestamp - b.timestamp);
+      for (const it of fresh) {
+        let at = f.messages.length;
+        while (at > 0 && f.messages[at - 1].timestamp > it.timestamp) at--;
+        f.messages.splice(at, 0, it);
+      }
+      if (fresh.length > 0 && !f.paused) enforceCaps(f.messages);
+    }),
+  );
+}
+
 export function prependItems(id: string, items: FeedItem[]) {
   ensureFeed(id);
   for (const it of items) {

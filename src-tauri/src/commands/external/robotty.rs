@@ -7,6 +7,7 @@ use serde::Deserialize;
 pub struct GetRecentMessagesParams {
     pub channel_login: String,
     pub limit: Option<usize>,
+    pub after: Option<u64>,
 }
 
 #[tauri::command]
@@ -16,6 +17,7 @@ pub async fn get_recent_messages(
     services::external::robotty::fetch_recent_messages(
         &params.channel_login,
         params.limit.unwrap_or(50),
+        params.after,
     )
     .await
 }

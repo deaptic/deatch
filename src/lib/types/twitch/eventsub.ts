@@ -49,6 +49,8 @@ export type SubStatus = "pending" | "active" | "failed" | "disconnected";
 
 export type EventSubNotice = { broadcaster_id: string; kind: EventKind };
 export type EventSubFailure = EventSubNotice & { error: string };
+export type EventSubRecovered = { since: number; broadcaster_ids: string[] };
+export type EventSubConnection = { connected: boolean };
 
 export type EventEnvelope<T> = {
   timestamp: string;
