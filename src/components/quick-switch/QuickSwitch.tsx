@@ -11,7 +11,7 @@ import {
 import { Portal } from "solid-js/web";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import {
   channelsInOrder,
   rememberUser,

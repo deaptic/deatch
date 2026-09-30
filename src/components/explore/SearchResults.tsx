@@ -7,14 +7,12 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { Category, SearchChannel, User } from "../../lib/types/index.ts";
 import {
-  type Category,
   searchCategories,
-  type SearchChannel,
   searchChannels,
 } from "../../lib/api/twitch/search.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import { rememberUser } from "../../lib/stores/channels.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";

@@ -1,5 +1,5 @@
 import { events } from "../bindings.ts";
-import { getUsers } from "../api/twitch/users.ts";
+import { getUsers } from "../services/users.ts";
 import { watchRequestState } from "../api/watch.ts";
 import { rememberUser } from "../stores/channels.ts";
 import {

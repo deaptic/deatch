@@ -13,8 +13,6 @@ import type {
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type { AutomodAction, Ban, BannedUser } from "../../types/index.ts";
-
 export async function deleteChatMessages(
   params: DeleteChatMessagesParams,
   options?: InvokeOptions,

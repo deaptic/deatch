@@ -1,4 +1,4 @@
-import { sendChatMessage } from "../api/twitch/chat.ts";
+import { sendChatMessage } from "../services/chat.ts";
 import { user } from "../stores/users.ts";
 import {
   clampCooldown,

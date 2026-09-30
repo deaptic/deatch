@@ -1,6 +1,6 @@
+import type { BannedUser } from "../../lib/types/index.ts";
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import {
-  type BannedUser,
   banUser,
   getBannedUsers,
   unbanUser,

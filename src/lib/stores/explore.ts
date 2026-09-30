@@ -1,5 +1,5 @@
+import type { Category } from "../types/index.ts";
 import { createStore } from "solid-js/store";
-import type { Category } from "../api/twitch/search.ts";
 
 export type ExploreFilters = {
   followingOnly: boolean;

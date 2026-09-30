@@ -1,8 +1,5 @@
+import type { ResolvedTheme } from "../constants/theme.ts";
 import { hexToOklch, type Oklch, oklchCss } from "../utils/color.ts";
-
-export const THEMES = ["system", "dark", "light"] as const;
-export type Theme = (typeof THEMES)[number];
-export type ResolvedTheme = Exclude<Theme, "system">;
 
 export const defaultAccentHex = "#9481ff";
 

@@ -4,7 +4,7 @@ import type { Stream } from "../../lib/types/index.ts";
 import { liveStreams, rememberUser } from "../../lib/stores/channels.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import { getStreams } from "../../lib/api/twitch/streams.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import LiveCard from "./LiveCard.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
 import Chip from "../ui/Chip.tsx";

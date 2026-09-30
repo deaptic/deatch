@@ -1,10 +1,12 @@
 import {
-  type ActivityInput as DiscordActivity,
   discordConnect,
   discordDisconnect,
   discordSetActivity,
 } from "../api/discord.ts";
-import type { Stream } from "../types/index.ts";
+import type {
+  ActivityInput as DiscordActivity,
+  Stream,
+} from "../types/index.ts";
 import type { User } from "../types/index.ts";
 
 let connected = false;

@@ -1,6 +1,7 @@
+import type { User } from "../../lib/types/index.ts";
 import { createEffect, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
-import { getUsers, type User } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import { resolveUserByLogin } from "../../lib/services/preferences.ts";
 import Chip from "../ui/Chip.tsx";
 import ChipInput from "../ui/ChipInput.tsx";

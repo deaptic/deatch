@@ -10,7 +10,7 @@ import {
 } from "solid-js";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
-import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
+import { sendChatMessage } from "../../lib/services/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
 import CommandComposer from "../command-composer/CommandComposer.tsx";

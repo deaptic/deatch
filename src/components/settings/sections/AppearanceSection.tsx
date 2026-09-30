@@ -12,10 +12,8 @@ import {
   setAppearanceTheme,
   setFeedFontSize,
 } from "../../../lib/stores/preferences.ts";
-import {
-  defaultAccentHex,
-  type Theme,
-} from "../../../lib/services/appearance.ts";
+import { defaultAccentHex } from "../../../lib/services/appearance.ts";
+import { type Theme } from "../../../lib/constants/theme.ts";
 
 const THEME_OPTIONS: { value: Theme; label: string }[] = [
   { value: "system", label: "System" },

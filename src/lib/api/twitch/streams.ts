@@ -8,8 +8,6 @@ import type {
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type { Stream } from "../../types/index.ts";
-
 export function getStreams(
   params: GetStreamsParams = {},
   options?: InvokeOptions,
