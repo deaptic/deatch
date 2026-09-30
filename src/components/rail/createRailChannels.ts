@@ -9,13 +9,12 @@ import {
 import { createStore, reconcile } from "solid-js/store";
 import {
   getFollowedStreams,
-  getStreams,
+  getStreamsFromIds,
   type Stream,
 } from "../../lib/api/twitch/streams.ts";
 import { getUsers } from "../../lib/api/twitch/users.ts";
 import { getChannelInformation } from "../../lib/api/twitch/channels.ts";
 import { user } from "../../lib/stores/users.ts";
-import { fetchAllPages } from "../../lib/api/utils.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import {
@@ -98,10 +97,7 @@ export function createRailChannels(
 
   async function fetchLive() {
     try {
-      const followed = await fetchAllPages<Stream>(
-        "get_followed_streams",
-        (after, opts) => getFollowedStreams({ after }, opts),
-      );
+      const followed = await getFollowedStreams();
       const followedIds = new Set(followed.map((s) => s.user.id));
       const pinnedSet = new Set(pinnedChannels());
       const extraIds = new Set<string>();
@@ -121,10 +117,7 @@ export function createRailChannels(
       }
       const extraIdList = [...extraIds];
       const extraStreams = extraIdList.length > 0
-        ? await fetchAllPages<Stream>(
-          "get_streams",
-          (after, opts) => getStreams({ userIds: extraIdList, after }, opts),
-        )
+        ? await getStreamsFromIds({ userIds: extraIdList })
         : [];
       const streams = [...followed, ...extraStreams];
 

@@ -8,7 +8,6 @@ import {
 } from "../api/external/ffz.ts";
 import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
 import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat.ts";
-import { fetchAllPages } from "../api/utils.ts";
 import {
   dedupeById,
   setBttvChannel,
@@ -47,10 +46,7 @@ export async function ensureUserEmotesLoaded(): Promise<void> {
   }
 
   try {
-    const all = await fetchAllPages<UserEmote>(
-      "get_user_emotes",
-      (after, opts) => getUserEmotes({ after }, opts),
-    );
+    const all = await getUserEmotes();
     setUserEmotes(dedupeById(all));
     saveCache(key, all);
   } catch {

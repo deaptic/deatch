@@ -1,23 +1,37 @@
 use super::Authed;
+use crate::dto::twitch::ids::UserId;
 use crate::error::Result;
-use twitch_api::helix::raids::{CancelARaidRequest, StartARaidRequest};
-use twitch_api::helix::EmptyBody;
+use serde::Deserialize;
 
-pub async fn start_raid(
-    twitch: &Authed<'_>,
-    from_broadcaster_id: String,
-    to_broadcaster_id: String,
-) -> Result<()> {
-    let request = StartARaidRequest::new(from_broadcaster_id.as_str(), to_broadcaster_id.as_str());
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StartRaidParams {
+    pub from_broadcaster_id: UserId,
+    pub to_broadcaster_id: UserId,
+}
+
+pub async fn start_raid(twitch: &Authed<'_>, params: StartRaidParams) -> Result<()> {
     twitch
         .helix
-        .req_post(request, EmptyBody, &twitch.token)
+        .start_a_raid(
+            params.from_broadcaster_id.as_str(),
+            params.to_broadcaster_id.as_str(),
+            &twitch.token,
+        )
         .await?;
     Ok(())
 }
 
-pub async fn cancel_raid(twitch: &Authed<'_>, broadcaster_id: String) -> Result<()> {
-    let request = CancelARaidRequest::broadcaster_id(broadcaster_id.as_str());
-    twitch.helix.req_delete(request, &twitch.token).await?;
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CancelRaidParams {
+    pub broadcaster_id: UserId,
+}
+
+pub async fn cancel_raid(twitch: &Authed<'_>, params: CancelRaidParams) -> Result<()> {
+    twitch
+        .helix
+        .cancel_a_raid(params.broadcaster_id.as_str(), &twitch.token)
+        .await?;
     Ok(())
 }

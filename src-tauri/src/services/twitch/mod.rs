@@ -13,12 +13,13 @@ pub mod users;
 use crate::dto::pagination::PaginatedResponse;
 use crate::dto::twitch::user::UserRef;
 use crate::error::Result;
+use futures_util::{Stream, TryStreamExt};
 use session::Session;
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::sync::Mutex;
 use tokio::sync::mpsc;
-use twitch_api::helix::{Cursor, CursorRef, Paginated, Response};
+use twitch_api::helix::{ClientRequestError, Cursor, CursorRef, Paginated, Response};
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::HelixClient;
 
@@ -68,6 +69,15 @@ impl Twitch {
         *self.moderated_channel_ids.lock().unwrap() =
             channels.iter().map(|ch| ch.id.0.clone()).collect();
     }
+}
+
+pub async fn collect<U, T>(
+    stream: impl Stream<Item = std::result::Result<U, ClientRequestError<reqwest::Error>>>,
+) -> Result<Vec<T>>
+where
+    T: From<U>,
+{
+    Ok(stream.map_ok(T::from).try_collect().await?)
 }
 
 pub fn cursor(after: Option<String>) -> Option<Cow<'static, CursorRef>> {

@@ -1,21 +1,26 @@
 use super::Authed;
 use crate::dto::twitch::clip::CreatedClip;
+use crate::dto::twitch::ids::UserId;
 use crate::error::Result;
+use serde::Deserialize;
 use twitch_api::helix::clips::create_clip::CreateClipRequest;
 use twitch_api::helix::EmptyBody;
 
-pub async fn create_clip(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    title: Option<String>,
-    duration: Option<f64>,
-) -> Result<CreatedClip> {
-    let mut request = CreateClipRequest::broadcaster_id(broadcaster_id.as_str());
-    if let Some(title) = title.as_deref() {
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateClipParams {
+    pub broadcaster_id: UserId,
+    pub title: Option<String>,
+    pub duration: Option<f32>,
+}
+
+pub async fn create_clip(twitch: &Authed<'_>, params: CreateClipParams) -> Result<CreatedClip> {
+    let mut request = CreateClipRequest::broadcaster_id(params.broadcaster_id.as_str());
+    if let Some(title) = params.title.as_deref() {
         request = request.title(title);
     }
-    if let Some(duration) = duration {
-        request = request.duration(duration as f32);
+    if let Some(duration) = params.duration {
+        request = request.duration(duration);
     }
     let response = twitch
         .helix

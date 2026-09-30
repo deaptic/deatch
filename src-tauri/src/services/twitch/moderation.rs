@@ -1,105 +1,144 @@
 use super::Authed;
 use crate::dto::pagination::PaginatedResponse;
+use crate::dto::twitch::ids::{MessageId, UserId};
 use crate::dto::twitch::moderation::{Ban, BannedUser};
 use crate::dto::twitch::user::UserRef;
 use crate::error::Result;
-use std::borrow::Cow;
+use serde::Deserialize;
 use twitch_api::helix::moderation::{
-    delete_chat_messages::DeleteChatMessagesRequest,
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
-    warn_chat_user::{WarnChatUserBody, WarnChatUserRequest},
-    BanUserBody, BanUserRequest, GetBannedUsersRequest, GetModeratedChannelsRequest,
-    GetModeratorsRequest, UnbanUserRequest,
+    GetBannedUsersRequest, GetModeratedChannelsRequest, GetModeratorsRequest,
 };
-use twitch_api::types::{MsgId, UserId};
+use twitch_api::types;
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DeleteChatMessagesParams {
+    pub broadcaster_id: UserId,
+    pub message_id: Option<MessageId>,
+}
 
 pub async fn delete_chat_messages(
     twitch: &Authed<'_>,
-    broadcaster_id: String,
-    message_id: Option<String>,
+    params: DeleteChatMessagesParams,
 ) -> Result<()> {
-    let mut request =
-        DeleteChatMessagesRequest::new(broadcaster_id.as_str(), twitch.token.user_id.as_str());
-    request.message_id = message_id.map(|s| Cow::Owned(MsgId::from(s)));
-    twitch.helix.req_delete(request, &twitch.token).await?;
+    let broadcaster_id = params.broadcaster_id.as_str();
+    let moderator_id = &twitch.token.user_id;
+    match &params.message_id {
+        Some(message_id) => {
+            twitch
+                .helix
+                .delete_chat_message(
+                    broadcaster_id,
+                    moderator_id,
+                    message_id.as_str(),
+                    &twitch.token,
+                )
+                .await?
+        }
+        None => {
+            twitch
+                .helix
+                .delete_all_chat_message(broadcaster_id, moderator_id, &twitch.token)
+                .await?
+        }
+    };
     Ok(())
 }
 
-pub async fn ban_user(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: String,
-    duration: Option<u32>,
-    reason: Option<String>,
-) -> Result<Ban> {
-    let request = BanUserRequest::new(broadcaster_id.as_str(), twitch.token.user_id.as_str());
-    let body = BanUserBody::new(user_id.as_str(), reason.unwrap_or_default(), duration);
-    let response = twitch.helix.req_post(request, body, &twitch.token).await?;
-    Ok(Ban::from(response.data))
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BanUserParams {
+    pub broadcaster_id: UserId,
+    pub user_id: UserId,
+    #[serde(default)]
+    pub duration: Option<u32>,
+    #[serde(default)]
+    pub reason: Option<String>,
+}
+
+pub async fn ban_user(twitch: &Authed<'_>, params: BanUserParams) -> Result<Ban> {
+    let ban = twitch
+        .helix
+        .ban_user(
+            params.user_id.as_str(),
+            params.reason.as_deref().unwrap_or_default(),
+            params.duration,
+            params.broadcaster_id.as_str(),
+            &twitch.token.user_id,
+            &twitch.token,
+        )
+        .await?;
+    Ok(Ban::from(ban))
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UnbanUserParams {
+    pub broadcaster_id: UserId,
+    pub user_id: UserId,
+}
+
+pub async fn unban_user(twitch: &Authed<'_>, params: UnbanUserParams) -> Result<()> {
+    twitch
+        .helix
+        .unban_user(
+            params.user_id.as_str(),
+            params.broadcaster_id.as_str(),
+            &twitch.token.user_id,
+            &twitch.token,
+        )
+        .await?;
+    Ok(())
+}
+
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetBannedUsersParams {
+    pub broadcaster_id: UserId,
+    pub user_id: Option<UserId>,
+    pub first: Option<usize>,
+    pub after: Option<String>,
 }
 
 pub async fn get_banned_users(
     twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: Option<String>,
-    first: Option<usize>,
-    after: Option<String>,
+    params: GetBannedUsersParams,
 ) -> Result<PaginatedResponse<BannedUser>> {
-    let mut request = GetBannedUsersRequest::broadcaster_id(broadcaster_id.as_str());
-    if let Some(uid) = user_id.as_deref() {
-        request.user_id = vec![UserId::from(uid)].into();
+    let mut request = GetBannedUsersRequest::broadcaster_id(params.broadcaster_id.as_str());
+    if let Some(uid) = params.user_id {
+        request.user_id = vec![types::UserId::from(uid.0)].into();
     }
-    request.first = first;
-    request.after = super::cursor(after);
+    request.first = params.first;
+    request.after = super::cursor(params.after);
 
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(super::into_paginated(response, BannedUser::from))
 }
 
-pub async fn unban_user(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: String,
-) -> Result<()> {
-    let request = UnbanUserRequest::new(
-        broadcaster_id.as_str(),
-        twitch.token.user_id.as_str(),
-        user_id.as_str(),
-    );
-    twitch.helix.req_delete(request, &twitch.token).await?;
-    Ok(())
+#[derive(Default, Deserialize)]
+#[serde(default, rename_all = "camelCase")]
+pub struct GetModeratorsParams {
+    pub broadcaster_id: UserId,
+    pub first: Option<usize>,
+    pub after: Option<String>,
 }
 
 pub async fn get_moderators(
     twitch: &Authed<'_>,
-    broadcaster_id: String,
-    first: Option<usize>,
-    after: Option<String>,
+    params: GetModeratorsParams,
 ) -> Result<PaginatedResponse<UserRef>> {
-    let mut request = GetModeratorsRequest::broadcaster_id(broadcaster_id.as_str());
-    request.first = first;
-    request.after = super::cursor(after);
+    let mut request = GetModeratorsRequest::broadcaster_id(params.broadcaster_id.as_str());
+    request.first = params.first;
+    request.after = super::cursor(params.after);
 
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(super::into_paginated(response, UserRef::from))
 }
 
-pub async fn get_moderated_channels(
-    twitch: &Authed<'_>,
-    first: Option<usize>,
-    after: Option<String>,
-) -> Result<PaginatedResponse<UserRef>> {
-    let mut request = GetModeratedChannelsRequest::user_id(twitch.token.user_id.clone());
-    request.first = first;
-    request.after = super::cursor(after);
-
-    let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(super::into_paginated(response, UserRef::from))
-}
-
-pub async fn get_all_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {
+pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {
     let mut all: Vec<UserRef> = Vec::new();
     let mut after: Option<String> = None;
     loop {
@@ -119,26 +158,54 @@ pub async fn get_all_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserR
     }
 }
 
-pub async fn warn_user(
-    twitch: &Authed<'_>,
-    broadcaster_id: String,
-    user_id: String,
-    reason: String,
-) -> Result<()> {
-    let request = WarnChatUserRequest::new(broadcaster_id.as_str(), twitch.token.user_id.as_str());
-    let body = WarnChatUserBody::new(user_id.as_str(), reason.as_str());
-    twitch.helix.req_post(request, body, &twitch.token).await?;
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WarnUserParams {
+    pub broadcaster_id: UserId,
+    pub user_id: UserId,
+    pub reason: String,
+}
+
+pub async fn warn_user(twitch: &Authed<'_>, params: WarnUserParams) -> Result<()> {
+    twitch
+        .helix
+        .warn_chat_user(
+            params.user_id.as_str(),
+            params.reason.as_str(),
+            params.broadcaster_id.as_str(),
+            &twitch.token.user_id,
+            &twitch.token,
+        )
+        .await?;
     Ok(())
+}
+
+#[derive(Clone, Copy, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomodAction {
+    Allow,
+    Deny,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ManageHeldAutomodMessageParams {
+    pub msg_id: MessageId,
+    pub action: AutomodAction,
 }
 
 pub async fn manage_held_automod_message(
     twitch: &Authed<'_>,
-    msg_id: String,
-    allow: bool,
+    params: ManageHeldAutomodMessageParams,
 ) -> Result<()> {
-    let request = ManageHeldAutoModMessagesRequest::new();
-    let body =
-        ManageHeldAutoModMessagesBody::new(twitch.token.user_id.as_str(), msg_id.as_str(), allow);
-    twitch.helix.req_post(request, body, &twitch.token).await?;
+    let body = ManageHeldAutoModMessagesBody::new(
+        twitch.token.user_id.as_str(),
+        params.msg_id.as_str(),
+        matches!(params.action, AutomodAction::Allow),
+    );
+    twitch
+        .helix
+        .req_post(ManageHeldAutoModMessagesRequest::new(), body, &twitch.token)
+        .await?;
     Ok(())
 }

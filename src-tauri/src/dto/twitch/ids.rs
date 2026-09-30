@@ -3,13 +3,19 @@ use std::fmt;
 
 macro_rules! id_type {
     ($name:ident) => {
-        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+        #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
         #[serde(transparent)]
         pub struct $name(pub String);
 
+        impl $name {
+            pub fn as_str(&self) -> &str {
+                &self.0
+            }
+        }
+
         impl fmt::Display for $name {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                self.0.fmt(f)
+                self.as_str().fmt(f)
             }
         }
 
@@ -30,3 +36,4 @@ macro_rules! id_type {
 id_type!(UserId);
 id_type!(StreamId);
 id_type!(GameId);
+id_type!(MessageId);

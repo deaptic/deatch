@@ -68,16 +68,10 @@ export function getBannedUsers(
   return invokeCommand("get_banned_users", params, options);
 }
 
-export type GetModeratedChannelsParams = {
-  first?: number;
-  after?: string;
-};
-
 export function getModeratedChannels(
-  params: GetModeratedChannelsParams = {},
   options?: InvokeOptions,
-): Promise<PaginatedResponse<UserRef>> {
-  return invokeCommand("get_moderated_channels", params, options);
+): Promise<UserRef[]> {
+  return invokeCommand("get_moderated_channels", undefined, options);
 }
 
 export type WarnUserParams = {
@@ -96,26 +90,22 @@ export function warnUser(
   });
 }
 
+export type AutomodAction = "allow" | "deny";
+
 export type ManageHeldAutomodMessageParams = {
   msgId: string;
+  action: AutomodAction;
 };
 
-export function approveHeldAutomodMessage(
+export function manageHeldAutomodMessage(
   params: ManageHeldAutomodMessageParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("approve_held_automod_message", params, {
-    successMessage: "Message approved",
-    ...options,
-  });
-}
-
-export function denyHeldAutomodMessage(
-  params: ManageHeldAutomodMessageParams,
-  options?: InvokeOptions,
-): Promise<void> {
-  return invokeCommand("deny_held_automod_message", params, {
-    successMessage: "Message denied",
+  const successMessage = params.action === "allow"
+    ? "Message approved"
+    : "Message denied";
+  return invokeCommand("manage_held_automod_message", params, {
+    successMessage,
     ...options,
   });
 }

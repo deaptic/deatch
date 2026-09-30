@@ -161,24 +161,17 @@ async fn create<E>(twitch: &Authed<'_>, condition: E, transport: Transport) -> R
 where
     E: twitch_api::eventsub::EventSubscription + Send + 'static,
 {
-    let resp = twitch
+    let subscription = twitch
         .helix
-        .req_post(
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionRequest::<E>::new(),
-            twitch_api::helix::eventsub::CreateEventSubSubscriptionBody::new(condition, transport),
-            &twitch.token,
-        )
+        .create_eventsub_subscription(condition, transport, &twitch.token)
         .await?;
-    Ok(resp.data.id.to_string())
+    Ok(subscription.id.to_string())
 }
 
 pub(super) async fn delete_subscription(twitch: &Authed<'_>, subscription_id: &str) -> Result<()> {
     twitch
         .helix
-        .req_delete(
-            twitch_api::helix::eventsub::DeleteEventSubSubscriptionRequest::id(subscription_id),
-            &twitch.token,
-        )
+        .delete_eventsub_subscription(subscription_id, &twitch.token)
         .await?;
     Ok(())
 }
