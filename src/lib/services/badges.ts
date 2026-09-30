@@ -36,7 +36,7 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
   return globalBadgesPromise;
 }
 
-export function loadChannelBadges(broadcasterId: string): Promise<BadgeMap> {
+export function loadChannel(broadcasterId: string): Promise<BadgeMap> {
   const cached = channelBadgesPromise.get(broadcasterId);
   if (cached) {
     cached.then((map) => setBadges(broadcasterId, map));
@@ -59,6 +59,6 @@ export function loadChannelBadges(broadcasterId: string): Promise<BadgeMap> {
   return fresh;
 }
 
-export function resetChannelBadgeCache() {
+export function resetChannelCache() {
   channelBadgesPromise.clear();
 }

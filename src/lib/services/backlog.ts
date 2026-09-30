@@ -32,7 +32,7 @@ export function fillGap(
 /// One-time hydration of a channel feed with recent history from robotty.
 /// The `backfilled` flag in `ChannelFeed` prevents repeats across remounts;
 /// a failed fetch leaves it unset so the next visit tries again.
-export function loadBacklog(broadcasterId: string, channelLogin: string) {
+export function load(broadcasterId: string, channelLogin: string) {
   if (feeds[broadcasterId]?.backfilled) return;
   getRecentMessages({ channelLogin, limit: 50 }, { silent: true })
     .then((msgs) => {
@@ -51,22 +51,4 @@ export function loadBacklog(broadcasterId: string, channelLogin: string) {
         silent: true,
       });
     });
-}
-
-/// Scrolls a rendered message into view and briefly highlights it. Relies
-/// on FeedMessage rendering a `data-message-id` attribute on each row.
-export function scrollToMessage(messageId: string) {
-  const el = document.querySelector(`[data-message-id="${messageId}"]`) as
-    | HTMLElement
-    | null;
-  if (!el) return;
-  el.scrollIntoView({ behavior: "smooth", block: "center" });
-  el.style.backgroundColor =
-    "color-mix(in oklab, var(--color-accent) 30%, transparent)";
-  const clear = () => {
-    el.style.transition = "background-color var(--duration-settle) ease";
-    el.style.backgroundColor = "";
-    el.removeEventListener("mouseenter", clear);
-  };
-  el.addEventListener("mouseenter", clear);
 }

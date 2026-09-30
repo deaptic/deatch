@@ -26,7 +26,7 @@ cargo check                                        # release feature set
 
 Run `deno fmt`, `deno lint`, `deno task lint:ui`, `deno task test`, `cargo fmt`, `cargo clippy`, and `cargo test` before every commit. CI (`.github/workflows/checks.yml`) runs the same set on every branch push and pull request, with clippy at `-D warnings`. `release.yml` runs it before building, so a failing check blocks the release. Shared CI setup lives in `.github/actions/setup`; change toolchains there, not per workflow.
 
-Frontend tests are `*.test.ts` files next to the module they cover. They start with `/// <reference lib="deno.ns" />`, because the shared `tsconfig.json` has no Deno types, and use `@std/assert`. Test modules with no side effects only. Importing a manager, store, or anything that touches Tauri at module load won't work under `deno test`, so pull the pure logic into its own file first (as with `services/emoteSetUpdate.ts`).
+Frontend tests are `*.test.ts` files next to the module they cover. They start with `/// <reference lib="deno.ns" />`, because the shared `tsconfig.json` has no Deno types, and use `@std/assert`. Test modules with no side effects only. Importing a store or anything that touches Tauri at module load won't work under `deno test`, so pull the pure logic into its own file first (as with `services/emoteSetUpdate.ts`).
 
 Rust tests live in a `#[cfg(test)] mod tests` at the bottom of the file they cover. Test the pure core: parsers, mappings, and params validation, asserting wire shapes via `serde_json::to_value`. Keep IO out of the logic under test; if a function mixes fetching and parsing, split out the parsing. `committed_bindings_are_current` fails when `bindings.ts` is stale. The app manifest is embedded by the linker in `build.rs` so test binaries can start on Windows; don't switch back to tauri-build's default manifest.
 
@@ -61,13 +61,22 @@ Keep the dependency flow one-directional: entry points call services, services c
 
 - **Backend** — handlers stay thin: parse input, call a service, return a result. Business logic and long-lived state live in services. Upstream clients are isolated from the rest of the app.
 - **Frontend** — components render. Layers in `src/lib/`, top to bottom:
-  - `managers/` — stateful singletons owning a feature's runtime lifecycle (timers, subscriptions).
-  - `services/` — stateless logic over backend calls (caching, dedupe, outcome handling).
+  - `services/` — one file per feature holding its logic, state, and lifecycle (caching, dedupe, outcome handling, retries, listeners).
   - `api/` — one thin typed wrapper per command; the only layer that calls `bindings.ts` commands. No state, no logic beyond toasts.
   - `stores/` — signals and state only. Never call the backend or import from a higher layer.
   - `types/`, `constants/`, `utils/` — shared leaves.
 
-  Components may call an `api/` wrapper directly when it's a plain one-shot call; once caching, state, or outcome logic is involved, it belongs in a service or manager. Types always come from `types/`, never re-exported through `api/`.
+  Components may call an `api/` wrapper directly when it's a plain one-shot call; once caching, state, or outcome logic is involved, it belongs in a service. Types always come from `types/`, never re-exported through `api/`.
+
+### Services
+
+A service is a plain ES module, never a class. The module is the singleton.
+
+- **Exports** are functions named for what they do *within the feature*: `raid.begin`, `users.get`, `shortcuts.register`. Don't repeat the feature in the name (`getUsers`, `sendChatMessage`), because the namespace supplies it.
+- **Callers import services as a namespace named after the file**: `import * as raid from "../lib/services/raid.ts"`, then call `raid.begin(...)`. Types may be imported by name alongside. `api/` wrappers keep named imports.
+- **State** is module-level `let`/`const`, never exported. Expose reads through functions or keep them in a store.
+- **Nothing runs on import.** Listeners, timers, and subscriptions start in an exported `start(): () => void` that returns its cleanup. `lib/primitives/createServices.ts` calls every `start()` once at boot; add new ones there.
+- **Pure logic** that a service needs but that has no state goes in its own file (e.g. `services/emoteSetUpdate.ts`), so it can be tested without Tauri.
 - **UI** — `docs/design-system.md` is the source of truth for look and behaviour. Primitives live in `src/components/ui/` and feature components compose them without restyling. Colours, type, radii, sizes, and motion come from `@theme` tokens in `src/App.css`; no raw hex, no shadows.
 
 ### Backend layout
@@ -110,5 +119,4 @@ Make the code explain itself. Reserve comments for the non-obvious *why* — and
 ## Patterns
 
 - **Entities** wrap plain data and derive from it on read. Keep them free of caches and side effects; behavior that touches the outside world belongs in a service.
-- **Managers** are stateful singletons that own a feature's runtime lifecycle — the counterpart to stateless service modules. Their shape is a convention, not an inherited contract.
 - **State and rendering stay decoupled** — data lives independently of what is currently mounted on screen.

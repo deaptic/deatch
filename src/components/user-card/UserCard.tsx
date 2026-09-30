@@ -1,7 +1,7 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
@@ -66,8 +66,8 @@ export default function UserCard(props: Props) {
     onDismiss: props.onClose,
     shouldDismiss: () => !pinned(),
   });
-  shortcutManager.setContext("userCardOpen", true);
-  const unbindEsc = shortcutManager.registerLocal(
+  shortcuts.setContext("userCardOpen", true);
+  const unbindEsc = shortcuts.registerLocal(
     "escape",
     () => {
       props.onClose();
@@ -76,7 +76,7 @@ export default function UserCard(props: Props) {
   );
   onCleanup(() => {
     unbindEsc();
-    shortcutManager.setContext("userCardOpen", false);
+    shortcuts.setContext("userCardOpen", false);
   });
 
   function startDrag(e: MouseEvent) {

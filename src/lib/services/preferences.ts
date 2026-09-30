@@ -1,5 +1,5 @@
 import type { User } from "../types/index.ts";
-import { getUsers } from "./users.ts";
+import * as users from "./users.ts";
 import { addToast } from "../stores/toasts.ts";
 import { errorMessage } from "../utils/error.ts";
 import { setUserNickname } from "../stores/preferences.ts";
@@ -8,8 +8,7 @@ export async function resolveUserByLogin(login: string): Promise<User | null> {
   const key = login.trim().toLowerCase();
   if (!key) return null;
   try {
-    const users = await getUsers({ logins: [key] });
-    const u = users[0];
+    const [u] = await users.get({ logins: [key] });
     if (!u) {
       addToast(`User "${key}" not found`, "error");
       return null;

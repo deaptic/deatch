@@ -18,13 +18,13 @@ import {
   userEmotes,
 } from "../../lib/stores/emotes.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
 import Field from "../ui/Field.tsx";
 import NavItem from "../ui/NavItem.tsx";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
-import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 import type { EmoteGridItem } from "./types.ts";
 import {
@@ -76,7 +76,7 @@ export default function EmotePicker(props: Props) {
         ids.add(e.ownerId);
       }
     }
-    if (ids.size) getUsers({ ids: [...ids] });
+    if (ids.size) users.get({ ids: [...ids] });
   });
 
   const channelSections = createMemo(() =>
@@ -181,7 +181,7 @@ export default function EmotePicker(props: Props) {
   });
   onMount(() => {
     queueMicrotask(() => searchRef?.focus());
-    const unbind = shortcutManager.bindScope("emotePickerOpen", {
+    const unbind = shortcuts.bindScope("emotePickerOpen", {
       left: () => {
         setActiveIndex(Math.max(activeIndex() - 1, 0));
       },

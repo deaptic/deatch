@@ -1,5 +1,5 @@
 import { onCleanup, onMount } from "solid-js";
-import { shortcutManager } from "../managers/ShortcutManager.ts";
+import * as shortcuts from "../services/shortcuts.ts";
 import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
 import { leavePage, showExplore, toggleSettings } from "../stores/view.ts";
 import {
@@ -18,60 +18,58 @@ export function createAppShortcuts(
 ): void {
   onMount(() => {
     const unbind = [
-      shortcutManager.register(
+      shortcuts.register(
         "channel::cycleNext",
         () => watch.cycleChannel(1),
       ),
-      shortcutManager.register(
+      shortcuts.register(
         "channel::cyclePrev",
         () => watch.cycleChannel(-1),
       ),
-      shortcutManager.register("watch::toggle", watch.toggleWatch),
-      shortcutManager.register("watch::toggleMute", watch.toggleWatchMute),
-      shortcutManager.register("watch::muteOthers", watch.muteOtherWatched),
-      shortcutManager.register(
+      shortcuts.register("watch::toggle", watch.toggleWatch),
+      shortcuts.register("watch::toggleMute", watch.toggleWatchMute),
+      shortcuts.register("watch::muteOthers", watch.muteOtherWatched),
+      shortcuts.register(
         "watch::toggleMuteAll",
         watch.toggleMuteAllWatched,
       ),
-      shortcutManager.register("settings::toggle", toggleSettings),
-      shortcutManager.register("explore::show", showExplore),
-      shortcutManager.register(
+      shortcuts.register("settings::toggle", toggleSettings),
+      shortcuts.register("explore::show", showExplore),
+      shortcuts.register(
         "rail::toggle",
         () => setAppearanceRailExpanded(!appearanceRailExpanded()),
       ),
-      shortcutManager.register("inbox::toggle", () => toggleOverlay("inbox")),
-      shortcutManager.register(
+      shortcuts.register("inbox::toggle", () => toggleOverlay("inbox")),
+      shortcuts.register(
         "quickSwitch::toggle",
         () => toggleOverlay("quickSwitch"),
       ),
-      shortcutManager.register(
+      shortcuts.register(
         "emotePicker::toggle",
         () => toggleOverlay("emotePicker"),
       ),
-      shortcutManager.register("panel::close", () => {
+      shortcuts.register("panel::close", () => {
         if (openOverlay()) {
           closeOverlay();
           return;
         }
         return leavePage();
       }),
-      shortcutManager.register("view::toggleAlwaysOnTop", () => {
+      shortcuts.register("view::toggleAlwaysOnTop", () => {
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());
       }),
     ];
     for (let i = 1; i <= 9; i++) {
       const idx = i - 1;
       unbind.push(
-        shortcutManager.register(`channel::select${i}`, () => {
+        shortcuts.register(`channel::select${i}`, () => {
           const ordered = channelsInOrder();
           if (idx < ordered.length) nav.selectChannel(ordered[idx]);
         }),
       );
     }
-    shortcutManager.start();
     onCleanup(() => {
       for (const u of unbind) u();
-      shortcutManager.stop();
     });
   });
 }

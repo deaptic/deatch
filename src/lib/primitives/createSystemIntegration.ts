@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, onMount } from "solid-js";
+import { createEffect } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   disable as disableAutostart,
@@ -12,16 +12,15 @@ import {
   appearanceAccent,
 } from "../stores/preferences.ts";
 import { resolvedTheme } from "../stores/theme.ts";
-import { applyAppearance } from "../services/appearance.ts";
-import { applyDiscordPresence } from "../services/discord.ts";
-import { startUpdateChecker } from "../services/updater.ts";
+import * as appearance from "../services/appearance.ts";
+import * as discord from "../services/discord.ts";
 import { user } from "../stores/users.ts";
 import { liveStreams } from "../stores/channels.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
-    applyAppearance({ theme: resolvedTheme(), accent: appearanceAccent() });
+    appearance.apply({ theme: resolvedTheme(), accent: appearanceAccent() });
   });
 
   createEffect(() => {
@@ -41,7 +40,7 @@ export function createSystemIntegration(): void {
 
   createEffect(() => {
     const u = user();
-    applyDiscordPresence({
+    discord.applyPresence({
       enabled: advancedDiscordRichPresence(),
       authenticated: u !== null,
       userId: u?.id ?? null,
@@ -49,10 +48,5 @@ export function createSystemIntegration(): void {
       exploreOpen: activeView() === "explore",
       liveStreams: liveStreams(),
     });
-  });
-
-  onMount(() => {
-    const stopUpdateChecker = startUpdateChecker();
-    onCleanup(stopUpdateChecker);
   });
 }

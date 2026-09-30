@@ -7,6 +7,7 @@ import { createMentionsBadge } from "./createMentionsBadge.ts";
 import { createSystemIntegration } from "./createSystemIntegration.ts";
 import { createSessionLifecycle } from "./createSessionLifecycle.ts";
 import { createAppShortcuts } from "./createAppShortcuts.ts";
+import { createServices } from "./createServices.ts";
 
 export type AppController = {
   selectChannel: (ch: User) => void;
@@ -17,6 +18,7 @@ export type AppController = {
 };
 
 export function createAppController(): AppController {
+  createServices();
   const nav = createChannelNavigation();
   const subs = createChannelSubscriptions();
   const watch = createWatchControls(nav);

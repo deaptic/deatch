@@ -2,7 +2,7 @@ import { AtSign } from "lucide-solid";
 import { createEffect, For, Show } from "solid-js";
 import InboxItem from "./InboxItem.tsx";
 import { markAllMentionsRead, mentions } from "../../lib/stores/inbox.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import Button from "../ui/Button.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import Popover from "../ui/Popover.tsx";
@@ -17,7 +17,7 @@ type Props = {
 export default function Inbox(props: Props) {
   createEffect(() => {
     const ids = [...new Set(mentions().map((m) => m.chatterId))];
-    if (ids.length) getUsers({ ids }).catch(() => {});
+    if (ids.length) users.get({ ids }).catch(() => {});
   });
 
   return (

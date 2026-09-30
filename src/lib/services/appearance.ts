@@ -37,7 +37,7 @@ type Appearance = {
   accent: string | null;
 };
 
-export function applyAppearance({ theme, accent }: Appearance): void {
+export function apply({ theme, accent }: Appearance): void {
   const root = document.documentElement;
   root.dataset.theme = theme;
 

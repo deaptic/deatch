@@ -11,7 +11,7 @@ import {
   getFollowedStreams,
   getStreamsFromIds,
 } from "../../lib/api/twitch/streams.ts";
-import { getUsers } from "../../lib/services/users.ts";
+import * as users from "../../lib/services/users.ts";
 import { getChannelInformation } from "../../lib/api/twitch/channels.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
@@ -64,9 +64,9 @@ export function createRailChannels(
       return;
     }
     try {
-      const users = await getUsers({ ids });
+      const found = await users.get({ ids });
       const next: Record<string, User> = {};
-      for (const u of users) {
+      for (const u of found) {
         next[u.id] = u;
         rememberUser(u);
       }
@@ -124,9 +124,9 @@ export function createRailChannels(
       void loadOfflineInfo(extraIdList, streams);
       const data: User[] = [];
       if (streams.length > 0) {
-        const users = await getUsers({ ids: streams.map((s) => s.user.id) });
-        const byId = new Map(users.map((u) => [u.id, u]));
-        for (const u of users) rememberUser(u);
+        const found = await users.get({ ids: streams.map((s) => s.user.id) });
+        const byId = new Map(found.map((u) => [u.id, u]));
+        for (const u of found) rememberUser(u);
         for (const s of followed) {
           const u = byId.get(s.user.id);
           if (u) data.push(u);
@@ -148,7 +148,7 @@ export function createRailChannels(
       (id) => !pinnedMeta[id] && !liveById().get(id),
     );
     if (missing.length === 0) return;
-    getUsers({ ids: missing })
+    users.get({ ids: missing })
       .then((users) => {
         const updates: Record<string, User> = {};
         for (const u of users) {

@@ -10,7 +10,7 @@ import {
 import { watchWarmedChannels } from "../stores/watch.ts";
 import { ensureFeed, markSeen } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
-import { scrollToMessage } from "../services/feeds.ts";
+import { scrollToMessage } from "../utils/scroll.ts";
 
 export type ChannelNavigation = {
   selectChannel(ch: User, mode?: WatchMode): void;

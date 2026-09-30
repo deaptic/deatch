@@ -8,7 +8,7 @@ import { feedKeywords, matchesAnyKeyword } from "../stores/preferences.ts";
 import { mapChatMessage } from "./chat-mapper.ts";
 import { handleFollowageCommand } from "./followage.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
-import { triggerManager } from "../managers/TriggerManager.ts";
+import * as triggers from "../services/triggers.ts";
 
 const FOLLOWAGE_CHANNEL_ID = "1091892807";
 
@@ -37,7 +37,7 @@ listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
   const me = user();
   if (!me || raw.chatter_user_id === me.id) return;
 
-  triggerManager.handle({
+  triggers.handle({
     text: raw.message.text,
     broadcasterId: raw.broadcaster_user_id,
     messageId: raw.message_id,

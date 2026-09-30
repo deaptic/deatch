@@ -12,7 +12,7 @@ import {
   setAppearanceTheme,
   setFeedFontSize,
 } from "../../../lib/stores/preferences.ts";
-import { defaultAccentHex } from "../../../lib/services/appearance.ts";
+import * as appearance from "../../../lib/services/appearance.ts";
 import { type Theme } from "../../../lib/constants/theme.ts";
 
 const THEME_OPTIONS: { value: Theme; label: string }[] = [
@@ -41,7 +41,7 @@ export default function AppearanceSection() {
         >
           <ColorPicker
             swatchColor="var(--color-accent)"
-            value={appearanceAccent() ?? defaultAccentHex}
+            value={appearanceAccent() ?? appearance.defaultAccentHex}
             onInput={setAppearanceAccent}
             onReset={() => setAppearanceAccent(null)}
             resetDisabled={appearanceAccent() === null}

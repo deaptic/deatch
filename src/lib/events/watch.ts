@@ -1,5 +1,5 @@
 import { events } from "../bindings.ts";
-import { getUsers } from "../services/users.ts";
+import * as users from "../services/users.ts";
 import { watchRequestState } from "../api/watch.ts";
 import { rememberUser } from "../stores/channels.ts";
 import {
@@ -33,8 +33,7 @@ async function drainPending() {
   if (pendingCurrent) {
     const slug = pendingCurrent;
     try {
-      const users = await getUsers({ logins: [slug] }, { silent: true });
-      const ch = users[0];
+      const [ch] = await users.get({ logins: [slug] }, { silent: true });
       if (ch && pendingCurrent === slug) {
         rememberUser(ch);
         if (watchedChannel()?.id !== ch.id) setWatchedChannel(ch);
@@ -46,7 +45,7 @@ async function drainPending() {
   if (pendingFetch.size > 0) {
     const toFetch = Array.from(pendingFetch);
     try {
-      const fresh = await getUsers({ logins: toFetch }, { silent: true });
+      const fresh = await users.get({ logins: toFetch }, { silent: true });
       for (const u of fresh) {
         rememberUser(u);
         pendingFetch.delete(u.login);

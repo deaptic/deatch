@@ -32,7 +32,7 @@ const channelEmoteCache = new Map<string, Promise<EmoteEntry[]>>();
 let userEmotesLoadStarted = false;
 let thirdPartyGlobalsLoaded = false;
 
-export async function ensureUserEmotesLoaded(): Promise<void> {
+export async function ensureUserLoaded(): Promise<void> {
   if (userEmotesLoadStarted) return;
   const u = user();
   if (!u) return;
@@ -54,12 +54,12 @@ export async function ensureUserEmotesLoaded(): Promise<void> {
   }
 }
 
-export function resetUserEmotes() {
+export function resetUser() {
   setUserEmotes([]);
   userEmotesLoadStarted = false;
 }
 
-export async function loadGlobalEmotes(): Promise<Emote[]> {
+export async function loadGlobal(): Promise<Emote[]> {
   const cached = loadCache<Emote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
   if (cached) {
     getGlobalEmotes()
@@ -75,7 +75,7 @@ export async function loadGlobalEmotes(): Promise<Emote[]> {
   return fresh;
 }
 
-export function loadThirdPartyGlobalEmotes() {
+export function loadThirdPartyGlobal() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
   seventvGetGlobalEmotes({ silent: true }).then(setSevenTvGlobal).catch(
@@ -97,7 +97,7 @@ function cachedChannelFetch(
   return p;
 }
 
-export function loadChannelThirdPartyEmotes(
+export function loadChannelThirdParty(
   channelId: string,
   channelLogin: string,
 ) {
@@ -111,6 +111,6 @@ export function loadChannelThirdPartyEmotes(
   ).then(setFfzChannel);
 }
 
-export function resetChannelThirdPartyEmoteCache() {
+export function resetChannelThirdParty() {
   channelEmoteCache.clear();
 }

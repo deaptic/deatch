@@ -10,7 +10,7 @@ import {
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const THROTTLE_MS = 60 * 60 * 1000;
 
-export function startUpdateChecker(): () => void {
+export function start(): () => void {
   let lastCheckedAt = 0;
 
   async function maybeCheck() {
@@ -35,7 +35,7 @@ export function startUpdateChecker(): () => void {
   };
 }
 
-export async function installUpdate(update: Update): Promise<void> {
+export async function install(update: Update): Promise<void> {
   await update.downloadAndInstall();
   await relaunch();
 }

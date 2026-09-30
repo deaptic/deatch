@@ -1,6 +1,6 @@
 import type { RawChatMessage } from "../types/index.ts";
 import { getChannelFollowers } from "../api/twitch/channels.ts";
-import { sendChatMessage } from "../services/chat.ts";
+import * as chat from "../services/chat.ts";
 import { Time } from "../utils/time.ts";
 
 export async function handleFollowageCommand(raw: RawChatMessage) {
@@ -17,7 +17,7 @@ export async function handleFollowageCommand(raw: RawChatMessage) {
     const message = follower
       ? `You started following ${new Time(follower.followedAt, "R")}`
       : `You are not following yet`;
-    await sendChatMessage({
+    await chat.send({
       broadcasterId: raw.broadcaster_user_id,
       message,
       replyParentMessageId: raw.message_id,

@@ -35,7 +35,7 @@ export const ALL_KINDS: EventKind[] = [
   ...OWN_KINDS,
 ];
 
-/// Per-channel subscription status tracked by the EventSubManager.
+/// Per-channel subscription status tracked by `services/eventsub.ts`.
 export type SubStatus = "pending" | "active" | "failed" | "disconnected";
 
 export type EventEnvelope<T> = {

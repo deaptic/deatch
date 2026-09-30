@@ -27,7 +27,7 @@ async function connect(): Promise<boolean> {
   }
 }
 
-export async function disconnectDiscord(): Promise<void> {
+export async function disconnect(): Promise<void> {
   if (!connected) return;
   try {
     await discordDisconnect({ silent: true });
@@ -166,11 +166,11 @@ function buildPresence(
   };
 }
 
-export function applyDiscordPresence(ctx: PresenceContext): void {
+export function applyPresence(ctx: PresenceContext): void {
   const mode = presenceMode(ctx);
   if (mode === null) {
     activityMode = null;
-    void disconnectDiscord();
+    void disconnect();
     return;
   }
   if (mode !== activityMode) {

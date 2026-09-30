@@ -1,10 +1,7 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
 import type { EmoteSetUpdated } from "../types/index.ts";
-import {
-  applyEmoteSetUpdate,
-  describeEmoteSetUpdate,
-} from "./emoteSetUpdate.ts";
+import * as emoteSetUpdate from "./emoteSetUpdate.ts";
 
 const emote = (name: string) => ({ name, url: `https://cdn/${name}` });
 
@@ -18,7 +15,7 @@ const update = (overrides: Partial<EmoteSetUpdated>): EmoteSetUpdated => ({
 });
 
 Deno.test("removes, renames, then appends added emotes", () => {
-  const next = applyEmoteSetUpdate(
+  const next = emoteSetUpdate.apply(
     [emote("Kek"), emote("Old"), emote("Pog")],
     update({
       added: [emote("New1")],
@@ -32,7 +29,7 @@ Deno.test("removes, renames, then appends added emotes", () => {
 
 Deno.test("describes each change, crediting Someone without an actor", () => {
   assertEquals(
-    describeEmoteSetUpdate(
+    emoteSetUpdate.describe(
       update({
         actor: null,
         added: [emote("A")],

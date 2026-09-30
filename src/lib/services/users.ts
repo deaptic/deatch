@@ -5,7 +5,7 @@ import type { GetUsersParams, User } from "../types/index.ts";
 
 const inFlightById = new Map<string, Promise<void>>();
 
-export async function getUsers(
+export async function get(
   params: GetUsersParams = {},
   options?: InvokeOptions,
 ): Promise<User[]> {

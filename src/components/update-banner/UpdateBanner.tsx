@@ -4,7 +4,7 @@ import {
   pendingUpdate,
   setInstalling,
 } from "../../lib/stores/updater.ts";
-import { installUpdate } from "../../lib/services/updater.ts";
+import * as updater from "../../lib/services/updater.ts";
 
 export default function UpdateBanner() {
   async function onInstall() {
@@ -12,7 +12,7 @@ export default function UpdateBanner() {
     if (!update || installing()) return;
     setInstalling(true);
     try {
-      await installUpdate(update);
+      await updater.install(update);
     } catch (e) {
       console.error("update install failed", e);
       setInstalling(false);
