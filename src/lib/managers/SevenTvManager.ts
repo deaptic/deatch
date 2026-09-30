@@ -4,6 +4,11 @@ import {
   seventvSubscribeEmoteSet,
   seventvUnsubscribeEmoteSet,
 } from "../api/external/seventv_events.ts";
+import {
+  applyEmoteSetUpdate,
+  describeEmoteSetUpdate,
+  emoteSetActor,
+} from "../services/emoteSetUpdate.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";
 import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
@@ -60,7 +65,7 @@ export class SevenTvManager {
   private onUpdate(u: EmoteSetUpdated): void {
     const entry = this.bySetId.get(u.id);
     if (!entry) return;
-    entry.emotes = this.applyUpdate(entry.emotes, u);
+    entry.emotes = applyEmoteSetUpdate(entry.emotes, u);
     this.pushIfActive(entry);
     this.announce(entry.broadcasterId, u);
   }
@@ -71,30 +76,13 @@ export class SevenTvManager {
     }
   }
 
-  private applyUpdate(prev: EmoteEntry[], u: EmoteSetUpdated): EmoteEntry[] {
-    const removed = new Set(u.removed);
-    const renames = new Map(u.renamed.map((r) => [r.from, r.to]));
-    const kept = prev.flatMap((e) =>
-      removed.has(e.name)
-        ? []
-        : [renames.has(e.name) ? { ...e, name: renames.get(e.name)! } : e]
-    );
-    return [...kept, ...u.added];
-  }
-
   private announce(channelId: string, u: EmoteSetUpdated): void {
-    const who = u.actor ?? "Someone";
-    const lines = [
-      ...u.added.map((e) => `${who} added 7TV emote ${e.name}`),
-      ...u.removed.map((n) => `${who} removed 7TV emote ${n}`),
-      ...u.renamed.map((r) => `${who} renamed 7TV emote ${r.from} to ${r.to}`),
-    ];
+    const who = emoteSetActor(u);
     const ts = Date.now();
-    for (const message of lines) {
+    for (const message of describeEmoteSetUpdate(u)) {
       appendItem(channelId, this.event(ts, who, message));
     }
   }
-
   private event(timestamp: number, actor: string, message: string): FeedEvent {
     return {
       kind: "event",

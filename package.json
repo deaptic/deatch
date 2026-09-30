@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint:ui": "oxlint src",
+    "test": "deno test src/",
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml --no-default-features -- --export-bindings",
     "serve": "vite preview",
     "tauri": "tauri",
