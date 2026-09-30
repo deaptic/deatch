@@ -1,4 +1,4 @@
-import { listenEventSub } from "./listenEventSub.ts";
+import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   FeedEvent,
   RawFollow,
@@ -85,50 +85,51 @@ function mapRedemption(
   };
 }
 
-listenEventSub<RawNotification>("channel.chat.notification", (e) => {
-  const raw = e.payload.event;
-  const id = raw.broadcaster_user_id;
-  if (!raw.system_message?.trim()) return;
-  const item = mapNotice(raw, Date.now());
-  if (raw.notice_type === "sub_gift") {
-    setTimeout(() => appendItem(id, item), 600);
-  } else {
-    appendItem(id, item);
-  }
-  if (
-    raw.notice_type === "raid" &&
-    moderationAutoShoutoutOnRaid() &&
-    raw.chatter_user_id &&
-    isModOfChannel(id)
-  ) {
-    sendShoutout({
-      fromBroadcasterId: id,
-      toBroadcasterId: raw.chatter_user_id,
-    }).catch(() => {});
-  }
-});
-
-listenEventSub<RawShoutout>("channel.shoutout.create", (e) => {
-  const raw = e.payload.event;
-  appendItem(raw.broadcaster_user_id, mapShoutout(raw, Date.now()));
-});
-
-listenEventSub<RawFollow>("channel.follow", (e) => {
-  const raw = e.payload.event;
-  appendItem(raw.broadcaster_user_id, mapFollow(raw, Date.now()));
-});
-
-listenEventSub<RawChannelPointsRedemption>(
-  "channel.channel_points_custom_reward_redemption.add",
-  (e) => {
-    const raw = e.payload.event;
-    const ts = Date.now();
-    correlateRedemption(
-      raw.broadcaster_user_id,
-      raw.user_id,
-      raw.reward.id,
-      raw.reward.title,
-      () => appendItem(raw.broadcaster_user_id, mapRedemption(raw, ts)),
-    );
-  },
-);
+export function start(): () => void {
+  return unlistenAll([
+    listenEventSub<RawNotification>("channel.chat.notification", (e) => {
+      const raw = e.payload.event;
+      const id = raw.broadcaster_user_id;
+      if (!raw.system_message?.trim()) return;
+      const item = mapNotice(raw, Date.now());
+      if (raw.notice_type === "sub_gift") {
+        setTimeout(() => appendItem(id, item), 600);
+      } else {
+        appendItem(id, item);
+      }
+      if (
+        raw.notice_type === "raid" &&
+        moderationAutoShoutoutOnRaid() &&
+        raw.chatter_user_id &&
+        isModOfChannel(id)
+      ) {
+        sendShoutout({
+          fromBroadcasterId: id,
+          toBroadcasterId: raw.chatter_user_id,
+        }).catch(() => {});
+      }
+    }),
+    listenEventSub<RawShoutout>("channel.shoutout.create", (e) => {
+      const raw = e.payload.event;
+      appendItem(raw.broadcaster_user_id, mapShoutout(raw, Date.now()));
+    }),
+    listenEventSub<RawFollow>("channel.follow", (e) => {
+      const raw = e.payload.event;
+      appendItem(raw.broadcaster_user_id, mapFollow(raw, Date.now()));
+    }),
+    listenEventSub<RawChannelPointsRedemption>(
+      "channel.channel_points_custom_reward_redemption.add",
+      (e) => {
+        const raw = e.payload.event;
+        const ts = Date.now();
+        correlateRedemption(
+          raw.broadcaster_user_id,
+          raw.user_id,
+          raw.reward.id,
+          raw.reward.title,
+          () => appendItem(raw.broadcaster_user_id, mapRedemption(raw, ts)),
+        );
+      },
+    ),
+  ]);
+}

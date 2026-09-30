@@ -1,4 +1,5 @@
 import { onCleanup, onMount } from "solid-js";
+import * as backendEvents from "../events/index.ts";
 import * as eventsub from "../services/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
 import * as shortcuts from "../services/shortcuts.ts";
@@ -7,6 +8,7 @@ import * as updater from "../services/updater.ts";
 export function createServices(): void {
   onMount(() => {
     const stops = [
+      backendEvents.start(),
       eventsub.start(),
       sevenTv.start(),
       shortcuts.start(),

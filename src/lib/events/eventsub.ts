@@ -1,4 +1,5 @@
 import { events } from "../bindings.ts";
+import { unlistenAll } from "./listen.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { usersById } from "../stores/channels.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
@@ -28,33 +29,42 @@ function pushNotice(
   appendItem(broadcasterId, notice);
 }
 
-events.eventSubSubscription.listen(({ payload }) => {
-  if (payload.kind !== CHAT) return;
-  const { broadcasterId, status } = payload;
-  switch (status.type) {
-    case "subscribed":
-      pushNotice(broadcasterId, "chat_connected", "Connected to chat");
-      break;
-    case "unsubscribed":
-      pushNotice(broadcasterId, "chat_disconnected", "Disconnected from chat");
-      break;
-    case "failed":
-      pushNotice(
-        broadcasterId,
-        "chat_connect_failed",
-        `Failed to connect to chat: ${status.error}`,
-      );
-      break;
-  }
-});
-
-events.eventSubConnection.listen((e) => {
-  setChatConnected(e.payload.connected);
-});
-
-events.eventSubRecovered.listen((e) => {
-  for (const id of e.payload.broadcasterIds) {
-    const login = usersById.get(id)?.login;
-    if (login) backlog.fillGap(id, login, e.payload.since);
-  }
-});
+export function start(): () => void {
+  return unlistenAll([
+    events.eventSubFailed.listen((e) => {
+      console.error("EventSub error:", e.payload);
+    }),
+    events.eventSubSubscription.listen(({ payload }) => {
+      if (payload.kind !== CHAT) return;
+      const { broadcasterId, status } = payload;
+      switch (status.type) {
+        case "subscribed":
+          pushNotice(broadcasterId, "chat_connected", "Connected to chat");
+          break;
+        case "unsubscribed":
+          pushNotice(
+            broadcasterId,
+            "chat_disconnected",
+            "Disconnected from chat",
+          );
+          break;
+        case "failed":
+          pushNotice(
+            broadcasterId,
+            "chat_connect_failed",
+            `Failed to connect to chat: ${status.error}`,
+          );
+          break;
+      }
+    }),
+    events.eventSubConnection.listen((e) => {
+      setChatConnected(e.payload.connected);
+    }),
+    events.eventSubRecovered.listen((e) => {
+      for (const id of e.payload.broadcasterIds) {
+        const login = usersById.get(id)?.login;
+        if (login) backlog.fillGap(id, login, e.payload.since);
+      }
+    }),
+  ]);
+}
