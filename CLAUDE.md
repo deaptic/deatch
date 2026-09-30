@@ -82,6 +82,7 @@ Conventions:
 
 - Every command returns `crate::error::Result<T>`. `Error` is a tagged enum that reaches the frontend as `{ kind, message }` (`AppError` in TS). Add a `From` impl rather than `map_err(|e| e.to_string())`.
 - One shared `reqwest::Client` (timeouts, user agent) from `http.rs`; never construct another. `http::get_json` covers plain JSON GETs.
+- Every Helix request goes through `twitch/transport/` (`HelixTransport`). It retries 429s after `Ratelimit-Reset`, and retries 5xx only for idempotent methods, never POST. It also pauses all requests while the rate-limit bucket is empty. Don't add retries, sleeps, or pacing at call sites.
 - `twitch::Twitch` is managed state and cheap to clone. Get a valid, auto-refreshed token with `twitch.authed().await?`, and prefer the `HelixClient` helper methods over hand-built requests. Use `twitch::pagination::collect` when the caller wants every page.
 - IDs cross the boundary as the newtypes in `twitch/ids.rs`. Closed sets of values are enums, validated when deserialized.
 - Every command, params struct, DTO, and event derives `specta::Type` and is registered in `lib.rs`. Option fields a caller may omit get `#[serde(default)]`. Put a struct-wide `default` only on structs where every field is optional.

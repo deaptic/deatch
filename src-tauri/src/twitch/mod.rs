@@ -12,6 +12,7 @@ pub mod search;
 pub mod session;
 pub mod streams;
 pub mod template;
+mod transport;
 pub mod users;
 
 use crate::error::Result;
@@ -22,7 +23,7 @@ use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::HelixClient;
 use users::dto::UserRef;
 
-pub type Helix = HelixClient<'static, reqwest::Client>;
+pub type Helix = HelixClient<'static, transport::HelixTransport>;
 
 #[derive(Clone)]
 pub struct Twitch {
@@ -41,7 +42,7 @@ pub struct Authed<'a> {
 impl Twitch {
     pub fn new(http: reqwest::Client) -> Self {
         Self {
-            helix: HelixClient::with_client(http.clone()),
+            helix: HelixClient::with_client(transport::HelixTransport::new(http.clone())),
             http,
             session: Arc::new(Session::new()),
             eventsub: Arc::default(),

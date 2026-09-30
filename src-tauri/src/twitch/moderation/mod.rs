@@ -12,7 +12,7 @@ use twitch_api::helix::moderation::{
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
-    GetBannedUsersRequest, GetModeratedChannelsRequest, GetModeratorsRequest,
+    GetBannedUsersRequest, GetModeratorsRequest,
 };
 use twitch_api::types;
 
@@ -154,23 +154,12 @@ pub async fn get_moderators(
 }
 
 pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {
-    let mut all: Vec<UserRef> = Vec::new();
-    let mut after: Option<String> = None;
-    loop {
-        let mut request = GetModeratedChannelsRequest::user_id(twitch.token.user_id.clone());
-        request.after = crate::twitch::pagination::cursor(after.take());
-        let response = twitch.helix.req_get(request, &twitch.token).await?;
-        all.extend(response.data.into_iter().map(UserRef::from));
-        match response.pagination_data.cursor {
-            // Pace under Helix's ~13 req/sec budget so a long paginator
-            // can't exhaust it; only paid when another page follows.
-            Some(cursor) => {
-                after = Some(cursor.as_str().to_string());
-                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-            }
-            None => return Ok(all),
-        }
-    }
+    crate::twitch::pagination::collect(
+        twitch
+            .helix
+            .get_moderated_channels(&twitch.token.user_id, &twitch.token),
+    )
+    .await
 }
 
 #[derive(Deserialize, specta::Type)]
