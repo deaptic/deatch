@@ -2,7 +2,7 @@ import { AtSign } from "lucide-solid";
 import { createEffect, For, Show } from "solid-js";
 import InboxItem from "./InboxItem.tsx";
 import { markAllMentionsRead, mentions } from "../../lib/stores/inbox.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import Button from "../ui/Button.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import Popover from "../ui/Popover.tsx";

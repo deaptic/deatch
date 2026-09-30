@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
-import type { User } from "../api/twitch/users.ts";
-import type { UserRef } from "../types/index.ts";
+import type { User, UserRef } from "../types/index.ts";
 
 export const [user, setUser] = createSignal<User | null>(null);
 export const [moderatedChannels, setModeratedChannels] = createSignal<
@@ -34,8 +33,6 @@ export function cacheUsers(users: User[]) {
     return next;
   });
 }
-
-export const pendingUserById = new Map<string, Promise<void>>();
 
 export type Chatter = {
   id: string;

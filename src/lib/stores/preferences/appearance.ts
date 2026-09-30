@@ -1,4 +1,4 @@
-import type { Theme } from "../../services/appearance.ts";
+import type { Theme } from "../../constants/theme.ts";
 import { persist, prefs, setPrefs } from "./core.ts";
 
 export const appearanceTheme = () => prefs.appearance.theme;

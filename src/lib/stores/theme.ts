@@ -1,5 +1,5 @@
 import { createMemo, createRoot, createSignal } from "solid-js";
-import type { ResolvedTheme } from "../services/appearance.ts";
+import type { ResolvedTheme } from "../constants/theme.ts";
 import { appearanceTheme } from "./preferences.ts";
 
 const query = window.matchMedia("(prefers-color-scheme: dark)");

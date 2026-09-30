@@ -7,7 +7,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { sendChatMessage } from "../../lib/api/twitch/chat.ts";
+import { sendChatMessage } from "../../lib/services/chat.ts";
 import { loadBacklog } from "../../lib/services/feeds.ts";
 import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
@@ -20,7 +20,7 @@ import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu from "../context-menus/UserContextMenu.tsx";
 import UserCard from "../user-card/UserCard.tsx";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
 import InputPopover from "../ui/InputPopover.tsx";

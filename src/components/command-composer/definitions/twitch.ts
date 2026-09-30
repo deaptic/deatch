@@ -1,20 +1,19 @@
+import type { AnnouncementColor, ChatColor } from "../../../lib/types/index.ts";
 import {
   banUser,
   deleteChatMessages,
   unbanUser,
   warnUser,
 } from "../../../lib/api/twitch/moderation.ts";
-import { getUsers } from "../../../lib/api/twitch/users.ts";
-import { beginRaid, cancelActiveRaid } from "../../../lib/stores/raid.ts";
+import { getUsers } from "../../../lib/services/users.ts";
+import { raidManager } from "../../../lib/managers/RaidManager.ts";
 import {
-  type AnnouncementColor,
-  type ChatColor,
   sendChatAnnouncement,
-  sendChatMessage,
   sendShoutout,
   updateChatSettings,
   updateUserChatColor,
 } from "../../../lib/api/twitch/chat.ts";
+import { sendChatMessage } from "../../../lib/services/chat.ts";
 import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
 import { searchCategories } from "../../../lib/api/twitch/search.ts";
 import {
@@ -379,7 +378,7 @@ export const twitchCommands: Command[] = [
     execute: async ({ channel }, ctx) => {
       const id = channel as string;
       const user = (await getUsers({ ids: [id] }))[0];
-      await beginRaid(ctx.broadcasterId, {
+      await raidManager.begin(ctx.broadcasterId, {
         id,
         login: user?.login ?? "",
         displayName: user?.displayName ?? id,
@@ -392,7 +391,7 @@ export const twitchCommands: Command[] = [
     role: "broadcaster",
     options: [],
     execute: async (_, ctx) => {
-      await cancelActiveRaid(ctx.broadcasterId);
+      await raidManager.cancel(ctx.broadcasterId);
     },
   },
   {

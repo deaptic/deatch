@@ -1,6 +1,4 @@
 import { commands } from "../../bindings.ts";
-import { appendLocalNotice } from "../../stores/feeds.ts";
-import { addToast } from "../../stores/toasts.ts";
 import type {
   BadgeSet,
   Emote,
@@ -9,23 +7,13 @@ import type {
   RecentMessage,
   SendChatAnnouncementParams,
   SendChatMessageParams,
+  SendMessageResult,
   SendShoutoutParams,
   UpdateChatSettingsParams,
   UpdateUserChatColorParams,
   UserEmote,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
-
-export type {
-  AnnouncementColor,
-  BadgeSet,
-  ChatColor,
-  Emote,
-  SendMessageResult,
-  UserEmote,
-} from "../../types/index.ts";
-
-export type SendOutcome = "sent" | "held" | "failed";
 
 export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
   return invokeCommand(commands.getGlobalEmotes, [], options);
@@ -58,29 +46,11 @@ export async function sendShoutout(
   });
 }
 
-export async function sendChatMessage(
+export function postChatMessage(
   params: SendChatMessageParams,
   options?: InvokeOptions,
-): Promise<SendOutcome> {
-  try {
-    const res = await invokeCommand(
-      commands.sendChatMessage,
-      [params],
-      options,
-    );
-    if (res.isSent) return "sent";
-    if (res.held) {
-      appendLocalNotice(
-        params.broadcasterId,
-        "Your message is with the mods for review.",
-      );
-      return "held";
-    }
-    addToast(res.dropReason ?? "Message dropped", "error");
-    return "failed";
-  } catch {
-    return "failed";
-  }
+): Promise<SendMessageResult> {
+  return invokeCommand(commands.sendChatMessage, [params], options);
 }
 
 export function getRecentMessages(

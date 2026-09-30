@@ -11,7 +11,7 @@ import {
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Banner from "../ui/Banner.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";

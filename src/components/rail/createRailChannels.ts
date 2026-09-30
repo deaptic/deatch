@@ -10,9 +10,8 @@ import { createStore, reconcile } from "solid-js/store";
 import {
   getFollowedStreams,
   getStreamsFromIds,
-  type Stream,
 } from "../../lib/api/twitch/streams.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import { getChannelInformation } from "../../lib/api/twitch/channels.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
@@ -25,7 +24,7 @@ import {
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { Stream, User } from "../../lib/types/index.ts";
 
 export type RailChannels = {
   loadingPinned: () => boolean;

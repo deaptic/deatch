@@ -1,7 +1,7 @@
+import type { Follow, User } from "../../lib/types/index.ts";
 import { createEffect, createSignal } from "solid-js";
-import { getUsers, type User } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import {
-  type Follow,
   getChannelFollowers,
   getFollowedChannels,
 } from "../../lib/api/twitch/channels.ts";

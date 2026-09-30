@@ -1,4 +1,5 @@
-import { getUsers, type User } from "../api/twitch/users.ts";
+import type { User } from "../types/index.ts";
+import { getUsers } from "./users.ts";
 import { addToast } from "../stores/toasts.ts";
 import { errorMessage } from "../utils/error.ts";
 import { setUserNickname } from "../stores/preferences.ts";

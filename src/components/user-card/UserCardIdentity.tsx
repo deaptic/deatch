@@ -1,8 +1,7 @@
 import { createMemo, Show } from "solid-js";
-import type { User } from "../../lib/api/twitch/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import { feeds } from "../../lib/stores/feeds.ts";
-import type { FeedMessage } from "../../lib/types/index.ts";
+import type { FeedMessage, User } from "../../lib/types/index.ts";
 import BadgeBox from "../ui/BadgeBox.tsx";
 import DisplayName from "../ui/DisplayName.tsx";
 

@@ -30,8 +30,8 @@ import {
   toggleSettings,
   watchMode,
 } from "../../lib/stores/view.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
-import { beginRaid } from "../../lib/stores/raid.ts";
+import { getUsers } from "../../lib/services/users.ts";
+import { raidManager } from "../../lib/managers/RaidManager.ts";
 import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
@@ -150,7 +150,7 @@ export default function Rail(props: Props) {
   function raidChannel(ch: User) {
     const self = user();
     if (!self) return;
-    beginRaid(self.id, ch).catch(() => {});
+    raidManager.begin(self.id, ch).catch(() => {});
   }
 
   function startDrag(e: MouseEvent, idx: number) {

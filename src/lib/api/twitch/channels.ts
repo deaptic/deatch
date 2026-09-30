@@ -12,8 +12,6 @@ import type {
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type { ChannelInfo, Follow } from "../../types/index.ts";
-
 export function getChannelInformation(
   params: GetChannelInformationParams,
   options?: InvokeOptions,

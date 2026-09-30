@@ -18,7 +18,7 @@ import {
   userEmotes,
 } from "../../lib/stores/emotes.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import { getUsers } from "../../lib/api/twitch/users.ts";
+import { getUsers } from "../../lib/services/users.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
 import Field from "../ui/Field.tsx";

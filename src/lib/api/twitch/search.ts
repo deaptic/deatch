@@ -7,8 +7,6 @@ import type {
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type { Category, SearchChannel } from "../../types/index.ts";
-
 export function searchChannels(
   params: SearchChannelsParams,
   options?: InvokeOptions,
