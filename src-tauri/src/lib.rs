@@ -1,41 +1,21 @@
-mod bridge;
-pub mod browser_host;
-mod commands;
-mod dto;
+mod discord;
+mod emotes;
 mod error;
+mod history;
 mod http;
-pub mod ipc;
-mod services;
+mod keymap;
+mod keyring;
+mod notifications;
+mod twitch;
+mod watch;
+
+pub use watch::host as browser_host;
 
 use tauri::Manager;
 
-fn init_keyring_store() {
-    #[cfg(target_os = "windows")]
-    {
-        match windows_native_keyring_store::Store::new() {
-            Ok(store) => keyring_core::set_default_store(store),
-            Err(e) => eprintln!("keyring store init failed: {e}"),
-        }
-    }
-    #[cfg(target_os = "macos")]
-    {
-        match apple_native_keyring_store::Store::new() {
-            Ok(store) => keyring_core::set_default_store(store),
-            Err(e) => eprintln!("keyring store init failed: {e}"),
-        }
-    }
-    #[cfg(any(target_os = "linux", target_os = "freebsd"))]
-    {
-        match dbus_secret_service_keyring_store::Store::new() {
-            Ok(store) => keyring_core::set_default_store(store),
-            Err(e) => eprintln!("keyring store init failed: {e}"),
-        }
-    }
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    init_keyring_store();
+    keyring::init_store();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -54,21 +34,21 @@ pub fn run() {
         )
         .setup(|app| {
             let http = http::client()?;
-            app.manage(services::twitch::Twitch::new(http.clone()));
+            app.manage(twitch::Twitch::new(http.clone()));
             app.manage(http);
 
             // A dev build must never become the browser's native-messaging
             // host: Firefox would keep spawning target/debug/deatch.exe and
             // hold the file lock cargo needs to relink.
             if !cfg!(debug_assertions) {
-                if let Err(e) = bridge::register() {
+                if let Err(e) = watch::bridge::register() {
                     eprintln!("browser bridge registration failed: {e}");
                 }
             }
-            ipc::start_server(app.handle().clone());
-            services::external::seventv_events::spawn(app.handle().clone());
+            watch::ipc::start_server(app.handle().clone());
+            emotes::seventv_events::spawn(app.handle().clone());
 
-            if let Some(w) = tauri::Manager::get_webview_window(app, "main") {
+            if let Some(w) = app.get_webview_window("main") {
                 if let Ok(icon) =
                     tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))
                 {
@@ -78,65 +58,65 @@ pub fn run() {
 
             Ok(())
         })
-        .manage(services::discord::DiscordState::new())
+        .manage(discord::DiscordState::new())
         .invoke_handler(tauri::generate_handler![
-            commands::discord::discord_connect,
-            commands::discord::discord_disconnect,
-            commands::discord::discord_set_activity,
-            commands::discord::discord_clear_activity,
-            commands::twitch::auth::get_device_code,
-            commands::twitch::auth::restore_session,
-            commands::twitch::auth::revoke_session,
-            commands::twitch::eventsub::subscribe,
-            commands::twitch::eventsub::unsubscribe,
-            commands::twitch::streams::get_followed_streams,
-            commands::twitch::streams::get_streams,
-            commands::twitch::streams::get_streams_from_ids,
-            commands::twitch::streams::create_stream_marker,
-            commands::twitch::users::get_users,
-            commands::twitch::search::search_channels,
-            commands::twitch::search::search_categories,
-            commands::twitch::chat::send_shoutout,
-            commands::twitch::chat::send_chat_message,
-            commands::twitch::chat::send_chat_announcement,
-            commands::twitch::chat::update_chat_settings,
-            commands::twitch::chat::update_user_chat_color,
-            commands::twitch::chat::get_user_emotes,
-            commands::twitch::chat::get_global_emotes,
-            commands::twitch::chat::get_global_chat_badges,
-            commands::twitch::chat::get_channel_chat_badges,
-            commands::twitch::moderation::delete_chat_messages,
-            commands::twitch::moderation::ban_user,
-            commands::twitch::moderation::unban_user,
-            commands::twitch::moderation::get_banned_users,
-            commands::twitch::moderation::get_moderators,
-            commands::twitch::moderation::get_moderated_channels,
-            commands::twitch::moderation::warn_user,
-            commands::twitch::moderation::manage_held_automod_message,
-            commands::twitch::channels::add_channel_vip,
-            commands::twitch::channels::remove_channel_vip,
-            commands::twitch::raids::start_raid,
-            commands::twitch::raids::cancel_raid,
-            commands::twitch::clips::create_clip,
-            commands::twitch::channels::get_channel_information,
-            commands::twitch::channels::get_channel_followers,
-            commands::twitch::channels::get_followed_channels,
-            commands::twitch::channels::modify_channel_information,
-            commands::twitch::channels::start_commercial,
-            commands::external::bttv::bttv_get_global_emotes,
-            commands::external::bttv::bttv_get_channel_emotes,
-            commands::external::ffz::ffz_get_global_emotes,
-            commands::external::ffz::ffz_get_channel_emotes,
-            commands::external::seventv::seventv_get_global_emotes,
-            commands::external::seventv::seventv_get_channel_emotes,
-            commands::external::seventv_events::seventv_subscribe_emote_set,
-            commands::external::seventv_events::seventv_unsubscribe_emote_set,
-            commands::external::robotty::get_recent_messages,
-            commands::keymap::read_keymap,
-            commands::keymap::write_keymap,
-            commands::watch::watch_set_muted,
-            commands::watch::watch_request_state,
-            commands::notifications::set_mentions_badge,
+            discord::commands::discord_connect,
+            discord::commands::discord_disconnect,
+            discord::commands::discord_set_activity,
+            discord::commands::discord_clear_activity,
+            twitch::auth::commands::get_device_code,
+            twitch::auth::commands::restore_session,
+            twitch::auth::commands::revoke_session,
+            twitch::eventsub::commands::subscribe,
+            twitch::eventsub::commands::unsubscribe,
+            twitch::streams::commands::get_followed_streams,
+            twitch::streams::commands::get_streams,
+            twitch::streams::commands::get_streams_from_ids,
+            twitch::streams::commands::create_stream_marker,
+            twitch::users::commands::get_users,
+            twitch::search::commands::search_channels,
+            twitch::search::commands::search_categories,
+            twitch::chat::commands::send_shoutout,
+            twitch::chat::commands::send_chat_message,
+            twitch::chat::commands::send_chat_announcement,
+            twitch::chat::commands::update_chat_settings,
+            twitch::chat::commands::update_user_chat_color,
+            twitch::chat::commands::get_user_emotes,
+            twitch::chat::commands::get_global_emotes,
+            twitch::chat::commands::get_global_chat_badges,
+            twitch::chat::commands::get_channel_chat_badges,
+            twitch::moderation::commands::delete_chat_messages,
+            twitch::moderation::commands::ban_user,
+            twitch::moderation::commands::unban_user,
+            twitch::moderation::commands::get_banned_users,
+            twitch::moderation::commands::get_moderators,
+            twitch::moderation::commands::get_moderated_channels,
+            twitch::moderation::commands::warn_user,
+            twitch::moderation::commands::manage_held_automod_message,
+            twitch::channels::commands::add_channel_vip,
+            twitch::channels::commands::remove_channel_vip,
+            twitch::raids::commands::start_raid,
+            twitch::raids::commands::cancel_raid,
+            twitch::clips::commands::create_clip,
+            twitch::channels::commands::get_channel_information,
+            twitch::channels::commands::get_channel_followers,
+            twitch::channels::commands::get_followed_channels,
+            twitch::channels::commands::modify_channel_information,
+            twitch::channels::commands::start_commercial,
+            emotes::commands::bttv_get_global_emotes,
+            emotes::commands::bttv_get_channel_emotes,
+            emotes::commands::ffz_get_global_emotes,
+            emotes::commands::ffz_get_channel_emotes,
+            emotes::commands::seventv_get_global_emotes,
+            emotes::commands::seventv_get_channel_emotes,
+            emotes::commands::seventv_subscribe_emote_set,
+            emotes::commands::seventv_unsubscribe_emote_set,
+            history::commands::get_recent_messages,
+            keymap::commands::read_keymap,
+            keymap::commands::write_keymap,
+            watch::commands::watch_set_muted,
+            watch::commands::watch_request_state,
+            notifications::commands::set_mentions_badge,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
