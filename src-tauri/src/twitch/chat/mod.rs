@@ -200,3 +200,23 @@ pub async fn update_user_chat_color(
         .await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{AnnouncementColor, SendChatAnnouncementParams, SendChatMessageParams};
+    use serde_json::json;
+
+    #[test]
+    fn reply_parent_is_optional() {
+        let params: SendChatMessageParams =
+            serde_json::from_value(json!({ "broadcasterId": "1", "message": "hi" })).unwrap();
+        assert!(params.reply_parent_message_id.is_none());
+    }
+
+    #[test]
+    fn announcement_without_color_uses_primary() {
+        let params: SendChatAnnouncementParams =
+            serde_json::from_value(json!({ "broadcasterId": "1", "message": "hi" })).unwrap();
+        assert!(matches!(params.color, AnnouncementColor::Primary));
+    }
+}

@@ -102,12 +102,15 @@ pub fn export_bindings() {
     write_bindings(&bindings());
 }
 
+const BINDINGS_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib/bindings.ts");
+
 fn write_bindings(bindings: &tauri_specta::Builder<tauri::Wry>) {
+    export_to(bindings, std::path::Path::new(BINDINGS_PATH));
+}
+
+fn export_to(bindings: &tauri_specta::Builder<tauri::Wry>, path: &std::path::Path) {
     bindings
-        .export(
-            specta_typescript::Typescript::default(),
-            concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib/bindings.ts"),
-        )
+        .export(specta_typescript::Typescript::default(), path)
         .expect("failed to export typescript bindings");
 }
 
@@ -172,4 +175,21 @@ pub fn run() {
         .invoke_handler(invoke_handler)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    fn normalized(path: &std::path::Path) -> String {
+        std::fs::read_to_string(path).unwrap().replace("\r\n", "\n")
+    }
+
+    #[test]
+    fn committed_bindings_are_current() {
+        let fresh = std::env::temp_dir().join("deatch-bindings-check.ts");
+        super::export_to(&super::bindings(), &fresh);
+        assert!(
+            normalized(&fresh) == normalized(std::path::Path::new(super::BINDINGS_PATH)),
+            "src/lib/bindings.ts is stale; run `deno task bindings` and commit the result"
+        );
+    }
 }

@@ -87,3 +87,56 @@ from_display!(
 from_display!(Keyring: keyring_core::Error);
 from_display!(Io: std::io::Error, tauri::Error);
 from_display!(Invalid: serde_json::Error);
+
+#[cfg(test)]
+mod tests {
+    use super::Error;
+    use serde_json::json;
+    use twitch_api::helix::{ClientRequestError, HelixRequestPostError};
+
+    #[test]
+    fn serializes_as_kind_and_message() {
+        assert_eq!(
+            serde_json::to_value(Error::NotAuthenticated).unwrap(),
+            json!({ "kind": "notAuthenticated" })
+        );
+        assert_eq!(
+            serde_json::to_value(Error::Invalid("bad".into())).unwrap(),
+            json!({ "kind": "invalid", "message": "bad" })
+        );
+        assert_eq!(
+            serde_json::to_value(Error::Helix {
+                status: 403,
+                message: "nope".into(),
+            })
+            .unwrap(),
+            json!({ "kind": "helix", "message": { "status": 403, "message": "nope" } })
+        );
+    }
+
+    #[test]
+    fn maps_helix_response_errors_to_status_and_message() {
+        let upstream: ClientRequestError<reqwest::Error> =
+            ClientRequestError::HelixRequestPostError(HelixRequestPostError::Error {
+                error: "Forbidden".into(),
+                status: http::StatusCode::FORBIDDEN,
+                message: "user is not a moderator".into(),
+                uri: http::Uri::from_static("https://api.twitch.tv/helix/moderation/bans"),
+                body: Default::default(),
+            });
+        match Error::from(upstream) {
+            Error::Helix { status, message } => {
+                assert_eq!(status, 403);
+                assert_eq!(message, "user is not a moderator");
+            }
+            other => panic!("expected Helix error, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn maps_other_client_errors_to_http() {
+        let upstream: ClientRequestError<reqwest::Error> =
+            ClientRequestError::Custom("socket closed".into());
+        assert!(matches!(Error::from(upstream), Error::Http(m) if m.contains("socket closed")));
+    }
+}

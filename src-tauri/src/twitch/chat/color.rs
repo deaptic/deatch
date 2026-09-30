@@ -66,3 +66,31 @@ impl From<ChatColor> for NamedUserColor<'static> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{AnnouncementColor, ChatColor};
+    use serde_json::json;
+    use twitch_api::types::NamedUserColor;
+
+    #[test]
+    fn parses_snake_case_chat_colors() {
+        let color: ChatColor = serde_json::from_value(json!("blue_violet")).unwrap();
+        assert!(matches!(
+            NamedUserColor::from(color),
+            NamedUserColor::BlueViolet
+        ));
+        assert!(serde_json::from_value::<ChatColor>(json!("BlueViolet")).is_err());
+        assert!(serde_json::from_value::<ChatColor>(json!("pink")).is_err());
+    }
+
+    #[test]
+    fn announcement_color_defaults_to_primary() {
+        assert!(matches!(
+            AnnouncementColor::default(),
+            AnnouncementColor::Primary
+        ));
+        assert!(serde_json::from_value::<AnnouncementColor>(json!("purple")).is_ok());
+        assert!(serde_json::from_value::<AnnouncementColor>(json!("red")).is_err());
+    }
+}

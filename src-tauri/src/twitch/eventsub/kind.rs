@@ -86,3 +86,32 @@ impl EventKind {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::EventKind;
+    use std::collections::HashSet;
+
+    #[test]
+    fn event_names_are_unique() {
+        let names: HashSet<_> = EventKind::ALL.iter().map(|k| k.event_name()).collect();
+        assert_eq!(names.len(), EventKind::ALL.len());
+    }
+
+    #[test]
+    fn all_lists_every_kind_once() {
+        let kinds: HashSet<_> = EventKind::ALL.iter().collect();
+        assert_eq!(kinds.len(), EventKind::ALL.len());
+        assert_eq!(EventKind::event_names().len(), EventKind::ALL.len());
+    }
+
+    #[test]
+    fn round_trips_twitch_subscription_type() {
+        for kind in EventKind::ALL {
+            let json = serde_json::to_string(&kind).unwrap();
+            assert_eq!(serde_json::from_str::<EventKind>(&json).unwrap(), kind);
+        }
+        let parsed: EventKind = serde_json::from_str("\"channel.chat.message\"").unwrap();
+        assert_eq!(parsed, EventKind::ChannelChatMessage);
+    }
+}

@@ -52,3 +52,6 @@ apple-native-keyring-store = { version = "1", features = ["keychain"] }
 [target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dependencies]
 dbus-secret-service-keyring-store = { version = "1", features = ["crypto-rust"] }
 
+[dev-dependencies]
+http = "1"
+
