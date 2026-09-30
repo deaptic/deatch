@@ -5,7 +5,7 @@ use crate::error::Result;
 use crate::twitch::ids::UserId;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct StartRaidParams {
     pub from_broadcaster_id: UserId,
@@ -24,7 +24,7 @@ pub async fn start_raid(twitch: &Authed<'_>, params: StartRaidParams) -> Result<
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct CancelRaidParams {
     pub broadcaster_id: UserId,

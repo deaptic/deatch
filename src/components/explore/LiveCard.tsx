@@ -1,8 +1,8 @@
 import { createSignal, Show } from "solid-js";
 import { MessageSquare } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { Stream } from "../../lib/types/twitch/stream.ts";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { Stream } from "../../lib/types/index.ts";
+import type { User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
 import { messageRate } from "../../lib/stores/chatActivity.ts";
 import { formatUptime } from "../../lib/format/stream.ts";

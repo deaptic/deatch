@@ -5,30 +5,32 @@ use crate::error::Result;
 use serde::Deserialize;
 use tauri::State;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelIdParams {
     pub channel_id: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelLoginParams {
     pub channel_login: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct EmoteSetParams {
     pub emote_set_id: String,
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn bttv_get_global_emotes(http: State<'_, reqwest::Client>) -> Result<Vec<EmoteEntry>> {
     bttv::get_global_emotes(&http).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn bttv_get_channel_emotes(
     http: State<'_, reqwest::Client>,
     params: ChannelIdParams,
@@ -37,11 +39,13 @@ pub async fn bttv_get_channel_emotes(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn ffz_get_global_emotes(http: State<'_, reqwest::Client>) -> Result<Vec<EmoteEntry>> {
     ffz::get_global_emotes(&http).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn ffz_get_channel_emotes(
     http: State<'_, reqwest::Client>,
     params: ChannelLoginParams,
@@ -50,6 +54,7 @@ pub async fn ffz_get_channel_emotes(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn seventv_get_global_emotes(
     http: State<'_, reqwest::Client>,
 ) -> Result<Vec<EmoteEntry>> {
@@ -57,6 +62,7 @@ pub async fn seventv_get_global_emotes(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn seventv_get_channel_emotes(
     http: State<'_, reqwest::Client>,
     params: ChannelIdParams,
@@ -65,11 +71,13 @@ pub async fn seventv_get_channel_emotes(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn seventv_subscribe_emote_set(state: State<SevenTvEvents>, params: EmoteSetParams) {
     let _ = state.0.send(SevenTvOp::Subscribe(params.emote_set_id));
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn seventv_unsubscribe_emote_set(state: State<SevenTvEvents>, params: EmoteSetParams) {
     let _ = state.0.send(SevenTvOp::Unsubscribe(params.emote_set_id));
 }

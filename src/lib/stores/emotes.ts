@@ -1,7 +1,7 @@
 import { createMemo, createRoot, createSignal } from "solid-js";
-import type { EmoteEntry } from "../types/external/emote.ts";
-import type { Emote, UserEmote } from "../types/twitch/chat.ts";
-import type { User } from "../types/twitch/user.ts";
+import type { EmoteEntry } from "../types/index.ts";
+import type { Emote, UserEmote } from "../types/index.ts";
+import type { User } from "../types/index.ts";
 import { userCache } from "./users.ts";
 
 export type { EmoteEntry };

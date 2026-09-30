@@ -5,6 +5,7 @@ use crate::twitch::Twitch;
 use tauri::State;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn create_clip(
     twitch: State<'_, Twitch>,
     params: CreateClipParams,

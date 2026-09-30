@@ -41,7 +41,7 @@ pub async fn get_global_chat_badges(twitch: &Authed<'_>) -> Result<Vec<BadgeSet>
     Ok(response.data.into_iter().map(BadgeSet::from).collect())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct GetChannelChatBadgesParams {
     pub broadcaster_id: UserId,
@@ -56,7 +56,7 @@ pub async fn get_channel_chat_badges(
     Ok(response.data.into_iter().map(BadgeSet::from).collect())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SendShoutoutParams {
     pub from_broadcaster_id: UserId,
@@ -76,11 +76,12 @@ pub async fn send_shoutout(twitch: &Authed<'_>, params: SendShoutoutParams) -> R
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SendChatMessageParams {
     pub broadcaster_id: UserId,
     pub message: String,
+    #[serde(default)]
     pub reply_parent_message_id: Option<MessageId>,
 }
 
@@ -114,7 +115,7 @@ pub async fn send_chat_message(
     Ok(SendMessageResult::from(response))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SendChatAnnouncementParams {
     pub broadcaster_id: UserId,
@@ -139,7 +140,7 @@ pub async fn send_chat_announcement(
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateChatSettingsParams {
     pub broadcaster_id: UserId,
@@ -179,7 +180,7 @@ pub async fn update_chat_settings(
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateUserChatColorParams {
     pub color: ChatColor,

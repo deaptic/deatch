@@ -1,13 +1,9 @@
 import { cacheUsers, pendingUserById, userCache } from "../../stores/users.ts";
-import type { User } from "../../types/twitch/user.ts";
+import { commands } from "../../bindings.ts";
+import type { GetUsersParams, User } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type { User } from "../../types/twitch/user.ts";
-
-export type GetUsersParams = {
-  ids?: string[];
-  logins?: string[];
-};
+export type { User } from "../../types/index.ts";
 
 export async function getUsers(
   params: GetUsersParams = {},
@@ -22,9 +18,9 @@ export async function getUsers(
     const toFetch = ids.filter((id) => !cache[id] && !pendingUserById.has(id));
 
     if (toFetch.length) {
-      const promise = invokeCommand<User[]>(
-        "get_users",
-        { ids: toFetch },
+      const promise = invokeCommand(
+        commands.getUsers,
+        [{ ids: toFetch }],
         options,
       )
         .then((users) => {
@@ -46,7 +42,7 @@ export async function getUsers(
   }
 
   // Anything else (logins, mixed, empty) — pass through and cache the result.
-  const result = await invokeCommand<User[]>("get_users", params, options);
+  const result = await invokeCommand(commands.getUsers, [params], options);
   cacheUsers(result);
   return result;
 }

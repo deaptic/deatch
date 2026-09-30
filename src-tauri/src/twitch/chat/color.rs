@@ -2,7 +2,7 @@ use serde::Deserialize;
 use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
 use twitch_api::types::NamedUserColor;
 
-#[derive(Clone, Copy, Default, Deserialize)]
+#[derive(Clone, Copy, Default, Deserialize, specta::Type)]
 #[serde(rename_all = "snake_case")]
 pub enum AnnouncementColor {
     #[default]
@@ -25,7 +25,7 @@ impl From<AnnouncementColor> for HelixAnnouncementColor {
     }
 }
 
-#[derive(Clone, Copy, Deserialize)]
+#[derive(Clone, Copy, Deserialize, specta::Type)]
 #[serde(rename_all = "snake_case")]
 pub enum ChatColor {
     Blue,

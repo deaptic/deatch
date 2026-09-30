@@ -45,7 +45,7 @@ import Skeleton from "../ui/Skeleton.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import { sessionManager } from "../../lib/managers/SessionManager.ts";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { User } from "../../lib/types/index.ts";
 
 type Props = {
   onSelect: (ch: User) => void;

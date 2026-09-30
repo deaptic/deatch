@@ -1,19 +1,17 @@
-import { invoke } from "@tauri-apps/api/core";
+import { commands } from "../bindings.ts";
 import { invokeCommand } from "./utils.ts";
 
 export async function watchSetMuted(
   channel: string,
   muted: boolean,
 ): Promise<void> {
-  await invokeCommand<void>(
-    "watch_set_muted",
-    { channel, muted },
-    { silent: true },
-  );
+  await invokeCommand(commands.watchSetMuted, [{ channel, muted }], {
+    silent: true,
+  });
 }
 
 export async function watchRequestState(): Promise<void> {
   try {
-    await invoke<void>("watch_request_state");
+    await invokeCommand(commands.watchRequestState, [], { silent: true });
   } catch {}
 }

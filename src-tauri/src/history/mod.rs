@@ -7,7 +7,7 @@ pub mod dto;
 
 use crate::error::Result;
 use crate::http::get_json;
-use dto::{Badge, EmoteRef, Fragment, MentionRef, MessageBody, RecentMessage, Reply};
+use dto::{ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, RecentMessage, Reply};
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
 
@@ -99,7 +99,7 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
     }
 }
 
-fn parse_badges(tags: &Tags) -> Vec<Badge> {
+fn parse_badges(tags: &Tags) -> Vec<ChatterBadge> {
     let badges = tags.get("badges").map_or("", String::as_str);
     if badges.is_empty() {
         return Vec::new();
@@ -113,7 +113,7 @@ fn parse_badges(tags: &Tags) -> Vec<Badge> {
     badges
         .split(',')
         .filter_map(|b| b.split_once('/'))
-        .map(|(set_id, id)| Badge {
+        .map(|(set_id, id)| ChatterBadge {
             info: info.get(set_id).map_or_else(String::new, |s| s.to_string()),
             set_id: set_id.to_string(),
             id: id.to_string(),
@@ -137,7 +137,7 @@ fn parse_reply(tags: &Tags) -> Option<Reply> {
 
 /// Slices the message text into Text / Emote / Mention fragments using the
 /// `emotes` IRC tag for emote positions and a `@\w+` scan for mentions.
-fn build_fragments(text: &str, emotes_tag: &str) -> Vec<Fragment> {
+fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragment> {
     enum Kind {
         Emote(String),
         Mention(String),
@@ -181,24 +181,24 @@ fn build_fragments(text: &str, emotes_tag: &str) -> Vec<Fragment> {
     spans.sort_by_key(|s| s.0);
 
     let slice = |s: usize, e: usize| -> String { chars[s..e.min(chars.len())].iter().collect() };
-    let mut out: Vec<Fragment> = Vec::new();
+    let mut out: Vec<MessageFragment> = Vec::new();
     let mut cursor = 0usize;
     for (s, e, kind) in spans {
         if s < cursor {
             continue;
         }
         if s > cursor {
-            out.push(Fragment::Text {
+            out.push(MessageFragment::Text {
                 text: slice(cursor, s),
             });
         }
         let text = slice(s, e);
         out.push(match kind {
-            Kind::Emote(id) => Fragment::Emote {
+            Kind::Emote(id) => MessageFragment::Emote {
                 text,
                 emote: EmoteRef { id },
             },
-            Kind::Mention(user_login) => Fragment::Mention {
+            Kind::Mention(user_login) => MessageFragment::Mention {
                 text,
                 mention: MentionRef { user_login },
             },
@@ -206,12 +206,12 @@ fn build_fragments(text: &str, emotes_tag: &str) -> Vec<Fragment> {
         cursor = e;
     }
     if cursor < chars.len() {
-        out.push(Fragment::Text {
+        out.push(MessageFragment::Text {
             text: slice(cursor, chars.len()),
         });
     }
     if out.is_empty() {
-        out.push(Fragment::Text {
+        out.push(MessageFragment::Text {
             text: String::new(),
         });
     }

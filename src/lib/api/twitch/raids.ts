@@ -1,29 +1,22 @@
+import { commands } from "../../bindings.ts";
+import type { CancelRaidParams, StartRaidParams } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
-export type StartRaidParams = {
-  fromBroadcasterId: string;
-  toBroadcasterId: string;
-};
-
-export function startRaid(
+export async function startRaid(
   params: StartRaidParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("start_raid", params, {
+  await invokeCommand(commands.startRaid, [params], {
     successMessage: "Raid started",
     ...options,
   });
 }
 
-export type CancelRaidParams = {
-  broadcasterId: string;
-};
-
-export function cancelRaid(
+export async function cancelRaid(
   params: CancelRaidParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  return invokeCommand("cancel_raid", params, {
+  await invokeCommand(commands.cancelRaid, [params], {
     successMessage: "Raid cancelled",
     ...options,
   });

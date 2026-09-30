@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
-import type { ChannelInfo } from "../types/twitch/channel.ts";
-import type { Stream } from "../types/twitch/stream.ts";
-import type { User, UserRef } from "../types/twitch/user.ts";
+import type { ChannelInfo } from "../types/index.ts";
+import type { Stream } from "../types/index.ts";
+import type { User, UserRef } from "../types/index.ts";
 import { pinnedChannels } from "./preferences.ts";
 import { watchWarmedChannels } from "./watch.ts";
 
@@ -78,7 +78,7 @@ export function userFromRef(ref: UserRef): User {
     displayName: ref.displayName,
     profileImageUrl: "",
     description: "",
-    broadcasterType: "",
+    broadcasterType: "normal",
     createdAt: "",
   };
 }

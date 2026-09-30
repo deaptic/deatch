@@ -1,17 +1,17 @@
-import type { DcfAuthResponse } from "../../types/twitch/auth.ts";
-import type { User } from "../../types/twitch/user.ts";
+import { commands } from "../../bindings.ts";
+import type { DcfAuthResponse, User } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export function getDeviceCode(
   options?: InvokeOptions,
 ): Promise<DcfAuthResponse> {
-  return invokeCommand<DcfAuthResponse>("get_device_code", undefined, options);
+  return invokeCommand(commands.getDeviceCode, [], options);
 }
 
 export async function revokeSession(options?: InvokeOptions): Promise<void> {
-  await invokeCommand<void>("revoke_session", undefined, options);
+  await invokeCommand(commands.revokeSession, [], options);
 }
 
 export function restoreSession(options?: InvokeOptions): Promise<User | null> {
-  return invokeCommand<User | null>("restore_session", undefined, options);
+  return invokeCommand(commands.restoreSession, [], options);
 }

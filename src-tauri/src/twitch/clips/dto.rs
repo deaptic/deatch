@@ -1,7 +1,7 @@
 use serde::Serialize;
 use twitch_api::helix::clips::create_clip::CreatedClip as HelixCreatedClip;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatedClip {
     pub id: String,

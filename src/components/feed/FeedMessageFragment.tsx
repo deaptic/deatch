@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../lib/stores/emotes.ts";
 import type { Fragment } from "../../lib/types/index.ts";
-import type { UserRef } from "../../lib/types/twitch/user.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 const INLINE_EMOTE =
   "inline-block feed-emote w-auto object-contain align-middle mx-px";

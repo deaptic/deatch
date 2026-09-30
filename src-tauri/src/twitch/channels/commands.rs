@@ -9,6 +9,7 @@ use crate::twitch::Twitch;
 use tauri::State;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_channel_information(
     twitch: State<'_, Twitch>,
     params: GetChannelInformationParams,
@@ -17,6 +18,7 @@ pub async fn get_channel_information(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_channel_followers(
     twitch: State<'_, Twitch>,
     params: GetChannelFollowersParams,
@@ -25,6 +27,7 @@ pub async fn get_channel_followers(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_followed_channels(
     twitch: State<'_, Twitch>,
     params: GetFollowedChannelsParams,
@@ -33,6 +36,7 @@ pub async fn get_followed_channels(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn modify_channel_information(
     twitch: State<'_, Twitch>,
     params: ModifyChannelInformationParams,
@@ -41,6 +45,7 @@ pub async fn modify_channel_information(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn start_commercial(
     twitch: State<'_, Twitch>,
     params: StartCommercialParams,
@@ -49,11 +54,13 @@ pub async fn start_commercial(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn add_channel_vip(twitch: State<'_, Twitch>, params: ChannelVipParams) -> Result<()> {
     channels::add_channel_vip(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn remove_channel_vip(twitch: State<'_, Twitch>, params: ChannelVipParams) -> Result<()> {
     channels::remove_channel_vip(&twitch.authed().await?, params).await
 }

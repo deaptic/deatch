@@ -16,10 +16,11 @@ use twitch_api::helix::moderation::{
 };
 use twitch_api::types;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteChatMessagesParams {
     pub broadcaster_id: UserId,
+    #[serde(default)]
     pub message_id: Option<MessageId>,
 }
 
@@ -51,7 +52,7 @@ pub async fn delete_chat_messages(
     Ok(())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct BanUserParams {
     pub broadcaster_id: UserId,
@@ -77,7 +78,7 @@ pub async fn ban_user(twitch: &Authed<'_>, params: BanUserParams) -> Result<Ban>
     Ok(Ban::from(ban))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UnbanUserParams {
     pub broadcaster_id: UserId,
@@ -97,12 +98,15 @@ pub async fn unban_user(twitch: &Authed<'_>, params: UnbanUserParams) -> Result<
     Ok(())
 }
 
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct GetBannedUsersParams {
     pub broadcaster_id: UserId,
+    #[serde(default)]
     pub user_id: Option<UserId>,
+    #[serde(default)]
     pub first: Option<usize>,
+    #[serde(default)]
     pub after: Option<String>,
 }
 
@@ -124,11 +128,13 @@ pub async fn get_banned_users(
     ))
 }
 
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct GetModeratorsParams {
     pub broadcaster_id: UserId,
+    #[serde(default)]
     pub first: Option<usize>,
+    #[serde(default)]
     pub after: Option<String>,
 }
 
@@ -167,7 +173,7 @@ pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>>
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct WarnUserParams {
     pub broadcaster_id: UserId,
@@ -189,14 +195,14 @@ pub async fn warn_user(twitch: &Authed<'_>, params: WarnUserParams) -> Result<()
     Ok(())
 }
 
-#[derive(Clone, Copy, Deserialize)]
+#[derive(Clone, Copy, Deserialize, specta::Type)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomodAction {
     Allow,
     Deny,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ManageHeldAutomodMessageParams {
     pub msg_id: MessageId,

@@ -1,5 +1,5 @@
 import { createMemo, createRoot, createSignal } from "solid-js";
-import type { User } from "../types/twitch/user.ts";
+import type { User } from "../types/index.ts";
 import { createDebounced } from "../primitives/createDebounced.ts";
 
 // The single source of truth for what the app is showing: a page or a channel.

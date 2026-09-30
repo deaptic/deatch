@@ -3,7 +3,7 @@ use serde::Serialize;
 use twitch_api::helix::search::search_channels::Channel as HelixSearchChannel;
 use twitch_api::types::TwitchCategory;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchChannel {
     pub user: UserRef,
@@ -27,7 +27,7 @@ impl From<HelixSearchChannel> for SearchChannel {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Category {
     pub id: String,

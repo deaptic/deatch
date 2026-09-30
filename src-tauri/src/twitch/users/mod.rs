@@ -9,7 +9,7 @@ use serde::Deserialize;
 use twitch_api::helix::users::GetUsersRequest;
 use twitch_api::types;
 
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
 pub struct GetUsersParams {
     pub ids: Vec<UserId>,

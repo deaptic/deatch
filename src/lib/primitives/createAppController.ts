@@ -1,4 +1,4 @@
-import type { User } from "../types/twitch/user.ts";
+import type { User } from "../types/index.ts";
 import { createChannelNavigation } from "./createChannelNavigation.ts";
 import { createWatchControls } from "./createWatchControls.ts";
 import { createChannelSubscriptions } from "./createChannelSubscriptions.ts";

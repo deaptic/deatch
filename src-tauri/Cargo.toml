@@ -36,6 +36,9 @@ tokio-tungstenite = { version = "0.30", features = ["native-tls"] }
 futures-util = "0.3"
 discord-rich-presence = "1"
 interprocess = { version = "2", features = ["tokio"] }
+specta = { version = "=2.0.0-rc.25", features = ["derive"] }
+tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
+specta-typescript = "=0.0.12"
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.56"

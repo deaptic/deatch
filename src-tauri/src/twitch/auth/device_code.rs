@@ -6,7 +6,7 @@ use serde::Serialize;
 use tauri::{Emitter, Manager};
 use twitch_api::twitch_oauth2::DeviceUserTokenBuilder;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, specta::Type)]
 pub struct DcfAuthResponse {
     pub user_code: String,
     pub verification_uri: String,

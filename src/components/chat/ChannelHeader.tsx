@@ -12,7 +12,7 @@ import { beginRaid } from "../../lib/stores/raid.ts";
 import { user } from "../../lib/stores/users.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Stat from "../ui/Stat.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";

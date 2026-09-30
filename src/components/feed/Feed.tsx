@@ -25,7 +25,7 @@ import { shortcutManager } from "../../lib/managers/ShortcutManager.ts";
 import FeedMessage from "./FeedMessage.tsx";
 import FeedEvent from "./FeedEvent.tsx";
 import FeedDivider from "./FeedDivider.tsx";
-import type { UserRef } from "../../lib/types/twitch/user.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 export type FeedApi = {
   scrollToBottom: () => void;

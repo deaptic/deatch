@@ -5,7 +5,7 @@ import {
   feedUserShowDisplayName,
 } from "../../lib/stores/preferences.ts";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
-import type { UserRef } from "../../lib/types/twitch/user.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   login: string;

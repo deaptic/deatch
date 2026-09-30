@@ -19,8 +19,8 @@ import {
   setUserEmotes,
 } from "../stores/emotes.ts";
 import { user } from "../stores/users.ts";
-import type { EmoteEntry } from "../types/external/emote.ts";
-import type { Emote, UserEmote } from "../types/twitch/chat.ts";
+import type { EmoteEntry } from "../types/index.ts";
+import type { Emote, UserEmote } from "../types/index.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;

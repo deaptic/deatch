@@ -25,7 +25,7 @@ import {
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import type { User } from "../../lib/types/twitch/user.ts";
+import type { User } from "../../lib/types/index.ts";
 
 export type RailChannels = {
   loadingPinned: () => boolean;

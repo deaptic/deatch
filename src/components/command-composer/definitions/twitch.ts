@@ -8,7 +8,7 @@ import { getUsers } from "../../../lib/api/twitch/users.ts";
 import { beginRaid, cancelActiveRaid } from "../../../lib/stores/raid.ts";
 import {
   type AnnouncementColor,
-  type NamedUserColor,
+  type ChatColor,
   sendChatAnnouncement,
   sendChatMessage,
   sendShoutout,
@@ -19,7 +19,6 @@ import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
 import { searchCategories } from "../../../lib/api/twitch/search.ts";
 import {
   addChannelVip,
-  type CommercialLength,
   modifyChannelInformation,
   removeChannelVip,
   startCommercial,
@@ -488,7 +487,7 @@ export const twitchCommands: Command[] = [
       },
     ],
     execute: async ({ color }) => {
-      await updateUserChatColor({ color: color as NamedUserColor });
+      await updateUserChatColor({ color: color as ChatColor });
     },
   },
   {
@@ -556,7 +555,7 @@ export const twitchCommands: Command[] = [
     execute: async ({ length }, ctx) => {
       await startCommercial({
         broadcasterId: ctx.broadcasterId,
-        length: Number(length) as CommercialLength,
+        length: Number(length),
       });
     },
   },

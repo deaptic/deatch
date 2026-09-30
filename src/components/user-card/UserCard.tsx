@@ -6,7 +6,7 @@ import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
-import type { UserRef } from "../../lib/types/twitch/user.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   x: number;

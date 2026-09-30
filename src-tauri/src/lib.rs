@@ -13,53 +13,13 @@ pub use watch::host as browser_host;
 
 use tauri::Manager;
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    keyring::init_store();
-    tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_autostart::init(
-            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
-            None,
-        ))
-        .plugin(
-            tauri_plugin_window_state::Builder::default()
-                .with_state_flags(
-                    tauri_plugin_window_state::StateFlags::all()
-                        - tauri_plugin_window_state::StateFlags::DECORATIONS,
-                )
-                .build(),
-        )
-        .setup(|app| {
-            let http = http::client()?;
-            app.manage(twitch::Twitch::new(http.clone()));
-            app.manage(http);
-
-            // A dev build must never become the browser's native-messaging
-            // host: Firefox would keep spawning target/debug/deatch.exe and
-            // hold the file lock cargo needs to relink.
-            if !cfg!(debug_assertions) {
-                if let Err(e) = watch::bridge::register() {
-                    eprintln!("browser bridge registration failed: {e}");
-                }
-            }
-            watch::ipc::start_server(app.handle().clone());
-            emotes::seventv_events::spawn(app.handle().clone());
-
-            if let Some(w) = app.get_webview_window("main") {
-                if let Ok(icon) =
-                    tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))
-                {
-                    let _ = w.set_icon(icon);
-                }
-            }
-
-            Ok(())
-        })
-        .manage(discord::DiscordState::new())
-        .invoke_handler(tauri::generate_handler![
+fn bindings() -> tauri_specta::Builder<tauri::Wry> {
+    tauri_specta::Builder::<tauri::Wry>::new()
+        .error_handling(tauri_specta::ErrorHandlingMode::Throw)
+        .dangerously_cast_bigints_to_number()
+        .typ::<error::Error>()
+        .typ::<emotes::dto::Delta>()
+        .commands(tauri_specta::collect_commands![
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
@@ -118,6 +78,70 @@ pub fn run() {
             watch::commands::watch_request_state,
             notifications::commands::set_mentions_badge,
         ])
+}
+
+#[cfg(debug_assertions)]
+fn export_bindings(bindings: &tauri_specta::Builder<tauri::Wry>) {
+    bindings
+        .export(
+            specta_typescript::Typescript::default(),
+            concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib/bindings.ts"),
+        )
+        .expect("failed to export typescript bindings");
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    keyring::init_store();
+    let bindings = bindings();
+    #[cfg(debug_assertions)]
+    export_bindings(&bindings);
+    let invoke_handler = bindings.invoke_handler();
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
+        .plugin(
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(
+                    tauri_plugin_window_state::StateFlags::all()
+                        - tauri_plugin_window_state::StateFlags::DECORATIONS,
+                )
+                .build(),
+        )
+        .setup(move |app| {
+            bindings.mount_events(app);
+            let http = http::client()?;
+            app.manage(twitch::Twitch::new(http.clone()));
+            app.manage(http);
+
+            // A dev build must never become the browser's native-messaging
+            // host: Firefox would keep spawning target/debug/deatch.exe and
+            // hold the file lock cargo needs to relink.
+            if !cfg!(debug_assertions) {
+                if let Err(e) = watch::bridge::register() {
+                    eprintln!("browser bridge registration failed: {e}");
+                }
+            }
+            watch::ipc::start_server(app.handle().clone());
+            emotes::seventv_events::spawn(app.handle().clone());
+
+            if let Some(w) = app.get_webview_window("main") {
+                if let Ok(icon) =
+                    tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))
+                {
+                    let _ = w.set_icon(icon);
+                }
+            }
+
+            Ok(())
+        })
+        .manage(discord::DiscordState::new())
+        .invoke_handler(invoke_handler)
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|_app, event| {

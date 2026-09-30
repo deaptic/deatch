@@ -1,5 +1,5 @@
 import { createEffect, on } from "solid-js";
-import type { User } from "../types/twitch/user.ts";
+import type { User } from "../types/index.ts";
 import { rememberUser, usersById } from "../stores/channels.ts";
 import {
   selectedChannel,

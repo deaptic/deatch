@@ -11,11 +11,13 @@ use twitch_api::helix::search::search_channels::SearchChannelsRequest;
 const DEFAULT_CHANNEL_RESULTS: usize = 20;
 const DEFAULT_CATEGORY_RESULTS: usize = 10;
 
-#[derive(Default, Deserialize)]
-#[serde(default, rename_all = "camelCase")]
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct SearchChannelsParams {
     pub query: String,
+    #[serde(default)]
     pub live_only: bool,
+    #[serde(default)]
     pub first: Option<usize>,
 }
 
@@ -33,7 +35,7 @@ pub async fn search_channels(
     Ok(response.data.into_iter().map(SearchChannel::from).collect())
 }
 
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
 pub struct SearchCategoriesParams {
     pub query: String,

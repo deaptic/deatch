@@ -9,11 +9,13 @@ use serde::Deserialize;
 use twitch_api::helix::clips::create_clip::CreateClipRequest;
 use twitch_api::helix::EmptyBody;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateClipParams {
     pub broadcaster_id: UserId,
+    #[serde(default)]
     pub title: Option<String>,
+    #[serde(default)]
     pub duration: Option<f32>,
 }
 

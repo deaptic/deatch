@@ -47,7 +47,7 @@ import {
 import { createPopover } from "./createPopover.ts";
 import { createNicknameEditor } from "./createNicknameEditor.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import type { UserRef } from "../../lib/types/twitch/user.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   broadcasterId: string;

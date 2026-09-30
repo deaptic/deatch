@@ -1,4 +1,4 @@
-import type { AppError } from "../types/error.ts";
+import type { AppError } from "../types/index.ts";
 
 function isAppError(e: unknown): e is AppError {
   return typeof e === "object" && e !== null && "kind" in e;

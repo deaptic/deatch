@@ -4,8 +4,8 @@ import {
   discordDisconnect,
   discordSetActivity,
 } from "../api/discord.ts";
-import type { Stream } from "../types/twitch/stream.ts";
-import type { User } from "../types/twitch/user.ts";
+import type { Stream } from "../types/index.ts";
+import type { User } from "../types/index.ts";
 
 let connected = false;
 let lastSerialized: string | null = null;

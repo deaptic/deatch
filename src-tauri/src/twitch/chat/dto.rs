@@ -10,7 +10,7 @@ fn emote_url(id: &str) -> String {
     format!("https://static-cdn.jtvnw.net/emoticons/v2/{id}/default/dark/1.0")
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Emote {
     pub id: String,
@@ -28,7 +28,7 @@ impl From<GlobalEmote> for Emote {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UserEmote {
     pub id: String,
@@ -52,7 +52,7 @@ impl From<HelixUserEmote> for UserEmote {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Badge {
     pub id: String,
@@ -76,7 +76,7 @@ impl From<HelixChatBadge> for Badge {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct BadgeSet {
     pub set_id: String,
@@ -92,7 +92,7 @@ impl From<HelixBadgeSet> for BadgeSet {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageResult {
     pub message_id: Option<String>,

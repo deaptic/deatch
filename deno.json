@@ -1,9 +1,11 @@
 {
   "fmt": {
-    "include": ["src/"]
+    "include": ["src/"],
+    "exclude": ["src/lib/bindings.ts"]
   },
   "lint": {
     "include": ["src/"],
+    "exclude": ["src/lib/bindings.ts"],
     "rules": {
       "exclude": [
         "no-window",

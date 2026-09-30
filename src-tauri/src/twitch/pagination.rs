@@ -4,12 +4,12 @@ use serde::Serialize;
 use std::borrow::Cow;
 use twitch_api::helix::{ClientRequestError, Cursor, CursorRef, Paginated, Response};
 
-#[derive(Serialize)]
+#[derive(Serialize, specta::Type)]
 pub struct Pagination {
     pub cursor: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, specta::Type)]
 pub struct PaginatedResponse<T> {
     pub data: Vec<T>,
     pub pagination: Pagination,

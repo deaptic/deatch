@@ -11,7 +11,7 @@ use std::borrow::Cow;
 use twitch_api::helix::streams::GetStreamsRequest;
 use twitch_api::types;
 
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
 pub struct GetStreamsParams {
     pub user_ids: Vec<UserId>,
@@ -49,7 +49,7 @@ pub async fn get_streams(
     ))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct GetStreamsFromIdsParams {
     pub user_ids: Vec<UserId>,
@@ -68,7 +68,7 @@ pub async fn get_followed_streams(twitch: &Authed<'_>) -> Result<Vec<Stream>> {
     crate::twitch::pagination::collect(twitch.helix.get_followed_streams(&twitch.token)).await
 }
 
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
 pub struct CreateStreamMarkerParams {
     pub description: Option<String>,

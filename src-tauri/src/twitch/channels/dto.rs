@@ -6,7 +6,7 @@ use twitch_api::helix::channels::{
     get_followed_channels::FollowedBroadcaster, ChannelInformation, Follower,
 };
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelInfo {
     pub broadcaster: UserRef,
@@ -27,7 +27,7 @@ impl From<ChannelInformation> for ChannelInfo {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Follow {
     pub user: UserRef,

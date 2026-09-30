@@ -6,8 +6,8 @@ import {
 } from "../api/external/seventv_events.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";
-import type { EmoteEntry } from "../types/external/emote.ts";
-import type { Delta } from "../types/external/seventv.ts";
+import type { EmoteEntry } from "../types/index.ts";
+import type { Delta } from "../types/index.ts";
 import type { FeedEvent } from "../types/feed.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };

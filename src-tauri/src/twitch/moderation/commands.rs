@@ -10,6 +10,7 @@ use crate::twitch::Twitch;
 use tauri::State;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn delete_chat_messages(
     twitch: State<'_, Twitch>,
     params: DeleteChatMessagesParams,
@@ -18,16 +19,19 @@ pub async fn delete_chat_messages(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn ban_user(twitch: State<'_, Twitch>, params: BanUserParams) -> Result<Ban> {
     moderation::ban_user(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn unban_user(twitch: State<'_, Twitch>, params: UnbanUserParams) -> Result<()> {
     moderation::unban_user(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_banned_users(
     twitch: State<'_, Twitch>,
     params: GetBannedUsersParams,
@@ -36,6 +40,7 @@ pub async fn get_banned_users(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_moderators(
     twitch: State<'_, Twitch>,
     params: GetModeratorsParams,
@@ -44,16 +49,19 @@ pub async fn get_moderators(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_moderated_channels(twitch: State<'_, Twitch>) -> Result<Vec<UserRef>> {
     moderation::get_moderated_channels(&twitch.authed().await?).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn warn_user(twitch: State<'_, Twitch>, params: WarnUserParams) -> Result<()> {
     moderation::warn_user(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn manage_held_automod_message(
     twitch: State<'_, Twitch>,
     params: ManageHeldAutomodMessageParams,
