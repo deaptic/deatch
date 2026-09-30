@@ -107,7 +107,7 @@ export default function TriggerCard(props: {
             <SectionLabel>Match</SectionLabel>
             <textarea
               rows={2}
-              placeholder="Phrases to match, one per line..."
+              placeholder="Phrases to match, one per line. Use * as a wildcard, e.g. hi*"
               value={draft.phrase}
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
               class="bg-surface text-ink text-body rounded-sm px-3 py-2 border border-line hover:border-ink-faint focus:outline-none focus:border-accent resize-y placeholder:text-ink-faint transition-colors duration-snap"

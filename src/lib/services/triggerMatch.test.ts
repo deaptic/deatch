@@ -67,6 +67,13 @@ Deno.test("accepts any of several phrases, one per line", () => {
   assertEquals(fires("twitter", multi), false);
 });
 
+Deno.test("phrases accept * wildcards in every location", () => {
+  assertEquals(fires("hiya all", { phrase: "hi*" }), true);
+  assertEquals(fires("hiya", { phrase: "hi*", location: "exact" }), true);
+  assertEquals(fires("oh hiya", { phrase: "hi*", location: "start" }), false);
+  assertEquals(fires("anything", { phrase: "*" }), false);
+});
+
 Deno.test("skips disabled and blank triggers and returns the first match", () => {
   const disabled = trigger({ id: "off", enabled: false });
   const blank = trigger({ id: "blank", phrase: "   " });
