@@ -1,6 +1,7 @@
 pub mod commands;
 pub(super) mod credentials;
 mod device_code;
+pub mod events;
 mod restore;
 mod revoke;
 mod scopes;

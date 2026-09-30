@@ -17,23 +17,20 @@ pub mod users;
 use crate::error::Result;
 use session::Session;
 use std::collections::HashSet;
-use std::sync::Mutex;
-use tokio::sync::mpsc;
+use std::sync::{Arc, Mutex};
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::HelixClient;
 use users::dto::UserRef;
 
 pub type Helix = HelixClient<'static, reqwest::Client>;
 
+#[derive(Clone)]
 pub struct Twitch {
     http: reqwest::Client,
     helix: Helix,
-    session: Session,
-    eventsub_tx: Mutex<Option<mpsc::UnboundedSender<eventsub::EventSubCmd>>>,
-    /// Serializes `eventsub::ensure_task` so concurrent `subscribe` calls
-    /// can't race the auth check or spawn duplicate tasks.
-    eventsub_init: tokio::sync::Mutex<()>,
-    moderated_channel_ids: Mutex<HashSet<String>>,
+    session: Arc<Session>,
+    eventsub: Arc<eventsub::Handle>,
+    moderated_channel_ids: Arc<Mutex<HashSet<String>>>,
 }
 
 pub struct Authed<'a> {
@@ -46,10 +43,9 @@ impl Twitch {
         Self {
             helix: HelixClient::with_client(http.clone()),
             http,
-            session: Session::new(),
-            eventsub_tx: Mutex::new(None),
-            eventsub_init: tokio::sync::Mutex::new(()),
-            moderated_channel_ids: Mutex::new(HashSet::new()),
+            session: Arc::new(Session::new()),
+            eventsub: Arc::default(),
+            moderated_channel_ids: Arc::default(),
         }
     }
 

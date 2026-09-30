@@ -1,4 +1,4 @@
-import { listen } from "@tauri-apps/api/event";
+import { events } from "../bindings.ts";
 import { seventvGetChannelEmotes } from "../api/external/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
@@ -6,8 +6,7 @@ import {
 } from "../api/external/seventv_events.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";
-import type { EmoteEntry } from "../types/index.ts";
-import type { Delta } from "../types/index.ts";
+import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 import type { FeedEvent } from "../types/feed.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
@@ -18,10 +17,7 @@ export class SevenTvManager {
   private activeChannelId: string | null = null;
 
   constructor() {
-    void listen<Delta>(
-      "seventv-emote-set-updated",
-      (e) => this.onDelta(e.payload),
-    );
+    void events.emoteSetUpdated.listen((e) => this.onUpdate(e.payload));
   }
 
   public async subscribe(broadcasterId: string): Promise<void> {
@@ -61,10 +57,10 @@ export class SevenTvManager {
     );
   }
 
-  private onDelta(u: Delta): void {
+  private onUpdate(u: EmoteSetUpdated): void {
     const entry = this.bySetId.get(u.id);
     if (!entry) return;
-    entry.emotes = this.applyDelta(entry.emotes, u);
+    entry.emotes = this.applyUpdate(entry.emotes, u);
     this.pushIfActive(entry);
     this.announce(entry.broadcasterId, u);
   }
@@ -75,7 +71,7 @@ export class SevenTvManager {
     }
   }
 
-  private applyDelta(prev: EmoteEntry[], u: Delta): EmoteEntry[] {
+  private applyUpdate(prev: EmoteEntry[], u: EmoteSetUpdated): EmoteEntry[] {
     const removed = new Set(u.removed);
     const renames = new Map(u.renamed.map((r) => [r.from, r.to]));
     const kept = prev.flatMap((e) =>
@@ -86,7 +82,7 @@ export class SevenTvManager {
     return [...kept, ...u.added];
   }
 
-  private announce(channelId: string, u: Delta): void {
+  private announce(channelId: string, u: EmoteSetUpdated): void {
     const who = u.actor ?? "Someone";
     const lines = [
       ...u.added.map((e) => `${who} added 7TV emote ${e.name}`),

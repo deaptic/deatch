@@ -4,17 +4,17 @@ use std::time::Duration;
 use futures_util::{Sink, SinkExt, StreamExt};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 use super::seventv::emote_url;
+use crate::emit::emit;
 use crate::emotes::dto::EmoteEntry;
-use crate::emotes::dto::{Delta, Rename};
+use crate::emotes::dto::{EmoteSetUpdated, Rename};
 
 const WS_URL: &str = "wss://events.7tv.io/v3";
 const EMOTE_SET_UPDATE: &str = "emote_set.update";
-const UPDATE_EVENT: &str = "seventv-emote-set-updated";
 const OP_DISPATCH: u8 = 0;
 const OP_SUBSCRIBE: u8 = 35;
 const OP_UNSUBSCRIBE: u8 = 36;
@@ -51,7 +51,7 @@ async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
                     Some(op) => apply(&mut write, &mut active, op).await,
                 },
                 msg = read.next() => match msg {
-                    Some(Ok(Message::Text(t))) => emit_delta(&app, &t),
+                    Some(Ok(Message::Text(t))) => emit_update(&app, &t),
                     Some(Ok(Message::Ping(p))) => { let _ = write.send(Message::Pong(p)).await; }
                     Some(Ok(_)) => {}
                     _ => break,
@@ -92,9 +92,9 @@ fn payload(op: u8, set_id: &str) -> Message {
     )
 }
 
-fn emit_delta(app: &tauri::AppHandle, text: &str) {
-    if let Some(delta) = parse_delta(text) {
-        let _ = app.emit(UPDATE_EVENT, delta);
+fn emit_update(app: &tauri::AppHandle, text: &str) {
+    if let Some(update) = parse_update(text) {
+        emit(app, update);
     }
 }
 
@@ -152,7 +152,7 @@ fn is_emote(c: &Change) -> bool {
     c.key == "emotes"
 }
 
-fn parse_delta(text: &str) -> Option<Delta> {
+fn parse_update(text: &str) -> Option<EmoteSetUpdated> {
     let frame: Frame = serde_json::from_str(text).ok()?;
     if frame.op != OP_DISPATCH {
         return None;
@@ -199,7 +199,7 @@ fn parse_delta(text: &str) -> Option<Delta> {
         return None;
     }
     let actor = d.body.actor.and_then(|a| a.display_name.or(a.username));
-    Some(Delta {
+    Some(EmoteSetUpdated {
         id: d.body.id,
         actor,
         added,

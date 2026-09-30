@@ -1,12 +1,7 @@
-import { listen } from "@tauri-apps/api/event";
+import { events } from "../bindings.ts";
 import { eventsubState, setEventsubState } from "../stores/eventsub.ts";
 import { subscribe, unsubscribe } from "../api/twitch/eventsub.ts";
-import type {
-  EventKind,
-  EventSubFailure,
-  EventSubNotice,
-  SubStatus,
-} from "../types/twitch/eventsub.ts";
+import type { EventKind, SubStatus } from "../types/twitch/eventsub.ts";
 
 export class EventSubManager {
   private static readonly RETRY_DELAY_MS = 3000;
@@ -15,25 +10,21 @@ export class EventSubManager {
   private retried = new Set<string>();
 
   constructor() {
-    void listen<EventSubNotice>(
-      "eventsub-subscribed",
-      (e) => this.onSubscribed(e.payload),
-    );
-    void listen<EventSubFailure>(
-      "eventsub-subscribe-failed",
-      (e) => this.onFailed(e.payload),
-    );
-    void listen<EventSubNotice>(
-      "eventsub-unsubscribed",
-      (e) =>
-        this.setStatus(
-          e.payload.broadcaster_id,
-          e.payload.kind,
-          "disconnected",
-        ),
-    );
+    void events.eventSubSubscription.listen(({ payload }) => {
+      const { broadcasterId, kind, status } = payload;
+      switch (status.type) {
+        case "subscribed":
+          this.onSubscribed(broadcasterId, kind);
+          break;
+        case "failed":
+          this.onFailed(broadcasterId, kind);
+          break;
+        case "unsubscribed":
+          this.setStatus(broadcasterId, kind, "disconnected");
+          break;
+      }
+    });
   }
-
   public async subscribe(
     broadcasterId: string,
     kind: EventKind,
@@ -53,22 +44,22 @@ export class EventSubManager {
     );
   }
 
-  private onSubscribed({ broadcaster_id, kind }: EventSubNotice): void {
-    this.cancelRetry(broadcaster_id, kind);
-    this.setStatus(broadcaster_id, kind, "active");
+  private onSubscribed(broadcasterId: string, kind: EventKind): void {
+    this.cancelRetry(broadcasterId, kind);
+    this.setStatus(broadcasterId, kind, "active");
   }
 
-  private onFailed({ broadcaster_id, kind }: EventSubFailure): void {
-    const key = EventSubManager.keyOf(broadcaster_id, kind);
+  private onFailed(broadcasterId: string, kind: EventKind): void {
+    const key = EventSubManager.keyOf(broadcasterId, kind);
     if (this.retried.has(key)) {
       this.retried.delete(key);
-      this.setStatus(broadcaster_id, kind, "failed");
+      this.setStatus(broadcasterId, kind, "failed");
       return;
     }
     this.retried.add(key);
     const timer = setTimeout(() => {
       this.retryTimers.delete(key);
-      void this.subscribe(broadcaster_id, kind);
+      void this.subscribe(broadcasterId, kind);
     }, EventSubManager.RETRY_DELAY_MS);
     this.retryTimers.set(key, timer);
   }

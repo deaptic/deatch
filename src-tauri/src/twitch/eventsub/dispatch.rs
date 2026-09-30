@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use futures_util::StreamExt;
+use serde::Serialize;
 use tauri::Emitter;
 use twitch_api::eventsub::{Event, EventsubWebsocketData};
 
@@ -10,24 +11,34 @@ use super::runner::ChannelSub;
 use super::subscribe::create_subscription;
 use super::EventKind;
 use crate::error::Result;
-use tauri::Manager;
 
 /// Forwards an EventSub notification to the frontend wrapped in
 /// `EventEnvelope { timestamp, event }` if the broadcaster is one we care
 /// about. The envelope is uniform across every event kind so the renderer
 /// can read `timestamp` without per-event special casing.
 macro_rules! forward {
-    ($app:expr, $subs:expr, $notif:expr, $event_name:literal, $timestamp:expr) => {
+    ($app:expr, $subs:expr, $notif:expr, $kind:expr, $timestamp:expr) => {
         if let twitch_api::eventsub::Message::Notification(msg) = $notif.message {
             if $subs.contains_key(msg.broadcaster_user_id.as_str()) {
-                let _ = $app.emit($event_name, EventEnvelope::new($timestamp, msg));
+                emit_notification($app, $kind, EventEnvelope::new($timestamp, msg));
             }
         }
     };
 }
 
+fn emit_notification<T: Serialize + Clone>(
+    app: &tauri::AppHandle,
+    kind: EventKind,
+    envelope: EventEnvelope<T>,
+) {
+    if let Err(e) = app.emit(kind.event_name(), envelope) {
+        eprintln!("[eventsub] emit {} failed: {e}", kind.event_name());
+    }
+}
+
 pub(super) async fn handle_ws_message(
     app: &tauri::AppHandle,
+    twitch: &Twitch,
     subs: &mut HashMap<String, ChannelSub>,
     session_id: &mut Option<String>,
     text: &str,
@@ -35,13 +46,16 @@ pub(super) async fn handle_ws_message(
 ) -> Result<Option<String>> {
     let event = match Event::parse_websocket(text) {
         Ok(e) => e,
-        Err(e) => return forward_unparsed(app, subs, text, e),
+        Err(e) => {
+            forward_unparsed(app, subs, text, e);
+            return Ok(None);
+        }
     };
     match event {
         EventsubWebsocketData::Welcome { payload, .. } => {
             let sid = payload.session.id.to_string();
             *session_id = Some(sid.clone());
-            resubscribe_pending(app, subs, &sid, quiet).await?;
+            resubscribe_pending(app, twitch, subs, &sid, quiet).await?;
             Ok(None)
         }
         EventsubWebsocketData::Notification {
@@ -64,35 +78,54 @@ fn dispatch_notification(
     timestamp: &str,
 ) {
     match payload {
-        Event::ChannelChatMessageV1(n) => forward!(app, subs, n, "channel-chat-message", timestamp),
+        Event::ChannelChatMessageV1(n) => {
+            forward!(app, subs, n, EventKind::ChannelChatMessage, timestamp)
+        }
         Event::ChannelChatNotificationV1(n) => {
-            forward!(app, subs, n, "channel-chat-notification", timestamp)
+            forward!(app, subs, n, EventKind::ChannelChatNotification, timestamp)
         }
         Event::ChannelChatMessageDeleteV1(n) => {
-            forward!(app, subs, n, "channel-chat-message-delete", timestamp)
+            forward!(app, subs, n, EventKind::ChannelChatMessageDelete, timestamp)
         }
-        Event::ChannelChatClearV1(n) => forward!(app, subs, n, "channel-chat-clear", timestamp),
+        Event::ChannelChatClearV1(n) => {
+            forward!(app, subs, n, EventKind::ChannelChatClear, timestamp)
+        }
         Event::ChannelChatClearUserMessagesV1(n) => {
-            forward!(app, subs, n, "channel-chat-clear-user-messages", timestamp)
+            forward!(
+                app,
+                subs,
+                n,
+                EventKind::ChannelChatClearUserMessages,
+                timestamp
+            )
         }
         Event::ChannelShoutoutCreateV1(n) => {
-            forward!(app, subs, n, "channel-shoutout-create", timestamp)
+            forward!(app, subs, n, EventKind::ChannelShoutoutCreate, timestamp)
         }
-        Event::ChannelFollowV2(n) => forward!(app, subs, n, "channel-follow", timestamp),
-        Event::ChannelModerateV2(n) => forward!(app, subs, n, "channel-moderate", timestamp),
-        Event::AutomodMessageHoldV2(n) => forward!(app, subs, n, "automod-message-hold", timestamp),
+        Event::ChannelFollowV2(n) => forward!(app, subs, n, EventKind::ChannelFollow, timestamp),
+        Event::ChannelModerateV2(n) => {
+            forward!(app, subs, n, EventKind::ChannelModerate, timestamp)
+        }
+        Event::AutomodMessageHoldV2(n) => {
+            forward!(app, subs, n, EventKind::AutomodMessageHold, timestamp)
+        }
         Event::AutomodMessageUpdateV2(n) => {
-            forward!(app, subs, n, "automod-message-update", timestamp)
+            forward!(app, subs, n, EventKind::AutomodMessageUpdate, timestamp)
         }
-        Event::ChannelPointsCustomRewardRedemptionAddV1(n) => {
-            forward!(app, subs, n, "channel-points-redemption-add", timestamp)
-        }
+        Event::ChannelPointsCustomRewardRedemptionAddV1(n) => forward!(
+            app,
+            subs,
+            n,
+            EventKind::ChannelPointsCustomRewardRedemptionAdd,
+            timestamp
+        ),
         _ => {}
     }
 }
 
 async fn resubscribe_pending(
     app: &tauri::AppHandle,
+    twitch: &Twitch,
     subs: &mut HashMap<String, ChannelSub>,
     sid: &str,
     quiet: bool,
@@ -103,16 +136,15 @@ async fn resubscribe_pending(
     if !has_pending {
         return Ok(());
     }
-    let twitch = app.state::<Twitch>();
     let authed = twitch.authed().await?;
     let authed = &authed;
 
-    // Build the work queue in KIND_PRIORITY order so every channel's
+    // Build the work queue in `EventKind::ALL` order so every channel's
     // chat.message HTTP call starts before any other-kind call —
     // `requested` is a HashSet, so this outer loop is what guarantees ordering.
     const MAX_CONCURRENT: usize = 20;
     let mut work: Vec<(EventKind, String)> = Vec::new();
-    for &kind in KIND_PRIORITY {
+    for kind in EventKind::ALL {
         for (broadcaster_id, sub) in subs.iter() {
             if sub.requested.contains(&kind) && !sub.sub_ids.contains_key(&kind) {
                 work.push((kind, broadcaster_id.clone()));
@@ -141,20 +173,6 @@ async fn resubscribe_pending(
     Ok(())
 }
 
-const KIND_PRIORITY: &[EventKind] = &[
-    EventKind::ChannelChatMessage,
-    EventKind::ChannelChatNotification,
-    EventKind::ChannelChatMessageDelete,
-    EventKind::ChannelChatClear,
-    EventKind::ChannelChatClearUserMessages,
-    EventKind::ChannelShoutoutCreate,
-    EventKind::ChannelFollow,
-    EventKind::ChannelModerate,
-    EventKind::AutomodMessageHold,
-    EventKind::AutomodMessageUpdate,
-    EventKind::ChannelPointsCustomRewardRedemptionAdd,
-];
-
 /// Fallback for messages `twitch_api` can't parse — typically newer
 /// `channel.chat.notification` variants (watch_streak, modiversary) or
 /// `channel.moderate` action additions. We pluck the inner event JSON
@@ -164,36 +182,31 @@ fn forward_unparsed(
     subs: &HashMap<String, ChannelSub>,
     text: &str,
     parse_err: impl std::fmt::Display,
-) -> Result<Option<String>> {
+) {
     if let Ok(value) = serde_json::from_str::<serde_json::Value>(text) {
-        let sub_type = value
+        let kind = value
             .pointer("/metadata/subscription_type")
-            .and_then(|v| v.as_str());
+            .and_then(|v| serde_json::from_value::<EventKind>(v.clone()).ok());
         let evt = value.pointer("/payload/event");
         let timestamp = value
             .pointer("/metadata/message_timestamp")
             .and_then(|v| v.as_str())
             .unwrap_or("");
 
-        if let (Some(kind), Some(evt)) = (sub_type, evt) {
+        if let (
+            Some(kind @ (EventKind::ChannelChatNotification | EventKind::ChannelModerate)),
+            Some(evt),
+        ) = (kind, evt)
+        {
             let broadcaster = evt
                 .get("broadcaster_user_id")
                 .and_then(|v| v.as_str())
                 .unwrap_or("");
-            let subscribed = subs.contains_key(broadcaster);
-            let event_name = match kind {
-                "channel.chat.notification" => Some("channel-chat-notification"),
-                "channel.moderate" => Some("channel-moderate"),
-                _ => None,
-            };
-            if let Some(name) = event_name {
-                if subscribed {
-                    let _ = app.emit(name, EventEnvelope::new(timestamp, evt));
-                }
-                return Ok(None);
+            if subs.contains_key(broadcaster) {
+                emit_notification(app, kind, EventEnvelope::new(timestamp, evt.clone()));
             }
+            return;
         }
     }
     eprintln!("[eventsub] parse_websocket skipped: {parse_err}\n  raw: {text}");
-    Ok(None)
 }

@@ -1,6 +1,5 @@
-import { listen } from "@tauri-apps/api/event";
+import { listenEventSub } from "./listenEventSub.ts";
 import type { RawChatMessage } from "../types/index.ts";
-import type { EventEnvelope } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { isModOfChannel, user } from "../stores/users.ts";
 import { usersById } from "../stores/channels.ts";
@@ -13,7 +12,7 @@ import { triggerManager } from "../managers/TriggerManager.ts";
 
 const FOLLOWAGE_CHANNEL_ID = "1091892807";
 
-listen<EventEnvelope<RawChatMessage>>("channel-chat-message", (e) => {
+listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
   const raw = e.payload.event;
   const ts = Date.now();
   appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));

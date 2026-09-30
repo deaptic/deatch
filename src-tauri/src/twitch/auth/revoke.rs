@@ -12,6 +12,6 @@ pub async fn revoke_session(twitch: &Twitch) -> Result<()> {
         }
     }
     twitch.session.clear();
-    *twitch.eventsub_tx.lock().unwrap() = None;
+    twitch.eventsub.stop();
     credentials::delete()
 }
