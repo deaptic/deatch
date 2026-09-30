@@ -70,7 +70,7 @@ async fn send_to_host(command: &HostCommand<'_>) -> std::io::Result<()> {
 pub fn start_server(app: tauri::AppHandle) -> tauri::async_runtime::JoinHandle<()> {
     tauri::async_runtime::spawn(async move {
         if let Err(e) = run_server(app).await {
-            eprintln!("ipc server stopped: {e}");
+            log::error!("ipc server stopped: {e}");
         }
     })
 }
@@ -87,7 +87,7 @@ async fn run_server(app: tauri::AppHandle) -> std::io::Result<()> {
         let conn = match listener.accept().await {
             Ok(c) => c,
             Err(e) => {
-                eprintln!("ipc accept failed: {e}");
+                log::warn!("ipc accept failed: {e}");
                 continue;
             }
         };
@@ -108,7 +108,7 @@ async fn handle_connection(
     while let Ok(Some(line)) = lines.next_line().await {
         match serde_json::from_str::<HostMessage>(&line) {
             Ok(HostMessage::State(state)) => emit(app, state),
-            Err(e) => eprintln!("ipc bad message: {e} — {line}"),
+            Err(e) => log::warn!("ipc bad message: {e} — {line}"),
         }
     }
 

@@ -121,9 +121,7 @@ pub(super) async fn create_subscription(
 
     match result {
         Ok(id) => {
-            println!(
-                "[eventsub] subscribed kind={kind:?} broadcaster={broadcaster_id} quiet={quiet}"
-            );
+            log::info!("subscribed kind={kind:?} broadcaster={broadcaster_id} quiet={quiet}");
             if !quiet {
                 emit_status(app, broadcaster_id, kind, SubscriptionStatus::Subscribed);
             }
@@ -158,9 +156,7 @@ pub(super) fn emit_failed(
     kind: EventKind,
     error: Error,
 ) {
-    println!(
-        "[eventsub] subscribe-failed kind={kind:?} broadcaster={broadcaster_id} error={error}"
-    );
+    log::warn!("subscribe-failed kind={kind:?} broadcaster={broadcaster_id} error={error}");
     emit_status(
         app,
         broadcaster_id,

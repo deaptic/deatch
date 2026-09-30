@@ -2,8 +2,8 @@ use std::collections::HashSet;
 use std::time::Duration;
 
 use futures_util::{Sink, SinkExt, StreamExt};
-use serde::Deserialize;
-use serde_json::{json, Value};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use tauri::Manager;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
@@ -81,17 +81,35 @@ async fn apply<S: Sink<Message> + Unpin>(
     }
 }
 
-fn payload(op: u8, set_id: &str) -> Message {
-    Message::Text(
-        json!({
-            "op": op,
-            "d": { "type": EMOTE_SET_UPDATE, "condition": { "object_id": set_id } }
-        })
-        .to_string()
-        .into(),
-    )
+#[derive(Serialize)]
+struct Request<'a> {
+    op: u8,
+    d: Subscription<'a>,
 }
 
+#[derive(Serialize)]
+struct Subscription<'a> {
+    #[serde(rename = "type")]
+    kind: &'static str,
+    condition: Condition<'a>,
+}
+
+#[derive(Serialize)]
+struct Condition<'a> {
+    object_id: &'a str,
+}
+
+fn payload(op: u8, set_id: &str) -> Message {
+    let request = Request {
+        op,
+        d: Subscription {
+            kind: EMOTE_SET_UPDATE,
+            condition: Condition { object_id: set_id },
+        },
+    };
+    let text = serde_json::to_string(&request).expect("7TV request is always serializable");
+    Message::Text(text.into())
+}
 fn emit_update(app: &tauri::AppHandle, text: &str) {
     if let Some(update) = parse_update(text) {
         emit(app, update);
