@@ -2,6 +2,7 @@ import { Blobatar } from "@blobatar/solid";
 import { Show } from "solid-js";
 import type { FeedMessage } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
+import DisplayName from "../../ui/DisplayName.tsx";
 import { chatterLook } from "./chatterLook.ts";
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function ReplyLine(props: Props) {
+  const parentColor = () => knownChatterColor(props.reply.parent_user_id) ?? "";
+
   return (
     <div
       class={`flex items-center gap-1.5 min-w-0 text-ink-faint feed-meta transition-colors duration-snap ${
@@ -20,7 +23,7 @@ export default function ReplyLine(props: Props) {
     >
       <Show when={props.showAvatar && props.reply.parent_user_id}>
         {(id) => {
-          const look = () => chatterLook(knownChatterColor(id()) ?? "");
+          const look = () => chatterLook(parentColor());
           return (
             <span
               class={`h-lh aspect-square shrink-0 overflow-hidden rounded-xs ${
@@ -40,8 +43,14 @@ export default function ReplyLine(props: Props) {
           );
         }}
       </Show>
-      <span class="shrink-0 font-semibold text-accent-ink">
-        @{props.reply.parent_user_name}
+      <span class="shrink-0">
+        <DisplayName
+          prefix="@"
+          login={props.reply.parent_user_login}
+          displayName={props.reply.parent_user_name}
+          color={parentColor()}
+          userId={props.reply.parent_user_id}
+        />
       </span>
       <span class="truncate">{props.reply.parent_message_body}</span>
     </div>
