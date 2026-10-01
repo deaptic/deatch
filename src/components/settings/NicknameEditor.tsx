@@ -47,7 +47,7 @@ export default function NicknameEditor(props: Props) {
                   size="sm"
                   onClick={() => props.onRemove(key)}
                 >
-                  <X class="size-3.5" />
+                  <X class="size-4" />
                 </IconButton>
               </div>
             )}

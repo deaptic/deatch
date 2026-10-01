@@ -1,4 +1,12 @@
-import { createEffect, createSignal, For, on, onCleanup, Show } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  For,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import type { Stream } from "../../lib/types/index.ts";
 import { liveStreams, rememberUser } from "../../lib/stores/channels.ts";
@@ -16,6 +24,7 @@ type Props = {
 };
 
 const PAGE_SIZE = 40;
+const THUMBNAIL_REFRESH_MS = 5 * 60_000;
 
 type Scope = "following" | "all";
 
@@ -24,6 +33,15 @@ export default function LiveNow(props: Props) {
   const [cursor, setCursor] = createSignal<string | null>(null);
   const [fetching, setFetching] = createSignal(false);
   const [exhausted, setExhausted] = createSignal(false);
+  const [thumbnailVersion, setThumbnailVersion] = createSignal(0);
+
+  onMount(() => {
+    const id = setInterval(
+      () => setThumbnailVersion((v) => v + 1),
+      THUMBNAIL_REFRESH_MS,
+    );
+    onCleanup(() => clearInterval(id));
+  });
 
   async function fetchPage(reset: boolean) {
     if (exploreFilters.followingOnly || fetching()) return;
@@ -169,7 +187,11 @@ export default function LiveNow(props: Props) {
           <div class="grid grid-cards gap-4">
             <For each={sorted()}>
               {(stream) => (
-                <LiveCard stream={stream} onSelect={props.onSelect} />
+                <LiveCard
+                  stream={stream}
+                  thumbnailVersion={thumbnailVersion()}
+                  onSelect={props.onSelect}
+                />
               )}
             </For>
           </div>

@@ -13,6 +13,7 @@ import { chattersByChannel } from "../../lib/stores/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import * as users from "../../lib/services/users.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
+import Artwork from "../ui/Artwork.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
 import { parseDuration, type Slot, slotSatisfied } from "./parse.ts";
@@ -55,11 +56,7 @@ function renderSearchItem(s: OptionSuggestion): JSX.Element {
   return (
     <>
       <Show when={s.image}>
-        <img
-          src={s.image}
-          alt=""
-          class="size-7 shrink-0 rounded object-cover"
-        />
+        <Artwork src={s.image!} shape="boxart" fit="inline" />
       </Show>
       <span class="text-ink truncate">{s.label}</span>
     </>

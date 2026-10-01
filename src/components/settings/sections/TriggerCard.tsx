@@ -1,29 +1,18 @@
 import { Check, ChevronRight, Trash2 } from "lucide-solid";
-import { createSignal, type JSX, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Toggle from "../../ui/Toggle.tsx";
 import Field from "../../ui/Field.tsx";
 import Button from "../../ui/Button.tsx";
 import Segmented from "../../ui/Segmented.tsx";
+import TriggerField from "./TriggerField.tsx";
+import TriggerSectionLabel from "./TriggerSectionLabel.tsx";
 import {
   clampCooldown,
   MAX_TRIGGER_COOLDOWN,
   MIN_TRIGGER_COOLDOWN,
   type Trigger,
 } from "../../../lib/stores/preferences.ts";
-
-function SectionLabel(props: { children: string }) {
-  return <span class="text-small text-ink-faint">{props.children}</span>;
-}
-
-function Row(props: { label: string; children: JSX.Element }) {
-  return (
-    <div class="flex items-center gap-3">
-      <span class="w-24 shrink-0 text-small text-ink-soft">{props.label}</span>
-      <div>{props.children}</div>
-    </div>
-  );
-}
 
 export default function TriggerCard(props: {
   source: Trigger;
@@ -41,9 +30,9 @@ export default function TriggerCard(props: {
 
   return (
     <div
-      class={`flex flex-col gap-4 rounded-lg border bg-surface p-4 transition-opacity duration-snap ${
+      class={`flex flex-col gap-4 rounded-lg border bg-surface p-4 ${
         canSave() ? "border-accent/40" : "border-line-soft"
-      } ${draft.enabled ? "" : "opacity-60"}`}
+      }`}
     >
       <div class="flex items-center gap-3">
         <Toggle
@@ -95,7 +84,7 @@ export default function TriggerCard(props: {
           <div class="h-px -mx-4 bg-line-soft" />
 
           <div class="flex flex-col gap-3">
-            <SectionLabel>Name</SectionLabel>
+            <TriggerSectionLabel>Name</TriggerSectionLabel>
             <Field
               placeholder="Trigger name..."
               value={draft.name}
@@ -104,7 +93,7 @@ export default function TriggerCard(props: {
           </div>
 
           <div class="flex flex-col gap-3">
-            <SectionLabel>Match</SectionLabel>
+            <TriggerSectionLabel>Match</TriggerSectionLabel>
             <textarea
               rows={2}
               placeholder="Phrases to match, one per line. Use * as a wildcard, e.g. hi*"
@@ -112,7 +101,7 @@ export default function TriggerCard(props: {
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
               class="bg-surface text-ink text-body rounded-sm px-3 py-2 border border-line hover:border-ink-faint focus:outline-none focus:border-accent resize-y placeholder:text-ink-faint transition-colors duration-snap"
             />
-            <Row label="Location">
+            <TriggerField label="Location">
               <Segmented
                 value={draft.location}
                 options={[
@@ -122,23 +111,23 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("location", v)}
               />
-            </Row>
-            <Row label="Case sensitive">
+            </TriggerField>
+            <TriggerField label="Case sensitive">
               <Toggle
                 checked={draft.caseSensitive}
                 onChange={(v) => setDraft("caseSensitive", v)}
               />
-            </Row>
+            </TriggerField>
           </div>
 
           <div class="flex flex-col gap-3">
-            <SectionLabel>Response</SectionLabel>
+            <TriggerSectionLabel>Response</TriggerSectionLabel>
             <Field
               placeholder="Response message..."
               value={draft.response}
               onInput={(e) => setDraft("response", e.currentTarget.value)}
             />
-            <Row label="Action">
+            <TriggerField label="Action">
               <Segmented
                 value={draft.action}
                 options={[
@@ -147,8 +136,8 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("action", v)}
               />
-            </Row>
-            <Row label="Cooldown">
+            </TriggerField>
+            <TriggerField label="Cooldown">
               <div class="flex items-center gap-2">
                 <Field
                   type="number"
@@ -165,7 +154,7 @@ export default function TriggerCard(props: {
                 />
                 <span class="text-small text-ink-soft">seconds</span>
               </div>
-            </Row>
+            </TriggerField>
           </div>
         </div>
       </Show>

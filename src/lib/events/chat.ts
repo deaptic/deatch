@@ -9,6 +9,7 @@ import { matchesAnyKeyword } from "../utils/wordMatch.ts";
 import { mapChatMessage } from "./chat-mapper.ts";
 import { handleFollowageCommand } from "./followage.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
+import * as chatActivity from "../services/chatActivity.ts";
 import * as triggers from "../services/triggers.ts";
 
 const FOLLOWAGE_CHANNEL_ID = "1091892807";
@@ -18,7 +19,9 @@ export function start(): () => void {
     listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
       const raw = e.payload.event;
       const ts = Date.now();
-      appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts));
+      if (appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts))) {
+        chatActivity.record(raw.broadcaster_user_id, ts);
+      }
       if (raw.channel_points_custom_reward_id) {
         noteChatRedemption(
           raw.broadcaster_user_id,

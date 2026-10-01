@@ -29,14 +29,14 @@ export default function MessageToolbar(props: Props) {
         )}
       </For>
       <ToolbarItem title="Reply" onClick={() => props.onReply(props.item)}>
-        <Reply class="size-3.5" />
+        <Reply />
       </ToolbarItem>
       <Show when={feedShowCopypasta()}>
         <ToolbarItem
           title="Copypasta"
           onClick={() => props.onCopypasta(props.item)}
         >
-          <ClipboardPaste class="size-3.5" />
+          <ClipboardPaste />
         </ToolbarItem>
       </Show>
       <ToolbarItem
@@ -46,7 +46,7 @@ export default function MessageToolbar(props: Props) {
           props.onMore(rect.left, rect.bottom + 4, props.item);
         }}
       >
-        <Ellipsis class="size-3.5" />
+        <Ellipsis />
       </ToolbarItem>
     </Toolbar>
   );

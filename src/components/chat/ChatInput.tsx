@@ -256,7 +256,7 @@ export default function ChatInput(props: Props) {
               size="sm"
               onClick={props.onClearReply}
             >
-              <X class="size-3.5" />
+              <X class="size-4" />
             </IconButton>
           </div>
         )}

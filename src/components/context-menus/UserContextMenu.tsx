@@ -44,7 +44,7 @@ export default function UserContextMenu(props: Props) {
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
         label="Profile"
-        icon={<User class="size-3.5" />}
+        icon={<User />}
         onClick={() => {
           props.onShowProfile(props.x, props.y, props.userId);
           props.onClose();
@@ -52,7 +52,7 @@ export default function UserContextMenu(props: Props) {
       />
       <MenuItem
         label="Mention"
-        icon={<AtSign class="size-3.5" />}
+        icon={<AtSign />}
         onClick={() => {
           props.onMention(props.userLogin);
           props.onClose();
@@ -61,7 +61,7 @@ export default function UserContextMenu(props: Props) {
       <Show when={props.isMod}>
         <MenuItem
           label="Shoutout"
-          icon={<Megaphone class="size-3.5" />}
+          icon={<Megaphone />}
           onClick={() => {
             sendShoutout({
               fromBroadcasterId: props.broadcasterId,
@@ -74,7 +74,7 @@ export default function UserContextMenu(props: Props) {
       <MenuDivider />
       <MenuItem
         label={nickname() ? "Edit nickname" : "Set nickname"}
-        icon={<Hash class="size-3.5" />}
+        icon={<Hash />}
         onClick={() => {
           props.onEditNickname(
             props.userLogin,
@@ -90,7 +90,7 @@ export default function UserContextMenu(props: Props) {
           ? `Unmute ${props.userDisplayName}`
           : `Mute ${props.userDisplayName}`}
         danger={!muted()}
-        icon={<VolumeX class="size-3.5" />}
+        icon={<VolumeX />}
         onClick={() => {
           if (muted()) unmuteUser(props.userId);
           else muteUser(props.userId);
@@ -102,7 +102,7 @@ export default function UserContextMenu(props: Props) {
         <MenuItem
           label="Ban / Timeout"
           danger
-          icon={<Ban class="size-3.5" />}
+          icon={<Ban />}
           onClick={() => {
             props.onModerate({
               userId: props.userId,

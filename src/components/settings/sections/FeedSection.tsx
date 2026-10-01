@@ -10,6 +10,7 @@ import ChipInput from "../../ui/ChipInput.tsx";
 import UserListEditor from "../UserListEditor.tsx";
 import NicknameEditor from "../NicknameEditor.tsx";
 import { BADGE_CATEGORIES, EVENTS } from "../../../lib/constants.ts";
+import * as appearance from "../../../lib/services/appearance.ts";
 import * as preferences from "../../../lib/services/preferences.ts";
 import {
   addFeedKeyword,
@@ -130,7 +131,7 @@ export default function FeedSection() {
         >
           <ColorPicker
             swatchColor={feedUserOverrideNameColor() || "transparent"}
-            value={feedUserOverrideNameColor() || "#9481ff"}
+            value={feedUserOverrideNameColor() || appearance.defaultAccentHex}
             onInput={setFeedUserOverrideNameColor}
             onReset={() => setFeedUserOverrideNameColor("")}
             resetDisabled={!feedUserOverrideNameColor()}

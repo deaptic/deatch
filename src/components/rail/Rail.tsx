@@ -41,7 +41,7 @@ import RailDivider from "./RailDivider.tsx";
 import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
-import Skeleton from "../ui/Skeleton.tsx";
+import RailRowSkeleton from "./RailRowSkeleton.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import * as session from "../../lib/services/session.ts";
@@ -58,21 +58,6 @@ const WATCH_LABEL: Record<"auto" | "manual" | "off", string> = {
   manual: "Manual · pick a tab",
   off: "Browser tabs",
 };
-
-function RowSkeleton() {
-  const expanded = appearanceRailExpanded;
-  return (
-    <div class="h-14 flex items-center gap-3 px-4">
-      <Skeleton shape="circle" class="size-10 shrink-0" />
-      <Show when={expanded()}>
-        <div class="flex-1 flex flex-col gap-1.5">
-          <Skeleton shape="line" class="h-3.5 w-24" />
-          <Skeleton shape="line" class="h-3 w-32" />
-        </div>
-      </Show>
-    </div>
-  );
-}
 
 export default function Rail(props: Props) {
   const expanded = appearanceRailExpanded;
@@ -269,7 +254,7 @@ export default function Rail(props: Props) {
             <Show
               when={!channels.loadingPinned()}
               fallback={
-                <For each={pinnedChannels()}>{() => <RowSkeleton />}</For>
+                <For each={pinnedChannels()}>{() => <RailRowSkeleton />}</For>
               }
             >
               <For each={pinnedChannels()}>
@@ -328,7 +313,7 @@ export default function Rail(props: Props) {
               when={!channels.loadingLive()}
               fallback={
                 <For each={Array.from({ length: 4 })}>
-                  {() => <RowSkeleton />}
+                  {() => <RailRowSkeleton />}
                 </For>
               }
             >

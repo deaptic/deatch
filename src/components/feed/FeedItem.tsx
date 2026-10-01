@@ -91,7 +91,7 @@ export default function FeedItem(props: Props) {
         props.selected
           ? "bg-accent-soft! outline outline-2 -outline-offset-2 outline-accent rounded-sm"
           : ""
-      } ${parts.dimmed ? "opacity-50" : ""}`}
+      } ${parts.dimmed ? "opacity-40" : ""}`}
       style={parts.toneColor ? { "--tone": parts.toneColor } : undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

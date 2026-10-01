@@ -9,11 +9,10 @@ import {
 } from "./core.ts";
 import type { FeedEntry } from "../../types/feed.ts";
 import { recordChatter, user } from "../users.ts";
-import { recordChatMessage } from "../chatActivity.ts";
 import { selectedChannel } from "../view.ts";
 import { appendSentHistoryOlder, pushSentHistory } from "../chatHistory.ts";
 
-export function appendItem(id: string, item: FeedEntry) {
+export function appendItem(id: string, item: FeedEntry): boolean {
   ensureFeed(id);
   if (item.kind === "message") {
     recordChatter(id, {
@@ -41,10 +40,10 @@ export function appendItem(id: string, item: FeedEntry) {
     }),
   );
   if (added) {
-    if (item.kind === "message") recordChatMessage(id, Date.now());
     const text = ownMessageText(item);
     if (text) pushSentHistory(id, text);
   }
+  return added;
 }
 
 export function appendLocalNotice(id: string, text: string) {

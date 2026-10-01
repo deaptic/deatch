@@ -16,6 +16,7 @@ import * as users from "../../lib/services/users.ts";
 import { rememberUser } from "../../lib/stores/channels.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
+import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
 
@@ -120,11 +121,12 @@ export default function SearchResults(props: Props) {
                   onClick={() => props.onSelectGame(category)}
                   class="group w-24 shrink-0 text-left cursor-pointer"
                 >
-                  <img
+                  <Artwork
                     src={category.boxArtUrl}
                     alt={category.name}
-                    loading="lazy"
-                    class="aspect-3/4 w-full rounded-md bg-raised object-cover transition-opacity duration-snap group-hover:opacity-80"
+                    shape="boxart"
+                    fit="fill"
+                    interactive
                   />
                   <p class="mt-1.5 truncate text-small text-ink">
                     {category.name}
