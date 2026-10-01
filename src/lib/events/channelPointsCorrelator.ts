@@ -1,12 +1,12 @@
 // Bridges `channel.chat.message` (carries the reward *id*) and
 // `channel.channel_points_custom_reward_redemption.add` (carries the reward
-// *title* and user_input). When a reward is configured to echo user input
-// into chat, both events fire — we merge them into a single chat message
-// annotated with the reward title and suppress the standalone FeedEvent.
-// Order isn't guaranteed: whichever side arrives first waits ~3s for the
-// other.
+// and user_input). When a reward is configured to echo user input into chat,
+// both events fire — we attach the redemption to that chat message and
+// suppress the standalone FeedEvent. Order isn't guaranteed: whichever side
+// arrives first waits ~3s for the other.
 
-import { setChannelPointsRewardTitle } from "../stores/feeds.ts";
+import type { Redemption } from "../types/feed.ts";
+import { setChannelPointsRedemption } from "../stores/feeds.ts";
 
 const WINDOW_MS = 3000;
 
@@ -17,7 +17,7 @@ type PendingChat = {
 };
 
 type PendingRedemption = {
-  rewardTitle: string;
+  redemption: Redemption;
   timer: ReturnType<typeof setTimeout>;
   emit: () => void;
 };
@@ -40,7 +40,7 @@ export function noteChatRedemption(
   if (pending) {
     clearTimeout(pending.timer);
     redemptionPending.delete(k);
-    setChannelPointsRewardTitle(broadcasterId, messageId, pending.rewardTitle);
+    setChannelPointsRedemption(broadcasterId, messageId, pending.redemption);
     return;
   }
   const existing = chatPending.get(k);
@@ -52,19 +52,18 @@ export function noteChatRedemption(
 export function correlateRedemption(
   broadcasterId: string,
   userId: string,
-  rewardId: string,
-  rewardTitle: string,
+  redemption: Redemption,
   emit: () => void,
 ): void {
-  const k = key(broadcasterId, userId, rewardId);
+  const k = key(broadcasterId, userId, redemption.reward.id);
   const pending = chatPending.get(k);
   if (pending) {
     clearTimeout(pending.timer);
     chatPending.delete(k);
-    setChannelPointsRewardTitle(
+    setChannelPointsRedemption(
       pending.broadcasterId,
       pending.messageId,
-      rewardTitle,
+      redemption,
     );
     return;
   }
@@ -74,5 +73,5 @@ export function correlateRedemption(
     redemptionPending.delete(k);
     emit();
   }, WINDOW_MS);
-  redemptionPending.set(k, { rewardTitle, timer, emit });
+  redemptionPending.set(k, { redemption, timer, emit });
 }

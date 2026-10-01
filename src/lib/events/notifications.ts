@@ -4,6 +4,7 @@ import type {
   RawFollow,
   RawNotification,
   RawShoutout,
+  Redemption,
 } from "../types/index.ts";
 import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
@@ -11,6 +12,7 @@ import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
 import { correlateRedemption } from "./channelPointsCorrelator.ts";
+import { mapRedemption } from "./redemption-mapper.ts";
 
 // Most notices ship a complete `system_message` that already starts with the
 // chatter name (e.g. resub: "viewer23 subscribed at Tier 1..."). A few
@@ -65,23 +67,23 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   };
 }
 
-function mapRedemption(
+function redemptionEvent(
   raw: RawChannelPointsRedemption,
+  redemption: Redemption,
   timestamp: number,
 ): FeedEvent {
-  const input = raw.user_input.trim();
-  const system_message = input
-    ? `${raw.user_name} redeemed ${raw.reward.title}: ${input}`
-    : `${raw.user_name} redeemed ${raw.reward.title}`;
+  const said = redemption.input ? `: ${redemption.input}` : "";
   return {
     kind: "event",
     id: raw.id,
     notice_type: "channel_points_redemption",
-    system_message,
+    system_message: `${raw.user_name} redeemed ${raw.reward.title}${said}`,
     chatter_user_id: raw.user_id,
+    chatter_login: raw.user_login,
     chatter_name: raw.user_name,
     color: "",
     timestamp,
+    redemption,
   };
 }
 
@@ -122,12 +124,16 @@ export function start(): () => void {
       (e) => {
         const raw = e.payload.event;
         const ts = Date.now();
+        const redemption = mapRedemption(raw);
         correlateRedemption(
           raw.broadcaster_user_id,
           raw.user_id,
-          raw.reward.id,
-          raw.reward.title,
-          () => appendItem(raw.broadcaster_user_id, mapRedemption(raw, ts)),
+          redemption,
+          () =>
+            appendItem(
+              raw.broadcaster_user_id,
+              redemptionEvent(raw, redemption, ts),
+            ),
         );
       },
     ),

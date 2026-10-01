@@ -171,12 +171,12 @@ export function createMessageParts(
     const list: Annotation[] = [];
     if (hold()) list.push({ content: holdNotice() });
     if (item.channel_points?.kind === "custom_reward") {
-      const title = item.channel_points.title;
+      const redemption = item.channel_points.redemption;
       list.push({
         content: (
           <RichNotice
             class="text-event-channel-points"
-            label={title ? `Redeemed ${title}` : "Redeemed channel points"}
+            label={`Redeemed ${redemption?.reward.title ?? "channel points"}`}
           />
         ),
       });

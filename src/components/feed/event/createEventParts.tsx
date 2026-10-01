@@ -23,10 +23,13 @@ import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
 import type { FeedEvent } from "../../../lib/types/index.ts";
+import { knownChatterColor } from "../../../lib/stores/users.ts";
+import DisplayName from "../../ui/DisplayName.tsx";
 import Timestamp from "../../ui/Timestamp.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import FeedTile from "../FeedTile.tsx";
+import RedemptionReward from "../RedemptionReward.tsx";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
 export type EventOptions = {
@@ -88,6 +91,12 @@ export function createEventParts(
     </Show>
   );
 
+  const time = () => (
+    <Show when={props.density === "comfortable"}>
+      <Timestamp ts={item.timestamp} format="c" variant="inline" />
+    </Show>
+  );
+
   const content = (
     <span class="text-ink">
       <Show when={props.density === "compact"}>
@@ -95,9 +104,33 @@ export function createEventParts(
           {icon()}
         </span>
       </Show>
-      {item.system_message}
-      <Show when={props.density === "comfortable"}>
-        <Timestamp ts={item.timestamp} format="c" variant="inline" />
+      <Show
+        when={item.redemption}
+        fallback={
+          <>
+            {item.system_message}
+            {time()}
+          </>
+        }
+      >
+        {(redemption) => (
+          <>
+            <DisplayName
+              login={item.chatter_login ?? item.chatter_name.toLowerCase()}
+              displayName={item.chatter_name}
+              color={item.chatter_user_id
+                ? knownChatterColor(item.chatter_user_id)
+                : undefined}
+              userId={item.chatter_user_id}
+            />
+            {" redeemed "}
+            <RedemptionReward redemption={redemption()} />
+            {time()}
+            <Show when={redemption().input}>
+              {(input) => <span class="block">{input()}</span>}
+            </Show>
+          </>
+        )}
       </Show>
     </span>
   );
