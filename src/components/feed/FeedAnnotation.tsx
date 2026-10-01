@@ -2,16 +2,16 @@ import { type JSX, Show } from "solid-js";
 import type { Density } from "../../lib/constants/density.ts";
 import Timestamp from "../ui/Timestamp.tsx";
 
+const LEADS: Record<Density, { box: string; spine: string }> = {
+  compact: { box: "h-lh aspect-square mr-1", spine: "-right-0.5" },
+  comfortable: { box: "w-(--chat-tile) self-stretch mr-3", spine: "-right-2" },
+};
+
 type Props = {
   density: Density;
   timestamp?: number;
   connector?: boolean;
   children: JSX.Element;
-};
-
-const LEADS: Record<Density, { box: string; spine: string }> = {
-  compact: { box: "h-lh aspect-square mr-1", spine: "-right-0.5" },
-  comfortable: { box: "w-(--chat-tile) self-stretch mr-3", spine: "-right-2" },
 };
 
 export default function FeedAnnotation(props: Props) {

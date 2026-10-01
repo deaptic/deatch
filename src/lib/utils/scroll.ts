@@ -1,7 +1,7 @@
 /// Scrolls a rendered message into view and briefly highlights it. Relies
-/// on FeedMessage rendering a `data-message-id` attribute on each row.
+/// on FeedRow rendering a `data-item-id` attribute on each row.
 export function scrollToMessage(messageId: string) {
-  const el = document.querySelector(`[data-message-id="${messageId}"]`) as
+  const el = document.querySelector(`[data-item-id="${messageId}"]`) as
     | HTMLElement
     | null;
   if (!el) return;

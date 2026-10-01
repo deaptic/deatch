@@ -1,6 +1,6 @@
 import { For, type JSX, Show } from "solid-js";
-import Toolbar from "../ui/Toolbar.tsx";
-import ToolbarItem, { type ToolbarTone } from "../ui/ToolbarItem.tsx";
+import Toolbar from "../../ui/Toolbar.tsx";
+import ToolbarItem, { type ToolbarTone } from "../../ui/ToolbarItem.tsx";
 
 export type RichNoticeAction = {
   title: string;
