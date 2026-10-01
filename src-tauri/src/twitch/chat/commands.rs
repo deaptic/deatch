@@ -1,8 +1,8 @@
-use super::dto::{BadgeSet, Emote, SendMessageResult, UserEmote};
+use super::dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
 use crate::error::Result;
 use crate::twitch::chat::{
-    self, GetChannelChatBadgesParams, SendChatAnnouncementParams, SendChatMessageParams,
-    SendShoutoutParams, UpdateChatSettingsParams, UpdateUserChatColorParams,
+    self, GetChannelChatBadgesParams, GetChatSettingsParams, SendChatAnnouncementParams,
+    SendChatMessageParams, SendShoutoutParams, UpdateChatSettingsParams, UpdateUserChatColorParams,
 };
 use crate::twitch::Twitch;
 use tauri::State;
@@ -56,6 +56,15 @@ pub async fn send_chat_announcement(
     params: SendChatAnnouncementParams,
 ) -> Result<()> {
     chat::send_chat_announcement(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_chat_settings(
+    twitch: State<'_, Twitch>,
+    params: GetChatSettingsParams,
+) -> Result<ChatSettings> {
+    chat::get_chat_settings(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]

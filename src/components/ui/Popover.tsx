@@ -10,6 +10,7 @@ type Props = {
   x: number;
   y: number;
   align?: "start" | "center" | "end";
+  opener?: () => HTMLElement | undefined;
   onClose: () => void;
   children: JSX.Element;
   events?: string[];
@@ -44,6 +45,7 @@ export default function Popover(props: Props) {
 
   dismissOnOutside({
     ref: () => ref,
+    opener: props.opener,
     onDismiss: props.onClose,
     events: props.events,
   });

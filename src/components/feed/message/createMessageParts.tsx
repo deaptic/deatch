@@ -1,6 +1,7 @@
 import { Check, X } from "lucide-solid";
 import { createMemo, createSignal, For, Show } from "solid-js";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import type {
   BadgeMap,
   FeedMessage,
@@ -28,6 +29,7 @@ import type { Reaction } from "./reaction.ts";
 
 export type MessageOptions = {
   emotes: EmoteMap;
+  cheermotes: CheermoteMap;
   badges: BadgeMap;
   userLogin: string;
   reactions: Reaction[];
@@ -111,6 +113,8 @@ export function createMessageParts(
       ? "held"
       : props.highlightMentions !== false && mentioned()
       ? "mention"
+      : item.cheer
+      ? "cheer"
       : item.channel_points
       ? "redemption"
       : item.first_message
@@ -170,6 +174,18 @@ export function createMessageParts(
   const annotations = createMemo((): Annotation[] => {
     const list: Annotation[] = [];
     if (hold()) list.push({ content: holdNotice() });
+    if (item.cheer) {
+      list.push({
+        content: (
+          <RichNotice
+            class="text-event-bits"
+            label={`Cheered ${item.cheer.bits.toLocaleString()} ${
+              item.cheer.bits === 1 ? "bit" : "bits"
+            }`}
+          />
+        ),
+      });
+    }
     if (item.channel_points?.kind === "custom_reward") {
       const redemption = item.channel_points.redemption;
       list.push({
@@ -233,6 +249,7 @@ export function createMessageParts(
             <MessageFragment
               frag={frag}
               emotes={props.emotes}
+              cheermotes={props.cheermotes}
               mentionsYou={mentioned()}
               onShowUserCard={props.onShowUserCard}
               onUserContextMenu={props.onUserContextMenu}

@@ -55,17 +55,14 @@ const LOOKS: Record<string, Look> = {
   chat_disconnected: { color: "var(--color-ink-faint)", Icon: Unplug },
   chat_connect_failed: { color: "var(--color-negative)", Icon: TriangleAlert },
   chat_cleared: { color: "var(--color-caution)", Icon: Eraser },
-  moderate: { color: "var(--color-caution)", Icon: Shield },
+  moderation: { color: "var(--color-caution)", Icon: Shield },
   seventv_update: { color: "var(--color-info)", Icon: Sparkles },
   channel_update: { color: "var(--color-info)", Icon: PenLine },
   local: { color: "var(--color-ink-faint)", Icon: Info },
 };
 
 function lookFor(noticeType: string): Look {
-  const key = noticeType.startsWith("moderate_")
-    ? "moderate"
-    : NOTICE_TO_EVENT[noticeType] ?? noticeType;
-  return LOOKS[key] ?? LOOKS.local;
+  return LOOKS[NOTICE_TO_EVENT[noticeType] ?? noticeType] ?? LOOKS.local;
 }
 
 export function createEventParts(

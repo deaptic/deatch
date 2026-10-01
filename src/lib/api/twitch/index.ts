@@ -1,4 +1,5 @@
 export * from "./auth.ts";
+export * from "./bits.ts";
 export * from "./channels.ts";
 export * from "./chat.ts";
 export * from "./eventsub.ts";

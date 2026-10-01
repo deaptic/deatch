@@ -5,6 +5,7 @@ import {
   feedUserShowDisplayName,
 } from "../../lib/stores/preferences.ts";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
+import { readableColor } from "../../lib/utils/color.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
@@ -29,14 +30,10 @@ export default function DisplayName(props: Props) {
     feedUserNickname(props.login) ??
       (feedUserShowDisplayName() === false ? props.login : props.displayName);
 
-  // Twitch name colours are chosen for one background; clamp lightness so
-  // dark names stay readable on dark and light names on light.
   const color = () =>
     feedUserOverrideNameColor() ||
     (props.color
-      ? resolvedTheme() === "dark"
-        ? `oklch(from ${props.color} max(l, 0.64) c h)`
-        : `oklch(from ${props.color} min(l, 0.58) c h)`
+      ? readableColor(props.color, resolvedTheme())
       : "var(--color-ink-soft)");
 
   return (

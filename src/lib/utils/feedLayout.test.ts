@@ -88,6 +88,15 @@ Deno.test("replies, holds, rewards and first messages stand alone", () => {
   assertEquals(continued(rows), [false, false, false, false, false]);
 });
 
+Deno.test("cheers stand alone", () => {
+  const rows = layoutFeed([
+    msg("1", "maya", T0),
+    msg("2", "maya", T0, { cheer: { bits: 100 } }),
+    msg("3", "maya", T0),
+  ], true);
+  assertEquals(continued(rows), [false, false, true]);
+});
+
 Deno.test("events break a group", () => {
   const rows = layoutFeed([
     msg("1", "maya", T0),

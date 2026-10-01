@@ -1,18 +1,15 @@
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
-import { isModOfChannel, user } from "../stores/users.ts";
+import { user } from "../stores/users.ts";
 import { usersById } from "../stores/channels.ts";
 import { recordMention } from "../stores/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { matchesAnyKeyword } from "../utils/wordMatch.ts";
 import { mapChatMessage } from "./chat-mapper.ts";
-import { handleFollowageCommand } from "./followage.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as triggers from "../services/triggers.ts";
-
-const FOLLOWAGE_CHANNEL_ID = "1091892807";
 
 export function start(): () => void {
   return unlistenAll([
@@ -29,15 +26,6 @@ export function start(): () => void {
           raw.channel_points_custom_reward_id,
           raw.message_id,
         );
-      }
-
-      if (
-        user()?.id === "52679773" &&
-        raw.broadcaster_user_id === FOLLOWAGE_CHANNEL_ID &&
-        raw.message.text.trim().toLowerCase() === "!followage" &&
-        isModOfChannel(raw.broadcaster_user_id)
-      ) {
-        handleFollowageCommand(raw);
       }
 
       const me = user();

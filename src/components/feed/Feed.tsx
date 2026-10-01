@@ -21,6 +21,7 @@ import {
   isFeedEntryVisible,
 } from "../../lib/stores/feeds.ts";
 import { favorites, thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
+import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
 import {
   feedKeywords,
   feedShowDeletedContent,
@@ -242,6 +243,7 @@ export default function Feed(props: Props) {
       flush={props.flush}
       showTimestamp={feedShowTimestamp()}
       emotes={thirdPartyEmoteMap()}
+      cheermotes={cheermotesFor(props.broadcasterId)}
       badges={badges()}
       userLogin={props.userLogin ?? ""}
       reactions={reactions()}

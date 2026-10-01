@@ -7,7 +7,7 @@ pub use color::{AnnouncementColor, ChatColor};
 use super::Authed;
 use crate::error::Result;
 use crate::twitch::ids::{MessageId, UserId};
-use dto::{BadgeSet, Emote, SendMessageResult, UserEmote};
+use dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
 use serde::Deserialize;
 use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
 use twitch_api::helix::chat::{
@@ -138,6 +138,23 @@ pub async fn send_chat_announcement(
     );
     twitch.helix.req_post(request, body, &twitch.token).await?;
     Ok(())
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct GetChatSettingsParams {
+    pub broadcaster_id: UserId,
+}
+
+pub async fn get_chat_settings(
+    twitch: &Authed<'_>,
+    params: GetChatSettingsParams,
+) -> Result<ChatSettings> {
+    let settings = twitch
+        .helix
+        .get_chat_settings(params.broadcaster_id.as_str(), None, &twitch.token)
+        .await?;
+    Ok(ChatSettings::from(settings))
 }
 
 #[derive(Deserialize, specta::Type)]

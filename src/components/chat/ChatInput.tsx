@@ -40,6 +40,7 @@ import ChatAutocomplete, {
 } from "./autocomplete/ChatAutocomplete.tsx";
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
+import ChatModes from "./ChatModes.tsx";
 
 const MAX_LEN = 500;
 const SEND_ACTION = "chat::send";
@@ -243,6 +244,7 @@ export default function ChatInput(props: Props) {
 
   return (
     <div class="shrink-0 bg-surface border-t border-line-soft px-4 pt-3 pb-4">
+      <ChatModes broadcasterId={props.broadcasterId} />
       <Show when={props.replyTo()}>
         {(reply) => (
           <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft">

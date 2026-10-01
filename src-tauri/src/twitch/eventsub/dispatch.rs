@@ -99,6 +99,15 @@ fn dispatch_notification(
                 timestamp
             )
         }
+        Event::ChannelChatSettingsUpdateV1(n) => {
+            forward!(
+                app,
+                subs,
+                n,
+                EventKind::ChannelChatSettingsUpdate,
+                timestamp
+            )
+        }
         Event::ChannelShoutoutCreateV1(n) => {
             forward!(app, subs, n, EventKind::ChannelShoutoutCreate, timestamp)
         }

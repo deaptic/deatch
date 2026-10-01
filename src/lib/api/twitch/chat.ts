@@ -1,8 +1,10 @@
 import { commands } from "../../bindings.ts";
 import type {
   BadgeSet,
+  ChatSettings,
   Emote,
   GetChannelChatBadgesParams,
+  GetChatSettingsParams,
   GetRecentMessagesParams,
   RecentMessage,
   SendChatAnnouncementParams,
@@ -68,6 +70,13 @@ export async function sendChatAnnouncement(
     successMessage: "Announcement sent",
     ...options,
   });
+}
+
+export function getChatSettings(
+  params: GetChatSettingsParams,
+  options?: InvokeOptions,
+): Promise<ChatSettings> {
+  return invokeCommand(commands.getChatSettings, [params], options);
 }
 
 export async function updateChatSettings(

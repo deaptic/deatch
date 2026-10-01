@@ -1,3 +1,35 @@
+import type { RawModerate } from "../types/twitch/eventsub.ts";
+
+const MODERATE_ACTIONS = [
+  "clear",
+  "ban",
+  "unban",
+  "timeout",
+  "untimeout",
+  "delete",
+  "mod",
+  "unmod",
+  "vip",
+  "unvip",
+  "raid",
+  "unraid",
+  "slow",
+  "slowoff",
+  "followers",
+  "followersoff",
+  "emoteonly",
+  "emoteonlyoff",
+  "subscribers",
+  "subscribersoff",
+  "uniquechat",
+  "uniquechatoff",
+  "warn",
+] as const satisfies readonly RawModerate["action"][];
+
+export function moderateNoticeType(action: RawModerate["action"]): string {
+  return `moderate_${action}`;
+}
+
 export const EVENTS = [
   {
     key: "message",
@@ -78,6 +110,14 @@ export const EVENTS = [
     types: ["shoutout"],
     modOnly: true,
     testMessage: "Check out AnotherStreamer at twitch.tv/another!",
+  },
+  {
+    key: "moderation",
+    label: "Moderation actions",
+    description: "Bans, timeouts, deletions and mode changes by mods.",
+    types: MODERATE_ACTIONS.map(moderateNoticeType),
+    modOnly: true,
+    testMessage: "TestMod timed out TestUser for 10m",
   },
 ] as const;
 
