@@ -13,6 +13,7 @@ type Props = {
   color?: string;
   userId?: string;
   truncate?: boolean;
+  prefix?: string;
   onShowUserCard?: (x: number, y: number, id: Partial<UserRef>) => void;
   onUserContextMenu?: (x: number, y: number, id: Partial<UserRef>) => void;
 };
@@ -60,6 +61,7 @@ export default function DisplayName(props: Props) {
         if (e.button === 1) e.preventDefault();
       }}
     >
+      {props.prefix}
       {text()}
     </span>
   );
