@@ -1,4 +1,3 @@
-import { Volume2, VolumeOff } from "lucide-solid";
 import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
@@ -6,6 +5,7 @@ import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
+import TabMuteBadge from "./TabMuteBadge.tsx";
 
 type Props = {
   ch: User;
@@ -54,25 +54,9 @@ export default function ChannelRow(props: Props) {
         dashed={props.ephemeral}
       >
         <Show when={props.onToggleMute}>
-          <button
-            type="button"
-            title={props.muted ? "Unmute browser tab" : "Mute browser tab"}
-            aria-label={props.muted ? "Unmute browser tab" : "Mute browser tab"}
-            onClick={(e) => {
-              e.stopPropagation();
-              props.onToggleMute!();
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            class={`absolute -top-0.5 -right-0.5 size-4 rounded-full ring-2 ring-surface grid place-items-center cursor-pointer transition-colors duration-snap ${
-              props.muted
-                ? "bg-negative text-on-accent"
-                : "bg-raised text-ink hover:bg-overlay"
-            }`}
-          >
-            <Show when={props.muted} fallback={<Volume2 class="size-2" />}>
-              <VolumeOff class="size-2" />
-            </Show>
-          </button>
+          {(toggle) => (
+            <TabMuteBadge muted={!!props.muted} onToggle={toggle()} />
+          )}
         </Show>
       </Avatar>
     </RailRow>
