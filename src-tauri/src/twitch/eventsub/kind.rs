@@ -36,12 +36,14 @@ pub enum EventKind {
     AutomodMessageUpdate,
     #[serde(rename = "channel.channel_points_custom_reward_redemption.add")]
     ChannelPointsCustomRewardRedemptionAdd,
+    #[serde(rename = "channel.update")]
+    ChannelUpdate,
 }
 
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 11] = [
+    pub const ALL: [Self; 12] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -53,6 +55,7 @@ impl EventKind {
         Self::AutomodMessageHold,
         Self::AutomodMessageUpdate,
         Self::ChannelPointsCustomRewardRedemptionAdd,
+        Self::ChannelUpdate,
     ];
 
     pub fn event_name(self) -> &'static str {
@@ -68,6 +71,7 @@ impl EventKind {
             Self::AutomodMessageHold => "automod-message-hold",
             Self::AutomodMessageUpdate => "automod-message-update",
             Self::ChannelPointsCustomRewardRedemptionAdd => "channel-points-redemption-add",
+            Self::ChannelUpdate => "channel-update",
         }
     }
 

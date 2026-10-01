@@ -19,6 +19,17 @@ export function rememberChannelInfo(infos: ChannelInfo[]) {
   });
 }
 
+export function applyChannelInfo(info: ChannelInfo) {
+  rememberChannelInfo([info]);
+  setLiveStreams((streams) =>
+    streams.map((s) =>
+      s.user.id === info.broadcaster.id
+        ? { ...s, title: info.title, game: info.game }
+        : s
+    )
+  );
+}
+
 export function channelInfoFor(userId: string): ChannelInfo | undefined {
   return channelInfoById()[userId];
 }

@@ -46,11 +46,15 @@ export function appendItem(id: string, item: FeedEntry): boolean {
   return added;
 }
 
-export function appendLocalNotice(id: string, text: string) {
+export function appendLocalNotice(
+  id: string,
+  text: string,
+  noticeType = "local",
+) {
   appendItem(id, {
     kind: "event",
     id: crypto.randomUUID(),
-    notice_type: "local",
+    notice_type: noticeType,
     system_message: text,
     chatter_name: "",
     color: "",

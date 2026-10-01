@@ -7,6 +7,7 @@ import {
   Heart,
   Info,
   Megaphone,
+  PenLine,
   Plug,
   Radio,
   Shield,
@@ -53,6 +54,7 @@ const LOOKS: Record<string, Look> = {
   chat_cleared: { color: "var(--color-caution)", Icon: Eraser },
   moderate: { color: "var(--color-caution)", Icon: Shield },
   seventv_update: { color: "var(--color-info)", Icon: Sparkles },
+  channel_update: { color: "var(--color-info)", Icon: PenLine },
   local: { color: "var(--color-ink-faint)", Icon: Info },
 };
 
