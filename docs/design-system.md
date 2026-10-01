@@ -405,14 +405,20 @@ already sits on `surface` hovers to `overlay`.
 
 Row treatments, one at a time, in this precedence:
 
-| State             | Left bar               | Background    | Extra                                           |
-| ----------------- | ---------------------- | ------------- | ----------------------------------------------- |
-| Held by AutoMod   | `caution`              | caution 12%   | Reason line + Approve / Deny `sm` buttons       |
-| Mentions you      | `accent`               | `accent-soft` | Your handle in `accent-ink strong`              |
-| Reward redemption | `event-channel-points` | event 10%     | Reward title line above the message             |
-| First message     | `line`                 | `surface`     | "First message" line above the message          |
-| Selected (keys)   | unchanged              | `accent-soft` | 2px `accent` outline, `sm` radius               |
-| Deleted           | unchanged              | unchanged     | 50% opacity, body swapped for "Message deleted" |
+| State             | Left bar               | Background    | Extra                                                                     |
+| ----------------- | ---------------------- | ------------- | ------------------------------------------------------------------------- |
+| Held by AutoMod   | `caution`              | caution 12%   | Reason line + Approve / Deny `sm` buttons                                 |
+| Mentions you      | `accent`               | `accent-soft` | Your handle in `accent-ink strong`                                        |
+| Reward redemption | `event-channel-points` | event 10%     | Reward title line above the message                                       |
+| First message     | `line`                 | `surface`     | "First message" line above the message                                    |
+| Selected (keys)   | unchanged              | `accent-soft` | 2px `accent` outline, `sm` radius                                         |
+| Deleted           | unchanged              | unchanged     | Body `ink-faint` + "(deleted)" after it, or "Message deleted" when hidden |
+
+Deleted messages stay quiet because on Twitch they arrive in waves (a timeout or
+ban removes every recent message from that chatter) and after the message was
+already read: no bar, no tint, no extra line, so a cleanup never paints the feed
+or moves it. The name, badges, and avatar keep full strength so it is clear who
+it was, and the text stays readable for context.
 
 Hovering a row reveals a floating toolbar at its top-right: reply, react, copy,
 more. `overlay` tone, 1px `line`, `sm` radius, `sm` ghost buttons.

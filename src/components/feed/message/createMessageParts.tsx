@@ -226,17 +226,24 @@ export function createMessageParts(
       when={!item.deleted || props.showDeletedContent}
       fallback={<span class="italic text-ink-soft">Message deleted</span>}
     >
-      <For each={visibleFragments()}>
-        {(frag) => (
-          <MessageFragment
-            frag={frag}
-            emotes={props.emotes}
-            mentionsYou={mentioned()}
-            onShowUserCard={props.onShowUserCard}
-            onUserContextMenu={props.onUserContextMenu}
-          />
-        )}
-      </For>
+      <span class={item.deleted ? "*:text-ink-faint" : ""}>
+        <For each={visibleFragments()}>
+          {(frag) => (
+            <MessageFragment
+              frag={frag}
+              emotes={props.emotes}
+              mentionsYou={mentioned()}
+              onShowUserCard={props.onShowUserCard}
+              onUserContextMenu={props.onUserContextMenu}
+            />
+          )}
+        </For>
+      </span>
+      <Show when={item.deleted}>
+        <span class="ml-1.5 feed-meta text-ink-faint select-none">
+          (deleted)
+        </span>
+      </Show>
     </Show>
   );
 
@@ -310,7 +317,7 @@ export function createMessageParts(
       return tone();
     },
     get dimmed() {
-      return !!item.deleted || holdResolved();
+      return holdResolved();
     },
     get annotations() {
       return annotations();
