@@ -1,15 +1,7 @@
 import { Blobatar } from "@blobatar/solid";
 import "blobatar/motion.css";
-import * as appearance from "../../../lib/services/appearance.ts";
-import { hueOf } from "../../../lib/utils/color.ts";
 import FeedTile from "../FeedTile.tsx";
-
-const VIVID_TONE = 0.7;
-
-const grey = () => ({
-  head: appearance.token("color-ink-soft"),
-  eye: appearance.token("color-canvas"),
-});
+import { chatterLook } from "./chatterLook.ts";
 
 type Props = {
   userId: string;
@@ -19,17 +11,14 @@ type Props = {
 };
 
 export default function ChatterAvatar(props: Props) {
-  const hue = () => hueOf(props.color);
+  const look = () => chatterLook(props.color);
   return (
-    <FeedTile
-      color={hue() === undefined ? undefined : props.color}
-      onClick={props.onClick}
-    >
+    <FeedTile color={look().tint} onClick={props.onClick}>
       <Blobatar
         name={props.userId}
-        hue={hue()}
-        tone={hue() === undefined ? undefined : VIVID_TONE}
-        palette={hue() === undefined ? grey() : undefined}
+        hue={look().hue}
+        tone={look().tone}
+        palette={look().palette}
         background={false}
         animate={props.active ? "always" : undefined}
         class="size-full"

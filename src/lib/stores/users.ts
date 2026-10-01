@@ -54,6 +54,14 @@ function pruneChatters(bucket: Map<string, Chatter>) {
   for (const c of recent) bucket.set(c.id, c);
 }
 
+export function knownChatterColor(userId: string): string | undefined {
+  for (const bucket of chattersByChannel.values()) {
+    const chatter = bucket.get(userId);
+    if (chatter) return chatter.color;
+  }
+  return undefined;
+}
+
 export function recordChatter(channelId: string, c: Chatter) {
   let bucket = chattersByChannel.get(channelId);
   if (!bucket) {
