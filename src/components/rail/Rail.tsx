@@ -42,6 +42,7 @@ import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
+import TabMuteBadge from "./TabMuteBadge.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import * as session from "../../lib/services/session.ts";
@@ -69,6 +70,10 @@ export default function Rail(props: Props) {
     const v = activeView();
     return typeof v === "object" ? v.id : null;
   };
+
+  const watchedOthers = () =>
+    watchWarmedChannels().filter((c) => c?.id !== user()?.id);
+  const ownTab = () => watchWarmedChannels().find((c) => c?.id === user()?.id);
 
   const warmedIds = createMemo(
     () => new Set(watchWarmedChannels().map((c) => c?.id)),
@@ -337,7 +342,7 @@ export default function Rail(props: Props) {
         </div>
       </div>
 
-      <Show when={watchWarmedChannels().length > 0}>
+      <Show when={watchedOthers().length > 0}>
         <RailDivider />
         <div class="flex flex-col py-1.5 shrink-0">
           <RailRow
@@ -383,7 +388,7 @@ export default function Rail(props: Props) {
               onScroll={watch.update}
               class="flex max-h-44 flex-col overflow-y-auto scrollbar-none"
             >
-              <For each={watchWarmedChannels()}>
+              <For each={watchedOthers()}>
                 {(ch) => (
                   <div data-channel-id={ch?.id}>
                     <ChannelRow
@@ -475,7 +480,20 @@ export default function Rail(props: Props) {
                 alt={u().displayName}
                 size={40}
                 presence="online"
-              />
+              >
+                <Show when={ownTab()}>
+                  {(tab) => (
+                    <TabMuteBadge
+                      muted={watchMutedByLogin()[tab().login] === true}
+                      onToggle={() =>
+                        void watchSetMuted(
+                          tab().login,
+                          watchMutedByLogin()[tab().login] !== true,
+                        )}
+                    />
+                  )}
+                </Show>
+              </Avatar>
             </RailRow>
           )}
         </Show>
