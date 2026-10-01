@@ -73,6 +73,9 @@ export type UserPreferences = {
       pinned: string[];
     };
   };
+  explore: {
+    language: string;
+  };
   triggers: Trigger[];
 };
 
@@ -205,6 +208,11 @@ function load(): UserPreferences {
       },
       menu: {
         channels: { pinned },
+      },
+      explore: {
+        language: typeof stored.explore?.language === "string"
+          ? stored.explore.language
+          : DEFAULT_PREFERENCES.explore.language,
       },
       triggers: sanitizeTriggers(stored.triggers),
     };

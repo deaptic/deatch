@@ -1,5 +1,7 @@
+import { Heart } from "lucide-solid";
 import {
   createEffect,
+  createMemo,
   createSignal,
   For,
   on,
@@ -11,12 +13,17 @@ import type { User } from "../../lib/types/index.ts";
 import type { Stream } from "../../lib/types/index.ts";
 import { liveStreams, rememberUser } from "../../lib/stores/channels.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
+import {
+  exploreLanguage,
+  setExploreLanguage,
+} from "../../lib/stores/preferences.ts";
 import { getStreams } from "../../lib/api/twitch/streams.ts";
 import * as users from "../../lib/services/users.ts";
+import { orderLanguages } from "../../lib/utils/languages.ts";
 import LiveCard from "./LiveCard.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
 import Chip from "../ui/Chip.tsx";
-import Segmented from "../ui/Segmented.tsx";
+import Button from "../ui/Button.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
 
 type Props = {
@@ -25,8 +32,7 @@ type Props = {
 
 const PAGE_SIZE = 40;
 const THUMBNAIL_REFRESH_MS = 5 * 60_000;
-
-type Scope = "following" | "all";
+const SYSTEM_LANGUAGE = navigator.language.split("-")[0];
 
 export default function LiveNow(props: Props) {
   const [remote, setRemote] = createSignal<Stream[]>([]);
@@ -52,7 +58,7 @@ export default function LiveNow(props: Props) {
         gameIds: exploreFilters.category
           ? [exploreFilters.category.id]
           : undefined,
-        language: exploreFilters.language || undefined,
+        language: exploreLanguage() || undefined,
         first: PAGE_SIZE,
         after: reset ? undefined : cursor() ?? undefined,
       });
@@ -75,7 +81,7 @@ export default function LiveNow(props: Props) {
     on(
       () => [
         exploreFilters.followingOnly,
-        exploreFilters.language,
+        exploreLanguage(),
         exploreFilters.category,
       ],
       () => {
@@ -89,7 +95,7 @@ export default function LiveNow(props: Props) {
 
   const source = () => {
     if (!exploreFilters.followingOnly) return remote();
-    const lang = exploreFilters.language;
+    const lang = exploreLanguage();
     const category = exploreFilters.category;
     return liveStreams().filter((s) =>
       (!lang || s.language === lang) && (!category || s.game.id === category.id)
@@ -98,6 +104,16 @@ export default function LiveNow(props: Props) {
 
   const sorted = () =>
     [...source()].sort((a, b) => b.viewerCount - a.viewerCount);
+
+  const seenLanguages = createMemo<Set<string>>((prev) => {
+    const next = new Set(prev);
+    for (const s of liveStreams()) next.add(s.language);
+    for (const s of remote()) next.add(s.language);
+    return next.size === prev.size ? prev : next;
+  }, new Set());
+
+  const languageOptions = () =>
+    orderLanguages(seenLanguages(), [SYSTEM_LANGUAGE, exploreLanguage()]);
 
   const initialLoading = () =>
     !exploreFilters.followingOnly && fetching() && remote().length === 0;
@@ -112,40 +128,34 @@ export default function LiveNow(props: Props) {
 
   return (
     <section>
-      <div class="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
-        <h2 class="text-heading text-ink">Live now</h2>
-        <Show when={source().length > 0}>
-          <span class="text-small text-ink-soft">
-            {exploreFilters.followingOnly
-              ? "from channels you follow"
-              : "on Twitch"}
-            {" · "}
-            {source().length}
-          </span>
-        </Show>
-        <Show when={exploreFilters.category}>
-          {(category) => (
-            <Chip
-              label={category().name}
-              selected
-              onRemove={() => setExploreFilters("category", null)}
-            />
-          )}
-        </Show>
+      <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div class="grow flex flex-wrap items-baseline gap-x-3 gap-y-2">
+          <h2 class="text-heading text-ink">Live now</h2>
+          <Show when={exploreFilters.category}>
+            {(category) => (
+              <Chip
+                label={category().name}
+                selected
+                onRemove={() => setExploreFilters("category", null)}
+              />
+            )}
+          </Show>
+        </div>
 
-        <div class="ml-auto flex items-center gap-2 self-center">
-          <Segmented<Scope>
-            value={exploreFilters.followingOnly ? "following" : "all"}
-            options={[
-              { value: "following", label: "Following" },
-              { value: "all", label: "Everyone" },
-            ]}
-            onChange={(v) =>
-              setExploreFilters("followingOnly", v === "following")}
-          />
+        <div class="flex items-center gap-2">
+          <Button
+            variant="neutral"
+            size="sm"
+            icon={<Heart class="size-4" />}
+            pressed={exploreFilters.followingOnly}
+            onClick={() => setExploreFilters("followingOnly", (v) => !v)}
+          >
+            Following
+          </Button>
           <LanguageSelect
-            value={exploreFilters.language}
-            onChange={(v) => setExploreFilters("language", v)}
+            value={exploreLanguage()}
+            options={languageOptions()}
+            onChange={setExploreLanguage}
           />
         </div>
       </div>

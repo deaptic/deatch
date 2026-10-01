@@ -20,7 +20,11 @@ const VARIANTS: Record<ButtonVariant, string> = {
   danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
 };
 
-const PRESSED = "bg-raised text-ink";
+const PRESSED: Partial<Record<ButtonVariant, string>> = {
+  ghost: "bg-raised text-ink",
+  neutral:
+    "bg-accent-soft text-accent-ink border border-accent/40 hover:bg-accent/18",
+};
 
 const SIZES: Record<ButtonSize, { box: string; pad: string; text: string }> = {
   sm: { box: "h-control-sm", pad: "px-2.5", text: "text-small font-semibold" },
@@ -49,7 +53,7 @@ export default function Button(props: Props) {
   const variant = () => local.variant ?? "accent";
   const iconOnly = () => local.icon !== undefined && local.children == null;
   const style = () =>
-    local.pressed && variant() === "ghost" ? PRESSED : VARIANTS[variant()];
+    (local.pressed && PRESSED[variant()]) || VARIANTS[variant()];
 
   return (
     <button

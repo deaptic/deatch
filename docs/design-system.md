@@ -88,6 +88,11 @@ text colour.
   stay inside an 8px viewport margin, and close on Escape or outside click. The
   opener toggles. One menu, one popover, and one dialog at a time; Escape closes
   the topmost and focus returns where it came from.
+- **Choosing from a long list is a `Combobox`.** The field always shows the
+  current value (or its placeholder when none, with × to clear); focus opens the
+  list attached below and selects the text so typing filters it; one row is
+  always highlighted, arrows and hover move it, Enter picks it; focus never
+  leaves the field; Escape, Tab, or clicking away close it unchanged.
 - **Fading means unusable.** 40% for anything that can't be used or is finished
   (disabled controls, resolved AutoMod holds, a dragged rail row). Something
   switched off but still editable is not faded; its state shows in its own
