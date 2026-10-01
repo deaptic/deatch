@@ -45,6 +45,7 @@ Deno.test("* in the middle or on both sides stays inside one word", () => {
   assertEquals(matchesAnyKeyword("colour", ["col*r"]), true);
   assertEquals(matchesAnyKeyword("col or", ["col*r"]), false);
   assertEquals(matchesAnyKeyword("d-rop", ["*drop*"]), false);
+  assertEquals(matchesAnyKeyword("x-drop-y", ["*drop*"]), true);
 });
 
 Deno.test("wildcards work with punctuation terms", () => {
@@ -63,4 +64,31 @@ Deno.test("exact anchor matches the whole text, wildcards included", () => {
   assertEquals(matchesTerms("hiya there", ["hi*"], "exact"), false);
   assertEquals(matchesTerms("HELLO", ["hello"], "exact", true), false);
   assertEquals(matchesTerms("HELLO", ["hello"], "exact"), true);
+});
+
+Deno.test("a symbol glued to the front means a different word", () => {
+  assertEquals(matchesAnyKeyword("@dead hi", ["dea*"]), false);
+  assertEquals(matchesAnyKeyword("#dead", ["dead"]), false);
+  assertEquals(matchesAnyKeyword(".dead", ["dead"]), false);
+  assertEquals(matchesAnyKeyword("hi @deaptic", ["deaptic"]), false);
+});
+
+Deno.test("only whitespace may surround a term, on both sides", () => {
+  assertEquals(matchesAnyKeyword("so (dead) rn", ["dead"]), false);
+  assertEquals(matchesAnyKeyword('he said "dead"', ["dead"]), false);
+  assertEquals(matchesAnyKeyword("!dead", ["dea*"]), false);
+  assertEquals(matchesAnyKeyword("im dead.", ["dead"]), false);
+  assertEquals(matchesAnyKeyword("dead, honestly", ["dead"]), false);
+  assertEquals(matchesAnyKeyword("good idea!", ["*dea"]), false);
+  assertEquals(matchesAnyKeyword("good idea", ["*dea"]), true);
+  assertEquals(matchesAnyKeyword("im dead lol", ["dea*"]), true);
+});
+
+Deno.test("* stands for anything but whitespace", () => {
+  assertEquals(matchesAnyKeyword("@idea", ["*dea"]), true);
+  assertEquals(matchesAnyKeyword("idea!", ["*dea"]), false);
+  assertEquals(matchesAnyKeyword("@ideas!", ["*dea*"]), true);
+  assertEquals(matchesAnyKeyword("dead!", ["dea*"]), true);
+  assertEquals(matchesAnyKeyword("de ad", ["de*"]), true);
+  assertEquals(matchesAnyKeyword("de ad", ["de*ad"]), false);
 });
