@@ -30,6 +30,11 @@ export type AutomodHoldInfo = {
   broadcaster_user_id: string;
 };
 
+export type Redemption = {
+  reward: { id: string; title: string; prompt: string };
+  input?: string;
+};
+
 export type FeedMessage = {
   kind: "message";
   message_id: string;
@@ -43,7 +48,7 @@ export type FeedMessage = {
   timestamp: number;
   channel_points?:
     | { kind: "highlight" }
-    | { kind: "custom_reward"; title?: string };
+    | { kind: "custom_reward"; redemption?: Redemption };
   first_message?: boolean;
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
@@ -55,11 +60,13 @@ export type FeedEvent = {
   notice_type: string;
   system_message: string;
   chatter_user_id?: string;
+  chatter_login?: string;
   chatter_name: string;
   color: string;
   timestamp: number;
   silent?: boolean;
   clip?: { id: string };
+  redemption?: Redemption;
 };
 
 export type FeedEntry = FeedMessage | FeedEvent;

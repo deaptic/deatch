@@ -6,7 +6,7 @@ import {
   feeds,
   setFeeds,
 } from "./core.ts";
-import type { BadgeMap } from "../../types/feed.ts";
+import type { BadgeMap, Redemption } from "../../types/feed.ts";
 import type { AutomodHoldStatus } from "../../types/index.ts";
 
 export function markMessageDeleted(id: string, messageId: string) {
@@ -73,10 +73,10 @@ export function dropFeed(id: string) {
   setFeeds(id, undefined as unknown as ChannelFeed);
 }
 
-export function setChannelPointsRewardTitle(
+export function setChannelPointsRedemption(
   broadcasterId: string,
   messageId: string,
-  title: string,
+  redemption: Redemption,
 ) {
   if (!feeds[broadcasterId]) return;
   setFeeds(
@@ -89,7 +89,7 @@ export function setChannelPointsRewardTitle(
         item?.kind === "message" &&
         item.channel_points?.kind === "custom_reward"
       ) {
-        item.channel_points.title = title;
+        item.channel_points.redemption = redemption;
       }
     }),
   );
