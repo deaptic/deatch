@@ -1,6 +1,7 @@
 import {
   createEffect,
   createMemo,
+  createSelector,
   createSignal,
   For,
   type JSX,
@@ -92,16 +93,36 @@ export default function Feed(props: Props) {
       : (feeds[props.broadcasterId]?.dividerAtItemId ?? null);
   const reactions = createMemo(() => favorites().slice(0, 3));
 
+  const dividerBeforeId = createMemo(() => {
+    const at = dividerAt();
+    if (at === null) return null;
+    const all = items();
+    const i = all.findIndex((item) => getItemId(item) === at);
+    return i >= 0 && i + 1 < all.length ? getItemId(all[i + 1]) : null;
+  });
+
   const layout = createMemo(() => {
     const visible = items().filter(isFeedItemVisible);
     const rows = layoutFeed(visible, props.density === "comfortable");
-    return new Map(visible.map((item, i) => [getItemId(item), rows[i]]));
+    const dayStarts = new Set<string>();
+    const continued = new Set<string>();
+    visible.forEach((item, i) => {
+      const id = getItemId(item);
+      if (rows[i].dayStart) dayStarts.add(id);
+      if (rows[i].continued && id !== dividerBeforeId()) continued.add(id);
+    });
+    return { dayStarts, continued };
   });
-  const dividerBefore = (index: number) =>
-    index > 0 && dividerAt() !== null &&
-    getItemId(items()[index - 1]) === dividerAt();
-  const continued = (item: FeedItem, index: () => number) =>
-    !!layout().get(getItemId(item))?.continued && !dividerBefore(index());
+
+  const hasDividerBefore = createSelector(dividerBeforeId);
+  const startsDay = createSelector(
+    () => layout().dayStarts,
+    (id: string, ids) => ids.has(id),
+  );
+  const isContinued = createSelector(
+    () => layout().continued,
+    (id: string, ids) => ids.has(id),
+  );
 
   const messageList = createMemo<Message[]>(() =>
     items().filter((i): i is Message => i.kind === "message")
@@ -209,7 +230,7 @@ export default function Feed(props: Props) {
     });
   });
 
-  const defaultRender = (item: FeedItem, index: () => number) => (
+  const defaultRender = (item: FeedItem) => (
     <Show when={isFeedItemVisible(item)}>
       {item.kind === "event"
         ? (
@@ -230,7 +251,7 @@ export default function Feed(props: Props) {
             selected={selectedId() === item.message_id}
             keywords={feedKeywords()}
             density={props.density}
-            continued={continued(item, index)}
+            continued={isContinued(getItemId(item))}
             showTimestamp={feedShowTimestamp()}
             showDeletedContent={feedShowDeletedContent()}
             showName={props.showName}
@@ -251,9 +272,7 @@ export default function Feed(props: Props) {
   );
 
   const render = (item: FeedItem, index: () => number) =>
-    props.renderItem
-      ? props.renderItem(item, index)
-      : defaultRender(item, index);
+    props.renderItem ? props.renderItem(item, index) : defaultRender(item);
 
   return (
     <div
@@ -277,10 +296,10 @@ export default function Feed(props: Props) {
         <For each={items()}>
           {(item, index) => (
             <>
-              <Show when={layout().get(getItemId(item))?.dayStart}>
+              <Show when={startsDay(getItemId(item))}>
                 <FeedDayDivider ts={item.timestamp} />
               </Show>
-              <Show when={dividerBefore(index())}>
+              <Show when={hasDividerBefore(getItemId(item))}>
                 <FeedDivider />
               </Show>
               <div

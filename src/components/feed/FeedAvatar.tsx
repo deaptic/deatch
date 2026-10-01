@@ -14,7 +14,7 @@ export default function FeedAvatar(props: Props) {
       <Blobatar
         name={props.userId}
         background={false}
-        animate={props.active ? "always" : "hover"}
+        animate={props.active ? "always" : undefined}
         class="size-full"
       />
     </FeedTile>

@@ -72,8 +72,10 @@ export default function FeedEvent(props: Props) {
   return (
     <div
       data-item-id={props.item.id}
-      class={`relative group flex items-start leading-normal pl-3 pr-2 ${
-        props.density === "comfortable" ? "py-1.5" : "py-1"
+      class={`relative group flex leading-normal pl-3 pr-2 ${
+        props.density === "comfortable"
+          ? "items-center py-1.5"
+          : "items-start py-1"
       } border-l-3 border-(--event) bg-(--event)/10 ${
         props.flush ? "rounded-r-sm" : "rounded-sm"
       }`}
@@ -106,7 +108,7 @@ export default function FeedEvent(props: Props) {
             <Dynamic component={look().Icon} />
           </span>
         </FeedTile>
-        <div class="flex-1 min-w-0 self-center ml-3 wrap-break-word text-ink">
+        <div class="flex-1 min-w-0 ml-3 wrap-break-word text-ink">
           {props.item.system_message}
           <Timestamp
             ts={props.item.timestamp}
