@@ -23,6 +23,13 @@ export function hexToOklch(hex: string): Oklch | null {
   return { l: L, c, h };
 }
 
+const MIN_HUED_CHROMA = 0.03;
+
+export function hueOf(hex: string): number | undefined {
+  const c = hexToOklch(hex);
+  return c && c.c >= MIN_HUED_CHROMA ? c.h : undefined;
+}
+
 export function oklchToHex({ l, c, h }: Oklch): string {
   const rad = (h * Math.PI) / 180;
   const a = c * Math.cos(rad);

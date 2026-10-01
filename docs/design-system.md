@@ -441,10 +441,11 @@ toggle in the composer. Both keep the treatments, toolbar, and dividers above.
   `ink-faint`, written as the calendar says it: "10:49" today, "Yesterday at
   10:49", then "29/09/2026 22:24". Event rows write their time the same way. The
   rest of the group is body only, with its time showing in the gutter on hover.
-  A group opens with 8px above it; rows inside it have 2px. Timestamps always
-  show here, so the timestamp setting only affects compact. Event rows take a
-  tile too, holding their icon in the event colour, with 6px above and below,
-  the text centred beside it, and the time after the text.
+  Every row has 2px above and below inside its highlight; a group adds a 6px
+  margin above, outside the highlight, so hover and treatments stay balanced.
+  Timestamps always show here, so the timestamp setting only affects compact.
+  Event rows take a tile too, holding their icon in the event colour, with 6px
+  above and below, the text centred beside it, and the time after the text.
 
 A message joins the group above it when both come from the same chatter, less
 than five minutes apart, on the same day, with no event or unread divider
@@ -466,18 +467,25 @@ parent.
 
 The chatter tile is a square as wide as the gutter, scaling with chat text size,
 centred on the boundary between the name line and the first body line so it sits
-centred on the two together at any chat text size, `sm` radius, `raised`,
-holding the chatter's blobatar: a creature generated locally from their user ID
-by the `blobatar` package, transparent backdrop. It holds still until you hover
-its row or select it with the keyboard, then idles (breathes, bobs, blinks,
-glances) for as long as the pointer stays or the row stays selected; that is
-motion answering the user, so it is allowed. Reduced motion turns it off. The
-same ID always draws the same creature, so a chatter keeps theirs through
-renames. Twitch sends no avatar with a message, and fetching one per chatter
-costs a request at chat speed, so the blobatar stands in. It sits beside a
-two-line block like the header avatar, so it is square for the same reason. An
-event's tile is the same shape, tinted with the event colour at 16% and holding
-its icon. Clicking a chatter tile opens the user card.
+centred on the two together at any chat text size, `sm` radius, holding the
+chatter's blobatar: a creature generated locally from their user ID by the
+`blobatar` package, transparent backdrop. The creature takes the hue of the
+chatter's own Twitch name colour at the library's vivid shade (its default shade
+per ID can land on a near-black or near-white band where no hue shows), and the
+tile is that colour at 16%, the same treatment as an event tile, so name,
+creature, and tile agree. A chatter with no colour (or a grey one) is grey
+throughout, as in Chatterino: their name in `ink-soft`, and a mid-grey creature
+with dark eyes on a plain `raised` tile. The name-colour override setting does
+not apply here. It holds still until you hover its row or select it with the
+keyboard, then idles (breathes, bobs, blinks, glances) for as long as the
+pointer stays or the row stays selected; that is motion answering the user, so
+it is allowed. Reduced motion turns it off. The same ID always draws the same
+creature, so a chatter keeps theirs through renames. Twitch sends no avatar with
+a message, and fetching one per chatter costs a request at chat speed, so the
+blobatar stands in. It sits beside a two-line block like the header avatar, so
+it is square for the same reason. An event's tile is the same shape, tinted with
+the event colour at 16% and holding its icon. Clicking a chatter tile opens the
+user card.
 
 ### 3.4 Pages
 

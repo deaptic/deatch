@@ -130,7 +130,7 @@ export default function FeedMessage(props: Props) {
       : "plain";
 
   const spacing = () =>
-    !comfortable() ? "py-1" : props.continued ? "py-0.5" : "pt-2 pb-0.5";
+    !comfortable() ? "py-1" : props.continued ? "py-0.5" : "mt-1.5 py-0.5";
 
   const visibleFragments = () => {
     const item = props.item;
@@ -292,6 +292,7 @@ export default function FeedMessage(props: Props) {
           <span class="absolute left-0 top-full -translate-y-1/2">
             <FeedAvatar
               userId={props.item.chatter_user_id}
+              color={props.item.color}
               active={hovered() || !!props.selected}
               onClick={props.onShowUserCard &&
                 ((x, y) =>
