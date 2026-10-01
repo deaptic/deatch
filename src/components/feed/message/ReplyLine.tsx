@@ -1,6 +1,8 @@
 import { Blobatar } from "@blobatar/solid";
 import { Show } from "solid-js";
 import type { FeedMessage } from "../../../lib/types/index.ts";
+import { knownChatterColor } from "../../../lib/stores/users.ts";
+import { chatterLook } from "./chatterLook.ts";
 
 type Props = {
   reply: NonNullable<FeedMessage["reply"]>;
@@ -17,11 +19,26 @@ export default function ReplyLine(props: Props) {
       onClick={() => props.onJump?.(props.reply.parent_message_id)}
     >
       <Show when={props.showAvatar && props.reply.parent_user_id}>
-        {(id) => (
-          <span class="h-lh aspect-square shrink-0 overflow-hidden rounded-xs bg-raised">
-            <Blobatar name={id()} background={false} class="size-full" />
-          </span>
-        )}
+        {(id) => {
+          const look = () => chatterLook(knownChatterColor(id()) ?? "");
+          return (
+            <span
+              class={`h-lh aspect-square shrink-0 overflow-hidden rounded-xs ${
+                look().tint ? "bg-(--tile)/16" : "bg-raised"
+              }`}
+              style={look().tint ? { "--tile": look().tint } : undefined}
+            >
+              <Blobatar
+                name={id()}
+                hue={look().hue}
+                tone={look().tone}
+                palette={look().palette}
+                background={false}
+                class="size-full"
+              />
+            </span>
+          );
+        }}
       </Show>
       <span class="shrink-0 font-semibold text-accent-ink">
         @{props.reply.parent_user_name}
