@@ -70,7 +70,7 @@ export default function FeedItem(props: Props) {
         {(tile) => (
           <span class="relative w-(--chat-tile) h-(--chat-two-lines) self-start shrink-0 mr-3">
             <Show when={hasConnector()}>
-              <span class="absolute left-1/2 top-0 bottom-1/2 border-l-2 border-line" />
+              <span class="absolute left-1/2 top-0 bottom-1/2 border-l-2 border-ink-faint" />
             </Show>
             <span class="absolute inset-x-0 top-1/2 -translate-y-1/2">
               {tile()(active)}

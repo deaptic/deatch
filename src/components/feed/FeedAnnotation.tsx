@@ -3,8 +3,11 @@ import type { Density } from "../../lib/constants/density.ts";
 import Timestamp from "../ui/Timestamp.tsx";
 
 const LEADS: Record<Density, { box: string; spine: string }> = {
-  compact: { box: "h-lh aspect-square mr-1", spine: "-right-0.5" },
-  comfortable: { box: "w-(--chat-tile) self-stretch mr-3", spine: "-right-2" },
+  compact: { box: "h-lh aspect-square mr-1", spine: "left-0 -right-0.5" },
+  comfortable: {
+    box: "w-(--chat-tile) self-stretch mr-3",
+    spine: "left-1/2 -right-2",
+  },
 };
 
 type Props = {
@@ -29,7 +32,7 @@ export default function FeedAnnotation(props: Props) {
         <span class={`${lead().box} shrink-0 relative`}>
           <Show when={props.connector}>
             <span
-              class={`${lead().spine} absolute left-1/2 top-1/2 bottom-0 border-l-2 border-t-2 border-line rounded-tl-sm`}
+              class={`${lead().spine} absolute top-1/2 bottom-0 border-l-2 border-t-2 border-ink-faint rounded-tl-sm`}
             />
           </Show>
         </span>
