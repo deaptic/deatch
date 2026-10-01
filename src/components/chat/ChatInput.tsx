@@ -104,9 +104,12 @@ export default function ChatInput(props: Props) {
     broadcasterId: () => props.broadcasterId,
   });
 
+  const outgoing = () => input().replace(/\s*\n\s*/g, " ").trim();
+  const tooLong = () => outgoing().length > MAX_LEN;
+
   async function sendMessage() {
-    const text = input().replace(/\s*\n\s*/g, " ").trim();
-    if (!text || sending()) return;
+    const text = outgoing();
+    if (!text || tooLong() || sending()) return;
     setSending(true);
     try {
       const reply = props.replyTo();
@@ -302,10 +305,13 @@ export default function ChatInput(props: Props) {
                   <Smile class="size-5" />
                 </IconButton>
                 <Button
-                  variant={input().trim() ? "accent" : "ghost"}
+                  variant={outgoing() && !tooLong() ? "accent" : "ghost"}
                   icon={<SendHorizontal class="size-4" />}
                   aria-label="Send"
-                  title="Send"
+                  title={tooLong()
+                    ? `Too long: Twitch allows ${MAX_LEN} characters`
+                    : "Send"}
+                  disabled={tooLong()}
                   loading={sending()}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => void sendMessage()}
