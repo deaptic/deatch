@@ -1,6 +1,7 @@
 import { For } from "solid-js";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
+import Kbd from "../../ui/Kbd.tsx";
 import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -33,26 +34,6 @@ const ACTION_LABELS: Record<string, string> = {
   "chat::recallPrev": "Previous sent message",
   "chat::recallNext": "Next sent message",
 };
-
-const KEY_LABELS: Record<string, string> = {
-  ctrl: "Ctrl",
-  alt: "Alt",
-  shift: "Shift",
-  meta: "Win",
-  up: "↑",
-  down: "↓",
-  left: "←",
-  right: "→",
-  enter: "Enter",
-  escape: "Esc",
-  tab: "Tab",
-};
-
-function keyParts(combo: string): string[] {
-  return combo
-    .split("-")
-    .map((k) => KEY_LABELS[k] ?? (k.length === 1 ? k.toUpperCase() : k));
-}
 
 const GROUPS = [
   { title: "Navigation", prefix: ["channel::", "explore::", "settings::"] },
@@ -98,15 +79,7 @@ export default function KeyboardSection() {
               {(row) => (
                 <div class="flex items-center justify-between gap-6 px-5 h-11 border-t border-line-soft">
                   <span class="text-body text-ink">{row.label}</span>
-                  <span class="flex items-center gap-1">
-                    <For each={keyParts(row.combo)}>
-                      {(k) => (
-                        <kbd class="min-w-6.5 h-6 px-1.5 inline-grid place-items-center rounded-xs bg-raised text-small text-ink-soft font-sans">
-                          {k}
-                        </kbd>
-                      )}
-                    </For>
-                  </span>
+                  <Kbd combo={row.combo} />
                 </div>
               )}
             </For>

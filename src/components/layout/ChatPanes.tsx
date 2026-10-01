@@ -38,6 +38,7 @@ export default function ChatPanes(props: ChatPanesProps) {
               <Chat
                 broadcasterId={ch.id}
                 broadcasterLogin={ch.login}
+                broadcasterName={ch.displayName}
                 userLogin={props.userLogin}
                 isActive
                 onJumpToMessage={props.onJumpToMessage}

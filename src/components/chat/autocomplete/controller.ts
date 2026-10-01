@@ -97,6 +97,6 @@ function detect(before: string): Active | null {
   const em = before.match(/(?:^|\s):(\w+)$/);
   if (em && em[1].length >= 1) return { kind: "emote", query: em[1] };
   const mn = before.match(/(?:^|\s)@(\w*)$/);
-  if (mn && mn[1].length >= 1) return { kind: "mention", query: mn[1] };
+  if (mn) return { kind: "mention", query: mn[1] };
   return null;
 }

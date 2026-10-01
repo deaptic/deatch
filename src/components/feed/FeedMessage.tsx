@@ -311,6 +311,7 @@ export default function FeedMessage(props: Props) {
             {badges("after")}
             <Timestamp
               ts={props.item.timestamp}
+              format="c"
               variant="inline"
             />
           </div>

@@ -1,4 +1,5 @@
 import { createEffect, type JSX, on, onMount, splitProps } from "solid-js";
+import ComposerBox from "../ui/ComposerBox.tsx";
 
 export type ComposerFieldApi = {
   focus: () => void;
@@ -66,10 +67,7 @@ export default function ComposerField(props: Props) {
   });
 
   return (
-    <div
-      ref={rowRef}
-      class="relative flex items-end gap-1 min-h-control-lg pl-3.5 pr-1.5 py-1 bg-surface border border-line rounded-md transition-colors duration-snap hover:border-ink-faint focus-within:border-accent! "
-    >
+    <ComposerBox ref={(el) => (rowRef = el)}>
       {local.children}
       <textarea
         {...textareaProps}
@@ -80,6 +78,6 @@ export default function ComposerField(props: Props) {
         class="flex-1 self-stretch content-center bg-transparent text-body text-ink placeholder:text-ink-faint py-2 pr-1 outline-none resize-none overflow-y-auto"
       />
       {local.addons}
-    </div>
+    </ComposerBox>
   );
 }

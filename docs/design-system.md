@@ -437,13 +437,14 @@ toggle in the composer. Both keep the treatments, toolbar, and dividers above.
   name: message". Fits the most chat on screen.
 - **Comfortable**: a gutter 2.5× the chat text size (40px at 16px), 12px gap,
   then content. The first message of a group puts a chatter tile in the gutter
-  and a header line above the body: name, badges, then the time in
-  `feed-meta ink-faint`. The rest of the group is body only, with its time
-  showing in the gutter on hover. A group opens with 8px above it; rows inside
-  it have 2px. Timestamps always show here, so the timestamp setting only
-  affects compact. Event rows take a tile too, holding their icon in the event
-  colour, with 6px above and below, the text centred beside it, and the time
-  after the text.
+  and a header line above the body: name, badges, then the time at 0.8em
+  `ink-faint`, written as the calendar says it: "10:49" today, "Yesterday at
+  10:49", then "29/09/2026 22:24". Event rows write their time the same way. The
+  rest of the group is body only, with its time showing in the gutter on hover.
+  A group opens with 8px above it; rows inside it have 2px. Timestamps always
+  show here, so the timestamp setting only affects compact. Event rows take a
+  tile too, holding their icon in the event colour, with 6px above and below,
+  the text centred beside it, and the time after the text.
 
 A message joins the group above it when both come from the same chatter, less
 than five minutes apart, on the same day, with no event or unread divider
@@ -577,6 +578,12 @@ leading icon 16px `ink-soft`. Optional clear button appears when non-empty.
 `lg` text area that grows to 5 lines, `md` radius. Layout toggle, emote button,
 and send button inside on the right, `sm` ghost. The layout toggle shows pressed
 while the feed is comfortable (§3.3). Send becomes `accent` when there is text.
+Placeholder "Message #ChannelName", using the channel's display name. Command
+mode (after picking a `/command`) keeps the same box, height, padding, and
+hover/focus borders: the command chip and its argument slots replace the text
+area, and the hint ("/ban · user — who to ban") sits above the box as a
+`small ink-soft` line like the reply chip, `negative` while an argument is
+invalid. Typing `@` on its own opens the mention list with recent chatters.
 Reply chip above: avatar 16, "Replying to name", message preview truncated, × to
 cancel. Character count appears at 80% of the limit in `micro ink-faint`,
 `negative` at the limit. Autocomplete (emotes, mentions, commands) opens as a

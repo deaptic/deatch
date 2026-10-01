@@ -13,7 +13,7 @@ import { chattersByChannel } from "../../lib/stores/users.ts";
 import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import * as users from "../../lib/services/users.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
-import Banner from "../ui/Banner.tsx";
+import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
 import { parseDuration, type Slot, slotSatisfied } from "./parse.ts";
 
@@ -436,7 +436,7 @@ export default function CommandComposer(props: Props) {
       ref={composerRef}
       tabIndex={hasSlots ? undefined : -1}
       onKeyDown={hasSlots ? undefined : onKeyDown}
-      class="relative flex-1 self-stretch flex flex-col min-w-0 outline-none"
+      class="relative flex flex-col min-w-0 outline-none"
     >
       <Show when={activePopup()}>
         <Suggestions<unknown>
@@ -449,51 +449,56 @@ export default function CommandComposer(props: Props) {
           }}
         />
       </Show>
-      <Banner danger={errorActive()}>
-        <span class="text-ink-soft">/{props.command.name}</span>
-        <Show when={activeOption()?.name}>
-          <span class="text-ink-soft">·</span>
-          <span
-            class={`font-semibold ${
-              errorActive() ? "text-negative" : "text-accent-ink"
-            }`}
-          >
-            {activeOption()!.name}
-          </span>
-        </Show>
-        <Show when={hintBody()}>
-          <span class={errorActive() ? "text-negative" : "text-ink-soft"}>
-            — {hintBody()}
-          </span>
-        </Show>
-      </Banner>
-      <div class="flex items-center flex-wrap gap-2 px-4 min-h-14 py-2 min-w-0">
-        <span class="inline-flex items-center px-2 py-1 rounded-sm bg-accent-soft text-accent-ink text-body font-semibold shrink-0">
+      <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft min-w-0">
+        <span class="truncate">
           /{props.command.name}
+          <Show when={activeOption()?.name}>
+            {" · "}
+            <span
+              class={`font-semibold ${
+                errorActive() ? "text-negative" : "text-accent-ink"
+              }`}
+            >
+              {activeOption()!.name}
+            </span>
+          </Show>
+          <Show when={hintBody()}>
+            <span class={errorActive() ? "text-negative" : ""}>
+              {" — "}
+              {hintBody()}
+            </span>
+          </Show>
         </span>
-        <For each={options}>
-          {(opt, i) => {
-            const slot = () => slots()[i()];
-            const active = () => i() === activeIdx();
-            return (
-              <CommandComposerSlot
-                option={opt}
-                raw={slot().raw}
-                displayLabel={slot().displayLabel}
-                isActive={active()}
-                isFilled={slot().resolved !== null && !active()}
-                errored={active() && !!slot().error}
-                onActivate={() => setActiveIdx(i())}
-                inputRef={(el) => {
-                  activeInput = el;
-                }}
-                onInput={onActiveInput}
-                onKeyDown={onKeyDown}
-              />
-            );
-          }}
-        </For>
       </div>
+      <ComposerBox>
+        <div class="flex-1 self-center flex items-center flex-wrap gap-2 min-h-9 py-0.5 min-w-0">
+          <span class="inline-flex items-center px-2 py-1 rounded-sm bg-accent-soft text-accent-ink text-body font-semibold shrink-0">
+            /{props.command.name}
+          </span>
+          <For each={options}>
+            {(opt, i) => {
+              const slot = () => slots()[i()];
+              const active = () => i() === activeIdx();
+              return (
+                <CommandComposerSlot
+                  option={opt}
+                  raw={slot().raw}
+                  displayLabel={slot().displayLabel}
+                  isActive={active()}
+                  isFilled={slot().resolved !== null && !active()}
+                  errored={active() && !!slot().error}
+                  onActivate={() => setActiveIdx(i())}
+                  inputRef={(el) => {
+                    activeInput = el;
+                  }}
+                  onInput={onActiveInput}
+                  onKeyDown={onKeyDown}
+                />
+              );
+            }}
+          </For>
+        </div>
+      </ComposerBox>
     </div>
   );
 }

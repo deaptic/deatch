@@ -55,6 +55,7 @@ const TILE_SCALE = 2.5;
 type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
+  broadcasterName: string;
   userLogin: string;
   isActive: boolean;
   onJumpToMessage: (channelId: string, messageId: string) => void;
@@ -337,6 +338,7 @@ export default function Chat(props: Props) {
       <ChatInput
         broadcasterId={props.broadcasterId}
         broadcasterLogin={props.broadcasterLogin}
+        broadcasterName={props.broadcasterName}
         isActive={props.isActive}
         replyTo={replyTo}
         onClearReply={clearReply}
