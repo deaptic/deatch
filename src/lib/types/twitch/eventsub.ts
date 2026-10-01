@@ -27,6 +27,7 @@ export const MOD_KINDS: EventKind[] = [
 // Broadcaster-only — only subscribable for the logged-in user's own channel.
 export const OWN_KINDS: EventKind[] = [
   "channel.channel_points_custom_reward_redemption.add",
+  "channel.update",
 ];
 
 export const ALL_KINDS: EventKind[] = [
@@ -233,4 +234,14 @@ export type RawAutomodMessageUpdate = {
   broadcaster_user_id: string;
   message_id: string;
   status: string;
+};
+
+// channel.update
+export type RawChannelUpdate = {
+  broadcaster_user_id: string;
+  broadcaster_user_login: string;
+  broadcaster_user_name: string;
+  title: string;
+  category_id: string;
+  category_name: string;
 };

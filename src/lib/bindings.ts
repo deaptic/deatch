@@ -86,7 +86,7 @@ export const events = {
 };
 
 /* Constants */
-export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.follow":"channel-follow","channel.moderate":"channel-moderate","channel.shoutout.create":"channel-shoutout-create"} as const;
+export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.follow":"channel-follow","channel.moderate":"channel-moderate","channel.shoutout.create":"channel-shoutout-create","channel.update":"channel-update"} as const;
 
 /* Types */
 export type ActivityInput = {
@@ -260,7 +260,7 @@ export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: {
 	message: string,
 } } | { kind: "http"; message: string } | { kind: "auth"; message: string } | { kind: "keyring"; message: string } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
-export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.shoutout.create" | "channel.follow" | "channel.moderate" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add";
+export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.shoutout.create" | "channel.follow" | "channel.moderate" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.update";
 
 export type EventSubConnection = {
 	connected: boolean,

@@ -40,10 +40,7 @@ export async function modifyChannelInformation(
   params: ModifyChannelInformationParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  await invokeCommand(commands.modifyChannelInformation, [params], {
-    successMessage: "Channel updated",
-    ...options,
-  });
+  await invokeCommand(commands.modifyChannelInformation, [params], options);
 }
 
 export async function startCommercial(

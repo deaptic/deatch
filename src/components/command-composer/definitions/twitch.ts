@@ -532,10 +532,10 @@ export const twitchCommands: Command[] = [
     ],
     execute: async ({ game }, ctx) => {
       const match = game as OptionSuggestion;
-      await modifyChannelInformation(
-        { broadcasterId: ctx.broadcasterId, gameId: match.id },
-        { successMessage: `Category set to ${match.label}` },
-      );
+      await modifyChannelInformation({
+        broadcasterId: ctx.broadcasterId,
+        gameId: match.id,
+      });
     },
   },
   {

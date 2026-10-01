@@ -119,6 +119,7 @@ fn dispatch_notification(
             EventKind::ChannelPointsCustomRewardRedemptionAdd,
             timestamp
         ),
+        Event::ChannelUpdateV2(n) => forward!(app, subs, n, EventKind::ChannelUpdate, timestamp),
         _ => {}
     }
 }

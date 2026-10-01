@@ -1,33 +1,11 @@
 import { events } from "../bindings.ts";
 import { unlistenAll } from "./listen.ts";
-import { appendItem } from "../stores/feeds.ts";
+import { appendLocalNotice } from "../stores/feeds.ts";
 import { usersById } from "../stores/channels.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
 import * as backlog from "../services/backlog.ts";
-import type { FeedEvent } from "../types/feed.ts";
 
 const CHAT = "channel.chat.message" as const;
-
-function pushNotice(
-  broadcasterId: string,
-  noticeType: string,
-  message: string,
-): void {
-  const now = Date.now();
-  const notice: FeedEvent = {
-    kind: "event",
-    id: `${noticeType}-${broadcasterId}-${now}-${
-      Math.random().toString(36).slice(2, 8)
-    }`,
-    notice_type: noticeType,
-    system_message: message,
-    chatter_name: "",
-    color: "",
-    timestamp: now,
-    silent: true,
-  };
-  appendItem(broadcasterId, notice);
-}
 
 export function start(): () => void {
   return unlistenAll([
@@ -39,20 +17,24 @@ export function start(): () => void {
       const { broadcasterId, status } = payload;
       switch (status.type) {
         case "subscribed":
-          pushNotice(broadcasterId, "chat_connected", "Connected to chat");
+          appendLocalNotice(
+            broadcasterId,
+            "Connected to chat",
+            "chat_connected",
+          );
           break;
         case "unsubscribed":
-          pushNotice(
+          appendLocalNotice(
             broadcasterId,
-            "chat_disconnected",
             "Disconnected from chat",
+            "chat_disconnected",
           );
           break;
         case "failed":
-          pushNotice(
+          appendLocalNotice(
             broadcasterId,
-            "chat_connect_failed",
             `Failed to connect to chat: ${status.error}`,
+            "chat_connect_failed",
           );
           break;
       }
