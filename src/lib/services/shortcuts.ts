@@ -113,7 +113,8 @@ export function start(): () => void {
 }
 
 function dispatch(seq: string): boolean {
-  if (run(localBindings.get(seq))) return true;
+  const local = localBindings.get(seq);
+  if (local && run([...local].reverse())) return true;
   const names = keymap.get(seq);
   if (!names) return false;
   return run(names.map((n) => actions.get(n)));

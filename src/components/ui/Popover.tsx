@@ -1,6 +1,7 @@
-import { createSignal, type JSX, onMount } from "solid-js";
+import { createSignal, type JSX, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 
 const MARGIN = 8;
@@ -46,6 +47,8 @@ export default function Popover(props: Props) {
     onDismiss: props.onClose,
     events: props.events,
   });
+
+  onCleanup(shortcuts.registerLocal("escape", () => props.onClose()));
 
   return (
     <Portal>
