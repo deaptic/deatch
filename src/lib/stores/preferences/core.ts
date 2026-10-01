@@ -1,5 +1,6 @@
 import { createStore, unwrap } from "solid-js/store";
 import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
+import { DENSITIES, type Density } from "../../constants/density.ts";
 import { type Theme, THEMES } from "../../constants/theme.ts";
 import defaults from "../default-preferences.json" with { type: "json" };
 
@@ -34,6 +35,7 @@ export type Trigger = {
 export type UserPreferences = {
   feed: {
     fontSize: number;
+    density: Density;
     showTimestamp: boolean;
     showDeletedContent: boolean;
     showCopypasta: boolean;
@@ -90,6 +92,12 @@ function sanitizeTheme(raw: unknown): Theme {
     : DEFAULT_PREFERENCES.appearance.theme;
 }
 
+function sanitizeDensity(raw: unknown): Density {
+  return DENSITIES.includes(raw as Density)
+    ? (raw as Density)
+    : DEFAULT_PREFERENCES.feed.density;
+}
+
 function sanitizeNicknames(raw: unknown): Record<string, string> {
   if (!raw || typeof raw !== "object") return {};
   const out: Record<string, string> = {};
@@ -142,6 +150,7 @@ function load(): UserPreferences {
     return {
       feed: {
         fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
+        density: sanitizeDensity(stored.feed?.density),
         showTimestamp: stored.feed?.showTimestamp ??
           DEFAULT_PREFERENCES.feed.showTimestamp,
         showDeletedContent: stored.feed?.showDeletedContent ??

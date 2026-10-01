@@ -408,6 +408,7 @@ export type Reply = {
 	parent_message_body: string,
 	parent_user_name: string,
 	parent_user_login: string,
+	parent_user_id: string,
 };
 
 export type SearchCategoriesParams = {

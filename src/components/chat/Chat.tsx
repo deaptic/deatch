@@ -39,6 +39,7 @@ import {
 } from "../../lib/stores/feeds.ts";
 import {
   advancedDeveloperMode,
+  feedDensity,
   feedFontSize,
   feedKeywords,
   feedShowCopypasta,
@@ -48,6 +49,8 @@ import { createPopover } from "./createPopover.ts";
 import { createNicknameEditor } from "./createNicknameEditor.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import type { UserRef } from "../../lib/types/index.ts";
+
+const TILE_SCALE = 2.5;
 
 type Props = {
   broadcasterId: string;
@@ -109,6 +112,7 @@ export default function Chat(props: Props) {
 
   createEffect(() => {
     feedFontSize();
+    feedDensity();
     const api = feedApi();
     if (!api) return;
     requestAnimationFrame(() => {
@@ -293,8 +297,12 @@ export default function Chat(props: Props) {
         userLogin={props.userLogin}
         scrollClass="pr-4 py-2"
         flush
+        density={feedDensity()}
         class="text-(length:--chat-size)"
-        style={{ "--chat-size": `${feedFontSize()}px` }}
+        style={{
+          "--chat-size": `${feedFontSize()}px`,
+          "--chat-tile": `${feedFontSize() * TILE_SCALE}px`,
+        }}
         onWheel={fontSize.onWheel}
         onContextMenu={(x, y, msg) => messageMenu.open(x, y, { msg })}
         onReply={startReply}

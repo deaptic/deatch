@@ -27,6 +27,7 @@ const ACTION_LABELS: Record<string, string> = {
   "watch::muteOthers": "Watch: mute other tabs",
   "view::toggleAlwaysOnTop": "Always on top",
   "panel::close": "Close the open overlay, or leave Settings and Explore",
+  "feed::toggleDensity": "Switch between compact and comfortable chat",
   "chat::send": "Send message",
   "chat::tabComplete": "Complete a name",
   "chat::recallPrev": "Previous sent message",
@@ -67,7 +68,7 @@ const GROUPS = [
     ],
   },
   { title: "Watch", prefix: ["watch::", "view::"] },
-  { title: "Chat", prefix: ["chat::"] },
+  { title: "Chat", prefix: ["feed::", "chat::"] },
 ];
 
 type Row = { combo: string; label: string };

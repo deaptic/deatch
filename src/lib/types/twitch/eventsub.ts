@@ -55,6 +55,7 @@ type RawReply = {
   parent_message_body: string;
   parent_user_name: string;
   parent_user_login: string;
+  parent_user_id: string;
 };
 
 /// A chat-message badge tag (`{set_id, id, info}`). Distinct from the

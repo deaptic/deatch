@@ -1,9 +1,12 @@
 import { Check, X } from "lucide-solid";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, type JSX, Show } from "solid-js";
 import { EmoteMap } from "../../lib/stores/emotes.ts";
 import FeedMessageToolbar from "./FeedMessageToolbar.tsx";
 import FeedMessageFragment from "./FeedMessageFragment.tsx";
-import BadgeBox from "../ui/BadgeBox.tsx";
+import FeedAvatar from "./FeedAvatar.tsx";
+import FeedReply from "./FeedReply.tsx";
+import FeedAnnotation from "./FeedAnnotation.tsx";
+import BadgeBox, { type BadgePlacement } from "../ui/BadgeBox.tsx";
 import DisplayName from "../ui/DisplayName.tsx";
 import Timestamp from "../ui/Timestamp.tsx";
 import RichNotice from "./RichNotice.tsx";
@@ -11,6 +14,7 @@ import type {
   BadgeMap,
   FeedMessage as Message,
 } from "../../lib/types/index.ts";
+import type { Density } from "../../lib/constants/density.ts";
 import { matchesAnyKeyword } from "../../lib/utils/wordMatch.ts";
 import type { Reaction } from "./reaction.ts";
 import type { UserRef } from "../../lib/types/index.ts";
@@ -23,6 +27,8 @@ type Props = {
   badges: BadgeMap;
   userLogin: string;
   keywords?: string[];
+  density?: Density;
+  continued?: boolean;
   showTimestamp?: boolean;
   showDeletedContent?: boolean;
   showName?: boolean;
@@ -64,6 +70,12 @@ export default function FeedMessage(props: Props) {
   };
   const [holdBusy, setHoldBusy] = createSignal(false);
   const [hovered, setHovered] = createSignal(false);
+
+  const comfortable = () =>
+    props.density === "comfortable" && props.showName !== false;
+  const density = (): Density => comfortable() ? "comfortable" : "compact";
+  const spacerTimestamp = () =>
+    !comfortable() && props.showTimestamp ? props.item.timestamp : undefined;
 
   async function handleHold(action: "approve" | "deny") {
     const h = hold();
@@ -117,6 +129,9 @@ export default function FeedMessage(props: Props) {
       ? "first"
       : "plain";
 
+  const spacing = () =>
+    !comfortable() ? "py-1" : props.continued ? "py-0.5" : "pt-2 pb-0.5";
+
   const visibleFragments = () => {
     const item = props.item;
     if (!item.reply) return item.fragments;
@@ -136,11 +151,180 @@ export default function FeedMessage(props: Props) {
     return item.fragments;
   };
 
+  const annotate = (notice: JSX.Element) => (
+    <FeedAnnotation density={density()} timestamp={spacerTimestamp()}>
+      {notice}
+    </FeedAnnotation>
+  );
+
+  const notices = () => (
+    <>
+      <Show when={hold()}>
+        {annotate(
+          <RichNotice
+            class="text-caution"
+            label={`Held by AutoMod · ${hold()!.reason}`}
+            suffix={holdResolved()
+              ? (hold()!.status === "approved"
+                ? "approved"
+                : hold()!.status === "denied"
+                ? "denied"
+                : "expired")
+              : undefined}
+            actions={holdPending()
+              ? [
+                {
+                  title: "Approve",
+                  icon: () => <Check class="size-4" />,
+                  tone: "success",
+                  disabled: holdBusy,
+                  onClick: () => handleHold("approve"),
+                },
+                {
+                  title: "Deny",
+                  icon: () => <X class="size-4" />,
+                  tone: "danger",
+                  disabled: holdBusy,
+                  onClick: () => handleHold("deny"),
+                },
+              ]
+              : undefined}
+          />,
+        )}
+      </Show>
+      <Show
+        when={props.item.channel_points?.kind === "custom_reward"
+          ? props.item.channel_points
+          : undefined}
+      >
+        {(cp) =>
+          annotate(
+            <RichNotice
+              class="text-event-channel-points"
+              label={cp().title
+                ? `Redeemed ${cp().title}`
+                : "Redeemed channel points"}
+            />,
+          )}
+      </Show>
+      <Show when={props.item.first_message && !hold()}>
+        {annotate(<RichNotice class="text-ink-soft" label="First message" />)}
+      </Show>
+    </>
+  );
+
+  const badges = (placement: BadgePlacement) => (
+    <Show when={props.showBadges !== false}>
+      <BadgeBox
+        badges={props.item.badges}
+        channelBadges={props.badges}
+        placement={placement}
+      />
+    </Show>
+  );
+
+  const name = () => (
+    <DisplayName
+      login={props.item.chatter_login}
+      displayName={props.item.chatter_name}
+      color={props.item.color}
+      userId={props.item.chatter_user_id}
+      onShowUserCard={props.onShowUserCard}
+      onUserContextMenu={props.onUserContextMenu}
+    />
+  );
+
+  const body = () => (
+    <Show
+      when={!props.item.deleted || props.showDeletedContent}
+      fallback={<span class="italic text-ink-soft">Message deleted</span>}
+    >
+      <For each={visibleFragments()}>
+        {(frag) => (
+          <FeedMessageFragment
+            frag={frag}
+            emotes={props.emotes}
+            mentionsYou={mentioned()}
+            onShowUserCard={props.onShowUserCard}
+            onUserContextMenu={props.onUserContextMenu}
+          />
+        )}
+      </For>
+    </Show>
+  );
+
+  const compactBody = () => (
+    <div class="flex items-start">
+      <Show when={props.showTimestamp}>
+        <Timestamp ts={props.item.timestamp} variant="column" />
+      </Show>
+      <div class="flex-1 min-w-0 wrap-break-word">
+        {badges("before")}
+        <Show when={props.showName !== false}>
+          {name()}
+          <span class="text-ink-soft">:</span>
+          {" "}
+        </Show>
+        {body()}
+      </div>
+    </div>
+  );
+
+  const comfortableBody = () => (
+    <div
+      class={`flex gap-3 ${props.continued ? "items-baseline" : "items-start"}`}
+    >
+      <Show
+        when={!props.continued}
+        fallback={
+          <span class="w-(--chat-tile) shrink-0 flex justify-center">
+            <Timestamp
+              ts={props.item.timestamp}
+              variant="gutter"
+            />
+          </span>
+        }
+      >
+        <span class="relative w-(--chat-tile) h-lh shrink-0">
+          <Show when={props.item.reply}>
+            <span class="absolute left-1/2 top-0 bottom-0 border-l-2 border-line" />
+          </Show>
+          <span class="absolute left-0 top-full -translate-y-1/2">
+            <FeedAvatar
+              userId={props.item.chatter_user_id}
+              active={hovered() || !!props.selected}
+              onClick={props.onShowUserCard &&
+                ((x, y) =>
+                  props.onShowUserCard!(x, y, {
+                    id: props.item.chatter_user_id,
+                    login: props.item.chatter_login,
+                    displayName: props.item.chatter_name,
+                  }))}
+            />
+          </span>
+        </span>
+      </Show>
+      <div class="flex-1 min-w-0 wrap-break-word">
+        <Show when={!props.continued}>
+          <div>
+            {name()}
+            {badges("after")}
+            <Timestamp
+              ts={props.item.timestamp}
+              variant="inline"
+            />
+          </div>
+        </Show>
+        {body()}
+      </div>
+    </div>
+  );
+
   return (
     <div
       data-message-id={props.item.message_id}
       data-item-id={props.item.message_id}
-      class={`relative group leading-normal pl-3 pr-2 py-1 border-l-3 transition-colors duration-snap ${
+      class={`relative group leading-normal pl-3 pr-2 ${spacing()} border-l-3 transition-colors duration-snap ${
         props.flush ? "rounded-r-sm" : "rounded-sm"
       } ${TREATMENTS[treatment()]} ${
         props.selected
@@ -174,111 +358,20 @@ export default function FeedMessage(props: Props) {
           onMore={props.onContextMenu!}
         />
       </Show>
-      <div class="flex items-start">
-        <Show when={props.showTimestamp}>
-          <Timestamp ts={props.item.timestamp} feed />
-        </Show>
-        <div class="flex-1 min-w-0 wrap-break-word">
-          <Show when={hold()}>
-            <RichNotice
-              class="text-caution"
-              label={`Held by AutoMod · ${hold()!.reason}`}
-              suffix={holdResolved()
-                ? (hold()!.status === "approved"
-                  ? "approved"
-                  : hold()!.status === "denied"
-                  ? "denied"
-                  : "expired")
-                : undefined}
-              actions={holdPending()
-                ? [
-                  {
-                    title: "Approve",
-                    icon: () => <Check class="size-4" />,
-                    tone: "success",
-                    disabled: holdBusy,
-                    onClick: () => handleHold("approve"),
-                  },
-                  {
-                    title: "Deny",
-                    icon: () => <X class="size-4" />,
-                    tone: "danger",
-                    disabled: holdBusy,
-                    onClick: () => handleHold("deny"),
-                  },
-                ]
-                : undefined}
-            />
-          </Show>
-          <Show
-            when={props.item.channel_points?.kind === "custom_reward"
-              ? props.item.channel_points
-              : undefined}
-          >
-            {(cp) => (
-              <RichNotice
-                class="text-event-channel-points"
-                label={cp().title
-                  ? `Redeemed ${cp().title}`
-                  : "Redeemed channel points"}
-              />
-            )}
-          </Show>
-          <Show when={props.item.reply}>
-            <div
-              class={`text-ink-faint feed-meta truncate transition-colors duration-snap ${
-                props.onJumpToMessage
-                  ? "cursor-pointer hover:text-ink-soft"
-                  : ""
-              }`}
-              onClick={() =>
-                props.onJumpToMessage?.(props.item.reply!.parent_message_id)}
-            >
-              ↰ Replying to{" "}
-              <span class="font-semibold text-accent-ink">
-                @{props.item.reply!.parent_user_name}
-              </span>
-              : {props.item.reply!.parent_message_body}
-            </div>
-          </Show>
-          <Show when={props.showBadges !== false}>
-            <BadgeBox badges={props.item.badges} channelBadges={props.badges} />
-          </Show>
-          <Show when={props.showName !== false}>
-            <DisplayName
-              login={props.item.chatter_login}
-              displayName={props.item.chatter_name}
-              color={props.item.color}
-              userId={props.item.chatter_user_id}
-              onShowUserCard={props.onShowUserCard}
-              onUserContextMenu={props.onUserContextMenu}
-            />
-            <Show when={props.item.first_message && !hold()}>
-              <span class="feed-chip inline-flex items-center ml-1.5 rounded-full bg-raised text-ink-soft font-semibold">
-                First message
-              </span>
-            </Show>
-            <span class="text-ink-soft">:</span>
-            {" "}
-          </Show>
-          <Show
-            when={!props.item.deleted || props.showDeletedContent}
-            fallback={<span class="italic text-ink-soft">Message deleted</span>}
-          >
-            <For each={visibleFragments()}>
-              {(frag) => (
-                <FeedMessageFragment
-                  frag={frag}
-                  emotes={props.emotes}
-                  mentionsYou={mentioned()}
-                  onShowUserCard={props.onShowUserCard}
-                  onUserContextMenu={props.onUserContextMenu}
-                />
-              )}
-            </For>
-          </Show>
-        </div>
-      </div>
+      {notices()}
+      <Show when={props.item.reply}>
+        {(reply) => (
+          <FeedReply
+            reply={reply()}
+            density={density()}
+            timestamp={spacerTimestamp()}
+            onJump={props.onJumpToMessage}
+          />
+        )}
+      </Show>
+      <Show when={comfortable()} fallback={compactBody()}>
+        {comfortableBody()}
+      </Show>
     </div>
   );
 }

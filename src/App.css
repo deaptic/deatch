@@ -245,13 +245,6 @@
   padding-top: 0.18em;
 }
 
-@utility feed-chip {
-  height: 1.45em;
-  padding-inline: 0.55em;
-  font-size: 0.75em;
-  vertical-align: 0.1em;
-}
-
 @utility feed-badge-box {
   gap: 0.2em;
   vertical-align: -0.15em;
