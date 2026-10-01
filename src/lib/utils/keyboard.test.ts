@@ -1,6 +1,6 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
-import { comboFor } from "./keyboard.ts";
+import { comboFor, keyLabels } from "./keyboard.ts";
 
 const key = (init: Partial<KeyboardEvent>) =>
   ({
@@ -21,4 +21,11 @@ Deno.test("orders modifiers ctrl, alt, shift, meta before the key", () => {
 Deno.test("drops the arrow prefix and lowercases keys", () => {
   assertEquals(comboFor(key({ key: "ArrowUp", altKey: true })), "alt-up");
   assertEquals(comboFor(key({ key: "Enter" })), "enter");
+});
+
+Deno.test("labels each key of a combo for display", () => {
+  assertEquals(keyLabels("ctrl-shift-e"), ["Ctrl", "Shift", "E"]);
+  assertEquals(keyLabels("alt-up"), ["Alt", "↑"]);
+  assertEquals(keyLabels("enter"), ["Enter"]);
+  assertEquals(keyLabels("ctrl-,"), ["Ctrl", ","]);
 });

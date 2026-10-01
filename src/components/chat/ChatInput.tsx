@@ -33,6 +33,7 @@ import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import Button from "../ui/Button.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
+import { keyLabels } from "../../lib/utils/keyboard.ts";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
@@ -41,6 +42,13 @@ import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 
 const MAX_LEN = 500;
+const SEND_ACTION = "chat::send";
+const DENSITY_ACTION = "feed::toggleDensity";
+
+function withShortcut(label: string, action: string): string {
+  const combo = shortcuts.keysFor(action);
+  return combo ? `${label} (${keyLabels(combo).join("+")})` : label;
+}
 
 export type ReplyTo = { messageId: string; name: string; text: string };
 
@@ -53,6 +61,7 @@ export type ChatInputApi = {
 type Props = {
   broadcasterId: string;
   broadcasterLogin: string;
+  broadcasterName: string;
   isActive: boolean;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
@@ -171,7 +180,7 @@ export default function ChatInput(props: Props) {
   function bindShortcuts() {
     const WHEN = "chat:focused && !chat:popupOpen";
     return [
-      shortcuts.register("chat::send", () => {
+      shortcuts.register(SEND_ACTION, () => {
         void sendMessage();
       }, WHEN),
       shortcuts.register("chat::tabComplete", () => {
@@ -259,7 +268,7 @@ export default function ChatInput(props: Props) {
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             maxLength={MAX_LEN}
-            placeholder={`Say something in ${props.broadcasterLogin}…`}
+            placeholder={`Message #${props.broadcasterName}`}
             ref={(api) => {
               textAreaApi = api;
               props.ref?.({
@@ -278,7 +287,7 @@ export default function ChatInput(props: Props) {
               <div class="flex items-center gap-1 shrink-0 self-end pb-0.5">
                 <CharCounter value={input} max={MAX_LEN} />
                 <IconButton
-                  label="Comfortable layout (Alt+D)"
+                  label={withShortcut("Comfortable layout", DENSITY_ACTION)}
                   pressed={feedDensity() === "comfortable"}
                   onClick={toggleFeedDensity}
                 >
@@ -288,7 +297,6 @@ export default function ChatInput(props: Props) {
                   label="Emote picker"
                   pressed={isOverlayOpen("emotePicker")}
                   {...{ [POPOVER_TOGGLE]: "" }}
-                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => toggleOverlay("emotePicker")}
                 >
                   <Smile class="size-5" />
@@ -327,18 +335,16 @@ export default function ChatInput(props: Props) {
         }
       >
         {(cmd) => (
-          <div class="relative flex items-end min-h-control-lg bg-surface border border-line rounded-md pl-1 pr-1.5 py-1">
-            <CommandComposer
-              command={cmd()}
-              ctx={{
-                broadcasterId: props.broadcasterId,
-                broadcasterLogin: props.broadcasterLogin,
-                openUserCard: props.openUserCard,
-              }}
-              onSubmit={runCommand}
-              onCancel={cancelCommand}
-            />
-          </div>
+          <CommandComposer
+            command={cmd()}
+            ctx={{
+              broadcasterId: props.broadcasterId,
+              broadcasterLogin: props.broadcasterLogin,
+              openUserCard: props.openUserCard,
+            }}
+            onSubmit={runCommand}
+            onCancel={cancelCommand}
+          />
         )}
       </Show>
     </div>

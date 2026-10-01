@@ -1,4 +1,13 @@
-export type TimeFormat = "t" | "T" | "d" | "D" | "f" | "F" | "r" | "R";
+export type TimeFormat =
+  | "t"
+  | "T"
+  | "d"
+  | "D"
+  | "f"
+  | "F"
+  | "r"
+  | "R"
+  | "c";
 
 export class Time {
   private static readonly UNITS = [
@@ -96,17 +105,34 @@ export class Time {
       .since(Temporal.Now.zonedDateTimeISO(tz), { largestUnit: "year" });
   }
 
-  toString(): string {
-    const collection = {
-      t: this.timeShort(this.date),
-      T: this.timeLong(this.date),
-      d: this.dateShort(this.date),
-      D: this.dateLong(this.date),
-      f: this.dateTimeShort(this.date),
-      F: this.dateTimeLong(this.date),
-      r: this.relativeShort(this.date),
-      R: this.relativeLong(this.date),
-    };
-    return collection[this.format];
+  private calendar(date: Date): string {
+    const days = daysBetween(date, new Date());
+    if (days === 0) return this.timeShort(date);
+    if (days === 1) return `Yesterday at ${this.timeShort(date)}`;
+    return `${this.dateShort(date)} ${this.timeShort(date)}`;
   }
+
+  toString(): string {
+    const formatters: Record<TimeFormat, (date: Date) => string> = {
+      t: (d) => this.timeShort(d),
+      T: (d) => this.timeLong(d),
+      d: (d) => this.dateShort(d),
+      D: (d) => this.dateLong(d),
+      f: (d) => this.dateTimeShort(d),
+      F: (d) => this.dateTimeLong(d),
+      r: (d) => this.relativeShort(d),
+      R: (d) => this.relativeLong(d),
+      c: (d) => this.calendar(d),
+    };
+    return formatters[this.format](this.date);
+  }
+}
+
+function startOfDay(input: number | Date): number {
+  const d = new Date(input);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
+export function daysBetween(from: number | Date, to: number | Date): number {
+  return Math.round((startOfDay(to) - startOfDay(from)) / 86_400_000);
 }

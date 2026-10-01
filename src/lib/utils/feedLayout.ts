@@ -1,15 +1,11 @@
 import type { FeedItem, FeedMessage } from "../types/feed.ts";
+import { daysBetween } from "./time.ts";
 
 export const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
 const LOCALE = "en-GB";
 
 export type RowLayout = { dayStart: boolean; continued: boolean };
-
-function dayKey(ts: number): number {
-  const d = new Date(ts);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
 
 function standsAlone(msg: FeedMessage): boolean {
   return !!(msg.reply || msg.automod_hold || msg.channel_points ||
@@ -30,7 +26,7 @@ export function layoutFeed(
   return items.map((item, i) => {
     const prev = items[i - 1];
     if (!prev) return { dayStart: false, continued: false };
-    const dayStart = dayKey(prev.timestamp) !== dayKey(item.timestamp);
+    const dayStart = daysBetween(prev.timestamp, item.timestamp) !== 0;
     return {
       dayStart,
       continued: group && !dayStart && continues(prev, item),
@@ -39,7 +35,7 @@ export function layoutFeed(
 }
 
 export function dayLabel(ts: number, now: number): string {
-  const days = Math.round((dayKey(now) - dayKey(ts)) / 86_400_000);
+  const days = daysBetween(ts, now);
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
   const sameYear = new Date(ts).getFullYear() === new Date(now).getFullYear();

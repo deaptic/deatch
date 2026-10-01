@@ -112,6 +112,7 @@ export default function FeedEvent(props: Props) {
           {props.item.system_message}
           <Timestamp
             ts={props.item.timestamp}
+            format="c"
             variant="inline"
           />
         </div>

@@ -11,7 +11,7 @@ const VARIANTS: Record<Variant, string> = {
   column: "feed-timestamp shrink-0 mr-2.5 text-ink-soft select-none",
   gutter:
     "feed-timestamp whitespace-nowrap text-ink-faint select-none invisible group-hover:visible",
-  inline: "feed-meta ml-2 text-ink-faint select-none",
+  inline: "feed-timestamp ml-2 text-ink-faint select-none",
 };
 
 type Props = {
