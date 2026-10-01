@@ -1,7 +1,11 @@
+import { createSignal } from "solid-js";
 import type { ResolvedTheme } from "../constants/theme.ts";
 import { hexToOklch, type Oklch, oklchCss } from "../utils/color.ts";
 
 export const defaultAccentHex = "#9481ff";
+
+const [applied, setApplied] = createSignal(0);
+const tokens = new Map<string, string>();
 
 const DEFAULT_ACCENT: Oklch = hexToOklch(defaultAccentHex)!;
 
@@ -46,6 +50,20 @@ export function apply({ theme, accent }: Appearance): void {
   setOrClear(root, "--color-accent-hover", shades?.hover);
   setOrClear(root, "--color-accent-ink", shades?.ink);
   setOrClear(root, "--color-accent-soft", shades?.soft);
+  tokens.clear();
+  setApplied((n) => n + 1);
+}
+
+export function token(name: string): string {
+  applied();
+  let value = tokens.get(name);
+  if (value === undefined) {
+    value = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--${name}`)
+      .trim();
+    tokens.set(name, value);
+  }
+  return value;
 }
 
 function setOrClear(el: HTMLElement, prop: string, value?: string): void {

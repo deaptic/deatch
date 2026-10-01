@@ -1,50 +1,11 @@
-import { Clock, Gamepad2, Moon, Users, Volume2, VolumeOff } from "lucide-solid";
+import { Volume2, VolumeOff } from "lucide-solid";
 import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
-import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
-import type { ChannelInfo } from "../../lib/types/index.ts";
-import type { Stream } from "../../lib/types/index.ts";
+import { formatViewers } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
-import Stat from "../ui/Stat.tsx";
 import RailRow from "./RailRow.tsx";
-
-function StreamTooltip(props: {
-  user: User;
-  stream?: Stream;
-  info?: ChannelInfo;
-}) {
-  const title = () => props.stream?.title ?? props.info?.title ?? "";
-  const game = () => props.stream?.game.name ?? props.info?.game.name ?? "";
-
-  return (
-    <div class="flex flex-col gap-2 max-w-72 px-0.5 py-0.5">
-      <p class="text-body font-semibold truncate">{props.user.displayName}</p>
-      <Show when={title()}>
-        <p class="text-body leading-relaxed text-ink wrap-break-word line-clamp-3">
-          {title()}
-        </p>
-      </Show>
-      <div class="pt-2 border-t border-line-soft flex flex-col gap-1">
-        <Stat icon={<Gamepad2 />} value={game()} truncate />
-        <Show
-          when={props.stream}
-          fallback={<Stat icon={<Moon />} value="Offline" />}
-        >
-          {(s) => (
-            <>
-              <Stat
-                icon={<Users />}
-                value={`${formatViewers(s().viewerCount)} viewers`}
-              />
-              <Stat icon={<Clock />} value={formatUptime(s().startedAt)} />
-            </>
-          )}
-        </Show>
-      </div>
-    </div>
-  );
-}
+import StreamTooltip from "./StreamTooltip.tsx";
 
 type Props = {
   ch: User;

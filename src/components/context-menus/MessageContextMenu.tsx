@@ -25,7 +25,7 @@ export default function MessageContextMenu(props: Props) {
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
         label="Reply"
-        icon={<Reply class="size-3.5" />}
+        icon={<Reply />}
         onClick={() => {
           props.onReply(props.msg);
           props.onClose();
@@ -33,7 +33,7 @@ export default function MessageContextMenu(props: Props) {
       />
       <MenuItem
         label="Copy Text"
-        icon={<Copy class="size-3.5" />}
+        icon={<Copy />}
         onClick={() => {
           navigator.clipboard.writeText(
             props.msg.fragments.map((f) => f.text).join(""),
@@ -45,7 +45,7 @@ export default function MessageContextMenu(props: Props) {
         <MenuDivider />
         <MenuItem
           label="Copypasta"
-          icon={<ClipboardPaste class="size-3.5" />}
+          icon={<ClipboardPaste />}
           onClick={() => {
             props.onCopypasta(props.msg);
             props.onClose();
@@ -57,7 +57,7 @@ export default function MessageContextMenu(props: Props) {
         <MenuItem
           label="Delete Message"
           danger
-          icon={<Trash2 class="size-3.5" />}
+          icon={<Trash2 />}
           onClick={() => {
             deleteChatMessages({
               broadcasterId: props.broadcasterId,

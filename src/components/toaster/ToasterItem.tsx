@@ -77,7 +77,7 @@ export default function ToasterItem(props: Props) {
         aria-label="Dismiss"
         class="shrink-0 size-7 grid place-items-center rounded-sm text-ink-faint hover:text-ink hover:bg-raised transition-colors duration-snap cursor-pointer"
       >
-        <X class="size-3.5" />
+        <X class="size-4" />
       </button>
     </div>
   );

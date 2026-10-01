@@ -15,7 +15,7 @@ export default function CopyPayloadItem(props: Props) {
       <MenuDivider />
       <MenuItem
         label="Copy Payload"
-        icon={<Copy class="size-3.5" />}
+        icon={<Copy />}
         onClick={() => {
           navigator.clipboard.writeText(JSON.stringify(props.data, null, 2));
           props.onClose();

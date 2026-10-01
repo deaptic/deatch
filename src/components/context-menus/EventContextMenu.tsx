@@ -17,7 +17,7 @@ export default function EventContextMenu(props: Props) {
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
         label="Copy Text"
-        icon={<Copy class="size-3.5" />}
+        icon={<Copy />}
         onClick={() => {
           navigator.clipboard.writeText(props.item.system_message);
           props.onClose();

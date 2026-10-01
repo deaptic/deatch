@@ -11,10 +11,6 @@ export default function Login() {
   return (
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
-        <div class="flex items-center gap-2.5 text-heading text-ink">
-          <span class="size-3.5 rounded-full bg-accent" />
-          Deatch
-        </div>
         <h1 class="text-hero text-ink">Welcome to Deatch</h1>
         <p class="text-body text-ink-soft">
           Every Twitch chat you care about, in one warm little window.
@@ -32,9 +28,6 @@ export default function Login() {
               >
                 Log in with Twitch
               </Button>
-              <p class="text-small text-ink-faint">
-                Deatch never sees your password. Twitch handles the login.
-              </p>
             </>
           }
         >
@@ -62,7 +55,7 @@ export default function Login() {
                       twitch.tv/activate
                     </a>
                   </p>
-                  <p class="font-mono text-3xl font-semibold tracking-widest text-ink">
+                  <p class="font-mono text-hero text-ink">
                     {code().user_code}
                   </p>
                   <Button

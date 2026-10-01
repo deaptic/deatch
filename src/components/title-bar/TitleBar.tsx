@@ -7,32 +7,9 @@ import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
 import Inbox from "../inbox/Inbox.tsx";
+import ResizeHandle from "./ResizeHandle.tsx";
 
 const win = getCurrentWindow();
-
-type ResizeDir =
-  | "North"
-  | "South"
-  | "East"
-  | "West"
-  | "NorthEast"
-  | "NorthWest"
-  | "SouthEast"
-  | "SouthWest";
-
-function ResizeHandle(props: { dir: ResizeDir; class: string }) {
-  return (
-    <div
-      class={`absolute z-50 ${props.class}`}
-      onMouseDown={(e) => {
-        if (e.button !== 0) return;
-        win.startResizeDragging(
-          props.dir as Parameters<typeof win.startResizeDragging>[0],
-        );
-      }}
-    />
-  );
-}
 
 const CONTROL =
   "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
