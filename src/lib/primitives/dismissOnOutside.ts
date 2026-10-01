@@ -6,6 +6,7 @@ export const POPOVER_TOGGLE = "data-popover-toggle";
 
 export type DismissOnOutsideOptions = {
   ref: () => HTMLElement | undefined;
+  opener?: () => HTMLElement | undefined;
   onDismiss: () => void;
   events?: string[];
   shouldDismiss?: () => boolean;
@@ -17,6 +18,7 @@ export function dismissOnOutside(opts: DismissOnOutsideOptions): void {
     if (opts.shouldDismiss && !opts.shouldDismiss()) return;
     const target = e.target as HTMLElement | null;
     if (opts.ref()?.contains(target)) return;
+    if (opts.opener?.()?.contains(target)) return;
     if (target?.closest(`[${POPOVER_TOGGLE}]`)) return;
     opts.onDismiss();
   };

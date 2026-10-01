@@ -4,6 +4,7 @@ import type { Density } from "../../lib/constants/density.ts";
 export type RowTone =
   | "held"
   | "mention"
+  | "cheer"
   | "redemption"
   | "first"
   | "event"

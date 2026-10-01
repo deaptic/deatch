@@ -14,6 +14,7 @@ export const CHAT_KINDS: EventKind[] = [
   "channel.chat.message_delete",
   "channel.chat.clear",
   "channel.chat.clear_user_messages",
+  "channel.chat_settings.update",
 ];
 
 export const MOD_KINDS: EventKind[] = [
@@ -49,7 +50,9 @@ export type RawFragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; emote: { id: string } }
   | { type: "mention"; text: string; mention: { user_login: string } }
-  | { type: "cheermote"; text: string; cheermote: unknown };
+  | { type: "cheermote"; text: string; cheermote: RawCheermote };
+
+type RawCheermote = { prefix: string; bits: number; tier: number };
 
 type RawReply = {
   parent_message_id: string;
@@ -79,6 +82,7 @@ export type RawChatMessage = {
   badges: MessageBadge[];
   reply: RawReply | null;
   channel_points_custom_reward_id: string | null;
+  cheer?: { bits: number } | null;
   /// Synthetic field set by the robotty backlog mapper when a CLEARMSG /
   /// CLEARCHAT in the same window targets this message. EventSub messages
   /// never carry this — they use a separate delete event.
@@ -146,6 +150,18 @@ export type RawChatClearUserMessages = {
   target_user_name: string;
 };
 
+// channel.chat_settings.update
+export type RawChatSettingsUpdate = {
+  broadcaster_user_id: string;
+  emote_mode: boolean;
+  follower_mode: boolean;
+  follower_mode_duration_minutes: number | null;
+  slow_mode: boolean;
+  slow_mode_wait_time_seconds: number | null;
+  subscriber_mode: boolean;
+  unique_chat_mode: boolean;
+};
+
 // channel.moderate
 type RawModerateBase = {
   broadcaster_user_id: string;
@@ -211,11 +227,7 @@ export type AutomodHeldReason =
 type RawAutomodFragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; emote: { id: string; emote_set_id: string } }
-  | {
-    type: "cheermote";
-    text: string;
-    cheermote: { prefix: string; bits: number; tier: number };
-  };
+  | { type: "cheermote"; text: string; cheermote: RawCheermote };
 
 export type RawAutomodMessageHold = {
   broadcaster_user_id: string;

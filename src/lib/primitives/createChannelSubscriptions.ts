@@ -6,6 +6,10 @@ import { clearChatters, isModOfChannel, user } from "../stores/users.ts";
 import { watchWarmedChannels } from "../stores/watch.ts";
 import * as eventsub from "../services/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
+import * as chatSettings from "../services/chatSettings.ts";
+import * as cheermotes from "../services/cheermotes.ts";
+import { clearChatSettings } from "../stores/chatSettings.ts";
+import { clearCheermotes } from "../stores/cheermotes.ts";
 import {
   ALL_KINDS,
   CHAT_KINDS,
@@ -34,6 +38,8 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     void sevenTv.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
     clearChatters(broadcasterId);
+    clearChatSettings(broadcasterId);
+    clearCheermotes(broadcasterId);
   }
 
   createEffect(
@@ -74,6 +80,8 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
         for (const k of OWN_KINDS) void eventsub.subscribe(id, k);
       }
       void sevenTv.subscribe(id);
+      void chatSettings.load(id);
+      void cheermotes.load(id);
     }
     for (const id of [...joinedIds]) {
       if (!desired.has(id)) leaveChannel(id);

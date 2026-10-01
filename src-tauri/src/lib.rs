@@ -57,6 +57,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::chat::commands::send_shoutout,
             twitch::chat::commands::send_chat_message,
             twitch::chat::commands::send_chat_announcement,
+            twitch::bits::commands::get_cheermotes,
+            twitch::chat::commands::get_chat_settings,
             twitch::chat::commands::update_chat_settings,
             twitch::chat::commands::update_user_chat_color,
             twitch::chat::commands::get_user_emotes,

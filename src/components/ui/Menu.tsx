@@ -5,6 +5,7 @@ type Props = {
   x: number;
   y: number;
   align?: "start" | "center" | "end";
+  opener?: () => HTMLElement | undefined;
   onClose: () => void;
   children: JSX.Element;
 };
@@ -15,6 +16,7 @@ export default function Menu(props: Props) {
       x={props.x}
       y={props.y}
       align={props.align}
+      opener={props.opener}
       onClose={props.onClose}
       events={["mousedown", "contextmenu"]}
     >

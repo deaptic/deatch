@@ -19,6 +19,7 @@ type Props = ItemLayout & MessageOptions & EventOptions & {
 const TONES: Record<RowTone, string> = {
   held: "border-caution bg-caution/12 hover:bg-caution/16",
   mention: "border-accent bg-accent-soft hover:bg-accent/18",
+  cheer: "border-event-bits bg-event-bits/10 hover:bg-event-bits/14",
   redemption:
     "border-event-channel-points bg-event-channel-points/10 hover:bg-event-channel-points/14",
   first: "border-line bg-surface hover:bg-overlay",

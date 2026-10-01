@@ -4,7 +4,7 @@ export type Fragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; id: string }
   | { type: "mention"; text: string; user_login: string }
-  | { type: "cheermote"; text: string };
+  | { type: "cheermote"; text: string; prefix: string; bits: number };
 
 type FeedReply = {
   parent_message_id: string;
@@ -50,6 +50,7 @@ export type FeedMessage = {
     | { kind: "highlight" }
     | { kind: "custom_reward"; redemption?: Redemption };
   first_message?: boolean;
+  cheer?: { bits: number };
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
 };

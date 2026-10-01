@@ -32,6 +32,8 @@ export const commands = {
 	sendShoutout: (params: SendShoutoutParams) => __TAURI_INVOKE<null>("send_shoutout", { params }),
 	sendChatMessage: (params: SendChatMessageParams) => __TAURI_INVOKE<SendMessageResult>("send_chat_message", { params }),
 	sendChatAnnouncement: (params: SendChatAnnouncementParams) => __TAURI_INVOKE<null>("send_chat_announcement", { params }),
+	getCheermotes: (params: GetCheermotesParams) => __TAURI_INVOKE<Cheermote[]>("get_cheermotes", { params }),
+	getChatSettings: (params: GetChatSettingsParams) => __TAURI_INVOKE<ChatSettings>("get_chat_settings", { params }),
 	updateChatSettings: (params: UpdateChatSettingsParams) => __TAURI_INVOKE<null>("update_chat_settings", { params }),
 	updateUserChatColor: (params: UpdateUserChatColorParams) => __TAURI_INVOKE<null>("update_user_chat_color", { params }),
 	getUserEmotes: () => __TAURI_INVOKE<UserEmote[]>("get_user_emotes"),
@@ -86,7 +88,7 @@ export const events = {
 };
 
 /* Constants */
-export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.follow":"channel-follow","channel.moderate":"channel-moderate","channel.shoutout.create":"channel-shoutout-create","channel.update":"channel-update"} as const;
+export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.moderate":"channel-moderate","channel.shoutout.create":"channel-shoutout-create","channel.update":"channel-update"} as const;
 
 /* Types */
 export type ActivityInput = {
@@ -194,10 +196,35 @@ export type ChannelVipParams = {
 
 export type ChatColor = "blue" | "blue_violet" | "cadet_blue" | "chocolate" | "coral" | "dodger_blue" | "firebrick" | "golden_rod" | "green" | "hot_pink" | "orange_red" | "red" | "sea_green" | "spring_green" | "yellow_green";
 
+export type ChatSettings = {
+	slowModeSeconds: number | null,
+	followerModeMinutes: number | null,
+	subscriberMode: boolean,
+	emoteMode: boolean,
+	uniqueChatMode: boolean,
+};
+
 export type ChatterBadge = {
 	set_id: string,
 	id: string,
 	info: string,
+};
+
+export type Cheermote = {
+	prefix: string,
+	tiers: CheermoteTier[],
+};
+
+export type CheermoteImage = {
+	animated: string,
+	still: string,
+};
+
+export type CheermoteTier = {
+	minBits: number,
+	color: string,
+	dark: CheermoteImage,
+	light: CheermoteImage,
 };
 
 export type CreateClipParams = {
@@ -260,7 +287,7 @@ export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: {
 	message: string,
 } } | { kind: "http"; message: string } | { kind: "auth"; message: string } | { kind: "keyring"; message: string } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
-export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.shoutout.create" | "channel.follow" | "channel.moderate" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.update";
+export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shoutout.create" | "channel.follow" | "channel.moderate" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.update";
 
 export type EventSubConnection = {
 	connected: boolean,
@@ -311,6 +338,14 @@ export type GetChannelFollowersParams = {
 
 export type GetChannelInformationParams = {
 	broadcasterIds: UserId[],
+};
+
+export type GetChatSettingsParams = {
+	broadcasterId: UserId,
+};
+
+export type GetCheermotesParams = {
+	broadcasterId: UserId,
 };
 
 export type GetFollowedChannelsParams = {

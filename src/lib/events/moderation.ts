@@ -19,14 +19,8 @@ import {
   setAutomodHoldStatus,
 } from "../stores/feeds.ts";
 import { isModOfChannel } from "../stores/users.ts";
-
-function formatDuration(seconds: number): string {
-  if (seconds <= 0) return "0s";
-  if (seconds >= 86400) return `${Math.round(seconds / 86400)}d`;
-  if (seconds >= 3600) return `${Math.round(seconds / 3600)}h`;
-  if (seconds >= 60) return `${Math.round(seconds / 60)}m`;
-  return `${seconds}s`;
-}
+import { formatShortDuration } from "../format/duration.ts";
+import { moderateNoticeType } from "../constants/events.ts";
 
 function buildModerateMessage(
   p: RawModerate,
@@ -51,7 +45,7 @@ function buildModerateMessage(
       );
       const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
       return `${mod} timed out ${p.timeout.user_name} for ${
-        formatDuration(secs)
+        formatShortDuration(secs)
       }${r}`;
     }
     case "untimeout":
@@ -103,7 +97,14 @@ function mapAutomodFragment(
   if (f.type === "emote") {
     return { type: "emote", text: f.text, id: f.emote.id };
   }
-  if (f.type === "cheermote") return { type: "cheermote", text: f.text };
+  if (f.type === "cheermote") {
+    return {
+      type: "cheermote",
+      text: f.text,
+      prefix: f.cheermote.prefix,
+      bits: f.cheermote.bits,
+    };
+  }
   return { type: "text", text: f.text };
 }
 
@@ -155,7 +156,7 @@ export function start(): () => void {
         id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${
           Math.random().toString(36).slice(2, 8)
         }`,
-        notice_type: `moderate_${payload.action}`,
+        notice_type: moderateNoticeType(payload.action),
         system_message: msg,
         chatter_name: payload.moderator_user_name,
         color: "",

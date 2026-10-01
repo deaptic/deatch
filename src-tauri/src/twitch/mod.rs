@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod bits;
 pub mod channels;
 pub mod chat;
 pub mod clips;

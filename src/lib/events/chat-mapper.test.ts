@@ -38,7 +38,11 @@ Deno.test("flattens every fragment kind", () => {
           { type: "text", text: "hi " },
           { type: "emote", text: "Kappa", emote: { id: "25" } },
           { type: "mention", text: "@bar", mention: { user_login: "bar" } },
-          { type: "cheermote", text: "Cheer100", cheermote: {} },
+          {
+            type: "cheermote",
+            text: "Cheer100",
+            cheermote: { prefix: "Cheer", bits: 100, tier: 100 },
+          },
         ],
       },
     }),
@@ -48,8 +52,15 @@ Deno.test("flattens every fragment kind", () => {
     { type: "text", text: "hi " },
     { type: "emote", text: "Kappa", id: "25" },
     { type: "mention", text: "@bar", user_login: "bar" },
-    { type: "cheermote", text: "Cheer100" },
+    { type: "cheermote", text: "Cheer100", prefix: "Cheer", bits: 100 },
   ]);
+});
+
+Deno.test("carries the cheered amount", () => {
+  assertEquals(mapChatMessage(raw({ cheer: { bits: 250 } }), 0).cheer, {
+    bits: 250,
+  });
+  assertEquals(mapChatMessage(raw({ cheer: null }), 0).cheer, undefined);
 });
 
 Deno.test("shows fragment types it doesn't know as their text", () => {

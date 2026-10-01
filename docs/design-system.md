@@ -107,17 +107,20 @@ text colour.
 - **Every entry is one `FeedItem`.** It owns all row layout. Each kind (message,
   event) only supplies its parts: tone, tile, notes, overlay, content.
 - **Tone**, one per row, in precedence: held by AutoMod (`caution`), mentions
-  you (`accent`), reward (`event-channel-points`), first message (`line` on
-  `surface`), event (its colour), plain. Selected adds an `accent` outline.
-  Hover lifts the row one tone.
+  you (`accent`), cheer (`event-bits`), reward (`event-channel-points`), first
+  message (`line` on `surface`), event (its colour), plain. Selected adds an
+  `accent` outline. Hover lifts the row one tone.
 - **Notes sit above the message**, never beside the name: AutoMod reason,
-  reward, "First message", then the reply line with a connector down to the
-  message. Notes start where the message text starts.
+  "Cheered N bits", reward, "First message", then the reply line with a
+  connector down to the message. Notes start where the message text starts.
 - **Two layouts.** Compact is one line per message with an optional timestamp
   column. Comfortable groups a chatter's messages (same chatter, under five
   minutes, same day, nothing between) under one header with a tile in a gutter;
   the tile sits centred on the first two lines of every row. Replies, holds,
-  rewards, and first messages always start a group.
+  cheers, rewards, and first messages always start a group.
+- **Cheermotes** render inline at emote size with the amount after them in the
+  tier's colour, clamped like a chatter colour; under reduced motion they show
+  their still image.
 - **The chatter tile** is a blobatar drawn locally from the user ID, in the hue
   of their name colour (grey without one), tinted behind with the same colour.
   It moves only while its row is hovered or selected.

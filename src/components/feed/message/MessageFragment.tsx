@@ -2,12 +2,15 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { Fragment } from "../../../lib/types/index.ts";
 import type { UserRef } from "../../../lib/types/index.ts";
+import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
+import Cheermote from "./Cheermote.tsx";
 import TextWithEmotes from "./TextWithEmotes.tsx";
 
 type Props = {
   frag: Fragment;
   emotes: EmoteMap;
+  cheermotes: CheermoteMap;
   mentionsYou?: boolean;
   onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
   onUserContextMenu?: (
@@ -28,6 +31,15 @@ export default function MessageFragment(props: Props) {
           title={frag.text}
           decoding="async"
           class={INLINE_EMOTE}
+        />
+      );
+    case "cheermote":
+      return (
+        <Cheermote
+          text={frag.text}
+          prefix={frag.prefix}
+          bits={frag.bits}
+          cheermotes={props.cheermotes}
         />
       );
     case "mention":

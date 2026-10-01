@@ -28,7 +28,12 @@ function mapFragment(f: RawFragment): Fragment {
         user_login: f.mention.user_login,
       };
     case "cheermote":
-      return { type: "cheermote", text: f.text };
+      return {
+        type: "cheermote",
+        text: f.text,
+        prefix: f.cheermote.prefix,
+        bits: f.cheermote.bits,
+      };
     default:
       return { type: "text", text: f.text };
   }
@@ -55,6 +60,7 @@ export function mapChatMessage(
       ? { kind: "highlight" }
       : undefined,
     first_message: raw.message_type === "user_intro",
+    cheer: raw.cheer ?? undefined,
     deleted: raw.deleted,
   };
 }

@@ -24,6 +24,8 @@ pub enum EventKind {
     ChannelChatClear,
     #[serde(rename = "channel.chat.clear_user_messages")]
     ChannelChatClearUserMessages,
+    #[serde(rename = "channel.chat_settings.update")]
+    ChannelChatSettingsUpdate,
     #[serde(rename = "channel.shoutout.create")]
     ChannelShoutoutCreate,
     #[serde(rename = "channel.follow")]
@@ -43,12 +45,13 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 12] = [
+    pub const ALL: [Self; 13] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
         Self::ChannelChatClear,
         Self::ChannelChatClearUserMessages,
+        Self::ChannelChatSettingsUpdate,
         Self::ChannelShoutoutCreate,
         Self::ChannelFollow,
         Self::ChannelModerate,
@@ -65,6 +68,7 @@ impl EventKind {
             Self::ChannelChatMessageDelete => "channel-chat-message-delete",
             Self::ChannelChatClear => "channel-chat-clear",
             Self::ChannelChatClearUserMessages => "channel-chat-clear-user-messages",
+            Self::ChannelChatSettingsUpdate => "channel-chat-settings-update",
             Self::ChannelShoutoutCreate => "channel-shoutout-create",
             Self::ChannelFollow => "channel-follow",
             Self::ChannelModerate => "channel-moderate",

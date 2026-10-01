@@ -11,8 +11,8 @@ use twitch_api::eventsub::{
         ChannelChatMessageV1, ChannelChatNotificationV1,
     },
     channel::{
-        ChannelFollowV2, ChannelModerateV2, ChannelPointsCustomRewardRedemptionAddV1,
-        ChannelShoutoutCreateV1, ChannelUpdateV2,
+        ChannelChatSettingsUpdateV1, ChannelFollowV2, ChannelModerateV2,
+        ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1, ChannelUpdateV2,
     },
     Transport,
 };
@@ -65,6 +65,14 @@ pub(super) async fn create_subscription(
             create(
                 twitch,
                 ChannelChatClearUserMessagesV1::new(broadcaster_id, user_id),
+                transport,
+            )
+            .await
+        }
+        EventKind::ChannelChatSettingsUpdate => {
+            create(
+                twitch,
+                ChannelChatSettingsUpdateV1::new(broadcaster_id, user_id),
                 transport,
             )
             .await

@@ -14,7 +14,8 @@
       "announcement": { "show": true },
       "charity_donation": { "show": true },
       "bits_badge_tier": { "show": true },
-      "shoutout": { "show": true }
+      "shoutout": { "show": true },
+      "moderation": { "show": true }
     },
     "badges": {
       "authority": { "show": true },
