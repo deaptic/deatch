@@ -1,9 +1,10 @@
-// `\b` needs a word character on one side, so it never matches around terms
-// like "!drop" or "gg!". These lookarounds only forbid a word character
-// touching the term.
-const NOT_WORD_BEFORE = "(?<!\\w)";
-const NOT_WORD_AFTER = "(?!\\w)";
-const WILDCARD = "\\w*";
+// A term is a whole whitespace-separated word: anything glued to either side
+// makes it a different word in chat (`@name`, `#tag`, `dead!`) unless a `*`
+// allows it there. `\b` would not do, since it needs a word character next to
+// it ("!drop", "gg!").
+const NOT_WORD_BEFORE = "(?<!\\S)";
+const NOT_WORD_AFTER = "(?!\\S)";
+const WILDCARD = "\\S*";
 const CACHE_LIMIT = 256;
 
 export type Anchor = "anywhere" | "start" | "exact";
