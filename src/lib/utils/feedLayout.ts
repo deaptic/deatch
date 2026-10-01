@@ -1,4 +1,4 @@
-import type { FeedItem, FeedMessage } from "../types/feed.ts";
+import type { FeedEntry, FeedMessage } from "../types/feed.ts";
 import { daysBetween } from "./time.ts";
 
 export const GROUP_WINDOW_MS = 5 * 60 * 1000;
@@ -12,7 +12,7 @@ function standsAlone(msg: FeedMessage): boolean {
     msg.first_message);
 }
 
-function continues(prev: FeedItem, item: FeedItem): boolean {
+function continues(prev: FeedEntry, item: FeedEntry): boolean {
   return prev.kind === "message" && item.kind === "message" &&
     prev.chatter_user_id === item.chatter_user_id &&
     !prev.automod_hold && !standsAlone(item) &&
@@ -20,7 +20,7 @@ function continues(prev: FeedItem, item: FeedItem): boolean {
 }
 
 export function layoutFeed(
-  items: readonly FeedItem[],
+  items: readonly FeedEntry[],
   group: boolean,
 ): RowLayout[] {
   return items.map((item, i) => {

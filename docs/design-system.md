@@ -444,8 +444,18 @@ toggle in the composer. Both keep the treatments, toolbar, and dividers above.
   Every row has 2px above and below inside its highlight; a group adds a 6px
   margin above, outside the highlight, so hover and treatments stay balanced.
   Timestamps always show here, so the timestamp setting only affects compact.
-  Event rows take a tile too, holding their icon in the event colour, with 6px
-  above and below, the text centred beside it, and the time after the text.
+  Event rows take a tile too, holding their icon in the event colour, and the
+  time after the text.
+
+Every row, message or event, is one `FeedItem`, so these rules hold for all of
+them: the 3px bar and tone, hover, selection and dimming, the spacing above, the
+annotation lines above the row, and the lead column. In compact the lead is the
+timestamp column. In comfortable it is the gutter: a tile slot as tall as the
+content but never shorter than the tile or taller than two lines, with the tile
+centred in it, so one-line content centres on the tile and longer content keeps
+the tile on its first two lines; follow-ups show their time there on hover
+instead. Each kind of entry only describes its parts (tone, tile, annotations,
+overlay, content); it never decides layout.
 
 A message joins the group above it when both come from the same chatter, less
 than five minutes apart, on the same day, with no event or unread divider

@@ -4,8 +4,8 @@ import { errorMessage } from "../utils/error.ts";
 import {
   appendItem,
   feeds,
-  insertItems,
-  prependItems,
+  insertEntries,
+  prependEntries,
 } from "../stores/feeds.ts";
 
 const GAP_MARGIN_MS = 5_000;
@@ -24,7 +24,7 @@ export function fillGap(
   )
     .then((msgs) => {
       const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
-      insertItems(broadcasterId, items);
+      insertEntries(broadcasterId, items);
     })
     .catch((e) => console.error("[feeds] gap fill failed", channelLogin, e));
 }
@@ -37,7 +37,7 @@ export function load(broadcasterId: string, channelLogin: string) {
   getRecentMessages({ channelLogin, limit: 50 }, { silent: true })
     .then((msgs) => {
       const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
-      prependItems(broadcasterId, items);
+      prependEntries(broadcasterId, items);
     })
     .catch((e) => {
       appendItem(broadcasterId, {

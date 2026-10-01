@@ -303,6 +303,7 @@ export default function Chat(props: Props) {
         style={{
           "--chat-size": `${feedFontSize()}px`,
           "--chat-tile": `${feedFontSize() * TILE_SCALE}px`,
+          "--chat-two-lines": "2lh",
         }}
         onWheel={fontSize.onWheel}
         onContextMenu={(x, y, msg) => messageMenu.open(x, y, { msg })}

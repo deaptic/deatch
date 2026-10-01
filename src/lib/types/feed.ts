@@ -62,4 +62,4 @@ export type FeedEvent = {
   clip?: { id: string };
 };
 
-export type FeedItem = FeedMessage | FeedEvent;
+export type FeedEntry = FeedMessage | FeedEvent;

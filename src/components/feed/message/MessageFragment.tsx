@@ -1,13 +1,9 @@
-import { For, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import type { EmoteMap } from "../../lib/stores/emotes.ts";
-import type { Fragment } from "../../lib/types/index.ts";
-import type { UserRef } from "../../lib/types/index.ts";
-
-const INLINE_EMOTE =
-  "inline-block feed-emote w-auto object-contain align-middle mx-px";
-
-const URL_RE = /^https?:\/\/\S+$/;
+import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import type { Fragment } from "../../../lib/types/index.ts";
+import type { UserRef } from "../../../lib/types/index.ts";
+import { INLINE_EMOTE } from "./inlineEmote.ts";
+import TextWithEmotes from "./TextWithEmotes.tsx";
 
 type Props = {
   frag: Fragment;
@@ -21,53 +17,7 @@ type Props = {
   ) => void;
 };
 
-function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
-  const tokens = () => props.text.split(/(\s+)/);
-  return (
-    <For each={tokens()}>
-      {(token) => {
-        const emoteUrl = () => props.emotes[token];
-        return (
-          <Show
-            when={emoteUrl()}
-            fallback={URL_RE.test(token)
-              ? (
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openUrl(token);
-                  }}
-                  onAuxClick={(e) => {
-                    if (e.button !== 1) return;
-                    e.preventDefault();
-                    openUrl(token);
-                  }}
-                  onMouseDown={(e) => {
-                    if (e.button === 1) e.preventDefault();
-                  }}
-                  class="text-accent-ink hover:underline break-all"
-                >
-                  {token}
-                </a>
-              )
-              : <span class="text-ink">{token}</span>}
-          >
-            <img
-              src={emoteUrl()!}
-              alt={token}
-              title={token}
-              decoding="async"
-              class={INLINE_EMOTE}
-            />
-          </Show>
-        );
-      }}
-    </For>
-  );
-}
-
-export default function FeedMessageFragment(props: Props) {
+export default function MessageFragment(props: Props) {
   const frag = props.frag;
   switch (frag.type) {
     case "emote":

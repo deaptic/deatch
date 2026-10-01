@@ -1,7 +1,7 @@
 import { Blobatar } from "@blobatar/solid";
 import "blobatar/motion.css";
-import { hueOf } from "../../lib/utils/color.ts";
-import FeedTile from "./FeedTile.tsx";
+import { hueOf } from "../../../lib/utils/color.ts";
+import FeedTile from "../FeedTile.tsx";
 
 const VIVID_TONE = 0.7;
 const GREY = { head: "#8c8c8c", eye: "#1c1c1c" };
@@ -13,7 +13,7 @@ type Props = {
   onClick?: (x: number, y: number) => void;
 };
 
-export default function FeedAvatar(props: Props) {
+export default function ChatterAvatar(props: Props) {
   const hue = () => hueOf(props.color);
   return (
     <FeedTile

@@ -2,18 +2,18 @@ import { produce } from "solid-js/store";
 import {
   enforceCaps,
   ensureFeed,
-  getItemId,
+  getEntryId,
   isSilent,
   ownMessageText,
   setFeeds,
 } from "./core.ts";
-import type { FeedItem } from "../../types/feed.ts";
+import type { FeedEntry } from "../../types/feed.ts";
 import { recordChatter, user } from "../users.ts";
 import { recordChatMessage } from "../chatActivity.ts";
 import { selectedChannel } from "../view.ts";
 import { appendSentHistoryOlder, pushSentHistory } from "../chatHistory.ts";
 
-export function appendItem(id: string, item: FeedItem) {
+export function appendItem(id: string, item: FeedEntry) {
   ensureFeed(id);
   if (item.kind === "message") {
     recordChatter(id, {
@@ -25,18 +25,18 @@ export function appendItem(id: string, item: FeedItem) {
     });
   }
   const isActive = selectedChannel()?.id === id;
-  const itemId = getItemId(item);
+  const itemId = getEntryId(item);
   let added = false;
   setFeeds(
     id,
     produce((f) => {
       // Dedupe: a backlog fetch may overlap with the first EventSub events.
-      if (f.messages.some((m) => getItemId(m) === itemId)) return;
+      if (f.messages.some((m) => getEntryId(m) === itemId)) return;
       added = true;
       f.messages.push(item);
       if (!f.paused) enforceCaps(f.messages);
       if (isActive && !f.paused && !isSilent(item)) {
-        f.lastSeenItemId = itemId;
+        f.lastSeenEntryId = itemId;
       }
     }),
   );
@@ -63,14 +63,14 @@ export function appendLocalNotice(id: string, text: string) {
 /// Merges items into the feed by timestamp, skipping ones already present.
 /// Used to fill a gap after a dropped connection, where live messages may
 /// already have arrived after the missing ones.
-export function insertItems(id: string, items: FeedItem[]) {
+export function insertEntries(id: string, items: FeedEntry[]) {
   ensureFeed(id);
   setFeeds(
     id,
     produce((f) => {
-      const existing = new Set(f.messages.map(getItemId));
+      const existing = new Set(f.messages.map(getEntryId));
       const fresh = items
-        .filter((it) => !existing.has(getItemId(it)))
+        .filter((it) => !existing.has(getEntryId(it)))
         .sort((a, b) => a.timestamp - b.timestamp);
       for (const it of fresh) {
         let at = f.messages.length;
@@ -82,7 +82,7 @@ export function insertItems(id: string, items: FeedItem[]) {
   );
 }
 
-export function prependItems(id: string, items: FeedItem[]) {
+export function prependEntries(id: string, items: FeedEntry[]) {
   ensureFeed(id);
   for (const it of items) {
     if (it.kind === "message") {
@@ -100,8 +100,8 @@ export function prependItems(id: string, items: FeedItem[]) {
     produce((f) => {
       f.backfilled = true;
       if (items.length > 0) {
-        const existing = new Set(f.messages.map(getItemId));
-        const fresh = items.filter((it) => !existing.has(getItemId(it)));
+        const existing = new Set(f.messages.map(getEntryId));
+        const fresh = items.filter((it) => !existing.has(getEntryId(it)));
         if (fresh.length > 0) {
           fresh.sort((a, b) => a.timestamp - b.timestamp);
           f.messages.unshift(...fresh);
@@ -109,8 +109,8 @@ export function prependItems(id: string, items: FeedItem[]) {
         }
       }
       // Mark backlog as already-seen so it doesn't count as unread.
-      if (!f.lastSeenItemId && f.messages.length > 0) {
-        f.lastSeenItemId = getItemId(f.messages[f.messages.length - 1]);
+      if (!f.lastSeenEntryId && f.messages.length > 0) {
+        f.lastSeenEntryId = getEntryId(f.messages[f.messages.length - 1]);
       }
     }),
   );

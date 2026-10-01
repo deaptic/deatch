@@ -1,9 +1,9 @@
 import { ClipboardPaste, Ellipsis, Reply } from "lucide-solid";
 import { For, Show } from "solid-js";
-import type { FeedMessage } from "../../lib/types/index.ts";
-import Toolbar from "../ui/Toolbar.tsx";
-import ToolbarItem from "../ui/ToolbarItem.tsx";
-import { feedShowCopypasta } from "../../lib/stores/preferences.ts";
+import type { FeedMessage } from "../../../lib/types/index.ts";
+import Toolbar from "../../ui/Toolbar.tsx";
+import ToolbarItem from "../../ui/ToolbarItem.tsx";
+import { feedShowCopypasta } from "../../../lib/stores/preferences.ts";
 import type { Reaction } from "./reaction.ts";
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
   onMore: (x: number, y: number, msg: FeedMessage) => void;
 };
 
-export default function FeedMessageToolbar(props: Props) {
+export default function MessageToolbar(props: Props) {
   return (
     <Toolbar>
       <For each={props.reactions}>
