@@ -450,12 +450,13 @@ toggle in the composer. Both keep the treatments, toolbar, and dividers above.
 Every row, message or event, is one `FeedItem`, so these rules hold for all of
 them: the 3px bar and tone, hover, selection and dimming, the spacing above, the
 annotation lines above the row, and the lead column. In compact the lead is the
-timestamp column. In comfortable it is the gutter: a tile slot as tall as the
-content but never shorter than the tile or taller than two lines, with the tile
-centred in it, so one-line content centres on the tile and longer content keeps
-the tile on its first two lines; follow-ups show their time there on hover
-instead. Each kind of entry only describes its parts (tone, tile, annotations,
-overlay, content); it never decides layout.
+timestamp column. In comfortable it is the gutter: a tile slot exactly two lines
+tall at the top of the row, with the tile centred in it, so every row has the
+same space around its tile, a one-line event is as tall as a one-line message
+and centres its text on the tile, and longer content keeps the tile on its first
+two lines; follow-ups show their time there on hover instead. Each kind of entry
+only describes its parts (tone, tile, annotations, overlay, content); it never
+decides layout.
 
 A message joins the group above it when both come from the same chatter, less
 than five minutes apart, on the same day, with no event or unread divider
