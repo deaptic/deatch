@@ -585,10 +585,12 @@ area, and the hint ("/ban · user — who to ban") sits above the box as a
 `small ink-soft` line like the reply chip, `negative` while an argument is
 invalid. Typing `@` on its own opens the mention list with recent chatters.
 Reply chip above: avatar 16, "Replying to name", message preview truncated, × to
-cancel. Character count appears at 80% of the limit in `micro ink-faint`,
-`negative` at the limit. Autocomplete (emotes, mentions, commands) opens as a
-popover above the field with `md` rows: image or avatar 20, label,
-`small ink-soft` hint.
+cancel. The remaining character count (Twitch allows 500) appears once 99 or
+fewer are left, in `micro ink-faint` set into the box's bottom border at the
+right, so it never moves the buttons; `negative` at or past the limit. Past the
+limit, send is disabled and says why in its tooltip. Autocomplete (emotes,
+mentions, commands) opens as a popover above the field with `md` rows: image or
+avatar 20, label, `small ink-soft` hint.
 
 ### Chip
 
