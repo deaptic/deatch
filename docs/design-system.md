@@ -410,7 +410,7 @@ Row treatments, one at a time, in this precedence:
 | Held by AutoMod   | `caution`              | caution 12%   | Reason line + Approve / Deny `sm` buttons       |
 | Mentions you      | `accent`               | `accent-soft` | Your handle in `accent-ink strong`              |
 | Reward redemption | `event-channel-points` | event 10%     | Reward title line above the message             |
-| First message     | `line`                 | `surface`     | "First message" chip after the name             |
+| First message     | `line`                 | `surface`     | "First message" line above the message          |
 | Selected (keys)   | unchanged              | `accent-soft` | 2px `accent` outline, `sm` radius               |
 | Deleted           | unchanged              | unchanged     | 50% opacity, body swapped for "Message deleted" |
 
@@ -422,6 +422,61 @@ messages" on `canvas`. Clears on Escape or when you send.
 
 When scrolled up, a `round` pill "↓ New messages" floats 16px above the composer
 in `accent`. Clicking it jumps to the bottom.
+
+Day divider: where two neighbouring rows fall on different days, a 1px
+`line-soft` rule with a centred `round` pill outlined in `line-soft`, `small`
+strong `ink-soft`: "Today", "Yesterday", "Monday 28 September", or with the year
+once it is not this one. Both layouts show it.
+
+#### Layouts
+
+The feed has two layouts, chosen in Settings → Feed, by Alt+D, or by the layout
+toggle in the composer. Both keep the treatments, toolbar, and dividers above.
+
+- **Compact** (default): the grid above. One line per message, read as "badges ·
+  name: message". Fits the most chat on screen.
+- **Comfortable**: a gutter 2.5× the chat text size (40px at 16px), 12px gap,
+  then content. The first message of a group puts a chatter tile in the gutter
+  and a header line above the body: name, badges, then the time in
+  `feed-meta ink-faint`. The rest of the group is body only, with its time
+  showing in the gutter on hover. A group opens with 8px above it; rows inside
+  it have 2px. Timestamps always show here, so the timestamp setting only
+  affects compact. Event rows take a tile too, holding their icon in the event
+  colour, with 6px above and below, the text centred beside it, and the time
+  after the text.
+
+A message joins the group above it when both come from the same chatter, less
+than five minutes apart, on the same day, with no event or unread divider
+between them. Replies, AutoMod holds, rewards, and first messages always open a
+new group, since each carries its own line above the body.
+
+Annotations sit above the whole message in both layouts, so the timestamp and
+the chatter tile still line up with the name: the AutoMod reason line, the
+reward title line, the "First message" line in `ink-soft`, then the reply line,
+in that order, each starting where the content does (past the timestamp column
+in compact, past the gutter in comfortable). The reply line shows (in
+comfortable only) the parent author's blobatar one line tall (`xs` radius,
+`raised`), then their name in `accent-ink` strong, then the parent message
+truncated, all `feed-meta ink-faint`. A 2px `line` connector with an `sm` corner
+runs down from it onto the message: in comfortable from the centre of the gutter
+to just above the tile, in compact from a lead one line square onto the first
+badge or the name. Only the reply has a connector. Clicking it jumps to the
+parent.
+
+The chatter tile is a square as wide as the gutter, scaling with chat text size,
+centred on the boundary between the name line and the first body line so it sits
+centred on the two together at any chat text size, `sm` radius, `raised`,
+holding the chatter's blobatar: a creature generated locally from their user ID
+by the `blobatar` package, transparent backdrop. It holds still until you hover
+its row or select it with the keyboard, then idles (breathes, bobs, blinks,
+glances) for as long as the pointer stays or the row stays selected; that is
+motion answering the user, so it is allowed. Reduced motion turns it off. The
+same ID always draws the same creature, so a chatter keeps theirs through
+renames. Twitch sends no avatar with a message, and fetching one per chatter
+costs a request at chat speed, so the blobatar stands in. It sits beside a
+two-line block like the header avatar, so it is square for the same reason. An
+event's tile is the same shape, tinted with the event colour at 16% and holding
+its icon. Clicking a chatter tile opens the user card.
 
 ### 3.4 Pages
 
@@ -519,9 +574,10 @@ leading icon 16px `ink-soft`. Optional clear button appears when non-empty.
 
 ### Composer
 
-`lg` text area that grows to 5 lines, `md` radius. Emote button and send button
-inside on the right, `sm` ghost. Send becomes `accent` when there is text. Reply
-chip above: avatar 16, "Replying to name", message preview truncated, × to
+`lg` text area that grows to 5 lines, `md` radius. Layout toggle, emote button,
+and send button inside on the right, `sm` ghost. The layout toggle shows pressed
+while the feed is comfortable (§3.3). Send becomes `accent` when there is text.
+Reply chip above: avatar 16, "Replying to name", message preview truncated, × to
 cancel. Character count appears at 80% of the limit in `micro ink-faint`,
 `negative` at the limit. Autocomplete (emotes, mentions, commands) opens as a
 popover above the field with `md` rows: image or avatar 20, label,
@@ -564,7 +620,11 @@ radius, icon 16 with 10px gap, shortcut hint right in `small ink-faint`. Hover
 ### Tooltip
 
 `overlay`, 1px `line`, `sm` radius, 8px 10px padding, `small`. 300ms delay,
-instant hide. Shortcut on the right in `ink-faint`.
+instant hide. Shortcut on the right in `ink-faint`. Opens to the right of its
+anchor, centred vertically, or above it, centred, 8px away.
+
+Every timestamp shows the full date and time above it on hover: "Wednesday, 30
+September 2026 at 01:42".
 
 Collapsed-rail channel tooltip, max 288px wide, 8px between blocks: name in
 `strong` at `body` size, then the stream title in `body ink` with relaxed
@@ -619,17 +679,17 @@ Spinner 20px 2px `ink-soft` only for indeterminate whole-screen waits.
 ### Message row, Event row, Unread divider
 
 Specified in §3.3. Each chat badge sits in its own 1.25em square tile with `xs`
-radius before the name, filled with `ink` at 15% rather than a fixed tone so it
-lifts the same amount on canvas, hovered, first-message, and mention rows in
-both themes, so a row reads as "badges · name · message" instead of loose
-images. Tiles sit 0.2em apart; the artwork is the 4x asset inset 0.15em so it
-stays crisp on scaled displays. The tile is never taller than the text line and
-hangs 0.15em below the baseline to centre on x-height. An event row has exactly
-the anatomy of a message row so the columns line up: timestamp in the same left
-column, then an event-coloured icon where a message would show badges, then the
-system text at regular weight and feed size. The tint and 3px bar carry the
-event colour; the text does not shout. Attached messages render below at feed
-size.
+radius before the name (after it in the comfortable header), filled with `ink`
+at 15% rather than a fixed tone so it lifts the same amount on canvas, hovered,
+first-message, and mention rows in both themes, so a row reads as "badges · name
+· message" instead of loose images. Tiles sit 0.2em apart; the artwork is the 4x
+asset inset 0.15em so it stays crisp on scaled displays. The tile is never
+taller than the text line and hangs 0.15em below the baseline to centre on
+x-height. An event row has exactly the anatomy of a message row so the columns
+line up: timestamp in the same left column, then an event-coloured icon where a
+message would show badges, then the system text at regular weight and feed size.
+The tint and 3px bar carry the event colour; the text does not shout. Attached
+messages render below at feed size.
 
 ---
 
@@ -651,6 +711,7 @@ Everything reachable by mouse has a key. Shortcuts show in tooltips and menus.
 | Ctrl+E                        | Emote picker                                                                                                                |
 | Alt+W / Alt+M / Alt+A / Alt+S | Watch: toggle, mute current, mute all, mute others                                                                          |
 | Alt+T                         | Always on top                                                                                                               |
+| Alt+D                         | Switch the feed between compact and comfortable                                                                             |
 | Shift+↑ / ↓                   | Enter message selection, then ↑/↓ to move                                                                                   |
 | Enter or R                    | Reply to selected message                                                                                                   |
 | C                             | Copy selected message text                                                                                                  |
@@ -768,11 +829,12 @@ accent colour, and chat text size. Everything else derives.
 - **Bundled typeface** chosen for long-session legibility over native look.
 - **No shadows anywhere.** Overlays rely on tone plus a 1px line.
 - **Accent is user-replaceable**; the rest of the accent family derives from it.
+- **Two feed layouts**: compact by default for busy channels, comfortable with
+  grouped messages and chatter tiles for slower ones (§3.3). The composer and
+  header are the same in both.
 
 ## Part 10. Still open
 
 1. Whether Explore should show followed-but-offline channels, or only live ones.
 2. Whether the Inbox popover should also be reachable as a full page for long
    mention histories.
-3. Whether to offer a "compact" density preset alongside the default comfortable
-   one.

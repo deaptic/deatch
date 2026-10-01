@@ -5,9 +5,17 @@ import type { BadgeMap } from "../../lib/types/index.ts";
 
 type Badge = { set_id: string; id: string; info?: string };
 
+export type BadgePlacement = "before" | "after";
+
+const PLACEMENTS: Record<BadgePlacement, string> = {
+  before: "mr-1.5",
+  after: "ml-1.5",
+};
+
 type Props = {
   badges: Badge[];
   channelBadges: BadgeMap;
+  placement?: BadgePlacement;
 };
 
 export default function BadgeBox(props: Props) {
@@ -20,7 +28,11 @@ export default function BadgeBox(props: Props) {
 
   return (
     <Show when={items().length > 0}>
-      <span class="feed-badge-box inline-flex items-center mr-1.5">
+      <span
+        class={`feed-badge-box inline-flex items-center ${
+          PLACEMENTS[props.placement ?? "before"]
+        }`}
+      >
         <For each={items()}>
           {(b) => (
             <img

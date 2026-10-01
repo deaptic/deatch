@@ -25,6 +25,9 @@ import * as shortcuts from "../../lib/services/shortcuts.ts";
 import FeedMessage from "./FeedMessage.tsx";
 import FeedEvent from "./FeedEvent.tsx";
 import FeedDivider from "./FeedDivider.tsx";
+import FeedDayDivider from "./FeedDayDivider.tsx";
+import type { Density } from "../../lib/constants/density.ts";
+import { layoutFeed } from "../../lib/utils/feedLayout.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 
 export type FeedApi = {
@@ -42,6 +45,7 @@ type Props = {
   userLogin?: string;
   filter?: (item: FeedItem) => boolean;
   renderItem?: (item: FeedItem, index: () => number) => JSX.Element;
+  density?: Density;
   showName?: boolean;
   showBadges?: boolean;
   showToolbar?: boolean;
@@ -87,6 +91,17 @@ export default function Feed(props: Props) {
       ? null
       : (feeds[props.broadcasterId]?.dividerAtItemId ?? null);
   const reactions = createMemo(() => favorites().slice(0, 3));
+
+  const layout = createMemo(() => {
+    const visible = items().filter(isFeedItemVisible);
+    const rows = layoutFeed(visible, props.density === "comfortable");
+    return new Map(visible.map((item, i) => [getItemId(item), rows[i]]));
+  });
+  const dividerBefore = (index: number) =>
+    index > 0 && dividerAt() !== null &&
+    getItemId(items()[index - 1]) === dividerAt();
+  const continued = (item: FeedItem, index: () => number) =>
+    !!layout().get(getItemId(item))?.continued && !dividerBefore(index());
 
   const messageList = createMemo<Message[]>(() =>
     items().filter((i): i is Message => i.kind === "message")
@@ -194,12 +209,13 @@ export default function Feed(props: Props) {
     });
   });
 
-  const defaultRender = (item: FeedItem) => (
+  const defaultRender = (item: FeedItem, index: () => number) => (
     <Show when={isFeedItemVisible(item)}>
       {item.kind === "event"
         ? (
           <FeedEvent
             item={item}
+            density={props.density}
             showTimestamp={feedShowTimestamp()}
             flush={props.flush}
             onContextMenu={props.onEventContextMenu}
@@ -213,6 +229,8 @@ export default function Feed(props: Props) {
             userLogin={props.userLogin ?? ""}
             selected={selectedId() === item.message_id}
             keywords={feedKeywords()}
+            density={props.density}
+            continued={continued(item, index)}
             showTimestamp={feedShowTimestamp()}
             showDeletedContent={feedShowDeletedContent()}
             showName={props.showName}
@@ -233,7 +251,9 @@ export default function Feed(props: Props) {
   );
 
   const render = (item: FeedItem, index: () => number) =>
-    props.renderItem ? props.renderItem(item, index) : defaultRender(item);
+    props.renderItem
+      ? props.renderItem(item, index)
+      : defaultRender(item, index);
 
   return (
     <div
@@ -257,11 +277,10 @@ export default function Feed(props: Props) {
         <For each={items()}>
           {(item, index) => (
             <>
-              <Show
-                when={index() > 0 &&
-                  dividerAt() &&
-                  getItemId(items()[index() - 1]) === dividerAt()}
-              >
+              <Show when={layout().get(getItemId(item))?.dayStart}>
+                <FeedDayDivider ts={item.timestamp} />
+              </Show>
+              <Show when={dividerBefore(index())}>
                 <FeedDivider />
               </Show>
               <div

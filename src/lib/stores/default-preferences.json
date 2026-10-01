@@ -1,6 +1,7 @@
 {
   "feed": {
     "fontSize": 16,
+    "density": "compact",
     "showTimestamp": false,
     "showDeletedContent": false,
     "showCopypasta": false,

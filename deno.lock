@@ -4,6 +4,7 @@
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/yaml@1": "1.3.0",
+    "npm:@blobatar/solid@^2.7.0": "2.7.0_blobatar@2.7.0_solid-js@1.9.15",
     "npm:@shadcn/lint@0.2": "0.2.0",
     "npm:@tailwindcss/vite@^4.3.3": "4.3.3_vite@8.3.1",
     "npm:@tauri-apps/api@^2.12.0": "2.12.0",
@@ -12,6 +13,7 @@
     "npm:@tauri-apps/plugin-opener@^2.6.0": "2.6.0",
     "npm:@tauri-apps/plugin-process@^2.4.0": "2.4.0",
     "npm:@tauri-apps/plugin-updater@^2.13.0": "2.13.0",
+    "npm:blobatar@^2.7.0": "2.7.0",
     "npm:lucide-solid@^1.48.0": "1.48.0_solid-js@1.9.15",
     "npm:oxlint@^1.86.0": "1.86.0",
     "npm:solid-js@^1.9.15": "1.9.15",
@@ -170,6 +172,13 @@
       "dependencies": [
         "@babel/helper-string-parser",
         "@babel/helper-validator-identifier"
+      ]
+    },
+    "@blobatar/solid@2.7.0_blobatar@2.7.0_solid-js@1.9.15": {
+      "integrity": "sha512-lP/t/GAD/85WJVmQiE+Thchi/kkL+IB/2w3on5VYomQL3bz/6xeR67jTYf+6k0sI6YvzdQn8423znYWD55ilkw==",
+      "dependencies": [
+        "blobatar",
+        "solid-js"
       ]
     },
     "@eslint/core@0.17.0": {
@@ -743,6 +752,9 @@
       "integrity": "sha512-GLQdD3y6UF8iVuMJl5fHgE4jdn/ua7n+toKfLgNlg3BqQtOZjpy68T8Tup8/wGWZCDlm7KMg7tPb4MPn7oN0TQ==",
       "bin": true
     },
+    "blobatar@2.7.0": {
+      "integrity": "sha512-tL1p2J3dXE/Z9U/ITwHqU7HBHmTH+Am+hif1J1hWAhvFT1VYC2HG+eXtN7081yuY+L2lrp9bs/VaF7dVH3S2jw=="
+    },
     "browserslist@4.29.2": {
       "integrity": "sha512-/u9r8k8ue4ZhHCw9ovDtltpWdXeXzjhdxCGj6vm1RGLPXb8lu33EMdoCHF5Sx8oYBS+Q/FYYNmAqlHncxR3RmA==",
       "dependencies": [
@@ -1220,6 +1232,7 @@
     ],
     "packageJson": {
       "dependencies": [
+        "npm:@blobatar/solid@^2.7.0",
         "npm:@shadcn/lint@0.2",
         "npm:@tailwindcss/vite@^4.3.3",
         "npm:@tauri-apps/api@^2.12.0",
@@ -1228,6 +1241,7 @@
         "npm:@tauri-apps/plugin-opener@^2.6.0",
         "npm:@tauri-apps/plugin-process@^2.4.0",
         "npm:@tauri-apps/plugin-updater@^2.13.0",
+        "npm:blobatar@^2.7.0",
         "npm:lucide-solid@^1.48.0",
         "npm:oxlint@^1.86.0",
         "npm:solid-js@^1.9.15",

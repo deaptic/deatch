@@ -7,6 +7,7 @@ import {
   appearanceRailExpanded,
   setAdvancedAlwaysOnTop,
   setAppearanceRailExpanded,
+  toggleFeedDensity,
 } from "../stores/preferences.ts";
 import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
@@ -58,6 +59,7 @@ export function createAppShortcuts(
       shortcuts.register("view::toggleAlwaysOnTop", () => {
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());
       }),
+      shortcuts.register("feed::toggleDensity", toggleFeedDensity),
     ];
     for (let i = 1; i <= 9; i++) {
       const idx = i - 1;

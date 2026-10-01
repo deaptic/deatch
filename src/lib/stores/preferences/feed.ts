@@ -1,4 +1,5 @@
 import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
+import type { Density } from "../../constants/density.ts";
 import {
   type BadgePref,
   type EventPref,
@@ -8,6 +9,7 @@ import {
 } from "./core.ts";
 
 export const feedFontSize = () => prefs.feed.fontSize;
+export const feedDensity = () => prefs.feed.density;
 export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
@@ -19,6 +21,15 @@ export const feedEvents = () =>
 export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", Math.min(22, Math.max(12, value)));
   persist();
+}
+
+export function setFeedDensity(value: Density) {
+  setPrefs("feed", "density", value);
+  persist();
+}
+
+export function toggleFeedDensity() {
+  setFeedDensity(feedDensity() === "compact" ? "comfortable" : "compact");
 }
 
 export function setFeedShowTimestamp(value: boolean) {

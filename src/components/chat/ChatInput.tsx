@@ -1,4 +1,4 @@
-import { SendHorizontal, Smile, X } from "lucide-solid";
+import { Rows2, SendHorizontal, Smile, X } from "lucide-solid";
 import {
   createEffect,
   createSignal,
@@ -20,6 +20,10 @@ import {
   pushSentHistory,
 } from "../../lib/stores/chatHistory.ts";
 import { getDraft, setDraft } from "../../lib/stores/drafts.ts";
+import {
+  feedDensity,
+  toggleFeedDensity,
+} from "../../lib/stores/preferences.ts";
 import {
   closeOverlay,
   isOverlayOpen,
@@ -273,6 +277,13 @@ export default function ChatInput(props: Props) {
             addons={
               <div class="flex items-center gap-1 shrink-0 self-end pb-0.5">
                 <CharCounter value={input} max={MAX_LEN} />
+                <IconButton
+                  label="Comfortable layout (Alt+D)"
+                  pressed={feedDensity() === "comfortable"}
+                  onClick={toggleFeedDensity}
+                >
+                  <Rows2 class="size-5" />
+                </IconButton>
                 <IconButton
                   label="Emote picker"
                   pressed={isOverlayOpen("emotePicker")}

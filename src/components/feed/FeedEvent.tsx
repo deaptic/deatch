@@ -22,7 +22,9 @@ import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { NOTICE_TO_EVENT } from "../../lib/constants.ts";
 import type { FeedEvent as Event } from "../../lib/types/index.ts";
+import type { Density } from "../../lib/constants/density.ts";
 import Timestamp from "../ui/Timestamp.tsx";
+import FeedTile from "./FeedTile.tsx";
 import Toolbar from "../ui/Toolbar.tsx";
 import ToolbarItem from "../ui/ToolbarItem.tsx";
 
@@ -59,6 +61,7 @@ function lookFor(noticeType: string): Look {
 
 type Props = {
   item: Event;
+  density?: Density;
   showTimestamp?: boolean;
   flush?: boolean;
   onContextMenu?: (x: number, y: number, item: Event) => void;
@@ -69,7 +72,9 @@ export default function FeedEvent(props: Props) {
   return (
     <div
       data-item-id={props.item.id}
-      class={`relative group flex items-start leading-normal pl-3 pr-2 py-1 border-l-3 border-(--event) bg-(--event)/10 ${
+      class={`relative group flex items-start leading-normal pl-3 pr-2 ${
+        props.density === "comfortable" ? "py-1.5" : "py-1"
+      } border-l-3 border-(--event) bg-(--event)/10 ${
         props.flush ? "rounded-r-sm" : "rounded-sm"
       }`}
       style={{ "--event": look().color }}
@@ -80,15 +85,35 @@ export default function FeedEvent(props: Props) {
         props.onContextMenu(e.clientX, e.clientY, props.item);
       }}
     >
-      <Show when={props.showTimestamp}>
-        <Timestamp ts={props.item.timestamp} feed />
+      <Show
+        when={props.density === "comfortable"}
+        fallback={
+          <>
+            <Show when={props.showTimestamp}>
+              <Timestamp ts={props.item.timestamp} variant="column" />
+            </Show>
+            <div class="flex-1 min-w-0 wrap-break-word text-ink">
+              <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--event)">
+                <Dynamic component={look().Icon} />
+              </span>
+              {props.item.system_message}
+            </div>
+          </>
+        }
+      >
+        <FeedTile color={look().color}>
+          <span class="feed-icon grid">
+            <Dynamic component={look().Icon} />
+          </span>
+        </FeedTile>
+        <div class="flex-1 min-w-0 self-center ml-3 wrap-break-word text-ink">
+          {props.item.system_message}
+          <Timestamp
+            ts={props.item.timestamp}
+            variant="inline"
+          />
+        </div>
       </Show>
-      <div class="flex-1 min-w-0 wrap-break-word text-ink">
-        <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--event)">
-          <Dynamic component={look().Icon} />
-        </span>
-        {props.item.system_message}
-      </div>
       <Show when={props.item.clip}>
         {(clip) => (
           <Toolbar alwaysVisible>

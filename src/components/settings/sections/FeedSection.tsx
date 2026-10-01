@@ -4,6 +4,7 @@ import Card from "../../ui/Card.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
 import Toggle from "../../ui/Toggle.tsx";
+import Segmented from "../../ui/Segmented.tsx";
 import Chip from "../../ui/Chip.tsx";
 import ChipInput from "../../ui/ChipInput.tsx";
 import UserListEditor from "../UserListEditor.tsx";
@@ -13,6 +14,7 @@ import * as preferences from "../../../lib/services/preferences.ts";
 import {
   addFeedKeyword,
   feedBadges,
+  feedDensity,
   feedEvents,
   feedKeywords,
   feedShowCopypasta,
@@ -26,6 +28,7 @@ import {
   removeFeedKeyword,
   removeUserNickname,
   setFeedBadge,
+  setFeedDensity,
   setFeedEvent,
   setFeedShowCopypasta,
   setFeedShowDeletedContent,
@@ -47,8 +50,21 @@ export default function FeedSection() {
     <PageBody title="Feed" lede="What shows up in chat, and how.">
       <Card>
         <SettingsRow
+          label="Layout"
+          description="Compact fits more chat on screen. Comfortable groups each chatter's messages under their name. Alt+D switches."
+        >
+          <Segmented
+            value={feedDensity()}
+            options={[
+              { value: "compact", label: "Compact" },
+              { value: "comfortable", label: "Comfortable" },
+            ]}
+            onChange={setFeedDensity}
+          />
+        </SettingsRow>
+        <SettingsRow
           label="Show timestamps"
-          description="Time next to every message."
+          description="Time next to every message in the compact layout. Comfortable always shows it."
         >
           <Toggle
             label="Show timestamps"

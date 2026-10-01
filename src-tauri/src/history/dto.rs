@@ -54,4 +54,5 @@ pub struct Reply {
     pub parent_message_body: String,
     pub parent_user_name: String,
     pub parent_user_login: String,
+    pub parent_user_id: String,
 }

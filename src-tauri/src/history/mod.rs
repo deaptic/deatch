@@ -132,6 +132,7 @@ fn parse_reply(tags: &Tags) -> Option<Reply> {
         parent_message_body: get("reply-parent-msg-body"),
         parent_user_name: get("reply-parent-display-name"),
         parent_user_login: get("reply-parent-user-login"),
+        parent_user_id: get("reply-parent-user-id"),
     })
 }
 
@@ -367,7 +368,8 @@ mod tests {
     #[test]
     fn falls_back_to_nick_and_unescapes_tags() {
         let line = "@display-name=;reply-parent-msg-id=p1;reply-parent-msg-body=hey\\sthere;\
-            reply-parent-display-name=Bar;reply-parent-user-login=bar;id=m1;user-id=1 \
+            reply-parent-display-name=Bar;reply-parent-user-login=bar;reply-parent-user-id=7;\
+            id=m1;user-id=1 \
             :foo!foo@foo PRIVMSG #chan :@bar yes";
         let m = &parse(&[line])[0];
         assert_eq!(m.chatter_user_name, "foo");
@@ -378,6 +380,7 @@ mod tests {
                 "parent_message_body": "hey there",
                 "parent_user_name": "Bar",
                 "parent_user_login": "bar",
+                "parent_user_id": "7",
             })
         );
     }
