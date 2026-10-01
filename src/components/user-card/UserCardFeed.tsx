@@ -37,6 +37,7 @@ export default function UserCardFeed(props: Props) {
         showName={false}
         showBadges={false}
         showToolbar={false}
+        highlightMentions={false}
         showDivider={false}
         onJumpToMessage={props.onJumpToMessage}
         onShowUserCard={props.onShowUserCard}

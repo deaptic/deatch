@@ -36,6 +36,7 @@ export type MessageOptions = {
   showName?: boolean;
   showBadges?: boolean;
   showToolbar?: boolean;
+  highlightMentions?: boolean;
   onContextMenu?: (x: number, y: number, msg: FeedMessage) => void;
   onReply?: (msg: FeedMessage) => void;
   onReact?: (msg: FeedMessage, value: string) => void;
@@ -108,7 +109,7 @@ export function createMessageParts(
   const tone = (): RowTone =>
     hold()
       ? "held"
-      : mentioned()
+      : props.highlightMentions !== false && mentioned()
       ? "mention"
       : item.channel_points
       ? "redemption"

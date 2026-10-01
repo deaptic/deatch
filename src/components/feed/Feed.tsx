@@ -52,6 +52,7 @@ type Props = {
   showName?: boolean;
   showBadges?: boolean;
   showToolbar?: boolean;
+  highlightMentions?: boolean;
   showDivider?: boolean;
   flush?: boolean;
   onContextMenu?: (x: number, y: number, msg: Message) => void;
@@ -249,6 +250,7 @@ export default function Feed(props: Props) {
       showName={props.showName}
       showBadges={props.showBadges}
       showToolbar={props.showToolbar}
+      highlightMentions={props.highlightMentions}
       onContextMenu={props.onContextMenu}
       onReply={props.onReply}
       onReact={props.onReact}
