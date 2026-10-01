@@ -36,7 +36,7 @@ export default function DisplayName(props: Props) {
       ? resolvedTheme() === "dark"
         ? `oklch(from ${props.color} max(l, 0.64) c h)`
         : `oklch(from ${props.color} min(l, 0.58) c h)`
-      : "var(--color-accent-ink)");
+      : "var(--color-ink-soft)");
 
   return (
     <span
