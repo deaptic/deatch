@@ -49,7 +49,7 @@ export default function AppearanceSection() {
         </SettingsRow>
         <SettingsRow
           label="Chat text size"
-          description="Also Ctrl + scroll over the chat."
+          description="Also Alt + scroll over the chat."
         >
           <Slider
             label="Chat text size"
