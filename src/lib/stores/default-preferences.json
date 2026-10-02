@@ -26,7 +26,6 @@
       "vanity": { "show": true }
     },
     "users": {
-      "muted": [],
       "showDisplayName": true,
       "overrideNameColor": ""
     }

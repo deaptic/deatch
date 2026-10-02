@@ -3,7 +3,6 @@ import { createClip } from "../../../lib/api/twitch/clips.ts";
 import { getStreams } from "../../../lib/api/twitch/streams.ts";
 import { getFollowedChannels } from "../../../lib/api/twitch/channels.ts";
 import { user } from "../../../lib/stores/users.ts";
-import { muteUser, unmuteUser } from "../../../lib/stores/preferences.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
 import { formatDuration } from "../../../lib/format/stream.ts";
 import { Time } from "../../../lib/utils/time.ts";
@@ -136,38 +135,6 @@ export const deatchCommands: Command[] = [
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch followage");
       }
-    },
-  },
-  {
-    name: "mute",
-    description: "Hide a user's messages (only affects your view)",
-    role: "regular",
-    options: [
-      {
-        name: "username",
-        description: "User to mute",
-        type: "user",
-        required: true,
-      },
-    ],
-    execute: async ({ username }) => {
-      muteUser(username as string);
-    },
-  },
-  {
-    name: "unmute",
-    description: "Show a user's messages again",
-    role: "regular",
-    options: [
-      {
-        name: "username",
-        description: "User to unmute",
-        type: "user",
-        required: true,
-      },
-    ],
-    execute: async ({ username }) => {
-      unmuteUser(username as string);
     },
   },
 ];
