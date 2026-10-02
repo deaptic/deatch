@@ -113,12 +113,16 @@ text colour.
 - **Notes sit above the message**, never beside the name: AutoMod reason,
   "Cheered N bits", reward, "First message", then the reply line with a
   connector down to the message. Notes start where the message text starts.
-- **Two layouts.** Compact is one line per message with an optional timestamp
-  column. Comfortable groups a chatter's messages (same chatter, within seven
-  minutes of the group's first message, same day, nothing between) under one
-  header with a tile in a gutter; the tile sits centred on the first two lines
-  of every row. Replies, holds, cheers, rewards, and first messages always start
-  a group.
+- **Two layouts.** Default (compact in code) is one line per message with an
+  optional timestamp column. Spacious (comfortable in code) groups a chatter's
+  messages (same chatter, within seven minutes of the group's first message,
+  same day, nothing between) under one header with a tile in a gutter; the tile
+  sits centred on the first two lines of every row. Replies, holds, cheers,
+  rewards, and first messages always start a group. The gap before each group is
+  the user's group spacing.
+- **Accessibility settings** (text size, group spacing, zoom, UI density) are
+  applied once at the root as CSS variables or webview zoom, so every feed and
+  the settings preview follow them.
 - **Cheermotes** render inline at emote size with the amount after them in the
   tier's colour, clamped like a chatter colour; under reduced motion they show
   their still image.

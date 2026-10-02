@@ -1,17 +1,26 @@
 import { onCleanup, onMount } from "solid-js";
 import * as shortcuts from "../services/shortcuts.ts";
+import * as readout from "../services/readout.ts";
 import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
 import { leavePage, showExplore, toggleSettings } from "../stores/view.ts";
 import {
   advancedAlwaysOnTop,
   appearanceRailExpanded,
+  appearanceZoom,
+  resetAppearanceZoom,
   setAdvancedAlwaysOnTop,
   setAppearanceRailExpanded,
+  stepAppearanceZoom,
   toggleFeedDensity,
 } from "../stores/preferences.ts";
 import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import type { WatchControls } from "./createWatchControls.ts";
+
+function zoom(change: () => void): void {
+  change();
+  readout.show(`${appearanceZoom()}%`);
+}
 
 export function createAppShortcuts(
   nav: ChannelNavigation,
@@ -60,6 +69,15 @@ export function createAppShortcuts(
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());
       }),
       shortcuts.register("feed::toggleDensity", toggleFeedDensity),
+      shortcuts.register(
+        "view::zoomIn",
+        () => zoom(() => stepAppearanceZoom(1)),
+      ),
+      shortcuts.register(
+        "view::zoomOut",
+        () => zoom(() => stepAppearanceZoom(-1)),
+      ),
+      shortcuts.register("view::zoomReset", () => zoom(resetAppearanceZoom)),
     ];
     for (let i = 1; i <= 9; i++) {
       const idx = i - 1;

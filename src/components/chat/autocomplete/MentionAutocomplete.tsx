@@ -1,7 +1,6 @@
 import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
 import { chattersByChannel } from "../../../lib/stores/users.ts";
-import { feedUserNickname } from "../../../lib/stores/preferences.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
@@ -9,7 +8,6 @@ type MentionSuggestion = {
   login: string;
   displayName: string;
   color: string;
-  nickname?: string;
 };
 
 type Props = {
@@ -28,14 +26,10 @@ export default function MentionAutocomplete(props: Props) {
       login: c.login,
       displayName: c.displayName,
       color: c.color,
-      nickname: feedUserNickname(c.login),
       lastSeen: c.lastSeen,
     }));
     return rankSuggestions(items, q, {
-      keys: (s) =>
-        [s.login, s.displayName, s.nickname]
-          .filter((v): v is string => !!v)
-          .map((v) => v.toLowerCase()),
+      keys: (s) => [s.login.toLowerCase(), s.displayName.toLowerCase()],
       compare: (a, b) => b.lastSeen - a.lastSeen,
       limit: 10,
     }).map(({ lastSeen: _, ...rest }) => rest);
@@ -54,11 +48,8 @@ export default function MentionAutocomplete(props: Props) {
         class="font-semibold text-left truncate text-(--name)"
         style={{ "--name": s.color || "var(--color-ink)" }}
       >
-        {s.nickname ?? s.displayName}
+        {s.displayName}
       </span>
-      <Show when={s.nickname}>
-        <span class="text-ink-soft text-small truncate">({s.displayName})</span>
-      </Show>
       <span class="flex-1" />
       <span class="text-small font-semibold shrink-0 text-ink-soft">
         {s.displayName.toLowerCase() !== s.login ? s.login : ""}

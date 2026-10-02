@@ -292,7 +292,7 @@ export default function ChatInput(props: Props) {
               <div class="flex items-center gap-1 shrink-0 self-end pb-0.5">
                 <CharCounter value={input} max={MAX_LEN} />
                 <IconButton
-                  label={withShortcut("Comfortable layout", DENSITY_ACTION)}
+                  label={withShortcut("Spacious layout", DENSITY_ACTION)}
                   pressed={feedDensity() === "comfortable"}
                   onClick={toggleFeedDensity}
                 >

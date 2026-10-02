@@ -3,7 +3,6 @@ import {
   Keyboard,
   Megaphone,
   Palette,
-  ScrollText,
   Settings as SettingsIcon,
   Zap,
 } from "lucide-solid";
@@ -11,7 +10,6 @@ import { createSignal, For, type JSX, Show } from "solid-js";
 import NavItem from "../ui/NavItem.tsx";
 import NotificationsSection from "./sections/NotificationsSection.tsx";
 import ModerationSection from "./sections/ModerationSection.tsx";
-import FeedSection from "./sections/FeedSection.tsx";
 import AppearanceSection from "./sections/AppearanceSection.tsx";
 import KeyboardSection from "./sections/KeyboardSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
@@ -19,7 +17,6 @@ import TriggersSection from "./sections/TriggersSection.tsx";
 
 type SectionKey =
   | "notifications"
-  | "feed"
   | "moderation"
   | "triggers"
   | "appearance"
@@ -38,7 +35,12 @@ const SECTIONS: {
     Icon: Megaphone,
     Section: NotificationsSection,
   },
-  { key: "feed", label: "Feed", Icon: ScrollText, Section: FeedSection },
+  {
+    key: "appearance",
+    label: "Appearance",
+    Icon: Palette,
+    Section: AppearanceSection,
+  },
   {
     key: "moderation",
     label: "Moderation",
@@ -46,12 +48,6 @@ const SECTIONS: {
     Section: ModerationSection,
   },
   { key: "triggers", label: "Triggers", Icon: Zap, Section: TriggersSection },
-  {
-    key: "appearance",
-    label: "Appearance",
-    Icon: Palette,
-    Section: AppearanceSection,
-  },
   {
     key: "keyboard",
     label: "Keyboard",

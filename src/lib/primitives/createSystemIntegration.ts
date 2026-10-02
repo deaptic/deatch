@@ -1,5 +1,6 @@
 import { createEffect } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import {
   disable as disableAutostart,
   enable as enableAutostart,
@@ -10,6 +11,9 @@ import {
   advancedAutostart,
   advancedDiscordRichPresence,
   appearanceAccent,
+  appearanceZoom,
+  feedFontSize,
+  feedGroupSpacing,
 } from "../stores/preferences.ts";
 import { resolvedTheme } from "../stores/theme.ts";
 import * as appearance from "../services/appearance.ts";
@@ -21,6 +25,19 @@ import { activeView, selectedChannel } from "../stores/view.ts";
 export function createSystemIntegration(): void {
   createEffect(() => {
     appearance.apply({ theme: resolvedTheme(), accent: appearanceAccent() });
+  });
+
+  createEffect(() => {
+    appearance.applyFeedSizing({
+      fontSize: feedFontSize(),
+      groupSpacing: feedGroupSpacing(),
+    });
+  });
+
+  createEffect(() => {
+    getCurrentWebview()
+      .setZoom(appearanceZoom() / 100)
+      .catch((e) => console.warn("zoom failed", e));
   });
 
   createEffect(() => {

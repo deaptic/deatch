@@ -28,7 +28,10 @@ const ACTION_LABELS: Record<string, string> = {
   "watch::muteOthers": "Watch: mute other tabs",
   "view::toggleAlwaysOnTop": "Always on top",
   "panel::close": "Close the open overlay, or leave Settings and Explore",
-  "feed::toggleDensity": "Switch between compact and comfortable chat",
+  "feed::toggleDensity": "Switch between default and spacious chat",
+  "view::zoomIn": "Zoom in",
+  "view::zoomOut": "Zoom out",
+  "view::zoomReset": "Reset zoom",
   "chat::send": "Send message",
   "chat::tabComplete": "Complete a name",
   "chat::recallPrev": "Previous sent message",
@@ -48,7 +51,8 @@ const GROUPS = [
       "panel::",
     ],
   },
-  { title: "Watch", prefix: ["watch::", "view::"] },
+  { title: "Watch", prefix: ["watch::"] },
+  { title: "View", prefix: ["view::"] },
   { title: "Chat", prefix: ["feed::", "chat::"] },
 ];
 

@@ -2,6 +2,14 @@ import { createStore, unwrap } from "solid-js/store";
 import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
 import { DENSITIES, type Density } from "../../constants/density.ts";
 import { type Theme, THEMES } from "../../constants/theme.ts";
+import {
+  clampToStops,
+  FONT_SIZE_STOPS,
+  GROUP_SPACING_STOPS,
+  UI_DENSITIES,
+  type UiDensity,
+  ZOOM_STOPS,
+} from "../../constants/accessibility.ts";
 import defaults from "../default-preferences.json" with { type: "json" };
 
 export type EventPref = { show: boolean };
@@ -36,6 +44,7 @@ export type UserPreferences = {
   feed: {
     fontSize: number;
     density: Density;
+    groupSpacing: number;
     showTimestamp: boolean;
     showDeletedContent: boolean;
     showCopypasta: boolean;
@@ -46,7 +55,6 @@ export type UserPreferences = {
       muted: string[];
       showDisplayName: boolean;
       overrideNameColor: string;
-      nicknames: Record<string, string>;
     };
   };
   notifications: {
@@ -67,6 +75,8 @@ export type UserPreferences = {
     theme: Theme;
     accent: string | null;
     railExpanded: boolean;
+    uiDensity: UiDensity;
+    zoom: number;
   };
   menu: {
     channels: {
@@ -95,25 +105,26 @@ function sanitizeTheme(raw: unknown): Theme {
     : DEFAULT_PREFERENCES.appearance.theme;
 }
 
+function sanitizeStop(
+  raw: unknown,
+  stops: readonly number[],
+  fallback: number,
+): number {
+  return typeof raw === "number" && Number.isFinite(raw)
+    ? clampToStops(raw, stops)
+    : fallback;
+}
+
+function sanitizeUiDensity(raw: unknown): UiDensity {
+  return UI_DENSITIES.includes(raw as UiDensity)
+    ? (raw as UiDensity)
+    : DEFAULT_PREFERENCES.appearance.uiDensity;
+}
+
 function sanitizeDensity(raw: unknown): Density {
   return DENSITIES.includes(raw as Density)
     ? (raw as Density)
     : DEFAULT_PREFERENCES.feed.density;
-}
-
-function sanitizeNicknames(raw: unknown): Record<string, string> {
-  if (!raw || typeof raw !== "object") return {};
-  const out: Record<string, string> = {};
-  for (
-    const [login, nickname] of Object.entries(raw as Record<string, unknown>)
-  ) {
-    if (typeof nickname !== "string") continue;
-    const trimmedLogin = login.trim().toLowerCase();
-    const trimmedNick = nickname.trim();
-    if (!trimmedLogin || !trimmedNick) continue;
-    out[trimmedLogin] = trimmedNick;
-  }
-  return out;
 }
 
 function sanitizeTriggers(raw: unknown): Trigger[] {
@@ -152,8 +163,17 @@ function load(): UserPreferences {
       : DEFAULT_PREFERENCES.menu.channels.pinned;
     return {
       feed: {
-        fontSize: stored.feed?.fontSize ?? DEFAULT_PREFERENCES.feed.fontSize,
+        fontSize: sanitizeStop(
+          stored.feed?.fontSize,
+          FONT_SIZE_STOPS,
+          DEFAULT_PREFERENCES.feed.fontSize,
+        ),
         density: sanitizeDensity(stored.feed?.density),
+        groupSpacing: sanitizeStop(
+          stored.feed?.groupSpacing,
+          GROUP_SPACING_STOPS,
+          DEFAULT_PREFERENCES.feed.groupSpacing,
+        ),
         showTimestamp: stored.feed?.showTimestamp ??
           DEFAULT_PREFERENCES.feed.showTimestamp,
         showDeletedContent: stored.feed?.showDeletedContent ??
@@ -175,7 +195,6 @@ function load(): UserPreferences {
             DEFAULT_PREFERENCES.feed.users.showDisplayName,
           overrideNameColor: stored.feed?.users?.overrideNameColor ??
             DEFAULT_PREFERENCES.feed.users.overrideNameColor,
-          nicknames: sanitizeNicknames(stored.feed?.users?.nicknames),
         },
       },
       notifications: {
@@ -205,6 +224,12 @@ function load(): UserPreferences {
         accent: sanitizeHex(stored.appearance?.accent),
         railExpanded: stored.appearance?.railExpanded ??
           DEFAULT_PREFERENCES.appearance.railExpanded,
+        uiDensity: sanitizeUiDensity(stored.appearance?.uiDensity),
+        zoom: sanitizeStop(
+          stored.appearance?.zoom,
+          ZOOM_STOPS,
+          DEFAULT_PREFERENCES.appearance.zoom,
+        ),
       },
       menu: {
         channels: { pinned },

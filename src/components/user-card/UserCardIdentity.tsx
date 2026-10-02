@@ -1,5 +1,4 @@
 import { createMemo, Show } from "solid-js";
-import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import { feeds } from "../../lib/stores/feeds.ts";
 import type { FeedMessage, User } from "../../lib/types/index.ts";
 import BadgeBox from "../ui/BadgeBox.tsx";
@@ -48,11 +47,6 @@ export default function UserCardIdentity(props: Props) {
           />
         </Show>
         <BadgeBox badges={latestBadges()} channelBadges={channelBadges()} />
-        <Show when={props.user && feedUserNickname(props.user!.login)}>
-          <span class="text-ink-faint text-small font-medium truncate min-w-0">
-            ({props.user!.displayName})
-          </span>
-        </Show>
       </div>
     </div>
   );

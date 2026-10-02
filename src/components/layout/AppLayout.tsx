@@ -8,6 +8,7 @@ import Boundary from "../ui/Boundary.tsx";
 import Rail from "../rail/Rail.tsx";
 import Explore from "../explore/Explore.tsx";
 import ChatPanes from "./ChatPanes.tsx";
+import Readout from "./Readout.tsx";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 import { activeView } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
@@ -78,6 +79,7 @@ export default function AppLayout(props: AppLayoutProps) {
                     onJumpToMessage={c.jumpToMessage}
                   />
                 </Show>
+                <Readout />
               </main>
               <Show when={isOverlayOpen("quickSwitch")}>
                 <Suspense>

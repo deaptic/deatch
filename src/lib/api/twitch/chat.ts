@@ -89,6 +89,12 @@ export async function updateChatSettings(
   });
 }
 
+export function getUserChatColor(
+  options?: InvokeOptions,
+): Promise<string | null> {
+  return invokeCommand(commands.getUserChatColor, [], options);
+}
+
 export async function updateUserChatColor(
   params: UpdateUserChatColorParams,
   options?: InvokeOptions,

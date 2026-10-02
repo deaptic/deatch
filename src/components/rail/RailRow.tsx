@@ -3,6 +3,7 @@ import Badge from "../ui/Badge.tsx";
 import Tooltip from "../ui/Tooltip.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
+import { railRowHeight } from "./railRowHeight.ts";
 
 export type SubTone = "soft" | "live" | "positive" | "caution";
 
@@ -61,7 +62,7 @@ export default function RailRow(props: Props) {
           setTip({ x: r.right + 8, y: r.top + r.height / 2 });
         }}
         onMouseLeave={() => setTip(null)}
-        class={`group relative w-full h-14 flex px-2 text-left cursor-pointer ${
+        class={`group relative w-full ${railRowHeight()} flex px-2 text-left cursor-pointer ${
           props.dimmed ? "opacity-40" : ""
         }`}
       >

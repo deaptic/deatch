@@ -1,6 +1,5 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
 import {
-  feedUserNickname,
   feedUserOverrideNameColor,
   feedUserShowDisplayName,
 } from "../../lib/stores/preferences.ts";
@@ -27,8 +26,7 @@ export default function DisplayName(props: Props) {
   });
 
   const text = () =>
-    feedUserNickname(props.login) ??
-      (feedUserShowDisplayName() === false ? props.login : props.displayName);
+    feedUserShowDisplayName() === false ? props.login : props.displayName;
 
   const color = () =>
     feedUserOverrideNameColor() ||

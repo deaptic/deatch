@@ -25,7 +25,6 @@ import UserCard from "../user-card/UserCard.tsx";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
-import InputPopover from "../ui/InputPopover.tsx";
 import { moderatedChannels } from "../../lib/stores/users.ts";
 import type {
   FeedEvent as EventItem,
@@ -47,11 +46,8 @@ import {
   moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";
-import { createNicknameEditor } from "./createNicknameEditor.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import type { UserRef } from "../../lib/types/index.ts";
-
-const TILE_SCALE = 2.5;
 
 type Props = {
   broadcasterId: string;
@@ -85,7 +81,6 @@ export default function Chat(props: Props) {
   >();
   const eventMenu = createPopover<{ item: EventItem }>();
   const userCard = createPopover<{ chatterId: string }>();
-  const nickname = createNicknameEditor();
   const fontSize = createFontSizeWheel();
 
   const [replyTo, setReplyTo] = createSignal<
@@ -307,11 +302,6 @@ export default function Chat(props: Props) {
         flush
         density={feedDensity()}
         class="text-(length:--chat-size)"
-        style={{
-          "--chat-size": `${feedFontSize()}px`,
-          "--chat-tile": `${feedFontSize() * TILE_SCALE}px`,
-          "--chat-two-lines": "2lh",
-        }}
         onWheel={fontSize.onWheel}
         onContextMenu={(x, y, msg) => messageMenu.open(x, y, { msg })}
         onReply={startReply}
@@ -322,13 +312,6 @@ export default function Chat(props: Props) {
         onShowUserCard={openUserCard}
         onUserContextMenu={openUserContextMenu}
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
-        header={
-          <Show when={fontSize.flash()}>
-            <div class="absolute top-3 right-4 z-20 bg-overlay border border-line text-ink text-title px-3 py-1.5 rounded-md pointer-events-none">
-              {feedFontSize()}px
-            </div>
-          </Show>
-        }
         footer={
           <Show when={feedApi()?.isPaused()}>
             <button
@@ -388,8 +371,6 @@ export default function Chat(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={userMenu.close}
             onModerate={(t) => setModAction(t)}
-            onEditNickname={(login, _displayName, x, y) =>
-              nickname.open(login, x, y)}
             onShowProfile={(x, y, userId) =>
               userCard.open(x, y, { chatterId: userId })}
             onMention={mentionUser}
@@ -433,19 +414,6 @@ export default function Chat(props: Props) {
             userName={ma().userName}
             broadcasterId={props.broadcasterId}
             onClose={() => setModAction(null)}
-          />
-        )}
-      </Show>
-      <Show when={nickname.state()}>
-        {(p) => (
-          <InputPopover
-            x={p().x}
-            y={p().y}
-            value={nickname.input()}
-            placeholder="Nickname"
-            onInput={nickname.setInput}
-            onSubmit={nickname.submit}
-            onClose={nickname.close}
           />
         )}
       </Show>

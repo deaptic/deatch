@@ -10,7 +10,6 @@ import {
 } from "solid-js";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
-import { feedUserNickname } from "../../lib/stores/preferences.ts";
 import * as users from "../../lib/services/users.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Artwork from "../ui/Artwork.tsx";
@@ -23,7 +22,6 @@ type UserSuggestion = {
   login: string;
   displayName: string;
   color: string;
-  nickname?: string;
 };
 
 type Popup = {
@@ -39,11 +37,8 @@ function renderUserItem(s: UserSuggestion): JSX.Element {
         class="font-semibold text-left truncate text-(--name)"
         style={{ "--name": s.color || "var(--color-ink)" }}
       >
-        {s.nickname ?? s.displayName}
+        {s.displayName}
       </span>
-      <Show when={s.nickname}>
-        <span class="text-ink-soft text-small truncate">({s.displayName})</span>
-      </Show>
       <span class="flex-1" />
       <span class="text-small font-semibold shrink-0 text-ink-soft">
         {s.displayName.toLowerCase() !== s.login ? s.login : ""}
@@ -99,8 +94,13 @@ export default function CommandComposer(props: Props) {
     );
   }
 
-  function fillUserSlot(idx: number, raw: string, id: string, label: string) {
-    patchSlot(idx, { raw, resolved: id, displayLabel: label, error: null });
+  function fillUserSlot(idx: number, displayName: string, id: string) {
+    patchSlot(idx, {
+      raw: displayName,
+      resolved: id,
+      displayLabel: displayName,
+      error: null,
+    });
   }
 
   createEffect(() => {
@@ -126,9 +126,7 @@ export default function CommandComposer(props: Props) {
     const starts: Ranked[] = [];
     const contains: Ranked[] = [];
     for (const c of bucket.values()) {
-      const nickname = feedUserNickname(c.login);
       const fields = [c.login.toLowerCase(), c.displayName.toLowerCase()];
-      if (nickname) fields.push(nickname.toLowerCase());
       const startsAny = q === "" || fields.some((f) => f.startsWith(q));
       const containsAny = !startsAny && fields.some((f) => f.includes(q));
       if (!startsAny && !containsAny) continue;
@@ -137,7 +135,6 @@ export default function CommandComposer(props: Props) {
         login: c.login,
         displayName: c.displayName,
         color: c.color,
-        nickname,
         lastSeen: c.lastSeen,
       };
       (startsAny ? starts : contains).push(ranked);
@@ -235,7 +232,7 @@ export default function CommandComposer(props: Props) {
         patchSlot(idx, { error: `User not found: ${login}` });
         return false;
       }
-      fillUserSlot(idx, u.displayName, u.id, u.displayName);
+      fillUserSlot(idx, u.displayName, u.id);
       return true;
     } catch (e) {
       console.error("user lookup failed", e);
@@ -367,7 +364,7 @@ export default function CommandComposer(props: Props) {
   }
 
   function selectUser(s: UserSuggestion) {
-    fillUserSlot(activeIdx(), s.displayName, s.id, s.nickname ?? s.displayName);
+    fillUserSlot(activeIdx(), s.displayName, s.id);
     void advance();
   }
 

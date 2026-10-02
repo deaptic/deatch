@@ -2,6 +2,7 @@ type Props = {
   checked: boolean;
   onChange: (value: boolean) => void;
   label?: string;
+  disabled?: boolean;
 };
 
 export default function Toggle(props: Props) {
@@ -11,8 +12,9 @@ export default function Toggle(props: Props) {
       role="switch"
       aria-checked={props.checked}
       aria-label={props.label}
+      disabled={props.disabled}
       onClick={() => props.onChange(!props.checked)}
-      class={`relative shrink-0 w-10 h-5.5 rounded-full cursor-pointer transition-colors duration-quick ${
+      class={`relative shrink-0 w-10 h-5.5 rounded-full cursor-pointer transition-colors duration-quick disabled:opacity-40 disabled:cursor-not-allowed ${
         props.checked ? "bg-accent" : "bg-line"
       }`}
     >

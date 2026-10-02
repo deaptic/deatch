@@ -28,4 +28,5 @@ Deno.test("labels each key of a combo for display", () => {
   assertEquals(keyLabels("alt-up"), ["Alt", "↑"]);
   assertEquals(keyLabels("enter"), ["Enter"]);
   assertEquals(keyLabels("ctrl-,"), ["Ctrl", ","]);
+  assertEquals(keyLabels("ctrl--"), ["Ctrl", "-"]);
 });
