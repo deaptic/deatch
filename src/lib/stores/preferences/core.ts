@@ -52,7 +52,6 @@ export type UserPreferences = {
     events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
     users: {
-      muted: string[];
       showDisplayName: boolean;
       overrideNameColor: string;
     };
@@ -188,9 +187,6 @@ function load(): UserPreferences {
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {
-          muted:
-            (stored.feed?.users?.muted ?? DEFAULT_PREFERENCES.feed.users.muted)
-              .filter((s) => /^\d+$/.test(s)),
           showDisplayName: stored.feed?.users?.showDisplayName ??
             DEFAULT_PREFERENCES.feed.users.showDisplayName,
           overrideNameColor: stored.feed?.users?.overrideNameColor ??

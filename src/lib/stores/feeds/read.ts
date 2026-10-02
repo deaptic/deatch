@@ -1,6 +1,6 @@
 import { feeds, getEntryId, lastVisible, setFeeds } from "./core.ts";
 import { selectedChannel } from "../view.ts";
-import { feedEvents, feedUserMuted } from "../preferences.ts";
+import { feedEvents } from "../preferences.ts";
 import { NOTICE_TO_EVENT } from "../../constants.ts";
 import type { FeedEntry } from "../../types/feed.ts";
 
@@ -43,11 +43,5 @@ export function isFeedEntryVisible(item: FeedEntry): boolean {
     const k = NOTICE_TO_EVENT[item.notice_type];
     return !k || feedEvents()[k]?.show !== false;
   }
-  if (item.automod_hold) {
-    return !feedUserMuted().includes(item.chatter_user_id);
-  }
-  return (
-    feedEvents().message?.show !== false &&
-    !feedUserMuted().includes(item.chatter_user_id)
-  );
+  return !!item.automod_hold || feedEvents().message?.show !== false;
 }

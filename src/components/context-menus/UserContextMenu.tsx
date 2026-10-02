@@ -1,15 +1,10 @@
-import { AtSign, Ban, Megaphone, User, VolumeX } from "lucide-solid";
+import { AtSign, Ban, Megaphone, User } from "lucide-solid";
 import { Show } from "solid-js";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
-import {
-  feedUserMuted,
-  muteUser,
-  unmuteUser,
-} from "../../lib/stores/preferences.ts";
 
 export type UserContextTarget = {
   userId: string;
@@ -30,8 +25,6 @@ type Props = UserContextTarget & {
 };
 
 export default function UserContextMenu(props: Props) {
-  const muted = () => feedUserMuted().includes(props.userId);
-
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
@@ -63,19 +56,6 @@ export default function UserContextMenu(props: Props) {
           }}
         />
       </Show>
-      <MenuDivider />
-      <MenuItem
-        label={muted()
-          ? `Unmute ${props.userDisplayName}`
-          : `Mute ${props.userDisplayName}`}
-        danger={!muted()}
-        icon={<VolumeX />}
-        onClick={() => {
-          if (muted()) unmuteUser(props.userId);
-          else muteUser(props.userId);
-          props.onClose();
-        }}
-      />
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
