@@ -16,7 +16,7 @@ const KEY_LABELS: Record<string, string> = {
 
 export function keyLabels(combo: string): string[] {
   return combo
-    .split("-")
+    .split(/-(?!$)/)
     .map((k) => KEY_LABELS[k] ?? (k.length === 1 ? k.toUpperCase() : k));
 }
 

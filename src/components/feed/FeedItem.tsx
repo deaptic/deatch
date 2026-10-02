@@ -42,7 +42,11 @@ export default function FeedItem(props: Props) {
     parts.annotations?.some((a) => a.connector) ?? false;
 
   const spacing = () =>
-    !comfortable() ? "py-1" : props.continued ? "py-0.5" : "mt-1.5 py-0.5";
+    !comfortable()
+      ? "py-1"
+      : props.continued
+      ? "py-0.5"
+      : "mt-(--feed-group-gap) py-0.5";
 
   const alignment = () =>
     !comfortable()

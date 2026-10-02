@@ -1,5 +1,4 @@
 import { chattersByChannel } from "../../lib/stores/users.ts";
-import { feedUserNickname } from "../../lib/stores/preferences.ts";
 
 type Options = {
   value: () => string;
@@ -66,8 +65,6 @@ function matchesPrefix(
   c: { login: string; displayName: string },
   query: string,
 ): boolean {
-  if (c.login.toLowerCase().startsWith(query)) return true;
-  if (c.displayName.toLowerCase().startsWith(query)) return true;
-  const nick = feedUserNickname(c.login);
-  return nick !== undefined && nick.toLowerCase().startsWith(query);
+  return c.login.toLowerCase().startsWith(query) ||
+    c.displayName.toLowerCase().startsWith(query);
 }

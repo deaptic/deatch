@@ -36,6 +36,20 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
   return globalBadgesPromise;
 }
 
+function toBadgeMap(sets: BadgeSet[]): BadgeMap {
+  const map: BadgeMap = {};
+  for (const set of sets) {
+    for (const v of set.versions) {
+      map[`${set.setId}/${v.id}`] = { url: v.url4x, title: v.title };
+    }
+  }
+  return map;
+}
+
+export async function loadGlobal(): Promise<BadgeMap> {
+  return toBadgeMap(await loadGlobalBadges());
+}
+
 export function loadChannel(broadcasterId: string): Promise<BadgeMap> {
   const cached = channelBadgesPromise.get(broadcasterId);
   if (cached) {
@@ -46,12 +60,7 @@ export function loadChannel(broadcasterId: string): Promise<BadgeMap> {
     loadGlobalBadges(),
     getChannelChatBadges({ broadcasterId }).catch(() => [] as BadgeSet[]),
   ]).then(([global, channel]) => {
-    const map: BadgeMap = {};
-    for (const set of [...global, ...channel]) {
-      for (const v of set.versions) {
-        map[`${set.setId}/${v.id}`] = { url: v.url4x, title: v.title };
-      }
-    }
+    const map = toBadgeMap([...global, ...channel]);
     setBadges(broadcasterId, map);
     return map;
   });

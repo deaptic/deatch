@@ -2,6 +2,7 @@
   "feed": {
     "fontSize": 16,
     "density": "compact",
+    "groupSpacing": 8,
     "showTimestamp": false,
     "showDeletedContent": false,
     "showCopypasta": false,
@@ -27,8 +28,7 @@
     "users": {
       "muted": [],
       "showDisplayName": true,
-      "overrideNameColor": "",
-      "nicknames": {}
+      "overrideNameColor": ""
     }
   },
   "notifications": {
@@ -48,7 +48,9 @@
   "appearance": {
     "theme": "system",
     "accent": null,
-    "railExpanded": false
+    "railExpanded": false,
+    "uiDensity": "default",
+    "zoom": 100
   },
   "menu": {
     "channels": {

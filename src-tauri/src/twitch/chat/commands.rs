@@ -78,6 +78,12 @@ pub async fn update_chat_settings(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn get_user_chat_color(twitch: State<'_, Twitch>) -> Result<Option<String>> {
+    chat::get_user_chat_color(&twitch.authed().await?).await
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn update_user_chat_color(
     twitch: State<'_, Twitch>,
     params: UpdateUserChatColorParams,

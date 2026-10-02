@@ -60,6 +60,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::bits::commands::get_cheermotes,
             twitch::chat::commands::get_chat_settings,
             twitch::chat::commands::update_chat_settings,
+            twitch::chat::commands::get_user_chat_color,
             twitch::chat::commands::update_user_chat_color,
             twitch::chat::commands::get_user_emotes,
             twitch::chat::commands::get_global_emotes,

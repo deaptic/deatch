@@ -1,6 +1,11 @@
 import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
 import type { Density } from "../../constants/density.ts";
 import {
+  clampToStops,
+  FONT_SIZE_STOPS,
+  GROUP_SPACING_STOPS,
+} from "../../constants/accessibility.ts";
+import {
   type BadgePref,
   type EventPref,
   persist,
@@ -10,6 +15,7 @@ import {
 
 export const feedFontSize = () => prefs.feed.fontSize;
 export const feedDensity = () => prefs.feed.density;
+export const feedGroupSpacing = () => prefs.feed.groupSpacing;
 export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
@@ -19,7 +25,12 @@ export const feedEvents = () =>
   prefs.feed.events as Record<EventKey, EventPref>;
 
 export function setFeedFontSize(value: number) {
-  setPrefs("feed", "fontSize", Math.min(22, Math.max(12, value)));
+  setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STOPS));
+  persist();
+}
+
+export function setFeedGroupSpacing(value: number) {
+  setPrefs("feed", "groupSpacing", clampToStops(value, GROUP_SPACING_STOPS));
   persist();
 }
 

@@ -2,31 +2,12 @@ import { banUser } from "../../../lib/api/twitch/moderation.ts";
 import { createClip } from "../../../lib/api/twitch/clips.ts";
 import { getStreams } from "../../../lib/api/twitch/streams.ts";
 import { getFollowedChannels } from "../../../lib/api/twitch/channels.ts";
-import {
-  chattersByChannel,
-  user,
-  userCache,
-} from "../../../lib/stores/users.ts";
-import {
-  muteUser,
-  removeUserNickname,
-  setUserNickname,
-  unmuteUser,
-} from "../../../lib/stores/preferences.ts";
+import { user } from "../../../lib/stores/users.ts";
+import { muteUser, unmuteUser } from "../../../lib/stores/preferences.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
 import { formatDuration } from "../../../lib/format/stream.ts";
 import { Time } from "../../../lib/utils/time.ts";
 import type { Command } from "../types.ts";
-
-function loginFromUserId(userId: string): string | null {
-  const cached = userCache()[userId];
-  if (cached) return cached.login;
-  for (const bucket of chattersByChannel.values()) {
-    const c = bucket.get(userId);
-    if (c) return c.login;
-  }
-  return null;
-}
 
 export const deatchCommands: Command[] = [
   {
@@ -155,48 +136,6 @@ export const deatchCommands: Command[] = [
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch followage");
       }
-    },
-  },
-  {
-    name: "nickname",
-    description: "Set a private nickname for a user",
-    role: "regular",
-    options: [
-      {
-        name: "username",
-        description: "User to rename",
-        type: "user",
-        required: true,
-      },
-      {
-        name: "nickname",
-        description: "Name to display instead",
-        type: "string",
-        required: true,
-      },
-    ],
-    execute: async ({ username, nickname }) => {
-      const login = loginFromUserId(username as string);
-      if (!login) return;
-      setUserNickname(login, nickname as string);
-    },
-  },
-  {
-    name: "unnickname",
-    description: "Clear a user's custom nickname",
-    role: "regular",
-    options: [
-      {
-        name: "username",
-        description: "User to reset",
-        type: "user",
-        required: true,
-      },
-    ],
-    execute: async ({ username }) => {
-      const login = loginFromUserId(username as string);
-      if (!login) return;
-      removeUserNickname(login);
     },
   },
   {

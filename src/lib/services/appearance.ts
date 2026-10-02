@@ -54,6 +54,18 @@ export function apply({ theme, accent }: Appearance): void {
   setApplied((n) => n + 1);
 }
 
+const TILE_SCALE = 2.5;
+
+type FeedSizing = { fontSize: number; groupSpacing: number };
+
+export function applyFeedSizing({ fontSize, groupSpacing }: FeedSizing): void {
+  const style = document.documentElement.style;
+  style.setProperty("--chat-size", `${fontSize}px`);
+  style.setProperty("--chat-tile", `${fontSize * TILE_SCALE}px`);
+  style.setProperty("--chat-two-lines", "2lh");
+  style.setProperty("--feed-group-gap", `${groupSpacing}px`);
+}
+
 export function token(name: string): string {
   applied();
   let value = tokens.get(name);

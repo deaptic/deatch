@@ -1,10 +1,11 @@
 import { Show } from "solid-js";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
 import Skeleton from "../ui/Skeleton.tsx";
+import { railRowHeight } from "./railRowHeight.ts";
 
 export default function RailRowSkeleton() {
   return (
-    <div class="h-14 flex items-center gap-3 px-4">
+    <div class={`${railRowHeight()} flex items-center gap-3 px-4`}>
       <Skeleton shape="circle" class="size-10 shrink-0" />
       <Show when={appearanceRailExpanded()}>
         <div class="flex-1 flex flex-col gap-1.5">
