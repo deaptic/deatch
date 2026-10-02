@@ -78,12 +78,11 @@ export function createRailChannels(
     }
   }
 
+  const trackedIds = new Set<string>();
+
   async function loadOfflineInfo(candidates: string[], streams: Stream[]) {
     const liveIds = new Set(streams.map((s) => s.user.id));
-    const self = user();
-    const ids = [...candidates, ...(self ? [self.id] : [])].filter(
-      (id) => !liveIds.has(id),
-    );
+    const ids = candidates.filter((id) => !liveIds.has(id));
     if (ids.length === 0) return;
     try {
       rememberChannelInfo(
@@ -120,8 +119,14 @@ export function createRailChannels(
         : [];
       const streams = [...followed, ...extraStreams];
 
+      trackedIds.clear();
+      for (const id of [...followedIds, ...extraIdList]) trackedIds.add(id);
       setLiveStreams(streams);
-      void loadOfflineInfo(extraIdList, streams);
+      const self = user();
+      void loadOfflineInfo(
+        self ? [...extraIdList, self.id] : extraIdList,
+        streams,
+      );
       const data: User[] = [];
       if (streams.length > 0) {
         const found = await users.get({ ids: streams.map((s) => s.user.id) });
@@ -167,8 +172,27 @@ export function createRailChannels(
     onCleanup(() => clearInterval(id));
   });
 
-  createEffect(on(watchedChannel, () => fetchLive(), { defer: true }));
-  createEffect(on(selectedChannel, () => fetchLive(), { defer: true }));
+  async function track(id: string) {
+    if (trackedIds.has(id)) return;
+    trackedIds.add(id);
+    try {
+      const streams = await getStreamsFromIds({ userIds: [id] });
+      if (streams.length > 0) {
+        setLiveStreams((prev) => [
+          ...prev.filter((s) => s.user.id !== id),
+          ...streams,
+        ]);
+      }
+      await loadOfflineInfo([id], streams);
+    } catch {
+      trackedIds.delete(id);
+    }
+  }
+
+  createEffect(on(watchedChannel, (ch) => ch && track(ch.id), { defer: true }));
+  createEffect(
+    on(selectedChannel, (ch) => ch && track(ch.id), { defer: true }),
+  );
 
   return {
     loadingPinned,
