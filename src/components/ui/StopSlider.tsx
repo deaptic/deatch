@@ -51,8 +51,9 @@ export default function StopSlider(props: Props) {
         disabled={props.disabled}
         onInput={(e) => setDragging(stopAt(e.currentTarget))}
         onChange={(e) => {
+          const stop = stopAt(e.currentTarget);
           setDragging(null);
-          props.onChange(stopAt(e.currentTarget));
+          props.onChange(stop);
         }}
         class="w-full accent-accent cursor-pointer disabled:cursor-not-allowed"
       />
