@@ -88,6 +88,17 @@ Deno.test("replies, holds, rewards and first messages stand alone", () => {
   assertEquals(continued(rows), [false, false, false, false, false]);
 });
 
+Deno.test("measures the window from the group's first message", () => {
+  const step = GROUP_WINDOW_MS / 2;
+  const rows = layoutFeed([
+    msg("1", "maya", T0),
+    msg("2", "maya", T0 + step),
+    msg("3", "maya", T0 + step * 2),
+    msg("4", "maya", T0 + step * 3),
+  ], true);
+  assertEquals(continued(rows), [false, true, false, true]);
+});
+
 Deno.test("cheers stand alone", () => {
   const rows = layoutFeed([
     msg("1", "maya", T0),
