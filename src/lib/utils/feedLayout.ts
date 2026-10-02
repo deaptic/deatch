@@ -1,7 +1,7 @@
 import type { FeedEntry, FeedMessage } from "../types/feed.ts";
 import { daysBetween } from "./time.ts";
 
-export const GROUP_WINDOW_MS = 5 * 60 * 1000;
+export const GROUP_WINDOW_MS = 7 * 60 * 1000;
 
 const LOCALE = "en-GB";
 
@@ -12,25 +12,30 @@ function standsAlone(msg: FeedMessage): boolean {
     msg.cheer || msg.first_message);
 }
 
-function continues(prev: FeedEntry, item: FeedEntry): boolean {
+function continues(
+  prev: FeedEntry,
+  item: FeedEntry,
+  groupStart: number,
+): boolean {
   return prev.kind === "message" && item.kind === "message" &&
     prev.chatter_user_id === item.chatter_user_id &&
     !prev.automod_hold && !standsAlone(item) &&
-    item.timestamp - prev.timestamp < GROUP_WINDOW_MS;
+    item.timestamp - groupStart < GROUP_WINDOW_MS;
 }
 
 export function layoutFeed(
   items: readonly FeedEntry[],
   group: boolean,
 ): RowLayout[] {
+  let groupStart = 0;
   return items.map((item, i) => {
     const prev = items[i - 1];
-    if (!prev) return { dayStart: false, continued: false };
-    const dayStart = daysBetween(prev.timestamp, item.timestamp) !== 0;
-    return {
-      dayStart,
-      continued: group && !dayStart && continues(prev, item),
-    };
+    const dayStart = !!prev &&
+      daysBetween(prev.timestamp, item.timestamp) !== 0;
+    const continued = group && !!prev && !dayStart &&
+      continues(prev, item, groupStart);
+    if (!continued) groupStart = item.timestamp;
+    return { dayStart, continued };
   });
 }
 

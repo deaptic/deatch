@@ -114,10 +114,11 @@ text colour.
   "Cheered N bits", reward, "First message", then the reply line with a
   connector down to the message. Notes start where the message text starts.
 - **Two layouts.** Compact is one line per message with an optional timestamp
-  column. Comfortable groups a chatter's messages (same chatter, under five
-  minutes, same day, nothing between) under one header with a tile in a gutter;
-  the tile sits centred on the first two lines of every row. Replies, holds,
-  cheers, rewards, and first messages always start a group.
+  column. Comfortable groups a chatter's messages (same chatter, within seven
+  minutes of the group's first message, same day, nothing between) under one
+  header with a tile in a gutter; the tile sits centred on the first two lines
+  of every row. Replies, holds, cheers, rewards, and first messages always start
+  a group.
 - **Cheermotes** render inline at emote size with the amount after them in the
   tier's colour, clamped like a chatter colour; under reduced motion they show
   their still image.
