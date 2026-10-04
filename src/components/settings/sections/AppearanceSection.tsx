@@ -13,7 +13,7 @@ export default function AppearanceSection() {
   return (
     <PageBody
       title="Appearance"
-      lede="How Deatch and chat look. Changes apply immediately."
+      lede="How Deatch looks. Changes show straight away."
     >
       <Card>
         <CardLabel>Preview</CardLabel>

@@ -53,7 +53,7 @@ export default function AdvancedSection() {
       <Card>
         <SettingsRow
           label="Developer mode"
-          description="Extra debug info and copy-payload actions in menus."
+          description="Extra technical details and copy options in menus."
         >
           <Toggle
             label="Developer mode"
@@ -63,7 +63,7 @@ export default function AdvancedSection() {
         </SettingsRow>
         <SettingsRow
           label="Show logs"
-          description="Surface log messages as toasts."
+          description="Show technical log messages as pop-ups."
         >
           <Toggle
             label="Show logs"

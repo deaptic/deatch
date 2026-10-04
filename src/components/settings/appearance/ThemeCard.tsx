@@ -22,7 +22,10 @@ export default function ThemeCard() {
   return (
     <Card>
       <CardLabel>Theme</CardLabel>
-      <SettingsRow label="Theme" description="Follow Windows, or pick one.">
+      <SettingsRow
+        label="Theme"
+        description="Match Windows, or pick dark or light."
+      >
         <Segmented
           value={appearanceTheme()}
           options={THEME_OPTIONS}
@@ -31,7 +34,7 @@ export default function ThemeCard() {
       </SettingsRow>
       <SettingsRow
         label="Accent"
-        description="Used for selection, buttons, and mentions of you."
+        description="The colour of selected things, buttons, and messages that mention you."
       >
         <ColorPicker
           swatchColor="var(--color-accent)"

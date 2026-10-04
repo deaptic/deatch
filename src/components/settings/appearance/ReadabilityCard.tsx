@@ -20,10 +20,10 @@ const px = (value: number) => `${value}px`;
 export default function ReadabilityCard() {
   return (
     <Card>
-      <CardLabel>Text readability</CardLabel>
+      <CardLabel>Text</CardLabel>
       <SettingsRow
         label="Chat text size"
-        description="Also Alt + scroll over the chat."
+        description="You can also hold Alt and scroll over the chat."
         stacked
       >
         <StopSlider
@@ -36,7 +36,7 @@ export default function ReadabilityCard() {
       </SettingsRow>
       <SettingsRow
         label="Show display names"
-        description="Display names instead of logins."
+        description="Show names with the capitals chatters picked, like MayaOnAir instead of mayaonair."
       >
         <Toggle
           label="Show display names"
@@ -46,7 +46,7 @@ export default function ReadabilityCard() {
       </SettingsRow>
       <SettingsRow
         label="One colour for all names"
-        description="Reset to bring back each chatter's own colour."
+        description="Give every name the same colour. Reset to use each chatter's own colour."
       >
         <ColorPicker
           swatchColor={feedUserOverrideNameColor() || "transparent"}

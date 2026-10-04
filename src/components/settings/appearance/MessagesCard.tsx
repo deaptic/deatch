@@ -20,7 +20,7 @@ export default function MessagesCard() {
       <CardLabel>Messages</CardLabel>
       <SettingsRow
         label="Show timestamps"
-        description="Time next to every message in the default display. Spacious always shows it."
+        description="Show the time next to each message. The spacious layout always shows it."
       >
         <Toggle
           label="Show timestamps"
@@ -30,11 +30,11 @@ export default function MessagesCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label="Real avatars"
-        description="Twitch profile pictures in the spacious display. Off shows generated ones and makes no requests."
+        label="Profile pictures"
+        description="Show chatters' Twitch pictures in the spacious layout. Off uses a generated picture for everyone."
       >
         <Toggle
-          label="Real avatars"
+          label="Profile pictures"
           disabled={feedDensity() !== "comfortable"}
           checked={feedShowAvatars()}
           onChange={setFeedShowAvatars}
@@ -42,7 +42,7 @@ export default function MessagesCard() {
       </SettingsRow>
       <SettingsRow
         label="Show deleted messages"
-        description="Keep the text visible, dimmed, instead of hiding it."
+        description="Keep deleted messages readable, dimmed, instead of hiding what they said."
       >
         <Toggle
           label="Show deleted messages"
@@ -52,7 +52,7 @@ export default function MessagesCard() {
       </SettingsRow>
       <SettingsRow
         label="Copypasta button"
-        description="Copy any message into your composer from its hover toolbar."
+        description="Add a button to each message that copies it into your message box."
       >
         <Toggle
           label="Copypasta button"

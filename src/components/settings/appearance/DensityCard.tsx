@@ -37,10 +37,10 @@ const percent = (value: number) => `${value}%`;
 export default function DensityCard() {
   return (
     <Card>
-      <CardLabel>Visual density</CardLabel>
+      <CardLabel>Layout</CardLabel>
       <SettingsRow
-        label="UI density"
-        description="Space between channels in the rail."
+        label="Channel list spacing"
+        description="How much room each channel takes in the list on the left."
       >
         <Segmented
           value={appearanceUiDensity()}
@@ -49,8 +49,8 @@ export default function DensityCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label="Chat message display"
-        description="Default fits more chat on screen. Spacious groups each chatter's messages under their name. Alt+D switches."
+        label="Message layout"
+        description="Default fits the most chat on screen. Spacious groups each chatter's messages under their name and picture. Alt+D switches."
       >
         <Segmented
           value={feedDensity()}
@@ -60,7 +60,7 @@ export default function DensityCard() {
       </SettingsRow>
       <SettingsRow
         label="Space between message groups"
-        description="Applies to the spacious display."
+        description="Only in the spacious layout."
         stacked
       >
         <StopSlider
@@ -74,7 +74,7 @@ export default function DensityCard() {
       </SettingsRow>
       <SettingsRow
         label="Zoom"
-        description="Size of the whole app. Also Ctrl + and Ctrl −, Ctrl 0 resets."
+        description="Make everything bigger or smaller. Ctrl + and Ctrl − also work, Ctrl 0 resets."
         stacked
       >
         <StopSlider

@@ -22,7 +22,7 @@ export default function NotificationsSection() {
       <Card>
         <SettingsRow
           label="Highlight keywords"
-          description="Messages containing these light up like mentions and land in your inbox. Use * as a wildcard: drop* matches drops and dropped."
+          description="Messages with these words light up like mentions and land in your inbox. Use * for part of a word: drop* matches drops and dropped."
           stacked
         >
           <ChipInput placeholder="Add a keyword" onAdd={addFeedKeyword} />
@@ -41,7 +41,7 @@ export default function NotificationsSection() {
         </SettingsRow>
         <SettingsRow
           label="Mention sound"
-          description="Play a sound on mentions and keyword matches."
+          description="Play a sound when someone mentions you or uses one of your keywords."
         >
           <Toggle
             label="Mention sound"
