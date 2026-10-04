@@ -1,9 +1,9 @@
-import { Blobatar } from "@blobatar/solid";
 import { Show } from "solid-js";
 import type { FeedMessage } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
 import { chatterLook } from "./chatterLook.ts";
+import ChatterPicture from "./ChatterPicture.tsx";
 
 type Props = {
   reply: NonNullable<FeedMessage["reply"]>;
@@ -26,19 +26,12 @@ export default function ReplyLine(props: Props) {
           const look = () => chatterLook(parentColor());
           return (
             <span
-              class={`h-lh aspect-square shrink-0 overflow-hidden rounded-xs ${
+              class={`h-lh aspect-square shrink-0 grid overflow-hidden rounded-xs ${
                 look().tint ? "bg-(--tile)/16" : "bg-raised"
               }`}
               style={look().tint ? { "--tile": look().tint } : undefined}
             >
-              <Blobatar
-                name={id()}
-                hue={look().hue}
-                tone={look().tone}
-                palette={look().palette}
-                background={false}
-                class="size-full"
-              />
+              <ChatterPicture userId={id()} color={parentColor()} />
             </span>
           );
         }}
