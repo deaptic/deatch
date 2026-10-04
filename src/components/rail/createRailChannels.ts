@@ -19,6 +19,7 @@ import { errorMessage } from "../../lib/utils/error.ts";
 import {
   rememberChannelInfo,
   setLiveStreams,
+  userFromRef,
 } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
@@ -63,7 +64,7 @@ export function createRailChannels(
       return;
     }
     try {
-      const found = await users.get({ ids });
+      const found = await users.get(ids);
       const next: Record<string, User> = {};
       for (const u of found) {
         next[u.id] = u;
@@ -117,6 +118,7 @@ export function createRailChannels(
         : [];
       const streams = [...followed, ...extraStreams];
 
+      users.set(streams.map((s) => userFromRef(s.user)));
       trackedIds.clear();
       for (const id of [...followedIds, ...extraIdList]) trackedIds.add(id);
       setLiveStreams(streams);
@@ -127,7 +129,7 @@ export function createRailChannels(
       );
       const data: User[] = [];
       if (streams.length > 0) {
-        const found = await users.get({ ids: streams.map((s) => s.user.id) });
+        const found = await users.get(streams.map((s) => s.user.id));
         const byId = new Map(found.map((u) => [u.id, u]));
         for (const s of followed) {
           const u = byId.get(s.user.id);
@@ -150,7 +152,7 @@ export function createRailChannels(
       (id) => !pinnedMeta[id] && !liveById().get(id),
     );
     if (missing.length === 0) return;
-    users.get({ ids: missing })
+    users.get(missing)
       .then((users) => {
         const updates: Record<string, User> = {};
         for (const u of users) {

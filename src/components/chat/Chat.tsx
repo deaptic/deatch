@@ -64,9 +64,11 @@ async function resolveIdentity(
   const { id, login, displayName } = identity;
   if (id && login && displayName) return { id, login, displayName };
   try {
-    const params = id ? { ids: [id] } : login ? { logins: [login] } : null;
-    if (!params) return null;
-    const [u] = await users.get(params);
+    const [u] = id
+      ? await users.get([id])
+      : login
+      ? await users.fetch({ logins: [login] })
+      : [];
     if (!u) return null;
     return { id: u.id, login: u.login, displayName: u.displayName };
   } catch {

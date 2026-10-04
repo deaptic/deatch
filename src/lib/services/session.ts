@@ -30,7 +30,7 @@ export async function restore(): Promise<void> {
   const user = await restoreSession().catch(() => null);
   if (user) {
     setUser(user);
-    users.remember([user]);
+    users.set([user]);
   }
   setAuthChecked(true);
 }

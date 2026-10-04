@@ -33,7 +33,7 @@ async function drainPending() {
   if (pendingCurrent) {
     const slug = pendingCurrent;
     try {
-      const [ch] = await users.get({ logins: [slug] }, { silent: true });
+      const [ch] = await users.fetch({ logins: [slug] }, { silent: true });
       if (ch && pendingCurrent === slug) {
         if (watchedChannel()?.id !== ch.id) setWatchedChannel(ch);
         pendingCurrent = null;
@@ -44,7 +44,7 @@ async function drainPending() {
   if (pendingFetch.size > 0) {
     const toFetch = Array.from(pendingFetch);
     try {
-      const fresh = await users.get({ logins: toFetch }, { silent: true });
+      const fresh = await users.fetch({ logins: toFetch }, { silent: true });
       for (const u of fresh) {
         pendingFetch.delete(u.login);
       }

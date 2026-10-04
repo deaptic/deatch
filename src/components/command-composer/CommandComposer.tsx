@@ -227,7 +227,7 @@ export default function CommandComposer(props: Props) {
     if (!login) return false;
     setResolving(true);
     try {
-      const u = (await users.get({ logins: [login] }))[0];
+      const u = (await users.fetch({ logins: [login] }))[0];
       if (!u) {
         patchSlot(idx, { error: `User not found: ${login}` });
         return false;

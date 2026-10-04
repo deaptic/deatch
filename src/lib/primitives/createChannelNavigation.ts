@@ -38,7 +38,7 @@ export function createChannelNavigation(): ChannelNavigation {
   createEffect(
     on(selectedChannel, (ch) => {
       if (!ch) return;
-      users.remember([ch]);
+      users.set([ch]);
       ensureFeed(ch.id);
       markSeen(ch.id);
       markChannelMentionsRead(ch.id);

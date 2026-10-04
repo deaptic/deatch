@@ -377,7 +377,7 @@ export const twitchCommands: Command[] = [
     ],
     execute: async ({ channel }, ctx) => {
       const id = channel as string;
-      const user = (await users.get({ ids: [id] }))[0];
+      const user = (await users.get([id]))[0];
       await raid.begin(ctx.broadcasterId, {
         id,
         login: user?.login ?? "",

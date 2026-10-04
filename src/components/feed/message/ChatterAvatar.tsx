@@ -27,7 +27,7 @@ export default function ChatterAvatar(props: Props) {
   const showingImage = () => !!url() && loaded() && !failed();
 
   createEffect(on([() => props.userId, feedShowAvatars], ([id, show]) => {
-    if (show) users.request(id);
+    if (show) users.get([id]).catch(() => {});
   }));
 
   createEffect(on(url, () => {
