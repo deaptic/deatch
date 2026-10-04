@@ -1,6 +1,6 @@
 import { onCleanup, onMount } from "solid-js";
 import * as backendEvents from "../events/index.ts";
-import * as avatars from "../services/avatars.ts";
+import * as users from "../services/users.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as eventsub from "../services/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
@@ -11,7 +11,7 @@ export function createServices(): void {
   onMount(() => {
     const stops = [
       backendEvents.start(),
-      avatars.start(),
+      users.start(),
       chatActivity.start(),
       eventsub.start(),
       sevenTv.start(),

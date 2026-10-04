@@ -13,7 +13,6 @@ import {
   searchChannels,
 } from "../../lib/api/twitch/search.ts";
 import * as users from "../../lib/services/users.ts";
-import { rememberUser } from "../../lib/stores/channels.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import Artwork from "../ui/Artwork.tsx";
@@ -57,7 +56,7 @@ export default function SearchResults(props: Props) {
       broadcasterType: "normal",
       createdAt: "",
     };
-    rememberUser(user);
+    users.remember([user]);
     props.onSelect(user);
   }
 
@@ -70,7 +69,6 @@ export default function SearchResults(props: Props) {
         addToast("Channel not found", "error");
         return;
       }
-      rememberUser(channel);
       props.onSelect(channel);
     } catch (e) {
       addToast(errorMessage(e), "error");

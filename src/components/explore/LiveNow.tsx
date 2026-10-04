@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import type { Stream } from "../../lib/types/index.ts";
-import { liveStreams, rememberUser } from "../../lib/stores/channels.ts";
+import { liveStreams } from "../../lib/stores/channels.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import {
   exploreLanguage,
@@ -63,9 +63,7 @@ export default function LiveNow(props: Props) {
         after: reset ? undefined : cursor() ?? undefined,
       });
       if (data.length) {
-        users.get({ ids: data.map((s) => s.user.id) })
-          .then((users) => users.forEach(rememberUser))
-          .catch(() => {});
+        users.get({ ids: data.map((s) => s.user.id) }).catch(() => {});
       }
       setRemote((prev) => (reset ? data : [...prev, ...data]));
       setCursor(pagination.cursor);

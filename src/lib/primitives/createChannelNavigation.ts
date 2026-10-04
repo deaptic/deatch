@@ -1,6 +1,7 @@
 import { createEffect, on } from "solid-js";
 import type { User } from "../types/index.ts";
-import { rememberUser, usersById } from "../stores/channels.ts";
+import { knownUser } from "../stores/users.ts";
+import * as users from "../services/users.ts";
 import {
   selectedChannel,
   setSelectedChannel,
@@ -25,7 +26,7 @@ export function createChannelNavigation(): ChannelNavigation {
   }
 
   function jumpToMessage(channelId: string, messageId: string) {
-    const ch = usersById.get(channelId);
+    const ch = knownUser(channelId);
     const needsSwitch = !!ch && selectedChannel()?.id !== channelId;
     if (needsSwitch && ch) selectChannel(ch);
     if (needsSwitch) setTimeout(() => scrollToMessage(messageId), 100);
@@ -37,7 +38,7 @@ export function createChannelNavigation(): ChannelNavigation {
   createEffect(
     on(selectedChannel, (ch) => {
       if (!ch) return;
-      rememberUser(ch);
+      users.remember([ch]);
       ensureFeed(ch.id);
       markSeen(ch.id);
       markChannelMentionsRead(ch.id);

@@ -1,8 +1,8 @@
 import { createEffect, createSignal, on, Show } from "solid-js";
 import { Blobatar } from "@blobatar/solid";
 import "blobatar/motion.css";
-import * as avatars from "../../../lib/services/avatars.ts";
-import { avatarFor } from "../../../lib/stores/avatars.ts";
+import * as users from "../../../lib/services/users.ts";
+import { knownUser } from "../../../lib/stores/users.ts";
 import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
 import { sizedAvatarUrl } from "../../../lib/utils/avatar.ts";
 import FeedTile from "../FeedTile.tsx";
@@ -21,11 +21,12 @@ export default function ChatterAvatar(props: Props) {
   const look = () => chatterLook(props.color);
   const [loaded, setLoaded] = createSignal(false);
   const [failed, setFailed] = createSignal(false);
-  const url = () => (feedShowAvatars() && avatarFor(props.userId)) || null;
+  const url = () =>
+    (feedShowAvatars() && knownUser(props.userId)?.profileImageUrl) || null;
   const showingImage = () => !!url() && loaded() && !failed();
 
   createEffect(() => {
-    if (feedShowAvatars()) avatars.request(props.userId);
+    if (feedShowAvatars()) users.request(props.userId);
   });
 
   createEffect(on(url, () => {

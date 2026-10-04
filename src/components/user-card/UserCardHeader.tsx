@@ -6,6 +6,7 @@ import {
   getFollowedChannels,
 } from "../../lib/api/twitch/channels.ts";
 import {
+  knownUser,
   moderatedChannels,
   user as currentUser,
 } from "../../lib/stores/users.ts";
@@ -39,10 +40,12 @@ export default function UserCardHeader(props: Props) {
 
   createEffect(() => {
     const id = props.chatterId;
-    setUser(null);
+    setUser(knownUser(id) ?? null);
     setFollower(null);
-    users.get({ ids: [id] })
-      .then((users) => setUser(users[0] ?? null))
+    users.refresh({ ids: [id] }, { silent: true })
+      .then((found) => {
+        if (found[0]) setUser(found[0]);
+      })
       .catch(() => {});
     const me = currentUser();
     if (me && id === me.id) {

@@ -4,6 +4,7 @@ import type { Stream } from "../types/index.ts";
 import type { User, UserRef } from "../types/index.ts";
 import { pinnedChannels } from "./preferences.ts";
 import { watchWarmedChannels } from "./watch.ts";
+import { knownUser } from "./users.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 
@@ -34,22 +35,6 @@ export function channelInfoFor(userId: string): ChannelInfo | undefined {
   return channelInfoById()[userId];
 }
 
-export const usersById = new Map<string, User>();
-
-const [usersVersion, setUsersVersion] = createSignal(0);
-
-const MAX_REMEMBERED_USERS = 5000;
-
-export function rememberUser(u: User) {
-  usersById.set(u.id, u);
-  while (usersById.size > MAX_REMEMBERED_USERS) {
-    const oldest = usersById.keys().next().value;
-    if (oldest === undefined) break;
-    usersById.delete(oldest);
-  }
-  setUsersVersion((v) => v + 1);
-}
-
 export function streamForUserId(userId: string): Stream | undefined {
   return liveStreams().find((s) => s.user.id === userId);
 }
@@ -68,11 +53,11 @@ export function channelsInOrder(): User[] {
     }
   };
   for (const id of pinnedIds) {
-    push(usersById.get(id) ?? userFromStream(live, id));
+    push(knownUser(id) ?? userFromStream(live, id));
   }
   for (const s of live) {
     if (pinnedSet.has(s.user.id)) continue;
-    push(usersById.get(s.user.id) ?? userFromRef(s.user));
+    push(knownUser(s.user.id) ?? userFromRef(s.user));
   }
   return ordered;
 }
@@ -95,6 +80,5 @@ export function userFromRef(ref: UserRef): User {
 }
 
 export function resolveUser(ref: UserRef): User {
-  usersVersion();
-  return usersById.get(ref.id) ?? userFromRef(ref);
+  return knownUser(ref.id) ?? userFromRef(ref);
 }

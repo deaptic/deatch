@@ -1,7 +1,7 @@
 import { events } from "../bindings.ts";
 import { unlistenAll } from "./listen.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
-import { usersById } from "../stores/channels.ts";
+import { knownUser } from "../stores/users.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
 import * as backlog from "../services/backlog.ts";
 import * as chatSettings from "../services/chatSettings.ts";
@@ -46,7 +46,7 @@ export function start(): () => void {
     events.eventSubRecovered.listen((e) => {
       for (const id of e.payload.broadcasterIds) {
         void chatSettings.load(id);
-        const login = usersById.get(id)?.login;
+        const login = knownUser(id)?.login;
         if (login) backlog.fillGap(id, login, e.payload.since);
       }
     }),

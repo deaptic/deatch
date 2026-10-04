@@ -130,8 +130,9 @@ text colour.
   Until then, without one, or with real avatars off, it is a blobatar drawn
   locally from the user ID, in the hue of their name colour (grey without one),
   tinted behind with the same colour; the blobatar moves only while its row is
-  hovered or selected. Avatars are looked up in batches of up to 100, at most
-  one request a second and twenty a minute, and cached for a week.
+  hovered or selected. Chatters are looked up in batches of up to 100, at most
+  one request a second and twenty a minute, into the one users table that every
+  Get Users call updates and that is kept for a week.
 - **Deleted messages stay quiet:** muted text and "(deleted)", nothing added
   that would paint the feed or move it during a mass cleanup.
 - **Time:** clock time today, "Yesterday at" then the date for older; hovering

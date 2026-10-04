@@ -12,11 +12,7 @@ import { Portal } from "solid-js/web";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import * as users from "../../lib/services/users.ts";
-import {
-  channelsInOrder,
-  rememberUser,
-  streamForUserId,
-} from "../../lib/stores/channels.ts";
+import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchWarmedChannels } from "../../lib/stores/watch.ts";
 import { user } from "../../lib/stores/users.ts";
@@ -111,7 +107,6 @@ export default function QuickSwitch(props: Props) {
         addToast("No channel with that name", "error");
         return;
       }
-      rememberUser(found);
       if (pin) pinChannel(found.id);
       props.onSelect(found);
       props.onClose();

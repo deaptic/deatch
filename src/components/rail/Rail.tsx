@@ -1,7 +1,6 @@
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { rememberUser } from "../../lib/stores/channels.ts";
 import {
   advancedDeveloperMode,
   appearanceRailExpanded,
@@ -196,7 +195,6 @@ export default function Rail(props: Props) {
         return;
       }
       channels.cachePinned(u);
-      rememberUser(u);
       pinChannel(u.id);
       closeAdd();
     } catch (e) {
@@ -208,7 +206,7 @@ export default function Rail(props: Props) {
 
   function pin(ch: User) {
     channels.cachePinned(ch);
-    rememberUser(ch);
+    users.remember([ch]);
     pinChannel(ch.id);
   }
 

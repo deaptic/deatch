@@ -1,8 +1,7 @@
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
-import { user } from "../stores/users.ts";
-import { usersById } from "../stores/channels.ts";
+import { knownUser, user } from "../stores/users.ts";
 import { recordMention } from "../stores/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { matchesAnyKeyword } from "../utils/wordMatch.ts";
@@ -46,7 +45,7 @@ export function start(): () => void {
       const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
       if (!isMention && !keywordHit) return;
 
-      const ch = usersById.get(raw.broadcaster_user_id);
+      const ch = knownUser(raw.broadcaster_user_id);
       recordMention({
         id: raw.message_id,
         channelId: raw.broadcaster_user_id,
