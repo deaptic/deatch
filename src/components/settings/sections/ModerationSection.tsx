@@ -18,7 +18,7 @@ export default function ModerationSection() {
       <Card>
         <SettingsRow
           label="Shout out raiders"
-          description="Automatically shout out incoming raids in channels you own or mod."
+          description="Automatically shout out anyone who raids a channel you own or moderate."
         >
           <Toggle
             label="Shout out raiders"
@@ -28,7 +28,7 @@ export default function ModerationSection() {
         </SettingsRow>
         <SettingsRow
           label="Hide moderation actions"
-          description="Remove ban, timeout, and delete controls everywhere."
+          description="Hide the ban, timeout, and delete buttons everywhere."
         >
           <Toggle
             label="Hide moderation actions"
