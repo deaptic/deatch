@@ -76,7 +76,7 @@ export default function EmotePicker(props: Props) {
         ids.add(e.ownerId);
       }
     }
-    if (ids.size) users.get({ ids: [...ids] });
+    if (ids.size) users.get([...ids]).catch(() => {});
   });
 
   const channelSections = createMemo(() =>

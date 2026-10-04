@@ -40,7 +40,7 @@ export default function UserCardHeader(props: Props) {
 
   createEffect(on(() => props.chatterId, (id) => {
     setFollower(null);
-    users.refresh({ ids: [id] }, { silent: true }).catch(() => {});
+    users.fetch({ ids: [id] }, { silent: true }).catch(() => {});
     const me = currentUser();
     if (me && id === me.id) {
       getFollowedChannels(

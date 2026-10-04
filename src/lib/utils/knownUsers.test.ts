@@ -4,8 +4,11 @@ import type { User } from "../types/index.ts";
 import {
   freshEntries,
   isComplete,
+  isKnownUser,
+  isUserId,
   mergeUser,
   requestsInWindow,
+  sameUser,
 } from "./knownUsers.ts";
 
 const full: User = {
@@ -42,8 +45,9 @@ Deno.test("mergeUser takes a complete user from Twitch as is", () => {
   assertEquals(mergeUser(full, renamed), renamed);
 });
 
-Deno.test("mergeUser takes the update when nothing is known yet", () => {
-  assertEquals(mergeUser(undefined, full), full);
+Deno.test("sameUser compares every field", () => {
+  assertEquals(sameUser(full, { ...full }), true);
+  assertEquals(sameUser(full, { ...full, description: "" }), false);
 });
 
 Deno.test("isComplete is true only for users Twitch has returned", () => {
@@ -51,10 +55,32 @@ Deno.test("isComplete is true only for users Twitch has returned", () => {
   assertEquals(isComplete({ ...full, createdAt: "" }), false);
 });
 
+Deno.test("isUserId accepts Twitch numeric ids only", () => {
+  assertEquals(isUserId("52679773"), true);
+  assertEquals(isUserId("maya"), false);
+  assertEquals(isUserId(""), false);
+});
+
+Deno.test("isKnownUser rejects malformed stored entries", () => {
+  assertEquals(isKnownUser({ user: full, at: 1 }), true);
+  assertEquals(isKnownUser(null), false);
+  assertEquals(isKnownUser({ user: null, at: 1 }), false);
+  assertEquals(isKnownUser({ user: full }), false);
+});
+
 Deno.test("freshEntries drops expired entries and keeps the newest up to max", () => {
   const at = (n: number) => ({ user: full, at: n });
   const entries = { old: at(0), a: at(900), b: at(950), c: at(990) };
   assertEquals(Object.keys(freshEntries(entries, 1000, 500, 2)), ["c", "b"]);
+});
+
+Deno.test("freshEntries never drops kept ids", () => {
+  const at = (n: number) => ({ user: full, at: n });
+  const entries = { me: at(0), a: at(900), b: at(950), c: at(990) };
+  assertEquals(
+    Object.keys(freshEntries(entries, 1000, 500, 2, new Set(["me"]))),
+    ["me", "c"],
+  );
 });
 
 Deno.test("requestsInWindow keeps only requests inside the window", () => {

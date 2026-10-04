@@ -12,7 +12,7 @@ export function start(): () => void {
       setWaiting(false);
       setDeviceCode(null);
       setUser(e.payload);
-      users.remember([e.payload]);
+      users.set([e.payload]);
       addToast("Connected to Twitch!", "success");
     }),
     events.authFailed.listen((e) => {

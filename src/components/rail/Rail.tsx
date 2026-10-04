@@ -187,7 +187,7 @@ export default function Rail(props: Props) {
     if (!login) return;
     setAddLoading(true);
     try {
-      const [u] = await users.get({ logins: [login] });
+      const [u] = await users.fetch({ logins: [login] });
       if (!u) throw new Error("User not found");
       if (pinnedChannels().includes(u.id)) {
         addToast("Already pinned", "error");
@@ -206,7 +206,7 @@ export default function Rail(props: Props) {
 
   function pin(ch: User) {
     channels.cachePinned(ch);
-    users.remember([ch]);
+    users.set([ch]);
     pinChannel(ch.id);
   }
 

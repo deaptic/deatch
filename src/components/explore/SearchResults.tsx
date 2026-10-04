@@ -56,7 +56,7 @@ export default function SearchResults(props: Props) {
       broadcasterType: "normal",
       createdAt: "",
     };
-    users.remember([user]);
+    users.set([user]);
     props.onSelect(user);
   }
 
@@ -64,7 +64,7 @@ export default function SearchResults(props: Props) {
     const login = debounced().toLowerCase();
     if (!login) return;
     try {
-      const [channel] = await users.get({ logins: [login] });
+      const [channel] = await users.fetch({ logins: [login] });
       if (!channel) {
         addToast("Channel not found", "error");
         return;

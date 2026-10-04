@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { createStore } from "solid-js/store";
 import type { User, UserRef } from "../types/index.ts";
 import type { KnownUser } from "../utils/knownUsers.ts";
 
@@ -16,12 +17,12 @@ export function isModOfChannel(broadcasterId: string): boolean {
   return moderatedChannels().some((m) => m.id === broadcasterId);
 }
 
-export const [knownUsers, setKnownUsers] = createSignal<
+export const [knownUsers, setKnownUsers] = createStore<
   Record<string, KnownUser>
 >({});
 
 export function knownUser(id: string): User | undefined {
-  return knownUsers()[id]?.user;
+  return knownUsers[id]?.user;
 }
 
 export type Chatter = {

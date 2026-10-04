@@ -17,7 +17,7 @@ type Props = {
 export default function Inbox(props: Props) {
   createEffect(() => {
     const ids = [...new Set(mentions().map((m) => m.chatterId))];
-    if (ids.length) users.get({ ids }).catch(() => {});
+    if (ids.length) users.get(ids).catch(() => {});
   });
 
   return (

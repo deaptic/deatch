@@ -63,7 +63,7 @@ export default function LiveNow(props: Props) {
         after: reset ? undefined : cursor() ?? undefined,
       });
       if (data.length) {
-        users.get({ ids: data.map((s) => s.user.id) }).catch(() => {});
+        users.get(data.map((s) => s.user.id)).catch(() => {});
       }
       setRemote((prev) => (reset ? data : [...prev, ...data]));
       setCursor(pagination.cursor);

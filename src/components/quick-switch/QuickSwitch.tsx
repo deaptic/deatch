@@ -102,7 +102,7 @@ export default function QuickSwitch(props: Props) {
     }
     setSearching(true);
     try {
-      const found = (await users.get({ logins: [row.query] }))[0];
+      const found = (await users.fetch({ logins: [row.query] }))[0];
       if (!found) {
         addToast("No channel with that name", "error");
         return;
