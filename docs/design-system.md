@@ -126,9 +126,12 @@ text colour.
 - **Cheermotes** render inline at emote size with the amount after them in the
   tier's colour, clamped like a chatter colour; under reduced motion they show
   their still image.
-- **The chatter tile** is a blobatar drawn locally from the user ID, in the hue
-  of their name colour (grey without one), tinted behind with the same colour.
-  It moves only while its row is hovered or selected.
+- **The chatter tile** shows the chatter's Twitch avatar once it has loaded.
+  Until then, without one, or with real avatars off, it is a blobatar drawn
+  locally from the user ID, in the hue of their name colour (grey without one),
+  tinted behind with the same colour; the blobatar moves only while its row is
+  hovered or selected. Avatars are looked up in batches of up to 100, at most
+  one request a second and twenty a minute, and cached for a week.
 - **Deleted messages stay quiet:** muted text and "(deleted)", nothing added
   that would paint the feed or move it during a mass cleanup.
 - **Time:** clock time today, "Yesterday at" then the date for older; hovering

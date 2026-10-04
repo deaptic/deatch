@@ -16,14 +16,33 @@ pub struct GetUsersParams {
     pub logins: Vec<String>,
 }
 
+/// Helix caps ids + logins at 100 per request.
+const MAX_PER_REQUEST: usize = 100;
+
 pub async fn get_users(twitch: &Authed<'_>, params: GetUsersParams) -> Result<Vec<User>> {
     let ids: Vec<types::UserId> = params.ids.into_iter().map(|id| id.0.into()).collect();
     let logins: Vec<types::UserName> = params.logins.into_iter().map(Into::into).collect();
+    if ids.len() + logins.len() <= MAX_PER_REQUEST {
+        return fetch(twitch, &ids, &logins).await;
+    }
+    let mut users = Vec::new();
+    for chunk in ids.chunks(MAX_PER_REQUEST) {
+        users.extend(fetch(twitch, chunk, &[]).await?);
+    }
+    for chunk in logins.chunks(MAX_PER_REQUEST) {
+        users.extend(fetch(twitch, &[], chunk).await?);
+    }
+    Ok(users)
+}
 
+async fn fetch(
+    twitch: &Authed<'_>,
+    ids: &[types::UserId],
+    logins: &[types::UserName],
+) -> Result<Vec<User>> {
     let mut request = GetUsersRequest::new();
-    request.id = (&*ids).into();
-    request.login = (&*logins).into();
-
+    request.id = ids.into();
+    request.login = logins.into();
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(response.data.into_iter().map(User::from).collect())
 }
