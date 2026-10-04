@@ -48,6 +48,7 @@ export type UserPreferences = {
     showTimestamp: boolean;
     showDeletedContent: boolean;
     showCopypasta: boolean;
+    showAvatars: boolean;
     keywords: string[];
     events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
@@ -179,6 +180,8 @@ function load(): UserPreferences {
           DEFAULT_PREFERENCES.feed.showDeletedContent,
         showCopypasta: stored.feed?.showCopypasta ??
           DEFAULT_PREFERENCES.feed.showCopypasta,
+        showAvatars: stored.feed?.showAvatars ??
+          DEFAULT_PREFERENCES.feed.showAvatars,
         keywords: Array.isArray(stored.feed?.keywords)
           ? stored.feed!.keywords.filter((k): k is string =>
             typeof k === "string" && k.trim().length > 0

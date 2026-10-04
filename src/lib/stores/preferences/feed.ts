@@ -19,6 +19,7 @@ export const feedGroupSpacing = () => prefs.feed.groupSpacing;
 export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
+export const feedShowAvatars = () => prefs.feed.showAvatars;
 export const feedBadges = () =>
   prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () =>
@@ -50,6 +51,11 @@ export function setFeedShowTimestamp(value: boolean) {
 
 export function setFeedShowDeletedContent(value: boolean) {
   setPrefs("feed", "showDeletedContent", value);
+  persist();
+}
+
+export function setFeedShowAvatars(value: boolean) {
+  setPrefs("feed", "showAvatars", value);
   persist();
 }
 

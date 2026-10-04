@@ -4,9 +4,11 @@ import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import {
   feedDensity,
+  feedShowAvatars,
   feedShowCopypasta,
   feedShowDeletedContent,
   feedShowTimestamp,
+  setFeedShowAvatars,
   setFeedShowCopypasta,
   setFeedShowDeletedContent,
   setFeedShowTimestamp,
@@ -25,6 +27,17 @@ export default function MessagesCard() {
           disabled={feedDensity() === "comfortable"}
           checked={feedShowTimestamp()}
           onChange={setFeedShowTimestamp}
+        />
+      </SettingsRow>
+      <SettingsRow
+        label="Real avatars"
+        description="Twitch profile pictures in the spacious display. Off shows generated ones and makes no requests."
+      >
+        <Toggle
+          label="Real avatars"
+          disabled={feedDensity() !== "comfortable"}
+          checked={feedShowAvatars()}
+          onChange={setFeedShowAvatars}
         />
       </SettingsRow>
       <SettingsRow

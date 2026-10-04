@@ -6,6 +6,7 @@
     "showTimestamp": false,
     "showDeletedContent": false,
     "showCopypasta": false,
+    "showAvatars": true,
     "keywords": [],
     "events": {
       "message": { "show": true },
