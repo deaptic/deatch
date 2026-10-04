@@ -8,7 +8,27 @@ import { matchesAnyKeyword } from "../utils/wordMatch.ts";
 import { mapChatMessage } from "./chat-mapper.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
+import * as users from "../services/users.ts";
+import { userFromRef } from "../stores/channels.ts";
 import * as triggers from "../services/triggers.ts";
+
+function noteRename(raw: RawChatMessage) {
+  const known = knownUser(raw.chatter_user_id);
+  if (
+    !known ||
+    (known.login === raw.chatter_user_login &&
+      known.displayName === raw.chatter_user_name)
+  ) {
+    return;
+  }
+  users.set([
+    userFromRef({
+      id: raw.chatter_user_id,
+      login: raw.chatter_user_login,
+      displayName: raw.chatter_user_name,
+    }),
+  ]);
+}
 
 export function start(): () => void {
   return unlistenAll([
@@ -18,6 +38,7 @@ export function start(): () => void {
       if (appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts))) {
         chatActivity.record(raw.broadcaster_user_id, ts);
       }
+      noteRename(raw);
       if (raw.channel_points_custom_reward_id) {
         noteChatRedemption(
           raw.broadcaster_user_id,
