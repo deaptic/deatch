@@ -1,5 +1,5 @@
 import type { Follow, User } from "../../lib/types/index.ts";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, on } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import {
   getChannelFollowers,
@@ -28,7 +28,7 @@ type Props = {
 };
 
 export default function UserCardHeader(props: Props) {
-  const [user, setUser] = createSignal<User | null>(null);
+  const user = (): User | null => knownUser(props.chatterId) ?? null;
   const [follower, setFollower] = createSignal<Follower | null>(null);
 
   const canQueryFollowers = () => {
@@ -38,15 +38,9 @@ export default function UserCardHeader(props: Props) {
     return moderatedChannels().some((c) => c.id === props.broadcasterId);
   };
 
-  createEffect(() => {
-    const id = props.chatterId;
-    setUser(knownUser(id) ?? null);
+  createEffect(on(() => props.chatterId, (id) => {
     setFollower(null);
-    users.refresh({ ids: [id] }, { silent: true })
-      .then((found) => {
-        if (found[0]) setUser(found[0]);
-      })
-      .catch(() => {});
+    users.refresh({ ids: [id] }, { silent: true }).catch(() => {});
     const me = currentUser();
     if (me && id === me.id) {
       getFollowedChannels(
@@ -71,7 +65,7 @@ export default function UserCardHeader(props: Props) {
     )
       .then((res) => setFollower(res.data[0] ?? null))
       .catch(() => {});
-  });
+  }));
 
   return (
     <div
