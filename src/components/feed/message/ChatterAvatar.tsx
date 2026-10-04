@@ -1,4 +1,4 @@
-import { createEffect, createSignal, on, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import { Blobatar } from "@blobatar/solid";
 import "blobatar/motion.css";
 import * as users from "../../../lib/services/users.ts";
@@ -21,8 +21,9 @@ export default function ChatterAvatar(props: Props) {
   const look = () => chatterLook(props.color);
   const [loaded, setLoaded] = createSignal(false);
   const [failed, setFailed] = createSignal(false);
-  const url = () =>
-    (feedShowAvatars() && knownUser(props.userId)?.profileImageUrl) || null;
+  const url = createMemo(() =>
+    (feedShowAvatars() && knownUser(props.userId)?.profileImageUrl) || null
+  );
   const showingImage = () => !!url() && loaded() && !failed();
 
   createEffect(on([() => props.userId, feedShowAvatars], ([id, show]) => {
