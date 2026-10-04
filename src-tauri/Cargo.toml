@@ -1,6 +1,6 @@
 [package]
 name = "deatch"
-version = "0.3.15"
+version = "0.3.16"
 description = "Deatch"
 authors = ["you"]
 edition = "2021"
