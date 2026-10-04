@@ -1,5 +1,5 @@
 import type { Mention } from "../../lib/stores/inbox.ts";
-import { userCache } from "../../lib/stores/users.ts";
+import { knownUser } from "../../lib/stores/users.ts";
 import Avatar from "../ui/Avatar.tsx";
 
 type Props = {
@@ -16,7 +16,7 @@ function formatRelative(ms: number): string {
 }
 
 export default function InboxItem(props: Props) {
-  const avatarUrl = () => userCache()[props.mention.chatterId]?.profileImageUrl;
+  const avatarUrl = () => knownUser(props.mention.chatterId)?.profileImageUrl;
 
   return (
     <button

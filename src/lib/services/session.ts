@@ -1,4 +1,5 @@
 import { setUser } from "../stores/users.ts";
+import * as users from "./users.ts";
 import { setAuthChecked, setDeviceCode, setWaiting } from "../stores/auth.ts";
 import {
   getDeviceCode,
@@ -27,6 +28,9 @@ export async function logout(): Promise<void> {
 
 export async function restore(): Promise<void> {
   const user = await restoreSession().catch(() => null);
-  if (user) setUser(user);
+  if (user) {
+    setUser(user);
+    users.remember([user]);
+  }
   setAuthChecked(true);
 }

@@ -2,7 +2,6 @@ import { events } from "../bindings.ts";
 import { unlistenAll } from "./listen.ts";
 import * as users from "../services/users.ts";
 import { watchRequestState } from "../api/watch.ts";
-import { rememberUser } from "../stores/channels.ts";
 import {
   setWatchConnected,
   setWatchedChannel,
@@ -36,7 +35,6 @@ async function drainPending() {
     try {
       const [ch] = await users.get({ logins: [slug] }, { silent: true });
       if (ch && pendingCurrent === slug) {
-        rememberUser(ch);
         if (watchedChannel()?.id !== ch.id) setWatchedChannel(ch);
         pendingCurrent = null;
       }
@@ -48,7 +46,6 @@ async function drainPending() {
     try {
       const fresh = await users.get({ logins: toFetch }, { silent: true });
       for (const u of fresh) {
-        rememberUser(u);
         pendingFetch.delete(u.login);
       }
       const current = watchWarmedChannels();

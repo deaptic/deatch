@@ -2,7 +2,7 @@ import { createMemo, createRoot, createSignal } from "solid-js";
 import type { EmoteEntry } from "../types/index.ts";
 import type { Emote, UserEmote } from "../types/index.ts";
 import type { User } from "../types/index.ts";
-import { userCache } from "./users.ts";
+import { knownUser } from "./users.ts";
 
 export type { EmoteEntry };
 export type EmoteMap = Record<string, string>;
@@ -139,7 +139,7 @@ export function computeChannelSections(
 }
 
 /// Builds the `Global` tab sections: one section per channel the user subs to
-/// (using `userCache` for display names), then global Twitch, 7TV, BTTV, FFZ.
+/// (using known users for display names), then global Twitch, 7TV, BTTV, FFZ.
 /// Emotes already attributed to the active broadcaster are excluded.
 export function computeGlobalSections(
   broadcaster: User | null,
@@ -160,11 +160,10 @@ export function computeGlobalSections(
     }
   }
 
-  const cache = userCache();
   const subscriptionSections: EmoteSection[] = [...subGroupMap.entries()]
     .map(([ownerId, emotes]) => ({
       id: `channel-${ownerId}`,
-      label: cache[ownerId]?.displayName ?? ownerId,
+      label: knownUser(ownerId)?.displayName ?? ownerId,
       emotes: sortByName(emotes),
     }))
     .sort((a, b) => a.label.localeCompare(b.label));

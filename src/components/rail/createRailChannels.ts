@@ -18,7 +18,6 @@ import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import {
   rememberChannelInfo,
-  rememberUser,
   setLiveStreams,
 } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
@@ -68,7 +67,6 @@ export function createRailChannels(
       const next: Record<string, User> = {};
       for (const u of found) {
         next[u.id] = u;
-        rememberUser(u);
       }
       setPinnedMeta(reconcile(next));
     } catch (e) {
@@ -131,7 +129,6 @@ export function createRailChannels(
       if (streams.length > 0) {
         const found = await users.get({ ids: streams.map((s) => s.user.id) });
         const byId = new Map(found.map((u) => [u.id, u]));
-        for (const u of found) rememberUser(u);
         for (const s of followed) {
           const u = byId.get(s.user.id);
           if (u) data.push(u);
@@ -158,7 +155,6 @@ export function createRailChannels(
         const updates: Record<string, User> = {};
         for (const u of users) {
           updates[u.id] = u;
-          rememberUser(u);
         }
         setPinnedMeta(updates);
       })

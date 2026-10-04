@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import type { User, UserRef } from "../types/index.ts";
+import type { KnownUser } from "../utils/knownUsers.ts";
 
 export const [user, setUser] = createSignal<User | null>(null);
 export const [moderatedChannels, setModeratedChannels] = createSignal<
@@ -15,23 +16,12 @@ export function isModOfChannel(broadcasterId: string): boolean {
   return moderatedChannels().some((m) => m.id === broadcasterId);
 }
 
-const [userCacheSig, setUserCacheSig] = createSignal<Record<string, User>>({});
-export const userCache = userCacheSig;
+export const [knownUsers, setKnownUsers] = createSignal<
+  Record<string, KnownUser>
+>({});
 
-const MAX_CACHED_USERS = 5000;
-
-export function cacheUsers(users: User[]) {
-  setUserCacheSig((prev) => {
-    const next = { ...prev };
-    for (const u of users) next[u.id] = u;
-    const keys = Object.keys(next);
-    if (keys.length > MAX_CACHED_USERS) {
-      for (const k of keys.slice(0, keys.length - MAX_CACHED_USERS)) {
-        delete next[k];
-      }
-    }
-    return next;
-  });
+export function knownUser(id: string): User | undefined {
+  return knownUsers()[id]?.user;
 }
 
 export type Chatter = {
