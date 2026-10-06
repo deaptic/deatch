@@ -15,7 +15,7 @@ pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
         Error::Auth("stored credentials missing refresh token, please re-authenticate".into())
     })?;
     let token = UserToken::from_existing_or_refresh_token(
-        &twitch.http,
+        &twitch.oauth,
         AccessToken::new(creds.access_token),
         RefreshToken::new(refresh_token),
         ClientId::new(CLIENT_ID.to_string()),

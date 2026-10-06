@@ -10,6 +10,7 @@
     "npm:@tauri-apps/api@^2.12.0": "2.12.0",
     "npm:@tauri-apps/cli@^2.12.0": "2.12.0",
     "npm:@tauri-apps/plugin-autostart@^2.6.0": "2.6.0",
+    "npm:@tauri-apps/plugin-log@^2.10.0": "2.10.0",
     "npm:@tauri-apps/plugin-opener@^2.6.0": "2.6.0",
     "npm:@tauri-apps/plugin-process@^2.4.0": "2.4.0",
     "npm:@tauri-apps/plugin-updater@^2.13.0": "2.13.0",
@@ -676,6 +677,12 @@
         "@tauri-apps/api"
       ]
     },
+    "@tauri-apps/plugin-log@2.10.0": {
+      "integrity": "sha512-IHMspJx/fDA+8q8O6MTbrKffkemSDa1I5iXRhnLrLVnOd7xK4bAosyQbWcjnpPA7E+c6BMkpsE2kESHhkiBrDg==",
+      "dependencies": [
+        "@tauri-apps/api"
+      ]
+    },
     "@tauri-apps/plugin-opener@2.6.0": {
       "integrity": "sha512-KIl9qkBGyAUrbzfCtdk+NRPTXUOwpMyUKsKN57H6/qA0q8auVywXpfUyWClqX6I/iH8PHmqAUa/KK9YZPWVQew==",
       "dependencies": [
@@ -1238,6 +1245,7 @@
         "npm:@tauri-apps/api@^2.12.0",
         "npm:@tauri-apps/cli@^2.12.0",
         "npm:@tauri-apps/plugin-autostart@^2.6.0",
+        "npm:@tauri-apps/plugin-log@^2.10.0",
         "npm:@tauri-apps/plugin-opener@^2.6.0",
         "npm:@tauri-apps/plugin-process@^2.4.0",
         "npm:@tauri-apps/plugin-updater@^2.13.0",

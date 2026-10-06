@@ -1,10 +1,12 @@
 use std::collections::HashSet;
+use std::fmt::Display;
 use std::time::Duration;
 
 use futures_util::{Sink, SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::Manager;
+use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
@@ -19,12 +21,21 @@ const OP_DISPATCH: u8 = 0;
 const OP_SUBSCRIBE: u8 = 35;
 const OP_UNSUBSCRIBE: u8 = 36;
 
+#[derive(Debug)]
 pub enum SevenTvOp {
     Subscribe(String),
     Unsubscribe(String),
 }
 
-pub struct SevenTvEvents(pub UnboundedSender<SevenTvOp>);
+pub struct SevenTvEvents(UnboundedSender<SevenTvOp>);
+
+impl SevenTvEvents {
+    pub fn request(&self, op: SevenTvOp) {
+        if let Err(SendError(op)) = self.0.send(op) {
+            log::error!("7tv events task stopped, dropped {op:?}");
+        }
+    }
+}
 
 pub fn spawn(app: tauri::AppHandle) {
     let (tx, rx) = unbounded_channel();
@@ -35,13 +46,18 @@ pub fn spawn(app: tauri::AppHandle) {
 async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
     let mut active: HashSet<String> = HashSet::new();
     loop {
-        let Ok((ws, _)) = connect_async(WS_URL).await else {
-            tokio::time::sleep(Duration::from_secs(5)).await;
-            continue;
+        let ws = match connect_async(WS_URL).await {
+            Ok((ws, _)) => ws,
+            Err(e) => {
+                log::warn!("7tv connect failed: {e}");
+                tokio::time::sleep(Duration::from_secs(5)).await;
+                continue;
+            }
         };
+        log::info!("7tv connected, resubscribing {} emote sets", active.len());
         let (mut write, mut read) = ws.split();
         for id in &active {
-            let _ = write.send(payload(OP_SUBSCRIBE, id)).await;
+            send(&mut write, payload(OP_SUBSCRIBE, id)).await;
         }
 
         loop {
@@ -52,9 +68,20 @@ async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
                 },
                 msg = read.next() => match msg {
                     Some(Ok(Message::Text(t))) => emit_update(&app, &t),
-                    Some(Ok(Message::Ping(p))) => { let _ = write.send(Message::Pong(p)).await; }
+                    Some(Ok(Message::Ping(p))) => send(&mut write, Message::Pong(p)).await,
+                    Some(Ok(Message::Close(frame))) => {
+                        log::info!("7tv closed by server: {frame:?}");
+                        break;
+                    }
                     Some(Ok(_)) => {}
-                    _ => break,
+                    Some(Err(e)) => {
+                        log::warn!("7tv socket error: {e}");
+                        break;
+                    }
+                    None => {
+                        log::info!("7tv socket ended");
+                        break;
+                    }
                 }
             }
         }
@@ -62,22 +89,32 @@ async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
     }
 }
 
-async fn apply<S: Sink<Message> + Unpin>(
-    write: &mut S,
-    active: &mut HashSet<String>,
-    op: SevenTvOp,
-) {
+async fn apply<S: Sink<Message> + Unpin>(write: &mut S, active: &mut HashSet<String>, op: SevenTvOp)
+where
+    S::Error: Display,
+{
     match op {
         SevenTvOp::Subscribe(id) => {
             if active.insert(id.clone()) {
-                let _ = write.send(payload(OP_SUBSCRIBE, &id)).await;
+                log::info!("7tv subscribe emote_set={id}");
+                send(write, payload(OP_SUBSCRIBE, &id)).await;
             }
         }
         SevenTvOp::Unsubscribe(id) => {
             if active.remove(&id) {
-                let _ = write.send(payload(OP_UNSUBSCRIBE, &id)).await;
+                log::info!("7tv unsubscribe emote_set={id}");
+                send(write, payload(OP_UNSUBSCRIBE, &id)).await;
             }
         }
+    }
+}
+
+async fn send<S: Sink<Message> + Unpin>(write: &mut S, message: Message)
+where
+    S::Error: Display,
+{
+    if let Err(e) = write.send(message).await {
+        log::warn!("7tv send failed: {e}");
     }
 }
 

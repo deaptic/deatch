@@ -1,3 +1,4 @@
+pub(super) mod client;
 pub mod commands;
 pub(super) mod credentials;
 mod device_code;
