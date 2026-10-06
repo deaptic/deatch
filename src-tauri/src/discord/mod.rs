@@ -85,7 +85,9 @@ pub async fn connect(state: &DiscordState, client_id: Option<String>) -> Result<
     client.connect().map_err(discord_error)?;
     let mut guard = lock(state)?;
     if let Some(mut prev) = guard.take() {
-        let _ = prev.close();
+        if let Err(e) = prev.close() {
+            log::warn!("discord close of previous client failed: {e}");
+        }
     }
     *guard = Some(client);
     Ok(())
@@ -94,7 +96,9 @@ pub async fn connect(state: &DiscordState, client_id: Option<String>) -> Result<
 pub async fn disconnect(state: &DiscordState) -> Result<()> {
     let mut guard = lock(state)?;
     if let Some(mut client) = guard.take() {
-        let _ = client.clear_activity();
+        if let Err(e) = client.clear_activity() {
+            log::warn!("discord clear activity failed: {e}");
+        }
         client.close().map_err(discord_error)?;
     }
     Ok(())

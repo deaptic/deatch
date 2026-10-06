@@ -73,11 +73,11 @@ pub async fn seventv_get_channel_emotes(
 #[tauri::command]
 #[specta::specta]
 pub fn seventv_subscribe_emote_set(state: State<SevenTvEvents>, params: EmoteSetParams) {
-    let _ = state.0.send(SevenTvOp::Subscribe(params.emote_set_id));
+    state.request(SevenTvOp::Subscribe(params.emote_set_id));
 }
 
 #[tauri::command]
 #[specta::specta]
 pub fn seventv_unsubscribe_emote_set(state: State<SevenTvEvents>, params: EmoteSetParams) {
-    let _ = state.0.send(SevenTvOp::Unsubscribe(params.emote_set_id));
+    state.request(SevenTvOp::Unsubscribe(params.emote_set_id));
 }

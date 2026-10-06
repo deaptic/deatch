@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
 use futures_util::StreamExt;
-use serde::Serialize;
-use tauri::Emitter;
 use twitch_api::eventsub::{Event, EventsubWebsocketData};
 
 use super::super::Twitch;
@@ -10,6 +8,7 @@ use super::envelope::EventEnvelope;
 use super::runner::ChannelSub;
 use super::subscribe::create_subscription;
 use super::EventKind;
+use crate::emit::emit_named;
 use crate::error::Result;
 
 /// Forwards an EventSub notification to the frontend wrapped in
@@ -20,20 +19,14 @@ macro_rules! forward {
     ($app:expr, $subs:expr, $notif:expr, $kind:expr, $timestamp:expr) => {
         if let twitch_api::eventsub::Message::Notification(msg) = $notif.message {
             if $subs.contains_key(msg.broadcaster_user_id.as_str()) {
-                emit_notification($app, $kind, EventEnvelope::new($timestamp, msg));
+                emit_named(
+                    $app,
+                    $kind.event_name(),
+                    EventEnvelope::new($timestamp, msg),
+                );
             }
         }
     };
-}
-
-fn emit_notification<T: Serialize + Clone>(
-    app: &tauri::AppHandle,
-    kind: EventKind,
-    envelope: EventEnvelope<T>,
-) {
-    if let Err(e) = app.emit(kind.event_name(), envelope) {
-        log::error!("emit {} failed: {e}", kind.event_name());
-    }
 }
 
 pub(super) async fn handle_ws_message(
@@ -200,9 +193,9 @@ fn forward_unparsed(
     };
     log::debug!("forwarding unparsed {:?}: {parse_err}", notification.kind);
     if subs.contains_key(&notification.broadcaster_id) {
-        emit_notification(
+        emit_named(
             app,
-            notification.kind,
+            notification.kind.event_name(),
             EventEnvelope::new(notification.timestamp, notification.event),
         );
     }

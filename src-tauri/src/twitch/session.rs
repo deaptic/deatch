@@ -1,3 +1,4 @@
+use super::auth::client::OAuthClient;
 use super::auth::credentials;
 use crate::error::{Error, Result};
 use std::sync::RwLock;
@@ -32,7 +33,7 @@ impl Session {
         *self.token.write().unwrap() = None;
     }
 
-    pub async fn valid(&self, http: &reqwest::Client) -> Result<UserToken> {
+    pub async fn valid(&self, oauth: &OAuthClient) -> Result<UserToken> {
         if let Some(token) = self.fresh()? {
             return Ok(token);
         }
@@ -41,7 +42,7 @@ impl Session {
             return Ok(token);
         }
         let mut token = self.current().ok_or(Error::NotAuthenticated)?;
-        token.refresh_token(http).await?;
+        token.refresh_token(oauth).await?;
         let mut slot = self.token.write().unwrap();
         if slot.is_none() {
             return Err(Error::NotAuthenticated);

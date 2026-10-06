@@ -1,9 +1,11 @@
 mod rate_limit;
 mod retry;
 
+use crate::http::log_request;
 use rate_limit::RateLimit;
 use std::future::Future;
 use std::sync::Arc;
+use std::time::Instant;
 use twitch_api::client::{Bytes, Request, Response};
 use twitch_api::HttpClient;
 
@@ -35,7 +37,16 @@ impl HttpClient for HelixTransport {
             let mut attempt = 0;
             loop {
                 this.rate_limit.wait().await;
-                let response = this.http.req(rebuild(&parts, &body)).await?;
+                let started = Instant::now();
+                let result = this.http.req(rebuild(&parts, &body)).await;
+                log_request(
+                    &parts.method,
+                    parts.uri.host().unwrap_or_default(),
+                    parts.uri.path(),
+                    started,
+                    result.as_ref().map(|r| (r.status(), r.body().as_ref())),
+                );
+                let response = result?;
                 this.rate_limit.observe(response.headers());
                 let reset_in = RateLimit::reset_in(response.headers());
                 let Some(delay) =

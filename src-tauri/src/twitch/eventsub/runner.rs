@@ -46,7 +46,10 @@ pub(super) async fn ensure_task(app: &tauri::AppHandle, twitch: &Twitch) -> Resu
     // false until the next refresh.
     match get_moderated_channels(&authed).await {
         Ok(channels) => twitch.cache_moderated_channel_ids(&channels),
-        Err(e) => emit(app, EventSubFailed(e)),
+        Err(e) => {
+            log::warn!("moderated channels fetch failed: {e}");
+            emit(app, EventSubFailed(e));
+        }
     }
 
     let (tx, rx) = mpsc::unbounded_channel();
@@ -119,7 +122,10 @@ async fn run(
                         let had_session = session_id.is_some();
                         match handle_ws_message(app, twitch, &mut subs, &mut session_id, &text, quiet).await {
                             Ok(Some(reconnect)) => { next_url = Some(reconnect); break; }
-                            Err(e) => emit(app, EventSubFailed(e)),
+                            Err(e) => {
+                                log::warn!("ws message handling failed: {e}");
+                                emit(app, EventSubFailed(e));
+                            }
                             _ => {}
                         }
                         if !had_session && session_id.is_some() {

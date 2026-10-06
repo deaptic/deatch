@@ -17,6 +17,7 @@ mod transport;
 pub mod users;
 
 use crate::error::Result;
+use auth::client::OAuthClient;
 use session::Session;
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
@@ -28,7 +29,7 @@ pub type Helix = HelixClient<'static, transport::HelixTransport>;
 
 #[derive(Clone)]
 pub struct Twitch {
-    http: reqwest::Client,
+    oauth: OAuthClient,
     helix: Helix,
     session: Arc<Session>,
     eventsub: Arc<eventsub::Handle>,
@@ -44,7 +45,7 @@ impl Twitch {
     pub fn new(http: reqwest::Client) -> Self {
         Self {
             helix: HelixClient::with_client(transport::HelixTransport::new(http.clone())),
-            http,
+            oauth: OAuthClient::new(http),
             session: Arc::new(Session::new()),
             eventsub: Arc::default(),
             moderated_channel_ids: Arc::default(),
@@ -52,7 +53,7 @@ impl Twitch {
     }
 
     pub async fn authed(&self) -> Result<Authed<'_>> {
-        let token = self.session.valid(&self.http).await?;
+        let token = self.session.valid(&self.oauth).await?;
         Ok(self.with_token(token))
     }
 
