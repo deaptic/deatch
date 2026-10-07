@@ -70,6 +70,7 @@ pub(super) async fn run(
                 }
                 Signal::Created(created) => {
                     coordinator.receive(created);
+                    coordinator.publish();
                     if coordinator.subs.is_creating() {
                         continue;
                     }
@@ -82,6 +83,7 @@ pub(super) async fn run(
             _ = moderated_refresh.tick() => coordinator.moderated_stale = true,
         }
         coordinator.sync().await;
+        coordinator.publish();
     }
     coordinator.close_all();
 }
@@ -100,6 +102,10 @@ struct Coordinator<'a> {
 }
 
 impl Coordinator<'_> {
+    fn publish(&self) {
+        self.twitch.eventsub.publish(self.subs.stats());
+    }
+
     /// Nothing due can run before sync resumes, so waking earlier would spin.
     fn next_wake(&self) -> Option<Instant> {
         let due = [self.subs.next_wake(), self.moderated_retry_at]

@@ -2,6 +2,10 @@ use http::HeaderMap;
 use std::sync::Mutex;
 use std::time::Duration;
 
+/// Only Helix responses describe the general request bucket; OAuth calls
+/// share the transport but answer for a different service.
+const HELIX_HOST: &str = "api.twitch.tv";
+
 #[derive(Default)]
 pub struct RateLimit {
     resets_at: Mutex<Option<u64>>,
@@ -19,7 +23,10 @@ impl RateLimit {
         resets_at.and_then(|at| until(at, now()))
     }
 
-    pub fn observe(&self, headers: &HeaderMap) {
+    pub fn observe(&self, host: Option<&str>, headers: &HeaderMap) {
+        if host != Some(HELIX_HOST) {
+            return;
+        }
         let remaining = header_number::<u32>(headers, "ratelimit-remaining");
         let resets_at = header_number::<u64>(headers, "ratelimit-reset");
         if let (Some(remaining), Some(resets_at)) = (remaining, resets_at) {
@@ -44,6 +51,8 @@ fn until(at: u64, now: u64) -> Option<Duration> {
 mod tests {
     use super::*;
 
+    const HELIX: Option<&str> = Some(HELIX_HOST);
+
     fn headers(remaining: &str, reset: &str) -> HeaderMap {
         let mut h = HeaderMap::new();
         h.insert("Ratelimit-Remaining", remaining.parse().unwrap());
@@ -51,26 +60,33 @@ mod tests {
         h
     }
 
-    fn resets_at(limit: &RateLimit) -> Option<u64> {
-        *limit.resets_at.lock().unwrap()
+    fn future() -> String {
+        (now() + 30).to_string()
     }
 
     #[test]
     fn pauses_only_while_exhausted() {
         let limit = RateLimit::default();
-        limit.observe(&headers("0", "1700000000"));
-        assert_eq!(resets_at(&limit), Some(1_700_000_000));
-        limit.observe(&headers("799", "1700000000"));
-        assert_eq!(resets_at(&limit), None);
+        limit.observe(HELIX, &headers("0", &future()));
+        assert!(limit.paused_for().is_some());
+        limit.observe(HELIX, &headers("799", &future()));
+        assert!(limit.paused_for().is_none());
+    }
+
+    #[test]
+    fn ignores_other_twitch_hosts() {
+        let limit = RateLimit::default();
+        limit.observe(Some("id.twitch.tv"), &headers("0", &future()));
+        assert!(limit.paused_for().is_none());
     }
 
     #[test]
     fn ignores_missing_or_malformed_headers() {
         let limit = RateLimit::default();
-        limit.observe(&headers("0", "1700000000"));
-        limit.observe(&HeaderMap::new());
-        limit.observe(&headers("lots", "1700000000"));
-        assert_eq!(resets_at(&limit), Some(1_700_000_000));
+        limit.observe(HELIX, &headers("0", &future()));
+        limit.observe(HELIX, &HeaderMap::new());
+        limit.observe(HELIX, &headers("lots", &future()));
+        assert!(limit.paused_for().is_some());
     }
 
     #[test]

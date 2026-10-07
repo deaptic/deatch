@@ -1,12 +1,21 @@
-import { Copy, Inbox as InboxIcon, Minus, Square, X } from "lucide-solid";
-import { createEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
+import {
+  Activity,
+  Copy,
+  Inbox as InboxIcon,
+  Minus,
+  Square,
+  X,
+} from "lucide-solid";
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
+import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
 import Inbox from "../inbox/Inbox.tsx";
+import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 
 const win = getCurrentWindow();
@@ -15,6 +24,11 @@ const CONTROL =
   "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
 const PRESSED = "bg-raised text-ink";
 
+function below(button: HTMLElement | undefined) {
+  const r = button?.getBoundingClientRect();
+  return r ? { x: r.left + r.width / 2, y: r.bottom + 4 } : { x: 0, y: 0 };
+}
+
 type Props = {
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
@@ -22,8 +36,8 @@ type Props = {
 export default function TitleBar(props: Props) {
   const [maximized, setMaximized] = createSignal(false);
   const [version, setVersion] = createSignal("");
-  const [inboxAnchor, setInboxAnchor] = createSignal({ x: 0, y: 0 });
   let inboxBtn: HTMLButtonElement | undefined;
+  let diagnosticsBtn: HTMLButtonElement | undefined;
 
   onMount(() => {
     getVersion().then(setVersion).catch(() => {});
@@ -46,12 +60,6 @@ export default function TitleBar(props: Props) {
     })();
   });
 
-  createEffect(() => {
-    if (!isOverlayOpen("inbox") || !inboxBtn) return;
-    const r = inboxBtn.getBoundingClientRect();
-    setInboxAnchor({ x: r.left + r.width / 2, y: r.bottom + 4 });
-  });
-
   return (
     <>
       <div
@@ -72,6 +80,22 @@ export default function TitleBar(props: Props) {
         </div>
         <div data-tauri-drag-region class="flex-1 h-full" />
         <div class="flex items-stretch h-full">
+          <Show when={advancedDeveloperMode()}>
+            <button
+              ref={diagnosticsBtn}
+              class={`${CONTROL} ${
+                isOverlayOpen("diagnostics") ? PRESSED : ""
+              }`}
+              aria-label="Diagnostics"
+              title="Diagnostics"
+              aria-pressed={isOverlayOpen("diagnostics")}
+              {...{ [POPOVER_TOGGLE]: "" }}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => toggleOverlay("diagnostics")}
+            >
+              <Activity class="size-4" />
+            </button>
+          </Show>
           <button
             ref={inboxBtn}
             class={`${CONTROL} ${isOverlayOpen("inbox") ? PRESSED : ""}`}
@@ -115,10 +139,15 @@ export default function TitleBar(props: Props) {
       </div>
       <Show when={isOverlayOpen("inbox")}>
         <Inbox
-          x={inboxAnchor().x}
-          y={inboxAnchor().y}
+          {...below(inboxBtn)}
           onClose={() => toggleOverlay("inbox")}
           onJump={props.onJumpToMessage}
+        />
+      </Show>
+      <Show when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}>
+        <Diagnostics
+          {...below(diagnosticsBtn)}
+          onClose={() => toggleOverlay("diagnostics")}
         />
       </Show>
       {!maximized() && (

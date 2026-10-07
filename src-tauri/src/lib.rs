@@ -1,4 +1,5 @@
 mod clock;
+mod diagnostics;
 mod discord;
 mod emit;
 mod emotes;
@@ -95,6 +96,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             watch::commands::watch_set_muted,
             watch::commands::watch_request_state,
             notifications::commands::set_mentions_badge,
+            diagnostics::commands::get_app_stats,
         ])
 }
 
@@ -168,6 +170,7 @@ pub fn run() {
             Ok(())
         })
         .manage(discord::DiscordState::default())
+        .manage(diagnostics::Monitor::default())
         .invoke_handler(invoke_handler)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

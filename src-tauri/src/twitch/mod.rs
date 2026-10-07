@@ -61,4 +61,8 @@ impl Twitch {
     fn rate_limited_for(&self) -> Option<std::time::Duration> {
         self.helix.get_client().paused_for()
     }
+
+    pub fn eventsub_stats(&self) -> eventsub::dto::EventSubStats {
+        self.eventsub.stats()
+    }
 }

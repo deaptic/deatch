@@ -42,6 +42,7 @@ specta-typescript = "=0.0.12"
 log = "0.4"
 tauri-plugin-log = "2"
 http = "1"
+sysinfo = { version = "0.39", default-features = false, features = ["system"] }
 winreg = "0.56"
 windows-native-keyring-store = "1"
 

@@ -73,6 +73,7 @@ export const commands = {
 	watchSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("watch_set_muted", { params }),
 	watchRequestState: () => __TAURI_INVOKE<null>("watch_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
+	getAppStats: () => __TAURI_INVOKE<AppStats>("get_app_stats"),
 };
 
 /** Events */
@@ -107,6 +108,12 @@ export type ActivityInput = {
 };
 
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
+
+export type AppStats = {
+	app: ProcessStats,
+	webview: ProcessStats,
+	eventsub: EventSubStats,
+};
 
 export type AuthFailed = Error;
 
@@ -241,6 +248,13 @@ export type CheermoteTier = {
 	light: CheermoteImage,
 };
 
+export type ConnectionState = "connecting" | "up" | "lost";
+
+export type ConnectionStats = {
+	state: ConnectionState,
+	subscriptions: number,
+};
+
 export type CreateClipParams = {
 	broadcasterId: UserId,
 	title?: string | null,
@@ -303,6 +317,15 @@ export type EventSubConnection = {
 export type EventSubRecovered = {
 	since: number,
 	broadcasterId: UserId,
+};
+
+export type EventSubStats = {
+	connections: ConnectionStats[],
+	maxConnections: number,
+	perConnection: number,
+	retrying: number,
+	waiting: number,
+	capped: number,
 };
 
 export type Focus = "focused" | "background";
@@ -373,6 +396,12 @@ export type PaginatedResponse<T> = {
 
 export type Pagination = {
 	cursor: string | null,
+};
+
+export type ProcessStats = {
+	memoryBytes: number,
+	cpuPercent: number | null,
+	processes: number,
 };
 
 export type RecentMessage = {

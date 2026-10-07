@@ -1,5 +1,6 @@
 pub mod commands;
 mod connection;
+pub mod dto;
 pub mod events;
 mod helix;
 mod kind;
@@ -11,6 +12,7 @@ pub use kind::{EventKind, Focus};
 use super::ids::UserId;
 use super::Twitch;
 use crate::error::{Error, Result};
+use dto::EventSubStats;
 use serde::Deserialize;
 use std::sync::Mutex;
 use subscriptions::Channels;
@@ -26,6 +28,7 @@ pub struct ChannelFocus {
 pub struct Handle {
     tx: mpsc::UnboundedSender<Channels>,
     rx: Mutex<Option<mpsc::UnboundedReceiver<Channels>>>,
+    stats: Mutex<EventSubStats>,
 }
 
 impl Default for Handle {
@@ -34,6 +37,7 @@ impl Default for Handle {
         Self {
             tx,
             rx: Mutex::new(Some(rx)),
+            stats: Mutex::default(),
         }
     }
 }
@@ -43,6 +47,14 @@ impl Handle {
         if self.send(Channels::new()).is_err() {
             log::warn!("eventsub task stopped, could not clear channels");
         }
+    }
+
+    pub(crate) fn stats(&self) -> EventSubStats {
+        self.stats.lock().unwrap().clone()
+    }
+
+    fn publish(&self, stats: EventSubStats) {
+        *self.stats.lock().unwrap() = stats;
     }
 
     fn send(&self, channels: Channels) -> Result<()> {
