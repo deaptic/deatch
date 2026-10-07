@@ -1,64 +1,24 @@
 pub mod commands;
 
 use crate::error::{Error, Result};
-use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
+use discord_rich_presence::activity::{
+    Activity, ActivityType, Assets, Button as ActivityButton, StatusDisplayType, Timestamps,
+};
+use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
 use serde::Deserialize;
-use std::fmt::Display;
-use std::sync::{Mutex, MutexGuard};
+use std::sync::Mutex;
 
-const DEFAULT_CLIENT_ID: &str = "1505340850853380239";
+const CLIENT_ID: &str = "1505340850853380239";
+const MAX_BUTTONS: usize = 2;
 
-pub struct DiscordState(pub Mutex<Option<DiscordIpcClient>>);
-
-impl DiscordState {
-    pub fn new() -> Self {
-        Self(Mutex::new(None))
-    }
-}
+#[derive(Default)]
+pub struct DiscordState(Mutex<Option<DiscordIpcClient>>);
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Button {
     pub label: String,
     pub url: String,
-}
-
-#[derive(Clone, Copy, Deserialize, specta::Type)]
-#[serde(rename_all = "lowercase")]
-pub enum ActivityType {
-    Playing,
-    Listening,
-    Watching,
-    Competing,
-}
-
-impl From<ActivityType> for activity::ActivityType {
-    fn from(t: ActivityType) -> Self {
-        match t {
-            ActivityType::Playing => Self::Playing,
-            ActivityType::Listening => Self::Listening,
-            ActivityType::Watching => Self::Watching,
-            ActivityType::Competing => Self::Competing,
-        }
-    }
-}
-
-#[derive(Clone, Copy, Deserialize, specta::Type)]
-#[serde(rename_all = "lowercase")]
-pub enum StatusDisplayType {
-    Name,
-    State,
-    Details,
-}
-
-impl From<StatusDisplayType> for activity::StatusDisplayType {
-    fn from(t: StatusDisplayType) -> Self {
-        match t {
-            StatusDisplayType::Name => Self::Name,
-            StatusDisplayType::State => Self::State,
-            StatusDisplayType::Details => Self::Details,
-        }
-    }
 }
 
 #[derive(Default, Deserialize, specta::Type)]
@@ -74,129 +34,98 @@ pub struct ActivityInput {
     pub small_image: Option<String>,
     pub small_text: Option<String>,
     pub started_at: Option<i64>,
-    pub activity_type: Option<ActivityType>,
-    pub status_display_type: Option<StatusDisplayType>,
-    pub buttons: Option<Vec<Button>>,
+    pub buttons: Vec<Button>,
 }
 
-pub async fn connect(state: &DiscordState, client_id: Option<String>) -> Result<()> {
-    let id = client_id.unwrap_or_else(|| DEFAULT_CLIENT_ID.to_string());
-    let mut client = DiscordIpcClient::new(&id);
-    client.connect().map_err(discord_error)?;
-    let mut guard = lock(state)?;
-    if let Some(mut prev) = guard.take() {
-        if let Err(e) = prev.close() {
+pub fn connect(state: &DiscordState) -> Result<()> {
+    let mut client = DiscordIpcClient::new(CLIENT_ID);
+    client.connect()?;
+    if let Some(mut previous) = state.0.lock().unwrap().replace(client) {
+        if let Err(e) = previous.close() {
             log::warn!("discord close of previous client failed: {e}");
         }
     }
-    *guard = Some(client);
     Ok(())
 }
 
-pub async fn disconnect(state: &DiscordState) -> Result<()> {
-    let mut guard = lock(state)?;
-    if let Some(mut client) = guard.take() {
-        if let Err(e) = client.clear_activity() {
-            log::warn!("discord clear activity failed: {e}");
-        }
-        client.close().map_err(discord_error)?;
+pub fn disconnect(state: &DiscordState) -> Result<()> {
+    let Some(mut client) = state.0.lock().unwrap().take() else {
+        return Ok(());
+    };
+    if let Err(e) = client.clear_activity() {
+        log::warn!("discord clear activity failed: {e}");
     }
-    Ok(())
+    Ok(client.close()?)
 }
 
-pub async fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<()> {
-    let mut guard = lock(state)?;
+pub fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<()> {
+    let mut guard = state.0.lock().unwrap();
     let client = guard
         .as_mut()
         .ok_or_else(|| Error::Discord("not connected".into()))?;
-    client
-        .set_activity(build_activity(&input))
-        .map_err(discord_error)
+    Ok(client.set_activity(build_activity(&input))?)
 }
 
-fn build_activity(input: &ActivityInput) -> activity::Activity<'_> {
-    let mut activity = activity::Activity::new();
-    if let Some(d) = input.details.as_deref().filter(|s| !s.is_empty()) {
-        activity = activity.details(d);
+fn text(value: &Option<String>) -> Option<&str> {
+    value.as_deref().filter(|s| !s.is_empty())
+}
+
+fn build_activity(input: &ActivityInput) -> Activity<'_> {
+    let mut activity = Activity::new()
+        .activity_type(ActivityType::Watching)
+        .status_display_type(StatusDisplayType::Details);
+    if let Some(v) = text(&input.details) {
+        activity = activity.details(v);
     }
-    if let Some(u) = input.details_url.as_deref().filter(|s| !s.is_empty()) {
-        activity = activity.details_url(u);
+    if let Some(v) = text(&input.details_url) {
+        activity = activity.details_url(v);
     }
-    if let Some(s) = input.state_text.as_deref().filter(|s| !s.is_empty()) {
-        activity = activity.state(s);
+    if let Some(v) = text(&input.state_text) {
+        activity = activity.state(v);
     }
-    if let Some(u) = input.state_url.as_deref().filter(|s| !s.is_empty()) {
-        activity = activity.state_url(u);
+    if let Some(v) = text(&input.state_url) {
+        activity = activity.state_url(v);
     }
-    if let Some(kind) = input.activity_type {
-        activity = activity.activity_type(kind.into());
-    }
-    if let Some(kind) = input.status_display_type {
-        activity = activity.status_display_type(kind.into());
+    if let Some(ts) = input.started_at {
+        activity = activity.timestamps(Timestamps::new().start(ts));
     }
 
-    let mut assets = activity::Assets::new();
-    let mut has_assets = false;
-    if let Some(v) = input.large_image.as_deref().filter(|s| !s.is_empty()) {
-        assets = assets.large_image(v);
-        has_assets = true;
-    }
-    if let Some(v) = input.large_text.as_deref().filter(|s| !s.is_empty()) {
-        assets = assets.large_text(v);
-        has_assets = true;
-    }
-    if let Some(v) = input.large_url.as_deref().filter(|s| !s.is_empty()) {
-        assets = assets.large_url(v);
-        has_assets = true;
-    }
-    if let Some(v) = input.small_image.as_deref().filter(|s| !s.is_empty()) {
-        assets = assets.small_image(v);
-        has_assets = true;
-    }
-    if let Some(v) = input.small_text.as_deref().filter(|s| !s.is_empty()) {
-        assets = assets.small_text(v);
-        has_assets = true;
-    }
-    if has_assets {
+    let asset_fields = [
+        &input.large_image,
+        &input.large_text,
+        &input.large_url,
+        &input.small_image,
+        &input.small_text,
+    ];
+    if asset_fields.iter().any(|v| text(v).is_some()) {
+        let mut assets = Assets::new();
+        if let Some(v) = text(&input.large_image) {
+            assets = assets.large_image(v);
+        }
+        if let Some(v) = text(&input.large_text) {
+            assets = assets.large_text(v);
+        }
+        if let Some(v) = text(&input.large_url) {
+            assets = assets.large_url(v);
+        }
+        if let Some(v) = text(&input.small_image) {
+            assets = assets.small_image(v);
+        }
+        if let Some(v) = text(&input.small_text) {
+            assets = assets.small_text(v);
+        }
         activity = activity.assets(assets);
     }
 
-    if let Some(ts) = input.started_at {
-        activity = activity.timestamps(activity::Timestamps::new().start(ts));
-    }
-
-    let btns: Vec<activity::Button> = input
+    let buttons: Vec<ActivityButton> = input
         .buttons
-        .as_deref()
-        .unwrap_or(&[])
         .iter()
-        .filter(|b| {
-            let l = b.label.len();
-            let u = b.url.len();
-            (1..=32).contains(&l) && (1..=512).contains(&u)
-        })
-        .take(2)
-        .map(|b| activity::Button::new(&b.label, &b.url))
+        .filter(|b| (1..=32).contains(&b.label.len()) && (1..=512).contains(&b.url.len()))
+        .take(MAX_BUTTONS)
+        .map(|b| ActivityButton::new(&b.label, &b.url))
         .collect();
-    if !btns.is_empty() {
-        activity = activity.buttons(btns);
+    if !buttons.is_empty() {
+        activity = activity.buttons(buttons);
     }
-
     activity
-}
-
-pub async fn clear_activity(state: &DiscordState) -> Result<()> {
-    let mut guard = lock(state)?;
-    if let Some(client) = guard.as_mut() {
-        client.clear_activity().map_err(discord_error)?;
-    }
-    Ok(())
-}
-
-fn lock(state: &DiscordState) -> Result<MutexGuard<'_, Option<DiscordIpcClient>>> {
-    state.0.lock().map_err(discord_error)
-}
-
-fn discord_error(e: impl Display) -> Error {
-    Error::Discord(e.to_string())
 }

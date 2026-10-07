@@ -1,6 +1,6 @@
 use super::dto::{Category, SearchChannel};
 use crate::error::Result;
-use crate::twitch::search::{self, SearchCategoriesParams, SearchChannelsParams};
+use crate::twitch::search::{self, SearchParams};
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -8,7 +8,7 @@ use tauri::State;
 #[specta::specta]
 pub async fn search_channels(
     twitch: State<'_, Twitch>,
-    params: SearchChannelsParams,
+    params: SearchParams,
 ) -> Result<Vec<SearchChannel>> {
     search::search_channels(&twitch.authed().await?, params).await
 }
@@ -17,7 +17,7 @@ pub async fn search_channels(
 #[specta::specta]
 pub async fn search_categories(
     twitch: State<'_, Twitch>,
-    params: SearchCategoriesParams,
+    params: SearchParams,
 ) -> Result<Vec<Category>> {
     search::search_categories(&twitch.authed().await?, params).await
 }

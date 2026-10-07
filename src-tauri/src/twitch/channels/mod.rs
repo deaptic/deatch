@@ -4,8 +4,8 @@ pub mod dto;
 use super::Authed;
 use crate::error::{Error, Result};
 use crate::twitch::ids::{GameId, UserId};
-use crate::twitch::pagination::PaginatedResponse;
-use dto::{ChannelInfo, Follow};
+use crate::twitch::params::BroadcasterUserParams;
+use dto::ChannelInfo;
 use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::channels::{
@@ -26,64 +26,31 @@ pub async fn get_channel_information(
     twitch: &Authed<'_>,
     params: GetChannelInformationParams,
 ) -> Result<Vec<ChannelInfo>> {
-    let ids: Vec<types::UserId> = params
-        .broadcaster_ids
-        .into_iter()
-        .map(|id| id.0.into())
-        .collect();
+    let ids: Vec<types::UserId> = params.broadcaster_ids.into_iter().map(Into::into).collect();
     let ids = ids.into();
     crate::twitch::pagination::collect(twitch.helix.get_channels_from_ids(&ids, &twitch.token))
         .await
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct GetChannelFollowersParams {
-    pub broadcaster_id: UserId,
-    #[serde(default)]
-    pub user_id: Option<UserId>,
-    #[serde(default)]
-    pub first: Option<usize>,
-    #[serde(default)]
-    pub after: Option<String>,
-}
-
-pub async fn get_channel_followers(
+/// Your own follows are readable for any channel; anyone else's need the
+/// channel's moderator view.
+pub async fn get_followed_at(
     twitch: &Authed<'_>,
-    params: GetChannelFollowersParams,
-) -> Result<PaginatedResponse<Follow>> {
-    let mut request = GetChannelFollowersRequest::broadcaster_id(params.broadcaster_id.as_str());
-    request.user_id = params
-        .user_id
-        .map(|id| Cow::Owned(types::UserId::from(id.0)));
-    request.first = params.first;
-    request.after = crate::twitch::pagination::cursor(params.after);
-
-    let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(crate::twitch::pagination::into_paginated(
-        response,
-        Follow::from,
-    ))
-}
-
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct GetFollowedChannelsParams {
-    pub user_id: UserId,
-    #[serde(default)]
-    pub broadcaster_id: Option<UserId>,
-}
-
-pub async fn get_followed_channels(
-    twitch: &Authed<'_>,
-    params: GetFollowedChannelsParams,
-) -> Result<Vec<Follow>> {
-    let mut request = GetFollowedChannels::user_id(params.user_id.as_str());
-    if let Some(bid) = &params.broadcaster_id {
-        request = request.broadcaster_id(bid.as_str());
-    }
-    let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(response.data.into_iter().map(Follow::from).collect())
+    params: BroadcasterUserParams,
+) -> Result<Option<String>> {
+    let broadcaster_id = params.broadcaster_id.as_str();
+    let followed_at = if params.user_id.as_str() == twitch.token.user_id.as_str() {
+        let request =
+            GetFollowedChannels::user_id(params.user_id.as_str()).broadcaster_id(broadcaster_id);
+        let response = twitch.helix.req_get(request, &twitch.token).await?;
+        response.data.into_iter().next().map(|f| f.followed_at)
+    } else {
+        let mut request = GetChannelFollowersRequest::broadcaster_id(broadcaster_id);
+        request.user_id = Some(Cow::Owned(params.user_id.into()));
+        let response = twitch.helix.req_get(request, &twitch.token).await?;
+        response.data.into_iter().next().map(|f| f.followed_at)
+    };
+    Ok(followed_at.map(|t| t.to_string()))
 }
 
 #[derive(Deserialize, specta::Type)]
@@ -106,7 +73,7 @@ pub async fn modify_channel_information(
         body.title = Some(Cow::Borrowed(t));
     }
     if let Some(g) = params.game_id.filter(|g| !g.as_str().is_empty()) {
-        body.game_id = Some(Cow::Owned(types::CategoryId::new(g.0)));
+        body.game_id = Some(Cow::Owned(g.into()));
     }
     twitch.helix.req_patch(request, body, &twitch.token).await?;
     Ok(())
@@ -176,14 +143,7 @@ pub async fn start_commercial(twitch: &Authed<'_>, params: StartCommercialParams
     Ok(())
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct ChannelVipParams {
-    pub broadcaster_id: UserId,
-    pub user_id: UserId,
-}
-
-pub async fn add_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -> Result<()> {
+pub async fn add_channel_vip(twitch: &Authed<'_>, params: BroadcasterUserParams) -> Result<()> {
     twitch
         .helix
         .add_channel_vip(
@@ -195,7 +155,7 @@ pub async fn add_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -> R
     Ok(())
 }
 
-pub async fn remove_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -> Result<()> {
+pub async fn remove_channel_vip(twitch: &Authed<'_>, params: BroadcasterUserParams) -> Result<()> {
     twitch
         .helix
         .remove_channel_vip(
@@ -209,7 +169,7 @@ pub async fn remove_channel_vip(twitch: &Authed<'_>, params: ChannelVipParams) -
 
 #[cfg(test)]
 mod tests {
-    use super::{GetChannelFollowersParams, StartCommercialParams};
+    use super::StartCommercialParams;
     use serde_json::json;
     use twitch_api::types;
 
@@ -229,13 +189,5 @@ mod tests {
     fn rejects_other_commercial_lengths() {
         assert!(commercial(45).is_err());
         assert!(commercial(0).is_err());
-    }
-
-    #[test]
-    fn followers_require_broadcaster_but_not_filters() {
-        let params: GetChannelFollowersParams =
-            serde_json::from_value(json!({ "broadcasterId": "1" })).unwrap();
-        assert!(params.user_id.is_none() && params.first.is_none() && params.after.is_none());
-        assert!(serde_json::from_value::<GetChannelFollowersParams>(json!({})).is_err());
     }
 }

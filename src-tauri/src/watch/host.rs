@@ -1,213 +1,135 @@
+use std::fmt::Display;
 use std::fs::OpenOptions;
-use std::io::{self, BufRead, BufReader, Read, Write};
-use std::path::PathBuf;
+use std::io::{self, BufRead, BufReader, ErrorKind, Read, Write};
 use std::sync::mpsc;
-use std::sync::{Arc, Mutex};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
 
+use interprocess::local_socket::Stream;
 use interprocess::TryClone;
 
 const MAX_MESSAGE_SIZE: usize = 1_048_576;
 const RECONNECT_DELAY: Duration = Duration::from_millis(1500);
 
-fn timestamp_ms() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_millis() as u64)
-        .unwrap_or(0)
-}
-
-fn log_path() -> PathBuf {
-    std::env::temp_dir().join("deatch-host.log")
-}
-
-fn read_exact_or_eof<R: Read>(reader: &mut R, n: usize) -> io::Result<Option<Vec<u8>>> {
-    let mut buf = vec![0u8; n];
-    let mut read = 0;
-    while read < n {
-        let r = reader.read(&mut buf[read..])?;
-        if r == 0 {
-            return Ok(None);
-        }
-        read += r;
-    }
-    Ok(Some(buf))
-}
-
-fn write_to_browser(stdout_lock: &Arc<Mutex<()>>, line: &str) -> io::Result<()> {
-    let bytes = line.as_bytes();
-    if bytes.len() > MAX_MESSAGE_SIZE {
-        return Err(io::Error::new(io::ErrorKind::InvalidData, "oversize"));
-    }
-    let len = (bytes.len() as u32).to_le_bytes();
-    let _g = stdout_lock.lock().unwrap_or_else(|e| e.into_inner());
-    let stdout = io::stdout();
-    let mut out = stdout.lock();
-    out.write_all(&len)?;
-    out.write_all(bytes)?;
-    out.flush()
-}
-
-fn spawn_reader_pump(
-    reader: interprocess::local_socket::Stream,
-    stdout_lock: Arc<Mutex<()>>,
-    log_path: PathBuf,
-) {
-    std::thread::spawn(move || {
-        let mut log = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&log_path)
-            .ok();
-        let mut buf = BufReader::new(reader);
-        let mut line = String::new();
-        loop {
-            line.clear();
-            match buf.read_line(&mut line) {
-                Ok(0) => break,
-                Ok(_) => {}
-                Err(e) => {
-                    if let Some(l) = log.as_mut() {
-                        let _ = writeln!(l, "{} reader read error: {e}", timestamp_ms());
-                    }
-                    break;
-                }
-            }
-            let trimmed = line.trim_end_matches(['\r', '\n']);
-            if trimmed.is_empty() {
-                continue;
-            }
-            if let Err(e) = write_to_browser(&stdout_lock, trimmed) {
-                if let Some(l) = log.as_mut() {
-                    let _ = writeln!(l, "{} reader stdout error: {e}", timestamp_ms());
-                }
-                break;
-            }
-            if let Some(l) = log.as_mut() {
-                let _ = writeln!(l, "{} ⇇ {trimmed}", timestamp_ms());
-                let _ = l.flush();
-            }
-        }
-    });
-}
-
-fn connection_manager(rx: mpsc::Receiver<String>, stdout_lock: Arc<Mutex<()>>, log_path: PathBuf) {
-    let mut log = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&log_path)
-        .ok();
-    let mut pending: Option<String> = None;
-
-    'outer: loop {
-        let stream = loop {
-            match super::ipc::connect_to_gui() {
-                Ok(s) => break s,
-                Err(e) => {
-                    if let Some(l) = log.as_mut() {
-                        let _ = writeln!(l, "{} connect retry: {e}", timestamp_ms());
-                    }
-                    std::thread::sleep(RECONNECT_DELAY);
-                }
-            }
-        };
-
-        if let Some(l) = log.as_mut() {
-            let _ = writeln!(l, "{} sink connected", timestamp_ms());
-        }
-
-        match stream.try_clone() {
-            Ok(reader) => {
-                spawn_reader_pump(reader, Arc::clone(&stdout_lock), log_path.clone());
-            }
-            Err(e) => {
-                if let Some(l) = log.as_mut() {
-                    let _ = writeln!(l, "{} try_clone failed: {e}", timestamp_ms());
-                }
-            }
-        }
-
-        if let Err(e) = write_to_browser(&stdout_lock, r#"{"type":"get_state"}"#) {
-            if let Some(l) = log.as_mut() {
-                let _ = writeln!(l, "{} get_state nudge failed: {e}", timestamp_ms());
-            }
-        }
-
-        let mut writer = stream;
-
-        if let Some(msg) = pending.take() {
-            if writeln!(writer, "{msg}").is_err() || writer.flush().is_err() {
-                pending = Some(msg);
-                continue 'outer;
-            }
-        }
-
-        loop {
-            let msg = match rx.recv() {
-                Ok(m) => m,
-                Err(_) => return,
-            };
-            if writeln!(writer, "{msg}").is_err() || writer.flush().is_err() {
-                pending = Some(msg);
-                continue 'outer;
-            }
-        }
+/// The host runs without Tauri, so it keeps its own log file. A failed log
+/// write has nowhere else to go and is dropped.
+fn log(message: impl Display) {
+    let path = std::env::temp_dir().join("deatch-host.log");
+    if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(file, "{} {message}", crate::clock::unix_ms());
     }
 }
 
 pub fn run() {
-    let mut log = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(log_path())
-        .expect("open browser-host log");
-    let _ = writeln!(log, "{} host started", timestamp_ms());
-    let _ = log.flush();
-
-    let (tx, rx) = mpsc::channel::<String>();
-    let stdout_lock: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
-
-    {
-        let stdout_lock = Arc::clone(&stdout_lock);
-        let log_path = log_path();
-        std::thread::spawn(move || {
-            connection_manager(rx, stdout_lock, log_path);
-        });
-    }
-
-    let stdin = io::stdin();
-    let mut stdin = stdin.lock();
-
+    log("host started");
+    let (tx, rx) = mpsc::channel();
+    std::thread::spawn(move || forward_to_gui(rx));
+    let mut stdin = io::stdin().lock();
     loop {
-        let len_buf = match read_exact_or_eof(&mut stdin, 4) {
-            Ok(Some(b)) => b,
+        match read_message(&mut stdin) {
+            Ok(Some(text)) => {
+                log(format_args!("<- {text}"));
+                if tx.send(text).is_err() {
+                    break;
+                }
+            }
             Ok(None) => break,
             Err(e) => {
-                let _ = writeln!(log, "{} read length error: {e}", timestamp_ms());
+                log(format_args!("read error: {e}"));
                 break;
             }
-        };
-        let len = u32::from_le_bytes([len_buf[0], len_buf[1], len_buf[2], len_buf[3]]) as usize;
-        if len == 0 || len > MAX_MESSAGE_SIZE {
-            let _ = writeln!(log, "{} bad message length: {len}", timestamp_ms());
-            break;
-        }
-        let body = match read_exact_or_eof(&mut stdin, len) {
-            Ok(Some(b)) => b,
-            Ok(None) => break,
-            Err(e) => {
-                let _ = writeln!(log, "{} read body error: {e}", timestamp_ms());
-                break;
-            }
-        };
-        let text = String::from_utf8_lossy(&body).into_owned();
-        let _ = writeln!(log, "{} <- {text}", timestamp_ms());
-        let _ = log.flush();
-
-        if tx.send(text).is_err() {
-            break;
         }
     }
+    log("host exiting");
+}
 
-    let _ = writeln!(log, "{} host exiting", timestamp_ms());
+fn read_message(stdin: &mut impl Read) -> io::Result<Option<String>> {
+    let mut len = [0u8; 4];
+    match stdin.read_exact(&mut len) {
+        Err(e) if e.kind() == ErrorKind::UnexpectedEof => return Ok(None),
+        result => result?,
+    }
+    let len = u32::from_le_bytes(len) as usize;
+    if len == 0 || len > MAX_MESSAGE_SIZE {
+        let error = format!("bad message length: {len}");
+        return Err(io::Error::new(ErrorKind::InvalidData, error));
+    }
+    let mut body = vec![0; len];
+    stdin.read_exact(&mut body)?;
+    Ok(Some(String::from_utf8_lossy(&body).into_owned()))
+}
+
+fn write_to_browser(line: &str) -> io::Result<()> {
+    if line.len() > MAX_MESSAGE_SIZE {
+        return Err(io::Error::new(ErrorKind::InvalidData, "oversize"));
+    }
+    let mut out = io::stdout().lock();
+    out.write_all(&(line.len() as u32).to_le_bytes())?;
+    out.write_all(line.as_bytes())?;
+    out.flush()
+}
+
+fn forward_to_gui(rx: mpsc::Receiver<String>) {
+    let mut pending: Option<String> = None;
+    loop {
+        let mut writer = connect_to_gui();
+        loop {
+            let message = match pending.take() {
+                Some(message) => message,
+                None => match rx.recv() {
+                    Ok(message) => message,
+                    Err(_) => return,
+                },
+            };
+            if writeln!(writer, "{message}")
+                .and_then(|()| writer.flush())
+                .is_err()
+            {
+                pending = Some(message);
+                break;
+            }
+        }
+    }
+}
+
+fn connect_to_gui() -> Stream {
+    let stream = loop {
+        match super::ipc::connect_to_gui() {
+            Ok(stream) => break stream,
+            Err(e) => {
+                log(format_args!("connect retry: {e}"));
+                std::thread::sleep(RECONNECT_DELAY);
+            }
+        }
+    };
+    log("sink connected");
+    match stream.try_clone() {
+        Ok(reader) => {
+            std::thread::spawn(move || pump_to_browser(reader));
+        }
+        Err(e) => log(format_args!("try_clone failed: {e}")),
+    }
+    if let Err(e) = write_to_browser(r#"{"type":"get_state"}"#) {
+        log(format_args!("get_state nudge failed: {e}"));
+    }
+    stream
+}
+
+fn pump_to_browser(reader: Stream) {
+    for line in BufReader::new(reader).lines() {
+        let line = match line {
+            Ok(line) => line,
+            Err(e) => {
+                log(format_args!("reader read error: {e}"));
+                return;
+            }
+        };
+        if line.is_empty() {
+            continue;
+        }
+        if let Err(e) = write_to_browser(&line) {
+            log(format_args!("reader stdout error: {e}"));
+            return;
+        }
+        log(format_args!("⇇ {line}"));
+    }
 }

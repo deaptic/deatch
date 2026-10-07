@@ -9,8 +9,6 @@ export function errorMessage(e: unknown): string {
   switch (e.kind) {
     case "notAuthenticated":
       return "Not signed in to Twitch";
-    case "helix":
-      return e.message.message;
     default:
       return e.message;
   }

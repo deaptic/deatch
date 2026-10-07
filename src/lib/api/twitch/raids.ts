@@ -1,9 +1,12 @@
 import { commands } from "../../bindings.ts";
-import type { CancelRaidParams, StartRaidParams } from "../../types/index.ts";
+import type {
+  BroadcasterPairParams,
+  BroadcasterParams,
+} from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 
 export async function startRaid(
-  params: StartRaidParams,
+  params: BroadcasterPairParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.startRaid, [params], {
@@ -13,7 +16,7 @@ export async function startRaid(
 }
 
 export async function cancelRaid(
-  params: CancelRaidParams,
+  params: BroadcasterParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.cancelRaid, [params], {

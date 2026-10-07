@@ -1,25 +1,29 @@
 use std::collections::HashSet;
-use std::fmt::Display;
 use std::time::Duration;
 
-use futures_util::{Sink, SinkExt, StreamExt};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use futures_util::stream::SplitSink;
+use futures_util::{SinkExt, StreamExt};
+use serde::Deserialize;
+use serde_json::{json, Value};
 use tauri::Manager;
+use tokio::net::TcpStream;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
-use tokio_tungstenite::{connect_async, tungstenite::Message};
+use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 
-use super::seventv::emote_url;
+use super::events::{EmoteSetUpdated, Rename};
+use super::seventv::{to_entry, StvEmote};
 use crate::emit::emit;
-use crate::emotes::dto::EmoteEntry;
-use crate::emotes::dto::{EmoteSetUpdated, Rename};
 
 const WS_URL: &str = "wss://events.7tv.io/v3";
 const EMOTE_SET_UPDATE: &str = "emote_set.update";
 const OP_DISPATCH: u8 = 0;
 const OP_SUBSCRIBE: u8 = 35;
 const OP_UNSUBSCRIBE: u8 = 36;
+const RECONNECT_DELAY: Duration = Duration::from_secs(5);
+
+type Writer = SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>;
 
 #[derive(Debug)]
 pub enum SevenTvOp {
@@ -43,113 +47,91 @@ pub fn spawn(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(run(app, rx));
 }
 
-async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
-    let mut active: HashSet<String> = HashSet::new();
-    loop {
-        let ws = match connect_async(WS_URL).await {
-            Ok((ws, _)) => ws,
-            Err(e) => {
-                log::warn!("7tv connect failed: {e}");
-                tokio::time::sleep(Duration::from_secs(5)).await;
-                continue;
-            }
-        };
-        log::info!("7tv connected, resubscribing {} emote sets", active.len());
-        let (mut write, mut read) = ws.split();
-        for id in &active {
-            send(&mut write, payload(OP_SUBSCRIBE, id)).await;
-        }
+enum End {
+    Lost,
+    Stopped,
+}
 
-        loop {
-            tokio::select! {
-                next = rx.recv() => match next {
-                    None => return,
-                    Some(op) => apply(&mut write, &mut active, op).await,
-                },
-                msg = read.next() => match msg {
-                    Some(Ok(Message::Text(t))) => emit_update(&app, &t),
-                    Some(Ok(Message::Ping(p))) => send(&mut write, Message::Pong(p)).await,
-                    Some(Ok(Message::Close(frame))) => {
-                        log::info!("7tv closed by server: {frame:?}");
-                        break;
-                    }
-                    Some(Ok(_)) => {}
-                    Some(Err(e)) => {
-                        log::warn!("7tv socket error: {e}");
-                        break;
-                    }
-                    None => {
-                        log::info!("7tv socket ended");
-                        break;
-                    }
+async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
+    let mut active = HashSet::new();
+    loop {
+        match connect_async(WS_URL).await {
+            Ok((socket, _)) => {
+                if let End::Stopped = serve(&app, socket, &mut rx, &mut active).await {
+                    return;
                 }
             }
+            Err(e) => log::warn!("7tv connect failed: {e}"),
         }
-        tokio::time::sleep(Duration::from_secs(3)).await;
+        tokio::time::sleep(RECONNECT_DELAY).await;
     }
 }
 
-async fn apply<S: Sink<Message> + Unpin>(write: &mut S, active: &mut HashSet<String>, op: SevenTvOp)
-where
-    S::Error: Display,
-{
+async fn serve(
+    app: &tauri::AppHandle,
+    socket: WebSocketStream<MaybeTlsStream<TcpStream>>,
+    rx: &mut UnboundedReceiver<SevenTvOp>,
+    active: &mut HashSet<String>,
+) -> End {
+    log::info!("7tv connected, resubscribing {} emote sets", active.len());
+    let (mut write, mut read) = socket.split();
+    for id in active.iter() {
+        send(&mut write, OP_SUBSCRIBE, id).await;
+    }
+    loop {
+        tokio::select! {
+            op = rx.recv() => match op {
+                Some(op) => apply(&mut write, active, op).await,
+                None => return End::Stopped,
+            },
+            message = read.next() => match message {
+                Some(Ok(Message::Text(text))) => {
+                    if let Some(update) = parse_update(&text) {
+                        emit(app, update);
+                    }
+                }
+                Some(Ok(Message::Close(frame))) => {
+                    log::info!("7tv closed by server: {frame:?}");
+                    return End::Lost;
+                }
+                Some(Ok(_)) => {}
+                Some(Err(e)) => {
+                    log::warn!("7tv socket error: {e}");
+                    return End::Lost;
+                }
+                None => {
+                    log::info!("7tv socket ended");
+                    return End::Lost;
+                }
+            }
+        }
+    }
+}
+
+async fn apply(write: &mut Writer, active: &mut HashSet<String>, op: SevenTvOp) {
     match op {
         SevenTvOp::Subscribe(id) => {
             if active.insert(id.clone()) {
                 log::info!("7tv subscribe emote_set={id}");
-                send(write, payload(OP_SUBSCRIBE, &id)).await;
+                send(write, OP_SUBSCRIBE, &id).await;
             }
         }
         SevenTvOp::Unsubscribe(id) => {
             if active.remove(&id) {
                 log::info!("7tv unsubscribe emote_set={id}");
-                send(write, payload(OP_UNSUBSCRIBE, &id)).await;
+                send(write, OP_UNSUBSCRIBE, &id).await;
             }
         }
     }
 }
 
-async fn send<S: Sink<Message> + Unpin>(write: &mut S, message: Message)
-where
-    S::Error: Display,
-{
-    if let Err(e) = write.send(message).await {
+async fn send(write: &mut Writer, op: u8, set_id: &str) {
+    let request = json!({
+        "op": op,
+        "d": { "type": EMOTE_SET_UPDATE, "condition": { "object_id": set_id } },
+    });
+    if let Err(e) = write.send(Message::Text(request.to_string().into())).await {
         log::warn!("7tv send failed: {e}");
-    }
-}
-
-#[derive(Serialize)]
-struct Request<'a> {
-    op: u8,
-    d: Subscription<'a>,
-}
-
-#[derive(Serialize)]
-struct Subscription<'a> {
-    #[serde(rename = "type")]
-    kind: &'static str,
-    condition: Condition<'a>,
-}
-
-#[derive(Serialize)]
-struct Condition<'a> {
-    object_id: &'a str,
-}
-
-fn payload(op: u8, set_id: &str) -> Message {
-    let request = Request {
-        op,
-        d: Subscription {
-            kind: EMOTE_SET_UPDATE,
-            condition: Condition { object_id: set_id },
-        },
-    };
-    let text = serde_json::to_string(&request).expect("7TV request is always serializable");
-    Message::Text(text.into())
-}
-fn emit_update(app: &tauri::AppHandle, text: &str) {
-    if let Some(update) = parse_update(text) {
-        emit(app, update);
     }
 }
 
@@ -188,23 +170,23 @@ struct Actor {
     display_name: Option<String>,
 }
 
+/// Values stay untyped until the key says they are emotes: a frame mixes
+/// emote changes with other keys whose values have different shapes.
 #[derive(Deserialize)]
 struct Change {
     key: String,
     #[serde(default)]
-    value: Option<ActiveEmote>,
+    value: Value,
     #[serde(default)]
-    old_value: Option<ActiveEmote>,
+    old_value: Value,
 }
 
-#[derive(Deserialize)]
-struct ActiveEmote {
-    id: String,
-    name: String,
+fn emote(value: Value) -> Option<StvEmote> {
+    serde_json::from_value(value).ok()
 }
 
-fn is_emote(c: &Change) -> bool {
-    c.key == "emotes"
+fn emote_changes(changes: Vec<Change>) -> impl Iterator<Item = Change> {
+    changes.into_iter().filter(|c| c.key == "emotes")
 }
 
 fn parse_update(text: &str) -> Option<EmoteSetUpdated> {
@@ -212,39 +194,24 @@ fn parse_update(text: &str) -> Option<EmoteSetUpdated> {
     if frame.op != OP_DISPATCH {
         return None;
     }
-    let d: Dispatch = serde_json::from_value(frame.d).ok()?;
-    if d.kind != EMOTE_SET_UPDATE {
+    let Dispatch { kind, body } = serde_json::from_value(frame.d).ok()?;
+    if kind != EMOTE_SET_UPDATE {
         return None;
     }
 
-    let added: Vec<_> = d
-        .body
-        .pushed
-        .into_iter()
-        .filter(is_emote)
-        .filter_map(|c| c.value)
-        .map(|e| EmoteEntry {
-            url: emote_url(&e.id),
-            name: e.name,
-        })
+    let added: Vec<_> = emote_changes(body.pushed)
+        .filter_map(|c| emote(c.value))
+        .map(to_entry)
         .collect();
-    let removed: Vec<_> = d
-        .body
-        .pulled
-        .into_iter()
-        .filter(is_emote)
-        .filter_map(|c| c.old_value)
+    let removed: Vec<_> = emote_changes(body.pulled)
+        .filter_map(|c| emote(c.old_value))
         .map(|e| e.name)
         .collect();
-    let renamed: Vec<_> = d
-        .body
-        .updated
-        .into_iter()
-        .filter(is_emote)
-        .filter_map(|c| match (c.old_value, c.value) {
-            (Some(o), Some(n)) if o.name != n.name => Some(Rename {
-                from: o.name,
-                to: n.name,
+    let renamed: Vec<_> = emote_changes(body.updated)
+        .filter_map(|c| match (emote(c.old_value), emote(c.value)) {
+            (Some(old), Some(new)) if old.name != new.name => Some(Rename {
+                from: old.name,
+                to: new.name,
             }),
             _ => None,
         })
@@ -253,9 +220,9 @@ fn parse_update(text: &str) -> Option<EmoteSetUpdated> {
     if added.is_empty() && removed.is_empty() && renamed.is_empty() {
         return None;
     }
-    let actor = d.body.actor.and_then(|a| a.display_name.or(a.username));
+    let actor = body.actor.and_then(|a| a.display_name.or(a.username));
     Some(EmoteSetUpdated {
-        id: d.body.id,
+        id: body.id,
         actor,
         added,
         removed,
@@ -309,6 +276,19 @@ mod tests {
             "pushed": [{ "key": "emotes", "value": { "id": "e1", "name": "Pog" } }],
         }));
         assert_eq!(update_json(&text).unwrap()["actor"], json!("foo"));
+    }
+
+    #[test]
+    fn keeps_emote_changes_next_to_other_shaped_values() {
+        let text = frame(json!({
+            "id": "set1",
+            "updated": [{ "key": "name", "old_value": "Old set", "value": "New set" }],
+            "pushed": [{ "key": "emotes", "value": { "id": "e1", "name": "Pog" } }],
+        }));
+        assert_eq!(
+            update_json(&text).unwrap()["added"][0]["name"],
+            json!("Pog")
+        );
     }
 
     #[test]

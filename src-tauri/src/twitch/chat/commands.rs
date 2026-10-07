@@ -1,9 +1,10 @@
 use super::dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
 use crate::error::Result;
 use crate::twitch::chat::{
-    self, GetChannelChatBadgesParams, GetChatSettingsParams, SendChatAnnouncementParams,
-    SendChatMessageParams, SendShoutoutParams, UpdateChatSettingsParams, UpdateUserChatColorParams,
+    self, SendChatAnnouncementParams, SendChatMessageParams, UpdateChatSettingsParams,
+    UpdateUserChatColorParams,
 };
+use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -29,14 +30,14 @@ pub async fn get_global_chat_badges(twitch: State<'_, Twitch>) -> Result<Vec<Bad
 #[specta::specta]
 pub async fn get_channel_chat_badges(
     twitch: State<'_, Twitch>,
-    params: GetChannelChatBadgesParams,
+    params: BroadcasterParams,
 ) -> Result<Vec<BadgeSet>> {
     chat::get_channel_chat_badges(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn send_shoutout(twitch: State<'_, Twitch>, params: SendShoutoutParams) -> Result<()> {
+pub async fn send_shoutout(twitch: State<'_, Twitch>, params: BroadcasterPairParams) -> Result<()> {
     chat::send_shoutout(&twitch.authed().await?, params).await
 }
 
@@ -62,7 +63,7 @@ pub async fn send_chat_announcement(
 #[specta::specta]
 pub async fn get_chat_settings(
     twitch: State<'_, Twitch>,
-    params: GetChatSettingsParams,
+    params: BroadcasterParams,
 ) -> Result<ChatSettings> {
     chat::get_chat_settings(&twitch.authed().await?, params).await
 }

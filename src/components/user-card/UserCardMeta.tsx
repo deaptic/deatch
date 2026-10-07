@@ -1,4 +1,4 @@
-import type { Follow, User } from "../../lib/types/index.ts";
+import type { User } from "../../lib/types/index.ts";
 import { AtSign, Calendar, Hash, Heart } from "lucide-solid";
 import { Show } from "solid-js";
 import CopyableField from "./CopyableField.tsx";
@@ -7,7 +7,7 @@ import Timestamp from "../ui/Timestamp.tsx";
 type Props = {
   chatterId: string;
   user: User | null;
-  follower: Follow | null;
+  followedAt: string | null;
 };
 
 export default function UserCardMeta(props: Props) {
@@ -31,7 +31,7 @@ export default function UserCardMeta(props: Props) {
         </CopyableField>
       </Show>
       <Show
-        when={props.follower}
+        when={props.followedAt}
         fallback={
           <CopyableField
             copy="Unknown"
@@ -42,9 +42,11 @@ export default function UserCardMeta(props: Props) {
           </CopyableField>
         }
       >
-        <CopyableField copy={props.follower!.followedAt} icon={<Heart />}>
-          <Timestamp ts={props.follower!.followedAt} format="D" />
-        </CopyableField>
+        {(followedAt) => (
+          <CopyableField copy={followedAt()} icon={<Heart />}>
+            <Timestamp ts={followedAt()} format="D" />
+          </CopyableField>
+        )}
       </Show>
     </div>
   );

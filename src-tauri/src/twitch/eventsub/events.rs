@@ -1,5 +1,3 @@
-use super::EventKind;
-use crate::error::Error;
 use crate::twitch::ids::UserId;
 use serde::Serialize;
 
@@ -12,24 +10,20 @@ pub struct EventSubConnection {
 #[serde(rename_all = "camelCase")]
 pub struct EventSubRecovered {
     pub since: u64,
-    pub broadcaster_ids: Vec<UserId>,
+    pub broadcaster_id: UserId,
 }
 
 #[derive(Clone, Serialize, specta::Type)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum SubscriptionStatus {
-    Subscribed,
-    Unsubscribed,
+pub enum ChatState {
+    Connected,
+    Disconnected,
     Failed { error: String },
 }
 
 #[derive(Clone, Serialize, specta::Type, tauri_specta::Event)]
 #[serde(rename_all = "camelCase")]
-pub struct EventSubSubscription {
+pub struct ChatStatus {
     pub broadcaster_id: UserId,
-    pub kind: EventKind,
-    pub status: SubscriptionStatus,
+    pub state: ChatState,
 }
-
-#[derive(Clone, Serialize, specta::Type, tauri_specta::Event)]
-pub struct EventSubFailed(pub Error);

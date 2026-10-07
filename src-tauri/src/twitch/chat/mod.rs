@@ -7,6 +7,7 @@ pub use color::{AnnouncementColor, ChatColor};
 use super::Authed;
 use crate::error::Result;
 use crate::twitch::ids::{MessageId, UserId};
+use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
 use dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
 use serde::Deserialize;
 use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
@@ -41,29 +42,16 @@ pub async fn get_global_chat_badges(twitch: &Authed<'_>) -> Result<Vec<BadgeSet>
     Ok(response.data.into_iter().map(BadgeSet::from).collect())
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct GetChannelChatBadgesParams {
-    pub broadcaster_id: UserId,
-}
-
 pub async fn get_channel_chat_badges(
     twitch: &Authed<'_>,
-    params: GetChannelChatBadgesParams,
+    params: BroadcasterParams,
 ) -> Result<Vec<BadgeSet>> {
     let request = GetChannelChatBadgesRequest::broadcaster_id(params.broadcaster_id.as_str());
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(response.data.into_iter().map(BadgeSet::from).collect())
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct SendShoutoutParams {
-    pub from_broadcaster_id: UserId,
-    pub to_broadcaster_id: UserId,
-}
-
-pub async fn send_shoutout(twitch: &Authed<'_>, params: SendShoutoutParams) -> Result<()> {
+pub async fn send_shoutout(twitch: &Authed<'_>, params: BroadcasterPairParams) -> Result<()> {
     let request = SendAShoutoutRequest::new(
         params.from_broadcaster_id.as_str(),
         params.to_broadcaster_id.as_str(),
@@ -140,15 +128,9 @@ pub async fn send_chat_announcement(
     Ok(())
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct GetChatSettingsParams {
-    pub broadcaster_id: UserId,
-}
-
 pub async fn get_chat_settings(
     twitch: &Authed<'_>,
-    params: GetChatSettingsParams,
+    params: BroadcasterParams,
 ) -> Result<ChatSettings> {
     let settings = twitch
         .helix

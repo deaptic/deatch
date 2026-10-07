@@ -2,17 +2,9 @@ pub mod commands;
 
 use super::Authed;
 use crate::error::Result;
-use crate::twitch::ids::UserId;
-use serde::Deserialize;
+use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct StartRaidParams {
-    pub from_broadcaster_id: UserId,
-    pub to_broadcaster_id: UserId,
-}
-
-pub async fn start_raid(twitch: &Authed<'_>, params: StartRaidParams) -> Result<()> {
+pub async fn start_raid(twitch: &Authed<'_>, params: BroadcasterPairParams) -> Result<()> {
     twitch
         .helix
         .start_a_raid(
@@ -24,13 +16,7 @@ pub async fn start_raid(twitch: &Authed<'_>, params: StartRaidParams) -> Result<
     Ok(())
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct CancelRaidParams {
-    pub broadcaster_id: UserId,
-}
-
-pub async fn cancel_raid(twitch: &Authed<'_>, params: CancelRaidParams) -> Result<()> {
+pub async fn cancel_raid(twitch: &Authed<'_>, params: BroadcasterParams) -> Result<()> {
     twitch
         .helix
         .cancel_a_raid(params.broadcaster_id.as_str(), &twitch.token)

@@ -7,8 +7,7 @@ use tauri::State;
 #[serde(rename_all = "camelCase")]
 pub struct GetRecentMessagesParams {
     pub channel_login: String,
-    #[serde(default)]
-    pub limit: Option<usize>,
+    pub limit: usize,
     #[serde(default)]
     pub after: Option<u64>,
 }
@@ -19,11 +18,5 @@ pub async fn get_recent_messages(
     http: State<'_, reqwest::Client>,
     params: GetRecentMessagesParams,
 ) -> Result<Vec<RecentMessage>> {
-    super::fetch_recent_messages(
-        &http,
-        &params.channel_login,
-        params.limit.unwrap_or(50),
-        params.after,
-    )
-    .await
+    super::fetch_recent_messages(&http, &params.channel_login, params.limit, params.after).await
 }

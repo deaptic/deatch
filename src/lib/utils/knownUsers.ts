@@ -50,11 +50,3 @@ export function freshEntries(
     .slice(0, max);
   return Object.fromEntries(fresh);
 }
-
-export function requestsInWindow(
-  sentAt: readonly number[],
-  now: number,
-  windowMs: number,
-): number[] {
-  return sentAt.filter((t) => now - t < windowMs);
-}

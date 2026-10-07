@@ -19,13 +19,13 @@ pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: &str) ->
     let request = http.get(url).build()?;
     let target = request.url().clone();
     let started = Instant::now();
-    let result = match http.execute(request).await {
-        Ok(response) => {
-            let status = response.status();
-            response.bytes().await.map(|body| (status, body))
-        }
-        Err(e) => Err(e),
-    };
+    let result = async {
+        let response = http.execute(request).await?;
+        let status = response.status();
+        Ok((status, response.bytes().await?))
+    }
+    .await
+    .map_err(reqwest::Error::without_url);
     log_request(
         &Method::GET,
         target.host_str().unwrap_or_default(),
@@ -50,6 +50,11 @@ pub fn log_request<E: Display>(
 ) {
     let ms = started.elapsed().as_millis();
     match outcome {
+        // Reads are frequent background lookups; writes are user actions
+        // worth keeping in the log.
+        Ok((status, _)) if status.is_success() && method == Method::GET => {
+            log::debug!("{method} {host}{path} status={} ms={ms}", status.as_u16())
+        }
         Ok((status, _)) if status.is_success() => {
             log::info!("{method} {host}{path} status={} ms={ms}", status.as_u16())
         }
@@ -59,5 +64,20 @@ pub fn log_request<E: Display>(
             String::from_utf8_lossy(body)
         ),
         Err(e) => log::warn!("{method} {host}{path} failed ms={ms}: {e}"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{client, get_json};
+
+    #[test]
+    fn failed_requests_never_expose_the_query() {
+        let result = tauri::async_runtime::block_on(get_json::<serde_json::Value>(
+            &client().unwrap(),
+            "http://127.0.0.1:1/oauth2/revoke?token=secret",
+        ));
+        let error = result.unwrap_err().to_string();
+        assert!(!error.contains("secret"), "{error}");
     }
 }

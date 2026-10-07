@@ -1,60 +1,40 @@
-use super::auth::client::OAuthClient;
 use super::auth::credentials;
+use super::Helix;
 use crate::error::{Error, Result};
-use std::sync::RwLock;
 use std::time::Duration;
+use tokio::sync::Mutex;
 use twitch_api::twitch_oauth2::{TwitchToken, UserToken};
 
 const REFRESH_MARGIN: Duration = Duration::from_secs(60);
 
+/// One lock covers reads and refreshes, so callers never race a refresh or
+/// a logout.
+#[derive(Default)]
 pub struct Session {
-    token: RwLock<Option<UserToken>>,
-    refresh: tokio::sync::Mutex<()>,
+    token: Mutex<Option<UserToken>>,
 }
 
 impl Session {
-    pub fn new() -> Self {
-        Self {
-            token: RwLock::new(None),
-            refresh: tokio::sync::Mutex::new(()),
-        }
-    }
-
-    pub fn current(&self) -> Option<UserToken> {
-        self.token.read().unwrap().clone()
-    }
-
-    pub fn set(&self, token: UserToken) {
+    pub async fn set(&self, token: UserToken) {
+        let mut slot = self.token.lock().await;
         persist(&token);
-        *self.token.write().unwrap() = Some(token);
+        *slot = Some(token);
     }
 
-    pub fn clear(&self) {
-        *self.token.write().unwrap() = None;
+    pub async fn end(&self) -> Result<Option<UserToken>> {
+        let mut slot = self.token.lock().await;
+        credentials::delete()?;
+        Ok(slot.take())
     }
 
-    pub async fn valid(&self, oauth: &OAuthClient) -> Result<UserToken> {
-        if let Some(token) = self.fresh()? {
-            return Ok(token);
+    pub async fn valid(&self, helix: &Helix) -> Result<UserToken> {
+        let mut slot = self.token.lock().await;
+        let token = slot.as_mut().ok_or(Error::NotAuthenticated)?;
+        if token.expires_in() < REFRESH_MARGIN {
+            token.refresh_token(helix).await?;
+            persist(token);
         }
-        let _refreshing = self.refresh.lock().await;
-        if let Some(token) = self.fresh()? {
-            return Ok(token);
-        }
-        let mut token = self.current().ok_or(Error::NotAuthenticated)?;
-        token.refresh_token(oauth).await?;
-        let mut slot = self.token.write().unwrap();
-        if slot.is_none() {
-            return Err(Error::NotAuthenticated);
-        }
-        persist(&token);
-        *slot = Some(token.clone());
-        Ok(token)
-    }
-
-    fn fresh(&self) -> Result<Option<UserToken>> {
-        let token = self.current().ok_or(Error::NotAuthenticated)?;
-        Ok((token.expires_in() >= REFRESH_MARGIN).then_some(token))
+        Ok(token.clone())
     }
 }
 

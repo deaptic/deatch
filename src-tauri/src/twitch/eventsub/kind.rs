@@ -83,16 +83,40 @@ impl EventKind {
         Self::ALL.iter().map(|&k| (k, k.event_name())).collect()
     }
 
-    pub(super) fn requires_mod(self) -> bool {
-        matches!(
-            self,
-            Self::ChannelShoutoutCreate
-                | Self::ChannelFollow
-                | Self::ChannelModerate
-                | Self::AutomodMessageHold
-                | Self::AutomodMessageUpdate
-        )
+    /// The least role that may subscribe, and the least focus a channel
+    /// needs before it's worth the subscription.
+    pub(super) fn requires(self) -> (Role, Focus) {
+        use Focus::{Background, Focused};
+        match self {
+            Self::ChannelChatMessage
+            | Self::ChannelChatNotification
+            | Self::ChannelChatMessageDelete
+            | Self::ChannelChatClear
+            | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
+            Self::ChannelChatSettingsUpdate => (Role::Viewer, Focused),
+            Self::AutomodMessageHold | Self::AutomodMessageUpdate => (Role::Moderator, Background),
+            Self::ChannelShoutoutCreate | Self::ChannelFollow | Self::ChannelModerate => {
+                (Role::Moderator, Focused)
+            }
+            Self::ChannelPointsCustomRewardRedemptionAdd | Self::ChannelUpdate => {
+                (Role::Broadcaster, Focused)
+            }
+        }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, serde::Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub enum Focus {
+    Focused,
+    Background,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum Role {
+    Viewer,
+    Moderator,
+    Broadcaster,
 }
 
 #[cfg(test)]
@@ -104,6 +128,11 @@ mod tests {
     fn event_names_are_unique() {
         let names: HashSet<_> = EventKind::ALL.iter().map(|k| k.event_name()).collect();
         assert_eq!(names.len(), EventKind::ALL.len());
+    }
+
+    #[test]
+    fn all_is_in_declaration_order() {
+        assert!(EventKind::ALL.is_sorted());
     }
 
     #[test]

@@ -17,7 +17,7 @@ let pendingActivity: DiscordActivity | null = null;
 async function connect(): Promise<boolean> {
   if (connected) return true;
   try {
-    await discordConnect({}, { silent: true });
+    await discordConnect({ silent: true });
     connected = true;
     lastSerialized = null;
     return true;
@@ -128,8 +128,6 @@ function buildPresence(
       largeImage: "app_logo",
       largeText: "Deatch",
       startedAt: session.startedAt,
-      activityType: "watching",
-      statusDisplayType: "details",
     };
   }
   const stream = ctx.liveStreams.find((s) => s.user.id === ch.id);
@@ -160,8 +158,6 @@ function buildPresence(
     smallImage: "app_logo",
     smallText: "Deatch",
     startedAt: streamStartedAt ?? session.startedAt,
-    activityType: "watching",
-    statusDisplayType: "details",
     buttons: [{ label: "Open on Twitch", url: channelUrl }],
   };
 }

@@ -1,44 +1,12 @@
-// EventSub subscription kinds + the envelope wrapping every event the
-// backend forwards from Twitch's WebSocket. The `Raw*` types below describe
-// the helix-shaped payloads that arrive as the inner `T` of the envelope —
-// they live here (rather than in `dto/twitch/eventsub.rs`) because the
-// backend re-emits helix types as-is, so the frontend owns the wire spec.
+// The envelope wrapping every event the backend forwards from Twitch's
+// WebSocket. The `Raw*` types below describe the helix-shaped payloads that
+// arrive as the inner `T` of the envelope — they live here (rather than in
+// `dto/twitch/eventsub.rs`) because the backend re-emits helix types as-is,
+// so the frontend owns the wire spec.
 
 import type { EventKind } from "../../bindings.ts";
 
 export type { EventKind };
-
-export const CHAT_KINDS: EventKind[] = [
-  "channel.chat.message",
-  "channel.chat.notification",
-  "channel.chat.message_delete",
-  "channel.chat.clear",
-  "channel.chat.clear_user_messages",
-  "channel.chat_settings.update",
-];
-
-export const MOD_KINDS: EventKind[] = [
-  "channel.shoutout.create",
-  "channel.follow",
-  "channel.moderate",
-  "automod.message.hold",
-  "automod.message.update",
-];
-
-// Broadcaster-only — only subscribable for the logged-in user's own channel.
-export const OWN_KINDS: EventKind[] = [
-  "channel.channel_points_custom_reward_redemption.add",
-  "channel.update",
-];
-
-export const ALL_KINDS: EventKind[] = [
-  ...CHAT_KINDS,
-  ...MOD_KINDS,
-  ...OWN_KINDS,
-];
-
-/// Per-channel subscription status tracked by `services/eventsub.ts`.
-export type SubStatus = "pending" | "active" | "failed" | "disconnected";
 
 export type EventEnvelope<T> = {
   timestamp: string;

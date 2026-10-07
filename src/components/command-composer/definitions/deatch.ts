@@ -1,7 +1,7 @@
 import { banUser } from "../../../lib/api/twitch/moderation.ts";
 import { createClip } from "../../../lib/api/twitch/clips.ts";
-import { getStreams } from "../../../lib/api/twitch/streams.ts";
-import { getFollowedChannels } from "../../../lib/api/twitch/channels.ts";
+import { getStreamsFromIds } from "../../../lib/api/twitch/streams.ts";
+import { getFollowedAt } from "../../../lib/api/twitch/channels.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
 import { formatDuration } from "../../../lib/format/stream.ts";
@@ -94,8 +94,7 @@ export const deatchCommands: Command[] = [
     options: [],
     execute: async (_, ctx) => {
       try {
-        const r = await getStreams({ userIds: [ctx.broadcasterId] });
-        const s = r.data[0];
+        const [s] = await getStreamsFromIds({ userIds: [ctx.broadcasterId] });
         if (!s) {
           appendLocalNotice(ctx.broadcasterId, "Stream is offline");
           return;
@@ -116,12 +115,11 @@ export const deatchCommands: Command[] = [
       const me = user();
       if (!me) return;
       try {
-        const r = await getFollowedChannels({
-          userId: me.id,
+        const followedAt = await getFollowedAt({
           broadcasterId: ctx.broadcasterId,
+          userId: me.id,
         });
-        const f = r[0];
-        if (!f) {
+        if (!followedAt) {
           appendLocalNotice(
             ctx.broadcasterId,
             "You're not following this channel",
@@ -130,7 +128,7 @@ export const deatchCommands: Command[] = [
         }
         appendLocalNotice(
           ctx.broadcasterId,
-          `You started following ${new Time(f.followedAt, "R")}`,
+          `You started following ${new Time(followedAt, "R")}`,
         );
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch followage");

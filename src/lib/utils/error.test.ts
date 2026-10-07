@@ -8,7 +8,7 @@ Deno.test("reads the message out of each backend error kind", () => {
     "Not signed in to Twitch",
   );
   assertEquals(
-    errorMessage({ kind: "helix", message: { status: 403, message: "nope" } }),
+    errorMessage({ kind: "helix", message: "nope" }),
     "nope",
   );
   assertEquals(

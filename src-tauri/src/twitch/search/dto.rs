@@ -1,3 +1,4 @@
+use crate::twitch::ids::GameId;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::search::search_channels::Channel as HelixSearchChannel;
@@ -30,7 +31,7 @@ impl From<HelixSearchChannel> for SearchChannel {
 #[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Category {
-    pub id: String,
+    pub id: GameId,
     pub name: String,
     pub box_art_url: String,
 }
@@ -38,7 +39,7 @@ pub struct Category {
 impl From<TwitchCategory> for Category {
     fn from(c: TwitchCategory) -> Self {
         Self {
-            id: c.id.to_string(),
+            id: GameId(c.id.to_string()),
             name: c.name,
             box_art_url: crate::twitch::template::render_size(&c.box_art_url, 285, 380)
                 .replace("-52x72.", "-285x380."),

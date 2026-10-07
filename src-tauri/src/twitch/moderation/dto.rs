@@ -3,7 +3,6 @@ use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::moderation::{
     BanUser, BannedUser as HelixBannedUser, ModeratedChannel as HelixModeratedChannel,
-    Moderator as HelixModerator,
 };
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
@@ -45,12 +44,6 @@ impl From<HelixBannedUser> for BannedUser {
             reason: b.reason.unwrap_or_default(),
             expires_at: b.expires_at.map(|t| t.to_string()).unwrap_or_default(),
         }
-    }
-}
-
-impl From<HelixModerator> for UserRef {
-    fn from(m: HelixModerator) -> Self {
-        UserRef::new(m.user_id, m.user_login, m.user_name)
     }
 }
 

@@ -4,7 +4,17 @@ use std::fmt;
 macro_rules! id_type {
     ($name:ident) => {
         #[derive(
-            Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize, specta::Type,
+            Debug,
+            Clone,
+            Default,
+            PartialEq,
+            Eq,
+            PartialOrd,
+            Ord,
+            Hash,
+            Serialize,
+            Deserialize,
+            specta::Type,
         )]
         #[serde(transparent)]
         pub struct $name(pub String);
@@ -39,3 +49,15 @@ id_type!(UserId);
 id_type!(StreamId);
 id_type!(GameId);
 id_type!(MessageId);
+
+impl From<UserId> for twitch_api::types::UserId {
+    fn from(id: UserId) -> Self {
+        id.0.into()
+    }
+}
+
+impl From<GameId> for twitch_api::types::CategoryId {
+    fn from(id: GameId) -> Self {
+        id.0.into()
+    }
+}

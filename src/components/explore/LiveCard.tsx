@@ -23,7 +23,7 @@ export default function LiveCard(props: Props) {
   const channel = () => resolveUser(props.stream.user);
   const rate = () => chatActivity.rate(props.stream.user.id);
   const thumbnail = () =>
-    `${props.stream.thumbnail.medium}?v=${props.thumbnailVersion}`;
+    `${props.stream.thumbnailUrl}?v=${props.thumbnailVersion}`;
 
   return (
     <button

@@ -3,12 +3,9 @@ import type {
   Ban,
   BannedUser,
   BanUserParams,
+  BroadcasterUserParams,
   DeleteChatMessagesParams,
-  GetBannedUsersParams,
   ManageHeldAutomodMessageParams,
-  PaginatedResponse,
-  UnbanUserParams,
-  UserRef,
   WarnUserParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
@@ -36,7 +33,7 @@ export function banUser(
 }
 
 export async function unbanUser(
-  params: UnbanUserParams,
+  params: BroadcasterUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.unbanUser, [params], {
@@ -45,17 +42,11 @@ export async function unbanUser(
   });
 }
 
-export function getBannedUsers(
-  params: GetBannedUsersParams,
+export function getBan(
+  params: BroadcasterUserParams,
   options?: InvokeOptions,
-): Promise<PaginatedResponse<BannedUser>> {
-  return invokeCommand(commands.getBannedUsers, [params], options);
-}
-
-export function getModeratedChannels(
-  options?: InvokeOptions,
-): Promise<UserRef[]> {
-  return invokeCommand(commands.getModeratedChannels, [], options);
+): Promise<BannedUser | null> {
+  return invokeCommand(commands.getBan, [params], options);
 }
 
 export async function warnUser(

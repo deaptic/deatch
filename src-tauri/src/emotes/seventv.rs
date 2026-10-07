@@ -5,9 +5,9 @@ use crate::http::get_json;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-struct StvEmote {
+pub(super) struct StvEmote {
     id: String,
-    name: String,
+    pub(super) name: String,
 }
 
 #[derive(Deserialize)]
@@ -26,13 +26,9 @@ struct StvChannelResponse {
     emote_set: Option<StvEmoteSet>,
 }
 
-pub fn emote_url(id: &str) -> String {
-    format!("https://cdn.7tv.app/emote/{id}/1x.webp")
-}
-
-fn to_entry(e: StvEmote) -> EmoteEntry {
+pub(super) fn to_entry(e: StvEmote) -> EmoteEntry {
     EmoteEntry {
-        url: emote_url(&e.id),
+        url: format!("https://cdn.7tv.app/emote/{}/1x.webp", e.id),
         name: e.name,
     }
 }
@@ -51,7 +47,6 @@ pub async fn get_channel_emotes(
         &format!("https://7tv.io/v3/users/twitch/{channel_id}"),
     )
     .await?;
-
     let (emotes, emote_set_id) = match response.emote_set {
         Some(s) => (s.emotes.into_iter().map(to_entry).collect(), Some(s.id)),
         None => (Vec::new(), None),
