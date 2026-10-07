@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt;
 use std::time::{Duration, Instant};
 
+use super::dto::{ConnectionState, ConnectionStats, EventSubStats};
 use super::kind::{Focus, Role};
 use super::EventKind;
 use crate::error::{Error, Result};
@@ -194,6 +195,40 @@ impl Subs {
 
     pub(super) fn connected(&self) -> bool {
         !self.conns.values().any(|c| matches!(c.link, Link::Lost))
+    }
+
+    pub(super) fn stats(&self) -> EventSubStats {
+        let mut stats = EventSubStats {
+            max_connections: MAX_CONNECTIONS as u32,
+            per_connection: PER_CONNECTION as u32,
+            ..EventSubStats::default()
+        };
+        for state in self.states.values() {
+            let counter = match state {
+                State::Retrying { .. } => &mut stats.retrying,
+                State::Waiting { .. } => &mut stats.waiting,
+                State::Capped => &mut stats.capped,
+                State::Creating { .. } | State::Live { .. } => continue,
+            };
+            *counter += 1;
+        }
+        stats.connections = self
+            .conns
+            .iter()
+            .map(|(&id, conn)| ConnectionStats {
+                state: match conn.link {
+                    Link::Connecting => ConnectionState::Connecting,
+                    Link::Up(_) => ConnectionState::Up,
+                    Link::Lost => ConnectionState::Lost,
+                },
+                subscriptions: self
+                    .states
+                    .values()
+                    .filter(|state| state.conn() == Some(id))
+                    .count() as u32,
+            })
+            .collect();
+        stats
     }
 
     pub(super) fn next_wake(&self) -> Option<Instant> {
@@ -717,6 +752,31 @@ mod tests {
             subs.up(conn, format!("s{conn}"));
             next = subs.plan(Some(&viewer(&[])), now);
         }
+    }
+
+    #[test]
+    fn reports_states_and_connections() {
+        let mut subs = subs_for(Channels::from([
+            (id("bg"), Focus::Background),
+            (id("fg"), Focus::Focused),
+        ]));
+        plan(&mut subs);
+        subs.up(0, "s0".into());
+        let next = plan(&mut subs);
+        let batch = &next.create[0];
+        let failed = created(batch, sub("bg", CHAT), Err(Error::Http("boom".into())));
+        subs.accept(failed, Instant::now());
+
+        let stats = subs.stats();
+        let total = subs.wanted.len() as u32;
+        assert_eq!(stats.retrying, 1);
+        assert_eq!(
+            stats.connections,
+            [ConnectionStats {
+                state: ConnectionState::Up,
+                subscriptions: total - 1,
+            }]
+        );
     }
 
     #[test]

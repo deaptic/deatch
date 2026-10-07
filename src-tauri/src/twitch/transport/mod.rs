@@ -55,7 +55,8 @@ impl HttpClient for HelixTransport {
                     result.as_ref().map(|r| (r.status(), r.body().as_ref())),
                 );
                 let response = result?;
-                this.rate_limit.observe(response.headers());
+                this.rate_limit
+                    .observe(parts.uri.host(), response.headers());
                 let Some(delay) = retry::retry_delay(&parts.method, response.status(), attempt)
                 else {
                     return Ok(response);
