@@ -18,7 +18,8 @@ import {
   markUserMessagesDeleted,
   setAutomodHoldStatus,
 } from "../stores/feeds.ts";
-import { isModOfChannel } from "../stores/users.ts";
+import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
+import { events } from "../bindings.ts";
 import { formatShortDuration } from "../format/duration.ts";
 import { moderateNoticeType } from "../constants/events.ts";
 
@@ -115,6 +116,9 @@ function automodReasonLabel(p: RawAutomodMessageHold): string {
 
 export function start(): () => void {
   return unlistenAll([
+    events.moderatedChannelsChanged.listen((e) =>
+      setModeratedChannels(e.payload)
+    ),
     listenEventSub<RawChatMessageDelete>(
       "channel.chat.message_delete",
       (e) => {

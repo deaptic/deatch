@@ -1,13 +1,9 @@
 import { commands } from "../../bindings.ts";
 import type {
+  BroadcasterUserParams,
   ChannelInfo,
-  ChannelVipParams,
-  Follow,
-  GetChannelFollowersParams,
   GetChannelInformationParams,
-  GetFollowedChannelsParams,
   ModifyChannelInformationParams,
-  PaginatedResponse,
   StartCommercialParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
@@ -22,18 +18,11 @@ export function getChannelInformation(
   });
 }
 
-export function getChannelFollowers(
-  params: GetChannelFollowersParams,
+export function getFollowedAt(
+  params: BroadcasterUserParams,
   options?: InvokeOptions,
-): Promise<PaginatedResponse<Follow>> {
-  return invokeCommand(commands.getChannelFollowers, [params], options);
-}
-
-export function getFollowedChannels(
-  params: GetFollowedChannelsParams,
-  options?: InvokeOptions,
-): Promise<Follow[]> {
-  return invokeCommand(commands.getFollowedChannels, [params], options);
+): Promise<string | null> {
+  return invokeCommand(commands.getFollowedAt, [params], options);
 }
 
 export async function modifyChannelInformation(
@@ -54,7 +43,7 @@ export async function startCommercial(
 }
 
 export async function addChannelVip(
-  params: ChannelVipParams,
+  params: BroadcasterUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.addChannelVip, [params], {
@@ -64,7 +53,7 @@ export async function addChannelVip(
 }
 
 export async function removeChannelVip(
-  params: ChannelVipParams,
+  params: BroadcasterUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.removeChannelVip, [params], {

@@ -8,5 +8,8 @@ fn main() {
     if host_mode {
         return deatch_lib::browser_host::run();
     }
+    if args.iter().any(|a| a == "--export-bindings") {
+        return deatch_lib::export_bindings();
+    }
     deatch_lib::run()
 }

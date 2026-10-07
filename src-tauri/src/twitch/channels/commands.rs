@@ -1,10 +1,9 @@
-use super::dto::{ChannelInfo, Follow};
+use super::dto::ChannelInfo;
 use crate::error::Result;
 use crate::twitch::channels::{
-    self, ChannelVipParams, GetChannelFollowersParams, GetChannelInformationParams,
-    GetFollowedChannelsParams, ModifyChannelInformationParams, StartCommercialParams,
+    self, GetChannelInformationParams, ModifyChannelInformationParams, StartCommercialParams,
 };
-use crate::twitch::pagination::PaginatedResponse;
+use crate::twitch::params::BroadcasterUserParams;
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -19,20 +18,11 @@ pub async fn get_channel_information(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_channel_followers(
+pub async fn get_followed_at(
     twitch: State<'_, Twitch>,
-    params: GetChannelFollowersParams,
-) -> Result<PaginatedResponse<Follow>> {
-    channels::get_channel_followers(&twitch.authed().await?, params).await
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn get_followed_channels(
-    twitch: State<'_, Twitch>,
-    params: GetFollowedChannelsParams,
-) -> Result<Vec<Follow>> {
-    channels::get_followed_channels(&twitch.authed().await?, params).await
+    params: BroadcasterUserParams,
+) -> Result<Option<String>> {
+    channels::get_followed_at(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
@@ -55,12 +45,18 @@ pub async fn start_commercial(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn add_channel_vip(twitch: State<'_, Twitch>, params: ChannelVipParams) -> Result<()> {
+pub async fn add_channel_vip(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterUserParams,
+) -> Result<()> {
     channels::add_channel_vip(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn remove_channel_vip(twitch: State<'_, Twitch>, params: ChannelVipParams) -> Result<()> {
+pub async fn remove_channel_vip(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterUserParams,
+) -> Result<()> {
     channels::remove_channel_vip(&twitch.authed().await?, params).await
 }

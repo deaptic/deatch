@@ -1,11 +1,9 @@
 use super::dto::{Ban, BannedUser};
 use crate::error::Result;
 use crate::twitch::moderation::{
-    self, BanUserParams, DeleteChatMessagesParams, GetBannedUsersParams, GetModeratorsParams,
-    ManageHeldAutomodMessageParams, UnbanUserParams, WarnUserParams,
+    self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams, WarnUserParams,
 };
-use crate::twitch::pagination::PaginatedResponse;
-use crate::twitch::users::dto::UserRef;
+use crate::twitch::params::BroadcasterUserParams;
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -26,32 +24,17 @@ pub async fn ban_user(twitch: State<'_, Twitch>, params: BanUserParams) -> Resul
 
 #[tauri::command]
 #[specta::specta]
-pub async fn unban_user(twitch: State<'_, Twitch>, params: UnbanUserParams) -> Result<()> {
+pub async fn unban_user(twitch: State<'_, Twitch>, params: BroadcasterUserParams) -> Result<()> {
     moderation::unban_user(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_banned_users(
+pub async fn get_ban(
     twitch: State<'_, Twitch>,
-    params: GetBannedUsersParams,
-) -> Result<PaginatedResponse<BannedUser>> {
-    moderation::get_banned_users(&twitch.authed().await?, params).await
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn get_moderators(
-    twitch: State<'_, Twitch>,
-    params: GetModeratorsParams,
-) -> Result<PaginatedResponse<UserRef>> {
-    moderation::get_moderators(&twitch.authed().await?, params).await
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn get_moderated_channels(twitch: State<'_, Twitch>) -> Result<Vec<UserRef>> {
-    moderation::get_moderated_channels(&twitch.authed().await?).await
+    params: BroadcasterUserParams,
+) -> Result<Option<BannedUser>> {
+    moderation::get_ban(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]

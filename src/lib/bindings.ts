@@ -5,10 +5,9 @@ import * as __TAURI_EVENT from "@tauri-apps/api/event";
 
 /** Commands */
 export const commands = {
-	discordConnect: (params: DiscordConnectParams) => __TAURI_INVOKE<null>("discord_connect", { params }),
+	discordConnect: () => __TAURI_INVOKE<null>("discord_connect"),
 	discordDisconnect: () => __TAURI_INVOKE<null>("discord_disconnect"),
 	discordSetActivity: (params: ActivityInput) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
-	discordClearActivity: () => __TAURI_INVOKE<null>("discord_clear_activity"),
 	getDeviceCode: () => __TAURI_INVOKE<DcfAuthResponse>("get_device_code"),
 	restoreSession: () => __TAURI_INVOKE<{
 	id: UserId,
@@ -20,43 +19,44 @@ export const commands = {
 	createdAt: string,
 } | null>("restore_session"),
 	revokeSession: () => __TAURI_INVOKE<null>("revoke_session"),
-	subscribe: (params: SubscribeParams) => __TAURI_INVOKE<null>("subscribe", { params }),
-	unsubscribe: (params: SubscribeParams) => __TAURI_INVOKE<null>("unsubscribe", { params }),
+	setEventsubChannels: (params: SetChannelsParams) => __TAURI_INVOKE<null>("set_eventsub_channels", { params }),
 	getFollowedStreams: () => __TAURI_INVOKE<Stream[]>("get_followed_streams"),
 	getStreams: (params: GetStreamsParams) => __TAURI_INVOKE<PaginatedResponse<Stream>>("get_streams", { params }),
 	getStreamsFromIds: (params: GetStreamsFromIdsParams) => __TAURI_INVOKE<Stream[]>("get_streams_from_ids", { params }),
 	createStreamMarker: (params: CreateStreamMarkerParams) => __TAURI_INVOKE<null>("create_stream_marker", { params }),
 	getUsers: (params: GetUsersParams) => __TAURI_INVOKE<User[]>("get_users", { params }),
-	searchChannels: (params: SearchChannelsParams) => __TAURI_INVOKE<SearchChannel[]>("search_channels", { params }),
-	searchCategories: (params: SearchCategoriesParams) => __TAURI_INVOKE<Category[]>("search_categories", { params }),
-	sendShoutout: (params: SendShoutoutParams) => __TAURI_INVOKE<null>("send_shoutout", { params }),
+	searchChannels: (params: SearchParams) => __TAURI_INVOKE<SearchChannel[]>("search_channels", { params }),
+	searchCategories: (params: SearchParams) => __TAURI_INVOKE<Category[]>("search_categories", { params }),
+	sendShoutout: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("send_shoutout", { params }),
 	sendChatMessage: (params: SendChatMessageParams) => __TAURI_INVOKE<SendMessageResult>("send_chat_message", { params }),
 	sendChatAnnouncement: (params: SendChatAnnouncementParams) => __TAURI_INVOKE<null>("send_chat_announcement", { params }),
-	getCheermotes: (params: GetCheermotesParams) => __TAURI_INVOKE<Cheermote[]>("get_cheermotes", { params }),
-	getChatSettings: (params: GetChatSettingsParams) => __TAURI_INVOKE<ChatSettings>("get_chat_settings", { params }),
+	getCheermotes: (params: BroadcasterParams) => __TAURI_INVOKE<Cheermote[]>("get_cheermotes", { params }),
+	getChatSettings: (params: BroadcasterParams) => __TAURI_INVOKE<ChatSettings>("get_chat_settings", { params }),
 	updateChatSettings: (params: UpdateChatSettingsParams) => __TAURI_INVOKE<null>("update_chat_settings", { params }),
 	getUserChatColor: () => __TAURI_INVOKE<string | null>("get_user_chat_color"),
 	updateUserChatColor: (params: UpdateUserChatColorParams) => __TAURI_INVOKE<null>("update_user_chat_color", { params }),
 	getUserEmotes: () => __TAURI_INVOKE<UserEmote[]>("get_user_emotes"),
 	getGlobalEmotes: () => __TAURI_INVOKE<Emote[]>("get_global_emotes"),
 	getGlobalChatBadges: () => __TAURI_INVOKE<BadgeSet[]>("get_global_chat_badges"),
-	getChannelChatBadges: (params: GetChannelChatBadgesParams) => __TAURI_INVOKE<BadgeSet[]>("get_channel_chat_badges", { params }),
+	getChannelChatBadges: (params: BroadcasterParams) => __TAURI_INVOKE<BadgeSet[]>("get_channel_chat_badges", { params }),
 	deleteChatMessages: (params: DeleteChatMessagesParams) => __TAURI_INVOKE<null>("delete_chat_messages", { params }),
 	banUser: (params: BanUserParams) => __TAURI_INVOKE<Ban>("ban_user", { params }),
-	unbanUser: (params: UnbanUserParams) => __TAURI_INVOKE<null>("unban_user", { params }),
-	getBannedUsers: (params: GetBannedUsersParams) => __TAURI_INVOKE<PaginatedResponse<BannedUser>>("get_banned_users", { params }),
-	getModerators: (params: GetModeratorsParams) => __TAURI_INVOKE<PaginatedResponse<UserRef>>("get_moderators", { params }),
-	getModeratedChannels: () => __TAURI_INVOKE<UserRef[]>("get_moderated_channels"),
+	unbanUser: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("unban_user", { params }),
+	getBan: (params: BroadcasterUserParams) => __TAURI_INVOKE<{
+	user: UserRef,
+	moderator: UserRef,
+	reason: string,
+	expiresAt: string,
+} | null>("get_ban", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
-	addChannelVip: (params: ChannelVipParams) => __TAURI_INVOKE<null>("add_channel_vip", { params }),
-	removeChannelVip: (params: ChannelVipParams) => __TAURI_INVOKE<null>("remove_channel_vip", { params }),
-	startRaid: (params: StartRaidParams) => __TAURI_INVOKE<null>("start_raid", { params }),
-	cancelRaid: (params: CancelRaidParams) => __TAURI_INVOKE<null>("cancel_raid", { params }),
+	addChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("add_channel_vip", { params }),
+	removeChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("remove_channel_vip", { params }),
+	startRaid: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("start_raid", { params }),
+	cancelRaid: (params: BroadcasterParams) => __TAURI_INVOKE<null>("cancel_raid", { params }),
 	createClip: (params: CreateClipParams) => __TAURI_INVOKE<CreatedClip>("create_clip", { params }),
 	getChannelInformation: (params: GetChannelInformationParams) => __TAURI_INVOKE<ChannelInfo[]>("get_channel_information", { params }),
-	getChannelFollowers: (params: GetChannelFollowersParams) => __TAURI_INVOKE<PaginatedResponse<Follow>>("get_channel_followers", { params }),
-	getFollowedChannels: (params: GetFollowedChannelsParams) => __TAURI_INVOKE<Follow[]>("get_followed_channels", { params }),
+	getFollowedAt: (params: BroadcasterUserParams) => __TAURI_INVOKE<string | null>("get_followed_at", { params }),
 	modifyChannelInformation: (params: ModifyChannelInformationParams) => __TAURI_INVOKE<null>("modify_channel_information", { params }),
 	startCommercial: (params: StartCommercialParams) => __TAURI_INVOKE<null>("start_commercial", { params }),
 	bttvGetGlobalEmotes: () => __TAURI_INVOKE<EmoteEntry[]>("bttv_get_global_emotes"),
@@ -72,18 +72,18 @@ export const commands = {
 	writeKeymap: (params: WriteKeymapParams) => __TAURI_INVOKE<null>("write_keymap", { params }),
 	watchSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("watch_set_muted", { params }),
 	watchRequestState: () => __TAURI_INVOKE<null>("watch_request_state"),
-	setMentionsBadge: (count: number, iconBytes: number[] | null) => __TAURI_INVOKE<null>("set_mentions_badge", { count, iconBytes }),
+	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
 };
 
 /** Events */
 export const events = {
 	authFailed: makeEvent<AuthFailed>("auth-failed"),
 	authSucceeded: makeEvent<AuthSucceeded>("auth-succeeded"),
+	chatStatus: makeEvent<ChatStatus>("chat-status"),
 	emoteSetUpdated: makeEvent<EmoteSetUpdated>("emote-set-updated"),
 	eventSubConnection: makeEvent<EventSubConnection>("event-sub-connection"),
-	eventSubFailed: makeEvent<EventSubFailed>("event-sub-failed"),
 	eventSubRecovered: makeEvent<EventSubRecovered>("event-sub-recovered"),
-	eventSubSubscription: makeEvent<EventSubSubscription>("event-sub-subscription"),
+	moderatedChannelsChanged: makeEvent<ModeratedChannelsChanged>("moderated-channels-changed"),
 	watchDisconnected: makeEvent<WatchDisconnected>("watch-disconnected"),
 	watchState: makeEvent<WatchState>("watch-state"),
 };
@@ -103,12 +103,8 @@ export type ActivityInput = {
 	smallImage?: string | null,
 	smallText?: string | null,
 	startedAt?: number | null,
-	activityType?: ActivityType | null,
-	statusDisplayType?: StatusDisplayType | null,
-	buttons?: Button[] | null,
+	buttons?: Button[],
 };
-
-export type ActivityType = "playing" | "listening" | "watching" | "competing";
 
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
 
@@ -154,21 +150,36 @@ export type BannedUser = {
 	expiresAt: string,
 };
 
+export type BroadcasterPairParams = {
+	fromBroadcasterId: UserId,
+	toBroadcasterId: UserId,
+};
+
+export type BroadcasterParams = {
+	broadcasterId: UserId,
+};
+
 export type BroadcasterType = "normal" | "affiliate" | "partner";
+
+export type BroadcasterUserParams = {
+	broadcasterId: UserId,
+	userId: UserId,
+};
 
 export type Button = {
 	label: string,
 	url: string,
 };
 
-export type CancelRaidParams = {
-	broadcasterId: UserId,
-};
-
 export type Category = {
-	id: string,
+	id: GameId,
 	name: string,
 	boxArtUrl: string,
+};
+
+export type ChannelFocus = {
+	broadcasterId: UserId,
+	focus: Focus,
 };
 
 export type ChannelIdParams = {
@@ -190,11 +201,6 @@ export type ChannelResult = {
 	emote_set_id: string | null,
 };
 
-export type ChannelVipParams = {
-	broadcasterId: UserId,
-	userId: UserId,
-};
-
 export type ChatColor = "blue" | "blue_violet" | "cadet_blue" | "chocolate" | "coral" | "dodger_blue" | "firebrick" | "golden_rod" | "green" | "hot_pink" | "orange_red" | "red" | "sea_green" | "spring_green" | "yellow_green";
 
 export type ChatSettings = {
@@ -203,6 +209,13 @@ export type ChatSettings = {
 	subscriberMode: boolean,
 	emoteMode: boolean,
 	uniqueChatMode: boolean,
+};
+
+export type ChatState = { type: "connected" } | { type: "disconnected" } | { type: "failed"; error: string };
+
+export type ChatStatus = {
+	broadcasterId: UserId,
+	state: ChatState,
 };
 
 export type ChatterBadge = {
@@ -252,10 +265,6 @@ export type DeleteChatMessagesParams = {
 	messageId?: MessageId | null,
 };
 
-export type DiscordConnectParams = {
-	clientId?: string | null,
-};
-
 export type Emote = {
 	id: string,
 	name: string,
@@ -283,10 +292,7 @@ export type EmoteSetUpdated = {
 	renamed: Rename[],
 };
 
-export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: {
-	status: number,
-	message: string,
-} } | { kind: "http"; message: string } | { kind: "auth"; message: string } | { kind: "keyring"; message: string } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
+export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
 export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shoutout.create" | "channel.follow" | "channel.moderate" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.update";
 
@@ -294,23 +300,12 @@ export type EventSubConnection = {
 	connected: boolean,
 };
 
-export type EventSubFailed = Error;
-
 export type EventSubRecovered = {
 	since: number,
-	broadcasterIds: UserId[],
-};
-
-export type EventSubSubscription = {
 	broadcasterId: UserId,
-	kind: EventKind,
-	status: SubscriptionStatus,
 };
 
-export type Follow = {
-	user: UserRef,
-	followedAt: string,
-};
+export type Focus = "focused" | "background";
 
 export type GameId = string;
 
@@ -319,50 +314,13 @@ export type GameRef = {
 	name: string,
 };
 
-export type GetBannedUsersParams = {
-	broadcasterId: UserId,
-	userId?: UserId | null,
-	first?: number | null,
-	after?: string | null,
-};
-
-export type GetChannelChatBadgesParams = {
-	broadcasterId: UserId,
-};
-
-export type GetChannelFollowersParams = {
-	broadcasterId: UserId,
-	userId?: UserId | null,
-	first?: number | null,
-	after?: string | null,
-};
-
 export type GetChannelInformationParams = {
 	broadcasterIds: UserId[],
 };
 
-export type GetChatSettingsParams = {
-	broadcasterId: UserId,
-};
-
-export type GetCheermotesParams = {
-	broadcasterId: UserId,
-};
-
-export type GetFollowedChannelsParams = {
-	userId: UserId,
-	broadcasterId?: UserId | null,
-};
-
-export type GetModeratorsParams = {
-	broadcasterId: UserId,
-	first?: number | null,
-	after?: string | null,
-};
-
 export type GetRecentMessagesParams = {
 	channelLogin: string,
-	limit?: number | null,
+	limit: number,
 	after?: number | null,
 };
 
@@ -371,13 +329,10 @@ export type GetStreamsFromIdsParams = {
 };
 
 export type GetStreamsParams = {
-	userIds?: UserId[],
-	userLogins?: string[],
 	gameIds?: GameId[],
 	language?: string | null,
 	first?: number | null,
 	after?: string | null,
-	before?: string | null,
 };
 
 export type GetUsersParams = {
@@ -402,6 +357,8 @@ export type MessageBody = {
 export type MessageFragment = { type: "text"; text: string } | { type: "emote"; text: string; emote: EmoteRef } | { type: "mention"; text: string; mention: MentionRef };
 
 export type MessageId = string;
+
+export type ModeratedChannelsChanged = UserRef[];
 
 export type ModifyChannelInformationParams = {
 	broadcasterId: UserId,
@@ -447,11 +404,6 @@ export type Reply = {
 	parent_user_id: string,
 };
 
-export type SearchCategoriesParams = {
-	query?: string,
-	first?: number | null,
-};
-
 export type SearchChannel = {
 	user: UserRef,
 	gameName: string,
@@ -461,10 +413,9 @@ export type SearchChannel = {
 	startedAt: string,
 };
 
-export type SearchChannelsParams = {
+export type SearchParams = {
 	query: string,
-	liveOnly?: boolean,
-	first?: number | null,
+	first: number,
 };
 
 export type SendChatAnnouncementParams = {
@@ -480,16 +431,20 @@ export type SendChatMessageParams = {
 };
 
 export type SendMessageResult = {
-	messageId: string | null,
+	messageId: MessageId | null,
 	isSent: boolean,
 	/**  AutoMod is holding the message for a moderator to approve or deny. */
 	held: boolean,
 	dropReason: string | null,
 };
 
-export type SendShoutoutParams = {
-	fromBroadcasterId: UserId,
-	toBroadcasterId: UserId,
+export type SetChannelsParams = {
+	channels: ChannelFocus[],
+};
+
+export type SetMentionsBadgeParams = {
+	count: number,
+	iconBytes?: number[] | null,
 };
 
 export type SetMutedParams = {
@@ -502,13 +457,6 @@ export type StartCommercialParams = {
 	length: number,
 };
 
-export type StartRaidParams = {
-	fromBroadcasterId: UserId,
-	toBroadcasterId: UserId,
-};
-
-export type StatusDisplayType = "name" | "state" | "details";
-
 export type Stream = {
 	id: StreamId,
 	user: UserRef,
@@ -517,30 +465,12 @@ export type Stream = {
 	viewerCount: number,
 	startedAt: string,
 	language: string,
-	thumbnail: Thumbnail,
+	thumbnailUrl: string,
 	tags: string[],
 	isMature: boolean,
 };
 
 export type StreamId = string;
-
-export type SubscribeParams = {
-	broadcasterId: string,
-	kind: EventKind,
-};
-
-export type SubscriptionStatus = { type: "subscribed" } | { type: "unsubscribed" } | { type: "failed"; error: string };
-
-export type Thumbnail = {
-	small: string,
-	medium: string,
-	large: string,
-};
-
-export type UnbanUserParams = {
-	broadcasterId: UserId,
-	userId: UserId,
-};
 
 export type UpdateChatSettingsParams = {
 	broadcasterId: UserId,

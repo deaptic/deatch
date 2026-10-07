@@ -17,7 +17,6 @@ import {
   isUserId,
   type KnownUser,
   mergeUser,
-  requestsInWindow,
   sameUser,
 } from "../utils/knownUsers.ts";
 
@@ -27,10 +26,6 @@ const MAX_KNOWN = 2000;
 const SAVE_DELAY_MS = 2000;
 const SAVE_MAX_WAIT_MS = 10_000;
 const BATCH_DELAY_MS = 250;
-const BATCH_SIZE = 100;
-const MAX_BATCHES_PER_MINUTE = 20;
-const MINUTE_MS = 60_000;
-const FAILURE_BACKOFF_MS = 30_000;
 
 type Waiter = { resolve: () => void; reject: (error: unknown) => void };
 
@@ -38,8 +33,6 @@ const waiting = new Map<string, Promise<void>>();
 const waiters = new Map<string, Waiter[]>();
 const queued = new Set<string>();
 const notFound = new Set<string>();
-let batchesSentAt: number[] = [];
-let lastFailureAt = 0;
 let batchTimer: ReturnType<typeof setTimeout> | undefined;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 let saveDeadline = 0;
@@ -112,29 +105,18 @@ function enqueue(id: string): Promise<void> {
   });
   waiting.set(id, promise);
   queued.add(id);
-  scheduleBatch(BATCH_DELAY_MS);
+  batchTimer ??= setTimeout(sendBatch, BATCH_DELAY_MS);
   return promise;
 }
 
-function scheduleBatch(delayMs: number) {
-  if (batchTimer === undefined) batchTimer = setTimeout(sendBatch, delayMs);
-}
-
+/// Pacing against Twitch's rate limit lives in the backend transport, so
+/// each batch goes out whole; the backend splits it into 100-id requests.
 async function sendBatch() {
   batchTimer = undefined;
-  const now = Date.now();
-  const backoffLeft = lastFailureAt + FAILURE_BACKOFF_MS - now;
-  if (backoffLeft > 0) return scheduleBatch(backoffLeft);
-  batchesSentAt = requestsInWindow(batchesSentAt, now, MINUTE_MS);
-  if (batchesSentAt.length >= MAX_BATCHES_PER_MINUTE) {
-    return scheduleBatch(MINUTE_MS - (now - batchesSentAt[0]));
-  }
-  const ids = [...queued].filter((id) => !isKnown(id)).slice(0, BATCH_SIZE);
+  const ids = [...queued].filter((id) => !isKnown(id));
   for (const id of queued) if (isKnown(id)) settle(id);
-  for (const id of ids) queued.delete(id);
-  if (queued.size > 0) scheduleBatch(BATCH_DELAY_MS);
+  queued.clear();
   if (ids.length === 0) return;
-  batchesSentAt.push(now);
   try {
     const found = new Set(
       (await fetch({ ids }, { silent: true })).map((u) => u.id),
@@ -144,7 +126,6 @@ async function sendBatch() {
       settle(id);
     }
   } catch (error) {
-    lastFailureAt = Date.now();
     for (const id of ids) settle(id, error);
   }
 }

@@ -2,7 +2,6 @@ import {
   createEffect,
   createMemo,
   createSignal,
-  on,
   onCleanup,
   onMount,
 } from "solid-js";
@@ -12,15 +11,11 @@ import {
   getStreamsFromIds,
 } from "../../lib/api/twitch/streams.ts";
 import * as users from "../../lib/services/users.ts";
-import { getChannelInformation } from "../../lib/api/twitch/channels.ts";
+import * as channelInfo from "../../lib/services/channelInfo.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
-import {
-  rememberChannelInfo,
-  setLiveStreams,
-  userFromRef,
-} from "../../lib/stores/channels.ts";
+import { setLiveStreams, userFromRef } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
@@ -82,14 +77,7 @@ export function createRailChannels(
   async function loadOfflineInfo(candidates: string[], streams: Stream[]) {
     const liveIds = new Set(streams.map((s) => s.user.id));
     const ids = candidates.filter((id) => !liveIds.has(id));
-    if (ids.length === 0) return;
-    try {
-      rememberChannelInfo(
-        await getChannelInformation({ broadcasterIds: [...new Set(ids)] }),
-      );
-    } catch {
-      // Offline metadata is decorative; the rail works without it.
-    }
+    await channelInfo.load(ids);
   }
 
   async function fetchLive() {
@@ -160,7 +148,7 @@ export function createRailChannels(
         }
         setPinnedMeta(updates);
       })
-      .catch(() => {});
+      .catch((e) => console.warn("pinned channel lookup failed", missing, e));
   });
 
   onMount(() => {
@@ -170,27 +158,35 @@ export function createRailChannels(
     onCleanup(() => clearInterval(id));
   });
 
-  async function track(id: string) {
-    if (trackedIds.has(id)) return;
-    trackedIds.add(id);
+  async function track(ids: string[]) {
+    for (const id of ids) trackedIds.add(id);
     try {
-      const streams = await getStreamsFromIds({ userIds: [id] });
-      if (streams.length > 0) {
-        setLiveStreams((prev) => [
-          ...prev.filter((s) => s.user.id !== id),
-          ...streams,
-        ]);
-      }
-      await loadOfflineInfo([id], streams);
-    } catch {
-      trackedIds.delete(id);
+      const streams = await getStreamsFromIds({ userIds: ids });
+      const fetched = new Set(ids);
+      setLiveStreams((prev) => [
+        ...prev.filter((s) => !fetched.has(s.user.id)),
+        ...streams,
+      ]);
+      await loadOfflineInfo(ids, streams);
+    } catch (e) {
+      for (const id of ids) trackedIds.delete(id);
+      console.warn("channel state lookup failed", ids, e);
     }
   }
 
-  createEffect(on(watchedChannel, (ch) => ch && track(ch.id), { defer: true }));
-  createEffect(
-    on(selectedChannel, (ch) => ch && track(ch.id), { defer: true }),
-  );
+  createEffect(() => {
+    if (loadingLive()) return;
+    const wanted = [
+      ...pinnedChannels(),
+      ...watchWarmedChannels().map((ch) => ch?.id),
+      watchedChannel()?.id,
+      selectedChannel()?.id,
+    ];
+    const fresh = [...new Set(wanted)].filter(
+      (id): id is string => !!id && !trackedIds.has(id),
+    );
+    if (fresh.length > 0) void track(fresh);
+  });
 
   return {
     loadingPinned,

@@ -19,8 +19,12 @@ impl HelixTransport {
     pub fn new(http: reqwest::Client) -> Self {
         Self {
             http,
-            rate_limit: Arc::new(RateLimit::new()),
+            rate_limit: Arc::default(),
         }
+    }
+
+    pub fn paused_for(&self) -> Option<std::time::Duration> {
+        self.rate_limit.paused_for()
     }
 }
 
@@ -38,7 +42,11 @@ impl HttpClient for HelixTransport {
             loop {
                 this.rate_limit.wait().await;
                 let started = Instant::now();
-                let result = this.http.req(rebuild(&parts, &body)).await;
+                let result = this
+                    .http
+                    .req(rebuild(&parts, &body))
+                    .await
+                    .map_err(reqwest::Error::without_url);
                 log_request(
                     &parts.method,
                     parts.uri.host().unwrap_or_default(),
@@ -48,9 +56,7 @@ impl HttpClient for HelixTransport {
                 );
                 let response = result?;
                 this.rate_limit.observe(response.headers());
-                let reset_in = RateLimit::reset_in(response.headers());
-                let Some(delay) =
-                    retry::retry_delay(&parts.method, response.status(), reset_in, attempt)
+                let Some(delay) = retry::retry_delay(&parts.method, response.status(), attempt)
                 else {
                     return Ok(response);
                 };
@@ -74,4 +80,22 @@ fn rebuild(parts: &http::request::Parts, body: &Bytes) -> Request {
     *request.version_mut() = parts.version;
     *request.headers_mut() = parts.headers.clone();
     request
+}
+
+#[cfg(test)]
+mod tests {
+    use super::HelixTransport;
+    use twitch_api::HttpClient;
+
+    #[test]
+    fn failed_requests_never_expose_the_query() {
+        let transport = HelixTransport::new(crate::http::client().unwrap());
+        let request = http::Request::post("http://127.0.0.1:1/oauth2/revoke?token=secret")
+            .body(Default::default())
+            .unwrap();
+        let error = tauri::async_runtime::block_on(transport.req(request))
+            .unwrap_err()
+            .to_string();
+        assert!(!error.contains("secret"), "{error}");
+    }
 }

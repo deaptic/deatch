@@ -7,7 +7,6 @@ import {
   isKnownUser,
   isUserId,
   mergeUser,
-  requestsInWindow,
   sameUser,
 } from "./knownUsers.ts";
 
@@ -81,11 +80,4 @@ Deno.test("freshEntries never drops kept ids", () => {
     Object.keys(freshEntries(entries, 1000, 500, 2, new Set(["me"]))),
     ["me", "c"],
   );
-});
-
-Deno.test("requestsInWindow keeps only requests inside the window", () => {
-  assertEquals(requestsInWindow([0, 30_000, 59_000], 60_000, 60_000), [
-    30_000,
-    59_000,
-  ]);
 });

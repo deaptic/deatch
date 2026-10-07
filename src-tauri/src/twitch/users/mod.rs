@@ -4,10 +4,11 @@ pub mod dto;
 use super::Authed;
 use crate::error::{Error, Result};
 use crate::twitch::ids::UserId;
+use crate::twitch::pagination::collect;
 use dto::User;
+use futures_util::StreamExt;
 use serde::Deserialize;
-use twitch_api::helix::users::GetUsersRequest;
-use twitch_api::types;
+use twitch_api::types::{self, Collection};
 
 #[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
@@ -16,35 +17,13 @@ pub struct GetUsersParams {
     pub logins: Vec<String>,
 }
 
-/// Helix caps ids + logins at 100 per request.
-const MAX_PER_REQUEST: usize = 100;
-
 pub async fn get_users(twitch: &Authed<'_>, params: GetUsersParams) -> Result<Vec<User>> {
-    let ids: Vec<types::UserId> = params.ids.into_iter().map(|id| id.0.into()).collect();
+    let ids: Vec<types::UserId> = params.ids.into_iter().map(Into::into).collect();
     let logins: Vec<types::UserName> = params.logins.into_iter().map(Into::into).collect();
-    if ids.len() + logins.len() <= MAX_PER_REQUEST {
-        return fetch(twitch, &ids, &logins).await;
-    }
-    let mut users = Vec::new();
-    for chunk in ids.chunks(MAX_PER_REQUEST) {
-        users.extend(fetch(twitch, chunk, &[]).await?);
-    }
-    for chunk in logins.chunks(MAX_PER_REQUEST) {
-        users.extend(fetch(twitch, &[], chunk).await?);
-    }
-    Ok(users)
-}
-
-async fn fetch(
-    twitch: &Authed<'_>,
-    ids: &[types::UserId],
-    logins: &[types::UserName],
-) -> Result<Vec<User>> {
-    let mut request = GetUsersRequest::new();
-    request.id = ids.into();
-    request.login = logins.into();
-    let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(response.data.into_iter().map(User::from).collect())
+    let (ids, logins): (Collection<_>, Collection<_>) = (ids.into(), logins.into());
+    let by_id = twitch.helix.get_users_from_ids(&ids, &twitch.token);
+    let by_login = twitch.helix.get_users_from_logins(&logins, &twitch.token);
+    collect(by_id.chain(by_login)).await
 }
 
 pub async fn get_self(twitch: &Authed<'_>) -> Result<User> {

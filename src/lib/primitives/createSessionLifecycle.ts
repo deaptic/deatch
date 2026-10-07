@@ -1,5 +1,4 @@
 import { createEffect, onMount } from "solid-js";
-import { getModeratedChannels } from "../api/twitch/moderation.ts";
 import { setModeratedChannels, user } from "../stores/users.ts";
 import { setGlobalEmotes } from "../stores/emotes.ts";
 import * as emotes from "../services/emotes.ts";
@@ -12,14 +11,12 @@ let userScopedFetched = false;
 function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
-  getModeratedChannels()
-    .then(setModeratedChannels)
-    .catch(() => {});
   emotes.loadGlobal().then(setGlobalEmotes).catch(() => {});
 }
 
 function resetUserScopedCaches() {
   userScopedFetched = false;
+  setModeratedChannels([]);
   badges.resetChannelCache();
   emotes.resetChannelThirdParty();
   emotes.resetUser();

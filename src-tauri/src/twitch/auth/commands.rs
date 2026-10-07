@@ -1,4 +1,4 @@
-use super::DcfAuthResponse;
+use super::dto::DcfAuthResponse;
 use crate::error::Result;
 use crate::twitch::users::dto::User;
 use crate::twitch::Twitch;

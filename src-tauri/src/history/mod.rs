@@ -9,7 +9,7 @@ use crate::error::Result;
 use crate::http::get_json;
 use dto::{ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, RecentMessage, Reply};
 use serde::Deserialize;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 type Tags = HashMap<String, String>;
 
@@ -58,6 +58,14 @@ fn unescape(s: &str) -> String {
     out
 }
 
+fn tag<'a>(tags: &'a Tags, key: &str) -> &'a str {
+    tags.get(key).map_or("", String::as_str)
+}
+
+fn nonempty<'a>(tags: &'a Tags, key: &str) -> Option<&'a str> {
+    Some(tag(tags, key)).filter(|value| !value.is_empty())
+}
+
 fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
     let text = body
         .strip_prefix("\u{0001}ACTION ")
@@ -65,74 +73,53 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
         .unwrap_or(body)
         .to_string();
 
-    let tag = |k: &str| tags.get(k).cloned().unwrap_or_default();
-    let display_name = tags
-        .get("display-name")
-        .filter(|s| !s.is_empty())
-        .cloned()
-        .unwrap_or_else(|| nick.to_string());
-
     RecentMessage {
-        broadcaster_user_id: tag("room-id"),
-        message_id: tag("id"),
-        chatter_user_id: tag("user-id"),
-        chatter_user_login: nick.to_string(),
-        chatter_user_name: display_name,
-        color: tag("color"),
+        broadcaster_user_id: tag(tags, "room-id").into(),
+        message_id: tag(tags, "id").into(),
+        chatter_user_id: tag(tags, "user-id").into(),
+        chatter_user_login: nick.into(),
+        chatter_user_name: nonempty(tags, "display-name").unwrap_or(nick).into(),
+        color: tag(tags, "color").into(),
         message: MessageBody {
-            fragments: build_fragments(&text, tags.get("emotes").map_or("", String::as_str)),
+            fragments: build_fragments(&text, tag(tags, "emotes")),
             text,
         },
-        message_type: if tag("first-msg") == "1" {
+        message_type: if tag(tags, "first-msg") == "1" {
             "user_intro".into()
         } else {
             "text".into()
         },
         badges: parse_badges(tags),
         reply: parse_reply(tags),
-        channel_points_custom_reward_id: tags
-            .get("custom-reward-id")
-            .filter(|s| !s.is_empty())
-            .cloned(),
-        timestamp_ms: tag("tmi-sent-ts").parse().unwrap_or(0),
+        channel_points_custom_reward_id: nonempty(tags, "custom-reward-id").map(Into::into),
+        timestamp_ms: tag(tags, "tmi-sent-ts").parse().unwrap_or(0),
         deleted: false,
     }
 }
 
 fn parse_badges(tags: &Tags) -> Vec<ChatterBadge> {
-    let badges = tags.get("badges").map_or("", String::as_str);
-    if badges.is_empty() {
-        return Vec::new();
-    }
-    let info: HashMap<&str, &str> = tags
-        .get("badge-info")
-        .map_or("", String::as_str)
+    let info: HashMap<&str, &str> = tag(tags, "badge-info")
         .split(',')
         .filter_map(|b| b.split_once('/'))
         .collect();
-    badges
+    tag(tags, "badges")
         .split(',')
         .filter_map(|b| b.split_once('/'))
         .map(|(set_id, id)| ChatterBadge {
-            info: info.get(set_id).map_or_else(String::new, |s| s.to_string()),
-            set_id: set_id.to_string(),
-            id: id.to_string(),
+            info: info.get(set_id).copied().unwrap_or_default().into(),
+            set_id: set_id.into(),
+            id: id.into(),
         })
         .collect()
 }
 
 fn parse_reply(tags: &Tags) -> Option<Reply> {
-    let parent_message_id = tags
-        .get("reply-parent-msg-id")
-        .filter(|s| !s.is_empty())?
-        .clone();
-    let get = |k| tags.get(k).cloned().unwrap_or_default();
     Some(Reply {
-        parent_message_id,
-        parent_message_body: get("reply-parent-msg-body"),
-        parent_user_name: get("reply-parent-display-name"),
-        parent_user_login: get("reply-parent-user-login"),
-        parent_user_id: get("reply-parent-user-id"),
+        parent_message_id: nonempty(tags, "reply-parent-msg-id")?.into(),
+        parent_message_body: tag(tags, "reply-parent-msg-body").into(),
+        parent_user_name: tag(tags, "reply-parent-display-name").into(),
+        parent_user_login: tag(tags, "reply-parent-user-login").into(),
+        parent_user_id: tag(tags, "reply-parent-user-id").into(),
     })
 }
 
@@ -240,12 +227,10 @@ pub async fn fetch_recent_messages(
     Ok(parse_messages(&resp.messages))
 }
 
+/// Lines arrive in chat order, so a clear only ever touches messages
+/// already collected.
 fn parse_messages(lines: &[String]) -> Vec<RecentMessage> {
     let mut messages: Vec<RecentMessage> = Vec::new();
-    let mut deleted_ids: HashSet<String> = HashSet::new();
-    let mut user_clears: Vec<(String, i64)> = Vec::new();
-    let mut full_clears: Vec<i64> = Vec::new();
-
     for line in lines {
         let Some((tags, nick, command, body)) = split_irc(line) else {
             continue;
@@ -253,34 +238,27 @@ fn parse_messages(lines: &[String]) -> Vec<RecentMessage> {
         match command {
             "PRIVMSG" => messages.push(parse_privmsg(&tags, nick, body)),
             "CLEARMSG" => {
-                if let Some(id) = tags.get("target-msg-id") {
-                    deleted_ids.insert(id.clone());
-                }
+                let target = nonempty(&tags, "target-msg-id");
+                mark_deleted(&mut messages, |m| Some(m.message_id.as_str()) == target);
             }
             "CLEARCHAT" => {
-                let ts = tags
-                    .get("tmi-sent-ts")
-                    .and_then(|v| v.parse().ok())
-                    .unwrap_or(i64::MAX);
-                match tags.get("target-user-id") {
-                    Some(uid) if !uid.is_empty() => user_clears.push((uid.clone(), ts)),
-                    _ => full_clears.push(ts),
-                }
+                let user = nonempty(&tags, "target-user-id");
+                mark_deleted(&mut messages, |m| {
+                    user.is_none_or(|u| m.chatter_user_id == u)
+                });
             }
             _ => {}
         }
     }
-
-    for m in &mut messages {
-        m.deleted = deleted_ids.contains(&m.message_id)
-            || user_clears
-                .iter()
-                .any(|(uid, ts)| uid == &m.chatter_user_id && m.timestamp_ms <= *ts)
-            || full_clears.iter().any(|ts| m.timestamp_ms <= *ts);
-    }
-
     messages
 }
+
+fn mark_deleted(messages: &mut [RecentMessage], cleared: impl Fn(&RecentMessage) -> bool) {
+    for message in messages.iter_mut().filter(|m| cleared(m)) {
+        message.deleted = true;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::parse_messages;

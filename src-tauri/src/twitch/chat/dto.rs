@@ -1,4 +1,4 @@
-use crate::twitch::ids::UserId;
+use crate::twitch::ids::{MessageId, UserId};
 use serde::Serialize;
 use twitch_api::helix::chat::{
     send_chat_message::{ChatMessageDropCode, SendChatMessageResponse},
@@ -95,7 +95,7 @@ impl From<HelixBadgeSet> for BadgeSet {
 #[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageResult {
-    pub message_id: Option<String>,
+    pub message_id: Option<MessageId>,
     pub is_sent: bool,
     /// AutoMod is holding the message for a moderator to approve or deny.
     pub held: bool,
@@ -109,7 +109,7 @@ impl From<SendChatMessageResponse> for SendMessageResult {
             .as_ref()
             .is_some_and(|d| matches!(d.code, ChatMessageDropCode::MsgRejected));
         Self {
-            message_id: r.message_id.map(|m| m.to_string()),
+            message_id: r.message_id.map(|m| MessageId(m.to_string())),
             is_sent: r.is_sent,
             held,
             drop_reason: r.drop_reason.map(|d| d.message),

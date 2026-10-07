@@ -8,6 +8,7 @@ pub mod game;
 pub mod ids;
 pub mod moderation;
 pub mod pagination;
+pub mod params;
 pub mod raids;
 pub mod search;
 pub mod session;
@@ -17,23 +18,18 @@ mod transport;
 pub mod users;
 
 use crate::error::Result;
-use auth::client::OAuthClient;
 use session::Session;
-use std::collections::HashSet;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::HelixClient;
-use users::dto::UserRef;
 
 pub type Helix = HelixClient<'static, transport::HelixTransport>;
 
 #[derive(Clone)]
 pub struct Twitch {
-    oauth: OAuthClient,
     helix: Helix,
     session: Arc<Session>,
     eventsub: Arc<eventsub::Handle>,
-    moderated_channel_ids: Arc<Mutex<HashSet<String>>>,
 }
 
 pub struct Authed<'a> {
@@ -44,16 +40,14 @@ pub struct Authed<'a> {
 impl Twitch {
     pub fn new(http: reqwest::Client) -> Self {
         Self {
-            helix: HelixClient::with_client(transport::HelixTransport::new(http.clone())),
-            oauth: OAuthClient::new(http),
-            session: Arc::new(Session::new()),
+            helix: HelixClient::with_client(transport::HelixTransport::new(http)),
+            session: Arc::default(),
             eventsub: Arc::default(),
-            moderated_channel_ids: Arc::default(),
         }
     }
 
     pub async fn authed(&self) -> Result<Authed<'_>> {
-        let token = self.session.valid(&self.oauth).await?;
+        let token = self.session.valid(&self.helix).await?;
         Ok(self.with_token(token))
     }
 
@@ -64,8 +58,7 @@ impl Twitch {
         }
     }
 
-    fn cache_moderated_channel_ids(&self, channels: &[UserRef]) {
-        *self.moderated_channel_ids.lock().unwrap() =
-            channels.iter().map(|ch| ch.id.0.clone()).collect();
+    fn rate_limited_for(&self) -> Option<std::time::Duration> {
+        self.helix.get_client().paused_for()
     }
 }

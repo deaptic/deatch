@@ -1,8 +1,7 @@
 use crate::error::Result;
 use futures_util::{Stream, TryStreamExt};
 use serde::Serialize;
-use std::borrow::Cow;
-use twitch_api::helix::{ClientRequestError, Cursor, CursorRef, Paginated, Response};
+use twitch_api::helix::ClientRequestError;
 
 #[derive(Serialize, specta::Type)]
 pub struct Pagination {
@@ -31,25 +30,4 @@ where
     T: From<U>,
 {
     Ok(stream.map_ok(T::from).try_collect().await?)
-}
-
-pub fn cursor(after: Option<String>) -> Option<Cow<'static, CursorRef>> {
-    after.map(|s| Cow::Owned(Cursor::from(s)))
-}
-
-pub fn into_paginated<R, U, T>(
-    response: Response<R, Vec<U>>,
-    map: impl FnMut(U) -> T,
-) -> PaginatedResponse<T>
-where
-    R: Paginated,
-    U: serde::de::DeserializeOwned + PartialEq,
-{
-    PaginatedResponse::new(
-        response.data.into_iter().map(map).collect(),
-        response
-            .pagination_data
-            .cursor
-            .map(|c| c.as_str().to_string()),
-    )
 }

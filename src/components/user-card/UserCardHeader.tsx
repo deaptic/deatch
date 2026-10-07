@@ -1,10 +1,7 @@
-import type { Follow, User } from "../../lib/types/index.ts";
+import type { User } from "../../lib/types/index.ts";
 import { createEffect, createSignal, on } from "solid-js";
 import * as users from "../../lib/services/users.ts";
-import {
-  getChannelFollowers,
-  getFollowedChannels,
-} from "../../lib/api/twitch/channels.ts";
+import { getFollowedAt } from "../../lib/api/twitch/channels.ts";
 import {
   knownUser,
   moderatedChannels,
@@ -17,8 +14,6 @@ import IconButton from "../ui/IconButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta from "./UserCardMeta.tsx";
 
-type Follower = Follow;
-
 type Props = {
   chatterId: string;
   broadcasterId: string;
@@ -29,41 +24,24 @@ type Props = {
 
 export default function UserCardHeader(props: Props) {
   const user = (): User | null => knownUser(props.chatterId) ?? null;
-  const [follower, setFollower] = createSignal<Follower | null>(null);
+  const [followedAt, setFollowedAt] = createSignal<string | null>(null);
 
-  const canQueryFollowers = () => {
+  const canSeeFollow = (chatterId: string) => {
     const me = currentUser();
     if (!me) return false;
-    if (me.id === props.broadcasterId) return true;
+    if (me.id === chatterId || me.id === props.broadcasterId) return true;
     return moderatedChannels().some((c) => c.id === props.broadcasterId);
   };
 
   createEffect(on(() => props.chatterId, (id) => {
-    setFollower(null);
+    setFollowedAt(null);
     users.fetch({ ids: [id] }, { silent: true }).catch(() => {});
-    const me = currentUser();
-    if (me && id === me.id) {
-      getFollowedChannels(
-        { userId: id, broadcasterId: props.broadcasterId },
-        { silent: true },
-      )
-        .then((rows) => {
-          const row = rows[0];
-          if (!row) return;
-          setFollower({
-            user: { id, login: me.login, displayName: me.displayName },
-            followedAt: row.followedAt,
-          });
-        })
-        .catch(() => {});
-      return;
-    }
-    if (!canQueryFollowers()) return;
-    getChannelFollowers(
-      { broadcasterId: props.broadcasterId, userId: id, first: 1 },
+    if (!canSeeFollow(id)) return;
+    getFollowedAt(
+      { broadcasterId: props.broadcasterId, userId: id },
       { silent: true },
     )
-      .then((res) => setFollower(res.data[0] ?? null))
+      .then(setFollowedAt)
       .catch(() => {});
   }));
 
@@ -96,7 +74,7 @@ export default function UserCardHeader(props: Props) {
         <UserCardMeta
           chatterId={props.chatterId}
           user={user()}
-          follower={follower()}
+          followedAt={followedAt()}
         />
       </div>
       <IconButton

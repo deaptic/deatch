@@ -1,10 +1,11 @@
 pub mod commands;
 pub mod dto;
+pub mod events;
 
 use super::Authed;
 use crate::error::Result;
 use crate::twitch::ids::{MessageId, UserId};
-use crate::twitch::pagination::PaginatedResponse;
+use crate::twitch::params::BroadcasterUserParams;
 use crate::twitch::users::dto::UserRef;
 use dto::{Ban, BannedUser};
 use serde::Deserialize;
@@ -12,7 +13,7 @@ use twitch_api::helix::moderation::{
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
-    GetBannedUsersRequest, GetModeratorsRequest,
+    GetBannedUsersRequest,
 };
 use twitch_api::types;
 
@@ -78,14 +79,7 @@ pub async fn ban_user(twitch: &Authed<'_>, params: BanUserParams) -> Result<Ban>
     Ok(Ban::from(ban))
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct UnbanUserParams {
-    pub broadcaster_id: UserId,
-    pub user_id: UserId,
-}
-
-pub async fn unban_user(twitch: &Authed<'_>, params: UnbanUserParams) -> Result<()> {
+pub async fn unban_user(twitch: &Authed<'_>, params: BroadcasterUserParams) -> Result<()> {
     twitch
         .helix
         .unban_user(
@@ -98,59 +92,14 @@ pub async fn unban_user(twitch: &Authed<'_>, params: UnbanUserParams) -> Result<
     Ok(())
 }
 
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct GetBannedUsersParams {
-    pub broadcaster_id: UserId,
-    #[serde(default)]
-    pub user_id: Option<UserId>,
-    #[serde(default)]
-    pub first: Option<usize>,
-    #[serde(default)]
-    pub after: Option<String>,
-}
-
-pub async fn get_banned_users(
+pub async fn get_ban(
     twitch: &Authed<'_>,
-    params: GetBannedUsersParams,
-) -> Result<PaginatedResponse<BannedUser>> {
+    params: BroadcasterUserParams,
+) -> Result<Option<BannedUser>> {
     let mut request = GetBannedUsersRequest::broadcaster_id(params.broadcaster_id.as_str());
-    if let Some(uid) = params.user_id {
-        request.user_id = vec![types::UserId::from(uid.0)].into();
-    }
-    request.first = params.first;
-    request.after = crate::twitch::pagination::cursor(params.after);
-
+    request.user_id = vec![types::UserId::from(params.user_id)].into();
     let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(crate::twitch::pagination::into_paginated(
-        response,
-        BannedUser::from,
-    ))
-}
-
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct GetModeratorsParams {
-    pub broadcaster_id: UserId,
-    #[serde(default)]
-    pub first: Option<usize>,
-    #[serde(default)]
-    pub after: Option<String>,
-}
-
-pub async fn get_moderators(
-    twitch: &Authed<'_>,
-    params: GetModeratorsParams,
-) -> Result<PaginatedResponse<UserRef>> {
-    let mut request = GetModeratorsRequest::broadcaster_id(params.broadcaster_id.as_str());
-    request.first = params.first;
-    request.after = crate::twitch::pagination::cursor(params.after);
-
-    let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(crate::twitch::pagination::into_paginated(
-        response,
-        UserRef::from,
-    ))
+    Ok(response.data.into_iter().next().map(BannedUser::from))
 }
 
 pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {

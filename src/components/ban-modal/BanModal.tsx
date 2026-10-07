@@ -1,10 +1,6 @@
 import type { BannedUser } from "../../lib/types/index.ts";
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import {
-  banUser,
-  getBannedUsers,
-  unbanUser,
-} from "../../lib/api/twitch/moderation.ts";
+import { banUser, getBan, unbanUser } from "../../lib/api/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import Field from "../ui/Field.tsx";
@@ -114,11 +110,11 @@ export default function BanModal(props: Props) {
     });
 
     if (isBroadcaster()) {
-      getBannedUsers(
-        { broadcasterId: props.broadcasterId, userId: props.userId, first: 1 },
+      getBan(
+        { broadcasterId: props.broadcasterId, userId: props.userId },
         { silent: true },
       )
-        .then((res) => setBanInfo(res.data[0] ?? null))
+        .then(setBanInfo)
         .catch(() => setBanInfo(null));
     } else {
       // Twitch's banned-users endpoint is broadcaster-only. Mods can still

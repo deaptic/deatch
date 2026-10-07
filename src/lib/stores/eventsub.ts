@@ -1,8 +1,3 @@
 import { createSignal } from "solid-js";
-import type { EventKind, SubStatus } from "../types/twitch/eventsub.ts";
-
-export const [eventsubState, setEventsubState] = createSignal<
-  Map<string, Map<EventKind, SubStatus>>
->(new Map());
 
 export const [chatConnected, setChatConnected] = createSignal(true);

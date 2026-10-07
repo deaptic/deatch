@@ -1,16 +1,15 @@
 import { commands } from "../../bindings.ts";
 import type {
   BadgeSet,
+  BroadcasterPairParams,
+  BroadcasterParams,
   ChatSettings,
   Emote,
-  GetChannelChatBadgesParams,
-  GetChatSettingsParams,
   GetRecentMessagesParams,
   RecentMessage,
   SendChatAnnouncementParams,
   SendChatMessageParams,
   SendMessageResult,
-  SendShoutoutParams,
   UpdateChatSettingsParams,
   UpdateUserChatColorParams,
   UserEmote,
@@ -32,14 +31,14 @@ export function getGlobalChatBadges(
 }
 
 export function getChannelChatBadges(
-  params: GetChannelChatBadgesParams,
+  params: BroadcasterParams,
   options?: InvokeOptions,
 ): Promise<BadgeSet[]> {
   return invokeCommand(commands.getChannelChatBadges, [params], options);
 }
 
 export async function sendShoutout(
-  params: SendShoutoutParams,
+  params: BroadcasterPairParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.sendShoutout, [params], {
@@ -73,7 +72,7 @@ export async function sendChatAnnouncement(
 }
 
 export function getChatSettings(
-  params: GetChatSettingsParams,
+  params: BroadcasterParams,
   options?: InvokeOptions,
 ): Promise<ChatSettings> {
   return invokeCommand(commands.getChatSettings, [params], options);

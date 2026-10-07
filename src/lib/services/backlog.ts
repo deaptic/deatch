@@ -17,8 +17,8 @@ export function fillGap(
   broadcasterId: string,
   channelLogin: string,
   sinceMs: number,
-) {
-  getRecentMessages(
+): Promise<void> {
+  return getRecentMessages(
     { channelLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
     { silent: true },
   )

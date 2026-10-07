@@ -1,3 +1,4 @@
+mod clock;
 mod discord;
 mod emit;
 mod emotes;
@@ -22,6 +23,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
         .error_handling(tauri_specta::ErrorHandlingMode::Throw)
         .dangerously_cast_bigints_to_number()
         .typ::<error::Error>()
+        .typ::<twitch::eventsub::EventKind>()
         .constant(
             "EVENTSUB_EVENT_NAMES",
             twitch::eventsub::EventKind::event_names(),
@@ -31,9 +33,9 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::auth::events::AuthFailed,
             twitch::eventsub::events::EventSubConnection,
             twitch::eventsub::events::EventSubRecovered,
-            twitch::eventsub::events::EventSubSubscription,
-            twitch::eventsub::events::EventSubFailed,
-            emotes::dto::EmoteSetUpdated,
+            twitch::eventsub::events::ChatStatus,
+            twitch::moderation::events::ModeratedChannelsChanged,
+            emotes::events::EmoteSetUpdated,
             watch::events::WatchState,
             watch::events::WatchDisconnected,
         ])
@@ -41,12 +43,10 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
-            discord::commands::discord_clear_activity,
             twitch::auth::commands::get_device_code,
             twitch::auth::commands::restore_session,
             twitch::auth::commands::revoke_session,
-            twitch::eventsub::commands::subscribe,
-            twitch::eventsub::commands::unsubscribe,
+            twitch::eventsub::commands::set_eventsub_channels,
             twitch::streams::commands::get_followed_streams,
             twitch::streams::commands::get_streams,
             twitch::streams::commands::get_streams_from_ids,
@@ -69,9 +69,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::moderation::commands::delete_chat_messages,
             twitch::moderation::commands::ban_user,
             twitch::moderation::commands::unban_user,
-            twitch::moderation::commands::get_banned_users,
-            twitch::moderation::commands::get_moderators,
-            twitch::moderation::commands::get_moderated_channels,
+            twitch::moderation::commands::get_ban,
             twitch::moderation::commands::warn_user,
             twitch::moderation::commands::manage_held_automod_message,
             twitch::channels::commands::add_channel_vip,
@@ -80,8 +78,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::raids::commands::cancel_raid,
             twitch::clips::commands::create_clip,
             twitch::channels::commands::get_channel_information,
-            twitch::channels::commands::get_channel_followers,
-            twitch::channels::commands::get_followed_channels,
+            twitch::channels::commands::get_followed_at,
             twitch::channels::commands::modify_channel_information,
             twitch::channels::commands::start_commercial,
             emotes::commands::bttv_get_global_emotes,
@@ -101,14 +98,10 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
         ])
 }
 
-pub fn export_bindings() {
-    write_bindings(&bindings());
-}
-
 const BINDINGS_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib/bindings.ts");
 
-fn write_bindings(bindings: &tauri_specta::Builder<tauri::Wry>) {
-    export_to(bindings, std::path::Path::new(BINDINGS_PATH));
+pub fn export_bindings() {
+    export_to(&bindings(), std::path::Path::new(BINDINGS_PATH));
 }
 
 fn export_to(bindings: &tauri_specta::Builder<tauri::Wry>, path: &std::path::Path) {
@@ -117,11 +110,10 @@ fn export_to(bindings: &tauri_specta::Builder<tauri::Wry>, path: &std::path::Pat
         .expect("failed to export typescript bindings");
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let bindings = bindings();
     #[cfg(debug_assertions)]
-    write_bindings(&bindings);
+    export_to(&bindings, std::path::Path::new(BINDINGS_PATH));
     let invoke_handler = bindings.invoke_handler();
     tauri::Builder::default()
         .plugin(
@@ -150,7 +142,9 @@ pub fn run() {
             keyring::init_store();
             bindings.mount_events(app);
             let http = http::client()?;
-            app.manage(twitch::Twitch::new(http.clone()));
+            let twitch = twitch::Twitch::new(http.clone());
+            twitch::eventsub::spawn(app.handle().clone(), twitch.clone());
+            app.manage(twitch);
             app.manage(http);
 
             // A dev build must never become the browser's native-messaging
@@ -164,17 +158,16 @@ pub fn run() {
             watch::ipc::start_server(app.handle().clone());
             emotes::seventv_events::spawn(app.handle().clone());
 
-            if let Some(w) = app.get_webview_window("main") {
-                if let Ok(icon) =
-                    tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))
-                {
-                    let _ = w.set_icon(icon);
+            if let Some(window) = app.get_webview_window("main") {
+                let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))?;
+                if let Err(e) = window.set_icon(icon) {
+                    log::warn!("taskbar icon failed: {e}");
                 }
             }
 
             Ok(())
         })
-        .manage(discord::DiscordState::new())
+        .manage(discord::DiscordState::default())
         .invoke_handler(invoke_handler)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

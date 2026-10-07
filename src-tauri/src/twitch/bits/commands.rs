@@ -1,6 +1,7 @@
 use super::dto::Cheermote;
 use crate::error::Result;
-use crate::twitch::bits::{self, GetCheermotesParams};
+use crate::twitch::bits;
+use crate::twitch::params::BroadcasterParams;
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -8,7 +9,7 @@ use tauri::State;
 #[specta::specta]
 pub async fn get_cheermotes(
     twitch: State<'_, Twitch>,
-    params: GetCheermotesParams,
+    params: BroadcasterParams,
 ) -> Result<Vec<Cheermote>> {
     bits::get_cheermotes(&twitch.authed().await?, params).await
 }
