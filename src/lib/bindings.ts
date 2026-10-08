@@ -41,7 +41,7 @@ export const commands = {
 	getGlobalChatBadges: () => __TAURI_INVOKE<BadgeSet[]>("get_global_chat_badges"),
 	getChannelChatBadges: (params: BroadcasterParams) => __TAURI_INVOKE<BadgeSet[]>("get_channel_chat_badges", { params }),
 	deleteChatMessages: (params: DeleteChatMessagesParams) => __TAURI_INVOKE<null>("delete_chat_messages", { params }),
-	banUser: (params: BanUserParams) => __TAURI_INVOKE<Ban>("ban_user", { params }),
+	banUser: (params: BanUserParams) => __TAURI_INVOKE<null>("ban_user", { params }),
 	unbanUser: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("unban_user", { params }),
 	getBan: (params: BroadcasterUserParams) => __TAURI_INVOKE<{
 	user: UserRef,
@@ -134,14 +134,6 @@ export type Badge = {
 export type BadgeSet = {
 	setId: string,
 	versions: Badge[],
-};
-
-export type Ban = {
-	userId: UserId,
-	broadcasterId: UserId,
-	moderatorId: UserId,
-	createdAt: string,
-	endTime: string,
 };
 
 export type BanUserParams = {
