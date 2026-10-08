@@ -9,8 +9,10 @@ const ACCEPT_RETRY: Duration = Duration::from_secs(1);
 
 #[derive(Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
-enum HostCommand<'a> {
-    SetMuted { channel: &'a str, muted: bool },
+pub enum HostCommand {
+    SetMuted { channel: String, muted: bool },
+    Focus { channel: String },
+    Close { channel: String },
     GetState,
 }
 
@@ -34,20 +36,7 @@ static HOST_WRITER: tokio::sync::Mutex<Option<(u64, HostWriter)>> =
     tokio::sync::Mutex::const_new(None);
 static NEXT_CONNECTION: AtomicU64 = AtomicU64::new(0);
 
-pub async fn set_muted(channel: &str, muted: bool) -> std::io::Result<()> {
-    let channel = channel.to_lowercase();
-    send_to_host(&HostCommand::SetMuted {
-        channel: &channel,
-        muted,
-    })
-    .await
-}
-
-pub async fn request_state() -> std::io::Result<()> {
-    send_to_host(&HostCommand::GetState).await
-}
-
-async fn send_to_host(command: &HostCommand<'_>) -> std::io::Result<()> {
+pub async fn send_to_host(command: &HostCommand) -> std::io::Result<()> {
     use tokio::io::AsyncWriteExt;
     let mut slot = HOST_WRITER.lock().await;
     let Some((_, writer)) = slot.as_mut() else {
@@ -117,5 +106,33 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
     if slot.as_ref().is_some_and(|(current, _)| *current == id) {
         *slot = None;
         emit(&app, WatchDisconnected);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::HostCommand;
+    use serde_json::json;
+
+    #[test]
+    fn host_commands_match_the_extension_protocol() {
+        let channel = || "xqc".to_string();
+        let wire = |c: HostCommand| serde_json::to_value(c).unwrap();
+        assert_eq!(
+            wire(HostCommand::SetMuted {
+                channel: channel(),
+                muted: true
+            }),
+            json!({ "type": "set_muted", "channel": "xqc", "muted": true })
+        );
+        assert_eq!(
+            wire(HostCommand::Focus { channel: channel() }),
+            json!({ "type": "focus", "channel": "xqc" })
+        );
+        assert_eq!(
+            wire(HostCommand::Close { channel: channel() }),
+            json!({ "type": "close", "channel": "xqc" })
+        );
+        assert_eq!(wire(HostCommand::GetState), json!({ "type": "get_state" }));
     }
 }

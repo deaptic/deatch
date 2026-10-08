@@ -18,11 +18,10 @@ dump when the app starts.
 
 ## Permissions
 
-| Permission              | Why                                                                                |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| `tabs`                  | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
-| `nativeMessaging`       | Talk to the Deatch desktop app over a local pipe.                                  |
-| `twitch.tv` host access | Inject a small content script that reads the current channel slug from the URL.    |
+| Permission        | Why                                                                                |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `tabs`            | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
+| `nativeMessaging` | Talk to the Deatch desktop app over a local pipe.                                  |
 
 The extension does **not** read chat, modify pages, send data to any third
 party, or talk to the network. The only data it transmits is your open channel

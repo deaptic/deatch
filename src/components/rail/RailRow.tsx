@@ -26,6 +26,7 @@ type Props = {
   toggle?: boolean;
   ref?: (el: HTMLButtonElement) => void;
   onClick?: () => void;
+  onDoubleClick?: () => void;
   onMiddleClick?: () => void;
   onContextMenu?: (x: number, y: number) => void;
   children: JSX.Element;
@@ -43,6 +44,7 @@ export default function RailRow(props: Props) {
         aria-current={props.selected ? "page" : undefined}
         {...(props.toggle ? { [POPOVER_TOGGLE]: "" } : {})}
         onClick={props.onClick}
+        onDblClick={props.onDoubleClick}
         onAuxClick={(e) => {
           if (e.button !== 1 || !props.onMiddleClick) return;
           e.preventDefault();

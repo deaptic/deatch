@@ -24,7 +24,7 @@ import {
   watchMutedByLogin,
   watchWarmedChannels,
 } from "../../lib/stores/watch.ts";
-import { watchSetMuted } from "../../lib/api/watch.ts";
+import { watchClose, watchSetMuted } from "../../lib/api/watch.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import {
@@ -57,6 +57,7 @@ import type { User } from "../../lib/types/index.ts";
 type Props = {
   onSelect: (ch: User) => void;
   onToggleWatch: () => void;
+  onFocusInBrowser: (ch: User) => void;
   onLiveChange?: (live: User[]) => void;
 };
 
@@ -299,7 +300,7 @@ export default function Rail(props: Props) {
                             mentions={channelMentionCount(id)}
                             dimmed={dragIdx() === index()}
                             onSelect={() => props.onSelect(c())}
-                            onOpenInBrowser={() => openInBrowser(c())}
+                            onMiddleClick={() => openInBrowser(c())}
                             onContextMenu={(x, y) =>
                               setChMenu({ ch: c(), x, y })}
                           />
@@ -344,7 +345,7 @@ export default function Rail(props: Props) {
                       unread={hasUnread(ch?.id)}
                       mentions={channelMentionCount(ch?.id)}
                       onSelect={() => props.onSelect(ch)}
-                      onOpenInBrowser={() => openInBrowser(ch)}
+                      onMiddleClick={() => openInBrowser(ch)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -416,7 +417,8 @@ export default function Rail(props: Props) {
                           watchMutedByLogin()[ch?.login] !== true,
                         )}
                       onSelect={() => props.onSelect(ch)}
-                      onOpenInBrowser={() => openInBrowser(ch)}
+                      onDoubleClick={() => props.onFocusInBrowser(ch)}
+                      onMiddleClick={() => void watchClose(ch?.login)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -439,7 +441,7 @@ export default function Rail(props: Props) {
                 mentions={channelMentionCount(nv().id)}
                 ephemeral
                 onSelect={() => props.onSelect(nv())}
-                onOpenInBrowser={() => openInBrowser(nv())}
+                onMiddleClick={() => openInBrowser(nv())}
                 onContextMenu={(x, y) => setChMenu({ ch: nv(), x, y })}
               />
             </div>
@@ -485,7 +487,11 @@ export default function Rail(props: Props) {
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
-              onMiddleClick={() => openInBrowser(u())}
+              onDoubleClick={ownTab()
+                ? () => props.onFocusInBrowser(u())
+                : undefined}
+              onMiddleClick={() =>
+                ownTab() ? void watchClose(u().login) : openInBrowser(u())}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
             >
               <Avatar
@@ -522,6 +528,9 @@ export default function Rail(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={() => setChMenu(null)}
             onOpenInBrowser={openInBrowser}
+            onCloseBrowserTab={warmedIds().has(m().ch?.id)
+              ? (ch) => void watchClose(ch.login)
+              : undefined}
             onPin={m().ch?.id === user()?.id ? undefined : pin}
             onUnpin={unpinChannel}
             onRaid={user() && m().ch?.id !== user()?.id

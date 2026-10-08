@@ -17,7 +17,8 @@ type Props = {
   ephemeral?: boolean;
   onToggleMute?: () => void;
   onSelect: () => void;
-  onOpenInBrowser: () => void;
+  onDoubleClick?: () => void;
+  onMiddleClick: () => void;
   onContextMenu: (x: number, y: number) => void;
 };
 
@@ -43,7 +44,8 @@ export default function ChannelRow(props: Props) {
       mentions={props.mentions}
       dimmed={props.dimmed}
       onClick={props.onSelect}
-      onMiddleClick={props.onOpenInBrowser}
+      onDoubleClick={props.onDoubleClick}
+      onMiddleClick={props.onMiddleClick}
       onContextMenu={props.onContextMenu}
     >
       <Avatar

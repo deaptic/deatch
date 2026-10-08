@@ -71,6 +71,8 @@ export const commands = {
 	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentMessage[]>("get_recent_messages", { params }),
 	readKeymap: () => __TAURI_INVOKE<string>("read_keymap"),
 	watchSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("watch_set_muted", { params }),
+	watchFocus: (params: WatchChannelParams) => __TAURI_INVOKE<null>("watch_focus", { params }),
+	watchClose: (params: WatchChannelParams) => __TAURI_INVOKE<null>("watch_close", { params }),
 	watchRequestState: () => __TAURI_INVOKE<null>("watch_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
 	getAppStats: () => __TAURI_INVOKE<AppStats>("get_app_stats"),
@@ -548,6 +550,10 @@ export type WarnUserParams = {
 export type WatchChannel = {
 	login: string,
 	muted?: boolean,
+};
+
+export type WatchChannelParams = {
+	channel: string,
 };
 
 export type WatchDisconnected = null;
