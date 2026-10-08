@@ -107,45 +107,29 @@ step 1 above covers Chromium too.
 
 ## Releasing
 
-One zip serves both stores:
+`manifest.json` carries the keys for both browsers, which is fine for loading
+unpacked but makes each store warn about the other's keys. For uploads, build a
+zip per browser with a manifest stripped to what that browser knows:
 
 ```pwsh
-# From the extension/ folder:
-Compress-Archive -Path manifest.json,background.js,icons -DestinationPath deatch-link.zip -Force
+deno task pack:extension minor   # or: patch | major | 1.2.3; omit to keep the version
+# → extension/dist/deatch-link-firefox-<v>.zip
+#   extension/dist/deatch-link-chrome-<v>.zip
 ```
 
-### Firefox
+Both stores are public listings and push updates to installed copies themselves.
+Build the zips with a version bump, then:
 
-The add-on is unlisted on AMO: Mozilla signs it, but Firefox gets updates from
-the `update_url` in `manifest.json`, which serves `updates.json` from `main`.
+- **Firefox**: upload the firefox zip on the
+  [AMO Developer Hub](https://addons.mozilla.org/developers/) as a new version
+  of Deatch Link, distributed **On this site**. AMO rejects listed manifests
+  that carry `update_url`, so never add one.
+- **Chrome / Edge**: upload the chrome zip on the
+  [Web Store developer dashboard](https://chrome.google.com/webstore/devconsole).
+  The store keeps the id from the manifest `key`. Edge installs from the Chrome
+  Web Store too.
 
-1. Bump `version` in `manifest.json` and build the zip.
-2. Upload it on the [AMO Developer Hub](https://addons.mozilla.org/developers/)
-   as a new version of Deatch Link, distributed **On your own**.
-3. Once signed, download the `.xpi` and attach it to the app's current GitHub
-   release. Never create a separate release for it: the app updater reads
-   `releases/latest`, and a newer extension-only release would break it.
-   ```pwsh
-   gh release upload v0.4.0 deatch_link-0.3.0.xpi
-   ```
-4. Add an entry to `updates.json` and push it to `main`:
-   ```json
-   {
-     "version": "0.3.0",
-     "update_link": "https://github.com/deaptic/deatch/releases/download/v0.4.0/deatch_link-0.3.0.xpi"
-   }
-   ```
-
-Firefox checks `update_url` about once a day; `about:addons` → gear → **Check
-for Updates** forces it. Copies installed before `update_url` existed (0.1.0)
-never check, so they need one manual install of the `.xpi`.
-
-### Chrome / Edge
-
-Chrome on Windows installs extensions only from the Chrome Web Store, so
-self-hosting is not an option. Upload the same zip to the
-[Web Store developer dashboard](https://chrome.google.com/webstore/devconsole)
-as an **unlisted** item; the store keeps the id from the manifest `key` and
-pushes updates to installed copies itself. Edge installs from the Chrome Web
-Store too. Review takes a few days per version, so the Firefox release may land
-first; mixed versions are fine, the host speaks to both.
+Both reviews take a few days per version and may land at different times; mixed
+versions are fine, the host speaks to both. Copies installed by hand (unpacked,
+temporary, or a self-distributed `.xpi`) never update; replace them with a store
+install once.
