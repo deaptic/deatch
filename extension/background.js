@@ -4,18 +4,26 @@ const RECONNECT_MAX_MS = 30_000;
 
 const tabChannels = new Map();
 const tabMuted = new Map();
+const tabFocusedAt = new Map();
 let activeTabId = null;
-let lastFocusedTwitchTabId = null;
 
 let port = null;
 let reconnectDelay = RECONNECT_MIN_MS;
 let reconnectTimer = null;
 let lastStateKey = "";
 
+function mostRecentTwitchTab() {
+  let best = null;
+  for (const tabId of tabChannels.keys()) {
+    const at = tabFocusedAt.get(tabId) ?? 0;
+    if (best == null || at > (tabFocusedAt.get(best) ?? 0)) best = tabId;
+  }
+  return best;
+}
+
 function buildState() {
   const byChannel = new Map();
   for (const [tabId, ch] of tabChannels) {
-    if (!ch) continue;
     const m = tabMuted.get(tabId) === true;
     const prev = byChannel.get(ch);
     byChannel.set(ch, prev === undefined ? m : prev && m);
@@ -27,10 +35,7 @@ function buildState() {
   const activeCh = activeTabId != null
     ? tabChannels.get(activeTabId) ?? null
     : null;
-  const fallbackCh = lastFocusedTwitchTabId != null
-    ? tabChannels.get(lastFocusedTwitchTabId) ?? null
-    : null;
-  const current = activeCh ?? fallbackCh ?? null;
+  const current = activeCh ?? tabChannels.get(mostRecentTwitchTab()) ?? null;
 
   return { type: "state", channels, current };
 }
@@ -46,31 +51,59 @@ function emitState() {
   } catch {}
 }
 
-function applyTabUrl(tabId, url) {
-  const ch = channelFromUrl(url || "");
-  if (ch) {
-    if (tabChannels.get(tabId) === ch) return false;
-    tabChannels.set(tabId, ch);
-    return true;
+function forgetTab(tabId) {
+  tabMuted.delete(tabId);
+  tabFocusedAt.delete(tabId);
+  return tabChannels.delete(tabId);
+}
+
+function applyTab(tab) {
+  const ch = channelFromUrl(tab.url || "");
+  if (!ch) return forgetTab(tab.id);
+  if (!tabFocusedAt.has(tab.id)) {
+    tabFocusedAt.set(tab.id, tab.lastAccessed ?? 0);
   }
-  const had = tabChannels.delete(tabId);
-  if (had) tabMuted.delete(tabId);
-  if (had && tabId === lastFocusedTwitchTabId) lastFocusedTwitchTabId = null;
-  return had;
+  if (tab.mutedInfo) tabMuted.set(tab.id, !!tab.mutedInfo.muted);
+  if (tabChannels.get(tab.id) === ch) return false;
+  tabChannels.set(tab.id, ch);
+  return true;
+}
+
+function tabsOf(channel) {
+  return [...tabChannels].filter(([, ch]) => ch === channel).map(([id]) => id);
 }
 
 async function applyMute(channel, muted) {
-  if (!channel) return;
-  let changed = false;
-  for (const [tabId, ch] of tabChannels) {
-    if (ch !== channel) continue;
-    try {
-      await chrome.tabs.update(tabId, { muted: !!muted });
-      changed = true;
-    } catch {}
+  for (const tabId of tabsOf(channel)) {
+    await chrome.tabs.update(tabId, { muted }).catch(() => {});
   }
-  if (changed) emitState();
 }
+
+// Activates the tab inside its window without raising the browser, so the
+// desktop app keeps focus.
+async function focusChannel(channel) {
+  const tabId =
+    tabsOf(channel).sort((a, b) =>
+      (tabFocusedAt.get(b) ?? 0) - (tabFocusedAt.get(a) ?? 0)
+    )[0];
+  if (tabId != null) {
+    await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+  }
+}
+
+async function closeChannel(channel) {
+  await chrome.tabs.remove(tabsOf(channel)).catch(() => {});
+}
+
+const COMMANDS = {
+  get_state: () => {
+    lastStateKey = "";
+    emitState();
+  },
+  set_muted: (msg) => applyMute(msg.channel, !!msg.muted),
+  focus: (msg) => focusChannel(msg.channel),
+  close: (msg) => closeChannel(msg.channel),
+};
 
 function scheduleReconnect() {
   clearTimeout(reconnectTimer);
@@ -91,64 +124,41 @@ function connect() {
     scheduleReconnect();
   });
   port.onMessage.addListener((msg) => {
-    if (!msg || typeof msg.type !== "string") return;
-    if (msg.type === "get_state") {
-      lastStateKey = "";
-      emitState();
-    } else if (msg.type === "set_muted" && typeof msg.channel === "string") {
-      void applyMute(msg.channel.toLowerCase(), !!msg.muted);
-    }
+    const run = COMMANDS[msg?.type];
+    if (!run) return;
+    if (typeof msg.channel === "string") {
+      msg.channel = msg.channel.toLowerCase();
+    } else if (msg.type !== "get_state") return;
+    void run(msg);
   });
   reconnectDelay = RECONNECT_MIN_MS;
   lastStateKey = "";
   emitState();
 }
 
-chrome.runtime.onMessage.addListener((msg, sender) => {
-  if (msg?.type !== "channel-changed" || sender.tab?.id == null) return;
-  tabChannels.set(sender.tab.id, msg.channel);
-  if (sender.tab.id === activeTabId) lastFocusedTwitchTabId = sender.tab.id;
-  emitState();
-});
-
 async function setActiveTab(tabId) {
   activeTabId = tabId;
-  if (tabId != null && !tabChannels.has(tabId)) {
-    try {
-      const tab = await chrome.tabs.get(tabId);
-      applyTabUrl(tabId, tab.url);
-      if (tab.mutedInfo && !tabMuted.has(tabId)) {
-        tabMuted.set(tabId, !!tab.mutedInfo.muted);
-      }
-    } catch {}
-  }
-  if (tabId != null && tabChannels.get(tabId)) lastFocusedTwitchTabId = tabId;
+  const tab = await chrome.tabs.get(tabId).catch(() => null);
+  if (tab) applyTab(tab);
+  if (tabChannels.has(tabId)) tabFocusedAt.set(tabId, Date.now());
   emitState();
 }
 
 chrome.tabs.onActivated.addListener(({ tabId }) => setActiveTab(tabId));
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-  tabChannels.delete(tabId);
-  tabMuted.delete(tabId);
+  forgetTab(tabId);
   if (tabId === activeTabId) activeTabId = null;
-  if (tabId === lastFocusedTwitchTabId) lastFocusedTwitchTabId = null;
   emitState();
 });
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  let dirty = false;
-  if (info.url != null && applyTabUrl(tabId, info.url)) dirty = true;
-  if (info.mutedInfo) {
-    tabMuted.set(tabId, !!info.mutedInfo.muted);
-    dirty = true;
-  } else if (tab?.mutedInfo && !tabMuted.has(tabId)) {
-    tabMuted.set(tabId, !!tab.mutedInfo.muted);
+  if (info.url == null && !info.mutedInfo) return;
+  applyTab(tab);
+  if (tabId === activeTabId && tabChannels.has(tabId)) {
+    tabFocusedAt.set(tabId, Date.now());
   }
-  if (tabId === activeTabId && tabChannels.get(tabId)) {
-    lastFocusedTwitchTabId = tabId;
-  }
-  if (dirty) emitState();
+  emitState();
 });
 
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
@@ -163,17 +173,11 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
   const tabs = await chrome.tabs.query({
     url: ["*://*.twitch.tv/*", "*://twitch.tv/*"],
   }).catch(() => []);
-  for (const tab of tabs) {
-    applyTabUrl(tab.id, tab.url);
-    if (tab.mutedInfo) tabMuted.set(tab.id, !!tab.mutedInfo.muted);
-  }
+  for (const tab of tabs) applyTab(tab);
   const [active] = await chrome.tabs.query({
     active: true,
     lastFocusedWindow: true,
   }).catch(() => []);
-  if (active?.id != null) {
-    activeTabId = active.id;
-    if (tabChannels.get(active.id)) lastFocusedTwitchTabId = active.id;
-  }
+  activeTabId = active?.id ?? null;
   connect();
 })();

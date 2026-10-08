@@ -18,6 +18,9 @@ const NON_CHANNEL_PATHS = new Set([
   "jobs",
   "store",
   "payments",
+  "login",
+  "signup",
+  "logout",
 ]);
 
 function channelFromUrl(url) {

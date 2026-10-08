@@ -15,6 +15,7 @@ type Props = {
   developerMode: boolean;
   onClose: () => void;
   onOpenInBrowser: (ch: User) => void;
+  onCloseBrowserTab?: (ch: User) => void;
   onPin?: (ch: User) => void;
   onUnpin: (userId: string) => void;
   onRaid?: (ch: User) => void;
@@ -31,6 +32,15 @@ export default function ChannelContextMenu(props: Props) {
           props.onClose();
         }}
       />
+      <Show when={props.onCloseBrowserTab}>
+        <MenuItem
+          label="Close browser tab"
+          onClick={() => {
+            props.onCloseBrowserTab?.(props.ch);
+            props.onClose();
+          }}
+        />
+      </Show>
       <Show
         when={props.isPinned}
         fallback={

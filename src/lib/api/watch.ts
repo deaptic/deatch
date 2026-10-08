@@ -13,3 +13,11 @@ export async function watchSetMuted(
 export async function watchRequestState(): Promise<void> {
   await invokeCommand(commands.watchRequestState, [], { silent: true });
 }
+
+export async function watchFocus(channel: string): Promise<void> {
+  await invokeCommand(commands.watchFocus, [{ channel }], { silent: true });
+}
+
+export async function watchClose(channel: string): Promise<void> {
+  await invokeCommand(commands.watchClose, [{ channel }], { silent: true });
+}

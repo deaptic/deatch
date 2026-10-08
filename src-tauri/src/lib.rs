@@ -95,6 +95,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             history::commands::get_recent_messages,
             keymap::commands::read_keymap,
             watch::commands::watch_set_muted,
+            watch::commands::watch_focus,
+            watch::commands::watch_close,
             watch::commands::watch_request_state,
             notifications::commands::set_mentions_badge,
             diagnostics::commands::get_app_stats,

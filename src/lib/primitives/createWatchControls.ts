@@ -12,11 +12,13 @@ import {
   watchMutedByLogin,
   watchWarmedChannels,
 } from "../stores/watch.ts";
-import { watchSetMuted } from "../api/watch.ts";
+import { watchFocus, watchSetMuted } from "../api/watch.ts";
+import type { User } from "../types/index.ts";
 
 export type WatchControls = {
   cycleChannel(direction: 1 | -1): void;
   toggleWatch(): void;
+  focusInBrowser(ch: User): void;
   muteOtherWatched(): void;
   toggleMuteAllWatched(): void;
   toggleWatchMute(): void;
@@ -103,9 +105,16 @@ export function createWatchControls(nav: ChannelNavigation): WatchControls {
     else nav.selectChannel(list[0], null);
   }
 
+  // Browser and app now agree on the channel, so go back to following it.
+  function focusInBrowser(ch: User) {
+    nav.selectChannel(ch, "auto");
+    void watchFocus(ch.login);
+  }
+
   return {
     cycleChannel,
     toggleWatch,
+    focusInBrowser,
     muteOtherWatched,
     toggleMuteAllWatched,
     toggleWatchMute,

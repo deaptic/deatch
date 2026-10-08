@@ -26,18 +26,24 @@ fn log(message: impl Display) {
     }
 }
 
+enum Event {
+    FromBrowser(String),
+    GuiClosed(u64),
+}
+
 pub fn run() {
     // One browser session per file; without this the log grows forever.
     let _ = std::fs::write(log_path(), "");
     log("host started");
     let (tx, rx) = mpsc::channel();
-    std::thread::spawn(move || forward_to_gui(rx));
+    let forward_tx = tx.clone();
+    std::thread::spawn(move || forward_to_gui(rx, forward_tx));
     let mut stdin = io::stdin().lock();
     loop {
         match read_message(&mut stdin) {
             Ok(Some(text)) => {
                 log(format_args!("<- {text}"));
-                if tx.send(text).is_err() {
+                if tx.send(Event::FromBrowser(text)).is_err() {
                     break;
                 }
             }
@@ -77,15 +83,19 @@ fn write_to_browser(line: &str) -> io::Result<()> {
     out.flush()
 }
 
-fn forward_to_gui(rx: mpsc::Receiver<String>) {
+/// Each GUI connection gets an id so a stale reader's close notice, arriving
+/// after we already reconnected, can't tear down the new connection.
+fn forward_to_gui(rx: mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) {
     let mut pending: Option<String> = None;
-    loop {
-        let mut writer = connect_to_gui();
+    for id in 0.. {
+        let mut writer = connect_to_gui(id, tx.clone());
         loop {
             let message = match pending.take() {
                 Some(message) => message,
                 None => match rx.recv() {
-                    Ok(message) => message,
+                    Ok(Event::FromBrowser(message)) => message,
+                    Ok(Event::GuiClosed(closed)) if closed == id => break,
+                    Ok(Event::GuiClosed(_)) => continue,
                     Err(_) => return,
                 },
             };
@@ -100,7 +110,7 @@ fn forward_to_gui(rx: mpsc::Receiver<String>) {
     }
 }
 
-fn connect_to_gui() -> Stream {
+fn connect_to_gui(id: u64, tx: mpsc::Sender<Event>) -> Stream {
     let mut reported = false;
     let stream = loop {
         match super::ipc::connect_to_gui() {
@@ -118,7 +128,11 @@ fn connect_to_gui() -> Stream {
     log("sink connected");
     match stream.try_clone() {
         Ok(reader) => {
-            std::thread::spawn(move || pump_to_browser(reader));
+            std::thread::spawn(move || {
+                pump_to_browser(reader);
+                log("sink closed");
+                let _ = tx.send(Event::GuiClosed(id));
+            });
         }
         Err(e) => log(format_args!("try_clone failed: {e}")),
     }
