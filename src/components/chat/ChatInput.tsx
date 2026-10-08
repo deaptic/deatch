@@ -33,6 +33,7 @@ import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import Button from "../ui/Button.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
+import { composerInnerHeight } from "../ui/rowHeight.ts";
 import { keyLabels } from "../../lib/utils/keyboard.ts";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
@@ -243,7 +244,7 @@ export default function ChatInput(props: Props) {
   });
 
   return (
-    <div class="shrink-0 bg-surface border-t border-line-soft px-4 pt-3 pb-4">
+    <div class="shrink-0 bg-surface border-t border-line-soft px-4 pt-3 pb-3">
       <ChatModes broadcasterId={props.broadcasterId} />
       <Show when={props.replyTo()}>
         {(reply) => (
@@ -289,7 +290,9 @@ export default function ChatInput(props: Props) {
               });
             }}
             addons={
-              <div class="flex items-center gap-1 shrink-0 self-end pb-0.5">
+              <div
+                class={`flex items-center gap-1 shrink-0 self-end ${composerInnerHeight()}`}
+              >
                 <CharCounter value={input} max={MAX_LEN} />
                 <IconButton
                   label={withShortcut("Spacious layout", DENSITY_ACTION)}

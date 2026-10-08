@@ -20,10 +20,12 @@ import {
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
 import {
+  watchConnected,
   watchedChannel,
   watchMutedByLogin,
   watchWarmedChannels,
 } from "../../lib/stores/watch.ts";
+import WatchAddonMenu from "./WatchAddonMenu.tsx";
 import { watchClose, watchSetMuted } from "../../lib/api/watch.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
@@ -41,8 +43,8 @@ import * as raid from "../../lib/services/raid.ts";
 import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
-import RailRow from "./RailRow.tsx";
-import RailTile from "./RailTile.tsx";
+import RailRow, { type SubTone } from "./RailRow.tsx";
+import RailTile, { type TileTone } from "./RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
 import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
@@ -61,10 +63,11 @@ type Props = {
   onLiveChange?: (live: User[]) => void;
 };
 
-const WATCH_LABEL: Record<"auto" | "manual" | "off", string> = {
-  auto: "Auto · following your browser",
-  manual: "Manual · pick a tab",
-  off: "Browser tabs",
+type WatchStatus = {
+  sub: string;
+  tone: SubTone;
+  tile: TileTone | false;
+  onClick?: () => void;
 };
 
 export default function Rail(props: Props) {
@@ -98,7 +101,48 @@ export default function Rail(props: Props) {
     return sel && !isListed(sel.id) ? sel : null;
   });
 
-  const watchKey = () => watchMode() ?? "off";
+  // The sub line says what Watch can do right now; the tile only lights up
+  // once a mode is engaged.
+  const watchStatus = (): WatchStatus => {
+    if (!watchConnected()) {
+      return {
+        sub: "Add the Firefox add-on",
+        tone: "soft",
+        tile: false,
+        onClick: () => {
+          if (!watchBtn || addonMenu()) return setAddonMenu(null);
+          const rect = watchBtn.getBoundingClientRect();
+          setAddonMenu({ x: rect.right + 8, y: rect.top });
+        },
+      };
+    }
+    if (watchWarmedChannels().length === 0) {
+      return { sub: "No Twitch tabs open", tone: "soft", tile: false };
+    }
+    switch (watchMode()) {
+      case "auto":
+        return {
+          sub: "Following your browser",
+          tone: "positive",
+          tile: "positive",
+          onClick: props.onToggleWatch,
+        };
+      case "manual":
+        return {
+          sub: "Pinned to a tab",
+          tone: "caution",
+          tile: "caution",
+          onClick: props.onToggleWatch,
+        };
+      default:
+        return {
+          sub: "Follow your browser",
+          tone: "soft",
+          tile: false,
+          onClick: props.onToggleWatch,
+        };
+    }
+  };
 
   const [chMenu, setChMenu] = createSignal<
     { ch: User; x: number; y: number } | null
@@ -111,6 +155,10 @@ export default function Rail(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
+  const [addonMenu, setAddonMenu] = createSignal<
+    { x: number; y: number } | null
+  >(null);
+  let watchBtn: HTMLButtonElement | undefined;
 
   createEffect(() => {
     pinnedChannels();
@@ -359,31 +407,6 @@ export default function Rail(props: Props) {
       <Show when={watchedOthers().length > 0}>
         <RailDivider />
         <div class="flex flex-col py-1.5 shrink-0">
-          <RailRow
-            label="Watch"
-            sub={WATCH_LABEL[watchKey()]}
-            subTone={watchKey() === "auto"
-              ? "positive"
-              : watchKey() === "manual"
-              ? "caution"
-              : "soft"}
-            tooltip={
-              <p class="font-semibold whitespace-nowrap">
-                Watch · {WATCH_LABEL[watchKey()]}
-              </p>
-            }
-            onClick={props.onToggleWatch}
-          >
-            <RailTile
-              active={watchKey() === "auto"
-                ? "positive"
-                : watchKey() === "manual"
-                ? "caution"
-                : false}
-            >
-              <Eye />
-            </RailTile>
-          </RailRow>
           <div class="relative">
             <Show when={watch.canUp()}>
               <ScrollChevron
@@ -452,6 +475,23 @@ export default function Rail(props: Props) {
       <RailDivider />
       <div class="flex flex-col py-1.5 shrink-0">
         <RailRow
+          ref={(el) => (watchBtn = el)}
+          toggle
+          label="Watch"
+          sub={watchStatus().sub}
+          subTone={watchStatus().tone}
+          tooltip={
+            <p class="font-semibold whitespace-nowrap">
+              Watch · {watchStatus().sub}
+            </p>
+          }
+          onClick={watchStatus().onClick}
+        >
+          <RailTile active={watchStatus().tile}>
+            <Eye />
+          </RailTile>
+        </RailRow>
+        <RailRow
           label="Explore"
           sub="Find live channels"
           tooltip={<p class="font-semibold whitespace-nowrap">Explore</p>}
@@ -473,6 +513,10 @@ export default function Rail(props: Props) {
             <Settings />
           </RailTile>
         </RailRow>
+      </div>
+
+      <RailDivider />
+      <div class="flex flex-col pt-1.5 pb-3 shrink-0">
         <Show when={user()}>
           {(u) => (
             <RailRow
@@ -517,6 +561,17 @@ export default function Rail(props: Props) {
           )}
         </Show>
       </div>
+
+      <Show when={addonMenu()}>
+        {(m) => (
+          <WatchAddonMenu
+            x={m().x}
+            y={m().y}
+            opener={() => watchBtn}
+            onClose={() => setAddonMenu(null)}
+          />
+        )}
+      </Show>
 
       <Show when={chMenu()}>
         {(m) => (
