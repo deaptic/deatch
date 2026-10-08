@@ -53,8 +53,9 @@ pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<Dc
         user_code: code.user_code.clone(),
         verification_uri: code.verification_uri.clone(),
     };
-    tauri::async_runtime::spawn(async move {
-        match login(&twitch, builder).await {
+    let poll = twitch.clone();
+    let task = tauri::async_runtime::spawn(async move {
+        match login(&poll, builder).await {
             Ok(user) => emit(&app, AuthSucceeded(user)),
             Err(e) => {
                 log::error!("login failed: {e}");
@@ -62,7 +63,12 @@ pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<Dc
             }
         }
     });
+    twitch.replace_login(Some(task));
     Ok(response)
+}
+
+pub fn cancel_login(twitch: &Twitch) {
+    twitch.replace_login(None);
 }
 
 async fn login(twitch: &Twitch, mut builder: DeviceUserTokenBuilder) -> Result<User> {
@@ -102,7 +108,7 @@ async fn start_session(twitch: &Twitch, token: UserToken) -> Result<User> {
 }
 
 pub async fn revoke_session(twitch: &Twitch) -> Result<()> {
-    let token = twitch.session.end().await?;
+    let token = twitch.session.end().await;
     twitch.eventsub.clear();
     if let Some(token) = token {
         // Logging out must succeed locally even when Twitch is unreachable;

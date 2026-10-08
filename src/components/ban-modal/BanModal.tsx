@@ -49,51 +49,46 @@ export default function BanModal(props: Props) {
 
   const isBroadcaster = () => user()?.id === props.broadcasterId;
 
-  async function timeout(seconds: number) {
+  async function run(
+    kind: number | "ban" | "unban",
+    action: () => Promise<unknown>,
+  ) {
     if (pending() !== null) return;
-    setPending(seconds);
+    setPending(kind);
     try {
-      await banUser({
+      await action();
+      props.onClose();
+    } catch {
+      // invokeCommand already toasted; the modal stays open to retry.
+    } finally {
+      setPending(null);
+    }
+  }
+
+  const timeout = (seconds: number) =>
+    run(seconds, () =>
+      banUser({
         broadcasterId: props.broadcasterId,
         userId: props.userId,
         duration: seconds,
         reason: reason(),
-      });
-      props.onClose();
-    } finally {
-      setPending(null);
-    }
-  }
+      }));
 
-  async function ban() {
-    if (pending() !== null) return;
-    setPending("ban");
-    try {
-      await banUser({
+  const ban = () =>
+    run("ban", () =>
+      banUser({
         broadcasterId: props.broadcasterId,
         userId: props.userId,
         duration: null,
         reason: reason(),
-      });
-      props.onClose();
-    } finally {
-      setPending(null);
-    }
-  }
+      }));
 
-  async function unban() {
-    if (pending() !== null) return;
-    setPending("unban");
-    try {
-      await unbanUser({
+  const unban = () =>
+    run("unban", () =>
+      unbanUser({
         broadcasterId: props.broadcasterId,
         userId: props.userId,
-      });
-      props.onClose();
-    } finally {
-      setPending(null);
-    }
-  }
+      }));
 
   onMount(() => {
     shortcuts.setContext("banModalOpen", true);

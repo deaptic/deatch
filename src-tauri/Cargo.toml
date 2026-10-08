@@ -12,7 +12,7 @@ edition = "2021"
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
 name = "deatch_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+crate-type = ["rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
@@ -30,7 +30,6 @@ thiserror = "2"
 twitch_api = { version = "0.8", features = ["helix", "twitch_oauth2", "reqwest", "client", "eventsub", "beta"] }
 reqwest = { version = "0.13", features = ["json"] }
 keyring-core = "1"
-url = "2"
 tokio = { version = "1", features = ["net", "io-util", "sync", "macros", "time"] }
 tokio-tungstenite = { version = "0.30", features = ["native-tls"] }
 futures-util = "0.3"

@@ -1,11 +1,6 @@
 import { produce } from "solid-js/store";
-import {
-  type ChannelFeed,
-  enforceCaps,
-  ensureFeed,
-  feeds,
-  setFeeds,
-} from "./core.ts";
+import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
+import { enforceCaps } from "./caps.ts";
 import type { BadgeMap, Redemption } from "../../types/feed.ts";
 import type { AutomodHoldStatus } from "../../types/index.ts";
 

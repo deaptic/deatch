@@ -20,5 +20,9 @@ export function start(): () => void {
       setDeviceCode(null);
       addToast(errorMessage(e.payload), "error");
     }),
+    events.sessionEnded.listen(() => {
+      setUser(null);
+      addToast("Twitch signed you out, please sign in again", "error");
+    }),
   ]);
 }

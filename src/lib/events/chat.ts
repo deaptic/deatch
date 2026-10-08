@@ -4,7 +4,7 @@ import { appendItem } from "../stores/feeds.ts";
 import { knownUser, user } from "../stores/users.ts";
 import { recordMention } from "../stores/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
-import { matchesAnyKeyword } from "../utils/wordMatch.ts";
+import { isMention } from "../utils/mention.ts";
 import { mapChatMessage } from "./chat-mapper.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
@@ -35,7 +35,8 @@ export function start(): () => void {
     listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
       const raw = e.payload.event;
       const ts = Date.now();
-      if (appendItem(raw.broadcaster_user_id, mapChatMessage(raw, ts))) {
+      const msg = mapChatMessage(raw, ts);
+      if (appendItem(raw.broadcaster_user_id, msg)) {
         chatActivity.record(raw.broadcaster_user_id, ts);
       }
       noteRename(raw);
@@ -57,14 +58,7 @@ export function start(): () => void {
         messageId: raw.message_id,
       });
 
-      const myLogin = me.login.toLowerCase();
-      const isMention = raw.message.fragments.some(
-        (f) =>
-          f.type === "mention" &&
-          f.mention.user_login.toLowerCase() === myLogin,
-      );
-      const keywordHit = matchesAnyKeyword(raw.message.text, feedKeywords());
-      if (!isMention && !keywordHit) return;
+      if (!isMention(msg, me.login, feedKeywords())) return;
 
       const ch = knownUser(raw.broadcaster_user_id);
       recordMention({

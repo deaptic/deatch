@@ -10,7 +10,12 @@ import { moderationActionsDisabled } from "../../../lib/stores/preferences.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
-type CommandSuggestion = { name: string; usage?: string; description: string };
+type CommandSuggestion = {
+  name: string;
+  aliases: string[];
+  usage?: string;
+  description: string;
+};
 
 type Props = {
   controller: ChatAutocompleteController;
@@ -35,10 +40,15 @@ export default function CommandAutocomplete(props: Props) {
       const usage = c.options
         .map((o) => (o.required === false ? `[${o.name}?]` : `[${o.name}]`))
         .join(" ");
-      items.push({ name: c.name, usage, description: c.description });
+      items.push({
+        name: c.name,
+        aliases: c.aliases ?? [],
+        usage,
+        description: c.description,
+      });
     }
     return rankSuggestions(items, q, {
-      keys: (s) => [s.name.toLowerCase()],
+      keys: (s) => [s.name, ...s.aliases].map((k) => k.toLowerCase()),
       compare: (a, b) => a.name.localeCompare(b.name),
     });
   };

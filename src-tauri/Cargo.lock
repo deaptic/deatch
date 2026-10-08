@@ -861,7 +861,6 @@ dependencies = [
  "tokio",
  "tokio-tungstenite",
  "twitch_api",
- "url",
  "windows-native-keyring-store",
  "winreg 0.56.0",
 ]

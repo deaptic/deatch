@@ -19,7 +19,8 @@ pub mod users;
 
 use crate::error::Result;
 use session::Session;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
+use tauri::async_runtime::JoinHandle;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::HelixClient;
 
@@ -30,6 +31,9 @@ pub struct Twitch {
     helix: Helix,
     session: Arc<Session>,
     eventsub: Arc<eventsub::Handle>,
+    /// The device-code poll in flight, so a new or cancelled sign-in can
+    /// stop it instead of letting it run for its 30 min lifetime.
+    login: Arc<Mutex<Option<JoinHandle<()>>>>,
 }
 
 pub struct Authed<'a> {
@@ -38,11 +42,19 @@ pub struct Authed<'a> {
 }
 
 impl Twitch {
-    pub fn new(http: reqwest::Client) -> Self {
+    pub fn new(http: reqwest::Client, app: tauri::AppHandle) -> Self {
         Self {
             helix: HelixClient::with_client(transport::HelixTransport::new(http)),
-            session: Arc::default(),
+            session: Arc::new(Session::new(app)),
             eventsub: Arc::default(),
+            login: Arc::default(),
+        }
+    }
+
+    pub fn replace_login(&self, task: Option<JoinHandle<()>>) {
+        let previous = std::mem::replace(&mut *self.login.lock().unwrap(), task);
+        if let Some(previous) = previous {
+            previous.abort();
         }
     }
 

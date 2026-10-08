@@ -9,6 +9,7 @@ export const commands = {
 	discordDisconnect: () => __TAURI_INVOKE<null>("discord_disconnect"),
 	discordSetActivity: (params: ActivityInput) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
 	getDeviceCode: () => __TAURI_INVOKE<DcfAuthResponse>("get_device_code"),
+	cancelLogin: () => __TAURI_INVOKE<void>("cancel_login"),
 	restoreSession: () => __TAURI_INVOKE<{
 	id: UserId,
 	login: string,
@@ -69,7 +70,6 @@ export const commands = {
 	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_unsubscribe_emote_set", { params }),
 	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentMessage[]>("get_recent_messages", { params }),
 	readKeymap: () => __TAURI_INVOKE<string>("read_keymap"),
-	writeKeymap: (params: WriteKeymapParams) => __TAURI_INVOKE<null>("write_keymap", { params }),
 	watchSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("watch_set_muted", { params }),
 	watchRequestState: () => __TAURI_INVOKE<null>("watch_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
@@ -85,6 +85,7 @@ export const events = {
 	eventSubConnection: makeEvent<EventSubConnection>("event-sub-connection"),
 	eventSubRecovered: makeEvent<EventSubRecovered>("event-sub-recovered"),
 	moderatedChannelsChanged: makeEvent<ModeratedChannelsChanged>("moderated-channels-changed"),
+	sessionEnded: makeEvent<SessionEnded>("session-ended"),
 	watchDisconnected: makeEvent<WatchDisconnected>("watch-disconnected"),
 	watchState: makeEvent<WatchState>("watch-state"),
 };
@@ -467,6 +468,9 @@ export type SendMessageResult = {
 	dropReason: string | null,
 };
 
+/**  Twitch rejected the stored token for good (revoked, password changed). */
+export type SessionEnded = null;
+
 export type SetChannelsParams = {
 	channels: ChannelFocus[],
 };
@@ -559,10 +563,6 @@ export type WatchDisconnected = null;
 export type WatchState = {
 	channels: WatchChannel[],
 	current: string | null,
-};
-
-export type WriteKeymapParams = {
-	contents: string,
 };
 
 /* Tauri Specta runtime */

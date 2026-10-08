@@ -15,6 +15,12 @@ pub async fn get_device_code(
 
 #[tauri::command]
 #[specta::specta]
+pub fn cancel_login(twitch: State<'_, Twitch>) {
+    super::cancel_login(&twitch)
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn restore_session(twitch: State<'_, Twitch>) -> Result<Option<User>> {
     super::restore_session(&twitch).await
 }

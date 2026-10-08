@@ -36,7 +36,8 @@ export const [bttvChannel, setBttvChannel] = createSignal<EmoteEntry[]>([]);
 export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 
 function computeThirdPartyEmoteMap(): EmoteMap {
-  const map: EmoteMap = {};
+  // No prototype: chat words like "constructor" must not hit Object.prototype.
+  const map: EmoteMap = Object.create(null);
   for (const e of sevenTvGlobal()) map[e.name] = e.url;
   for (const e of bttvGlobal()) map[e.name] = e.url;
   for (const e of ffzGlobal()) map[e.name] = e.url;

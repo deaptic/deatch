@@ -184,7 +184,12 @@ impl Coordinator<'_> {
     async fn refresh_viewer(&mut self, authed: &Authed<'_>) {
         let id = UserId::from(authed.token.user_id.as_str());
         let new_viewer = self.viewer.as_ref().is_none_or(|v| v.id != id);
-        if !new_viewer && !self.moderated_stale {
+        if !refetch_due(
+            new_viewer,
+            self.moderated_stale,
+            self.moderated_retry_at,
+            Instant::now(),
+        ) {
             return;
         }
         self.moderated_stale = false;
@@ -342,5 +347,32 @@ async fn sleep_until(at: Option<Instant>) {
     match at {
         Some(at) => tokio::time::sleep_until(at.into()).await,
         None => std::future::pending().await,
+    }
+}
+
+/// A failed fetch waits out its retry delay; a new viewer never waits.
+fn refetch_due(new_viewer: bool, stale: bool, retry_at: Option<Instant>, now: Instant) -> bool {
+    new_viewer || (stale && retry_at.is_none_or(|at| at <= now))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::refetch_due;
+    use std::time::{Duration, Instant};
+
+    #[test]
+    fn stale_list_waits_for_its_retry_time() {
+        let now = Instant::now();
+        let later = Some(now + Duration::from_secs(30));
+        assert!(!refetch_due(false, true, later, now));
+        assert!(refetch_due(
+            false,
+            true,
+            later,
+            now + Duration::from_secs(30)
+        ));
+        assert!(refetch_due(false, true, None, now));
+        assert!(!refetch_due(false, false, None, now));
+        assert!(refetch_due(true, false, later, now));
     }
 }

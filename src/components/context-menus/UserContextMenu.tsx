@@ -51,7 +51,7 @@ export default function UserContextMenu(props: Props) {
             sendShoutout({
               fromBroadcasterId: props.broadcasterId,
               toBroadcasterId: props.userId,
-            });
+            }).catch(() => {});
             props.onClose();
           }}
         />

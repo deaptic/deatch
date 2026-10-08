@@ -9,7 +9,7 @@ use tauri::Manager;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
-use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::tungstenite::{Error as WsError, Message};
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 
 use super::events::{EmoteSetUpdated, Rename};
@@ -22,6 +22,9 @@ const OP_DISPATCH: u8 = 0;
 const OP_SUBSCRIBE: u8 = 35;
 const OP_UNSUBSCRIBE: u8 = 36;
 const RECONNECT_DELAY: Duration = Duration::from_secs(5);
+/// 7TV heartbeats roughly every 30s; silence past this means the TCP
+/// connection died without a close frame (sleep, network switch).
+const READ_TIMEOUT: Duration = Duration::from_secs(90);
 
 type Writer = SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>;
 
@@ -76,31 +79,41 @@ async fn serve(
     log::info!("7tv connected, resubscribing {} emote sets", active.len());
     let (mut write, mut read) = socket.split();
     for id in active.iter() {
-        send(&mut write, OP_SUBSCRIBE, id).await;
+        if send(&mut write, OP_SUBSCRIBE, id).await.is_err() {
+            return End::Lost;
+        }
     }
     loop {
         tokio::select! {
             op = rx.recv() => match op {
-                Some(op) => apply(&mut write, active, op).await,
+                Some(op) => {
+                    if apply(&mut write, active, op).await.is_err() {
+                        return End::Lost;
+                    }
+                }
                 None => return End::Stopped,
             },
-            message = read.next() => match message {
-                Some(Ok(Message::Text(text))) => {
+            message = tokio::time::timeout(READ_TIMEOUT, read.next()) => match message {
+                Ok(Some(Ok(Message::Text(text)))) => {
                     if let Some(update) = parse_update(&text) {
                         emit(app, update);
                     }
                 }
-                Some(Ok(Message::Close(frame))) => {
+                Ok(Some(Ok(Message::Close(frame)))) => {
                     log::info!("7tv closed by server: {frame:?}");
                     return End::Lost;
                 }
-                Some(Ok(_)) => {}
-                Some(Err(e)) => {
+                Ok(Some(Ok(_))) => {}
+                Ok(Some(Err(e))) => {
                     log::warn!("7tv socket error: {e}");
                     return End::Lost;
                 }
-                None => {
+                Ok(None) => {
                     log::info!("7tv socket ended");
+                    return End::Lost;
+                }
+                Err(_) => {
+                    log::warn!("7tv silent for {READ_TIMEOUT:?}, reconnecting");
                     return End::Lost;
                 }
             }
@@ -108,31 +121,37 @@ async fn serve(
     }
 }
 
-async fn apply(write: &mut Writer, active: &mut HashSet<String>, op: SevenTvOp) {
+async fn apply(
+    write: &mut Writer,
+    active: &mut HashSet<String>,
+    op: SevenTvOp,
+) -> Result<(), WsError> {
     match op {
         SevenTvOp::Subscribe(id) => {
             if active.insert(id.clone()) {
                 log::info!("7tv subscribe emote_set={id}");
-                send(write, OP_SUBSCRIBE, &id).await;
+                send(write, OP_SUBSCRIBE, &id).await?;
             }
         }
         SevenTvOp::Unsubscribe(id) => {
             if active.remove(&id) {
                 log::info!("7tv unsubscribe emote_set={id}");
-                send(write, OP_UNSUBSCRIBE, &id).await;
+                send(write, OP_UNSUBSCRIBE, &id).await?;
             }
         }
     }
+    Ok(())
 }
 
-async fn send(write: &mut Writer, op: u8, set_id: &str) {
+async fn send(write: &mut Writer, op: u8, set_id: &str) -> Result<(), WsError> {
     let request = json!({
         "op": op,
         "d": { "type": EMOTE_SET_UPDATE, "condition": { "object_id": set_id } },
     });
-    if let Err(e) = write.send(Message::Text(request.to_string().into())).await {
-        log::warn!("7tv send failed: {e}");
-    }
+    write
+        .send(Message::Text(request.to_string().into()))
+        .await
+        .inspect_err(|e| log::warn!("7tv send failed: {e}"))
 }
 
 #[derive(Deserialize)]

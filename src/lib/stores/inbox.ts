@@ -23,13 +23,23 @@ export type Mention = {
 const MAX = 100;
 const STORAGE_KEY = "mentions";
 
-const [mentions, setMentions] = createSignal<Mention[]>(
-  JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"),
-);
+const initialMentions: Mention[] = (() => {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+})();
+
+const [mentions, setMentions] = createSignal<Mention[]>(initialMentions);
 export { mentions };
 
 function save(list: Mention[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  } catch (e) {
+    console.warn("mentions not persisted", e);
+  }
   return list;
 }
 

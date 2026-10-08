@@ -32,6 +32,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
         .events(tauri_specta::collect_events![
             twitch::auth::events::AuthSucceeded,
             twitch::auth::events::AuthFailed,
+            twitch::auth::events::SessionEnded,
             twitch::eventsub::events::EventSubConnection,
             twitch::eventsub::events::EventSubRecovered,
             twitch::eventsub::events::ChatStatus,
@@ -45,6 +46,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
             twitch::auth::commands::get_device_code,
+            twitch::auth::commands::cancel_login,
             twitch::auth::commands::restore_session,
             twitch::auth::commands::revoke_session,
             twitch::eventsub::commands::set_eventsub_channels,
@@ -92,7 +94,6 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             emotes::commands::seventv_unsubscribe_emote_set,
             history::commands::get_recent_messages,
             keymap::commands::read_keymap,
-            keymap::commands::write_keymap,
             watch::commands::watch_set_muted,
             watch::commands::watch_request_state,
             notifications::commands::set_mentions_badge,
@@ -144,7 +145,7 @@ pub fn run() {
             keyring::init_store();
             bindings.mount_events(app);
             let http = http::client()?;
-            let twitch = twitch::Twitch::new(http.clone());
+            let twitch = twitch::Twitch::new(http.clone(), app.handle().clone());
             twitch::eventsub::spawn(app.handle().clone(), twitch.clone());
             app.manage(twitch);
             app.manage(http);

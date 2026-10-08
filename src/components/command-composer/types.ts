@@ -15,6 +15,9 @@ export type CommandOption = {
   required?: boolean;
   default?: unknown;
   hint?: string;
+  // Inclusive bounds in seconds for `duration` options.
+  min?: number;
+  max?: number;
   values?: string[];
   // For `search` options: async provider returning ranked suggestions.
   search?: (query: string) => Promise<OptionSuggestion[]>;

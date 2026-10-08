@@ -4,7 +4,7 @@ import {
   compile as compileWhen,
   type Predicate as WhenFn,
 } from "../utils/boolExpr.ts";
-import { readKeymap, writeKeymap } from "../api/keymap.ts";
+import { readKeymap } from "../api/keymap.ts";
 
 type Handler = () => boolean | void;
 type ActionEntry = { handler: Handler; when?: WhenFn };
@@ -86,12 +86,6 @@ export function setContext(name: string, value: boolean): void {
   contexts.set(name, value);
 }
 
-export function rebind(combo: string, bound: string[] | null): void {
-  overrides.set(combo, normalizeOverride(bound));
-  rebuild();
-  void saveOverrides();
-}
-
 export function start(): () => void {
   const onKey = (e: KeyboardEvent) => {
     if (e.isComposing || MODIFIER_KEYS.has(e.key)) return;
@@ -171,15 +165,9 @@ async function loadOverrides(): Promise<void> {
       overrides.set(combo, normalizeOverride(bound));
     }
     rebuild();
-  } catch {
-    // best-effort: fall back to defaults
+  } catch (e) {
+    console.warn("keymap.json unreadable, using default shortcuts", e);
   }
-}
-
-async function saveOverrides(): Promise<void> {
-  const obj: Record<string, string[] | null> = {};
-  for (const [k, v] of overrides) obj[k] = v;
-  await writeKeymap({ contents: JSON.stringify(obj, null, 2) });
 }
 
 function makeEntry(handler: Handler, when?: string): ActionEntry {

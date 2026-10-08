@@ -3,7 +3,8 @@
 // and user_input). When a reward is configured to echo user input into chat,
 // both events fire — we attach the redemption to that chat message and
 // suppress the standalone FeedEvent. Order isn't guaranteed: whichever side
-// arrives first waits ~3s for the other.
+// arrives first waits ~3s for the other. Rewards without input never echo
+// into chat, so they post straight away.
 
 import type { Redemption } from "../types/feed.ts";
 import { setChannelPointsRedemption } from "../stores/feeds.ts";
@@ -19,14 +20,33 @@ type PendingChat = {
 type PendingRedemption = {
   redemption: Redemption;
   timer: ReturnType<typeof setTimeout>;
-  emit: () => void;
 };
 
-const chatPending = new Map<string, PendingChat>();
-const redemptionPending = new Map<string, PendingRedemption>();
+const chatPending = new Map<string, PendingChat[]>();
+const redemptionPending = new Map<string, PendingRedemption[]>();
 
 function key(broadcasterId: string, userId: string, rewardId: string): string {
   return `${broadcasterId}:${userId}:${rewardId}`;
+}
+
+function takeFirst<T>(queue: Map<string, T[]>, k: string): T | undefined {
+  const list = queue.get(k);
+  if (!list?.length) return undefined;
+  const first = list.shift();
+  if (list.length === 0) queue.delete(k);
+  return first;
+}
+
+function enqueue<T>(queue: Map<string, T[]>, k: string, item: T) {
+  const list = queue.get(k) ?? [];
+  list.push(item);
+  queue.set(k, list);
+}
+
+function remove<T>(queue: Map<string, T[]>, k: string, item: T) {
+  const list = queue.get(k)?.filter((x) => x !== item) ?? [];
+  if (list.length === 0) queue.delete(k);
+  else queue.set(k, list);
 }
 
 export function noteChatRedemption(
@@ -36,17 +56,18 @@ export function noteChatRedemption(
   messageId: string,
 ): void {
   const k = key(broadcasterId, userId, rewardId);
-  const pending = redemptionPending.get(k);
+  const pending = takeFirst(redemptionPending, k);
   if (pending) {
     clearTimeout(pending.timer);
-    redemptionPending.delete(k);
     setChannelPointsRedemption(broadcasterId, messageId, pending.redemption);
     return;
   }
-  const existing = chatPending.get(k);
-  if (existing) clearTimeout(existing.timer);
-  const timer = setTimeout(() => chatPending.delete(k), WINDOW_MS);
-  chatPending.set(k, { broadcasterId, messageId, timer });
+  const entry: PendingChat = {
+    broadcasterId,
+    messageId,
+    timer: setTimeout(() => remove(chatPending, k, entry), WINDOW_MS),
+  };
+  enqueue(chatPending, k, entry);
 }
 
 export function correlateRedemption(
@@ -55,11 +76,14 @@ export function correlateRedemption(
   redemption: Redemption,
   emit: () => void,
 ): void {
+  if (!redemption.input) {
+    emit();
+    return;
+  }
   const k = key(broadcasterId, userId, redemption.reward.id);
-  const pending = chatPending.get(k);
+  const pending = takeFirst(chatPending, k);
   if (pending) {
     clearTimeout(pending.timer);
-    chatPending.delete(k);
     setChannelPointsRedemption(
       pending.broadcasterId,
       pending.messageId,
@@ -67,11 +91,12 @@ export function correlateRedemption(
     );
     return;
   }
-  const existing = redemptionPending.get(k);
-  if (existing) clearTimeout(existing.timer);
-  const timer = setTimeout(() => {
-    redemptionPending.delete(k);
-    emit();
-  }, WINDOW_MS);
-  redemptionPending.set(k, { redemption, timer, emit });
+  const entry: PendingRedemption = {
+    redemption,
+    timer: setTimeout(() => {
+      remove(redemptionPending, k, entry);
+      emit();
+    }, WINDOW_MS),
+  };
+  enqueue(redemptionPending, k, entry);
 }
