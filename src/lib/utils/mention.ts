@@ -1,4 +1,5 @@
 import type { FeedMessage } from "../types/feed.ts";
+import { textOf } from "./message.ts";
 import { matchesAnyKeyword } from "./wordMatch.ts";
 
 /// One rule for "this message is for me": an @mention, a reply to me, or a
@@ -18,6 +19,5 @@ export function isMention(
   ) {
     return true;
   }
-  return keywords.length > 0 &&
-    matchesAnyKeyword(msg.fragments.map((f) => f.text).join(""), keywords);
+  return keywords.length > 0 && matchesAnyKeyword(textOf(msg), keywords);
 }

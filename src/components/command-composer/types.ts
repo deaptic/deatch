@@ -4,24 +4,33 @@ export type CommandContext = {
   openUserCard: (userId: string) => void;
 };
 
-export type OptionType = "user" | "string" | "duration" | "enum" | "search";
-
 export type OptionSuggestion = { id: string; label: string; image?: string };
 
-export type CommandOption = {
+type OptionBase = {
   name: string;
   description: string;
-  type: OptionType;
   required?: boolean;
   default?: unknown;
   hint?: string;
-  // Inclusive bounds in seconds for `duration` options.
+};
+
+export type DurationOption = OptionBase & {
+  type: "duration";
+  // Inclusive bounds in seconds.
   min?: number;
   max?: number;
-  values?: string[];
-  // For `search` options: async provider returning ranked suggestions.
-  search?: (query: string) => Promise<OptionSuggestion[]>;
 };
+
+export type CommandOption =
+  | (OptionBase & { type: "user" | "string" })
+  | DurationOption
+  | (OptionBase & { type: "enum"; values: string[] })
+  | (OptionBase & {
+    type: "search";
+    search: (query: string) => Promise<OptionSuggestion[]>;
+  });
+
+export type OptionType = CommandOption["type"];
 
 export type CommandRole = "broadcaster" | "mod" | "regular";
 

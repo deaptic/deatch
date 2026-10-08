@@ -1,8 +1,8 @@
 import { createStore } from "solid-js/store";
 import type { BadgeMap, FeedEntry } from "../../types/feed.ts";
-import { user } from "../users.ts";
 
 export type { FeedEntry };
+export { getEntryId } from "./ops.ts";
 
 export type ChannelFeed = {
   messages: FeedEntry[];
@@ -24,10 +24,6 @@ const emptyFeed = (): ChannelFeed => ({
   backfilled: false,
 });
 
-export function getEntryId(item: FeedEntry): string {
-  return item.kind === "message" ? item.message_id : item.id;
-}
-
 export function isSilent(item: FeedEntry): boolean {
   return item.kind === "event" && item.silent === true;
 }
@@ -41,11 +37,4 @@ export function lastVisible(feed: ChannelFeed): FeedEntry | undefined {
 
 export function ensureFeed(id: string) {
   if (!feeds[id]) setFeeds(id, emptyFeed());
-}
-
-export function ownMessageText(item: FeedEntry): string | null {
-  if (item.kind !== "message") return null;
-  const me = user();
-  if (!me || me.id !== item.chatter_user_id) return null;
-  return item.fragments.map((f) => f.text).join("");
 }

@@ -8,7 +8,8 @@ import type {
   UserRef,
 } from "../../../lib/types/index.ts";
 import type { Density } from "../../../lib/constants/density.ts";
-import { matchesAnyKeyword } from "../../../lib/utils/wordMatch.ts";
+import { isMention } from "../../../lib/utils/mention.ts";
+import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import { setAutomodHoldStatus } from "../../../lib/stores/feeds.ts";
 import { manageHeldAutomodMessage } from "../../../lib/api/twitch/moderation.ts";
 import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
@@ -94,19 +95,9 @@ export function createMessageParts(
     }
   }
 
-  const mentioned = () => {
-    if (
-      item.fragments.some((f) =>
-        f.type === "mention" && f.user_login === props.userLogin
-      )
-    ) {
-      return true;
-    }
-    const kws = props.keywords;
-    if (!kws || kws.length === 0) return false;
-    const text = item.fragments.map((f) => f.text).join(" ");
-    return matchesAnyKeyword(text, kws);
-  };
+  const mentioned = createMemo(() =>
+    isMention(item, props.userLogin, props.keywords ?? [])
+  );
 
   const tone = (): RowTone =>
     hold()
@@ -121,23 +112,7 @@ export function createMessageParts(
       ? "first"
       : "plain";
 
-  const visibleFragments = () => {
-    if (!item.reply) return item.fragments;
-    const [first, ...rest] = item.fragments;
-    if (
-      first?.type === "mention" &&
-      first.user_login === item.reply.parent_user_login
-    ) {
-      if (rest[0]?.type === "text") {
-        const trimmed = rest[0].text.trimStart();
-        return trimmed
-          ? [{ ...rest[0], text: trimmed }, ...rest.slice(1)]
-          : rest.slice(1);
-      }
-      return rest;
-    }
-    return item.fragments;
-  };
+  const visibleFragments = () => withoutReplyMention(item);
 
   const holdNotice = () => (
     <RichNotice

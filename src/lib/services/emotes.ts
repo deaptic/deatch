@@ -19,8 +19,7 @@ import {
   setUserEmotes,
 } from "../stores/emotes.ts";
 import { user } from "../stores/users.ts";
-import { selectedChannel } from "../stores/view.ts";
-import type { EmoteEntry } from "../types/index.ts";
+import { type ChannelRef, channelResource } from "./channelResource.ts";
 import type { Emote, UserEmote } from "../types/index.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 
@@ -28,7 +27,12 @@ const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
 
-const channelEmoteCache = new Map<string, Promise<EmoteEntry[]>>();
+const bttv = channelResource((c) =>
+  bttvGetChannelEmotes({ channelId: c.id }, { silent: true })
+);
+const ffz = channelResource((c) =>
+  ffzGetChannelEmotes({ channelLogin: c.login }, { silent: true })
+);
 
 let userEmotesLoadStarted = false;
 let thirdPartyGlobalsLoaded = false;
@@ -86,37 +90,12 @@ export function loadThirdPartyGlobal() {
   ffzGetGlobalEmotes({ silent: true }).then(setFfzGlobal).catch(() => {});
 }
 
-function cachedChannelFetch(
-  key: string,
-  fetch: () => Promise<EmoteEntry[]>,
-): Promise<EmoteEntry[]> {
-  let p = channelEmoteCache.get(key);
-  if (!p) {
-    p = fetch().catch(() => {
-      channelEmoteCache.delete(key);
-      return [] as EmoteEntry[];
-    });
-    channelEmoteCache.set(key, p);
-  }
-  return p;
-}
-
-export function loadChannelThirdParty(
-  channelId: string,
-  channelLogin: string,
-) {
-  // A slow fetch for the previous channel must not land on the current one.
-  const stillSelected = () => selectedChannel()?.id === channelId;
-  cachedChannelFetch(
-    `bttv:${channelId}`,
-    () => bttvGetChannelEmotes({ channelId }, { silent: true }),
-  ).then((e) => stillSelected() && setBttvChannel(e));
-  cachedChannelFetch(
-    `ffz:${channelLogin}`,
-    () => ffzGetChannelEmotes({ channelLogin }, { silent: true }),
-  ).then((e) => stillSelected() && setFfzChannel(e));
+export function loadChannelThirdParty(channel: ChannelRef) {
+  bttv.show(channel, setBttvChannel);
+  ffz.show(channel, setFfzChannel);
 }
 
 export function resetChannelThirdParty() {
-  channelEmoteCache.clear();
+  bttv.clear();
+  ffz.clear();
 }

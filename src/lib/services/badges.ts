@@ -6,12 +6,12 @@ import { loadCache, saveCache } from "../utils/cache.ts";
 import { setBadges } from "../stores/feeds.ts";
 import type { BadgeSet } from "../types/index.ts";
 import type { BadgeMap } from "../types/feed.ts";
+import { type ChannelRef, channelResource } from "./channelResource.ts";
 
 const GLOBAL_BADGES_CACHE_KEY = "cache:global_badges";
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;
 
 let globalBadgesPromise: Promise<BadgeSet[]> | null = null;
-const channelBadgesPromise = new Map<string, Promise<BadgeMap>>();
 
 function loadGlobalBadges(): Promise<BadgeSet[]> {
   if (globalBadgesPromise) return globalBadgesPromise;
@@ -50,31 +50,23 @@ function toBadgeMap(sets: BadgeSet[]): BadgeMap {
   return map;
 }
 
+const channelBadges = channelResource((c) =>
+  Promise.all([
+    loadGlobalBadges(),
+    getChannelChatBadges({ broadcasterId: c.id }),
+  ]).then(([global, channel]) => toBadgeMap([...global, ...channel]))
+);
+
 export async function loadGlobal(): Promise<BadgeMap> {
   return toBadgeMap(await loadGlobalBadges());
 }
 
-export function loadChannel(broadcasterId: string): Promise<BadgeMap> {
-  const cached = channelBadgesPromise.get(broadcasterId);
-  if (cached) {
-    cached.then((map) => setBadges(broadcasterId, map));
-    return cached;
-  }
-  const fresh = Promise.all([
-    loadGlobalBadges(),
-    getChannelChatBadges({ broadcasterId }).catch(() => {
-      channelBadgesPromise.delete(broadcasterId);
-      return [] as BadgeSet[];
-    }),
-  ]).then(([global, channel]) => {
-    const map = toBadgeMap([...global, ...channel]);
-    setBadges(broadcasterId, map);
-    return map;
-  });
-  channelBadgesPromise.set(broadcasterId, fresh);
-  return fresh;
+/// Global badges show at once; channel badges replace them when they land.
+export function loadChannel(channel: ChannelRef) {
+  loadGlobal().then((map) => setBadges(channel.id, map));
+  channelBadges.show(channel, (map) => setBadges(channel.id, map));
 }
 
 export function resetChannelCache() {
-  channelBadgesPromise.clear();
+  channelBadges.clear();
 }

@@ -6,6 +6,7 @@ import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
+import { textOf } from "../../lib/utils/message.ts";
 
 type Props = {
   x: number;
@@ -35,9 +36,7 @@ export default function MessageContextMenu(props: Props) {
         label="Copy Text"
         icon={<Copy />}
         onClick={() => {
-          navigator.clipboard.writeText(
-            props.msg.fragments.map((f) => f.text).join(""),
-          );
+          navigator.clipboard.writeText(textOf(props.msg));
           props.onClose();
         }}
       />

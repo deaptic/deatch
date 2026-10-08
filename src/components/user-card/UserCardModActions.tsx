@@ -7,17 +7,7 @@ import {
 } from "../../lib/stores/users.ts";
 import { moderationActionsDisabled } from "../../lib/stores/preferences.ts";
 import Button from "../ui/Button.tsx";
-
-type Timeout = { label: string; seconds: number };
-
-const TIMEOUTS: Timeout[] = [
-  { label: "1s", seconds: 1 },
-  { label: "1m", seconds: 60 },
-  { label: "10m", seconds: 600 },
-  { label: "1h", seconds: 3600 },
-  { label: "1d", seconds: 86400 },
-  { label: "1w", seconds: 604800 },
-];
+import { TIMEOUT_PRESETS } from "../../lib/constants/timeouts.ts";
 
 type Props = {
   chatterId: string;
@@ -63,7 +53,7 @@ export default function UserCardModActions(props: Props) {
           icon={<Ban class="size-4 text-positive" />}
         />
         <div class="flex-1 grid grid-cols-6 gap-1.5 min-w-0">
-          <For each={TIMEOUTS}>
+          <For each={TIMEOUT_PRESETS}>
             {(t) => (
               <Button
                 variant="neutral"

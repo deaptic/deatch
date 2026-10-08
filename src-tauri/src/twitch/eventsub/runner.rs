@@ -5,19 +5,19 @@ use tauri::async_runtime::JoinHandle;
 use tokio::sync::mpsc;
 
 use super::super::moderation::events::ModeratedChannelsChanged;
-use super::super::moderation::get_moderated_channels;
 use super::super::{Authed, Twitch};
 use super::connection::{self, Notification};
 use super::events::{ChatState, ChatStatus, EventSubConnection, EventSubRecovered};
-use super::helix::{spawn_creates, spawn_deletes};
+use super::helix::{spawn_creates, spawn_deletes, spawn_moderated};
 use super::subscriptions::{
     Channels, ConnId, Created, Outcome, Subs, Subscription, Viewer, MAX_CONNECTIONS, PER_CONNECTION,
 };
 use super::EventKind;
 use crate::clock::unix_ms;
 use crate::emit::{emit, emit_named};
-use crate::error::Error;
+use crate::error::{Error, Result};
 use crate::twitch::ids::UserId;
+use crate::twitch::users::dto::UserRef;
 
 /// Twitch has no event for gaining or losing moderator status, so the list
 /// is polled.
@@ -26,11 +26,20 @@ const TOKEN_RETRY: Duration = Duration::from_secs(30);
 const MODERATED_RETRY: Duration = Duration::from_secs(30);
 
 pub(super) enum Signal {
-    Up { conn: ConnId, session_id: String },
-    Down { conn: ConnId },
+    Up {
+        conn: ConnId,
+        session_id: String,
+    },
+    Down {
+        conn: ConnId,
+    },
     Notification(Notification),
     Revoked(String),
     Created(Created),
+    Moderated {
+        viewer: UserId,
+        result: Result<Vec<UserRef>>,
+    },
 }
 
 pub(super) async fn run(
@@ -47,6 +56,7 @@ pub(super) async fn run(
         sockets: HashMap::new(),
         viewer: None,
         moderated_stale: false,
+        moderated_pending: false,
         connected: true,
         resume_at: None,
         moderated_retry_at: None,
@@ -78,6 +88,7 @@ pub(super) async fn run(
                 Signal::Up { conn, session_id } => coordinator.subs.up(conn, session_id),
                 Signal::Down { conn } => coordinator.subs.down(conn, Instant::now(), unix_ms()),
                 Signal::Revoked(sub_id) => coordinator.revoke(&sub_id),
+                Signal::Moderated { viewer, result } => coordinator.moderated(viewer, result),
             },
             _ = sleep_until(coordinator.next_wake()) => coordinator.announce_disconnects(),
             _ = moderated_refresh.tick() => coordinator.moderated_stale = true,
@@ -96,6 +107,7 @@ struct Coordinator<'a> {
     sockets: HashMap<ConnId, JoinHandle<()>>,
     viewer: Option<Viewer>,
     moderated_stale: bool,
+    moderated_pending: bool,
     connected: bool,
     resume_at: Option<Instant>,
     moderated_retry_at: Option<Instant>,
@@ -106,16 +118,12 @@ impl Coordinator<'_> {
         self.twitch.eventsub.publish(self.subs.stats());
     }
 
-    /// Nothing due can run before sync resumes, so waking earlier would spin.
     fn next_wake(&self) -> Option<Instant> {
         let due = [self.subs.next_wake(), self.moderated_retry_at]
             .into_iter()
             .flatten()
             .min();
-        match (due, self.resume_at) {
-            (Some(due), Some(resume)) => Some(due.max(resume)),
-            (due, resume) => due.or(resume),
-        }
+        wake_at(due, self.resume_at)
     }
 
     /// Twitch closes a connection that gets no subscription within 10s, and
@@ -145,7 +153,7 @@ impl Coordinator<'_> {
             }
         };
         match &authed {
-            Some(authed) => self.refresh_viewer(authed).await,
+            Some(authed) => self.refresh_viewer(authed),
             // The frontend drops its moderated list on logout, so the next
             // session must load and send it again even for the same user.
             None => {
@@ -179,35 +187,54 @@ impl Coordinator<'_> {
         }
     }
 
-    /// A failed refresh keeps the last known list, so a blip never drops
-    /// every moderator subscription.
-    async fn refresh_viewer(&mut self, authed: &Authed<'_>) {
+    /// A new viewer gets their own-channel subscriptions right away; the
+    /// moderator ones follow once the list lands.
+    fn refresh_viewer(&mut self, authed: &Authed<'_>) {
         let id = UserId::from(authed.token.user_id.as_str());
         let new_viewer = self.viewer.as_ref().is_none_or(|v| v.id != id);
+        if new_viewer {
+            let moderated = HashSet::new();
+            self.viewer = Some(Viewer { id, moderated });
+        }
         if !refetch_due(
             new_viewer,
             self.moderated_stale,
+            self.moderated_pending,
             self.moderated_retry_at,
             Instant::now(),
         ) {
             return;
         }
         self.moderated_stale = false;
-        match get_moderated_channels(authed).await {
+        self.moderated_pending = true;
+        spawn_moderated(
+            self.twitch.clone(),
+            authed.token.clone(),
+            self.signals.clone(),
+        );
+    }
+
+    /// A failed fetch keeps the last known list, so a blip never drops
+    /// every moderator subscription.
+    fn moderated(&mut self, viewer: UserId, result: Result<Vec<UserRef>>) {
+        self.moderated_pending = false;
+        if self.viewer.as_ref().is_none_or(|v| v.id != viewer) {
+            return;
+        }
+        match result {
             Ok(channels) => {
                 let moderated = channels.iter().map(|c| c.id.clone()).collect();
                 emit(self.app, ModeratedChannelsChanged(channels));
                 self.moderated_retry_at = None;
-                self.viewer = Some(Viewer { id, moderated });
+                self.viewer = Some(Viewer {
+                    id: viewer,
+                    moderated,
+                });
             }
             Err(e) => {
                 log::warn!("moderated channels fetch failed: {e}");
                 self.moderated_stale = true;
                 self.moderated_retry_at = Some(Instant::now() + MODERATED_RETRY);
-                if new_viewer {
-                    let moderated = HashSet::new();
-                    self.viewer = Some(Viewer { id, moderated });
-                }
             }
         }
     }
@@ -350,29 +377,63 @@ async fn sleep_until(at: Option<Instant>) {
     }
 }
 
-/// A failed fetch waits out its retry delay; a new viewer never waits.
-fn refetch_due(new_viewer: bool, stale: bool, retry_at: Option<Instant>, now: Instant) -> bool {
-    new_viewer || (stale && retry_at.is_none_or(|at| at <= now))
+/// One fetch at a time; a failed one waits out its retry delay, a new
+/// viewer never waits.
+fn refetch_due(
+    new_viewer: bool,
+    stale: bool,
+    pending: bool,
+    retry_at: Option<Instant>,
+    now: Instant,
+) -> bool {
+    !pending && (new_viewer || (stale && retry_at.is_none_or(|at| at <= now)))
+}
+
+/// Nothing due can run before sync resumes, so waking earlier would spin.
+fn wake_at(due: Option<Instant>, resume: Option<Instant>) -> Option<Instant> {
+    match (due, resume) {
+        (Some(due), Some(resume)) => Some(due.max(resume)),
+        (due, resume) => due.or(resume),
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::refetch_due;
+    use super::{refetch_due, wake_at};
     use std::time::{Duration, Instant};
 
     #[test]
     fn stale_list_waits_for_its_retry_time() {
         let now = Instant::now();
         let later = Some(now + Duration::from_secs(30));
-        assert!(!refetch_due(false, true, later, now));
+        assert!(!refetch_due(false, true, false, later, now));
         assert!(refetch_due(
             false,
             true,
+            false,
             later,
             now + Duration::from_secs(30)
         ));
-        assert!(refetch_due(false, true, None, now));
-        assert!(!refetch_due(false, false, None, now));
-        assert!(refetch_due(true, false, later, now));
+        assert!(refetch_due(false, true, false, None, now));
+        assert!(!refetch_due(false, false, false, None, now));
+        assert!(refetch_due(true, false, false, later, now));
+    }
+
+    #[test]
+    fn never_fetches_twice_at_once() {
+        let now = Instant::now();
+        assert!(!refetch_due(true, true, true, None, now));
+    }
+
+    #[test]
+    fn wakes_no_earlier_than_sync_resumes() {
+        let now = Instant::now();
+        let soon = now + Duration::from_secs(5);
+        let later = now + Duration::from_secs(60);
+        assert_eq!(wake_at(Some(soon), Some(later)), Some(later));
+        assert_eq!(wake_at(Some(later), Some(soon)), Some(later));
+        assert_eq!(wake_at(Some(soon), None), Some(soon));
+        assert_eq!(wake_at(None, Some(soon)), Some(soon));
+        assert_eq!(wake_at(None, None), None);
     }
 }
