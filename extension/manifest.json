@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Deatch Link",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Sends the Twitch channel you're watching to the Deatch desktop app so its Watch tab follows along.",
   "homepage_url": "https://github.com/Deaptic/deatch",
   "browser_specific_settings": {
