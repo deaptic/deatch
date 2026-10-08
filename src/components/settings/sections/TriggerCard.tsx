@@ -1,5 +1,5 @@
 import { Check, ChevronRight, Trash2 } from "lucide-solid";
-import { createSignal, Show } from "solid-js";
+import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Toggle from "../../ui/Toggle.tsx";
 import Field from "../../ui/Field.tsx";
@@ -17,11 +17,13 @@ import {
 export default function TriggerCard(props: {
   source: Trigger;
   persisted: boolean;
+  expanded: boolean;
+  onToggle: () => void;
   onSave: (trigger: Trigger) => void;
   onDelete: () => void;
 }) {
   const [draft, setDraft] = createStore<Trigger>({ ...props.source });
-  const [expanded, setExpanded] = createSignal(!props.persisted);
+  const expanded = () => props.expanded;
 
   const dirty = () => JSON.stringify(draft) !== JSON.stringify(props.source);
   const valid = () =>
@@ -41,7 +43,7 @@ export default function TriggerCard(props: {
         />
         <button
           type="button"
-          onClick={() => setExpanded((v) => !v)}
+          onClick={props.onToggle}
           class="flex-1 flex items-center gap-2 min-w-0 cursor-pointer text-left group"
         >
           <span

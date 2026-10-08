@@ -13,8 +13,22 @@ import {
 
 export default function TriggersSection() {
   const [drafts, setDrafts] = createSignal<Trigger[]>([]);
+  // Lives here, by id: saving replaces the trigger object, which remounts
+  // its card.
+  const [open, setOpen] = createSignal<ReadonlySet<string>>(new Set());
+  const isOpen = (id: string) => open().has(id);
+  const toggle = (id: string) =>
+    setOpen((s) => {
+      const next = new Set(s);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
 
-  const addDraft = () => setDrafts((d) => [...d, blankTrigger()]);
+  const addDraft = () => {
+    const t = blankTrigger();
+    setDrafts((d) => [...d, t]);
+    toggle(t.id);
+  };
   const discardDraft = (id: string) =>
     setDrafts((d) => d.filter((t) => t.id !== id));
   const commitDraft = (trigger: Trigger) => {
@@ -32,6 +46,8 @@ export default function TriggersSection() {
           <TriggerCard
             source={t}
             persisted
+            expanded={isOpen(t.id)}
+            onToggle={() => toggle(t.id)}
             onSave={saveTrigger}
             onDelete={() => removeTrigger(t.id)}
           />
@@ -42,6 +58,8 @@ export default function TriggersSection() {
           <TriggerCard
             source={t}
             persisted={false}
+            expanded={isOpen(t.id)}
+            onToggle={() => toggle(t.id)}
             onSave={commitDraft}
             onDelete={() => discardDraft(t.id)}
           />

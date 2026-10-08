@@ -10,10 +10,13 @@ export type RenderSection = {
 };
 
 export function emojiUrl(emoji: string): string {
+  // Twemoji drops U+FE0F from file names only when there is no U+200D joiner.
+  const keepSelector = emoji.includes("‍");
   const points: string[] = [];
   for (const char of emoji) {
     const cp = char.codePointAt(0);
-    if (cp !== undefined && cp !== 0xfe0f) points.push(cp.toString(16));
+    if (cp === undefined || (cp === 0xfe0f && !keepSelector)) continue;
+    points.push(cp.toString(16));
   }
   return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/${
     points.join("-")

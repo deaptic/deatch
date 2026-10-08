@@ -106,6 +106,7 @@ export function start(): () => void {
       retryDelay = 1000;
     }),
   ]);
-  void watchRequestState();
+  // No host connected yet is the normal case at startup.
+  watchRequestState().catch(() => {});
   return stop;
 }

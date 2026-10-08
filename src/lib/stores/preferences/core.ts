@@ -127,6 +127,11 @@ function sanitizeDensity(raw: unknown): Density {
     : DEFAULT_PREFERENCES.feed.density;
 }
 
+// A hand-edited "false" string is truthy; only real booleans count.
+function bool(raw: unknown, fallback: boolean): boolean {
+  return typeof raw === "boolean" ? raw : fallback;
+}
+
 function sanitizeTriggers(raw: unknown): Trigger[] {
   if (!Array.isArray(raw)) return [];
   const out: Trigger[] = [];
@@ -174,14 +179,22 @@ function load(): UserPreferences {
           GROUP_SPACING_STOPS,
           DEFAULT_PREFERENCES.feed.groupSpacing,
         ),
-        showTimestamp: stored.feed?.showTimestamp ??
+        showTimestamp: bool(
+          stored.feed?.showTimestamp,
           DEFAULT_PREFERENCES.feed.showTimestamp,
-        showDeletedContent: stored.feed?.showDeletedContent ??
+        ),
+        showDeletedContent: bool(
+          stored.feed?.showDeletedContent,
           DEFAULT_PREFERENCES.feed.showDeletedContent,
-        showCopypasta: stored.feed?.showCopypasta ??
+        ),
+        showCopypasta: bool(
+          stored.feed?.showCopypasta,
           DEFAULT_PREFERENCES.feed.showCopypasta,
-        showAvatars: stored.feed?.showAvatars ??
+        ),
+        showAvatars: bool(
+          stored.feed?.showAvatars,
           DEFAULT_PREFERENCES.feed.showAvatars,
+        ),
         keywords: Array.isArray(stored.feed?.keywords)
           ? stored.feed!.keywords.filter((k): k is string =>
             typeof k === "string" && k.trim().length > 0
@@ -190,39 +203,61 @@ function load(): UserPreferences {
         events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
         badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
         users: {
-          showDisplayName: stored.feed?.users?.showDisplayName ??
+          showDisplayName: bool(
+            stored.feed?.users?.showDisplayName,
             DEFAULT_PREFERENCES.feed.users.showDisplayName,
-          overrideNameColor: stored.feed?.users?.overrideNameColor ??
-            DEFAULT_PREFERENCES.feed.users.overrideNameColor,
+          ),
+          overrideNameColor: typeof stored.feed?.users?.overrideNameColor ===
+              "string"
+            ? stored.feed.users.overrideNameColor
+            : DEFAULT_PREFERENCES.feed.users.overrideNameColor,
         },
       },
       notifications: {
-        mentionSound: stored.notifications?.mentionSound ??
+        mentionSound: bool(
+          stored.notifications?.mentionSound,
           DEFAULT_PREFERENCES.notifications.mentionSound,
+        ),
       },
       moderation: {
-        autoShoutoutOnRaid: stored.moderation?.autoShoutoutOnRaid ??
+        autoShoutoutOnRaid: bool(
+          stored.moderation?.autoShoutoutOnRaid,
           DEFAULT_PREFERENCES.moderation.autoShoutoutOnRaid,
-        actionsDisabled: stored.moderation?.actionsDisabled ??
+        ),
+        actionsDisabled: bool(
+          stored.moderation?.actionsDisabled,
           DEFAULT_PREFERENCES.moderation.actionsDisabled,
+        ),
       },
       advanced: {
-        developerMode: stored.advanced?.developerMode ??
+        developerMode: bool(
+          stored.advanced?.developerMode,
           DEFAULT_PREFERENCES.advanced.developerMode,
-        showLogs: stored.advanced?.showLogs ??
+        ),
+        showLogs: bool(
+          stored.advanced?.showLogs,
           DEFAULT_PREFERENCES.advanced.showLogs,
-        alwaysOnTop: stored.advanced?.alwaysOnTop ??
+        ),
+        alwaysOnTop: bool(
+          stored.advanced?.alwaysOnTop,
           DEFAULT_PREFERENCES.advanced.alwaysOnTop,
-        autostart: stored.advanced?.autostart ??
+        ),
+        autostart: bool(
+          stored.advanced?.autostart,
           DEFAULT_PREFERENCES.advanced.autostart,
-        discordRichPresence: stored.advanced?.discordRichPresence ??
+        ),
+        discordRichPresence: bool(
+          stored.advanced?.discordRichPresence,
           DEFAULT_PREFERENCES.advanced.discordRichPresence,
+        ),
       },
       appearance: {
         theme: sanitizeTheme(stored.appearance?.theme),
         accent: sanitizeHex(stored.appearance?.accent),
-        railExpanded: stored.appearance?.railExpanded ??
+        railExpanded: bool(
+          stored.appearance?.railExpanded,
           DEFAULT_PREFERENCES.appearance.railExpanded,
+        ),
         uiDensity: sanitizeUiDensity(stored.appearance?.uiDensity),
         zoom: sanitizeStop(
           stored.appearance?.zoom,

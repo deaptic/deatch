@@ -11,7 +11,5 @@ export async function watchSetMuted(
 }
 
 export async function watchRequestState(): Promise<void> {
-  try {
-    await invokeCommand(commands.watchRequestState, [], { silent: true });
-  } catch {}
+  await invokeCommand(commands.watchRequestState, [], { silent: true });
 }

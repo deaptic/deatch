@@ -21,6 +21,8 @@ import * as discord from "../services/discord.ts";
 import { user } from "../stores/users.ts";
 import { liveStreams } from "../stores/channels.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
+import { addToast } from "../stores/toasts.ts";
+import { errorMessage } from "../utils/error.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
@@ -43,7 +45,7 @@ export function createSystemIntegration(): void {
   createEffect(() => {
     getCurrentWindow()
       .setAlwaysOnTop(advancedAlwaysOnTop())
-      .catch(() => {});
+      .catch((e) => addToast("Always on top failed", "error", errorMessage(e)));
   });
 
   createEffect(() => {
@@ -52,7 +54,7 @@ export function createSystemIntegration(): void {
       const have = await isAutostartEnabled();
       if (have === want) return;
       await (want ? enableAutostart() : disableAutostart());
-    })().catch(() => {});
+    })().catch((e) => addToast("Autostart failed", "error", errorMessage(e)));
   });
 
   createEffect(() => {

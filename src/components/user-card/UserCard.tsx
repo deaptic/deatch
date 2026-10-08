@@ -1,4 +1,6 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { feeds } from "../../lib/stores/feeds.ts";
+import type { FeedMessage } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
@@ -91,12 +93,24 @@ export default function UserCard(props: Props) {
       setPos(clamp(ev.clientX - offsetX, ev.clientY - offsetY, w, h));
     };
     const onUp = () => {
+      endDrag = undefined;
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
     };
+    endDrag = onUp;
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
+  // Escape can close the card mid-drag; the listeners must go with it.
+  let endDrag: (() => void) | undefined;
+  onCleanup(() => endDrag?.());
+
+  const messages = createMemo<FeedMessage[]>(() =>
+    (feeds[props.broadcasterId]?.messages ?? []).filter(
+      (m): m is FeedMessage =>
+        m.kind === "message" && m.chatter_user_id === props.chatterId,
+    )
+  );
 
   return (
     <Portal>
@@ -115,6 +129,7 @@ export default function UserCard(props: Props) {
         <UserCardHeader
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
+          messages={messages()}
           pinned={pinned()}
           onTogglePin={() => setPinned((p) => !p)}
           onStartDrag={startDrag}
@@ -126,6 +141,7 @@ export default function UserCard(props: Props) {
         <UserCardFeed
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
+          hasMessages={messages().length > 0}
           onJumpToMessage={(messageId) => {
             props.onJumpToMessage?.(props.broadcasterId, messageId);
             props.onClose();

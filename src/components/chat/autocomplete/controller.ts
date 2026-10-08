@@ -1,7 +1,8 @@
 import { createSignal } from "solid-js";
 
-export type Kind = "emote" | "mention" | "command";
-type Active = { kind: Kind; query: string };
+import { type Active, detect, type Kind } from "./detect.ts";
+
+export type { Kind };
 
 type Options = {
   getValue: () => string;
@@ -89,14 +90,4 @@ export function createChatAutocompleteController(opts: Options) {
     setValue: opts.setValue,
     focus: opts.focus,
   };
-}
-
-function detect(before: string): Active | null {
-  const cmd = before.match(/^\/(\w*)$/);
-  if (cmd) return { kind: "command", query: cmd[1] };
-  const em = before.match(/(?:^|\s):(\w+)$/);
-  if (em && em[1].length >= 1) return { kind: "emote", query: em[1] };
-  const mn = before.match(/(?:^|\s)@(\w*)$/);
-  if (mn) return { kind: "mention", query: mn[1] };
-  return null;
 }

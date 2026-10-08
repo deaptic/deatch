@@ -32,7 +32,9 @@ type Waiter = { resolve: () => void; reject: (error: unknown) => void };
 const waiting = new Map<string, Promise<void>>();
 const waiters = new Map<string, Waiter[]>();
 const queued = new Set<string>();
-const notFound = new Set<string>();
+// Id → when Twitch last returned nothing for it; retried after TTL_MS so a
+// new or briefly suspended account resolves eventually.
+const notFound = new Map<string, number>();
 let batchTimer: ReturnType<typeof setTimeout> | undefined;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 let saveDeadline = 0;
@@ -84,12 +86,20 @@ export function get(ids: string[]): Promise<User[]> {
   return untrack(() => {
     const wanted = ids.filter(isUserId);
     const pending = wanted
-      .filter((id) => !isKnown(id) && !notFound.has(id))
+      .filter((id) => !isKnown(id) && !recentlyMissing(id))
       .map(enqueue);
     return Promise.all(pending).then(() =>
       wanted.map(knownUser).filter((u): u is User => !!u)
     );
   });
+}
+
+function recentlyMissing(id: string): boolean {
+  const at = notFound.get(id);
+  if (at === undefined) return false;
+  if (Date.now() - at < TTL_MS) return true;
+  notFound.delete(id);
+  return false;
 }
 
 function isKnown(id: string): boolean {
@@ -121,8 +131,10 @@ async function sendBatch() {
     const found = new Set(
       (await fetch({ ids }, { silent: true })).map((u) => u.id),
     );
+    const now = Date.now();
     for (const id of ids) {
-      if (!found.has(id)) notFound.add(id);
+      if (found.has(id)) notFound.delete(id);
+      else notFound.set(id, now);
       settle(id);
     }
   } catch (error) {

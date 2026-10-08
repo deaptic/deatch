@@ -7,6 +7,7 @@ import { clearChatters, user } from "../stores/users.ts";
 import { watchWarmedChannels } from "../stores/watch.ts";
 import { setEventsubChannels } from "../api/twitch/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
+import * as chatActivity from "../services/chatActivity.ts";
 import * as chatSettings from "../services/chatSettings.ts";
 import * as cheermotes from "../services/cheermotes.ts";
 import { clearChatSettings } from "../stores/chatSettings.ts";
@@ -40,6 +41,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     clearChatters(broadcasterId);
     clearChatSettings(broadcasterId);
     clearCheermotes(broadcasterId);
+    chatActivity.clear(broadcasterId);
   }
 
   createEffect(

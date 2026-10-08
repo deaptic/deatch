@@ -29,6 +29,10 @@ export function record(channelId: string, timestamp: number) {
   if (arr.length > MAX_SAMPLES) prune(arr, timestamp);
 }
 
+export function clear(channelId: string) {
+  samples.delete(channelId);
+}
+
 export function rate(channelId: string): number {
   tick();
   const arr = samples.get(channelId);

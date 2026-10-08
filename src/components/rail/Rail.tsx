@@ -1,4 +1,11 @@
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  Show,
+} from "solid-js";
 import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import {
@@ -156,9 +163,8 @@ export default function Rail(props: Props) {
       const i = row ? parseInt(row.dataset.pinnedIndex!) : null;
       setOverIdx(i !== null && !isNaN(i) ? i : null);
     };
-    const onUp = () => {
-      const over = overIdx();
-      if (over !== null && over !== idx) reorderPinnedChannels(idx, over);
+    const end = () => {
+      endDrag = undefined;
       setDragIdx(null);
       setOverIdx(null);
       document.body.style.cursor = "";
@@ -166,9 +172,18 @@ export default function Rail(props: Props) {
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
     };
+    const onUp = () => {
+      const over = overIdx();
+      if (over !== null && over !== idx) reorderPinnedChannels(idx, over);
+      end();
+    };
+    endDrag = end;
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
+  // Unmounting mid-drag must not leave the cursor or listeners behind.
+  let endDrag: (() => void) | undefined;
+  onCleanup(() => endDrag?.());
 
   function openAdd() {
     if (!addBtn) return;

@@ -1,31 +1,8 @@
-use crate::twitch::ids::UserId;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::moderation::{
-    BanUser, BannedUser as HelixBannedUser, ModeratedChannel as HelixModeratedChannel,
+    BannedUser as HelixBannedUser, ModeratedChannel as HelixModeratedChannel,
 };
-
-#[derive(Debug, Clone, Serialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct Ban {
-    pub user_id: UserId,
-    pub broadcaster_id: UserId,
-    pub moderator_id: UserId,
-    pub created_at: String,
-    pub end_time: String,
-}
-
-impl From<BanUser> for Ban {
-    fn from(b: BanUser) -> Self {
-        Self {
-            user_id: UserId(b.user_id.to_string()),
-            broadcaster_id: UserId(b.broadcaster_id.to_string()),
-            moderator_id: UserId(b.moderator_id.to_string()),
-            created_at: b.created_at.to_string(),
-            end_time: b.end_time.map(|t| t.to_string()).unwrap_or_default(),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]

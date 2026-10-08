@@ -49,9 +49,14 @@ export default function LiveNow(props: Props) {
     onCleanup(() => clearInterval(id));
   });
 
+  // A filter change starts a new generation; pages from the old one are
+  // dropped when they land.
+  let generation = 0;
+
   async function fetchPage(reset: boolean) {
-    if (exploreFilters.followingOnly || fetching()) return;
-    if (!reset && exhausted()) return;
+    if (exploreFilters.followingOnly) return;
+    if (!reset && (fetching() || exhausted())) return;
+    const mine = ++generation;
     setFetching(true);
     try {
       const { data, pagination } = await getStreams({
@@ -62,6 +67,7 @@ export default function LiveNow(props: Props) {
         first: PAGE_SIZE,
         after: reset ? undefined : cursor() ?? undefined,
       });
+      if (mine !== generation) return;
       if (data.length) {
         users.get(data.map((s) => s.user.id)).catch(() => {});
       }
@@ -69,9 +75,9 @@ export default function LiveNow(props: Props) {
       setCursor(pagination.cursor);
       setExhausted(!pagination.cursor || data.length === 0);
     } catch {
-      setExhausted(true);
+      if (mine === generation) setExhausted(true);
     } finally {
-      setFetching(false);
+      if (mine === generation) setFetching(false);
     }
   }
 

@@ -8,24 +8,15 @@ type Props = {
   chatterId: string;
   broadcasterId: string;
   user: User | null;
+  messages: FeedMessage[];
 };
 
 export default function UserCardIdentity(props: Props) {
-  const messages = createMemo<FeedMessage[]>(() => {
-    const feed = feeds[props.broadcasterId];
-    if (!feed) return [];
-    return feed.messages.filter(
-      (m): m is FeedMessage =>
-        m.kind === "message" && m.chatter_user_id === props.chatterId,
-    );
-  });
-
-  const messageColor = createMemo(() => messages().find((m) => m.color)?.color);
+  const messageColor = createMemo(() =>
+    props.messages.find((m) => m.color)?.color
+  );
   const channelBadges = () => feeds[props.broadcasterId]?.badges ?? {};
-  const latestBadges = createMemo(() => {
-    const ms = messages();
-    return ms[ms.length - 1]?.badges ?? [];
-  });
+  const latestBadges = () => props.messages.at(-1)?.badges ?? [];
 
   return (
     <div class="h-6 flex items-center gap-1 min-w-0">

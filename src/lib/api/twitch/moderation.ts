@@ -1,6 +1,5 @@
 import { commands } from "../../bindings.ts";
 import type {
-  Ban,
   BannedUser,
   BanUserParams,
   BroadcasterUserParams,
@@ -21,12 +20,12 @@ export async function deleteChatMessages(
   });
 }
 
-export function banUser(
+export async function banUser(
   params: BanUserParams,
   options?: InvokeOptions,
-): Promise<Ban> {
+): Promise<void> {
   const successMessage = params.duration ? "User timed out" : "User banned";
-  return invokeCommand(commands.banUser, [params], {
+  await invokeCommand(commands.banUser, [params], {
     successMessage,
     ...options,
   });

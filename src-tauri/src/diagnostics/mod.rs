@@ -3,7 +3,7 @@ pub mod dto;
 
 use crate::twitch::Twitch;
 use dto::{AppStats, ProcessStats};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System};
 
@@ -67,8 +67,13 @@ fn split(own: u32, samples: &[Sample], cores: f32) -> (ProcessStats, ProcessStat
     }
     let mut webview = ProcessStats::default();
     let mut stack = vec![own];
+    // Reused PIDs and stale parents can form a cycle in the snapshot.
+    let mut seen = HashSet::from([own]);
     while let Some(pid) = stack.pop() {
         for child in children.get(&pid).into_iter().flatten() {
+            if !seen.insert(child.pid) {
+                continue;
+            }
             add(&mut webview, child, cores);
             stack.push(child.pid);
         }
@@ -113,5 +118,17 @@ mod tests {
         assert_eq!(app.cpu_percent, 12.5);
         assert_eq!((webview.memory_bytes, webview.processes), (600, 3));
         assert_eq!(webview.cpu_percent, 15.0);
+    }
+
+    #[test]
+    fn survives_a_parent_cycle_from_pid_reuse() {
+        let samples = [
+            sample(1, None, 1, 0.0),
+            sample(10, Some(1), 100, 0.0),
+            sample(20, Some(10), 200, 0.0),
+            sample(10, Some(20), 100, 0.0),
+        ];
+        let (_, webview) = split(1, &samples, 1.0);
+        assert_eq!((webview.memory_bytes, webview.processes), (300, 2));
     }
 }
