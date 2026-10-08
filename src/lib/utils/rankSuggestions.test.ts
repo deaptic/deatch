@@ -17,6 +17,14 @@ Deno.test("ranks prefix matches before substring matches, each sorted", () => {
   ]);
 });
 
+Deno.test("an exact match wins over a better-sorted prefix match", () => {
+  const ranked = rankSuggestions(["bobby", "bob"], "bob", {
+    keys: (name) => [name],
+    compare: (a, b) => b.length - a.length,
+  });
+  assertEquals(ranked, ["bob", "bobby"]);
+});
+
 Deno.test("matches the query case-insensitively", () => {
   assertEquals(rankSuggestions(names, "BAR", byName)[0], "bar");
 });

@@ -11,11 +11,17 @@ import {
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import * as users from "../../lib/services/users.ts";
+import { rankSuggestions } from "../../lib/utils/rankSuggestions.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
-import { parseDuration, type Slot, slotSatisfied } from "./parse.ts";
+import {
+  durationError,
+  parseDuration,
+  type Slot,
+  slotSatisfied,
+} from "./parse.ts";
 
 type UserSuggestion = {
   id: string;
@@ -121,28 +127,16 @@ export default function CommandComposer(props: Props) {
     if (opt?.type !== "user" || activeSlot()?.resolved !== null) return [];
     const bucket = chattersByChannel.get(props.ctx.broadcasterId);
     if (!bucket) return [];
-    const q = activeRaw().toLowerCase();
-    type Ranked = UserSuggestion & { lastSeen: number };
-    const starts: Ranked[] = [];
-    const contains: Ranked[] = [];
-    for (const c of bucket.values()) {
-      const fields = [c.login.toLowerCase(), c.displayName.toLowerCase()];
-      const startsAny = q === "" || fields.some((f) => f.startsWith(q));
-      const containsAny = !startsAny && fields.some((f) => f.includes(q));
-      if (!startsAny && !containsAny) continue;
-      const ranked: Ranked = {
-        id: c.id,
-        login: c.login,
-        displayName: c.displayName,
-        color: c.color,
-        lastSeen: c.lastSeen,
-      };
-      (startsAny ? starts : contains).push(ranked);
-    }
-    const byRecency = (a: Ranked, b: Ranked) => b.lastSeen - a.lastSeen;
-    return [...starts.sort(byRecency), ...contains.sort(byRecency)]
-      .slice(0, 10)
-      .map(({ lastSeen: _, ...rest }) => rest);
+    return rankSuggestions([...bucket.values()], activeRaw(), {
+      keys: (c) => [c.login.toLowerCase(), c.displayName.toLowerCase()],
+      compare: (a, b) => b.lastSeen - a.lastSeen,
+      limit: 10,
+    }).map((c) => ({
+      id: c.id,
+      login: c.login,
+      displayName: c.displayName,
+      color: c.color,
+    }));
   });
 
   const enumSuggestions = createMemo<string[]>(() => {
@@ -327,13 +321,12 @@ export default function CommandComposer(props: Props) {
     if (!opt) return;
     if (opt.type === "duration") {
       const n = value === "" ? null : parseDuration(value);
+      const error = value === "" ? null : durationError(opt, n);
       patchSlot(idx, {
         raw: value,
-        resolved: n,
+        resolved: error ? null : n,
         displayLabel: value,
-        error: value !== "" && n === null
-          ? `Try ${opt.hint ?? "30s, 5m, 1h"}`
-          : null,
+        error,
       });
     } else if (opt.type === "user" || opt.type === "search") {
       patchSlot(idx, {

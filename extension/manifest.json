@@ -15,12 +15,12 @@
   },
   "permissions": ["tabs", "nativeMessaging"],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["channel.js", "background.js"]
   },
   "content_scripts": [
     {
       "matches": ["*://www.twitch.tv/*", "*://twitch.tv/*"],
-      "js": ["content.js"],
+      "js": ["channel.js", "content.js"],
       "run_at": "document_start",
       "all_frames": false
     }

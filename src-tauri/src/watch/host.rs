@@ -133,3 +133,31 @@ fn pump_to_browser(reader: Stream) {
         log(format_args!("⇇ {line}"));
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{read_message, MAX_MESSAGE_SIZE};
+    use std::io::Cursor;
+
+    fn framed(len: u32, body: &[u8]) -> Cursor<Vec<u8>> {
+        Cursor::new([&len.to_le_bytes()[..], body].concat())
+    }
+
+    #[test]
+    fn reads_one_framed_message() {
+        let message = read_message(&mut framed(5, b"hello")).unwrap();
+        assert_eq!(message.as_deref(), Some("hello"));
+    }
+
+    #[test]
+    fn clean_eof_ends_the_stream() {
+        assert_eq!(read_message(&mut Cursor::new(vec![])).unwrap(), None);
+    }
+
+    #[test]
+    fn rejects_empty_oversize_and_truncated_frames() {
+        assert!(read_message(&mut framed(0, b"")).is_err());
+        assert!(read_message(&mut framed(MAX_MESSAGE_SIZE as u32 + 1, b"")).is_err());
+        assert!(read_message(&mut framed(5, b"hi")).is_err());
+    }
+}

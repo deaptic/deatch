@@ -13,30 +13,6 @@ export type ChannelFeed = {
   backfilled: boolean;
 };
 
-const CATEGORY_CAPS: Record<string, number> = {
-  message: 400,
-};
-const DEFAULT_CAP = 50;
-
-function categoryOf(item: FeedEntry): string {
-  return item.kind === "message" ? "message" : item.notice_type;
-}
-
-function capFor(category: string): number {
-  return CATEGORY_CAPS[category] ?? DEFAULT_CAP;
-}
-
-export function enforceCaps(messages: FeedEntry[]) {
-  const counts: Record<string, number> = {};
-  const removeIdxs: number[] = [];
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const cat = categoryOf(messages[i]);
-    counts[cat] = (counts[cat] ?? 0) + 1;
-    if (counts[cat] > capFor(cat)) removeIdxs.push(i);
-  }
-  for (const i of removeIdxs) messages.splice(i, 1);
-}
-
 export const [feeds, setFeeds] = createStore<Record<string, ChannelFeed>>({});
 
 const emptyFeed = (): ChannelFeed => ({

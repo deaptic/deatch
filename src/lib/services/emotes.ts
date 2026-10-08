@@ -19,6 +19,7 @@ import {
   setUserEmotes,
 } from "../stores/emotes.ts";
 import { user } from "../stores/users.ts";
+import { selectedChannel } from "../stores/view.ts";
 import type { EmoteEntry } from "../types/index.ts";
 import type { Emote, UserEmote } from "../types/index.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
@@ -91,7 +92,10 @@ function cachedChannelFetch(
 ): Promise<EmoteEntry[]> {
   let p = channelEmoteCache.get(key);
   if (!p) {
-    p = fetch().catch(() => [] as EmoteEntry[]);
+    p = fetch().catch(() => {
+      channelEmoteCache.delete(key);
+      return [] as EmoteEntry[];
+    });
     channelEmoteCache.set(key, p);
   }
   return p;
@@ -101,14 +105,16 @@ export function loadChannelThirdParty(
   channelId: string,
   channelLogin: string,
 ) {
+  // A slow fetch for the previous channel must not land on the current one.
+  const stillSelected = () => selectedChannel()?.id === channelId;
   cachedChannelFetch(
     `bttv:${channelId}`,
     () => bttvGetChannelEmotes({ channelId }, { silent: true }),
-  ).then(setBttvChannel);
+  ).then((e) => stillSelected() && setBttvChannel(e));
   cachedChannelFetch(
     `ffz:${channelLogin}`,
     () => ffzGetChannelEmotes({ channelLogin }, { silent: true }),
-  ).then(setFfzChannel);
+  ).then((e) => stillSelected() && setFfzChannel(e));
 }
 
 export function resetChannelThirdParty() {

@@ -34,10 +34,10 @@ async function drainPending() {
     const slug = pendingCurrent;
     try {
       const [ch] = await users.fetch({ logins: [slug] }, { silent: true });
-      if (ch && pendingCurrent === slug) {
-        if (watchedChannel()?.id !== ch.id) setWatchedChannel(ch);
-        pendingCurrent = null;
-      }
+      // An unknown login (banned, renamed) resolves to nothing; retrying
+      // would never change that.
+      if (pendingCurrent === slug) pendingCurrent = null;
+      if (ch && watchedChannel()?.id !== ch.id) setWatchedChannel(ch);
     } catch {}
   }
 
@@ -45,9 +45,7 @@ async function drainPending() {
     const toFetch = Array.from(pendingFetch);
     try {
       const fresh = await users.fetch({ logins: toFetch }, { silent: true });
-      for (const u of fresh) {
-        pendingFetch.delete(u.login);
-      }
+      for (const login of toFetch) pendingFetch.delete(login);
       const current = watchWarmedChannels();
       const known = new Set(current.map((c) => c.login));
       setWatchWarmedChannels([

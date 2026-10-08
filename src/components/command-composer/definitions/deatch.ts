@@ -56,6 +56,8 @@ export const deatchCommands: Command[] = [
         name: "duration",
         description: "Clip length (5-60s, default 30s)",
         type: "duration",
+        min: 5,
+        max: 60,
         hint: "between 5s and 60s, e.g. 15s, 30s, 60s",
       },
     ],

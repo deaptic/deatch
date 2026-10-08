@@ -4,6 +4,7 @@ mod retry;
 use crate::http::log_request;
 use rate_limit::RateLimit;
 use std::future::Future;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
 use twitch_api::client::{Bytes, Request, Response};
@@ -13,6 +14,7 @@ use twitch_api::HttpClient;
 pub struct HelixTransport {
     http: reqwest::Client,
     rate_limit: Arc<RateLimit>,
+    unauthorized: Arc<AtomicBool>,
 }
 
 impl HelixTransport {
@@ -20,11 +22,18 @@ impl HelixTransport {
         Self {
             http,
             rate_limit: Arc::default(),
+            unauthorized: Arc::default(),
         }
     }
 
     pub fn paused_for(&self) -> Option<std::time::Duration> {
         self.rate_limit.paused_for()
+    }
+
+    /// True once since the last call if Twitch rejected a token that still
+    /// looked valid by its expiry, so the session can refresh it early.
+    pub fn take_unauthorized(&self) -> bool {
+        self.unauthorized.swap(false, Ordering::Relaxed)
     }
 }
 
@@ -57,6 +66,9 @@ impl HttpClient for HelixTransport {
                 let response = result?;
                 this.rate_limit
                     .observe(parts.uri.host(), response.headers());
+                if response.status() == http::StatusCode::UNAUTHORIZED {
+                    this.unauthorized.store(true, Ordering::Relaxed);
+                }
                 let Some(delay) = retry::retry_delay(&parts.method, response.status(), attempt)
                 else {
                     return Ok(response);

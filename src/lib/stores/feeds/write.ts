@@ -1,12 +1,12 @@
 import { produce } from "solid-js/store";
 import {
-  enforceCaps,
   ensureFeed,
   getEntryId,
   isSilent,
   ownMessageText,
   setFeeds,
 } from "./core.ts";
+import { enforceCaps } from "./caps.ts";
 import type { FeedEntry } from "../../types/feed.ts";
 import { recordChatter, user } from "../users.ts";
 import { selectedChannel } from "../view.ts";
@@ -33,7 +33,7 @@ export function appendItem(id: string, item: FeedEntry): boolean {
       if (f.messages.some((m) => getEntryId(m) === itemId)) return;
       added = true;
       f.messages.push(item);
-      if (!f.paused) enforceCaps(f.messages);
+      enforceCaps(f.messages, f.paused);
       if (isActive && !f.paused && !isSilent(item)) {
         f.lastSeenEntryId = itemId;
       }
@@ -80,7 +80,7 @@ export function insertEntries(id: string, items: FeedEntry[]) {
         while (at > 0 && f.messages[at - 1].timestamp > it.timestamp) at--;
         f.messages.splice(at, 0, it);
       }
-      if (fresh.length > 0 && !f.paused) enforceCaps(f.messages);
+      if (fresh.length > 0) enforceCaps(f.messages, f.paused);
     }),
   );
 }
@@ -108,7 +108,7 @@ export function prependEntries(id: string, items: FeedEntry[]) {
         if (fresh.length > 0) {
           fresh.sort((a, b) => a.timestamp - b.timestamp);
           f.messages.unshift(...fresh);
-          enforceCaps(f.messages);
+          enforceCaps(f.messages, f.paused);
         }
       }
       // Mark backlog as already-seen so it doesn't count as unread.

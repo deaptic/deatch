@@ -10,16 +10,19 @@ export function rankSuggestions<T>(
   opts: RankOptions<T>,
 ): T[] {
   const lower = query.toLowerCase();
+  const exact: T[] = [];
   const starts: T[] = [];
   const contains: T[] = [];
   for (const item of items) {
     const keys = opts.keys(item);
-    if (lower === "" || keys.some((k) => k.startsWith(lower))) {
+    if (lower !== "" && keys.some((k) => k === lower)) exact.push(item);
+    else if (lower === "" || keys.some((k) => k.startsWith(lower))) {
       starts.push(item);
     } else if (keys.some((k) => k.includes(lower))) contains.push(item);
   }
+  exact.sort(opts.compare);
   starts.sort(opts.compare);
   contains.sort(opts.compare);
-  const ranked = [...starts, ...contains];
+  const ranked = [...exact, ...starts, ...contains];
   return opts.limit === undefined ? ranked : ranked.slice(0, opts.limit);
 }

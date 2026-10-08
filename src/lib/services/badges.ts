@@ -32,7 +32,11 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
       saveCache(GLOBAL_BADGES_CACHE_KEY, fresh);
       return fresh;
     })
-    .catch(() => [] as BadgeSet[]);
+    .catch(() => {
+      // A failed load must not be remembered as "no badges" all session.
+      globalBadgesPromise = null;
+      return [] as BadgeSet[];
+    });
   return globalBadgesPromise;
 }
 
@@ -58,7 +62,10 @@ export function loadChannel(broadcasterId: string): Promise<BadgeMap> {
   }
   const fresh = Promise.all([
     loadGlobalBadges(),
-    getChannelChatBadges({ broadcasterId }).catch(() => [] as BadgeSet[]),
+    getChannelChatBadges({ broadcasterId }).catch(() => {
+      channelBadgesPromise.delete(broadcasterId);
+      return [] as BadgeSet[];
+    }),
   ]).then(([global, channel]) => {
     const map = toBadgeMap([...global, ...channel]);
     setBadges(broadcasterId, map);

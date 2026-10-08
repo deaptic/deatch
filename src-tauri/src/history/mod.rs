@@ -142,7 +142,9 @@ fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragment> {
                 continue;
             };
             if let (Ok(s), Ok(e)) = (s.parse::<usize>(), e.parse::<usize>()) {
-                spans.push((s, e + 1, Kind::Emote(id.into())));
+                if s <= e && s < chars.len() {
+                    spans.push((s, e.saturating_add(1), Kind::Emote(id.into())));
+                }
             }
         }
     }
@@ -321,6 +323,19 @@ mod tests {
             json!([
                 { "type": "text", "text": "héllo " },
                 { "type": "emote", "text": "Kappa", "emote": { "id": "25" } },
+            ])
+        );
+    }
+
+    #[test]
+    fn ignores_emote_ranges_outside_the_text() {
+        let line =
+            "@emotes=25:50-54/26:10-5/27:3-99;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :hello";
+        assert_eq!(
+            to_json(&parse(&[line])[0].message.fragments),
+            json!([
+                { "type": "text", "text": "hel" },
+                { "type": "emote", "text": "lo", "emote": { "id": "27" } },
             ])
         );
     }

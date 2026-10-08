@@ -11,7 +11,7 @@ import * as chat from "../../lib/services/chat.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
-import { matchesAnyKeyword } from "../../lib/utils/wordMatch.ts";
+import { isMention } from "../../lib/utils/mention.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
@@ -108,6 +108,7 @@ export default function Chat(props: Props) {
     setFeedPaused(props.broadcasterId, api.isPaused());
     if (props.isActive && !api.isPaused()) markSeen(props.broadcasterId);
   });
+  onCleanup(() => setFeedPaused(props.broadcasterId, false));
 
   createEffect(() => {
     feedFontSize();
@@ -133,25 +134,14 @@ export default function Chat(props: Props) {
   }
 
   function getMentions(): Message[] {
-    const me = props.userLogin.toLowerCase();
     const kws = feedKeywords();
     const msgs = feeds[props.broadcasterId]?.messages ?? [];
     const out: Message[] = [];
     for (let i = msgs.length - 1; i >= 0; i--) {
       const m = msgs[i];
-      if (m.kind !== "message") continue;
-      const mentionsMe = m.fragments.some((f) =>
-        f.type === "mention" && f.user_login.toLowerCase() === me
-      ) ||
-        m.reply?.parent_user_login.toLowerCase() === me ||
-        (kws.length > 0 &&
-          matchesAnyKeyword(
-            m.fragments.map((f) =>
-              f.text
-            ).join(" "),
-            kws,
-          ));
-      if (mentionsMe) out.push(m);
+      if (m.kind === "message" && isMention(m, props.userLogin, kws)) {
+        out.push(m);
+      }
     }
     return out;
   }

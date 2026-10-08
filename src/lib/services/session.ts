@@ -2,6 +2,7 @@ import { setUser } from "../stores/users.ts";
 import * as users from "./users.ts";
 import { setAuthChecked, setDeviceCode, setWaiting } from "../stores/auth.ts";
 import {
+  cancelLogin,
   getDeviceCode,
   restoreSession,
   revokeSession,
@@ -17,6 +18,7 @@ export async function login(): Promise<void> {
 export function abort(): void {
   setWaiting(false);
   setDeviceCode(null);
+  cancelLogin({ silent: true }).catch(() => {});
 }
 
 export async function logout(): Promise<void> {

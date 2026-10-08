@@ -62,7 +62,7 @@ export default function MessageContextMenu(props: Props) {
             deleteChatMessages({
               broadcasterId: props.broadcasterId,
               messageId: props.msg.message_id,
-            });
+            }).catch(() => {});
             props.onClose();
           }}
         />

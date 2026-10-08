@@ -8,6 +8,10 @@ export function getDeviceCode(
   return invokeCommand(commands.getDeviceCode, [], options);
 }
 
+export async function cancelLogin(options?: InvokeOptions): Promise<void> {
+  await invokeCommand(commands.cancelLogin, [], options);
+}
+
 export async function revokeSession(options?: InvokeOptions): Promise<void> {
   await invokeCommand(commands.revokeSession, [], options);
 }

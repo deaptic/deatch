@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::error::{Error, Result};
 use reqwest::{Method, StatusCode};
 use serde::de::DeserializeOwned;
 use std::fmt::Display;
@@ -35,8 +35,20 @@ pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: &str) ->
             .as_ref()
             .map(|(status, body)| (*status, body.as_ref())),
     );
-    let (_, body) = result?;
+    let (status, body) = result?;
+    check_status(status, target.path())?;
     Ok(serde_json::from_slice(&body)?)
+}
+
+/// Emote providers answer 404 with a JSON body that parses as "no emotes",
+/// which is the answer callers want; any other failure must not be mistaken
+/// for an empty result.
+fn check_status(status: StatusCode, path: &str) -> Result<()> {
+    if status.is_success() || status == StatusCode::NOT_FOUND {
+        Ok(())
+    } else {
+        Err(Error::Http(format!("{path} returned {status}")))
+    }
 }
 
 // Only host and path are logged: OAuth sends tokens and secrets as query params.
@@ -69,7 +81,16 @@ pub fn log_request<E: Display>(
 
 #[cfg(test)]
 mod tests {
-    use super::{client, get_json};
+    use super::{check_status, client, get_json};
+    use reqwest::StatusCode;
+
+    #[test]
+    fn only_not_found_passes_among_failures() {
+        assert!(check_status(StatusCode::OK, "/x").is_ok());
+        assert!(check_status(StatusCode::NOT_FOUND, "/x").is_ok());
+        assert!(check_status(StatusCode::TOO_MANY_REQUESTS, "/x").is_err());
+        assert!(check_status(StatusCode::BAD_GATEWAY, "/x").is_err());
+    }
 
     #[test]
     fn failed_requests_never_expose_the_query() {
