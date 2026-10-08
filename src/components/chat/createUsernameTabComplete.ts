@@ -1,4 +1,5 @@
 import { chattersByChannel } from "../../lib/stores/users.ts";
+import { completions } from "./usernameCompletion.ts";
 
 type Options = {
   value: () => string;
@@ -38,11 +39,7 @@ export function createUsernameTabComplete(opts: Options) {
 
   function findMatches(query: string): string[] {
     const bucket = chattersByChannel.get(opts.broadcasterId());
-    if (!bucket) return [];
-    return [...bucket.values()]
-      .filter((c) => matchesPrefix(c, query))
-      .sort((a, b) => b.lastSeen - a.lastSeen)
-      .map((c) => c.displayName);
+    return bucket ? completions(bucket.values(), query) : [];
   }
 
   function writeCycle(c: Cycle) {
@@ -59,12 +56,4 @@ export function createUsernameTabComplete(opts: Options) {
   }
 
   return { complete, reset };
-}
-
-function matchesPrefix(
-  c: { login: string; displayName: string },
-  query: string,
-): boolean {
-  return c.login.toLowerCase().startsWith(query) ||
-    c.displayName.toLowerCase().startsWith(query);
 }

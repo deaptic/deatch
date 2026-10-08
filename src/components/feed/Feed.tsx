@@ -204,9 +204,11 @@ export default function Feed(props: Props) {
     ),
   );
 
+  // The last entry, not the count: at the cap every append evicts one, so
+  // the length never changes.
   createEffect(
     on(
-      () => entries().length,
+      () => entries().at(-1),
       () => {
         if (!isPaused()) scrollInstant();
       },

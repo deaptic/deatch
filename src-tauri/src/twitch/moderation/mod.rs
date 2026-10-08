@@ -7,7 +7,7 @@ use crate::error::Result;
 use crate::twitch::ids::{MessageId, UserId};
 use crate::twitch::params::BroadcasterUserParams;
 use crate::twitch::users::dto::UserRef;
-use dto::{Ban, BannedUser};
+use dto::BannedUser;
 use serde::Deserialize;
 use twitch_api::helix::moderation::{
     manage_held_automod_messages::{
@@ -64,8 +64,8 @@ pub struct BanUserParams {
     pub reason: Option<String>,
 }
 
-pub async fn ban_user(twitch: &Authed<'_>, params: BanUserParams) -> Result<Ban> {
-    let ban = twitch
+pub async fn ban_user(twitch: &Authed<'_>, params: BanUserParams) -> Result<()> {
+    twitch
         .helix
         .ban_user(
             params.user_id.as_str(),
@@ -76,7 +76,7 @@ pub async fn ban_user(twitch: &Authed<'_>, params: BanUserParams) -> Result<Ban>
             &twitch.token,
         )
         .await?;
-    Ok(Ban::from(ban))
+    Ok(())
 }
 
 pub async fn unban_user(twitch: &Authed<'_>, params: BroadcasterUserParams) -> Result<()> {

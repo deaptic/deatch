@@ -1,4 +1,4 @@
-import type { User } from "../../lib/types/index.ts";
+import type { FeedMessage, User } from "../../lib/types/index.ts";
 import { createEffect, createSignal, on } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { getFollowedAt } from "../../lib/api/twitch/channels.ts";
@@ -17,6 +17,7 @@ import UserCardMeta from "./UserCardMeta.tsx";
 type Props = {
   chatterId: string;
   broadcasterId: string;
+  messages: FeedMessage[];
   pinned: boolean;
   onTogglePin: () => void;
   onStartDrag: (e: MouseEvent) => void;
@@ -41,7 +42,9 @@ export default function UserCardHeader(props: Props) {
       { broadcasterId: props.broadcasterId, userId: id },
       { silent: true },
     )
-      .then(setFollowedAt)
+      .then((at) => {
+        if (props.chatterId === id) setFollowedAt(at);
+      })
       .catch(() => {});
   }));
 
@@ -70,6 +73,7 @@ export default function UserCardHeader(props: Props) {
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
           user={user()}
+          messages={props.messages}
         />
         <UserCardMeta
           chatterId={props.chatterId}

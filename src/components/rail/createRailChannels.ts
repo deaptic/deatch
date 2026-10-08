@@ -127,9 +127,8 @@ export function createRailChannels(
       setLive(reconcile(data, { key: "id" }));
       onLiveChange?.(data);
     } catch (e) {
+      // Keep the last known list; a blip must not show everyone offline.
       addToast(errorMessage(e), "error");
-      setLiveStreams([]);
-      onLiveChange?.([]);
     } finally {
       setLoadingLive(false);
     }

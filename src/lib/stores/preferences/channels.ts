@@ -1,5 +1,6 @@
 import { persist, prefs, setPrefs } from "./core.ts";
 import { user } from "../users.ts";
+import { moved } from "../../utils/moved.ts";
 
 const isOwn = (id: string) => id === user()?.id;
 
@@ -20,9 +21,6 @@ export function unpinChannel(id: string) {
 
 export function reorderPinnedChannels(from: number, to: number) {
   if (from === to) return;
-  const next = [...pinnedChannels()];
-  const [item] = next.splice(from, 1);
-  next.splice(from < to ? to - 1 : to, 0, item);
-  setPrefs("menu", "channels", "pinned", next);
+  setPrefs("menu", "channels", "pinned", moved(pinnedChannels(), from, to));
   persist();
 }

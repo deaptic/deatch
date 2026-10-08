@@ -27,7 +27,7 @@ async function connect(): Promise<boolean> {
   }
 }
 
-export async function disconnect(): Promise<void> {
+async function disconnect(): Promise<void> {
   if (!connected) return;
   try {
     await discordDisconnect({ silent: true });

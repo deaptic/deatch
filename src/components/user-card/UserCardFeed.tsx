@@ -1,29 +1,19 @@
-import { createMemo, Show } from "solid-js";
-import { feeds } from "../../lib/stores/feeds.ts";
-import type { FeedMessage } from "../../lib/types/index.ts";
+import { Show } from "solid-js";
 import Feed from "../feed/Feed.tsx";
 import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   chatterId: string;
   broadcasterId: string;
+  hasMessages: boolean;
   onJumpToMessage?: (messageId: string) => void;
   onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
 };
 
 export default function UserCardFeed(props: Props) {
-  const messages = createMemo<FeedMessage[]>(() => {
-    const feed = feeds[props.broadcasterId];
-    if (!feed) return [];
-    return feed.messages.filter(
-      (m): m is FeedMessage =>
-        m.kind === "message" && m.chatter_user_id === props.chatterId,
-    );
-  });
-
   return (
     <Show
-      when={messages().length > 0}
+      when={props.hasMessages}
       fallback={
         <div class="flex-1 min-h-0 flex items-center justify-center text-ink-soft text-body p-4 text-center">
           Nothing from them in this channel yet.

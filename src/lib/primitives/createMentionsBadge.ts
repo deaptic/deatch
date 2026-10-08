@@ -51,6 +51,8 @@ export function createMentionsBadge(): void {
     void (async () => {
       try {
         const bytes = await renderBadgeBytes(count, look);
+        // A newer count may have finished drawing first.
+        if (key !== last) return;
         await setMentionsBadge(count, bytes);
       } catch (e) {
         console.error("failed to update mentions badge", e);

@@ -19,6 +19,9 @@ export type ChannelNavigation = {
 };
 
 export function createChannelNavigation(): ChannelNavigation {
+  // A jump into another channel waits for that channel's pane to mount.
+  let pendingJump: { channelId: string; messageId: string } | null = null;
+
   function selectChannel(ch: User, mode?: WatchMode) {
     const watched = watchWarmedChannels().some((c) => c?.id === ch.id);
     setWatchMode(mode !== undefined ? mode : watched ? "manual" : null);
@@ -26,11 +29,14 @@ export function createChannelNavigation(): ChannelNavigation {
   }
 
   function jumpToMessage(channelId: string, messageId: string) {
+    if (selectedChannel()?.id === channelId) {
+      scrollToMessage(messageId);
+      return;
+    }
     const ch = knownUser(channelId);
-    const needsSwitch = !!ch && selectedChannel()?.id !== channelId;
-    if (needsSwitch && ch) selectChannel(ch);
-    if (needsSwitch) setTimeout(() => scrollToMessage(messageId), 100);
-    else scrollToMessage(messageId);
+    if (!ch) return;
+    pendingJump = { channelId, messageId };
+    selectChannel(ch);
   }
 
   // Whatever channel is shown — picked manually or mirrored from the browser
@@ -42,6 +48,11 @@ export function createChannelNavigation(): ChannelNavigation {
       ensureFeed(ch.id);
       markSeen(ch.id);
       markChannelMentionsRead(ch.id);
+      if (pendingJump?.channelId === ch.id) {
+        const { messageId } = pendingJump;
+        pendingJump = null;
+        requestAnimationFrame(() => scrollToMessage(messageId));
+      }
     }),
   );
 

@@ -15,7 +15,7 @@ export type IncomingMessage = {
 
 const lastFiredAt = new Map<string, number>();
 
-export function match(message: IncomingMessage): Trigger | null {
+function match(message: IncomingMessage): Trigger | null {
   if (message.broadcasterId !== user()?.id) return null;
   return triggerMatch.firstMatch(message.text, triggers());
 }

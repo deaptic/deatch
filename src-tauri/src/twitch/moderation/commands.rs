@@ -1,4 +1,4 @@
-use super::dto::{Ban, BannedUser};
+use super::dto::BannedUser;
 use crate::error::Result;
 use crate::twitch::moderation::{
     self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams, WarnUserParams,
@@ -18,7 +18,7 @@ pub async fn delete_chat_messages(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn ban_user(twitch: State<'_, Twitch>, params: BanUserParams) -> Result<Ban> {
+pub async fn ban_user(twitch: State<'_, Twitch>, params: BanUserParams) -> Result<()> {
     moderation::ban_user(&twitch.authed().await?, params).await
 }
 

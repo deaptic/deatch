@@ -71,10 +71,8 @@ export default function QuickSwitch(props: Props) {
     return out;
   });
 
-  createEffect(() => {
-    rows();
-    setActive(0);
-  });
+  // Only typing resets the highlight; the live poll must not move it.
+  createEffect(on(query, () => setActive(0)));
 
   createEffect(() => {
     const idx = active();
