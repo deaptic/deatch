@@ -3,5 +3,4 @@ dist
 node_modules
 vite.config.ts.timestamp-*.mjs
 
-*.zip
-*.xpi
+extension/dist

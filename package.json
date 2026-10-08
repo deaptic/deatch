@@ -12,7 +12,8 @@
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml --no-default-features -- --export-bindings",
     "serve": "vite preview",
     "tauri": "tauri",
-    "release": "deno run -A scripts/release.ts"
+    "release": "deno run -A scripts/release.ts",
+    "pack:extension": "deno run -A scripts/pack-extension.ts"
   },
   "license": "MIT",
   "dependencies": {
