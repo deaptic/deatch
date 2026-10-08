@@ -7,6 +7,7 @@ type Props = {
   hint?: string;
   submenu?: boolean;
   danger?: boolean;
+  disabled?: boolean;
   onClick: () => void;
 };
 
@@ -14,10 +15,13 @@ export default function MenuItem(props: Props) {
   return (
     <button
       type="button"
+      disabled={props.disabled}
       onClick={props.onClick}
-      class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-body text-left cursor-pointer transition-colors duration-snap hover:bg-raised ${
-        props.danger ? "text-negative" : "text-ink"
-      }`}
+      class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-body text-left transition-colors duration-snap ${
+        props.disabled
+          ? "opacity-40 cursor-default"
+          : "cursor-pointer hover:bg-raised"
+      } ${props.danger ? "text-negative" : "text-ink"}`}
     >
       <span
         class={`shrink-0 w-4 grid place-items-center [&>svg]:size-4 ${
