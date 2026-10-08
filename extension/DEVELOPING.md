@@ -88,12 +88,33 @@ Not yet wired up. To support it, swap `background.scripts` for `service_worker`
 in `manifest.json`, drop `browser_specific_settings`, and add a Chrome-style
 native messaging manifest path in `src-tauri/src/watch/bridge.rs`.
 
-## Packaging for distribution
+## Releasing
 
-```pwsh
-# From the extension/ folder:
-Compress-Archive -Path manifest.json,channel.js,background.js,icons -DestinationPath deatch.zip -Force
-```
+The add-on is unlisted on AMO: Mozilla signs it, but Firefox gets updates from
+the `update_url` in `manifest.json`, which serves `updates.json` from `main`.
 
-Submit `deatch.zip` to [addons.mozilla.org](https://addons.mozilla.org) for
-signing.
+1. Bump `version` in `manifest.json`.
+2. Package it and upload the zip to the
+   [AMO Developer Hub](https://addons.mozilla.org/developers/) as a new version
+   of Deatch Link:
+   ```pwsh
+   # From the extension/ folder:
+   Compress-Archive -Path manifest.json,channel.js,background.js,icons -DestinationPath deatch-link.zip -Force
+   ```
+3. Once signed, download the `.xpi` and attach it to the app's current GitHub
+   release. Never create a separate release for it: the app updater reads
+   `releases/latest`, and a newer extension-only release would break it.
+   ```pwsh
+   gh release upload v0.4.0 deatch_link-0.3.0.xpi
+   ```
+4. Add an entry to `updates.json` and push it to `main`:
+   ```json
+   {
+     "version": "0.3.0",
+     "update_link": "https://github.com/deaptic/deatch/releases/download/v0.4.0/deatch_link-0.3.0.xpi"
+   }
+   ```
+
+Firefox checks `update_url` about once a day; `about:addons` → gear → **Check
+for Updates** forces it. Copies installed before `update_url` existed (0.1.0)
+never check, so they need one manual install of the `.xpi`.
