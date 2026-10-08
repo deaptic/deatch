@@ -4,6 +4,8 @@
   "version": "0.2.1",
   "description": "Sends the Twitch channel you're watching to the Deatch desktop app so its Watch tab follows along.",
   "homepage_url": "https://github.com/Deaptic/deatch",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4SqEbo415mbsDCmVlLg+L+51GyVjZGDZnZWd9cmYhoGRoE/nDWVCZv3mRKpiK5MU7pgi3S+ycqvmA36QJV7Xkddffr8cpPRdSjjjoFYdaKQdW8DFf8cCcj1394VtWfxdRVke89DMonq04ss2mhiooVZ3hsUx/xVuJoCVLG5FFj8M8qumJ+PnC/SOqyGTjiVme3cj564YhzDg4/VUlehVq8BjBC+3RUzd84NbUmM4S7MW45P935k81lDzKukr2ueAzxPao3UcdWNW3i493kz9yY2x+mRcqOkGNCN78BjOBOnFuGl2K9srcoVjEIupYe+JftBL5GqNmuHjEyHTZt3krQIDAQAB",
+  "minimum_chrome_version": "121",
   "browser_specific_settings": {
     "gecko": {
       "id": "deatch-link@deaptic.com",
@@ -19,7 +21,8 @@
   },
   "permissions": ["tabs", "nativeMessaging"],
   "background": {
-    "scripts": ["channel.js", "background.js"]
+    "scripts": ["background.js"],
+    "service_worker": "background.js"
   },
   "icons": {
     "48": "icons/icon-48.png",

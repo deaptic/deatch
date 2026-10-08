@@ -15,14 +15,24 @@ Twitch tabs          Extension                   Native host process
                                                  └──────────────────┘
 ```
 
-Twitch is an SPA, but Firefox still fires `tabs.onUpdated` with the new `url` on
-in-page navigation, so no content script is needed. `channel.js` turns a URL
-into a channel login (or `null` for non-channel pages).
+Twitch is an SPA, but browsers still fire `tabs.onUpdated` with the new `url` on
+in-page navigation, so no content script is needed.
 
-`deatch.exe` is launched with `--browser-host` (it routes to host mode before
-Tauri init). The host forwards NDJSON lines to the running GUI over a local
-socket (`\\.\pipe\deatch-bridge` on Windows). The bridge is fully bidirectional
-— extension → GUI for state, GUI → extension for commands.
+One codebase serves Firefox and Chromium. `manifest.json` lists `background.js`
+as both an event-page script (Firefox) and a service worker (Chrome, Edge); each
+browser warns about the other's keys and moves on. Chrome keeps a service worker
+alive while a native-messaging port is open (Chrome 105+), so the
+reconnect-in-`onDisconnect` design holds there too. The `key` fixes the Chrome
+extension id (`dmoblcekdcegdpjbbkhblfnjjefkagpd`), which the host manifest
+whitelists; never change it or every install loses the host.
+
+Each browser launches its own `deatch.exe` host (Firefox passes the manifest
+path, Chromium the extension origin; `main.rs` routes both to host mode before
+Tauri init). Every host forwards NDJSON lines to the running GUI over the same
+local socket (`\\.\pipe\deatch-bridge`). The GUI merges all connected browsers
+into one state (`ipc.rs`): channels are the union, a channel is muted only if
+muted everywhere, and the browser that reported last decides `current`. Commands
+fan out to every browser; the extension ignores channels it has no tab for.
 
 ## Message protocol
 
@@ -82,25 +92,36 @@ Host-side log (all in/out frames):
 Get-Content $env:TEMP\deatch-host.log -Wait -Tail 20
 ```
 
-## Loading in Chrome / Edge
+## Loading unpacked (Chrome / Edge)
 
-Not yet wired up. To support it, swap `background.scripts` for `service_worker`
-in `manifest.json`, drop `browser_specific_settings`, and add a Chrome-style
-native messaging manifest path in `src-tauri/src/watch/bridge.rs`.
+The release Deatch also registers
+`%LOCALAPPDATA%\Deatch\deatch-host-chromium.json` under
+`HKCU\Software\Google\Chrome\NativeMessagingHosts` and the Edge equivalent, so
+step 1 above covers Chromium too.
+
+1. `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick
+   `D:\deatch\extension`.
+2. Confirm the id reads `dmoblcekdcegdpjbbkhblfnjjefkagpd`. Thanks to the
+   manifest `key`, unpacked and store installs share it.
+3. **Service worker** link on the card opens the background console.
 
 ## Releasing
+
+One zip serves both stores:
+
+```pwsh
+# From the extension/ folder:
+Compress-Archive -Path manifest.json,background.js,icons -DestinationPath deatch-link.zip -Force
+```
+
+### Firefox
 
 The add-on is unlisted on AMO: Mozilla signs it, but Firefox gets updates from
 the `update_url` in `manifest.json`, which serves `updates.json` from `main`.
 
-1. Bump `version` in `manifest.json`.
-2. Package it and upload the zip to the
-   [AMO Developer Hub](https://addons.mozilla.org/developers/) as a new version
-   of Deatch Link:
-   ```pwsh
-   # From the extension/ folder:
-   Compress-Archive -Path manifest.json,channel.js,background.js,icons -DestinationPath deatch-link.zip -Force
-   ```
+1. Bump `version` in `manifest.json` and build the zip.
+2. Upload it on the [AMO Developer Hub](https://addons.mozilla.org/developers/)
+   as a new version of Deatch Link, distributed **On your own**.
 3. Once signed, download the `.xpi` and attach it to the app's current GitHub
    release. Never create a separate release for it: the app updater reads
    `releases/latest`, and a newer extension-only release would break it.
@@ -118,3 +139,13 @@ the `update_url` in `manifest.json`, which serves `updates.json` from `main`.
 Firefox checks `update_url` about once a day; `about:addons` → gear → **Check
 for Updates** forces it. Copies installed before `update_url` existed (0.1.0)
 never check, so they need one manual install of the `.xpi`.
+
+### Chrome / Edge
+
+Chrome on Windows installs extensions only from the Chrome Web Store, so
+self-hosting is not an option. Upload the same zip to the
+[Web Store developer dashboard](https://chrome.google.com/webstore/devconsole)
+as an **unlisted** item; the store keeps the id from the manifest `key` and
+pushes updates to installed copies itself. Edge installs from the Chrome Web
+Store too. Review takes a few days per version, so the Firefox release may land
+first; mixed versions are fine, the host speaks to both.
