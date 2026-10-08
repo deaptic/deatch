@@ -22,9 +22,10 @@ One codebase serves Firefox and Chromium. `manifest.json` lists `background.js`
 as both an event-page script (Firefox) and a service worker (Chrome, Edge); each
 browser warns about the other's keys and moves on. Chrome keeps a service worker
 alive while a native-messaging port is open (Chrome 105+), so the
-reconnect-in-`onDisconnect` design holds there too. The `key` fixes the Chrome
-extension id (`dmoblcekdcegdpjbbkhblfnjjefkagpd`), which the host manifest
-whitelists; never change it or every install loses the host.
+reconnect-in-`onDisconnect` design holds there too. The Chrome Web Store assigns
+the extension id; the `key` in `manifest.json` is the store item's public key,
+so unpacked loads get the same id. `bridge.rs` whitelists that id in the host
+manifest, so the two must always agree.
 
 Each browser launches its own `deatch.exe` host (Firefox passes the manifest
 path, Chromium the extension origin; `main.rs` routes both to host mode before
@@ -101,8 +102,9 @@ step 1 above covers Chromium too.
 
 1. `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick
    `D:\deatch\extension`.
-2. Confirm the id reads `dmoblcekdcegdpjbbkhblfnjjefkagpd`. Thanks to the
-   manifest `key`, unpacked and store installs share it.
+2. Confirm the id matches `CHROME_EXTENSION_ID` in
+   `src-tauri/src/watch/bridge.rs`. Thanks to the manifest `key`, unpacked and
+   store installs share it.
 3. **Service worker** link on the card opens the background console.
 
 ## Releasing
@@ -126,8 +128,12 @@ Build the zips with a version bump, then:
   that carry `update_url`, so never add one.
 - **Chrome / Edge**: upload the chrome zip on the
   [Web Store developer dashboard](https://chrome.google.com/webstore/devconsole).
-  The store keeps the id from the manifest `key`. Edge installs from the Chrome
-  Web Store too.
+  The zip carries no `key` (the store rejects it); the store keeps the id it
+  assigned on first upload. Edge installs from the Chrome Web Store too.
+
+  If the store item is ever recreated: upload, then copy its public key (item →
+  **Package** → **View public key**) into `manifest.json` `key` and its id into
+  `bridge.rs`, and ship an app release.
 
 Both reviews take a few days per version and may land at different times; mixed
 versions are fine, the host speaks to both. Copies installed by hand (unpacked,

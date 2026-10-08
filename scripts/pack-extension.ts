@@ -13,8 +13,11 @@ const SRC = "extension";
 const OUT = `${SRC}/dist`;
 const FILES = ["background.js", "icons"];
 
-const CHROME_ONLY = ["key", "minimum_chrome_version"];
+const CHROME_ONLY = ["minimum_chrome_version"];
 const FIREFOX_ONLY = ["browser_specific_settings"];
+// The Web Store assigns the id and rejects uploads that carry `key`; it only
+// serves unpacked loads.
+const UNPACKED_ONLY = ["key"];
 
 type Manifest = Record<string, unknown> & {
   version: string;
@@ -42,8 +45,8 @@ function strip(keys: string[], background: string): Manifest {
 }
 
 const targets = {
-  firefox: strip(CHROME_ONLY, "service_worker"),
-  chrome: strip(FIREFOX_ONLY, "scripts"),
+  firefox: strip([...CHROME_ONLY, ...UNPACKED_ONLY], "service_worker"),
+  chrome: strip([...FIREFOX_ONLY, ...UNPACKED_ONLY], "scripts"),
 };
 
 async function pack(browser: string, manifest: Manifest): Promise<string> {
