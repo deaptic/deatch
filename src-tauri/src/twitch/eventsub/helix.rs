@@ -2,11 +2,13 @@ use futures_util::{stream, StreamExt};
 use tokio::sync::mpsc;
 use twitch_api::twitch_oauth2::UserToken;
 
+use super::super::moderation::get_moderated_channels;
 use super::super::{Authed, Twitch};
 use super::runner::Signal;
 use super::subscriptions::{Batch, Created, Subscription};
 use super::EventKind;
 use crate::error::Result;
+use crate::twitch::ids::UserId;
 use twitch_api::eventsub::{
     automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
     channel::chat::{
@@ -54,6 +56,21 @@ pub(super) fn spawn_creates(
                 log::debug!("eventsub task stopped, dropping subscribe result");
                 return;
             }
+        }
+    });
+}
+
+/// Runs off the coordinator so chat delivery never waits on Helix.
+pub(super) fn spawn_moderated(
+    twitch: Twitch,
+    token: UserToken,
+    signals: mpsc::UnboundedSender<Signal>,
+) {
+    tauri::async_runtime::spawn(async move {
+        let viewer = UserId::from(token.user_id.as_str());
+        let result = get_moderated_channels(&twitch.with_token(token)).await;
+        if signals.send(Signal::Moderated { viewer, result }).is_err() {
+            log::debug!("eventsub task stopped, dropping moderated channels");
         }
     });
 }

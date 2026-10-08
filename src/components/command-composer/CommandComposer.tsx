@@ -141,7 +141,7 @@ export default function CommandComposer(props: Props) {
 
   const enumSuggestions = createMemo<string[]>(() => {
     const opt = activeOption();
-    if (opt?.type !== "enum" || !opt.values) return [];
+    if (opt?.type !== "enum") return [];
     if (activeSlot()?.resolved !== null) return [];
     const q = activeRaw().toLowerCase();
     if (q === "") return opt.values;
@@ -159,9 +159,9 @@ export default function CommandComposer(props: Props) {
   const [searchResults] = createResource(
     () => (activeOption()?.type === "search" ? searchQuery() : ""),
     async (q) => {
-      const search = activeOption()?.search;
-      if (!q || !search) return [];
-      return await search(q).catch(() => []);
+      const opt = activeOption();
+      if (!q || opt?.type !== "search") return [];
+      return await opt.search(q).catch(() => []);
     },
   );
 
@@ -240,7 +240,7 @@ export default function CommandComposer(props: Props) {
   async function resolveSearchSlot(idx: number): Promise<boolean> {
     const opt = options[idx];
     const query = slots()[idx].raw.trim();
-    if (!opt?.search || !query) return false;
+    if (opt?.type !== "search" || !query) return false;
     setResolving(true);
     try {
       const match = (await opt.search(query))[0];
@@ -336,7 +336,7 @@ export default function CommandComposer(props: Props) {
         error: null,
       });
     } else if (opt.type === "enum") {
-      const allowed = opt.values ?? [];
+      const allowed = opt.values;
       const exact = allowed.includes(value);
       patchSlot(idx, {
         raw: value,

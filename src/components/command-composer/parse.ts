@@ -1,4 +1,4 @@
-import type { CommandOption } from "./types.ts";
+import type { CommandOption, DurationOption } from "./types.ts";
 
 export type Slot = {
   raw: string;
@@ -33,7 +33,7 @@ export function formatDuration(seconds: number): string {
 }
 
 export function durationError(
-  opt: CommandOption,
+  opt: DurationOption,
   seconds: number | null,
 ): string | null {
   if (seconds === null) return `Try ${opt.hint ?? "30s, 5m, 1h"}`;

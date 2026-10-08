@@ -3,7 +3,6 @@ import type {
   AutomodHoldStatus,
   FeedEvent,
   FeedMessage,
-  Fragment,
   RawAutomodMessageHold,
   RawAutomodMessageUpdate,
   RawChatClear,
@@ -21,6 +20,7 @@ import {
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
 import { formatShortDuration } from "../format/duration.ts";
+import { mapFragment } from "./chat-mapper.ts";
 import { moderateNoticeType } from "../constants/events.ts";
 
 function buildModerateMessage(
@@ -92,23 +92,6 @@ function buildModerateMessage(
   }
 }
 
-function mapAutomodFragment(
-  f: RawAutomodMessageHold["message"]["fragments"][number],
-): Fragment {
-  if (f.type === "emote") {
-    return { type: "emote", text: f.text, id: f.emote.id };
-  }
-  if (f.type === "cheermote") {
-    return {
-      type: "cheermote",
-      text: f.text,
-      prefix: f.cheermote.prefix,
-      bits: f.cheermote.bits,
-    };
-  }
-  return { type: "text", text: f.text };
-}
-
 function automodReasonLabel(p: RawAutomodMessageHold): string {
   if (p.reason === "blocked_term") return "Blocked term";
   return `AutoMod: ${p.automod.category} (level ${p.automod.level})`;
@@ -177,7 +160,7 @@ export function start(): () => void {
         chatter_login: p.user_login,
         chatter_name: p.user_name,
         color: "",
-        fragments: p.message.fragments.map(mapAutomodFragment),
+        fragments: p.message.fragments.map(mapFragment),
         badges: [],
         timestamp: new Date(p.held_at).getTime() || Date.now(),
         automod_hold: {

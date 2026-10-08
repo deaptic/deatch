@@ -1,48 +1,22 @@
 import { produce } from "solid-js/store";
-import {
-  ensureFeed,
-  getEntryId,
-  isSilent,
-  ownMessageText,
-  setFeeds,
-} from "./core.ts";
-import { enforceCaps } from "./caps.ts";
+import { ensureFeed, getEntryId, isSilent, setFeeds } from "./core.ts";
+import { append, insert, prepend } from "./ops.ts";
 import type { FeedEntry } from "../../types/feed.ts";
-import { recordChatter, user } from "../users.ts";
 import { selectedChannel } from "../view.ts";
-import { appendSentHistoryOlder, pushSentHistory } from "../chatHistory.ts";
 
 export function appendItem(id: string, item: FeedEntry): boolean {
   ensureFeed(id);
-  if (item.kind === "message") {
-    recordChatter(id, {
-      id: item.chatter_user_id,
-      login: item.chatter_login,
-      displayName: item.chatter_name,
-      color: item.color,
-      lastSeen: item.timestamp,
-    });
-  }
   const isActive = selectedChannel()?.id === id;
-  const itemId = getEntryId(item);
   let added = false;
   setFeeds(
     id,
     produce((f) => {
-      // Dedupe: a backlog fetch may overlap with the first EventSub events.
-      if (f.messages.some((m) => getEntryId(m) === itemId)) return;
-      added = true;
-      f.messages.push(item);
-      enforceCaps(f.messages, f.paused);
-      if (isActive && !f.paused && !isSilent(item)) {
-        f.lastSeenEntryId = itemId;
+      added = append(f.messages, item, f.paused);
+      if (added && isActive && !f.paused && !isSilent(item)) {
+        f.lastSeenEntryId = getEntryId(item);
       }
     }),
   );
-  if (added) {
-    const text = ownMessageText(item);
-    if (text) pushSentHistory(id, text);
-  }
   return added;
 }
 
@@ -63,67 +37,33 @@ export function appendLocalNotice(
   });
 }
 
-/// Merges items into the feed by timestamp, skipping ones already present.
-/// Used to fill a gap after a dropped connection, where live messages may
-/// already have arrived after the missing ones.
-export function insertEntries(id: string, items: FeedEntry[]) {
+/// Fills a gap after a dropped connection; returns the entries that were new.
+export function insertEntries(id: string, items: FeedEntry[]): FeedEntry[] {
   ensureFeed(id);
+  let added: FeedEntry[] = [];
   setFeeds(
     id,
     produce((f) => {
-      const existing = new Set(f.messages.map(getEntryId));
-      const fresh = items
-        .filter((it) => !existing.has(getEntryId(it)))
-        .sort((a, b) => a.timestamp - b.timestamp);
-      for (const it of fresh) {
-        let at = f.messages.length;
-        while (at > 0 && f.messages[at - 1].timestamp > it.timestamp) at--;
-        f.messages.splice(at, 0, it);
-      }
-      if (fresh.length > 0) enforceCaps(f.messages, f.paused);
+      added = insert(f.messages, items, f.paused);
     }),
   );
+  return added;
 }
 
-export function prependEntries(id: string, items: FeedEntry[]) {
+/// Hydrates a feed with history; returns the entries that were new.
+export function prependEntries(id: string, items: FeedEntry[]): FeedEntry[] {
   ensureFeed(id);
-  for (const it of items) {
-    if (it.kind === "message") {
-      recordChatter(id, {
-        id: it.chatter_user_id,
-        login: it.chatter_login,
-        displayName: it.chatter_name,
-        color: it.color,
-        lastSeen: it.timestamp,
-      });
-    }
-  }
+  let added: FeedEntry[] = [];
   setFeeds(
     id,
     produce((f) => {
       f.backfilled = true;
-      if (items.length > 0) {
-        const existing = new Set(f.messages.map(getEntryId));
-        const fresh = items.filter((it) => !existing.has(getEntryId(it)));
-        if (fresh.length > 0) {
-          fresh.sort((a, b) => a.timestamp - b.timestamp);
-          f.messages.unshift(...fresh);
-          enforceCaps(f.messages, f.paused);
-        }
-      }
-      // Mark backlog as already-seen so it doesn't count as unread.
+      added = prepend(f.messages, items, f.paused);
+      // Backlog is already-seen; it must not count as unread.
       if (!f.lastSeenEntryId && f.messages.length > 0) {
         f.lastSeenEntryId = getEntryId(f.messages[f.messages.length - 1]);
       }
     }),
   );
-  // Iterate newest → oldest so the newest backlog entry lands just behind
-  // any live entries already in the sent-history.
-  if (items.length > 0 && user()) {
-    const sorted = [...items].sort((a, b) => b.timestamp - a.timestamp);
-    for (const it of sorted) {
-      const text = ownMessageText(it);
-      if (text) appendSentHistoryOlder(id, text);
-    }
-  }
+  return added;
 }

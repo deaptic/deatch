@@ -9,6 +9,7 @@ import type {
   RawChatMessage,
   RawFragment,
 } from "../types/index.ts";
+import type { Chatter } from "../stores/users.ts";
 
 const CHANNEL_POINT_TYPES = new Set([
   "channel_points_highlighted",
@@ -17,7 +18,17 @@ const CHANNEL_POINT_TYPES = new Set([
   "power_ups_gigantified_emote",
 ]);
 
-function mapFragment(f: RawFragment): Fragment {
+export function chatterOf(msg: FeedMessage): Chatter {
+  return {
+    id: msg.chatter_user_id,
+    login: msg.chatter_login,
+    displayName: msg.chatter_name,
+    color: msg.color,
+    lastSeen: msg.timestamp,
+  };
+}
+
+export function mapFragment(f: RawFragment): Fragment {
   switch (f.type) {
     case "emote":
       return { type: "emote", text: f.text, id: f.emote.id };

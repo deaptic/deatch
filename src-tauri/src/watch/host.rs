@@ -10,16 +10,25 @@ use interprocess::TryClone;
 const MAX_MESSAGE_SIZE: usize = 1_048_576;
 const RECONNECT_DELAY: Duration = Duration::from_millis(1500);
 
+fn log_path() -> std::path::PathBuf {
+    std::env::temp_dir().join("deatch-host.log")
+}
+
 /// The host runs without Tauri, so it keeps its own log file. A failed log
 /// write has nowhere else to go and is dropped.
 fn log(message: impl Display) {
-    let path = std::env::temp_dir().join("deatch-host.log");
-    if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(path) {
+    if let Ok(mut file) = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_path())
+    {
         let _ = writeln!(file, "{} {message}", crate::clock::unix_ms());
     }
 }
 
 pub fn run() {
+    // One browser session per file; without this the log grows forever.
+    let _ = std::fs::write(log_path(), "");
     log("host started");
     let (tx, rx) = mpsc::channel();
     std::thread::spawn(move || forward_to_gui(rx));
@@ -92,11 +101,16 @@ fn forward_to_gui(rx: mpsc::Receiver<String>) {
 }
 
 fn connect_to_gui() -> Stream {
+    let mut reported = false;
     let stream = loop {
         match super::ipc::connect_to_gui() {
             Ok(stream) => break stream,
             Err(e) => {
-                log(format_args!("connect retry: {e}"));
+                // The app being closed is the normal case; one line is enough.
+                if !reported {
+                    log(format_args!("waiting for app: {e}"));
+                    reported = true;
+                }
                 std::thread::sleep(RECONNECT_DELAY);
             }
         }

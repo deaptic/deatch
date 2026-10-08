@@ -12,6 +12,7 @@ import * as backlog from "../../lib/services/backlog.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { copyField } from "../../lib/utils/clipboard.ts";
 import { isMention } from "../../lib/utils/mention.ts";
+import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
@@ -124,7 +125,7 @@ export default function Chat(props: Props) {
     setReplyTo({
       messageId: msg.message_id,
       name: msg.chatter_name,
-      text: msg.fragments.map((f) => f.text).join(""),
+      text: textOf(msg),
     });
     inputApi?.focus();
   }
@@ -155,24 +156,7 @@ export default function Chat(props: Props) {
   }
 
   function copypasta(msg: Message) {
-    let fragments = msg.fragments;
-    if (msg.reply) {
-      const [first, ...rest] = fragments;
-      if (
-        first.type === "mention" &&
-        first.user_login === msg.reply.parent_user_login
-      ) {
-        if (rest[0]?.type === "text") {
-          const trimmed = rest[0].text.trimStart();
-          fragments = trimmed
-            ? [{ ...rest[0], text: trimmed }, ...rest.slice(1)]
-            : rest.slice(1);
-        } else {
-          fragments = rest;
-        }
-      }
-    }
-    const text = fragments.map((f) => f.text).join("").trim();
+    const text = textOf({ fragments: withoutReplyMention(msg) }).trim();
     if (text) inputApi?.replace(text);
   }
 
@@ -248,9 +232,7 @@ export default function Chat(props: Props) {
       ),
       shortcuts.registerLocal(
         "c",
-        withSelected((m) => {
-          copyField(m.fragments.map((f) => f.text).join(""));
-        }),
+        withSelected((m) => copyField(textOf(m))),
         "feedSelected",
       ),
     ];

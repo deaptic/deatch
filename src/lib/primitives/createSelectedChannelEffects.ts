@@ -25,7 +25,7 @@ export function createSelectedChannelEffects(): void {
       clearChannelThirdPartyEmotes();
       return;
     }
-    badges.loadChannel(broadcaster.id);
-    emotes.loadChannelThirdParty(broadcaster.id, broadcaster.login);
+    badges.loadChannel(broadcaster);
+    emotes.loadChannelThirdParty(broadcaster);
   });
 }

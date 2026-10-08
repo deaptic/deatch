@@ -1,11 +1,11 @@
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
-import { knownUser, user } from "../stores/users.ts";
+import { knownUser, recordChatter, user } from "../stores/users.ts";
 import { recordMention } from "../stores/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { isMention } from "../utils/mention.ts";
-import { mapChatMessage } from "./chat-mapper.ts";
+import { chatterOf, mapChatMessage } from "./chat-mapper.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as users from "../services/users.ts";
@@ -34,8 +34,10 @@ export function start(): () => void {
   return unlistenAll([
     listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
       const raw = e.payload.event;
-      const ts = Date.now();
+      // Server time keeps live and backfilled messages on one clock.
+      const ts = new Date(e.payload.timestamp).getTime();
       const msg = mapChatMessage(raw, ts);
+      recordChatter(raw.broadcaster_user_id, chatterOf(msg));
       if (appendItem(raw.broadcaster_user_id, msg)) {
         chatActivity.record(raw.broadcaster_user_id, ts);
       }

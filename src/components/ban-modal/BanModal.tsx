@@ -6,17 +6,7 @@ import Dialog from "../ui/Dialog.tsx";
 import Field from "../ui/Field.tsx";
 import { user } from "../../lib/stores/users.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-
-const DURATIONS = [
-  { label: "1s", value: 1 },
-  { label: "1m", value: 60 },
-  { label: "5m", value: 300 },
-  { label: "10m", value: 600 },
-  { label: "1h", value: 3600 },
-  { label: "10h", value: 36000 },
-  { label: "1d", value: 86400 },
-  { label: "1w", value: 604800 },
-];
+import { TIMEOUT_PRESETS } from "../../lib/constants/timeouts.ts";
 
 type BanInfo = BannedUser;
 
@@ -190,14 +180,14 @@ export default function BanModal(props: Props) {
 
       <div class="flex flex-col gap-2">
         <span class="text-small text-ink-soft">Time out for</span>
-        <div class="grid grid-cols-4 gap-1.5">
-          <For each={DURATIONS}>
+        <div class="grid grid-cols-3 gap-1.5">
+          <For each={TIMEOUT_PRESETS}>
             {(d) => (
               <Button
                 variant="neutral"
                 size="sm"
-                onClick={() => timeout(d.value)}
-                loading={pending() === d.value}
+                onClick={() => timeout(d.seconds)}
+                loading={pending() === d.seconds}
                 disabled={pending() !== null}
               >
                 {d.label}
