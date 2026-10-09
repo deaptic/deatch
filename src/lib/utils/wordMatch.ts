@@ -47,6 +47,13 @@ export function matchesAnyKeyword(text: string, keywords: string[]): boolean {
   return matchesTerms(text, keywords, "anywhere");
 }
 
+export function matchedKeyword(
+  text: string,
+  keywords: string[],
+): string | null {
+  return keywords.find((k) => matchesTerms(text, [k], "anywhere")) ?? null;
+}
+
 // A term made only of wildcards would match every message.
 function hasLiteral(term: string): boolean {
   return term.replaceAll("*", "") !== "";

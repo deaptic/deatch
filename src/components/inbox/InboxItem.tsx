@@ -1,53 +1,91 @@
+import { Check, CornerDownRight } from "lucide-solid";
+import { For } from "solid-js";
 import type { Mention } from "../../lib/stores/inbox.ts";
 import { knownUser } from "../../lib/stores/users.ts";
+import { thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
+import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
+import type { MentionReason } from "../../lib/utils/mention.ts";
 import Avatar from "../ui/Avatar.tsx";
+import Card from "../ui/Card.tsx";
+import IconButton from "../ui/IconButton.tsx";
+import Timestamp from "../ui/Timestamp.tsx";
+import ChatterAvatar from "../feed/message/ChatterAvatar.tsx";
+import MessageFragment from "../feed/message/MessageFragment.tsx";
 
 type Props = {
   mention: Mention;
-  onClick: () => void;
+  onJump: () => void;
+  onClear: () => void;
 };
 
-function formatRelative(ms: number): string {
-  const diff = (Date.now() - ms) / 1000;
-  if (diff < 60) return "now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
-  return `${Math.floor(diff / 86400)}d`;
+function reasonLabel(reason: MentionReason): string {
+  switch (reason.kind) {
+    case "mention":
+      return "mentioned you";
+    case "reply":
+      return "replied to you";
+    case "keyword":
+      return `matched ${reason.term}`;
+  }
 }
 
 export default function InboxItem(props: Props) {
-  const avatarUrl = () => knownUser(props.mention.chatterId)?.profileImageUrl;
+  const m = () => props.mention;
+  const channelAvatar = () => knownUser(m().channelId)?.profileImageUrl;
 
   return (
-    <button
-      type="button"
-      onClick={props.onClick}
-      class={`w-full flex gap-3 items-start px-3 py-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap hover:bg-raised ${
-        props.mention.unread ? "bg-accent-soft" : ""
-      }`}
-    >
-      <Avatar src={avatarUrl()} alt={props.mention.chatterName} size={32} />
-      <span class="flex-1 min-w-0 flex flex-col gap-0.5">
-        <span class="flex items-baseline gap-1.5 text-small">
-          <span
-            class="font-semibold text-(--name) truncate"
-            style={{
-              "--name": props.mention.chatterColor || "var(--color-ink)",
-            }}
-          >
-            {props.mention.chatterName}
-          </span>
-          <span class="text-ink-faint truncate">
-            in {props.mention.channelName}
-          </span>
-          <span class="ml-auto shrink-0 text-ink-faint tabular-nums">
-            {formatRelative(props.mention.timestamp)}
+    <Card tone={m().unread ? "accent" : "plain"}>
+      <header class="flex items-center gap-2 h-10 pl-3 pr-1.5 border-b border-line-soft">
+        <Avatar src={channelAvatar()} alt={m().channelName} size={24} />
+        <span class="text-small font-semibold text-ink truncate">
+          {m().channelName}
+        </span>
+        <span class="text-micro text-ink-faint truncate">
+          {reasonLabel(m().reason)}
+        </span>
+        <span class="ml-auto flex items-center">
+          <IconButton size="sm" label="Jump to message" onClick={props.onJump}>
+            <CornerDownRight />
+          </IconButton>
+          <IconButton size="sm" label="Clear" onClick={props.onClear}>
+            <Check />
+          </IconButton>
+        </span>
+      </header>
+      <div class="flex gap-3 items-start px-3 py-2.5 text-body leading-normal">
+        <span class="relative w-(--chat-tile) h-(--chat-two-lines) shrink-0">
+          <span class="absolute inset-x-0 top-1/2 -translate-y-1/2">
+            <ChatterAvatar
+              userId={m().chatterId}
+              color={m().chatterColor}
+              active={false}
+            />
           </span>
         </span>
-        <span class="text-body text-ink wrap-break-word line-clamp-2">
-          {props.mention.message}
-        </span>
-      </span>
-    </button>
+        <div class="flex-1 min-w-0 flex flex-col">
+          <div class="flex items-baseline">
+            <span
+              class="font-semibold text-(--name) truncate"
+              style={{ "--name": m().chatterColor || "var(--color-ink)" }}
+            >
+              {m().chatterName}
+            </span>
+            <Timestamp ts={m().timestamp} format="c" variant="inline" />
+          </div>
+          <div class="text-ink wrap-break-word line-clamp-3">
+            <For each={m().fragments}>
+              {(frag) => (
+                <MessageFragment
+                  frag={frag}
+                  emotes={thirdPartyEmoteMap()}
+                  cheermotes={cheermotesFor(m().channelId)}
+                  mentionsYou={m().reason.kind === "mention"}
+                />
+              )}
+            </For>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }

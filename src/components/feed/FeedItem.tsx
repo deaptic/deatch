@@ -90,12 +90,12 @@ export default function FeedItem(props: Props) {
     <div
       data-item-id={entry.kind === "message" ? entry.message_id : entry.id}
       tabIndex={-1}
-      class={`relative group outline-none leading-normal pl-3 pr-2 ${spacing()} border-l-3 transition-colors duration-snap ${
+      class={`relative group leading-normal pl-3 pr-2 ${spacing()} border-l-3 outline-accent transition-colors duration-snap ${
         props.flush ? "rounded-r-sm" : "rounded-sm"
       } ${TONES[parts.tone]} ${
         props.selected
-          ? "bg-accent-soft! outline outline-2 -outline-offset-2 outline-accent rounded-sm"
-          : ""
+          ? "outline-3 -outline-offset-3 rounded-sm"
+          : "outline-none"
       } ${parts.dimmed ? "opacity-40" : ""}`}
       style={parts.toneColor ? { "--tone": parts.toneColor } : undefined}
       onMouseEnter={() => setHovered(true)}
