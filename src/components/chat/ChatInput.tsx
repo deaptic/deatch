@@ -1,4 +1,4 @@
-import { Rows2, SendHorizontal, Smile, X } from "lucide-solid";
+import { SendHorizontal, Smile, X } from "lucide-solid";
 import {
   createEffect,
   createSignal,
@@ -21,10 +21,6 @@ import {
 } from "../../lib/stores/chatHistory.ts";
 import { getDraft, setDraft } from "../../lib/stores/drafts.ts";
 import {
-  feedDensity,
-  toggleFeedDensity,
-} from "../../lib/stores/preferences.ts";
-import {
   closeOverlay,
   isOverlayOpen,
   toggleOverlay,
@@ -34,7 +30,6 @@ import Button from "../ui/Button.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import { composerInnerHeight } from "../ui/rowHeight.ts";
-import { keyLabels } from "../../lib/utils/keyboard.ts";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
@@ -45,12 +40,6 @@ import ChatModes from "./ChatModes.tsx";
 
 const MAX_LEN = 500;
 const SEND_ACTION = "chat::send";
-const DENSITY_ACTION = "feed::toggleDensity";
-
-function withShortcut(label: string, action: string): string {
-  const combo = shortcuts.keysFor(action);
-  return combo ? `${label} (${keyLabels(combo).join("+")})` : label;
-}
 
 export type ReplyTo = { messageId: string; name: string; text: string };
 
@@ -294,13 +283,6 @@ export default function ChatInput(props: Props) {
                 class={`flex items-center gap-1 shrink-0 self-end ${composerInnerHeight()}`}
               >
                 <CharCounter value={input} max={MAX_LEN} />
-                <IconButton
-                  label={withShortcut("Spacious layout", DENSITY_ACTION)}
-                  pressed={feedDensity() === "comfortable"}
-                  onClick={toggleFeedDensity}
-                >
-                  <Rows2 class="size-5" />
-                </IconButton>
                 <IconButton
                   label="Emote picker"
                   pressed={isOverlayOpen("emotePicker")}
