@@ -1,4 +1,4 @@
-import { createResource, For } from "solid-js";
+import { createMemo, createResource, For } from "solid-js";
 import type { FeedEntry, FeedMessage } from "../../../lib/types/index.ts";
 import * as badges from "../../../lib/services/badges.ts";
 import {
@@ -65,8 +65,14 @@ export default function AppearancePreview() {
       color: color() ?? "",
     };
   };
-  const entries = () => sampleFeed(me(), Date.now());
-  const rows = () => layoutFeed(entries(), feedDensity() === "comfortable");
+  // FeedItem reads its entry once, so wait for the colour rather than rebuild
+  // every row when it lands.
+  const entries = createMemo(() =>
+    color.loading ? [] : sampleFeed(me(), Date.now())
+  );
+  const rows = createMemo(() =>
+    layoutFeed(entries(), feedDensity() === "comfortable")
+  );
   const [badgeMap] = createResource(badges.loadGlobal, { initialValue: {} });
 
   return (
