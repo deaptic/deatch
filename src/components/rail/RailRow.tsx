@@ -64,7 +64,7 @@ export default function RailRow(props: Props) {
           setTip({ x: r.right + 8, y: r.top + r.height / 2 });
         }}
         onMouseLeave={() => setTip(null)}
-        class={`group relative w-full ${rowHeight()} flex pr-2 text-left cursor-pointer ${
+        class={`group relative w-full ${rowHeight()} flex items-center pr-2 text-left cursor-pointer ${
           props.dimmed ? "opacity-40" : ""
         }`}
       >
@@ -72,14 +72,14 @@ export default function RailRow(props: Props) {
           aria-hidden
           class={`absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-full transition-all duration-quick ease-out ${
             props.selected
-              ? "h-full bg-accent"
+              ? "h-14 bg-accent"
               : props.unread
               ? "h-2 bg-ink-soft"
               : "h-0"
           }`}
         />
         <span
-          class={`flex-1 min-w-0 flex items-center gap-3 pl-4 pr-2 rounded-r-sm overflow-hidden transition-colors duration-snap ${
+          class={`flex-1 min-w-0 h-14 flex items-center gap-3 pl-4 pr-2 rounded-r-sm overflow-hidden transition-colors duration-snap ${
             props.selected ? "bg-accent-soft" : "group-hover:bg-raised"
           }`}
         >

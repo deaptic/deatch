@@ -50,6 +50,7 @@ import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
+import { railGap } from "../ui/rowHeight.ts";
 import TabMuteBadge from "./TabMuteBadge.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
@@ -317,7 +318,7 @@ export default function Rail(props: Props) {
           onScroll={main.update}
           class="flex flex-col h-full overflow-y-auto scrollbar-none"
         >
-          <div class="flex flex-col py-1.5">
+          <div class={`flex flex-col py-1.5 ${railGap()}`}>
             <Show
               when={!channels.loadingPinned()}
               fallback={
@@ -375,7 +376,7 @@ export default function Rail(props: Props) {
 
           <RailDivider />
 
-          <div class="flex flex-col py-1.5">
+          <div class={`flex flex-col py-1.5 ${railGap()}`}>
             <Show
               when={!channels.loadingLive()}
               fallback={
@@ -423,7 +424,7 @@ export default function Rail(props: Props) {
             <div
               ref={watch.setRef}
               onScroll={watch.update}
-              class="flex max-h-44 flex-col overflow-y-auto scrollbar-none"
+              class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none ${railGap()}`}
             >
               <For each={watchedOthers()}>
                 {(ch) => (
@@ -473,7 +474,7 @@ export default function Rail(props: Props) {
       </Show>
 
       <RailDivider />
-      <div class="flex flex-col py-1.5 shrink-0">
+      <div class={`flex flex-col py-1.5 shrink-0 ${railGap()}`}>
         <RailRow
           ref={(el) => (watchBtn = el)}
           toggle
