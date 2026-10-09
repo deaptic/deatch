@@ -75,13 +75,6 @@ export function registerLocal(
   };
 }
 
-export function keysFor(action: string): string | undefined {
-  for (const [combo, names] of keymap) {
-    if (names.includes(action)) return combo;
-  }
-  return undefined;
-}
-
 export function setContext(name: string, value: boolean): void {
   contexts.set(name, value);
 }
