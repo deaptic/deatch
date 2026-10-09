@@ -6,6 +6,7 @@ import * as chatActivity from "../services/chatActivity.ts";
 import * as sevenTv from "../services/sevenTv.ts";
 import * as shortcuts from "../services/shortcuts.ts";
 import * as updater from "../services/updater.ts";
+import * as inbox from "../services/inbox.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -17,6 +18,7 @@ export function createServices(): void {
       sevenTv.start(),
       shortcuts.start(),
       updater.start(),
+      inbox.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();
