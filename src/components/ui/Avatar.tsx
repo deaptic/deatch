@@ -31,7 +31,7 @@ const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
 export default function Avatar(props: Props) {
   const [failed, setFailed] = createSignal(false);
   const initial = () => (props.alt?.trim()?.[0] ?? "?").toUpperCase();
-  const shape = () => (props.square ? "rounded-sm" : "rounded-full");
+  const shape = () => (props.square ? "rounded-xs" : "rounded-full");
 
   createEffect(() => {
     props.src;

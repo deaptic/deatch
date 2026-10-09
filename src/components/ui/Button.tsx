@@ -15,7 +15,7 @@ type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
 const VARIANTS: Record<ButtonVariant, string> = {
   accent: "bg-accent text-on-accent hover:bg-accent-hover active:opacity-90",
   neutral:
-    "bg-surface text-ink border border-line hover:bg-raised active:bg-overlay",
+    "bg-raised text-ink border border-line hover:bg-overlay active:bg-surface",
   ghost: "text-ink-soft hover:bg-raised hover:text-ink active:bg-overlay",
   danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
 };

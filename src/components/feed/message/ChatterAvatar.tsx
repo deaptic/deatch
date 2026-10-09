@@ -11,7 +11,11 @@ type Props = {
 
 export default function ChatterAvatar(props: Props) {
   return (
-    <FeedTile color={chatterLook(props.color).tint} onClick={props.onClick}>
+    <FeedTile
+      round
+      color={chatterLook(props.color).tint}
+      onClick={props.onClick}
+    >
       <ChatterPicture
         userId={props.userId}
         color={props.color}

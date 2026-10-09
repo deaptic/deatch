@@ -542,6 +542,7 @@ export default function Rail(props: Props) {
                 src={u().profileImageUrl}
                 alt={u().displayName}
                 size={40}
+                square
                 presence="online"
               >
                 <Show when={ownTab()}>

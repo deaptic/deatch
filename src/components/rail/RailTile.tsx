@@ -16,7 +16,7 @@ type Props = {
 export default function RailTile(props: Props) {
   return (
     <span
-      class={`grid place-items-center size-10 rounded-full transition-colors duration-snap [&>svg]:size-5 ${
+      class={`grid place-items-center size-10 rounded-xs transition-colors duration-snap [&>svg]:size-5 ${
         props.active
           ? TONES[props.active]
           : "bg-raised text-ink-soft group-hover:bg-overlay group-hover:text-ink"

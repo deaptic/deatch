@@ -66,15 +66,15 @@ user's chat text size, so everything in a row scales with it.
 `control-sm/md/lg` heights; icon-only controls are square, hit target at least
 32px. **Motion:** `snap` (colour changes), `quick` (small moves, popovers),
 `settle` (panes, pages); `ease-out`. **Pictures:** people and channels are
-`Avatar`, always round (square only beside a multi-line block). Pictures of
-content are `Artwork` and keep their native shape, never cropped to another one:
-`boxart` 3:4, `video` 16:9; a new kind of picture is a new shape there. Artwork
-sits on `raised` while loading; its radius follows where it sits (`xs` inline in
-a row, `md` on its own, none when it bleeds to a card's edge); anything laid
-over it uses `media-scrim`. **Icons:** Lucide, 16 on every control and menu
-item, 20 in headers and rail tiles, 24 in empty states; a glyph inside a chip or
-badge sizes with its text; window controls follow Windows at 12. Icons inherit
-text colour.
+`Avatar`: round for chatters in the feed, square (`xs`) in the rail, inbox
+channel line, and beside a multi-line block. Pictures of content are `Artwork`
+and keep their native shape, never cropped to another one: `boxart` 3:4, `video`
+16:9; a new kind of picture is a new shape there. Artwork sits on `raised` while
+loading; its radius follows where it sits (`xs` inline in a row, `md` on its
+own, none when it bleeds to a card's edge); anything laid over it uses
+`media-scrim`. **Icons:** Lucide, 16 on every control and menu item, 20 in
+headers and rail tiles, 24 in empty states; a glyph inside a chip or badge sizes
+with its text; window controls follow Windows at 12. Icons inherit text colour.
 
 ## Building
 

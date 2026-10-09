@@ -26,7 +26,7 @@ export default function ReplyLine(props: Props) {
           const look = () => chatterLook(parentColor());
           return (
             <span
-              class={`h-lh aspect-square shrink-0 grid overflow-hidden rounded-xs ${
+              class={`h-lh aspect-square shrink-0 grid overflow-hidden rounded-full ${
                 look().tint ? "bg-(--tile)/16" : "bg-raised"
               }`}
               style={look().tint ? { "--tile": look().tint } : undefined}

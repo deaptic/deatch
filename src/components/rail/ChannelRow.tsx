@@ -52,6 +52,7 @@ export default function ChannelRow(props: Props) {
         src={props.ch.profileImageUrl}
         alt={props.ch.displayName}
         size={40}
+        square
         presence={stream() ? "live" : "offline"}
         dashed={props.ephemeral}
       >
