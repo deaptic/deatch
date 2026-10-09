@@ -1,5 +1,5 @@
 import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import {
@@ -9,6 +9,7 @@ import {
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import * as raid from "../../lib/services/raid.ts";
+import * as clock from "../../lib/services/clock.ts";
 import { user } from "../../lib/stores/users.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
@@ -26,20 +27,13 @@ export default function ChannelHeader(props: Props) {
   const info = () => channelInfoFor(props.channel.id);
   const title = () => stream()?.title ?? info()?.title ?? "";
   const game = () => stream()?.game.name ?? info()?.game.name ?? "";
-  const [tick, setTick] = createSignal(0);
   const [menu, setMenu] = createSignal<{ x: number; y: number } | null>(null);
   const name = createCopied();
   const titleCopy = createCopied();
 
-  onMount(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 1_000);
-    onCleanup(() => clearInterval(id));
-  });
-
   const uptime = () => {
-    tick();
     const s = stream();
-    return s ? formatUptime(s.startedAt) : "";
+    return s ? formatUptime(s.startedAt, clock.now()) : "";
   };
 
   const openInBrowser = (ch: User) => openUrl(`https://twitch.tv/${ch.login}`);

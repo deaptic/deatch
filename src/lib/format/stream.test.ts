@@ -16,6 +16,11 @@ Deno.test("formats durations as h:mm:ss", () => {
   assertEquals(formatDuration(-5_000), "0:00:00");
 });
 
+Deno.test("formats uptime from the given moment", () => {
+  const start = Date.parse("2026-01-01T00:00:00Z");
+  assertEquals(formatUptime("2026-01-01T00:00:00Z", start + 61_000), "0:01:01");
+});
+
 Deno.test("returns empty uptime for an unparseable start", () => {
-  assertEquals(formatUptime("not a date"), "");
+  assertEquals(formatUptime("not a date", 0), "");
 });
