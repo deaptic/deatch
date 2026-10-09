@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
 import { notificationsMentionSound } from "./preferences.ts";
 import { selectedChannel } from "./view.ts";
+import { fresh } from "./inboxRetention.ts";
 
 const audio = new Audio(notificationSound);
 
@@ -25,7 +26,10 @@ const STORAGE_KEY = "mentions";
 
 const initialMentions: Mention[] = (() => {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+    return fresh(
+      JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"),
+      Date.now(),
+    );
   } catch {
     return [];
   }
@@ -55,13 +59,20 @@ export function recordMention(m: Omit<Mention, "unread">) {
   setMentions((prev) => {
     if (prev.some((x) => x.id === m.id)) return prev;
     added = true;
-    const next = [{ ...m, unread: !isActive }, ...prev];
+    const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
     return save(next.length > MAX ? next.slice(0, MAX) : next);
   });
   if (added && notificationsMentionSound()) {
     audio.currentTime = 0;
     audio.play().catch(() => {});
   }
+}
+
+export function pruneExpired() {
+  setMentions((prev) => {
+    const next = fresh(prev, Date.now());
+    return next.length === prev.length ? prev : save(next);
+  });
 }
 
 function markRead(match: (m: Mention) => boolean) {
