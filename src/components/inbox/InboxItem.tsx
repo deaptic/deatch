@@ -35,20 +35,35 @@ export default function InboxItem(props: Props) {
 
   return (
     <Card tone={m().unread ? "accent" : "plain"}>
-      <header class="flex items-center gap-2 h-10 pl-3 pr-1.5 border-b border-line-soft">
-        <Avatar src={channelAvatar()} alt={m().channelName} size={24} />
+      <header class="flex items-center gap-2 h-14 px-3 border-b border-line-soft">
+        <Avatar
+          src={channelAvatar()}
+          alt={m().channelName}
+          size={32}
+          square
+        />
         <span class="text-small font-semibold text-ink truncate">
           {m().channelName}
         </span>
         <span class="text-micro text-ink-faint truncate">
           {reasonLabel(m().reason)}
         </span>
-        <span class="ml-auto flex items-center">
-          <IconButton size="sm" label="Jump to message" onClick={props.onJump}>
-            <CornerDownRight />
+        <span class="ml-auto flex items-center gap-1">
+          <IconButton
+            size="sm"
+            variant="neutral"
+            label="Jump to message"
+            onClick={props.onJump}
+          >
+            <CornerDownRight class="size-4" />
           </IconButton>
-          <IconButton size="sm" label="Clear" onClick={props.onClear}>
-            <Check />
+          <IconButton
+            size="sm"
+            variant="neutral"
+            label="Clear"
+            onClick={props.onClear}
+          >
+            <Check class="size-4" />
           </IconButton>
         </span>
       </header>
