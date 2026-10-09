@@ -7,6 +7,7 @@ import * as sevenTv from "../services/sevenTv.ts";
 import * as shortcuts from "../services/shortcuts.ts";
 import * as updater from "../services/updater.ts";
 import * as inbox from "../services/inbox.ts";
+import * as clock from "../services/clock.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -19,6 +20,7 @@ export function createServices(): void {
       shortcuts.start(),
       updater.start(),
       inbox.start(),
+      clock.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

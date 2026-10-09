@@ -6,6 +6,7 @@ import type { User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
 import * as chatActivity from "../../lib/services/chatActivity.ts";
 import { formatUptime } from "../../lib/format/stream.ts";
+import * as clock from "../../lib/services/clock.ts";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
@@ -52,7 +53,7 @@ export default function LiveCard(props: Props) {
             </span>
           </Show>
           <span class={OVERLAY_CHIP}>
-            {formatUptime(props.stream.startedAt)}
+            {formatUptime(props.stream.startedAt, clock.now())}
           </span>
         </div>
       </Artwork>

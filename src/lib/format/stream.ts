@@ -14,8 +14,8 @@ export function formatDuration(ms: number): string {
   return `${h}:${pad(m)}:${pad(s)}`;
 }
 
-export function formatUptime(startedAt: string): string {
+export function formatUptime(startedAt: string, now: number): string {
   const start = new Date(startedAt).getTime();
   if (Number.isNaN(start)) return "";
-  return formatDuration(Date.now() - start);
+  return formatDuration(now - start);
 }

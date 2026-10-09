@@ -1,6 +1,7 @@
 import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
 import { Show } from "solid-js";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
+import * as clock from "../../lib/services/clock.ts";
 import type { ChannelInfo, Stream, User } from "../../lib/types/index.ts";
 import Stat from "../ui/Stat.tsx";
 
@@ -32,7 +33,10 @@ export default function StreamTooltip(props: {
                 icon={<Users />}
                 value={`${formatViewers(s().viewerCount)} viewers`}
               />
-              <Stat icon={<Clock />} value={formatUptime(s().startedAt)} />
+              <Stat
+                icon={<Clock />}
+                value={formatUptime(s().startedAt, clock.now())}
+              />
             </>
           )}
         </Show>
