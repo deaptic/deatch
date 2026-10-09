@@ -3,6 +3,8 @@ import notificationSound from "../../assets/notification.mp3";
 import { notificationsMentionSound } from "./preferences.ts";
 import { selectedChannel } from "./view.ts";
 import { fresh } from "./inboxRetention.ts";
+import type { Fragment } from "../types/feed.ts";
+import type { MentionReason } from "../utils/mention.ts";
 
 const audio = new Audio(notificationSound);
 
@@ -16,20 +18,25 @@ export type Mention = {
   chatterLogin: string;
   chatterName: string;
   chatterColor: string;
-  message: string;
+  fragments: Fragment[];
+  reason: MentionReason;
   timestamp: number;
   unread: boolean;
 };
+
+// Entries saved before fragments and reason existed can't be rendered.
+const complete = (m: Partial<Mention>): m is Mention =>
+  Array.isArray(m.fragments) && m.reason !== undefined;
 
 const MAX = 100;
 const STORAGE_KEY = "mentions";
 
 const initialMentions: Mention[] = (() => {
   try {
-    return fresh(
-      JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"),
-      Date.now(),
+    const stored: Partial<Mention>[] = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) ?? "[]",
     );
+    return fresh(stored.filter(complete), Date.now());
   } catch {
     return [];
   }
@@ -90,6 +97,14 @@ function markRead(match: (m: Mention) => boolean) {
 }
 
 export const markMentionRead = (id: string) => markRead((m) => m.id === id);
-export const markAllMentionsRead = () => markRead(() => true);
 export const markChannelMentionsRead = (channelId: string) =>
   markRead((m) => m.channelId === channelId);
+
+export function dismissMention(id: string) {
+  setMentions((prev) => {
+    const next = prev.filter((m) => m.id !== id);
+    return next.length === prev.length ? prev : save(next);
+  });
+}
+
+export const dismissAllMentions = () => setMentions(save([]));

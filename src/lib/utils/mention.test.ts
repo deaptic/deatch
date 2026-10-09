@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
 import type { FeedMessage } from "../types/feed.ts";
-import { isMention } from "./mention.ts";
+import { isMention, mentionReason } from "./mention.ts";
 
 const message = (overrides: Partial<FeedMessage>): FeedMessage =>
   ({
@@ -29,4 +29,12 @@ Deno.test("mentions, replies and keywords count; own messages never do", () => {
   );
   assertEquals(isMention(message({}), "me", ["there"]), true);
   assertEquals(isMention(message({}), "me", []), false);
+});
+
+Deno.test("mentionReason names the matched keyword", () => {
+  assertEquals(mentionReason(message({}), "me", ["nope", "the*"]), {
+    kind: "keyword",
+    term: "the*",
+  });
+  assertEquals(mentionReason(message({}), "me", []), null);
 });

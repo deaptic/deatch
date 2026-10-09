@@ -66,6 +66,12 @@ export function leavePage(): boolean {
   return false;
 }
 
+// A message to bring into view once its channel's feed holds it.
+export type JumpTarget = { channelId: string; messageId: string };
+export const [jumpTarget, setJumpTarget] = createSignal<JumpTarget | null>(
+  null,
+);
+
 // null: not watching. "auto": mirror whatever the browser tab is watching.
 // "manual": locked onto a watched channel the user picked by cycling.
 export type WatchMode = "auto" | "manual" | null;

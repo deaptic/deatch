@@ -4,7 +4,7 @@ import { appendItem } from "../stores/feeds.ts";
 import { knownUser, recordChatter, user } from "../stores/users.ts";
 import { recordMention } from "../stores/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
-import { isMention } from "../utils/mention.ts";
+import { mentionReason } from "../utils/mention.ts";
 import { chatterOf, mapChatMessage } from "./chat-mapper.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
@@ -60,7 +60,8 @@ export function start(): () => void {
         messageId: raw.message_id,
       });
 
-      if (!isMention(msg, me.login, feedKeywords())) return;
+      const reason = mentionReason(msg, me.login, feedKeywords());
+      if (!reason) return;
 
       const ch = knownUser(raw.broadcaster_user_id);
       recordMention({
@@ -73,7 +74,8 @@ export function start(): () => void {
         chatterLogin: raw.chatter_user_login,
         chatterName: raw.chatter_user_name,
         chatterColor: raw.color,
-        message: raw.message.text,
+        fragments: msg.fragments,
+        reason,
         timestamp: ts,
       });
     }),

@@ -22,6 +22,8 @@ import {
 } from "../../lib/stores/feeds.ts";
 import { favorites, thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
 import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
+import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
+import { createFeedScroll } from "./createFeedScroll.ts";
 import {
   feedKeywords,
   feedShowDeletedContent,
@@ -77,14 +79,14 @@ type Props = {
   ref?: (api: FeedApi) => void;
 };
 
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
 export default function Feed(props: Props) {
-  const [isPaused, setIsPaused] = createSignal(false);
   const [selectedId, setSelectedId] = createSignal<string | null>(null);
 
   let rootRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
-  let bottomRef: HTMLDivElement | undefined;
-  let isProgrammaticScroll = false;
+  const scroll = createFeedScroll(() => scrollRef);
 
   const entries = createMemo<FeedEntry[]>(() => {
     const all = feeds[props.broadcasterId]?.messages ?? [];
@@ -177,57 +179,52 @@ export default function Feed(props: Props) {
     });
   });
 
-  function scrollInstant() {
-    setIsPaused(false);
-    isProgrammaticScroll = true;
-    bottomRef?.scrollIntoView({ behavior: "instant" });
-  }
+  // A jump glides when the feed was already on screen; a feed that mounted
+  // for the jump has nowhere to glide from.
+  let settled = false;
+  onMount(() => requestAnimationFrame(() => (settled = true)));
 
-  function onScroll(e: Event) {
-    if (isProgrammaticScroll) {
-      isProgrammaticScroll = false;
-      return;
-    }
-    const el = e.currentTarget as HTMLDivElement;
-    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-    setIsPaused(!atBottom);
-  }
+  createEffect(() => {
+    const target = jumpTarget();
+    if (!target || target.channelId !== props.broadcasterId) return;
+    if (!messageList().some((m) => m.message_id === target.messageId)) return;
+    setJumpTarget(null);
+    const behavior = settled && !reducedMotion.matches ? "smooth" : "instant";
+    queueMicrotask(() => {
+      const el = rootRef?.querySelector<HTMLElement>(
+        `[data-item-id="${CSS.escape(target.messageId)}"]`,
+      );
+      if (el) {
+        scroll.jumpTo(el, behavior, () => setSelectedId(target.messageId));
+      }
+    });
+  });
 
   createEffect(
     on(
       () => props.broadcasterId,
       () => {
-        setIsPaused(false);
         setSelectedId(null);
-        queueMicrotask(scrollInstant);
+        queueMicrotask(scroll.toBottom);
       },
     ),
   );
 
   // The last entry, not the count: at the cap every append evicts one, so
   // the length never changes.
-  createEffect(
-    on(
-      () => entries().at(-1),
-      () => {
-        if (!isPaused()) scrollInstant();
-      },
-    ),
-  );
+  createEffect(on(() => entries().at(-1), scroll.follow));
 
   onMount(() => {
     if (!scrollRef) return;
-    const observer = new ResizeObserver(() => {
-      if (!isPaused()) scrollInstant();
-    });
+    const observer = new ResizeObserver(scroll.follow);
     observer.observe(scrollRef);
     onCleanup(() => observer.disconnect());
   });
 
   onMount(() => {
     props.ref?.({
-      scrollToBottom: scrollInstant,
-      isPaused,
+      scrollToBottom: scroll.toBottom,
+      isPaused: scroll.isPaused,
       getBounds: () => rootRef?.getBoundingClientRect() ?? null,
       getElement: () => rootRef ?? null,
       moveSelection,
@@ -279,7 +276,7 @@ export default function Feed(props: Props) {
       {props.header}
       <div
         ref={scrollRef}
-        onScroll={onScroll}
+        onScroll={scroll.onScroll}
         onWheel={props.onWheel}
         class={`h-full overflow-y-auto overflow-x-hidden flex flex-col scrollbar-gutter-stable ${
           props.scrollClass ?? ""
@@ -298,7 +295,6 @@ export default function Feed(props: Props) {
             </>
           )}
         </For>
-        <div ref={bottomRef} />
       </div>
       {props.footer}
     </div>
