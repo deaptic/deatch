@@ -6,7 +6,6 @@ mod emotes;
 mod error;
 mod history;
 mod http;
-mod keymap;
 mod keyring;
 mod link;
 mod notifications;
@@ -93,7 +92,6 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             emotes::commands::seventv_subscribe_emote_set,
             emotes::commands::seventv_unsubscribe_emote_set,
             history::commands::get_recent_messages,
-            keymap::commands::read_keymap,
             link::commands::link_set_muted,
             link::commands::link_focus,
             link::commands::link_close,
