@@ -6,10 +6,12 @@ import ChannelHeader from "../chat/ChannelHeader.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import Button from "../ui/Button.tsx";
 import Boundary from "../ui/Boundary.tsx";
+import type { User } from "../../lib/types/index.ts";
 
 type ChatPanesProps = {
   userLogin: string;
   onJumpToMessage: (channelId: string, messageId: string) => void;
+  onSelectChannel: (ch: User) => void;
 };
 
 export default function ChatPanes(props: ChatPanesProps) {
@@ -42,6 +44,7 @@ export default function ChatPanes(props: ChatPanesProps) {
                 userLogin={props.userLogin}
                 isActive
                 onJumpToMessage={props.onJumpToMessage}
+                onSelectChannel={props.onSelectChannel}
               />
             </Boundary>
           </div>

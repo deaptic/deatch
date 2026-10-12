@@ -21,7 +21,11 @@ import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
 import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
-import UserContextMenu from "../context-menus/UserContextMenu.tsx";
+import UserContextMenu, {
+  type ModAction,
+} from "../context-menus/UserContextMenu.tsx";
+import WarnModal from "../warn-modal/WarnModal.tsx";
+import { Dynamic } from "solid-js/web";
 import UserCard from "../user-card/UserCard.tsx";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
@@ -48,7 +52,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { User, UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   broadcasterId: string;
@@ -57,6 +61,7 @@ type Props = {
   userLogin: string;
   isActive: boolean;
   onJumpToMessage: (channelId: string, messageId: string) => void;
+  onSelectChannel: (ch: User) => void;
 };
 
 async function resolveIdentity(
@@ -90,7 +95,7 @@ export default function Chat(props: Props) {
     { messageId: string; name: string; text: string } | null
   >(null);
   const [modAction, setModAction] = createSignal<
-    { userId: string; userName: string } | null
+    { action: ModAction; userId: string; userName: string } | null
   >(null);
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
   let inputApi: ChatInputApi | undefined;
@@ -197,6 +202,11 @@ export default function Chat(props: Props) {
   }
 
   const mentionUser = (login: string) => inputApi?.insert(`@${login}`);
+
+  async function openChat(userId: string) {
+    const [u] = await users.get([userId]).catch(() => []);
+    if (u) props.onSelectChannel(u);
+  }
 
   function bindFeedShortcuts() {
     const withSelected = (fn: (msg: Message) => void) => () => {
@@ -344,10 +354,11 @@ export default function Chat(props: Props) {
             broadcasterId={props.broadcasterId}
             developerMode={advancedDeveloperMode()}
             onClose={userMenu.close}
-            onModerate={(t) => setModAction(t)}
+            onModerate={(action, t) => setModAction({ action, ...t })}
             onShowProfile={(x, y, userId) =>
               userCard.open(x, y, { chatterId: userId })}
             onMention={mentionUser}
+            onOpenChat={openChat}
           />
         )}
       </Show>
@@ -383,7 +394,8 @@ export default function Chat(props: Props) {
       </Show>
       <Show when={modAction()}>
         {(ma) => (
-          <BanModal
+          <Dynamic
+            component={ma().action === "warn" ? WarnModal : BanModal}
             userId={ma().userId}
             userName={ma().userName}
             broadcasterId={props.broadcasterId}
