@@ -2,7 +2,6 @@ import { createSignal, type JSX, Show } from "solid-js";
 import Badge from "../ui/Badge.tsx";
 import Tooltip from "../ui/Tooltip.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
-import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
 import { rowHeight } from "../ui/rowHeight.ts";
 
 export type SubTone = "soft" | "live" | "positive" | "caution";
@@ -23,7 +22,6 @@ type Props = {
   unread?: boolean;
   mentions?: number;
   dimmed?: boolean;
-  toggle?: boolean;
   ref?: (el: HTMLButtonElement) => void;
   onClick?: () => void;
   onDoubleClick?: () => void;
@@ -42,7 +40,6 @@ export default function RailRow(props: Props) {
         type="button"
         ref={props.ref}
         aria-current={props.selected ? "page" : undefined}
-        {...(props.toggle ? { [POPOVER_TOGGLE]: "" } : {})}
         onClick={props.onClick}
         onDblClick={props.onDoubleClick}
         onAuxClick={(e) => {

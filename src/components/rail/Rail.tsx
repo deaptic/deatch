@@ -460,7 +460,6 @@ export default function Rail(props: Props) {
       <div class={`flex flex-col py-1.5 shrink-0 ${railGap()}`}>
         <RailRow
           ref={(el) => (linkBtn = el)}
-          toggle
           label="Link"
           sub={linkStatus().sub}
           subTone={linkStatus().tone}

@@ -18,6 +18,11 @@ const contexts = new Map<string, boolean>();
 const localBindings = new Map<string, Set<ActionEntry>>();
 let pending: { seq: string; timer: number } | null = null;
 
+export function keyFor(action: string): string | undefined {
+  for (const [combo, names] of keymap) if (names.includes(action)) return combo;
+  return undefined;
+}
+
 export function register(
   name: string,
   handler: Handler,

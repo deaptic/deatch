@@ -19,6 +19,7 @@ import {
   setLinkAudioLink,
 } from "../../lib/stores/preferences.ts";
 import * as link from "../../lib/services/link.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 
 type Props = {
   x: number;
@@ -60,14 +61,16 @@ export default function LinkMenu(props: Props) {
         <MenuItem
           label="Sync"
           icon={<RefreshCw />}
-          hint={linkSynced() ? "On" : "Off"}
+          active={linkSynced()}
+          shortcut={shortcuts.keyFor("link::toggle")}
           disabled={!hasTabs()}
           onClick={run(props.onToggleSync)}
         />
         <MenuItem
           label="Audio link"
           icon={<AudioLines />}
-          hint={linkAudioLink() ? "On" : "Off"}
+          active={linkAudioLink()}
+          shortcut={shortcuts.keyFor("link::toggleAudioLink")}
           onClick={run(() =>
             setLinkAudioLink(!linkAudioLink())
           )}
@@ -76,18 +79,21 @@ export default function LinkMenu(props: Props) {
         <MenuItem
           label={link.currentMuted() ? "Unmute" : "Mute"}
           icon={link.currentMuted() ? <Volume2 /> : <VolumeX />}
+          shortcut={shortcuts.keyFor("link::toggleMute")}
           disabled={link.currentMuted() === null}
           onClick={run(link.toggleMute)}
         />
         <MenuItem
           label="Mute others"
           icon={<VolumeX />}
+          shortcut={shortcuts.keyFor("link::muteOthers")}
           disabled={!hasTabs()}
           onClick={run(link.muteOthers)}
         />
         <MenuItem
           label={link.anyUnmuted() ? "Mute all" : "Unmute all"}
           icon={link.anyUnmuted() ? <VolumeX /> : <Volume2 />}
+          shortcut={shortcuts.keyFor("link::toggleMuteAll")}
           disabled={!hasTabs()}
           onClick={run(link.toggleMuteAll)}
         />

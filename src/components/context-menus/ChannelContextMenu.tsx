@@ -31,7 +31,9 @@ import {
   markChannelMentionsRead,
 } from "../../lib/stores/inbox.ts";
 import { user } from "../../lib/stores/users.ts";
+import { selectedChannel } from "../../lib/stores/view.ts";
 import * as raid from "../../lib/services/raid.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
 import { copyField } from "../../lib/utils/clipboard.ts";
 import type { User } from "../../lib/types/index.ts";
@@ -105,6 +107,9 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label={muted() ? "Unmute tab" : "Mute tab"}
             icon={muted() ? <Volume2 /> : <VolumeX />}
+            shortcut={selectedChannel()?.id === props.ch.id
+              ? shortcuts.keyFor("link::toggleMute")
+              : undefined}
             onClick={run(() =>
               linkSetMuted(props.ch.login, !muted())
             )}
