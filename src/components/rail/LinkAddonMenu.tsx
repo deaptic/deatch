@@ -11,7 +11,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function WatchAddonMenu(props: Props) {
+export default function LinkAddonMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} opener={props.opener} onClose={props.onClose}>
       <MenuItem

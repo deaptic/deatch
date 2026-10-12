@@ -15,7 +15,7 @@ import {
 } from "../stores/preferences.ts";
 import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
-import type { WatchControls } from "./createWatchControls.ts";
+import type { LinkControls } from "./createLinkControls.ts";
 
 function zoom(change: () => void): void {
   change();
@@ -24,24 +24,24 @@ function zoom(change: () => void): void {
 
 export function createAppShortcuts(
   nav: ChannelNavigation,
-  watch: WatchControls,
+  link: LinkControls,
 ): void {
   onMount(() => {
     const unbind = [
       shortcuts.register(
         "channel::cycleNext",
-        () => watch.cycleChannel(1),
+        () => link.cycleChannel(1),
       ),
       shortcuts.register(
         "channel::cyclePrev",
-        () => watch.cycleChannel(-1),
+        () => link.cycleChannel(-1),
       ),
-      shortcuts.register("watch::toggle", watch.toggleWatch),
-      shortcuts.register("watch::toggleMute", watch.toggleWatchMute),
-      shortcuts.register("watch::muteOthers", watch.muteOtherWatched),
+      shortcuts.register("link::toggle", link.toggleLink),
+      shortcuts.register("link::toggleMute", link.toggleLinkMute),
+      shortcuts.register("link::muteOthers", link.muteOtherLinked),
       shortcuts.register(
-        "watch::toggleMuteAll",
-        watch.toggleMuteAllWatched,
+        "link::toggleMuteAll",
+        link.toggleMuteAllLinked,
       ),
       shortcuts.register("settings::toggle", toggleSettings),
       shortcuts.register("explore::show", showExplore),

@@ -3,7 +3,7 @@ import type { ChannelInfo } from "../types/index.ts";
 import type { Stream } from "../types/index.ts";
 import type { User, UserRef } from "../types/index.ts";
 import { pinnedChannels } from "./preferences.ts";
-import { watchWarmedChannels } from "./watch.ts";
+import { linkWarmedChannels } from "./link.ts";
 import { knownUser } from "./users.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
@@ -42,7 +42,7 @@ export function streamForUserId(userId: string): Stream | undefined {
 export function channelsInOrder(): User[] {
   const pinnedIds = pinnedChannels();
   const pinnedSet = new Set(pinnedIds);
-  const warmedSet = new Set(watchWarmedChannels().map((c) => c?.id));
+  const warmedSet = new Set(linkWarmedChannels().map((c) => c?.id));
   const live = liveStreams();
   const ordered: User[] = [];
   const seen = new Set<string>();

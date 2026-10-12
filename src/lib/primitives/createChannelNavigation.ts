@@ -3,14 +3,14 @@ import type { User } from "../types/index.ts";
 import { knownUser } from "../stores/users.ts";
 import * as users from "../services/users.ts";
 import {
+  linkSynced,
   selectedChannel,
   setJumpTarget,
+  setLinkSynced,
   setSelectedChannel,
-  setWatchSynced,
-  watchSynced,
 } from "../stores/view.ts";
-import { watchWarmedChannels } from "../stores/watch.ts";
-import { watchFocus } from "../api/watch.ts";
+import { linkWarmedChannels } from "../stores/link.ts";
+import { linkFocus } from "../api/link.ts";
 import { ensureFeed, markSeen } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
 
@@ -20,12 +20,12 @@ export type ChannelNavigation = {
 };
 
 export function createChannelNavigation(): ChannelNavigation {
-  // While synced the browser follows along; leaving the watched tabs ends it.
+  // While synced the browser follows along; leaving the linked tabs ends it.
   function selectChannel(ch: User) {
-    if (watchSynced()) {
-      const watched = watchWarmedChannels().some((c) => c?.id === ch.id);
-      if (watched) void watchFocus(ch.login);
-      else setWatchSynced(false);
+    if (linkSynced()) {
+      const linked = linkWarmedChannels().some((c) => c?.id === ch.id);
+      if (linked) void linkFocus(ch.login);
+      else setLinkSynced(false);
     }
     setSelectedChannel(ch);
   }
@@ -40,7 +40,7 @@ export function createChannelNavigation(): ChannelNavigation {
   }
 
   // Whatever channel is shown — picked manually or mirrored from the browser
-  // tab in Watch mode — gets its feed prepared and marked seen.
+  // tab in Link mode — gets its feed prepared and marked seen.
   createEffect(
     on(selectedChannel, (ch) => {
       if (!ch) return;

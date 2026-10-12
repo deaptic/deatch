@@ -57,7 +57,7 @@ and commit the regenerated file with it.
 Backend logs go through the `log` crate (`log::info!` / `warn!` / `error!`),
 never `println!`. `tauri-plugin-log` writes them to stdout and to the app log
 dir (`%LOCALAPPDATA%\com.deaptic.deatch\logs`). The browser-host process
-(`watch/host.rs`) runs without Tauri and keeps its own log file.
+(`link/host.rs`) runs without Tauri and keeps its own log file.
 
 ## Guiding principles
 
@@ -107,7 +107,7 @@ up.
   are isolated from the rest of the app.
 - **Frontend** — components render. Layers in `src/lib/`, top to bottom:
   - `events/` — listeners that map backend events (typed events, EventSub
-    notifications, Watch) into stores. One file per event family, each exporting
+    notifications, Link) into stores. One file per event family, each exporting
     `start()`. `events/index.ts` starts them all.
   - `services/` — one file per feature holding its logic, state, and lifecycle
     (caching, dedupe, outcome handling, retries, listeners).
@@ -149,7 +149,7 @@ A service is a plain ES module, never a class. The module is the singleton.
 ### Backend layout
 
 `src-tauri/src/` is one folder per feature (`twitch/<resource>/`, `emotes/`,
-`history/`, `watch/`, `discord/`, `keymap/`, `notifications/`). Crate-wide
+`history/`, `link/`, `discord/`, `keymap/`, `notifications/`). Crate-wide
 pieces sit at the root: `error.rs`, `http.rs`, `emit.rs`, `keyring.rs`,
 `clock.rs`. `lib.rs` only wires the app: plugins, managed state, setup, and the
 tauri-specta command/event lists. The app is Windows-only: no `cfg` branches or

@@ -1,7 +1,7 @@
 # Deatch Link
 
 Bridges the [Deatch desktop app](https://github.com/Deaptic/deatch) with your
-browser's open Twitch tabs — so its **Watch** view can follow what you're
+browser's open Twitch tabs — so its **Link** view can follow what you're
 watching, and you can mute background streams from inside Deatch without
 alt-tabbing.
 

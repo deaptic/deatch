@@ -167,8 +167,10 @@ function makeEntry(handler: Handler, when?: string): ActionEntry {
   return { handler, when: when ? compileWhen(when) : undefined };
 }
 
+// Saved keymaps may still name the Link actions by their old prefix.
 function normalizeOverride(
   bound: string[] | null | undefined,
 ): string[] | null {
-  return bound && bound.length > 0 ? bound : null;
+  if (!bound || bound.length === 0) return null;
+  return bound.map((name) => name.replace(/^watch::/, "link::"));
 }

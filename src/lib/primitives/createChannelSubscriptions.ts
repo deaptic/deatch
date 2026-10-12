@@ -4,7 +4,7 @@ import { channelFocus, diffFocus } from "../utils/channelFocus.ts";
 import { selectedChannel } from "../stores/view.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import { clearChatters, user } from "../stores/users.ts";
-import { watchWarmedChannels } from "../stores/watch.ts";
+import { linkWarmedChannels } from "../stores/link.ts";
 import { setEventsubChannels } from "../api/twitch/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
 import * as chatActivity from "../services/chatActivity.ts";
@@ -61,7 +61,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     const next = channelFocus({
       ownId: u.id,
       pinnedIds: pinnedChannels(),
-      warmedIds: watchWarmedChannels().map((ch) => ch.id),
+      warmedIds: linkWarmedChannels().map((ch) => ch.id),
       selectedId: selectedChannel()?.id,
       liveIds: liveStreams().map((ch) => ch.id),
     });

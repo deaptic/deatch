@@ -20,23 +20,23 @@ import {
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
 import {
-  watchConnected,
-  watchedChannel,
-  watchMutedByLogin,
-  watchWarmedChannels,
-} from "../../lib/stores/watch.ts";
-import WatchAddonMenu from "./WatchAddonMenu.tsx";
-import { watchClose, watchSetMuted } from "../../lib/api/watch.ts";
+  linkConnected,
+  linkedChannel,
+  linkMutedByLogin,
+  linkWarmedChannels,
+} from "../../lib/stores/link.ts";
+import LinkAddonMenu from "./LinkAddonMenu.tsx";
+import { linkClose, linkSetMuted } from "../../lib/api/link.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import {
   activeView,
   isSettingsOpen,
+  linkSynced,
   pendingChannel,
   selectedChannel,
   showExplore,
   toggleSettings,
-  watchSynced,
 } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
 import * as raid from "../../lib/services/raid.ts";
@@ -59,11 +59,11 @@ import type { User } from "../../lib/types/index.ts";
 
 type Props = {
   onSelect: (ch: User) => void;
-  onToggleWatch: () => void;
+  onToggleLink: () => void;
   onLiveChange?: (live: User[]) => void;
 };
 
-type WatchStatus = {
+type LinkStatus = {
   sub: string;
   tone: SubTone;
   tile: TileTone | false;
@@ -74,25 +74,25 @@ export default function Rail(props: Props) {
   const expanded = appearanceRailExpanded;
   const channels = createRailChannels(props.onLiveChange);
   const main = createScrollAffordance();
-  const watch = createScrollAffordance();
+  const link = createScrollAffordance();
 
   const selectedId = () => {
     const v = activeView();
     return typeof v === "object" ? v.id : null;
   };
 
-  const watchedOthers = () =>
-    watchWarmedChannels().filter((c) => c?.id !== user()?.id);
-  const ownTab = () => watchWarmedChannels().find((c) => c?.id === user()?.id);
+  const linkedOthers = () =>
+    linkWarmedChannels().filter((c) => c?.id !== user()?.id);
+  const ownTab = () => linkWarmedChannels().find((c) => c?.id === user()?.id);
 
   const warmedIds = createMemo(
-    () => new Set(watchWarmedChannels().map((c) => c?.id)),
+    () => new Set(linkWarmedChannels().map((c) => c?.id)),
   );
 
   const isListed = (id: string) =>
     new Set(pinnedChannels()).has(id) ||
     warmedIds().has(id) ||
-    watchedChannel()?.id === id ||
+    linkedChannel()?.id === id ||
     channels.isLive(id) ||
     id === user()?.id;
 
@@ -101,37 +101,37 @@ export default function Rail(props: Props) {
     return sel && !isListed(sel.id) ? sel : null;
   });
 
-  // The sub line says what Watch can do right now; the tile only lights up
+  // The sub line says what Link can do right now; the tile only lights up
   // once a mode is engaged.
-  const watchStatus = (): WatchStatus => {
-    if (!watchConnected()) {
+  const linkStatus = (): LinkStatus => {
+    if (!linkConnected()) {
       return {
         sub: "Add the Firefox add-on",
         tone: "soft",
         tile: false,
         onClick: () => {
-          if (!watchBtn || addonMenu()) return setAddonMenu(null);
-          const rect = watchBtn.getBoundingClientRect();
+          if (!linkBtn || addonMenu()) return setAddonMenu(null);
+          const rect = linkBtn.getBoundingClientRect();
           setAddonMenu({ x: rect.right + 8, y: rect.top });
         },
       };
     }
-    if (watchWarmedChannels().length === 0) {
+    if (linkWarmedChannels().length === 0) {
       return { sub: "No Twitch tabs open", tone: "soft", tile: false };
     }
-    if (watchSynced()) {
+    if (linkSynced()) {
       return {
         sub: "Synced with browser",
         tone: "positive",
         tile: "positive",
-        onClick: props.onToggleWatch,
+        onClick: props.onToggleLink,
       };
     }
     return {
       sub: "Sync with browser",
       tone: "soft",
       tile: false,
-      onClick: props.onToggleWatch,
+      onClick: props.onToggleLink,
     };
   };
 
@@ -149,7 +149,7 @@ export default function Rail(props: Props) {
   const [addonMenu, setAddonMenu] = createSignal<
     { x: number; y: number } | null
   >(null);
-  let watchBtn: HTMLButtonElement | undefined;
+  let linkBtn: HTMLButtonElement | undefined;
 
   createEffect(() => {
     pinnedChannels();
@@ -159,8 +159,8 @@ export default function Rail(props: Props) {
   });
 
   createEffect(() => {
-    watchWarmedChannels().length;
-    queueMicrotask(watch.update);
+    linkWarmedChannels().length;
+    queueMicrotask(link.update);
   });
 
   createEffect(() => {
@@ -395,28 +395,28 @@ export default function Rail(props: Props) {
         </div>
       </div>
 
-      <Show when={watchedOthers().length > 0}>
+      <Show when={linkedOthers().length > 0}>
         <RailDivider />
         <div class="flex flex-col py-1.5 shrink-0">
           <div class="relative">
-            <Show when={watch.canUp()}>
+            <Show when={link.canUp()}>
               <ScrollChevron
                 direction="up"
-                onClick={() => watch.scrollByOne(-1)}
+                onClick={() => link.scrollByOne(-1)}
               />
             </Show>
-            <Show when={watch.canDown()}>
+            <Show when={link.canDown()}>
               <ScrollChevron
                 direction="down"
-                onClick={() => watch.scrollByOne(1)}
+                onClick={() => link.scrollByOne(1)}
               />
             </Show>
             <div
-              ref={watch.setRef}
-              onScroll={watch.update}
+              ref={link.setRef}
+              onScroll={link.update}
               class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none ${railGap()}`}
             >
-              <For each={watchedOthers()}>
+              <For each={linkedOthers()}>
                 {(ch) => (
                   <div data-channel-id={ch?.id}>
                     <ChannelRow
@@ -424,14 +424,14 @@ export default function Rail(props: Props) {
                       selected={selectedId() === ch?.id}
                       unread={hasUnread(ch?.id)}
                       mentions={channelMentionCount(ch?.id)}
-                      muted={watchMutedByLogin()[ch?.login] === true}
+                      muted={linkMutedByLogin()[ch?.login] === true}
                       onToggleMute={() =>
-                        void watchSetMuted(
+                        void linkSetMuted(
                           ch?.login,
-                          watchMutedByLogin()[ch?.login] !== true,
+                          linkMutedByLogin()[ch?.login] !== true,
                         )}
                       onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() => void watchClose(ch?.login)}
+                      onMiddleClick={() => void linkClose(ch?.login)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -465,19 +465,19 @@ export default function Rail(props: Props) {
       <RailDivider />
       <div class={`flex flex-col py-1.5 shrink-0 ${railGap()}`}>
         <RailRow
-          ref={(el) => (watchBtn = el)}
+          ref={(el) => (linkBtn = el)}
           toggle
-          label="Watch"
-          sub={watchStatus().sub}
-          subTone={watchStatus().tone}
+          label="Link"
+          sub={linkStatus().sub}
+          subTone={linkStatus().tone}
           tooltip={
             <p class="font-semibold whitespace-nowrap">
-              Watch · {watchStatus().sub}
+              Link · {linkStatus().sub}
             </p>
           }
-          onClick={watchStatus().onClick}
+          onClick={linkStatus().onClick}
         >
-          <RailTile active={watchStatus().tile}>
+          <RailTile active={linkStatus().tile}>
             <Eye />
           </RailTile>
         </RailRow>
@@ -522,7 +522,7 @@ export default function Rail(props: Props) {
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() =>
-                ownTab() ? void watchClose(u().login) : openInBrowser(u())}
+                ownTab() ? void linkClose(u().login) : openInBrowser(u())}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
             >
               <Avatar
@@ -535,11 +535,11 @@ export default function Rail(props: Props) {
                 <Show when={ownTab()}>
                   {(tab) => (
                     <TabMuteBadge
-                      muted={watchMutedByLogin()[tab().login] === true}
+                      muted={linkMutedByLogin()[tab().login] === true}
                       onToggle={() =>
-                        void watchSetMuted(
+                        void linkSetMuted(
                           tab().login,
-                          watchMutedByLogin()[tab().login] !== true,
+                          linkMutedByLogin()[tab().login] !== true,
                         )}
                     />
                   )}
@@ -552,10 +552,10 @@ export default function Rail(props: Props) {
 
       <Show when={addonMenu()}>
         {(m) => (
-          <WatchAddonMenu
+          <LinkAddonMenu
             x={m().x}
             y={m().y}
-            opener={() => watchBtn}
+            opener={() => linkBtn}
             onClose={() => setAddonMenu(null)}
           />
         )}
@@ -572,7 +572,7 @@ export default function Rail(props: Props) {
             onClose={() => setChMenu(null)}
             onOpenInBrowser={openInBrowser}
             onCloseBrowserTab={warmedIds().has(m().ch?.id)
-              ? (ch) => void watchClose(ch.login)
+              ? (ch) => void linkClose(ch.login)
               : undefined}
             onPin={m().ch?.id === user()?.id ? undefined : pin}
             onUnpin={unpinChannel}

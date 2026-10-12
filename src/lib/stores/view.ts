@@ -35,7 +35,7 @@ let lastChannel: User | null = null;
 
 export function showExplore() {
   setActiveView("explore");
-  setWatchSynced(false);
+  setLinkSynced(false);
 }
 
 export function setSelectedChannel(channel: User) {
@@ -73,4 +73,4 @@ export const [jumpTarget, setJumpTarget] = createSignal<JumpTarget | null>(
 );
 
 // Synced: the app and the browser's Twitch tab follow each other.
-export const [watchSynced, setWatchSynced] = createSignal(false);
+export const [linkSynced, setLinkSynced] = createSignal(false);

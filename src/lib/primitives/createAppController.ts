@@ -1,6 +1,6 @@
 import type { User } from "../types/index.ts";
 import { createChannelNavigation } from "./createChannelNavigation.ts";
-import { createWatchControls } from "./createWatchControls.ts";
+import { createLinkControls } from "./createLinkControls.ts";
 import { createChannelSubscriptions } from "./createChannelSubscriptions.ts";
 import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
 import { createMentionsBadge } from "./createMentionsBadge.ts";
@@ -11,7 +11,7 @@ import { createServices } from "./createServices.ts";
 
 export type AppController = {
   selectChannel: (ch: User) => void;
-  toggleWatch: () => void;
+  toggleLink: () => void;
   jumpToMessage: (channelId: string, messageId: string) => void;
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
@@ -21,7 +21,7 @@ export function createAppController(): AppController {
   createServices();
   const nav = createChannelNavigation();
   const subs = createChannelSubscriptions();
-  const watch = createWatchControls(nav);
+  const link = createLinkControls(nav);
 
   createSelectedChannelEffects();
   createMentionsBadge();
@@ -30,11 +30,11 @@ export function createAppController(): AppController {
     setLiveLoaded: subs.setLiveLoaded,
     leaveAll: subs.leaveAll,
   });
-  createAppShortcuts(nav, watch);
+  createAppShortcuts(nav, link);
 
   return {
     selectChannel: nav.selectChannel,
-    toggleWatch: watch.toggleWatch,
+    toggleLink: link.toggleLink,
     jumpToMessage: nav.jumpToMessage,
     setLiveStreams: subs.setLiveStreams,
     setLiveLoaded: subs.setLiveLoaded,
