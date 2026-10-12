@@ -468,7 +468,7 @@ export default function Rail(props: Props) {
               Link · {linkStatus().sub}
             </p>
           }
-          onClick={linkStatus().onClick}
+          onClick={() => linkStatus().onClick?.()}
           onContextMenu={openLinkMenu}
         >
           <RailTile active={linkStatus().tile}>
