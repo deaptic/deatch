@@ -72,7 +72,7 @@ export default function ModBar(props: Props) {
         {(close) => (
           <MenuItem
             label="Clear every message"
-            danger
+            tone="negative"
             onClick={() => {
               close();
               run(

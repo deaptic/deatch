@@ -109,7 +109,7 @@ export default function LinkMenu(props: Props) {
         <MenuItem
           label="Close all tabs"
           icon={<X />}
-          danger
+          tone="negative"
           disabled={!hasTabs()}
           onClick={run(link.closeAll)}
         />

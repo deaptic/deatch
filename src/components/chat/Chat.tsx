@@ -25,7 +25,6 @@ import UserContextMenu, {
   type ModAction,
 } from "../context-menus/UserContextMenu.tsx";
 import WarnModal from "../warn-modal/WarnModal.tsx";
-import { Dynamic } from "solid-js/web";
 import UserCard from "../user-card/UserCard.tsx";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
@@ -389,13 +388,24 @@ export default function Chat(props: Props) {
       </Show>
       <Show when={modAction()}>
         {(ma) => (
-          <Dynamic
-            component={ma().action === "warn" ? WarnModal : BanModal}
-            userId={ma().userId}
-            userName={ma().userName}
-            broadcasterId={props.broadcasterId}
-            onClose={() => setModAction(null)}
-          />
+          <Show
+            when={ma().action !== "warn"}
+            fallback={
+              <WarnModal
+                userId={ma().userId}
+                userName={ma().userName}
+                broadcasterId={props.broadcasterId}
+                onClose={() => setModAction(null)}
+              />
+            }
+          >
+            <BanModal
+              userId={ma().userId}
+              userName={ma().userName}
+              broadcasterId={props.broadcasterId}
+              onClose={() => setModAction(null)}
+            />
+          </Show>
         )}
       </Show>
     </div>

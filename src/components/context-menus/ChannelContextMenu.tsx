@@ -179,7 +179,7 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label="Log out"
             icon={<LogOut />}
-            danger
+            tone="negative"
             onClick={run(() => props.onLogout?.())}
           />
         </Show>

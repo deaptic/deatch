@@ -82,11 +82,12 @@ export default function UserContextMenu(props: Props) {
         <MenuItem
           label="Warn"
           icon={<TriangleAlert />}
+          tone="caution"
           onClick={moderate("warn")}
         />
         <MenuItem
           label="Ban / Timeout"
-          danger
+          tone="negative"
           icon={<Ban />}
           onClick={moderate("ban")}
         />

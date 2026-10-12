@@ -9,10 +9,12 @@ type Props = {
   shortcut?: string;
   submenu?: boolean;
   active?: boolean;
-  danger?: boolean;
+  tone?: "negative" | "caution";
   disabled?: boolean;
   onClick: () => void;
 };
+
+const TONES = { negative: "text-negative", caution: "text-caution" };
 
 export default function MenuItem(props: Props) {
   return (
@@ -24,11 +26,11 @@ export default function MenuItem(props: Props) {
         props.disabled
           ? "opacity-40 cursor-default"
           : "cursor-pointer hover:bg-raised"
-      } ${props.danger ? "text-negative" : "text-ink"}`}
+      } ${props.tone ? TONES[props.tone] : "text-ink"}`}
     >
       <span
         class={`shrink-0 w-4 grid place-items-center [&>svg]:size-4 ${
-          props.danger ? "" : props.active ? "text-positive" : "text-ink-soft"
+          props.tone ? "" : props.active ? "text-positive" : "text-ink-soft"
         }`}
       >
         {props.icon}
