@@ -1,0 +1,22 @@
+name = "deatch-api"
+main = "main.ts"
+compatibility_date = "2026-10-01"
+
+[observability]
+enabled = true
+
+[vars]
+TWITCH_CLIENT_ID = "9zz5nm0knwecx9icd0xbkmkpnrdhjr"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "deatch"
+database_id = "replace-with-output-of-wrangler-d1-create"
+migrations_dir = "drizzle"
+
+[durable_objects]
+bindings = [{ name = "HUB", class_name = "Hub" }]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Hub"]

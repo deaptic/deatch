@@ -1,5 +1,6 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import * as diagnostics from "../../lib/services/diagnostics.ts";
+import { type ApiState, apiState } from "../../lib/stores/deatch.ts";
 import type { Diagnostics as Sample } from "../../lib/types/diagnostics.ts";
 import { formatBytes, formatPercent } from "../../lib/format/size.ts";
 import Loading from "../ui/Loading.tsx";
@@ -12,6 +13,15 @@ type Props = {
   x: number;
   y: number;
   onClose: () => void;
+};
+
+const API: Record<
+  ApiState,
+  { label: string; tone: "default" | "caution" | "negative" }
+> = {
+  unknown: { label: "Not signed in", tone: "caution" },
+  connected: { label: "Connected", tone: "default" },
+  disconnected: { label: "Unreachable", tone: "negative" },
 };
 
 export default function Diagnostics(props: Props) {
@@ -51,6 +61,14 @@ export default function Diagnostics(props: Props) {
                 <MetricRow
                   label="WebView CPU"
                   value={formatPercent(s().app.webview.cpuPercent ?? 0)}
+                />
+              </DiagnosticsSection>
+
+              <DiagnosticsSection title="Deatch API">
+                <MetricRow
+                  label="Connection"
+                  value={API[apiState()].label}
+                  tone={API[apiState()].tone}
                 />
               </DiagnosticsSection>
 

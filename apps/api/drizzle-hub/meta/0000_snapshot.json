@@ -1,0 +1,50 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "d651493a-07a7-4e88-a28f-e8f225b28817",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "watch": {
+      "name": "watch",
+      "columns": {
+        "socketId": {
+          "name": "socketId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "twitchId": {
+          "name": "twitchId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "watch_socketId_twitchId_pk": {
+          "columns": [
+            "socketId",
+            "twitchId"
+          ],
+          "name": "watch_socketId_twitchId_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

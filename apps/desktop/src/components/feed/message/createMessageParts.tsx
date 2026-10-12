@@ -11,6 +11,7 @@ import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import { setAutomodHoldStatus } from "../../../lib/stores/feeds.ts";
+import { presenceOf } from "../../../lib/stores/deatch.ts";
 import { manageHeldAutomodMessage } from "../../../lib/api/twitch/moderation.ts";
 import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
 import DisplayName from "../../ui/DisplayName.tsx";
@@ -251,6 +252,7 @@ export function createMessageParts(
       userId={item.chatter_user_id}
       color={item.color}
       active={active()}
+      presence={presenceOf(item.chatter_user_id)}
       onClick={props.onShowUserCard &&
         ((x, y) => props.onShowUserCard!(x, y, chatter()))}
       onContextMenu={props.onUserContextMenu &&

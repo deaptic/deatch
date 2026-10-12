@@ -1,9 +1,10 @@
 {
-  "workspace": ["./apps/desktop"],
+  "workspace": ["./apps/desktop", "./apps/api"],
   "nodeModulesDir": "manual",
   "tasks": {
     "dev:desktop": "deno task --cwd apps/desktop dev",
     "build:desktop": "deno task --cwd apps/desktop build",
+    "dev:api": "deno task --cwd apps/api dev",
     "release:desktop": "deno run -A scripts/release-desktop.ts",
     "release:extension": "deno run -A scripts/release-extension.ts"
   },

@@ -258,6 +258,11 @@
   object-fit: contain;
 }
 
+@utility feed-presence {
+  width: calc(var(--chat-tile) * 0.25);
+  height: calc(var(--chat-tile) * 0.25);
+}
+
 @utility feed-icon {
   & > svg {
     width: 1.1em;

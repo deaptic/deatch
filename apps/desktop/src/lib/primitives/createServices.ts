@@ -8,6 +8,7 @@ import * as shortcuts from "../services/shortcuts.ts";
 import * as updater from "../services/updater.ts";
 import * as inbox from "../services/inbox.ts";
 import * as clock from "../services/clock.ts";
+import * as deatch from "../services/deatch.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -21,6 +22,7 @@ export function createServices(): void {
       updater.start(),
       inbox.start(),
       clock.start(),
+      deatch.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

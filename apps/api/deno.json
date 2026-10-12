@@ -1,0 +1,23 @@
+{
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1"
+  },
+  "compilerOptions": {
+    "types": [
+      "npm:@cloudflare/workers-types"
+    ]
+  },
+  "tasks": {
+    "dev": "deno run -A npm:wrangler dev --port 8000",
+    "deploy": "deno run -A npm:wrangler deploy",
+    "db:generate": "deno run -A npm:drizzle-kit generate && deno run -A npm:drizzle-kit generate --config drizzle.hub.config.ts",
+    "db:migrate": "deno run -A npm:wrangler d1 migrations apply deatch --local",
+    "db:migrate:remote": "deno run -A npm:wrangler d1 migrations apply deatch --remote",
+    "test": "deno test"
+  },
+  "exclude": [
+    ".wrangler",
+    "drizzle",
+    "drizzle-hub"
+  ]
+}

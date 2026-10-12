@@ -6,6 +6,7 @@ import * as eventsub from "./eventsub.ts";
 import * as moderation from "./moderation.ts";
 import * as notifications from "./notifications.ts";
 import * as link from "./link.ts";
+import * as deatch from "./deatch.ts";
 
 export function start(): () => void {
   const stops = [
@@ -17,6 +18,7 @@ export function start(): () => void {
     moderation.start(),
     notifications.start(),
     link.start(),
+    deatch.start(),
   ];
   return () => {
     for (const stop of stops) stop();

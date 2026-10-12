@@ -5,6 +5,9 @@ import * as __TAURI_EVENT from "@tauri-apps/api/event";
 
 /** Commands */
 export const commands = {
+	deatchConnect: () => __TAURI_INVOKE<void>("deatch_connect"),
+	deatchDisconnect: () => __TAURI_INVOKE<void>("deatch_disconnect"),
+	deatchWatch: (params: WatchParams) => __TAURI_INVOKE<void>("deatch_watch", { params }),
 	discordConnect: () => __TAURI_INVOKE<null>("discord_connect"),
 	discordDisconnect: () => __TAURI_INVOKE<null>("discord_disconnect"),
 	discordSetActivity: (params: ActivityInput) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
@@ -82,6 +85,8 @@ export const events = {
 	authFailed: makeEvent<AuthFailed>("auth-failed"),
 	authSucceeded: makeEvent<AuthSucceeded>("auth-succeeded"),
 	chatStatus: makeEvent<ChatStatus>("chat-status"),
+	deatchConnection: makeEvent<DeatchConnection>("deatch-connection"),
+	deatchPresence: makeEvent<DeatchPresence>("deatch-presence"),
 	emoteSetUpdated: makeEvent<EmoteSetUpdated>("emote-set-updated"),
 	eventSubConnection: makeEvent<EventSubConnection>("event-sub-connection"),
 	eventSubRecovered: makeEvent<EventSubRecovered>("event-sub-recovered"),
@@ -268,6 +273,14 @@ export type DcfAuthResponse = {
 	verification_uri: string,
 };
 
+export type DeatchConnection = {
+	connected: boolean,
+};
+
+export type DeatchPresence = {
+	entries: PresenceEntry[],
+};
+
 export type DeleteChatMessagesParams = {
 	broadcasterId: UserId,
 	messageId?: MessageId | null,
@@ -407,6 +420,13 @@ export type PaginatedResponse<T> = {
 export type Pagination = {
 	cursor: string | null,
 };
+
+export type PresenceEntry = {
+	twitchId: string,
+	state: PresenceState,
+};
+
+export type PresenceState = "online" | "offline" | "unknown";
 
 export type ProcessStats = {
 	memoryBytes: number,
@@ -560,6 +580,10 @@ export type WarnUserParams = {
 	broadcasterId: UserId,
 	userId: UserId,
 	reason: string,
+};
+
+export type WatchParams = {
+	twitchIds: string[],
 };
 
 /* Tauri Specta runtime */

@@ -4,6 +4,7 @@ import { setGlobalEmotes } from "../stores/emotes.ts";
 import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
 import * as session from "../services/session.ts";
+import * as deatch from "../services/deatch.ts";
 import { showExplore } from "../stores/view.ts";
 
 let userScopedFetched = false;
@@ -12,10 +13,12 @@ function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
   emotes.loadGlobal().then(setGlobalEmotes).catch(() => {});
+  deatch.connect();
 }
 
 function resetUserScopedCaches() {
   userScopedFetched = false;
+  deatch.disconnect();
   setModeratedChannels([]);
   badges.resetChannelCache();
   emotes.resetChannelThirdParty();

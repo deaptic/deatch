@@ -39,6 +39,7 @@ import {
 } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
 import { user } from "../../lib/stores/users.ts";
+import { apiState } from "../../lib/stores/deatch.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
 import RailRow, { type SubTone } from "./RailRow.tsx";
@@ -524,7 +525,7 @@ export default function Rail(props: Props) {
                 alt={u().displayName}
                 size={40}
                 square
-                presence="online"
+                presence={apiState() === "connected" ? "online" : "offline"}
               >
                 <Show when={ownTab()}>
                   {(tab) => (

@@ -72,7 +72,11 @@ macro_rules! from_display {
 
 type OAuthError = CompatError<reqwest::Error>;
 
-from_display!(Http: reqwest::Error);
+from_display!(
+    Http: reqwest::Error,
+    tokio_tungstenite::tungstenite::Error,
+    tokio_tungstenite::tungstenite::http::header::InvalidHeaderValue,
+);
 from_display!(
     Auth: RefreshTokenError<OAuthError>,
     RetrieveTokenError<OAuthError>,

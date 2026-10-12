@@ -39,6 +39,11 @@ jobs:
       - name: vite build
         run: deno task --cwd apps/desktop vite:build
 
+      - name: api check
+        run: deno check apps/api/
+      - name: api test
+        run: deno task --cwd apps/api test
+
       - name: cargo fmt
         working-directory: apps/desktop/src-tauri
         run: cargo fmt --check

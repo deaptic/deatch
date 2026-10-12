@@ -136,6 +136,11 @@ with its text; window controls follow Windows at 12. Icons inherit text colour.
   request a second and twenty a minute, into the one users table that every Get
   Users call updates; a user counts as known for a day after Twitch returned
   them, and live stream data refreshes names without a request.
+- **Chatters who use Deatch** get a presence dot on their tile, placed like the
+  live dot on an `Avatar` and sized with the tile: `positive` "Online" while
+  their app is running, `ink-faint` "Offline" otherwise. The user card shows the
+  same dot on its avatar. The default layout has no tile, so there the card is
+  where it shows. Chatters who never used Deatch get nothing.
 - **Deleted messages stay quiet:** muted text and "(deleted)", nothing added
   that would paint the feed or move it during a mass cleanup.
 - **Time:** clock time today, "Yesterday at" then the date for older; hovering

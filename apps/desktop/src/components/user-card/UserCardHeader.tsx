@@ -8,6 +8,7 @@ import {
   user as currentUser,
 } from "../../lib/stores/users.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { presenceOf } from "../../lib/stores/deatch.ts";
 import { Pin } from "lucide-solid";
 import Avatar from "../ui/Avatar.tsx";
 import IconButton from "../ui/IconButton.tsx";
@@ -66,6 +67,7 @@ export default function UserCardHeader(props: Props) {
           alt={user()?.displayName ?? ""}
           size={80}
           square
+          presence={presenceOf(props.chatterId)}
         />
       </button>
       <div class="flex-1 min-w-0 h-20 flex flex-col justify-center gap-2">

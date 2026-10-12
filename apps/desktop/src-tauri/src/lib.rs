@@ -1,4 +1,5 @@
 mod clock;
+mod deatch;
 mod diagnostics;
 mod discord;
 mod emit;
@@ -29,6 +30,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::eventsub::EventKind::event_names(),
         )
         .events(tauri_specta::collect_events![
+            deatch::events::DeatchConnection,
+            deatch::events::DeatchPresence,
             twitch::auth::events::AuthSucceeded,
             twitch::auth::events::AuthFailed,
             twitch::auth::events::SessionEnded,
@@ -41,6 +44,9 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             link::events::LinkDisconnected,
         ])
         .commands(tauri_specta::collect_commands![
+            deatch::commands::deatch_connect,
+            deatch::commands::deatch_disconnect,
+            deatch::commands::deatch_watch,
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
@@ -147,6 +153,7 @@ pub fn run() {
             let http = http::client()?;
             let twitch = twitch::Twitch::new(http.clone(), app.handle().clone());
             twitch::eventsub::spawn(app.handle().clone(), twitch.clone());
+            deatch::hub::spawn(app.handle().clone(), twitch.clone());
             app.manage(twitch);
             app.manage(http);
 

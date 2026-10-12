@@ -2,10 +2,11 @@
 
 A native Twitch chat client for Windows, and the pieces that work with it.
 
-| Package | What it is |
-| --- | --- |
-| [`apps/desktop`](apps/desktop) | The desktop app — Tauri 2 + Solid.js. Installers on [Releases](https://github.com/deaptic/deatch/releases/latest). |
-| [`apps/extension`](apps/extension) | Deatch Link — browser extension that lets the app follow the Twitch tab you have open. |
+| Package                            | What it is                                                                                                         |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [`apps/desktop`](apps/desktop)     | The desktop app — Tauri 2 + Solid.js. Installers on [Releases](https://github.com/deaptic/deatch/releases/latest). |
+| [`apps/api`](apps/api)             | Backend API — Hono on Cloudflare Workers, D1, Durable Objects. Accounts and presence for the app.                  |
+| [`apps/extension`](apps/extension) | Deatch Link — browser extension that lets the app follow the Twitch tab you have open.                             |
 
 ## Development
 
@@ -21,8 +22,8 @@ deno task release:extension  # bump and build store zips for the extension
 
 Each app is self-contained: `cd` into it and run its own tasks.
 
-Each package's README covers its own details. `CLAUDE.md` describes how the
-code is structured.
+Each package's README covers its own details. `CLAUDE.md` describes how the code
+is structured.
 
 ## License
 
