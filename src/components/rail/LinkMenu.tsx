@@ -1,5 +1,13 @@
-import { AudioLines, Puzzle, Volume2, VolumeX, X } from "lucide-solid";
+import {
+  AudioLines,
+  Puzzle,
+  RefreshCw,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-solid";
 import { Show } from "solid-js";
+import { linkSynced } from "../../lib/stores/view.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -17,6 +25,7 @@ type Props = {
   y: number;
   opener?: () => HTMLElement | undefined;
   onClose: () => void;
+  onToggleSync: () => void;
 };
 
 export default function LinkMenu(props: Props) {
@@ -48,6 +57,13 @@ export default function LinkMenu(props: Props) {
           </>
         }
       >
+        <MenuItem
+          label="Sync"
+          icon={<RefreshCw />}
+          hint={linkSynced() ? "On" : "Off"}
+          disabled={!hasTabs()}
+          onClick={run(props.onToggleSync)}
+        />
         <MenuItem
           label="Audio link"
           icon={<AudioLines />}

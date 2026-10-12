@@ -552,6 +552,7 @@ export default function Rail(props: Props) {
             y={m().y}
             opener={() => linkBtn}
             onClose={() => setLinkMenu(null)}
+            onToggleSync={props.onToggleLink}
           />
         )}
       </Show>
