@@ -77,7 +77,6 @@ export default function AppLayout(props: AppLayoutProps) {
                   <ChatPanes
                     userLogin={u().login}
                     onJumpToMessage={c.jumpToMessage}
-                    onSelectChannel={c.selectChannel}
                   />
                 </Show>
                 <Readout />

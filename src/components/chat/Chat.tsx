@@ -52,7 +52,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import type { User, UserRef } from "../../lib/types/index.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   broadcasterId: string;
@@ -61,7 +61,6 @@ type Props = {
   userLogin: string;
   isActive: boolean;
   onJumpToMessage: (channelId: string, messageId: string) => void;
-  onSelectChannel: (ch: User) => void;
 };
 
 async function resolveIdentity(
@@ -202,11 +201,6 @@ export default function Chat(props: Props) {
   }
 
   const mentionUser = (login: string) => inputApi?.insert(`@${login}`);
-
-  async function openChat(userId: string) {
-    const [u] = await users.get([userId]).catch(() => []);
-    if (u) props.onSelectChannel(u);
-  }
 
   function bindFeedShortcuts() {
     const withSelected = (fn: (msg: Message) => void) => () => {
@@ -360,7 +354,6 @@ export default function Chat(props: Props) {
             onShowProfile={(x, y, userId) =>
               userCard.open(x, y, { chatterId: userId })}
             onMention={mentionUser}
-            onOpenChat={openChat}
           />
         )}
       </Show>
