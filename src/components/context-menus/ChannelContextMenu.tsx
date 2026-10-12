@@ -75,6 +75,16 @@ export default function ChannelContextMenu(props: Props) {
           />
         }
       >
+        <MenuItem
+          label="Mark as read"
+          icon={<CheckCheck />}
+          disabled={!unread()}
+          onClick={run(() => {
+            markSeen(props.ch.id);
+            markChannelMentionsRead(props.ch.id);
+          })}
+        />
+        <MenuDivider />
         <Show
           when={hasTab()}
           fallback={
@@ -126,16 +136,6 @@ export default function ChannelContextMenu(props: Props) {
               onClick={run(() => unpinChannel(props.ch.id))}
             />
           </Show>
-        </Show>
-        <Show when={unread()}>
-          <MenuItem
-            label="Mark as read"
-            icon={<CheckCheck />}
-            onClick={run(() => {
-              markSeen(props.ch.id);
-              markChannelMentionsRead(props.ch.id);
-            })}
-          />
         </Show>
         <MenuItem
           label="Copy link"
