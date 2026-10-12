@@ -69,7 +69,7 @@ export default function MessageContextMenu(props: Props) {
         <MenuDivider />
         <MenuItem
           label="Delete message"
-          danger
+          tone="negative"
           icon={<Trash2 />}
           onClick={run(() =>
             deleteChatMessages({
