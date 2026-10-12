@@ -4,6 +4,7 @@ type Props = {
   color?: string;
   round?: boolean;
   onClick?: (x: number, y: number) => void;
+  onContextMenu?: (x: number, y: number) => void;
   children: JSX.Element;
 };
 
@@ -18,6 +19,12 @@ export default function FeedTile(props: Props) {
       }`}
       style={props.color ? { "--tile": props.color } : undefined}
       onClick={(e) => props.onClick?.(e.clientX, e.clientY)}
+      onContextMenu={(e) => {
+        if (!props.onContextMenu) return;
+        e.preventDefault();
+        e.stopPropagation();
+        props.onContextMenu(e.clientX, e.clientY);
+      }}
     >
       {props.children}
     </span>

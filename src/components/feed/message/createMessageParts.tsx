@@ -240,18 +240,21 @@ export function createMessageParts(
     </Show>
   );
 
+  const chatter = () => ({
+    id: item.chatter_user_id,
+    login: item.chatter_login,
+    displayName: item.chatter_name,
+  });
+
   const avatar = (active: () => boolean) => (
     <ChatterAvatar
       userId={item.chatter_user_id}
       color={item.color}
       active={active()}
       onClick={props.onShowUserCard &&
-        ((x, y) =>
-          props.onShowUserCard!(x, y, {
-            id: item.chatter_user_id,
-            login: item.chatter_login,
-            displayName: item.chatter_name,
-          }))}
+        ((x, y) => props.onShowUserCard!(x, y, chatter()))}
+      onContextMenu={props.onUserContextMenu &&
+        ((x, y) => props.onUserContextMenu!(x, y, chatter()))}
     />
   );
 
