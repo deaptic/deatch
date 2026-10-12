@@ -7,25 +7,30 @@ import {
   selectedChannel,
   setLinkSynced,
 } from "../stores/view.ts";
-import {
-  linkedChannel,
-  linkMutedByLogin,
-  linkWarmedChannels,
-} from "../stores/link.ts";
-import { linkSetMuted } from "../api/link.ts";
+import { linkedChannel, linkWarmedChannels } from "../stores/link.ts";
+import { linkAudioLink } from "../stores/preferences.ts";
+import * as link from "../services/link.ts";
 
 export type LinkControls = {
   cycleChannel(direction: 1 | -1): void;
   toggleLink(): void;
-  muteOtherLinked(): void;
-  toggleMuteAllLinked(): void;
-  toggleLinkMute(): void;
 };
 
 export function createLinkControls(nav: ChannelNavigation): LinkControls {
   createEffect(
     on(linkedChannel, (wc) => {
       if (linkSynced() && wc) nav.selectChannel(wc);
+    }, { defer: true }),
+  );
+
+  // With audio linked while synced, only the shown tab plays.
+  createEffect(
+    on([selectedChannel, linkSynced, linkAudioLink], () => {
+      if (!linkSynced() || !linkAudioLink()) return;
+      const sel = selectedChannel();
+      if (sel && linkWarmedChannels().some((c) => c?.id === sel.id)) {
+        link.muteOthers();
+      }
     }, { defer: true }),
   );
 
@@ -42,46 +47,6 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
     nav.selectChannel(list[nextIdx]);
   }
 
-  function muteOtherLinked() {
-    const sel = selectedChannel();
-    const linked = linkWarmedChannels();
-    const focusedLogin = sel && linked.some((c) => c?.id === sel.id)
-      ? sel.login
-      : null;
-    for (const ch of linked) {
-      if (!ch?.login) continue;
-      const shouldBeMuted = ch.login !== focusedLogin;
-      const isMuted = linkMutedByLogin()[ch.login] === true;
-      if (isMuted !== shouldBeMuted) {
-        void linkSetMuted(ch.login, shouldBeMuted);
-      }
-    }
-  }
-
-  function toggleMuteAllLinked() {
-    const linked = linkWarmedChannels();
-    if (linked.length === 0) return;
-    const mutedMap = linkMutedByLogin();
-    const anyUnmuted = linked.some(
-      (ch) => ch?.login && mutedMap[ch.login] !== true,
-    );
-    for (const ch of linked) {
-      if (!ch?.login) continue;
-      const isMuted = mutedMap[ch.login] === true;
-      if (isMuted !== anyUnmuted) void linkSetMuted(ch.login, anyUnmuted);
-    }
-  }
-
-  function toggleLinkMute() {
-    const sel = selectedChannel();
-    const target = sel && linkWarmedChannels().some((c) => c?.id === sel.id)
-      ? sel
-      : null;
-    if (!target?.login) return;
-    const muted = linkMutedByLogin()[target.login] === true;
-    void linkSetMuted(target.login, !muted);
-  }
-
   // Turning on lands on the browser's current tab; turning off stays put.
   function toggleLink() {
     if (linkSynced()) {
@@ -94,11 +59,5 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
     nav.selectChannel(target);
   }
 
-  return {
-    cycleChannel,
-    toggleLink,
-    muteOtherLinked,
-    toggleMuteAllLinked,
-    toggleLinkMute,
-  };
+  return { cycleChannel, toggleLink };
 }

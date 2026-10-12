@@ -78,6 +78,9 @@ export type UserPreferences = {
     uiDensity: UiDensity;
     zoom: number;
   };
+  link: {
+    audioLink: boolean;
+  };
   menu: {
     channels: {
       pinned: string[];
@@ -263,6 +266,12 @@ function load(): UserPreferences {
           stored.appearance?.zoom,
           ZOOM_STOPS,
           DEFAULT_PREFERENCES.appearance.zoom,
+        ),
+      },
+      link: {
+        audioLink: bool(
+          stored.link?.audioLink,
+          DEFAULT_PREFERENCES.link.audioLink,
         ),
       },
       menu: {

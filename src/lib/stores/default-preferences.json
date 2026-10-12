@@ -52,6 +52,9 @@
     "uiDensity": "default",
     "zoom": 100
   },
+  "link": {
+    "audioLink": false
+  },
   "menu": {
     "channels": {
       "pinned": []

@@ -10,6 +10,7 @@ import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   appearanceRailExpanded,
+  linkAudioLink,
   pinChannel,
   pinnedChannels,
   reorderPinnedChannels,
@@ -23,7 +24,7 @@ import {
   linkMutedByLogin,
   linkWarmedChannels,
 } from "../../lib/stores/link.ts";
-import LinkAddonMenu from "./LinkAddonMenu.tsx";
+import LinkMenu from "./LinkMenu.tsx";
 import { linkClose, linkSetMuted } from "../../lib/api/link.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
@@ -106,11 +107,7 @@ export default function Rail(props: Props) {
         sub: "Add the Firefox add-on",
         tone: "soft",
         tile: false,
-        onClick: () => {
-          if (!linkBtn || addonMenu()) return setAddonMenu(null);
-          const rect = linkBtn.getBoundingClientRect();
-          setAddonMenu({ x: rect.right + 8, y: rect.top });
-        },
+        onClick: openLinkMenu,
       };
     }
     if (linkWarmedChannels().length === 0) {
@@ -118,7 +115,7 @@ export default function Rail(props: Props) {
     }
     if (linkSynced()) {
       return {
-        sub: "Synced with browser",
+        sub: linkAudioLink() ? "Synced with audio" : "Synced",
         tone: "positive",
         tile: "positive",
         onClick: props.onToggleLink,
@@ -143,10 +140,16 @@ export default function Rail(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
-  const [addonMenu, setAddonMenu] = createSignal<
+  const [linkMenu, setLinkMenu] = createSignal<
     { x: number; y: number } | null
   >(null);
   let linkBtn: HTMLButtonElement | undefined;
+
+  function openLinkMenu() {
+    if (!linkBtn || linkMenu()) return setLinkMenu(null);
+    const rect = linkBtn.getBoundingClientRect();
+    setLinkMenu({ x: rect.right + 8, y: rect.top });
+  }
 
   createEffect(() => {
     pinnedChannels();
@@ -467,6 +470,7 @@ export default function Rail(props: Props) {
             </p>
           }
           onClick={linkStatus().onClick}
+          onContextMenu={openLinkMenu}
         >
           <RailTile active={linkStatus().tile}>
             <Eye />
@@ -541,13 +545,13 @@ export default function Rail(props: Props) {
         </Show>
       </div>
 
-      <Show when={addonMenu()}>
+      <Show when={linkMenu()}>
         {(m) => (
-          <LinkAddonMenu
+          <LinkMenu
             x={m().x}
             y={m().y}
             opener={() => linkBtn}
-            onClose={() => setAddonMenu(null)}
+            onClose={() => setLinkMenu(null)}
           />
         )}
       </Show>
