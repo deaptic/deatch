@@ -69,7 +69,6 @@ export const commands = {
 	seventvSubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_subscribe_emote_set", { params }),
 	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_unsubscribe_emote_set", { params }),
 	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentMessage[]>("get_recent_messages", { params }),
-	readKeymap: () => __TAURI_INVOKE<string>("read_keymap"),
 	linkSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("link_set_muted", { params }),
 	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),

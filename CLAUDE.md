@@ -149,7 +149,7 @@ A service is a plain ES module, never a class. The module is the singleton.
 ### Backend layout
 
 `src-tauri/src/` is one folder per feature (`twitch/<resource>/`, `emotes/`,
-`history/`, `link/`, `discord/`, `keymap/`, `notifications/`). Crate-wide
+`history/`, `link/`, `discord/`, `notifications/`). Crate-wide
 pieces sit at the root: `error.rs`, `http.rs`, `emit.rs`, `keyring.rs`,
 `clock.rs`. `lib.rs` only wires the app: plugins, managed state, setup, and the
 tauri-specta command/event lists. The app is Windows-only: no `cfg` branches or

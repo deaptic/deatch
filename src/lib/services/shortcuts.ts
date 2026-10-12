@@ -4,22 +4,18 @@ import {
   compile as compileWhen,
   type Predicate as WhenFn,
 } from "../utils/boolExpr.ts";
-import { readKeymap } from "../api/keymap.ts";
 
 type Handler = () => boolean | void;
 type ActionEntry = { handler: Handler; when?: WhenFn };
-type Overrides = Map<string, string[] | null>;
 
 const CHORD_TIMEOUT_MS = 1000;
-const DEFAULTS = new Map<string, string[]>(
+const keymap = new Map<string, string[]>(
   Object.entries(defaultKeymap as Record<string, string[]>),
 );
 
 const actions = new Map<string, ActionEntry>();
-const overrides: Overrides = new Map();
 const contexts = new Map<string, boolean>();
 const localBindings = new Map<string, Set<ActionEntry>>();
-let keymap = new Map(DEFAULTS);
 let pending: { seq: string; timer: number } | null = null;
 
 export function register(
@@ -92,7 +88,6 @@ export function start(): () => void {
     }
   };
   window.addEventListener("keydown", onKey, true);
-  void loadOverrides();
   return () => {
     window.removeEventListener("keydown", onKey, true);
     clearPending();
@@ -140,37 +135,6 @@ function clearPending(): void {
   pending = null;
 }
 
-function rebuild(): void {
-  keymap = new Map(DEFAULTS);
-  for (const [k, v] of overrides) {
-    if (v === null) keymap.delete(k);
-    else keymap.set(k, v);
-  }
-}
-
-async function loadOverrides(): Promise<void> {
-  try {
-    const raw = await readKeymap({ silent: true });
-    if (!raw) return;
-    const parsed = JSON.parse(raw) as Record<string, string[] | null>;
-    overrides.clear();
-    for (const [combo, bound] of Object.entries(parsed)) {
-      overrides.set(combo, normalizeOverride(bound));
-    }
-    rebuild();
-  } catch (e) {
-    console.warn("keymap.json unreadable, using default shortcuts", e);
-  }
-}
-
 function makeEntry(handler: Handler, when?: string): ActionEntry {
   return { handler, when: when ? compileWhen(when) : undefined };
-}
-
-// Saved keymaps may still name the Link actions by their old prefix.
-function normalizeOverride(
-  bound: string[] | null | undefined,
-): string[] | null {
-  if (!bound || bound.length === 0) return null;
-  return bound.map((name) => name.replace(/^watch::/, "link::"));
 }
