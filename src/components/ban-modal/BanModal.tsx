@@ -1,14 +1,14 @@
 import type { BannedUser } from "../../lib/types/index.ts";
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import { banUser, getBan, unbanUser } from "../../lib/api/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
-import Field from "../ui/Field.tsx";
+import Textarea from "../ui/Textarea.tsx";
+import BanChoiceStrip, {
+  type BanChoice,
+  secondsFor,
+} from "./BanChoiceStrip.tsx";
 import { user } from "../../lib/stores/users.ts";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { TIMEOUT_PRESETS } from "../../lib/constants/timeouts.ts";
-
-type BanInfo = BannedUser;
 
 type Props = {
   userId: string;
@@ -16,6 +16,8 @@ type Props = {
   broadcasterId: string;
   onClose: () => void;
 };
+
+const DEFAULT_CHOICE: BanChoice = "10m";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-GB", {
@@ -28,127 +30,75 @@ function formatDate(iso: string) {
 }
 
 export default function BanModal(props: Props) {
+  const [choice, setChoice] = createSignal<BanChoice>(DEFAULT_CHOICE);
   const [reason, setReason] = createSignal("");
-  const [pending, setPending] = createSignal<number | "ban" | "unban" | null>(
-    null,
-  );
+  const [pending, setPending] = createSignal(false);
   // undefined = loading, null = not banned, object = banned with details.
-  const [banInfo, setBanInfo] = createSignal<BanInfo | null | undefined>(
+  const [banInfo, setBanInfo] = createSignal<BannedUser | null | undefined>(
     undefined,
   );
 
   const isBroadcaster = () => user()?.id === props.broadcasterId;
+  const confirmLabel = () =>
+    choice() === "unban"
+      ? "Unban"
+      : choice() === "ban"
+      ? "Ban"
+      : `Time out ${choice()}`;
 
-  async function run(
-    kind: number | "ban" | "unban",
-    action: () => Promise<unknown>,
-  ) {
-    if (pending() !== null) return;
-    setPending(kind);
+  async function confirm() {
+    if (pending()) return;
+    setPending(true);
     try {
-      await action();
+      const target = {
+        broadcasterId: props.broadcasterId,
+        userId: props.userId,
+      };
+      await (choice() === "unban" ? unbanUser(target) : banUser({
+        ...target,
+        duration: secondsFor(choice()),
+        reason: reason(),
+      }));
       props.onClose();
     } catch {
       // invokeCommand already toasted; the modal stays open to retry.
     } finally {
-      setPending(null);
+      setPending(false);
     }
   }
 
-  const timeout = (seconds: number) =>
-    run(seconds, () =>
-      banUser({
-        broadcasterId: props.broadcasterId,
-        userId: props.userId,
-        duration: seconds,
-        reason: reason(),
-      }));
-
-  const ban = () =>
-    run("ban", () =>
-      banUser({
-        broadcasterId: props.broadcasterId,
-        userId: props.userId,
-        duration: null,
-        reason: reason(),
-      }));
-
-  const unban = () =>
-    run("unban", () =>
-      unbanUser({
-        broadcasterId: props.broadcasterId,
-        userId: props.userId,
-      }));
-
   onMount(() => {
-    shortcuts.setContext("banModalOpen", true);
-    const unbindEsc = shortcuts.registerLocal(
-      "escape",
-      () => {
-        props.onClose();
-      },
-      "banModalOpen",
-    );
-    onCleanup(() => {
-      unbindEsc();
-      shortcuts.setContext("banModalOpen", false);
-    });
-
-    if (isBroadcaster()) {
-      getBan(
-        { broadcasterId: props.broadcasterId, userId: props.userId },
-        { silent: true },
-      )
-        .then(setBanInfo)
-        .catch(() => setBanInfo(null));
-    } else {
+    if (!isBroadcaster()) {
       // Twitch's banned-users endpoint is broadcaster-only. Mods can still
-      // ban/unban — they just have to pick the action without a status hint.
+      // unban — they just do it without a status hint.
       setBanInfo(null);
+      return;
     }
+    getBan(
+      { broadcasterId: props.broadcasterId, userId: props.userId },
+      { silent: true },
+    )
+      .then((info) => {
+        setBanInfo(info);
+        if (info) setChoice("unban");
+      })
+      .catch(() => setBanInfo(null));
   });
 
   return (
     <Dialog
       title={`Ban or time out ${props.userName}`}
-      description="Pick a timeout, ban outright, or lift an existing ban."
       onClose={props.onClose}
       actions={
         <>
           <Button variant="neutral" onClick={props.onClose}>Cancel</Button>
-          <Show
-            when={isBroadcaster()}
-            fallback={
-              <>
-                <Button
-                  variant="neutral"
-                  onClick={unban}
-                  loading={pending() === "unban"}
-                  disabled={pending() !== null}
-                >
-                  Unban
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={ban}
-                  loading={pending() === "ban"}
-                  disabled={pending() !== null}
-                >
-                  Ban
-                </Button>
-              </>
-            }
+          <Button
+            variant={choice() === "unban" ? "accent" : "danger"}
+            onClick={confirm}
+            loading={pending() || banInfo() === undefined}
           >
-            <Button
-              variant={banInfo() ? "neutral" : "danger"}
-              onClick={banInfo() ? unban : ban}
-              loading={pending() === "ban" || pending() === "unban" ||
-                banInfo() === undefined}
-              disabled={pending() !== null}
-            >
-              {banInfo() ? "Unban" : "Ban"}
-            </Button>
-          </Show>
+            {confirmLabel()}
+          </Button>
         </>
       }
     >
@@ -171,31 +121,21 @@ export default function BanModal(props: Props) {
         )}
       </Show>
 
-      <Field
+      <BanChoiceStrip value={choice()} onChange={setChoice} />
+
+      <Textarea
         placeholder="Reason (optional)"
         value={reason()}
+        disabled={choice() === "unban"}
         onInput={(e) => setReason(e.currentTarget.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            void confirm();
+          }
+        }}
         autofocus
       />
-
-      <div class="flex flex-col gap-2">
-        <span class="text-small text-ink-soft">Time out for</span>
-        <div class="grid grid-cols-3 gap-1.5">
-          <For each={TIMEOUT_PRESETS}>
-            {(d) => (
-              <Button
-                variant="neutral"
-                size="sm"
-                onClick={() => timeout(d.seconds)}
-                loading={pending() === d.seconds}
-                disabled={pending() !== null}
-              >
-                {d.label}
-              </Button>
-            )}
-          </For>
-        </div>
-      </div>
     </Dialog>
   );
 }

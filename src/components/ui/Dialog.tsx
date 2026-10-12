@@ -1,6 +1,7 @@
-import { type JSX, Show } from "solid-js";
+import { type JSX, onCleanup, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 
 type Props = {
   title: string;
@@ -12,6 +13,7 @@ type Props = {
 
 export default function Dialog(props: Props) {
   captureFocusForRestore();
+  onCleanup(shortcuts.registerLocal("escape", () => props.onClose()));
   return (
     <Portal>
       <div
