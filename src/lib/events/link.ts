@@ -27,19 +27,10 @@ function scheduleRetry() {
   retryDelay = Math.min(retryDelay * 2, 15000);
 }
 
+// The tab list lands before `current` so a new tab counts as linked by the
+// time the app follows it.
 async function drainPending() {
   if (!linkConnected()) return;
-
-  if (pendingCurrent) {
-    const slug = pendingCurrent;
-    try {
-      const [ch] = await users.fetch({ logins: [slug] }, { silent: true });
-      // An unknown login (banned, renamed) resolves to nothing; retrying
-      // would never change that.
-      if (pendingCurrent === slug) pendingCurrent = null;
-      if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
-    } catch {}
-  }
 
   if (pendingFetch.size > 0) {
     const toFetch = Array.from(pendingFetch);
@@ -52,6 +43,17 @@ async function drainPending() {
         ...current,
         ...fresh.filter((u) => !known.has(u.login)),
       ]);
+    } catch {}
+  }
+
+  if (pendingCurrent) {
+    const slug = pendingCurrent;
+    try {
+      const [ch] = await users.fetch({ logins: [slug] }, { silent: true });
+      // An unknown login (banned, renamed) resolves to nothing; retrying
+      // would never change that.
+      if (pendingCurrent === slug) pendingCurrent = null;
+      if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
     } catch {}
   }
 
