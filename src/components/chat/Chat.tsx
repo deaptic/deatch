@@ -339,6 +339,8 @@ export default function Chat(props: Props) {
             onClose={messageMenu.close}
             onReply={startReply}
             onCopypasta={copypasta}
+            onJumpToMessage={(messageId) =>
+              props.onJumpToMessage(props.broadcasterId, messageId)}
           />
         )}
       </Show>
