@@ -5,7 +5,7 @@ import * as chatSettings from "./chatSettings.ts";
 import * as eventsub from "./eventsub.ts";
 import * as moderation from "./moderation.ts";
 import * as notifications from "./notifications.ts";
-import * as watch from "./watch.ts";
+import * as link from "./link.ts";
 
 export function start(): () => void {
   const stops = [
@@ -16,7 +16,7 @@ export function start(): () => void {
     eventsub.start(),
     moderation.start(),
     notifications.start(),
-    watch.start(),
+    link.start(),
   ];
   return () => {
     for (const stop of stops) stop();

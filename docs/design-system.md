@@ -154,7 +154,7 @@ when an overlay closes.
 Sentence case. Buttons say what happens ("Pin channel", never "OK"), and the
 result keeps the word ("Pinned"). Errors are direct and say what to do, without
 apology. Empty states invite in one line. Fixed vocabulary: channel, chatter,
-pin, live, Watch, Inbox, Explore, AutoMod, raid, bits, shoutout.
+pin, live, Link, Inbox, Explore, AutoMod, raid, bits, shoutout.
 
 ## Accessibility
 

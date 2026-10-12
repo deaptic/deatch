@@ -103,7 +103,7 @@ step 1 above covers Chromium too.
 1. `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick
    `D:\deatch\extension`.
 2. Confirm the id matches `CHROME_EXTENSION_ID` in
-   `src-tauri/src/watch/bridge.rs`. Thanks to the manifest `key`, unpacked and
+   `src-tauri/src/link/bridge.rs`. Thanks to the manifest `key`, unpacked and
    store installs share it.
 3. **Service worker** link on the card opens the background console.
 

@@ -19,7 +19,7 @@ moderate without a stack of open tabs.
 - **Chat.** Replies, reply-by-`Tab` to recent mentions, username and emote
   completion, message history recall, keyboard message selection, clip and
   marker creation, raids and shoutouts.
-- **Watch.** Pair with the
+- **Link.** Pair with the
   [Deatch Link](https://github.com/Deaptic/deatch/tree/main/extension) Firefox
   extension and the app follows the Twitch tab you have open, with per-tab mute
   from inside Deatch.

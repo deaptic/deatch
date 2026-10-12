@@ -1,4 +1,4 @@
-use super::events::{WatchChannel, WatchDisconnected, WatchState};
+use super::events::{LinkChannel, LinkDisconnected, LinkState};
 use crate::emit::emit;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -20,7 +20,7 @@ pub enum HostCommand {
 #[derive(Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 enum HostMessage {
-    State(WatchState),
+    State(LinkState),
 }
 
 pub fn connect_to_gui() -> std::io::Result<interprocess::local_socket::Stream> {
@@ -35,7 +35,7 @@ type HostWriter = tokio::io::WriteHalf<interprocess::local_socket::tokio::Stream
 /// browser that spoke last decides `current`.
 struct Host {
     writer: HostWriter,
-    state: WatchState,
+    state: LinkState,
     reported_at: u64,
 }
 
@@ -65,7 +65,7 @@ pub async fn send_to_host(command: &HostCommand) -> std::io::Result<()> {
 }
 
 /// A channel open in several browsers is muted only when every tab is.
-fn merge<'a>(states: impl Iterator<Item = (u64, &'a WatchState)>) -> WatchState {
+fn merge<'a>(states: impl Iterator<Item = (u64, &'a LinkState)>) -> LinkState {
     let mut channels: BTreeMap<&str, bool> = BTreeMap::new();
     let mut current: Option<(u64, &str)> = None;
     for (reported_at, state) in states {
@@ -81,10 +81,10 @@ fn merge<'a>(states: impl Iterator<Item = (u64, &'a WatchState)>) -> WatchState 
             }
         }
     }
-    WatchState {
+    LinkState {
         channels: channels
             .into_iter()
-            .map(|(login, muted)| WatchChannel {
+            .map(|(login, muted)| LinkChannel {
                 login: login.to_string(),
                 muted,
             })
@@ -95,7 +95,7 @@ fn merge<'a>(states: impl Iterator<Item = (u64, &'a WatchState)>) -> WatchState 
 
 fn emit_merged(app: &tauri::AppHandle, hosts: &BTreeMap<u64, Host>) {
     if hosts.is_empty() {
-        emit(app, WatchDisconnected);
+        emit(app, LinkDisconnected);
     } else {
         emit(
             app,
@@ -142,7 +142,7 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
         id,
         Host {
             writer,
-            state: WatchState {
+            state: LinkState {
                 channels: Vec::new(),
                 current: None,
             },
@@ -172,14 +172,14 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
 
 #[cfg(test)]
 mod tests {
-    use super::{merge, HostCommand, WatchChannel, WatchState};
+    use super::{merge, HostCommand, LinkChannel, LinkState};
     use serde_json::json;
 
-    fn state(channels: &[(&str, bool)], current: Option<&str>) -> WatchState {
-        WatchState {
+    fn state(channels: &[(&str, bool)], current: Option<&str>) -> LinkState {
+        LinkState {
             channels: channels
                 .iter()
-                .map(|(login, muted)| WatchChannel {
+                .map(|(login, muted)| LinkChannel {
                     login: login.to_string(),
                     muted: *muted,
                 })
@@ -209,8 +209,8 @@ mod tests {
     #[test]
     fn merge_falls_back_to_any_browser_with_a_current_channel() {
         let idle = state(&[("xqc", false)], None);
-        let watching = state(&[("forsen", false)], Some("forsen"));
-        let merged = merge([(5, &idle), (1, &watching)].into_iter());
+        let linking = state(&[("forsen", false)], Some("forsen"));
+        let merged = merge([(5, &idle), (1, &linking)].into_iter());
         assert_eq!(merged.current.as_deref(), Some("forsen"));
     }
 

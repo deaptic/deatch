@@ -8,11 +8,11 @@ mod history;
 mod http;
 mod keymap;
 mod keyring;
+mod link;
 mod notifications;
 mod twitch;
-mod watch;
 
-pub use watch::host as browser_host;
+pub use link::host as browser_host;
 
 use tauri::Manager;
 
@@ -38,8 +38,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::eventsub::events::ChatStatus,
             twitch::moderation::events::ModeratedChannelsChanged,
             emotes::events::EmoteSetUpdated,
-            watch::events::WatchState,
-            watch::events::WatchDisconnected,
+            link::events::LinkState,
+            link::events::LinkDisconnected,
         ])
         .commands(tauri_specta::collect_commands![
             discord::commands::discord_connect,
@@ -94,10 +94,10 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             emotes::commands::seventv_unsubscribe_emote_set,
             history::commands::get_recent_messages,
             keymap::commands::read_keymap,
-            watch::commands::watch_set_muted,
-            watch::commands::watch_focus,
-            watch::commands::watch_close,
-            watch::commands::watch_request_state,
+            link::commands::link_set_muted,
+            link::commands::link_focus,
+            link::commands::link_close,
+            link::commands::link_request_state,
             notifications::commands::set_mentions_badge,
             diagnostics::commands::get_app_stats,
         ])
@@ -156,11 +156,11 @@ pub fn run() {
             // host: Firefox would keep spawning target/debug/deatch.exe and
             // hold the file lock cargo needs to relink.
             if !cfg!(debug_assertions) {
-                if let Err(e) = watch::bridge::register() {
+                if let Err(e) = link::bridge::register() {
                     log::warn!("browser bridge registration failed: {e}");
                 }
             }
-            watch::ipc::start_server(app.handle().clone());
+            link::ipc::start_server(app.handle().clone());
             emotes::seventv_events::spawn(app.handle().clone());
 
             if let Some(window) = app.get_webview_window("main") {

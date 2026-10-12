@@ -70,10 +70,10 @@ export const commands = {
 	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_unsubscribe_emote_set", { params }),
 	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentMessage[]>("get_recent_messages", { params }),
 	readKeymap: () => __TAURI_INVOKE<string>("read_keymap"),
-	watchSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("watch_set_muted", { params }),
-	watchFocus: (params: WatchChannelParams) => __TAURI_INVOKE<null>("watch_focus", { params }),
-	watchClose: (params: WatchChannelParams) => __TAURI_INVOKE<null>("watch_close", { params }),
-	watchRequestState: () => __TAURI_INVOKE<null>("watch_request_state"),
+	linkSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("link_set_muted", { params }),
+	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
+	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
+	linkRequestState: () => __TAURI_INVOKE<null>("link_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
 	getAppStats: () => __TAURI_INVOKE<AppStats>("get_app_stats"),
 };
@@ -86,10 +86,10 @@ export const events = {
 	emoteSetUpdated: makeEvent<EmoteSetUpdated>("emote-set-updated"),
 	eventSubConnection: makeEvent<EventSubConnection>("event-sub-connection"),
 	eventSubRecovered: makeEvent<EventSubRecovered>("event-sub-recovered"),
+	linkDisconnected: makeEvent<LinkDisconnected>("link-disconnected"),
+	linkState: makeEvent<LinkState>("link-state"),
 	moderatedChannelsChanged: makeEvent<ModeratedChannelsChanged>("moderated-channels-changed"),
 	sessionEnded: makeEvent<SessionEnded>("session-ended"),
-	watchDisconnected: makeEvent<WatchDisconnected>("watch-disconnected"),
-	watchState: makeEvent<WatchState>("watch-state"),
 };
 
 /* Constants */
@@ -358,6 +358,22 @@ export type GetUsersParams = {
 	logins?: string[],
 };
 
+export type LinkChannel = {
+	login: string,
+	muted?: boolean,
+};
+
+export type LinkChannelParams = {
+	channel: string,
+};
+
+export type LinkDisconnected = null;
+
+export type LinkState = {
+	channels: LinkChannel[],
+	current: string | null,
+};
+
 export type ManageHeldAutomodMessageParams = {
 	msgId: MessageId,
 	action: AutomodAction,
@@ -545,22 +561,6 @@ export type WarnUserParams = {
 	broadcasterId: UserId,
 	userId: UserId,
 	reason: string,
-};
-
-export type WatchChannel = {
-	login: string,
-	muted?: boolean,
-};
-
-export type WatchChannelParams = {
-	channel: string,
-};
-
-export type WatchDisconnected = null;
-
-export type WatchState = {
-	channels: WatchChannel[],
-	current: string | null,
 };
 
 /* Tauri Specta runtime */

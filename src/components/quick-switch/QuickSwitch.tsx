@@ -15,7 +15,7 @@ import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";
-import { watchWarmedChannels } from "../../lib/stores/watch.ts";
+import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
@@ -46,7 +46,7 @@ function candidates(): User[] {
     out.push(u);
   };
   for (const u of channelsInOrder()) push(u);
-  for (const u of watchWarmedChannels()) push(u);
+  for (const u of linkWarmedChannels()) push(u);
   push(user());
   return out;
 }

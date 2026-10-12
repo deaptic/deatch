@@ -17,7 +17,7 @@ import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import { setLiveStreams, userFromRef } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
-import { watchedChannel, watchWarmedChannels } from "../../lib/stores/watch.ts";
+import { linkedChannel, linkWarmedChannels } from "../../lib/stores/link.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import type { Stream, User } from "../../lib/types/index.ts";
 
@@ -41,7 +41,7 @@ export function createRailChannels(
   const liveById = createMemo(() => new Map(live.map((ch) => [ch?.id, ch])));
   const pinnedIdSet = createMemo(() => new Set(pinnedChannels()));
   const warmedIdSet = createMemo(
-    () => new Set(watchWarmedChannels().map((ch) => ch?.id)),
+    () => new Set(linkWarmedChannels().map((ch) => ch?.id)),
   );
   const onlineList = createMemo(() =>
     live.filter((ch) =>
@@ -87,11 +87,11 @@ export function createRailChannels(
       const pinnedSet = new Set(pinnedChannels());
       const extraIds = new Set<string>();
       for (const id of pinnedSet) if (!followedIds.has(id)) extraIds.add(id);
-      const wc = watchedChannel();
+      const wc = linkedChannel();
       if (wc && !followedIds.has(wc?.id) && !pinnedSet.has(wc?.id)) {
         extraIds.add(wc?.id);
       }
-      for (const ch of watchWarmedChannels()) {
+      for (const ch of linkWarmedChannels()) {
         if (!followedIds.has(ch?.id) && !pinnedSet.has(ch?.id)) {
           extraIds.add(ch?.id);
         }
@@ -177,8 +177,8 @@ export function createRailChannels(
     if (loadingLive()) return;
     const wanted = [
       ...pinnedChannels(),
-      ...watchWarmedChannels().map((ch) => ch?.id),
-      watchedChannel()?.id,
+      ...linkWarmedChannels().map((ch) => ch?.id),
+      linkedChannel()?.id,
       selectedChannel()?.id,
     ];
     const fresh = [...new Set(wanted)].filter(
