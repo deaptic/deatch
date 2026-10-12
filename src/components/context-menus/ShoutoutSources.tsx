@@ -45,15 +45,13 @@ export default function ShoutoutSources(props: Props) {
       <MenuDivider />
       <Show
         when={!sources.loading}
-        fallback={
-          <MenuItem label="Checking who is live…" disabled onClick={() => {}} />
-        }
+        fallback={<MenuItem label="Checking…" disabled onClick={() => {}} />}
       >
         <For
           each={sources() ?? []}
           fallback={
             <MenuItem
-              label="None of your channels are live"
+              label="No live channels"
               disabled
               onClick={() => {}}
             />
