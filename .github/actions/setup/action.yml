@@ -22,7 +22,7 @@ runs:
           ~/.cache/deno
           ~/.deno
           ~/AppData/Local/deno
-        key: ${{ runner.os }}-deno-${{ hashFiles('package.json', 'deno.lock') }}
+        key: ${{ runner.os }}-deno-${{ hashFiles('apps/desktop/package.json', 'deno.lock') }}
         restore-keys: ${{ runner.os }}-deno-
 
     - name: setup rust
@@ -33,7 +33,7 @@ runs:
     - name: rust cache
       uses: swatinem/rust-cache@v2
       with:
-        workspaces: src-tauri
+        workspaces: apps/desktop/src-tauri
         cache-on-failure: true
         cache-targets: false
 

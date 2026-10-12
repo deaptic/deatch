@@ -1,15 +1,15 @@
 // Usage:
-//   deno task pack:extension                 (no version change)
-//   deno task pack:extension patch | minor | major | 1.2.3
+//   deno task release:extension                 (no version change)
+//   deno task release:extension patch | minor | major | 1.2.3
 //
-// Bumps the version in extension/manifest.json when asked, then builds
-// extension/dist/deatch-link-{firefox,chrome}-<v>.zip, each with a manifest
-// stripped to what that browser knows, so neither store warns about the
-// other's keys.
+// Bumps the version in apps/extension/manifest.json when asked, then builds
+// apps/extension/dist/deatch-link-{firefox,chrome}-<v>.zip, each with a
+// manifest stripped to what that browser knows, so neither store warns about
+// the other's keys.
 
 import { nextVersion } from "./version.ts";
 
-const SRC = "extension";
+const SRC = "apps/extension";
 const OUT = `${SRC}/dist`;
 const FILES = ["background.js", "icons"];
 

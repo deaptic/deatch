@@ -10,7 +10,7 @@ use winreg::RegKey;
 
 const HOST_NAME: &str = "com.deaptic.deatch";
 const FIREFOX_EXTENSION_ID: &str = "deatch-link@deaptic.com";
-/// Derived from the `key` in extension/manifest.json; changes only if that
+/// Derived from the `key` in apps/extension/manifest.json; changes only if that
 /// key changes.
 const CHROME_EXTENSION_ID: &str = "dmoblcekdcegdpjbbkhblfnjjefkagpd";
 

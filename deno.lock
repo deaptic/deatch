@@ -1234,31 +1234,35 @@
     }
   },
   "workspace": {
-    "dependencies": [
-      "jsr:@std/assert@1"
-    ],
-    "packageJson": {
-      "dependencies": [
-        "npm:@blobatar/solid@^2.7.0",
-        "npm:@shadcn/lint@0.2",
-        "npm:@tailwindcss/vite@^4.3.3",
-        "npm:@tauri-apps/api@^2.12.0",
-        "npm:@tauri-apps/cli@^2.12.0",
-        "npm:@tauri-apps/plugin-autostart@^2.6.0",
-        "npm:@tauri-apps/plugin-log@^2.10.0",
-        "npm:@tauri-apps/plugin-opener@^2.6.0",
-        "npm:@tauri-apps/plugin-process@^2.4.0",
-        "npm:@tauri-apps/plugin-updater@^2.13.0",
-        "npm:blobatar@^2.7.0",
-        "npm:lucide-solid@^1.48.0",
-        "npm:oxlint@^1.86.0",
-        "npm:solid-js@^1.9.15",
-        "npm:tailwindcss@^4.3.3",
-        "npm:typescript@^6.0.3",
-        "npm:unicode-emoji-json@0.9",
-        "npm:vite-plugin-solid@^2.11.14",
-        "npm:vite@^8.3.1"
-      ]
+    "members": {
+      "apps/desktop": {
+        "dependencies": [
+          "jsr:@std/assert@1"
+        ],
+        "packageJson": {
+          "dependencies": [
+            "npm:@blobatar/solid@^2.7.0",
+            "npm:@shadcn/lint@0.2",
+            "npm:@tailwindcss/vite@^4.3.3",
+            "npm:@tauri-apps/api@^2.12.0",
+            "npm:@tauri-apps/cli@^2.12.0",
+            "npm:@tauri-apps/plugin-autostart@^2.6.0",
+            "npm:@tauri-apps/plugin-log@^2.10.0",
+            "npm:@tauri-apps/plugin-opener@^2.6.0",
+            "npm:@tauri-apps/plugin-process@^2.4.0",
+            "npm:@tauri-apps/plugin-updater@^2.13.0",
+            "npm:blobatar@^2.7.0",
+            "npm:lucide-solid@^1.48.0",
+            "npm:oxlint@^1.86.0",
+            "npm:solid-js@^1.9.15",
+            "npm:tailwindcss@^4.3.3",
+            "npm:typescript@^6.0.3",
+            "npm:unicode-emoji-json@0.9",
+            "npm:vite-plugin-solid@^2.11.14",
+            "npm:vite@^8.3.1"
+          ]
+        }
+      }
     }
   }
 }

@@ -4,9 +4,9 @@
   "version": "0.3.22",
   "identifier": "com.deaptic.deatch",
   "build": {
-    "beforeDevCommand": "deno task dev",
+    "beforeDevCommand": "deno task vite",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "deno task build",
+    "beforeBuildCommand": "deno task vite:build",
     "frontendDist": "../dist"
   },
   "app": {

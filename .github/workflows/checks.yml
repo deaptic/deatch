@@ -31,20 +31,20 @@ jobs:
       - name: deno lint
         run: deno lint
       - name: ui lint
-        run: deno task lint:ui
+        run: deno task --cwd apps/desktop lint:ui
       - name: deno check
-        run: deno check src/
+        run: deno check apps/desktop/src/
       - name: deno test
-        run: deno task test
+        run: deno task --cwd apps/desktop test
       - name: vite build
-        run: deno task build
+        run: deno task --cwd apps/desktop vite:build
 
       - name: cargo fmt
-        working-directory: src-tauri
+        working-directory: apps/desktop/src-tauri
         run: cargo fmt --check
       - name: cargo clippy
-        working-directory: src-tauri
+        working-directory: apps/desktop/src-tauri
         run: cargo clippy --no-default-features --all-targets -- -D warnings
       - name: cargo test
-        working-directory: src-tauri
+        working-directory: apps/desktop/src-tauri
         run: cargo test --no-default-features --lib

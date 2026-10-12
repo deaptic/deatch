@@ -1,22 +1,16 @@
 {
-  "imports": {
-    "@std/assert": "jsr:@std/assert@^1"
+  "workspace": ["./apps/desktop"],
+  "nodeModulesDir": "manual",
+  "tasks": {
+    "dev:desktop": "deno task --cwd apps/desktop dev",
+    "build:desktop": "deno task --cwd apps/desktop build",
+    "release:desktop": "deno run -A scripts/release-desktop.ts",
+    "release:extension": "deno run -A scripts/release-extension.ts"
   },
   "fmt": {
-    "include": ["src/"],
-    "exclude": ["src/lib/bindings.ts"]
+    "include": ["scripts/"]
   },
   "lint": {
-    "include": ["src/"],
-    "exclude": ["src/lib/bindings.ts"],
-    "rules": {
-      "exclude": [
-        "no-window",
-        "no-window-prefix",
-        "require-await",
-        "no-empty",
-        "jsx-button-has-type"
-      ]
-    }
+    "include": ["scripts/"]
   }
 }

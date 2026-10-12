@@ -3,18 +3,6 @@
   "version": "0.3.22",
   "description": "",
   "type": "module",
-  "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "lint:ui": "oxlint src",
-    "test": "deno test src/",
-    "bindings": "cargo run --manifest-path src-tauri/Cargo.toml --no-default-features -- --export-bindings",
-    "serve": "vite preview",
-    "tauri": "tauri",
-    "release": "deno run -A scripts/release.ts",
-    "pack:extension": "deno run -A scripts/pack-extension.ts"
-  },
   "license": "MIT",
   "dependencies": {
     "@blobatar/solid": "^2.7.0",

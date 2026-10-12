@@ -62,7 +62,8 @@ from `tab.lastAccessed`, so it survives add-on reloads) → `null`.
 
 1. Build a release Deatch and run it once so it self-registers the native host:
    ```pwsh
-   deno task build
+   cd apps/desktop
+   deno task vite:build
    cd src-tauri
    cargo build --release
    .\target\release\deatch.exe
@@ -70,14 +71,14 @@ from `tab.lastAccessed`, so it survives add-on reloads) → `null`.
    This writes `%LOCALAPPDATA%\Deatch\deatch-host.json` and the registry key
    under `HKCU\Software\Mozilla\NativeMessagingHosts\com.deaptic.deatch`. Debug
    builds never register (Firefox would hold `target\debug\deatch.exe` open and
-   block relinking), so `deno task tauri dev` alone is not enough to test host
+   block relinking), so `deno task dev` alone is not enough to test host
    changes. Whichever release Deatch ran last, built or installed, owns the host
    path. After re-registering, reload the add-on so Firefox spawns a fresh host
    process.
 
 2. In Firefox: `about:debugging#/runtime/this-firefox`.
 
-3. **Load Temporary Add-on…** → pick `D:\deatch\extension\manifest.json`.
+3. **Load Temporary Add-on…** → pick `D:\deatch\apps\extension\manifest.json`.
 
 4. Click **Inspect** next to "Deatch Link" to open the background console.
 
@@ -101,9 +102,10 @@ The release Deatch also registers
 step 1 above covers Chromium too.
 
 1. `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick
-   `D:\deatch\extension`.
+   `D:\deatch\apps\extension`.
 2. Confirm the id matches `CHROME_EXTENSION_ID` in
-   `src-tauri/src/link/bridge.rs`. Thanks to the manifest `key`, unpacked and
+   `apps/desktop/src-tauri/src/link/bridge.rs`. Thanks to the manifest `key`,
+   unpacked and
    store installs share it.
 3. **Service worker** link on the card opens the background console.
 
@@ -114,9 +116,9 @@ unpacked but makes each store warn about the other's keys. For uploads, build a
 zip per browser with a manifest stripped to what that browser knows:
 
 ```pwsh
-deno task pack:extension minor   # or: patch | major | 1.2.3; omit to keep the version
-# → extension/dist/deatch-link-firefox-<v>.zip
-#   extension/dist/deatch-link-chrome-<v>.zip
+deno task release:extension minor   # or: patch | major | 1.2.3; omit to keep the version
+# → apps/extension/dist/deatch-link-firefox-<v>.zip
+#   apps/extension/dist/deatch-link-chrome-<v>.zip
 ```
 
 Both stores are public listings and push updates to installed copies themselves.
