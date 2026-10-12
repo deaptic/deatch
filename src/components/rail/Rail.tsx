@@ -36,7 +36,7 @@ import {
   selectedChannel,
   showExplore,
   toggleSettings,
-  watchMode,
+  watchSynced,
 } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
 import * as raid from "../../lib/services/raid.ts";
@@ -60,7 +60,6 @@ import type { User } from "../../lib/types/index.ts";
 type Props = {
   onSelect: (ch: User) => void;
   onToggleWatch: () => void;
-  onFocusInBrowser: (ch: User) => void;
   onLiveChange?: (live: User[]) => void;
 };
 
@@ -120,29 +119,20 @@ export default function Rail(props: Props) {
     if (watchWarmedChannels().length === 0) {
       return { sub: "No Twitch tabs open", tone: "soft", tile: false };
     }
-    switch (watchMode()) {
-      case "auto":
-        return {
-          sub: "Following your browser",
-          tone: "positive",
-          tile: "positive",
-          onClick: props.onToggleWatch,
-        };
-      case "manual":
-        return {
-          sub: "Pinned to a tab",
-          tone: "caution",
-          tile: "caution",
-          onClick: props.onToggleWatch,
-        };
-      default:
-        return {
-          sub: "Follow your browser",
-          tone: "soft",
-          tile: false,
-          onClick: props.onToggleWatch,
-        };
+    if (watchSynced()) {
+      return {
+        sub: "Synced with browser",
+        tone: "positive",
+        tile: "positive",
+        onClick: props.onToggleWatch,
+      };
     }
+    return {
+      sub: "Sync with browser",
+      tone: "soft",
+      tile: false,
+      onClick: props.onToggleWatch,
+    };
   };
 
   const [chMenu, setChMenu] = createSignal<
@@ -441,7 +431,6 @@ export default function Rail(props: Props) {
                           watchMutedByLogin()[ch?.login] !== true,
                         )}
                       onSelect={() => props.onSelect(ch)}
-                      onDoubleClick={() => props.onFocusInBrowser(ch)}
                       onMiddleClick={() => void watchClose(ch?.login)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
@@ -532,9 +521,6 @@ export default function Rail(props: Props) {
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
-              onDoubleClick={ownTab()
-                ? () => props.onFocusInBrowser(u())
-                : undefined}
               onMiddleClick={() =>
                 ownTab() ? void watchClose(u().login) : openInBrowser(u())}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
