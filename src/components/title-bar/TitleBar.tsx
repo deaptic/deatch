@@ -70,7 +70,6 @@ export default function TitleBar(props: Props) {
           data-tauri-drag-region
           class="flex items-center gap-2 pl-4 pointer-events-none"
         >
-          <span class="size-2.5 rounded-full bg-accent" />
           <span class="text-body font-semibold text-ink">Deatch</span>
           <Show when={version()}>
             <span class="text-micro text-ink-faint tabular-nums">
