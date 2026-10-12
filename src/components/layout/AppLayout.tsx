@@ -57,7 +57,6 @@ export default function AppLayout(props: AppLayoutProps) {
               <Rail
                 onSelect={c.selectChannel}
                 onToggleWatch={c.toggleWatch}
-                onFocusInBrowser={c.focusInBrowser}
                 onLiveChange={(data) => {
                   c.setLiveStreams(data);
                   c.setLiveLoaded(true);

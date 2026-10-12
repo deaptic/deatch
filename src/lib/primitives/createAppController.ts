@@ -12,7 +12,6 @@ import { createServices } from "./createServices.ts";
 export type AppController = {
   selectChannel: (ch: User) => void;
   toggleWatch: () => void;
-  focusInBrowser: (ch: User) => void;
   jumpToMessage: (channelId: string, messageId: string) => void;
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
@@ -36,7 +35,6 @@ export function createAppController(): AppController {
   return {
     selectChannel: nav.selectChannel,
     toggleWatch: watch.toggleWatch,
-    focusInBrowser: watch.focusInBrowser,
     jumpToMessage: nav.jumpToMessage,
     setLiveStreams: subs.setLiveStreams,
     setLiveLoaded: subs.setLiveLoaded,

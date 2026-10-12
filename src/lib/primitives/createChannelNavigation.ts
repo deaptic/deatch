@@ -6,22 +6,27 @@ import {
   selectedChannel,
   setJumpTarget,
   setSelectedChannel,
-  setWatchMode,
-  type WatchMode,
+  setWatchSynced,
+  watchSynced,
 } from "../stores/view.ts";
 import { watchWarmedChannels } from "../stores/watch.ts";
+import { watchFocus } from "../api/watch.ts";
 import { ensureFeed, markSeen } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
 
 export type ChannelNavigation = {
-  selectChannel(ch: User, mode?: WatchMode): void;
+  selectChannel(ch: User): void;
   jumpToMessage(channelId: string, messageId: string): void;
 };
 
 export function createChannelNavigation(): ChannelNavigation {
-  function selectChannel(ch: User, mode?: WatchMode) {
-    const watched = watchWarmedChannels().some((c) => c?.id === ch.id);
-    setWatchMode(mode !== undefined ? mode : watched ? "manual" : null);
+  // While synced the browser follows along; leaving the watched tabs ends it.
+  function selectChannel(ch: User) {
+    if (watchSynced()) {
+      const watched = watchWarmedChannels().some((c) => c?.id === ch.id);
+      if (watched) void watchFocus(ch.login);
+      else setWatchSynced(false);
+    }
     setSelectedChannel(ch);
   }
 

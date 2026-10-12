@@ -4,45 +4,36 @@ import { channelsInOrder } from "../stores/channels.ts";
 import {
   pendingChannel,
   selectedChannel,
-  setWatchMode,
-  watchMode,
+  setWatchSynced,
+  watchSynced,
 } from "../stores/view.ts";
 import {
   watchedChannel,
   watchMutedByLogin,
   watchWarmedChannels,
 } from "../stores/watch.ts";
-import { watchFocus, watchSetMuted } from "../api/watch.ts";
-import type { User } from "../types/index.ts";
+import { watchSetMuted } from "../api/watch.ts";
 
 export type WatchControls = {
   cycleChannel(direction: 1 | -1): void;
   toggleWatch(): void;
-  focusInBrowser(ch: User): void;
   muteOtherWatched(): void;
   toggleMuteAllWatched(): void;
   toggleWatchMute(): void;
 };
 
 export function createWatchControls(nav: ChannelNavigation): WatchControls {
-  // In auto mode the app mirrors whichever channel the browser tab is on.
   createEffect(
     on(watchedChannel, (wc) => {
-      if (watchMode() === "auto" && wc) nav.selectChannel(wc, "auto");
-    }, { defer: true }),
-  );
-
-  createEffect(
-    on(watchWarmedChannels, (warmed) => {
-      if (watchMode() !== null) return;
-      const sel = selectedChannel();
-      if (sel && warmed.some((c) => c?.id === sel.id)) setWatchMode("manual");
+      if (watchSynced() && wc) nav.selectChannel(wc);
     }, { defer: true }),
   );
 
   function cycleChannel(direction: 1 | -1) {
-    // The Watch toggle decides which set alt+up/down walks.
-    const list = watchMode() ? watchWarmedChannels() : channelsInOrder();
+    // Synced walks only the browser's tabs; otherwise every channel, tabs first.
+    const list = watchSynced()
+      ? watchWarmedChannels()
+      : [...watchWarmedChannels(), ...channelsInOrder()];
     if (list.length === 0) return;
     const i = list.findIndex((c) => c?.id === pendingChannel()?.id);
     const nextIdx = i === -1
@@ -91,30 +82,21 @@ export function createWatchControls(nav: ChannelNavigation): WatchControls {
     void watchSetMuted(target.login, !muted);
   }
 
+  // Turning on lands on the browser's current tab; turning off stays put.
   function toggleWatch() {
-    // Only auto turns off; null and manual both (re-)engage auto.
-    const turningOn = watchMode() !== "auto";
-    const list = turningOn ? watchWarmedChannels() : channelsInOrder();
-    if (list.length === 0) {
-      setWatchMode(turningOn ? "auto" : null);
+    if (watchSynced()) {
+      setWatchSynced(false);
       return;
     }
-    // Jump focus into the new scope immediately. Turning on enters auto so we
-    // follow the browser tab; turning off lands on a non-watched channel (null).
-    if (turningOn) nav.selectChannel(watchedChannel() ?? list[0], "auto");
-    else nav.selectChannel(list[0], null);
-  }
-
-  // Browser and app now agree on the channel, so go back to following it.
-  function focusInBrowser(ch: User) {
-    nav.selectChannel(ch, "auto");
-    void watchFocus(ch.login);
+    const target = watchedChannel() ?? watchWarmedChannels()[0];
+    if (!target) return;
+    setWatchSynced(true);
+    nav.selectChannel(target);
   }
 
   return {
     cycleChannel,
     toggleWatch,
-    focusInBrowser,
     muteOtherWatched,
     toggleMuteAllWatched,
     toggleWatchMute,
