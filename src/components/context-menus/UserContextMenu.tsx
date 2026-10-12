@@ -1,17 +1,14 @@
 import {
   AtSign,
   Ban,
-  Copy,
   ExternalLink,
   Megaphone,
-  MessageSquare,
   TriangleAlert,
   User,
 } from "lucide-solid";
 import { Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
-import { copyField } from "../../lib/utils/clipboard.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
@@ -38,7 +35,6 @@ type Props = UserContextTarget & {
   ) => void;
   onShowProfile: (x: number, y: number, userId: string) => void;
   onMention: (login: string) => void;
-  onOpenChat: (userId: string) => void;
 };
 
 export default function UserContextMenu(props: Props) {
@@ -67,19 +63,9 @@ export default function UserContextMenu(props: Props) {
         onClick={run(() => props.onMention(props.userLogin))}
       />
       <MenuItem
-        label="Open chat"
-        icon={<MessageSquare />}
-        onClick={run(() => props.onOpenChat(props.userId))}
-      />
-      <MenuItem
-        label="Open on Twitch"
+        label="Open in browser"
         icon={<ExternalLink />}
         onClick={run(() => openUrl(`https://twitch.tv/${props.userLogin}`))}
-      />
-      <MenuItem
-        label="Copy name"
-        icon={<Copy />}
-        onClick={run(() => copyField(props.userLogin))}
       />
       <Show when={props.isMod}>
         <MenuDivider />
