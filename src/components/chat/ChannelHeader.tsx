@@ -2,15 +2,7 @@ import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
-import {
-  advancedDeveloperMode,
-  pinChannel,
-  pinnedChannels,
-  unpinChannel,
-} from "../../lib/stores/preferences.ts";
-import * as raid from "../../lib/services/raid.ts";
 import * as clock from "../../lib/services/clock.ts";
-import { user } from "../../lib/stores/users.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
 import type { User } from "../../lib/types/index.ts";
@@ -116,20 +108,7 @@ export default function ChannelHeader(props: Props) {
             x={m().x}
             y={m().y}
             ch={props.channel}
-            isPinned={pinnedChannels().includes(props.channel.id)}
-            developerMode={advancedDeveloperMode()}
             onClose={() => setMenu(null)}
-            onOpenInBrowser={openInBrowser}
-            onPin={props.channel.id === user()?.id
-              ? undefined
-              : (ch) => pinChannel(ch.id)}
-            onUnpin={unpinChannel}
-            onRaid={user() && props.channel.id !== user()?.id
-              ? (ch) => {
-                const self = user();
-                if (self) raid.begin(self.id, ch).catch(() => {});
-              }
-              : undefined}
           />
         )}
       </Show>
