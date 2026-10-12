@@ -1,4 +1,10 @@
-import { ClipboardPaste, Copy, Reply, Trash2 } from "lucide-solid";
+import {
+  ClipboardPaste,
+  Copy,
+  CornerUpLeft,
+  Reply,
+  Trash2,
+} from "lucide-solid";
 import { Show } from "solid-js";
 import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
 import Menu from "../ui/Menu.tsx";
@@ -7,6 +13,7 @@ import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import { textOf } from "../../lib/utils/message.ts";
+import { copyField } from "../../lib/utils/clipboard.ts";
 
 type Props = {
   x: number;
@@ -19,51 +26,57 @@ type Props = {
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
   onCopypasta: (msg: FeedMessage) => void;
+  onJumpToMessage: (messageId: string) => void;
 };
 
 export default function MessageContextMenu(props: Props) {
+  const run = (action: () => unknown) => () => {
+    action();
+    props.onClose();
+  };
+
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
         label="Reply"
         icon={<Reply />}
-        onClick={() => {
-          props.onReply(props.msg);
-          props.onClose();
-        }}
+        onClick={run(() => props.onReply(props.msg))}
       />
+      <Show when={props.msg.reply}>
+        {(reply) => (
+          <MenuItem
+            label="Jump to parent"
+            icon={<CornerUpLeft />}
+            onClick={run(() =>
+              props.onJumpToMessage(reply().parent_message_id)
+            )}
+          />
+        )}
+      </Show>
       <MenuItem
-        label="Copy Text"
+        label="Copy text"
         icon={<Copy />}
-        onClick={() => {
-          navigator.clipboard.writeText(textOf(props.msg));
-          props.onClose();
-        }}
+        onClick={run(() => copyField(textOf(props.msg)))}
       />
       <Show when={props.showCopypasta}>
-        <MenuDivider />
         <MenuItem
           label="Copypasta"
           icon={<ClipboardPaste />}
-          onClick={() => {
-            props.onCopypasta(props.msg);
-            props.onClose();
-          }}
+          onClick={run(() => props.onCopypasta(props.msg))}
         />
       </Show>
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
-          label="Delete Message"
+          label="Delete message"
           danger
           icon={<Trash2 />}
-          onClick={() => {
+          onClick={run(() =>
             deleteChatMessages({
               broadcasterId: props.broadcasterId,
               messageId: props.msg.message_id,
-            }).catch(() => {});
-            props.onClose();
-          }}
+            }).catch(() => {})
+          )}
         />
       </Show>
       <CopyPayloadItem
