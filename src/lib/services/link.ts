@@ -1,6 +1,35 @@
 import { selectedChannel } from "../stores/view.ts";
 import { linkMutedByLogin, linkWarmedChannels } from "../stores/link.ts";
-import { linkSetMuted } from "../api/link.ts";
+import { linkClose, linkSetMuted } from "../api/link.ts";
+import { getStreamsFromIds } from "../api/twitch/streams.ts";
+import { addToast } from "../stores/toasts.ts";
+import type { User } from "../types/index.ts";
+
+function closeTabs(tabs: User[]) {
+  for (const ch of tabs) if (ch?.login) void linkClose(ch.login);
+}
+
+export function closeAll() {
+  closeTabs(linkWarmedChannels());
+}
+
+// Checks live status fresh so a tab that just went live stays open.
+export async function closeOffline() {
+  const tabs = linkWarmedChannels();
+  if (tabs.length === 0) return;
+  const streams = await getStreamsFromIds({ userIds: tabs.map((c) => c.id) });
+  const live = new Set(streams.map((s) => s.user.id));
+  const offline = tabs.filter((c) => !live.has(c.id));
+  if (offline.length === 0) {
+    addToast("Every tab is live");
+    return;
+  }
+  closeTabs(offline);
+  addToast(
+    `Closed ${offline.length} offline ${offline.length === 1 ? "tab" : "tabs"}`,
+    "success",
+  );
+}
 
 function isMuted(login: string): boolean {
   return linkMutedByLogin()[login] === true;

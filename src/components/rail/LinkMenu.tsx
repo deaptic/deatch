@@ -1,4 +1,4 @@
-import { AudioLines, Puzzle, Volume2, VolumeX } from "lucide-solid";
+import { AudioLines, Puzzle, Volume2, VolumeX, X } from "lucide-solid";
 import { Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import Menu from "../ui/Menu.tsx";
@@ -74,6 +74,22 @@ export default function LinkMenu(props: Props) {
           icon={link.anyUnmuted() ? <VolumeX /> : <Volume2 />}
           disabled={!hasTabs()}
           onClick={run(link.toggleMuteAll)}
+        />
+        <MenuDivider />
+        <MenuItem
+          label="Close offline tabs"
+          icon={<X />}
+          disabled={!hasTabs()}
+          onClick={run(() =>
+            link.closeOffline().catch(() => {})
+          )}
+        />
+        <MenuItem
+          label="Close all tabs"
+          icon={<X />}
+          danger
+          disabled={!hasTabs()}
+          onClick={run(link.closeAll)}
         />
       </Show>
     </Menu>
