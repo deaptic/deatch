@@ -24,8 +24,11 @@ export default function ChatterPicture(props: Props) {
   const [loaded, setLoaded] = createSignal(false);
   const [instant, setInstant] = createSignal(false);
   const [failed, setFailed] = createSignal(false);
+  // Twitch serves the same picture at 70px; the chat tile never needs 300.
   const url = createMemo(() =>
-    (feedShowAvatars() && knownUser(props.userId)?.profileImageUrl) || null
+    (feedShowAvatars() &&
+      knownUser(props.userId)?.profileImageUrl?.replace("300x300", "70x70")) ||
+    null
   );
   const showingImage = () => !!url() && loaded() && !failed();
   const noImage = () =>
