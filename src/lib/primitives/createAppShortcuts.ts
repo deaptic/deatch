@@ -1,15 +1,18 @@
 import { onCleanup, onMount } from "solid-js";
 import * as shortcuts from "../services/shortcuts.ts";
 import * as readout from "../services/readout.ts";
+import * as linkAudio from "../services/link.ts";
 import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
 import { leavePage, showExplore, toggleSettings } from "../stores/view.ts";
 import {
   advancedAlwaysOnTop,
   appearanceRailExpanded,
   appearanceZoom,
+  linkAudioLink,
   resetAppearanceZoom,
   setAdvancedAlwaysOnTop,
   setAppearanceRailExpanded,
+  setLinkAudioLink,
   stepAppearanceZoom,
   toggleFeedDensity,
 } from "../stores/preferences.ts";
@@ -37,12 +40,13 @@ export function createAppShortcuts(
         () => link.cycleChannel(-1),
       ),
       shortcuts.register("link::toggle", link.toggleLink),
-      shortcuts.register("link::toggleMute", link.toggleLinkMute),
-      shortcuts.register("link::muteOthers", link.muteOtherLinked),
       shortcuts.register(
-        "link::toggleMuteAll",
-        link.toggleMuteAllLinked,
+        "link::toggleAudioLink",
+        () => setLinkAudioLink(!linkAudioLink()),
       ),
+      shortcuts.register("link::toggleMute", linkAudio.toggleMute),
+      shortcuts.register("link::muteOthers", linkAudio.muteOthers),
+      shortcuts.register("link::toggleMuteAll", linkAudio.toggleMuteAll),
       shortcuts.register("settings::toggle", toggleSettings),
       shortcuts.register("explore::show", showExplore),
       shortcuts.register(

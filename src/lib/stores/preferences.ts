@@ -21,3 +21,4 @@ export * from "./preferences/moderation.ts";
 export * from "./preferences/advanced.ts";
 export * from "./preferences/appearance.ts";
 export * from "./preferences/explore.ts";
+export * from "./preferences/link.ts";

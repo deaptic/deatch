@@ -5,6 +5,7 @@
   "alt-a": ["link::toggleMuteAll"],
   "alt-s": ["link::muteOthers"],
   "alt-w": ["link::toggle"],
+  "alt-f": ["link::toggleAudioLink"],
   "ctrl-,": ["settings::toggle"],
   "ctrl-+": ["view::zoomIn"],
   "ctrl-=": ["view::zoomIn"],
