@@ -7,6 +7,7 @@ type Props = {
   color: string;
   active: boolean;
   onClick?: (x: number, y: number) => void;
+  onContextMenu?: (x: number, y: number) => void;
 };
 
 export default function ChatterAvatar(props: Props) {
@@ -15,6 +16,7 @@ export default function ChatterAvatar(props: Props) {
       round
       color={chatterLook(props.color).tint}
       onClick={props.onClick}
+      onContextMenu={props.onContextMenu}
     >
       <ChatterPicture
         userId={props.userId}
