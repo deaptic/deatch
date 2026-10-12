@@ -9,13 +9,11 @@ import {
 import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import {
-  advancedDeveloperMode,
   appearanceRailExpanded,
   pinChannel,
   pinnedChannels,
   reorderPinnedChannels,
   setAppearanceRailExpanded,
-  unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
@@ -39,7 +37,6 @@ import {
   toggleSettings,
 } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
-import * as raid from "../../lib/services/raid.ts";
 import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
@@ -181,12 +178,6 @@ export default function Rail(props: Props) {
 
   function openInBrowser(ch: User) {
     openUrl(`https://twitch.tv/${ch?.login}`);
-  }
-
-  function raidChannel(ch: User) {
-    const self = user();
-    if (!self) return;
-    raid.begin(self.id, ch).catch(() => {});
   }
 
   function startDrag(e: MouseEvent, idx: number) {
@@ -567,18 +558,8 @@ export default function Rail(props: Props) {
             x={m().x}
             y={m().y}
             ch={m().ch}
-            isPinned={new Set(pinnedChannels()).has(m().ch?.id)}
-            developerMode={advancedDeveloperMode()}
             onClose={() => setChMenu(null)}
-            onOpenInBrowser={openInBrowser}
-            onCloseBrowserTab={warmedIds().has(m().ch?.id)
-              ? (ch) => void linkClose(ch.login)
-              : undefined}
-            onPin={m().ch?.id === user()?.id ? undefined : pin}
-            onUnpin={unpinChannel}
-            onRaid={user() && m().ch?.id !== user()?.id
-              ? raidChannel
-              : undefined}
+            onPin={pin}
             onLogout={m().ch?.id === user()?.id
               ? () => session.logout()
               : undefined}
