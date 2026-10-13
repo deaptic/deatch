@@ -25,7 +25,8 @@ import {
   linkWarmedChannels,
 } from "../../lib/stores/link.ts";
 import LinkMenu from "./LinkMenu.tsx";
-import { linkClose, linkSetMuted } from "../../lib/api/link.ts";
+import { linkClose } from "../../lib/api/link.ts";
+import * as link from "../../lib/services/link.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import {
@@ -73,7 +74,7 @@ export default function Rail(props: Props) {
   const expanded = appearanceRailExpanded;
   const channels = createRailChannels(props.onLiveChange);
   const main = createScrollAffordance();
-  const link = createScrollAffordance();
+  const linkScroll = createScrollAffordance();
 
   const selectedId = () => {
     const v = activeView();
@@ -161,7 +162,7 @@ export default function Rail(props: Props) {
 
   createEffect(() => {
     linkWarmedChannels().length;
-    queueMicrotask(link.update);
+    queueMicrotask(linkScroll.update);
   });
 
   createEffect(() => {
@@ -394,21 +395,21 @@ export default function Rail(props: Props) {
         <RailDivider />
         <div class="flex flex-col py-1.5 shrink-0">
           <div class="relative">
-            <Show when={link.canUp()}>
+            <Show when={linkScroll.canUp()}>
               <ScrollChevron
                 direction="up"
-                onClick={() => link.scrollByOne(-1)}
+                onClick={() => linkScroll.scrollByOne(-1)}
               />
             </Show>
-            <Show when={link.canDown()}>
+            <Show when={linkScroll.canDown()}>
               <ScrollChevron
                 direction="down"
-                onClick={() => link.scrollByOne(1)}
+                onClick={() => linkScroll.scrollByOne(1)}
               />
             </Show>
             <div
-              ref={link.setRef}
-              onScroll={link.update}
+              ref={linkScroll.setRef}
+              onScroll={linkScroll.update}
               class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none ${railGap()}`}
             >
               <For each={linkedOthers()}>
@@ -420,11 +421,7 @@ export default function Rail(props: Props) {
                       unread={hasUnread(ch?.id)}
                       mentions={channelMentionCount(ch?.id)}
                       muted={linkMutedByLogin()[ch?.login] === true}
-                      onToggleMute={() =>
-                        void linkSetMuted(
-                          ch?.login,
-                          linkMutedByLogin()[ch?.login] !== true,
-                        )}
+                      onToggleMute={() => link.toggleMuted(ch?.login)}
                       onSelect={() => props.onSelect(ch)}
                       onMiddleClick={() => void linkClose(ch?.login)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
@@ -531,11 +528,7 @@ export default function Rail(props: Props) {
                   {(tab) => (
                     <TabMuteBadge
                       muted={linkMutedByLogin()[tab().login] === true}
-                      onToggle={() =>
-                        void linkSetMuted(
-                          tab().login,
-                          linkMutedByLogin()[tab().login] !== true,
-                        )}
+                      onToggle={() => link.toggleMuted(tab().login)}
                     />
                   )}
                 </Show>

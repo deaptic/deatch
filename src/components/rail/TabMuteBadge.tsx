@@ -6,13 +6,13 @@ type Props = {
   onToggle: () => void;
 };
 
+// A mouse shortcut on top of the row's own button; keyboard and screen
+// readers reach the same toggle through the channel menu and Alt+M.
 export default function TabMuteBadge(props: Props) {
-  const label = () => props.muted ? "Unmute browser tab" : "Mute browser tab";
   return (
-    <button
-      type="button"
-      title={label()}
-      aria-label={label()}
+    <span
+      aria-hidden
+      title={props.muted ? "Unmute browser tab" : "Mute browser tab"}
       onClick={(e) => {
         e.stopPropagation();
         props.onToggle();
@@ -27,6 +27,6 @@ export default function TabMuteBadge(props: Props) {
       <Show when={props.muted} fallback={<Volume2 class="size-2" />}>
         <VolumeOff class="size-2" />
       </Show>
-    </button>
+    </span>
   );
 }

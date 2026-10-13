@@ -24,7 +24,8 @@ import {
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import { linkMutedByLogin, linkWarmedChannels } from "../../lib/stores/link.ts";
-import { linkClose, linkFocus, linkSetMuted } from "../../lib/api/link.ts";
+import { linkClose, linkFocus } from "../../lib/api/link.ts";
+import * as link from "../../lib/services/link.ts";
 import { hasUnread, markSeen } from "../../lib/stores/feeds.ts";
 import {
   channelMentionCount,
@@ -111,7 +112,7 @@ export default function ChannelContextMenu(props: Props) {
               ? shortcuts.keyFor("link::toggleMute")
               : undefined}
             onClick={run(() =>
-              linkSetMuted(props.ch.login, !muted())
+              link.toggleMuted(props.ch.login)
             )}
           />
           <MenuItem
