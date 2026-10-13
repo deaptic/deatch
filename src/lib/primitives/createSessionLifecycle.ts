@@ -4,7 +4,7 @@ import { setGlobalEmotes } from "../stores/emotes.ts";
 import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
 import * as session from "../services/session.ts";
-import { showExplore } from "../stores/view.ts";
+import { resetView } from "../stores/view.ts";
 
 const RETRY_MIN_MS = 30_000;
 const RETRY_MAX_MS = 300_000;
@@ -58,7 +58,7 @@ export function createSessionLifecycle(deps: SessionDeps): void {
     }
     deps.leaveAll();
     resetUserScopedCaches();
-    showExplore();
+    resetView();
     deps.setLiveLoaded(false);
   });
 }
