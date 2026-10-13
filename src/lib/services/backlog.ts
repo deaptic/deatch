@@ -36,6 +36,18 @@ export function fillGap(
     .then((msgs) => {
       const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
       noteChatters(broadcasterId, insertEntries(broadcasterId, items));
+      // A full page means robotty dropped the oldest messages of the gap;
+      // it keeps the newest `limit`, so the hole sits before the first one.
+      if (msgs.length >= GAP_LIMIT) {
+        insertEntries(broadcasterId, [
+          feedEvent(
+            "local",
+            "Some messages may be missing here",
+            msgs[0].timestamp_ms - 1,
+            { silent: true },
+          ),
+        ]);
+      }
     })
     .catch((e) => console.error("[feeds] gap fill failed", channelLogin, e));
 }
