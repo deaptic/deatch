@@ -2,6 +2,7 @@ import { Copy } from "lucide-solid";
 import { Show } from "solid-js";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
+import { copyField } from "../../lib/utils/clipboard.ts";
 
 type Props = {
   show: boolean;
@@ -14,10 +15,10 @@ export default function CopyPayloadItem(props: Props) {
     <Show when={props.show}>
       <MenuDivider />
       <MenuItem
-        label="Copy Payload"
+        label="Copy payload"
         icon={<Copy />}
         onClick={() => {
-          navigator.clipboard.writeText(JSON.stringify(props.data, null, 2));
+          copyField(JSON.stringify(props.data, null, 2));
           props.onClose();
         }}
       />

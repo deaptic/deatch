@@ -1,6 +1,7 @@
 import { Copy } from "lucide-solid";
 import Menu from "../ui/Menu.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
+import { copyField } from "../../lib/utils/clipboard.ts";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedEvent } from "../../lib/types/index.ts";
 
@@ -16,10 +17,10 @@ export default function EventContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label="Copy Text"
+        label="Copy text"
         icon={<Copy />}
         onClick={() => {
-          navigator.clipboard.writeText(props.item.system_message);
+          copyField(props.item.system_message);
           props.onClose();
         }}
       />
