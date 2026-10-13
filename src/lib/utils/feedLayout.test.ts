@@ -84,8 +84,18 @@ Deno.test("replies, holds, rewards and first messages stand alone", () => {
       },
     }),
     msg("5", "maya", T0),
+    msg("6", "maya", T0),
+    msg("7", "maya", T0, { first_message: true }),
   ], true);
-  assertEquals(continued(rows), [false, false, false, false, false]);
+  assertEquals(continued(rows), [
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+  ]);
 });
 
 Deno.test("measures the window from the group's first message", () => {
