@@ -14,7 +14,7 @@ deno task tauri dev       # run app in dev
 deno task bindings        # regenerate src/lib/bindings.ts
 deno task test            # frontend unit tests
 deno fmt && deno lint && deno task lint:ui
-cd src-tauri && cargo fmt && cargo clippy --no-default-features --all-targets && cargo test --no-default-features --lib
+cd src-tauri && cargo fmt && cargo clippy --all-targets && cargo test --lib
 ```
 
 Run the full check set before every commit; CI runs the same with clippy at

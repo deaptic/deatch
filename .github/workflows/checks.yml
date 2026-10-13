@@ -44,7 +44,7 @@ jobs:
         run: cargo fmt --check
       - name: cargo clippy
         working-directory: src-tauri
-        run: cargo clippy --no-default-features --all-targets -- -D warnings
+        run: cargo clippy --all-targets -- -D warnings
       - name: cargo test
         working-directory: src-tauri
-        run: cargo test --no-default-features --lib
+        run: cargo test --lib
