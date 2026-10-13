@@ -320,6 +320,7 @@ export type EventSubStats = {
 	retrying: number,
 	waiting: number,
 	capped: number,
+	rejected: number,
 };
 
 export type Focus = "focused" | "background";

@@ -281,6 +281,10 @@ impl Coordinator<'_> {
                     self.chat_status(&subscription, ChatState::Failed { error });
                 }
             }
+            Outcome::Rejected(message) => {
+                log::warn!("subscribe rejected {subscription}: {message}");
+                self.chat_status(&subscription, ChatState::Failed { error: message });
+            }
             Outcome::Orphaned(sub_id) => {
                 spawn_deletes(self.twitch.clone(), vec![(subscription, sub_id)]);
             }
