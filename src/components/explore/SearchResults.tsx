@@ -61,7 +61,7 @@ export default function SearchResults(props: Props) {
   }
 
   async function forceOpenByLogin() {
-    const login = debounced().toLowerCase();
+    const login = props.query.trim().toLowerCase();
     if (!login) return;
     try {
       const [channel] = await users.fetch({ logins: [login] });
