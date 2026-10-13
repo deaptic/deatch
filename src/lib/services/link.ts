@@ -85,10 +85,18 @@ export function currentMuted(): boolean | null {
   return target?.login ? isMuted(target.login) : null;
 }
 
+export function toggleMuted(login: string) {
+  linkSetMuted(login, !isMuted(login)).catch(() =>
+    addToast(
+      "Couldn't reach the browser tab. Check that Link is connected.",
+      "error",
+    )
+  );
+}
+
 export function toggleMute() {
   const target = selectedLinked();
-  if (!target?.login) return;
-  void linkSetMuted(target.login, !isMuted(target.login));
+  if (target?.login) toggleMuted(target.login);
 }
 
 let pendingFetch = new Set<string>();
