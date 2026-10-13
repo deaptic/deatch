@@ -56,3 +56,16 @@ Deno.test("long relative format spells out each unit with its direction", () => 
     "in 45 minutes",
   );
 });
+
+Deno.test("long relative format keeps the three largest units", () => {
+  const then = Temporal.Now.zonedDateTimeISO().subtract({
+    years: 2,
+    days: 4,
+    hours: 5,
+    minutes: 6,
+  });
+  assertEquals(
+    new Time(then.epochMilliseconds, "R").toString(),
+    "2 years, 4 days, 5 hours ago",
+  );
+});
