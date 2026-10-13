@@ -4,10 +4,16 @@ import { Show } from "solid-js";
 import CopyableField from "./CopyableField.tsx";
 import Timestamp from "../ui/Timestamp.tsx";
 
+export type FollowStatus =
+  | { kind: "unknown" }
+  | { kind: "hidden" }
+  | { kind: "none" }
+  | { kind: "since"; at: string };
+
 type Props = {
   chatterId: string;
   user: User | null;
-  followedAt: string | null;
+  follow: FollowStatus;
 };
 
 export default function UserCardMeta(props: Props) {
@@ -30,24 +36,34 @@ export default function UserCardMeta(props: Props) {
           <Timestamp ts={props.user!.createdAt} format="D" />
         </CopyableField>
       </Show>
-      <Show
-        when={props.followedAt}
-        fallback={
-          <CopyableField
-            copy="Unknown"
-            icon={<Heart />}
-            title="Mod permission required to view follow status"
-          >
-            Unknown
-          </CopyableField>
-        }
-      >
-        {(followedAt) => (
-          <CopyableField copy={followedAt()} icon={<Heart />}>
-            <Timestamp ts={followedAt()} format="D" />
-          </CopyableField>
-        )}
-      </Show>
+      <FollowField follow={props.follow} />
     </div>
+  );
+}
+
+function FollowField(props: { follow: FollowStatus }) {
+  const since = () => props.follow.kind === "since" ? props.follow.at : null;
+  const text = () => props.follow.kind === "none" ? "Not following" : "Unknown";
+  return (
+    <Show
+      when={since()}
+      fallback={
+        <CopyableField
+          copy={text()}
+          icon={<Heart />}
+          title={props.follow.kind === "hidden"
+            ? "Mod permission required to view follow status"
+            : undefined}
+        >
+          {text()}
+        </CopyableField>
+      }
+    >
+      {(at) => (
+        <CopyableField copy={at()} icon={<Heart />}>
+          <Timestamp ts={at()} format="D" />
+        </CopyableField>
+      )}
+    </Show>
   );
 }
