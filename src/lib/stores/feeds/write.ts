@@ -1,11 +1,13 @@
 import { produce } from "solid-js/store";
-import { ensureFeed, getEntryId, isSilent, setFeeds } from "./core.ts";
+import { feeds, getEntryId, isSilent, setFeeds } from "./core.ts";
 import { append, insert, prepend } from "./ops.ts";
 import type { FeedEntry } from "../../types/feed.ts";
 import { selectedChannel } from "../view.ts";
 
+// Writes never create a feed: joining does, and late events for a channel
+// that was left (disconnect notices, delayed gifts) must not resurrect it.
 export function appendItem(id: string, item: FeedEntry): boolean {
-  ensureFeed(id);
+  if (!feeds[id]) return false;
   const isActive = selectedChannel()?.id === id;
   let added = false;
   setFeeds(
@@ -39,7 +41,7 @@ export function appendLocalNotice(
 
 /// Fills a gap after a dropped connection; returns the entries that were new.
 export function insertEntries(id: string, items: FeedEntry[]): FeedEntry[] {
-  ensureFeed(id);
+  if (!feeds[id]) return [];
   let added: FeedEntry[] = [];
   setFeeds(
     id,
@@ -52,7 +54,7 @@ export function insertEntries(id: string, items: FeedEntry[]): FeedEntry[] {
 
 /// Hydrates a feed with history; returns the entries that were new.
 export function prependEntries(id: string, items: FeedEntry[]): FeedEntry[] {
-  ensureFeed(id);
+  if (!feeds[id]) return [];
   let added: FeedEntry[] = [];
   setFeeds(
     id,
