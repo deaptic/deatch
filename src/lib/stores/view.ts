@@ -31,7 +31,10 @@ export const selectedChannel: () => User | null = createRoot(() =>
 export const isSettingsOpen = () => activeView() === "settings";
 
 let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
-let lastChannel: User | null = null;
+
+// The channel a page returns to, kept joined while a page is shown.
+const [lastChannel, setLastChannel] = createSignal<User | null>(null);
+export { lastChannel };
 
 export function showExplore() {
   setActiveView("explore");
@@ -39,7 +42,7 @@ export function showExplore() {
 }
 
 export function setSelectedChannel(channel: User) {
-  lastChannel = channel;
+  setLastChannel(channel);
   setActiveView(channel);
 }
 
@@ -59,8 +62,9 @@ export function leavePage(): boolean {
     setActiveView(beforeSettings);
     return true;
   }
-  if (v === "explore" && lastChannel) {
-    setActiveView(lastChannel);
+  const back = lastChannel();
+  if (v === "explore" && back) {
+    setActiveView(back);
     return true;
   }
   return false;
