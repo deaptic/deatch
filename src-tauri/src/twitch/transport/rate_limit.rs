@@ -2,9 +2,7 @@ use http::HeaderMap;
 use std::sync::Mutex;
 use std::time::Duration;
 
-/// Only Helix responses describe the general request bucket; OAuth calls
-/// share the transport but answer for a different service.
-const HELIX_HOST: &str = "api.twitch.tv";
+use super::HELIX_HOST;
 
 #[derive(Default)]
 pub struct RateLimit {
