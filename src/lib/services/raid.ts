@@ -17,9 +17,9 @@ export async function begin(fromId: string, target: RaidTarget): Promise<void> {
 
 export async function cancel(fromId?: string): Promise<void> {
   const broadcasterId = fromId ?? pendingRaid()?.fromId;
+  if (broadcasterId) await cancelRaid({ broadcasterId });
   clearExpiry();
   setPendingRaid(null);
-  if (broadcasterId) await cancelRaid({ broadcasterId }).catch(() => {});
 }
 
 function clearExpiry(): void {

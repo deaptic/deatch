@@ -33,7 +33,7 @@ export default function RaidBanner(props: Props) {
         variant="neutral"
         size="sm"
         class="ml-auto"
-        onClick={() => raid.cancel()}
+        onClick={() => raid.cancel().catch(() => {})}
       >
         Cancel raid
       </Button>
