@@ -239,7 +239,9 @@ impl Subs {
                 subscriptions: self
                     .states
                     .values()
-                    .filter(|state| state.conn() == Some(id))
+                    .filter(|state| {
+                        !matches!(state, State::Rejected { .. }) && state.conn() == Some(id)
+                    })
                     .count() as u32,
             })
             .collect();
@@ -759,6 +761,8 @@ mod tests {
             .iter()
             .find(|b| b.subscriptions.contains(&sub("c0", CHAT)))
             .expect("chat is created");
+        let active = |subs: &Subs| subs.stats().connections[0].subscriptions;
+        let before = active(&subs);
         let rejected = created(
             batch,
             sub("c0", CHAT),
@@ -768,6 +772,7 @@ mod tests {
             matches!(subs.accept(rejected, now), Outcome::Rejected(m) if m == "not a moderator")
         );
         assert_eq!(subs.stats().rejected, 1);
+        assert_eq!(active(&subs), before - 1);
         let later = now + Duration::from_secs(3600);
         assert!(
             !subs
