@@ -158,7 +158,9 @@ pub fn run() {
                     log::warn!("browser bridge registration failed: {e}");
                 }
             }
-            link::ipc::start_server(app.handle().clone());
+            let hosts = link::ipc::Hosts::default();
+            link::ipc::start_server(app.handle().clone(), hosts.clone());
+            app.manage(hosts);
             emotes::seventv_events::spawn(app.handle().clone());
 
             if let Some(window) = app.get_webview_window("main") {

@@ -1,6 +1,7 @@
 use serde::Deserialize;
+use tauri::State;
 
-use super::ipc::{self, HostCommand};
+use super::ipc::{HostCommand, Hosts};
 use crate::error::Result;
 
 #[derive(Deserialize, specta::Type)]
@@ -18,27 +19,29 @@ pub struct LinkChannelParams {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn link_set_muted(params: SetMutedParams) -> Result<()> {
+pub async fn link_set_muted(hosts: State<'_, Hosts>, params: SetMutedParams) -> Result<()> {
     let SetMutedParams { channel, muted } = params;
-    Ok(ipc::send_to_host(&HostCommand::SetMuted { channel, muted }).await?)
+    Ok(hosts
+        .send(&HostCommand::SetMuted { channel, muted })
+        .await?)
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn link_focus(params: LinkChannelParams) -> Result<()> {
+pub async fn link_focus(hosts: State<'_, Hosts>, params: LinkChannelParams) -> Result<()> {
     let channel = params.channel;
-    Ok(ipc::send_to_host(&HostCommand::Focus { channel }).await?)
+    Ok(hosts.send(&HostCommand::Focus { channel }).await?)
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn link_close(params: LinkChannelParams) -> Result<()> {
+pub async fn link_close(hosts: State<'_, Hosts>, params: LinkChannelParams) -> Result<()> {
     let channel = params.channel;
-    Ok(ipc::send_to_host(&HostCommand::Close { channel }).await?)
+    Ok(hosts.send(&HostCommand::Close { channel }).await?)
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn link_request_state() -> Result<()> {
-    Ok(ipc::send_to_host(&HostCommand::GetState).await?)
+pub async fn link_request_state(hosts: State<'_, Hosts>) -> Result<()> {
+    Ok(hosts.send(&HostCommand::GetState).await?)
 }
