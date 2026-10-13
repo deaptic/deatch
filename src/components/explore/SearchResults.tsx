@@ -36,12 +36,12 @@ export default function SearchResults(props: Props) {
 
   const [results] = createResource(
     debounced,
-    (q) => (q ? searchChannels({ query: q, first: 24 }) : []),
+    (q) => (q ? searchChannels({ query: q, first: 24 }).catch(() => []) : []),
   );
 
   const [categories] = createResource(
     debounced,
-    (q) => (q ? searchCategories({ query: q, first: 8 }) : []),
+    (q) => (q ? searchCategories({ query: q, first: 8 }).catch(() => []) : []),
   );
 
   const ranked = () => results() ?? [];
