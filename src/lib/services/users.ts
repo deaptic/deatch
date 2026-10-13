@@ -60,15 +60,22 @@ export function start(): () => void {
 export function set(users: User[]): void {
   if (users.length === 0) return;
   const now = Date.now();
+  let changed = false;
   setKnownUsers(produce((table) => {
     for (const next of users) {
       const prev = table[next.id];
       const merged = mergeUser(prev?.user, next);
       const at = isComplete(next) ? now : prev?.at ?? 0;
-      if (prev && sameUser(prev.user, merged)) prev.at = at;
-      else table[next.id] = { user: merged, at };
+      if (prev && sameUser(prev.user, merged)) {
+        if (prev.at === at) continue;
+        prev.at = at;
+      } else {
+        table[next.id] = { user: merged, at };
+      }
+      changed = true;
     }
   }));
+  if (!changed) return;
   if (Object.keys(unwrap(knownUsers)).length > MAX_KNOWN) evict(now);
   scheduleSave();
 }
