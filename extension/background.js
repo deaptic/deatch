@@ -91,7 +91,9 @@ function emitState() {
   lastStateKey = key;
   try {
     port.postMessage(state);
-  } catch {}
+  } catch (e) {
+    console.warn("state not sent", e);
+  }
 }
 
 function forgetTab(tabId) {
@@ -118,7 +120,9 @@ function tabsOf(channel) {
 
 async function applyMute(channel, muted) {
   for (const tabId of tabsOf(channel)) {
-    await chrome.tabs.update(tabId, { muted }).catch(() => {});
+    await chrome.tabs.update(tabId, { muted }).catch((e) =>
+      console.warn("mute failed", channel, e)
+    );
   }
 }
 
@@ -130,12 +134,16 @@ async function focusChannel(channel) {
       (tabFocusedAt.get(b) ?? 0) - (tabFocusedAt.get(a) ?? 0)
     )[0];
   if (tabId != null) {
-    await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+    await chrome.tabs.update(tabId, { active: true }).catch((e) =>
+      console.warn("focus failed", channel, e)
+    );
   }
 }
 
 async function closeChannel(channel) {
-  await chrome.tabs.remove(tabsOf(channel)).catch(() => {});
+  await chrome.tabs.remove(tabsOf(channel)).catch((e) =>
+    console.warn("close failed", channel, e)
+  );
 }
 
 const COMMANDS = {
