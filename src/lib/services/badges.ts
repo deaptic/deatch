@@ -32,10 +32,11 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
       saveCache(GLOBAL_BADGES_CACHE_KEY, fresh);
       return fresh;
     })
-    .catch(() => {
-      // A failed load must not be remembered as "no badges" all session.
+    .catch((e) => {
+      // Rejecting keeps a failure out of every cached channel map, so both
+      // this and the channel loads retry instead of lacking global badges.
       globalBadgesPromise = null;
-      return [] as BadgeSet[];
+      throw e;
     });
   return globalBadgesPromise;
 }
@@ -58,7 +59,7 @@ const channelBadges = channelResource((c) =>
 );
 
 export async function loadGlobal(): Promise<BadgeMap> {
-  return toBadgeMap(await loadGlobalBadges());
+  return toBadgeMap(await loadGlobalBadges().catch(() => []));
 }
 
 /// Global badges show at once; channel badges replace them when they land.
