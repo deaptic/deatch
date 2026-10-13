@@ -1,7 +1,7 @@
 import { createEffect, createSignal, on } from "solid-js";
 import type { Focus, User } from "../types/index.ts";
 import { channelFocus, diffFocus } from "../utils/channelFocus.ts";
-import { selectedChannel } from "../stores/view.ts";
+import { lastChannel, selectedChannel } from "../stores/view.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import { clearChatters, user } from "../stores/users.ts";
 import { linkWarmedChannels } from "../stores/link.ts";
@@ -62,7 +62,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
       ownId: u.id,
       pinnedIds: pinnedChannels(),
       warmedIds: linkWarmedChannels().map((ch) => ch.id),
-      selectedId: selectedChannel()?.id,
+      selectedId: (selectedChannel() ?? lastChannel())?.id,
       liveIds: liveStreams().map((ch) => ch.id),
     });
     const diff = diffFocus(joined, next);
