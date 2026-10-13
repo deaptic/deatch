@@ -9,6 +9,7 @@ use interprocess::TryClone;
 
 const MAX_MESSAGE_SIZE: usize = 1_048_576;
 const RECONNECT_DELAY: Duration = Duration::from_millis(1500);
+const MAX_LOG_BYTES: u64 = 1_048_576;
 
 fn log_path() -> std::path::PathBuf {
     std::env::temp_dir().join("deatch-host.log")
@@ -22,7 +23,12 @@ fn log(message: impl Display) {
         .append(true)
         .open(log_path())
     {
-        let _ = writeln!(file, "{} {message}", crate::clock::unix_ms());
+        let _ = writeln!(
+            file,
+            "{} {} {message}",
+            crate::clock::unix_ms(),
+            std::process::id()
+        );
     }
 }
 
@@ -32,8 +38,11 @@ enum Event {
 }
 
 pub fn run() {
-    // One browser session per file; without this the log grows forever.
-    let _ = std::fs::write(log_path(), "");
+    // Every browser runs its own host on this file, so it is only cleared
+    // once it outgrows the cap, never on start.
+    if std::fs::metadata(log_path()).is_ok_and(|m| m.len() > MAX_LOG_BYTES) {
+        let _ = std::fs::write(log_path(), "");
+    }
     log("host started");
     let (tx, rx) = mpsc::channel();
     let forward_tx = tx.clone();
