@@ -49,7 +49,7 @@ export function setPaused(id: string, paused: boolean) {
 }
 
 export function setBadges(id: string, badges: BadgeMap) {
-  ensureFeed(id);
+  if (!feeds[id]) return;
   setFeeds(id, "badges", badges);
 }
 
