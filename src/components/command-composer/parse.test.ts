@@ -1,6 +1,6 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
-import { durationError, formatDuration, parseDuration } from "./parse.ts";
+import { durationError, parseDuration } from "./parse.ts";
 import type { CommandOption } from "./types.ts";
 
 Deno.test("parses single, compound, unitless and padded durations", () => {
@@ -17,12 +17,6 @@ Deno.test("rejects anything that is not a duration", () => {
   assertEquals(parseDuration("abc"), null);
   assertEquals(parseDuration("5x"), null);
   assertEquals(parseDuration("-5m"), null);
-});
-
-Deno.test("formats with the largest unit that divides evenly", () => {
-  assertEquals(formatDuration(1209600), "2w");
-  assertEquals(formatDuration(90), "90s");
-  assertEquals(formatDuration(120), "2m");
 });
 
 Deno.test("reports a value outside the option's range", () => {

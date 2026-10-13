@@ -1,11 +1,19 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
-import { formatShortDuration } from "./duration.ts";
+import { formatApproxDuration, formatDuration } from "./duration.ts";
 
-Deno.test("formatShortDuration picks the largest whole unit", () => {
-  assertEquals(formatShortDuration(0), "0s");
-  assertEquals(formatShortDuration(30), "30s");
-  assertEquals(formatShortDuration(600), "10m");
-  assertEquals(formatShortDuration(7200), "2h");
-  assertEquals(formatShortDuration(604800), "7d");
+Deno.test("formatDuration uses the largest unit that divides evenly", () => {
+  assertEquals(formatDuration(0), "0s");
+  assertEquals(formatDuration(90), "90s");
+  assertEquals(formatDuration(120), "2m");
+  assertEquals(formatDuration(129600), "36h");
+  assertEquals(formatDuration(1209600), "2w");
+});
+
+Deno.test("formatApproxDuration rounds to the nearest whole unit", () => {
+  assertEquals(formatApproxDuration(0), "0s");
+  assertEquals(formatApproxDuration(30), "30s");
+  assertEquals(formatApproxDuration(599), "10m");
+  assertEquals(formatApproxDuration(7200), "2h");
+  assertEquals(formatApproxDuration(604800), "7d");
 });

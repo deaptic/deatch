@@ -5,7 +5,7 @@ import { getFollowedAt } from "../../../lib/api/twitch/channels.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
 import { feedEvent } from "../../../lib/utils/feedEvent.ts";
-import { formatDuration } from "../../../lib/format/stream.ts";
+import { formatClock } from "../../../lib/format/stream.ts";
 import { Time } from "../../../lib/utils/time.ts";
 import type { Command } from "../types.ts";
 
@@ -100,7 +100,7 @@ export const deatchCommands: Command[] = [
           return;
         }
         const ms = Date.now() - new Date(s.startedAt).getTime();
-        appendLocalNotice(ctx.broadcasterId, `Uptime: ${formatDuration(ms)}`);
+        appendLocalNotice(ctx.broadcasterId, `Uptime: ${formatClock(ms)}`);
       } catch {
         appendLocalNotice(ctx.broadcasterId, "Failed to fetch uptime");
       }

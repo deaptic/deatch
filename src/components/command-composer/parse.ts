@@ -1,18 +1,11 @@
 import type { CommandOption, DurationOption } from "./types.ts";
+import { DURATION_UNITS, formatDuration } from "../../lib/format/duration.ts";
 
 export type Slot = {
   raw: string;
   resolved: unknown | null;
   displayLabel: string;
   error: string | null;
-};
-
-const DURATION_UNITS: Record<string, number> = {
-  s: 1,
-  m: 60,
-  h: 3600,
-  d: 86400,
-  w: 604800,
 };
 
 export function parseDuration(raw: string): number | null {
@@ -23,13 +16,6 @@ export function parseDuration(raw: string): number | null {
     total += parseInt(n, 10) * (DURATION_UNITS[unit] ?? 1);
   }
   return total;
-}
-
-export function formatDuration(seconds: number): string {
-  const [unit, size] = Object.entries(DURATION_UNITS)
-    .reverse()
-    .find(([, size]) => seconds % size === 0) ?? ["s", 1];
-  return `${seconds / size}${unit}`;
 }
 
 export function durationError(
