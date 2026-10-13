@@ -2,7 +2,10 @@ import { advancedShowLogs } from "../stores/preferences.ts";
 import { addToast } from "../stores/toasts.ts";
 import { errorMessage } from "../utils/error.ts";
 
-export type InvokeOptions = { silent?: boolean; successMessage?: string };
+export type InvokeOptions = {
+  silent?: boolean;
+  successMessage?: string | false;
+};
 
 export async function invokeCommand<A extends unknown[], T>(
   command: (...args: A) => Promise<T>,

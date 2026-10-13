@@ -116,6 +116,6 @@ export const CHAT_MODES: ChatMode[] = [
 export function applyChatMode(broadcasterId: string, change: Change) {
   void updateChatSettings(
     { broadcasterId, ...change },
-    { successMessage: undefined },
+    { successMessage: false },
   ).catch(() => {});
 }
