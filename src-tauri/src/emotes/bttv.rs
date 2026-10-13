@@ -1,6 +1,7 @@
 use crate::emotes::dto::EmoteEntry;
 use crate::error::Result;
 use crate::http::get_json;
+use crate::twitch::ids::UserId;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -32,7 +33,7 @@ pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>
 
 pub async fn get_channel_emotes(
     http: &reqwest::Client,
-    channel_id: String,
+    channel_id: UserId,
 ) -> Result<Vec<EmoteEntry>> {
     let response: BttvChannelResponse = get_json(
         http,

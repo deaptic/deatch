@@ -1,20 +1,28 @@
+use crate::twitch::ids::{MessageId, UserId};
 use serde::Serialize;
 
 #[derive(Serialize, specta::Type)]
 pub struct RecentMessage {
-    pub broadcaster_user_id: String,
-    pub message_id: String,
-    pub chatter_user_id: String,
+    pub broadcaster_user_id: UserId,
+    pub message_id: MessageId,
+    pub chatter_user_id: UserId,
     pub chatter_user_login: String,
     pub chatter_user_name: String,
     pub color: String,
     pub message: MessageBody,
-    pub message_type: String,
+    pub message_type: MessageType,
     pub badges: Vec<ChatterBadge>,
     pub reply: Option<Reply>,
     pub channel_points_custom_reward_id: Option<String>,
     pub timestamp_ms: i64,
     pub deleted: bool,
+}
+
+#[derive(Debug, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "snake_case")]
+pub enum MessageType {
+    Text,
+    UserIntro,
 }
 
 #[derive(Serialize, specta::Type)]
@@ -50,9 +58,9 @@ pub struct ChatterBadge {
 
 #[derive(Serialize, specta::Type)]
 pub struct Reply {
-    pub parent_message_id: String,
+    pub parent_message_id: MessageId,
     pub parent_message_body: String,
     pub parent_user_name: String,
     pub parent_user_login: String,
-    pub parent_user_id: String,
+    pub parent_user_id: UserId,
 }
