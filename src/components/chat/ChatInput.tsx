@@ -51,7 +51,6 @@ export type ChatInputApi = {
 
 type Props = {
   broadcasterId: string;
-  broadcasterLogin: string;
   broadcasterName: string;
   isActive: boolean;
   replyTo: () => ReplyTo | null;
@@ -129,7 +128,6 @@ export default function ChatInput(props: Props) {
     try {
       await cmd.execute(values, {
         broadcasterId: props.broadcasterId,
-        broadcasterLogin: props.broadcasterLogin,
         openUserCard: props.openUserCard,
       });
     } catch (e) {
@@ -332,7 +330,6 @@ export default function ChatInput(props: Props) {
             command={cmd()}
             ctx={{
               broadcasterId: props.broadcasterId,
-              broadcasterLogin: props.broadcasterLogin,
               openUserCard: props.openUserCard,
             }}
             onSubmit={runCommand}

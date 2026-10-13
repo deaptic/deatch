@@ -301,7 +301,6 @@ export default function Chat(props: Props) {
 
       <ChatInput
         broadcasterId={props.broadcasterId}
-        broadcasterLogin={props.broadcasterLogin}
         broadcasterName={props.broadcasterName}
         isActive={props.isActive}
         replyTo={replyTo}

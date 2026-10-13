@@ -1,6 +1,5 @@
 export type CommandContext = {
   broadcasterId: string;
-  broadcasterLogin: string;
   openUserCard: (userId: string) => void;
 };
 
@@ -10,7 +9,6 @@ type OptionBase = {
   name: string;
   description: string;
   required?: boolean;
-  default?: unknown;
   hint?: string;
 };
 
@@ -29,8 +27,6 @@ export type CommandOption =
     type: "search";
     search: (query: string) => Promise<OptionSuggestion[]>;
   });
-
-export type OptionType = CommandOption["type"];
 
 export type CommandRole = "broadcaster" | "mod" | "regular";
 
