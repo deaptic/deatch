@@ -8,6 +8,7 @@ import type {
 } from "../types/index.ts";
 import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
@@ -30,41 +31,27 @@ function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   ) {
     system_message = `${name} ${system_message}`;
   }
-  return {
-    kind: "event",
-    id: crypto.randomUUID(),
-    notice_type: raw.notice_type,
-    system_message,
+  return feedEvent(raw.notice_type, system_message, timestamp, {
     chatter_user_id: raw.chatter_is_anonymous ? undefined : raw.chatter_user_id,
     chatter_name: raw.chatter_user_name ?? "anonymous",
     color: raw.color ?? "",
-    timestamp,
-  };
+  });
 }
 
 function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
-  return {
-    kind: "event",
-    id: crypto.randomUUID(),
-    notice_type: "shoutout",
-    system_message: `Shoutout to ${raw.to_broadcaster_user_name}!`,
-    chatter_name: raw.moderator_user_name,
-    color: "",
+  return feedEvent(
+    "shoutout",
+    `Shoutout to ${raw.to_broadcaster_user_name}!`,
     timestamp,
-  };
+    { chatter_name: raw.moderator_user_name },
+  );
 }
 
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
-  return {
-    kind: "event",
-    id: crypto.randomUUID(),
-    notice_type: "follow",
-    system_message: `${raw.user_name} followed!`,
+  return feedEvent("follow", `${raw.user_name} followed!`, timestamp, {
     chatter_user_id: raw.user_id,
     chatter_name: raw.user_name,
-    color: "",
-    timestamp,
-  };
+  });
 }
 
 function redemptionEvent(
@@ -73,18 +60,18 @@ function redemptionEvent(
   timestamp: number,
 ): FeedEvent {
   const said = redemption.input ? `: ${redemption.input}` : "";
-  return {
-    kind: "event",
-    id: raw.id,
-    notice_type: "channel_points_redemption",
-    system_message: `${raw.user_name} redeemed ${raw.reward.title}${said}`,
-    chatter_user_id: raw.user_id,
-    chatter_login: raw.user_login,
-    chatter_name: raw.user_name,
-    color: "",
+  return feedEvent(
+    "channel_points_redemption",
+    `${raw.user_name} redeemed ${raw.reward.title}${said}`,
     timestamp,
-    redemption,
-  };
+    {
+      id: raw.id,
+      chatter_user_id: raw.user_id,
+      chatter_login: raw.user_login,
+      chatter_name: raw.user_name,
+      redemption,
+    },
+  );
 }
 
 export function start(): () => void {

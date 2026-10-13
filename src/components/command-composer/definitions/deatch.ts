@@ -4,6 +4,7 @@ import { getStreamsFromIds } from "../../../lib/api/twitch/streams.ts";
 import { getFollowedAt } from "../../../lib/api/twitch/channels.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
+import { feedEvent } from "../../../lib/utils/feedEvent.ts";
 import { formatDuration } from "../../../lib/format/stream.ts";
 import { Time } from "../../../lib/utils/time.ts";
 import type { Command } from "../types.ts";
@@ -71,16 +72,13 @@ export const deatchCommands: Command[] = [
           },
           { silent: true },
         );
-        appendItem(ctx.broadcasterId, {
-          kind: "event",
-          id: clip.id,
-          notice_type: "clip_created",
-          system_message: "Clip created",
-          chatter_name: "",
-          color: "",
-          timestamp: Date.now(),
-          clip: { id: clip.id },
-        });
+        appendItem(
+          ctx.broadcasterId,
+          feedEvent("clip_created", "Clip created", Date.now(), {
+            id: clip.id,
+            clip: { id: clip.id },
+          }),
+        );
       } catch {
         appendLocalNotice(
           ctx.broadcasterId,
