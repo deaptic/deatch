@@ -1,5 +1,5 @@
 import { Check, X } from "lucide-solid";
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import type {
@@ -10,8 +10,7 @@ import type {
 import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
-import { setAutomodHoldStatus } from "../../../lib/stores/feeds.ts";
-import { manageHeldAutomodMessage } from "../../../lib/api/twitch/moderation.ts";
+import * as automod from "../../../lib/services/automod.ts";
 import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
 import DisplayName from "../../ui/DisplayName.tsx";
 import Timestamp from "../../ui/Timestamp.tsx";
@@ -63,36 +62,13 @@ export function createMessageParts(
     const s = hold()?.status;
     return s === "approved" || s === "denied" || s === "expired";
   };
-  const [holdBusy, setHoldBusy] = createSignal(false);
 
   const comfortable = () =>
     props.density === "comfortable" && props.showName !== false;
 
-  async function handleHold(action: "approve" | "deny") {
+  function handleHold(action: automod.HoldAction) {
     const h = hold();
-    if (!h || holdBusy()) return;
-    setHoldBusy(true);
-    const broadcasterId = h.broadcaster_user_id;
-    setAutomodHoldStatus(
-      broadcasterId,
-      item.message_id,
-      action === "approve" ? "approving" : "denying",
-    );
-    try {
-      await manageHeldAutomodMessage({
-        msgId: item.message_id,
-        action: action === "approve" ? "allow" : "deny",
-      });
-      setAutomodHoldStatus(
-        broadcasterId,
-        item.message_id,
-        action === "approve" ? "approved" : "denied",
-      );
-    } catch {
-      setAutomodHoldStatus(broadcasterId, item.message_id, "pending");
-    } finally {
-      setHoldBusy(false);
-    }
+    if (h) void automod.resolve(h.broadcaster_user_id, item.message_id, action);
   }
 
   const mentioned = createMemo(() =>
@@ -131,14 +107,12 @@ export function createMessageParts(
             title: "Approve",
             icon: () => <Check class="size-4" />,
             tone: "success",
-            disabled: holdBusy,
             onClick: () => handleHold("approve"),
           },
           {
             title: "Deny",
             icon: () => <X class="size-4" />,
             tone: "danger",
-            disabled: holdBusy,
             onClick: () => handleHold("deny"),
           },
         ]
