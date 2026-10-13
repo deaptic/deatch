@@ -10,6 +10,10 @@ use std::time::Instant;
 use twitch_api::client::{Bytes, Request, Response};
 use twitch_api::HttpClient;
 
+/// OAuth calls share the transport but answer for a different service, so
+/// only Helix responses speak for the rate-limit bucket or the token.
+const HELIX_HOST: &str = "api.twitch.tv";
+
 #[derive(Clone)]
 pub struct HelixTransport {
     http: reqwest::Client,
@@ -66,7 +70,9 @@ impl HttpClient for HelixTransport {
                 let response = result?;
                 this.rate_limit
                     .observe(parts.uri.host(), response.headers());
-                if response.status() == http::StatusCode::UNAUTHORIZED {
+                if parts.uri.host() == Some(HELIX_HOST)
+                    && response.status() == http::StatusCode::UNAUTHORIZED
+                {
                     this.unauthorized.store(true, Ordering::Relaxed);
                 }
                 let Some(delay) = retry::retry_delay(&parts.method, response.status(), attempt)
