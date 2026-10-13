@@ -30,6 +30,7 @@ const complete = (m: Partial<Mention>): m is Mention =>
 
 const MAX = 100;
 const STORAGE_KEY = "mentions";
+const SAVE_DELAY_MS = 1000;
 
 const initialMentions: Mention[] = (() => {
   try {
@@ -45,12 +46,24 @@ const initialMentions: Mention[] = (() => {
 const [mentions, setMentions] = createSignal<Mention[]>(initialMentions);
 export { mentions };
 
-function save(list: Mention[]) {
+let saveTimer: number | undefined;
+let unsaved: Mention[] | undefined;
+
+export function flushMentions() {
+  clearTimeout(saveTimer);
+  if (!unsaved) return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(unsaved));
   } catch (e) {
     console.warn("mentions not persisted", e);
   }
+  unsaved = undefined;
+}
+
+function save(list: Mention[]) {
+  unsaved = list;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushMentions, SAVE_DELAY_MS);
   return list;
 }
 
@@ -69,8 +82,7 @@ export function recordMention(m: Omit<Mention, "unread">) {
     const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
     return save(next.length > MAX ? next.slice(0, MAX) : next);
   });
-  if (added && notificationsMentionSound()) {
-    audio.currentTime = 0;
+  if (added && notificationsMentionSound() && audio.paused) {
     audio.play().catch(() => {});
   }
 }
