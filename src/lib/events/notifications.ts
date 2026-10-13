@@ -1,4 +1,4 @@
-import { listenEventSub, unlistenAll } from "./listen.ts";
+import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type {
   FeedEvent,
   RawFollow,
@@ -93,7 +93,7 @@ export function start(): () => void {
       const raw = e.payload.event;
       const id = raw.broadcaster_user_id;
       if (!raw.system_message?.trim()) return;
-      const item = mapNotice(raw, Date.now());
+      const item = mapNotice(raw, serverTime(e.payload));
       if (raw.notice_type === "sub_gift") {
         setTimeout(() => appendItem(id, item), 600);
       } else {
@@ -113,17 +113,23 @@ export function start(): () => void {
     }),
     listenEventSub<RawShoutout>("channel.shoutout.create", (e) => {
       const raw = e.payload.event;
-      appendItem(raw.broadcaster_user_id, mapShoutout(raw, Date.now()));
+      appendItem(
+        raw.broadcaster_user_id,
+        mapShoutout(raw, serverTime(e.payload)),
+      );
     }),
     listenEventSub<RawFollow>("channel.follow", (e) => {
       const raw = e.payload.event;
-      appendItem(raw.broadcaster_user_id, mapFollow(raw, Date.now()));
+      appendItem(
+        raw.broadcaster_user_id,
+        mapFollow(raw, serverTime(e.payload)),
+      );
     }),
     listenEventSub<RawChannelPointsRedemption>(
       "channel.channel_points_custom_reward_redemption.add",
       (e) => {
         const raw = e.payload.event;
-        const ts = Date.now();
+        const ts = serverTime(e.payload);
         const redemption = mapRedemption(raw);
         correlateRedemption(
           raw.broadcaster_user_id,

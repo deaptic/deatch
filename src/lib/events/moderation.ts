@@ -1,4 +1,4 @@
-import { listenEventSub, unlistenAll } from "./listen.ts";
+import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type {
   AutomodHoldStatus,
   FeedEvent,
@@ -120,7 +120,7 @@ export function start(): () => void {
       const broadcasterId = e.payload.event.broadcaster_user_id;
       markAllMessagesDeleted(broadcasterId);
       if (isModOfChannel(broadcasterId)) return;
-      const now = Date.now();
+      const now = serverTime(e.payload);
       const notice: FeedEvent = {
         kind: "event",
         id: `chat-cleared-${broadcasterId}-${now}`,
@@ -134,10 +134,9 @@ export function start(): () => void {
     }),
     listenEventSub<RawModerate>("channel.moderate", (e) => {
       const payload = e.payload.event;
-      const serverNowMs = new Date(e.payload.timestamp).getTime();
-      const msg = buildModerateMessage(payload, serverNowMs);
+      const now = serverTime(e.payload);
+      const msg = buildModerateMessage(payload, now);
       if (!msg) return;
-      const now = Date.now();
       const notice: FeedEvent = {
         kind: "event",
         id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${
@@ -162,7 +161,7 @@ export function start(): () => void {
         color: "",
         fragments: p.message.fragments.map(mapFragment),
         badges: [],
-        timestamp: new Date(p.held_at).getTime() || Date.now(),
+        timestamp: new Date(p.held_at).getTime() || serverTime(e.payload),
         automod_hold: {
           reason: automodReasonLabel(p),
           status: "pending",

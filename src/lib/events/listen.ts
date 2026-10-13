@@ -18,3 +18,7 @@ export function unlistenAll(listeners: Promise<UnlistenFn>[]): () => void {
     for (const listener of listeners) void listener.then((stop) => stop());
   };
 }
+
+export function serverTime(envelope: EventEnvelope<unknown>): number {
+  return new Date(envelope.timestamp).getTime();
+}
