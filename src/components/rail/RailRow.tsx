@@ -40,6 +40,7 @@ export default function RailRow(props: Props) {
       <button
         type="button"
         ref={props.ref}
+        aria-label={expanded() ? undefined : props.label}
         aria-current={props.selected ? "page" : undefined}
         onClick={props.onClick}
         onDblClick={props.onDoubleClick}
