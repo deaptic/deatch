@@ -15,6 +15,7 @@ type Props = {
 };
 
 export default function CommandComposerSlot(props: Props) {
+  const text = () => props.isFilled ? props.displayLabel : props.raw;
   return (
     <Show
       when={props.isActive}
@@ -26,16 +27,13 @@ export default function CommandComposerSlot(props: Props) {
             props.onActivate();
           }}
           class={`inline-flex items-center px-2 py-1 rounded-sm text-body transition-colors duration-snap cursor-pointer ${
-            props.isFilled
+            text()
               ? "bg-raised text-ink hover:bg-raised/80"
               : "bg-raised/30 text-ink-faint hover:bg-raised/50"
           }`}
         >
-          {props.isFilled
-            ? props.displayLabel
-            : `${props.option.name}${
-              props.option.required === false ? "?" : ""
-            }`}
+          {text() ||
+            `${props.option.name}${props.option.required === false ? "?" : ""}`}
         </button>
       }
     >
