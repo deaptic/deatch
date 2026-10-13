@@ -8,6 +8,7 @@
 // commits with message "chore: release vX.Y.Z", tags vX.Y.Z, and pushes the
 // current branch + tag. The release GitHub Action takes over from the tag.
 
+import { run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
 const FILES = {
@@ -47,16 +48,6 @@ async function patchCargoLock(
   const patched = text.replace(re, `$1${newVersion}$2`);
   if (patched === text) throw new Error(`failed to bump ${name} in ${path}`);
   await Deno.writeTextFile(path, patched);
-}
-
-async function run(cmd: string[]): Promise<void> {
-  const p = new Deno.Command(cmd[0], {
-    args: cmd.slice(1),
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  const { code } = await p.output();
-  if (code !== 0) throw new Error(`${cmd.join(" ")} exited with ${code}`);
 }
 
 async function captureStdout(cmd: string[]): Promise<string> {

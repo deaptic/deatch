@@ -7,6 +7,7 @@
 // stripped to what that browser knows, so neither store warns about the
 // other's keys.
 
+import { run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
 const SRC = "extension";
@@ -84,16 +85,6 @@ async function copy(from: string, to: string): Promise<void> {
   } else {
     await Deno.copyFile(from, to);
   }
-}
-
-async function run(cmd: string[]): Promise<void> {
-  const p = new Deno.Command(cmd[0], {
-    args: cmd.slice(1),
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  const { code } = await p.output();
-  if (code !== 0) throw new Error(`${cmd.join(" ")} exited with ${code}`);
 }
 
 for (const [browser, manifest] of Object.entries(targets)) {
