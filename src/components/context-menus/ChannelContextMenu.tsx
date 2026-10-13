@@ -1,4 +1,6 @@
 import {
+  ArrowDown,
+  ArrowUp,
   CheckCheck,
   ExternalLink,
   Link2,
@@ -21,6 +23,7 @@ import {
   advancedDeveloperMode,
   pinChannel,
   pinnedChannels,
+  reorderPinnedChannels,
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import { linkMutedByLogin, linkWarmedChannels } from "../../lib/stores/link.ts";
@@ -54,6 +57,9 @@ export default function ChannelContextMenu(props: Props) {
   const hasTab = () => linkWarmedChannels().some((c) => c?.id === props.ch.id);
   const muted = () => linkMutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);
+  const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
+  const movePin = (by: number) => () =>
+    reorderPinnedChannels(pinIndex(), pinIndex() + by);
   const unread = () =>
     hasUnread(props.ch.id) || channelMentionCount(props.ch.id) > 0;
   const self = () => user();
@@ -141,6 +147,20 @@ export default function ChannelContextMenu(props: Props) {
               icon={<PinOff />}
               onClick={run(() => unpinChannel(props.ch.id))}
             />
+            <Show when={pinIndex() > 0}>
+              <MenuItem
+                label="Move up"
+                icon={<ArrowUp />}
+                onClick={run(movePin(-1))}
+              />
+            </Show>
+            <Show when={pinIndex() < pinnedChannels().length - 1}>
+              <MenuItem
+                label="Move down"
+                icon={<ArrowDown />}
+                onClick={run(movePin(1))}
+              />
+            </Show>
           </Show>
         </Show>
         <MenuItem

@@ -194,6 +194,10 @@ export default function EmotePicker(props: Props) {
       "shift-tab": () => cycleTab(-1),
       enter: () => selectActive(false),
       "shift-enter": () => selectActive(true),
+      "ctrl-d": () => {
+        const item = activeItem();
+        if (item) onToggleFavorite(item);
+      },
     });
     onCleanup(() => {
       unbind();
@@ -318,7 +322,7 @@ export default function EmotePicker(props: Props) {
                   {item().label}
                 </span>
                 <span class="ml-auto text-ink-faint whitespace-nowrap">
-                  Enter to insert
+                  Enter to insert · Ctrl D to favourite
                 </span>
               </>
             )}
