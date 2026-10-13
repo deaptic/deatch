@@ -78,6 +78,18 @@ if (status) {
   Deno.exit(1);
 }
 
+const tag = `v${next}`;
+if (await captureStdout(["git", "tag", "--list", tag])) {
+  console.error(`tag ${tag} already exists`);
+  Deno.exit(1);
+}
+const branch = await captureStdout([
+  "git",
+  "rev-parse",
+  "--abbrev-ref",
+  "HEAD",
+]);
+
 console.log(`bumping ${current} → ${next}`);
 
 pkg.version = next;
@@ -90,18 +102,10 @@ await writeJson(FILES.tauri, tauri);
 await patchCargo(FILES.cargo, next);
 await patchCargoLock(FILES.cargoLock, "deatch", next);
 
-const branch = await captureStdout([
-  "git",
-  "rev-parse",
-  "--abbrev-ref",
-  "HEAD",
-]);
-const tag = `v${next}`;
-
 await run(["git", "add", FILES.pkg, FILES.tauri, FILES.cargo, FILES.cargoLock]);
 await run(["git", "commit", "-m", `chore: release ${tag}`]);
 await run(["git", "tag", tag]);
-await run(["git", "push", "origin", branch, tag]);
+await run(["git", "push", "--atomic", "origin", branch, tag]);
 
 console.log(
   `released ${tag} from ${branch} — GitHub Action will build and publish.`,
