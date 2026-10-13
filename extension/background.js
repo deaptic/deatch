@@ -167,6 +167,7 @@ function connect() {
     scheduleReconnect();
   });
   port.onMessage.addListener((msg) => {
+    reconnectDelay = RECONNECT_MIN_MS;
     const run = COMMANDS[msg?.type];
     if (!run) return;
     if (typeof msg.channel === "string") {
@@ -174,7 +175,6 @@ function connect() {
     } else if (msg.type !== "get_state") return;
     void run(msg);
   });
-  reconnectDelay = RECONNECT_MIN_MS;
   lastStateKey = "";
   emitState();
 }
