@@ -14,7 +14,6 @@
         "no-window",
         "no-window-prefix",
         "require-await",
-        "no-empty",
         "jsx-button-has-type"
       ]
     }
