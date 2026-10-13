@@ -155,9 +155,7 @@ where
             status,
             message,
             ..
-        })) if status.is_client_error() && status != http::StatusCode::TOO_MANY_REQUESTS => {
-            Err(CreateError::Rejected(message))
-        }
+        })) if is_rejection(status) => Err(CreateError::Rejected(message)),
         Err(e) => Err(CreateError::Transient(e.into())),
     }
 }
@@ -168,4 +166,35 @@ async fn delete(twitch: &Authed<'_>, subscription_id: &str) -> Result<()> {
         .delete_eventsub_subscription(subscription_id, &twitch.token)
         .await?;
     Ok(())
+}
+
+fn is_rejection(status: http::StatusCode) -> bool {
+    use http::StatusCode;
+    status.is_client_error()
+        && status != StatusCode::TOO_MANY_REQUESTS
+        && status != StatusCode::UNAUTHORIZED
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_rejection;
+    use http::StatusCode;
+
+    #[test]
+    fn only_final_client_errors_reject() {
+        for status in [
+            StatusCode::BAD_REQUEST,
+            StatusCode::FORBIDDEN,
+            StatusCode::CONFLICT,
+        ] {
+            assert!(is_rejection(status), "{status}");
+        }
+        for status in [
+            StatusCode::UNAUTHORIZED,
+            StatusCode::TOO_MANY_REQUESTS,
+            StatusCode::INTERNAL_SERVER_ERROR,
+        ] {
+            assert!(!is_rejection(status), "{status}");
+        }
+    }
 }
