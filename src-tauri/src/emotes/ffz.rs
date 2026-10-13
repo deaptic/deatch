@@ -17,6 +17,7 @@ struct FfzSet {
 
 #[derive(Deserialize)]
 struct FfzResponse {
+    #[serde(default)]
     sets: HashMap<String, FfzSet>,
 }
 
@@ -48,4 +49,17 @@ pub async fn get_channel_emotes(
     )
     .await?;
     Ok(response_to_entries(response))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{response_to_entries, FfzResponse};
+
+    #[test]
+    fn missing_room_body_parses_as_no_emotes() {
+        let response: FfzResponse =
+            serde_json::from_str(r#"{"error":"Not Found","message":"No such room","status":404}"#)
+                .unwrap();
+        assert!(response_to_entries(response).is_empty());
+    }
 }
