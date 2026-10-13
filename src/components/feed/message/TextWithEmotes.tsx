@@ -1,54 +1,47 @@
-import { For, Show } from "solid-js";
+import { For } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
-
-const URL_RE = /^https?:\/\/\S+$/;
+import { textSegments } from "./textSegments.ts";
 
 export default function TextWithEmotes(
   props: { text: string; emotes: EmoteMap },
 ) {
-  const tokens = () => props.text.split(/(\s+)/);
   return (
-    <For each={tokens()}>
-      {(token) => {
-        const emoteUrl = () => props.emotes[token];
-        return (
-          <Show
-            when={emoteUrl()}
-            fallback={URL_RE.test(token)
-              ? (
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openUrl(token);
-                  }}
-                  onAuxClick={(e) => {
-                    if (e.button !== 1) return;
-                    e.preventDefault();
-                    openUrl(token);
-                  }}
-                  onMouseDown={(e) => {
-                    if (e.button === 1) e.preventDefault();
-                  }}
-                  class="text-accent-ink hover:underline break-all"
-                >
-                  {token}
-                </a>
-              )
-              : <span class="text-ink">{token}</span>}
-          >
+    <For each={textSegments(props.text, props.emotes)}>
+      {(segment) =>
+        segment.kind === "emote"
+          ? (
             <img
-              src={emoteUrl()!}
-              alt={token}
-              title={token}
+              src={segment.url}
+              alt={segment.name}
+              title={segment.name}
               decoding="async"
               class={INLINE_EMOTE}
             />
-          </Show>
-        );
-      }}
+          )
+          : segment.kind === "link"
+          ? (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                openUrl(segment.url);
+              }}
+              onAuxClick={(e) => {
+                if (e.button !== 1) return;
+                e.preventDefault();
+                openUrl(segment.url);
+              }}
+              onMouseDown={(e) => {
+                if (e.button === 1) e.preventDefault();
+              }}
+              class="text-accent-ink hover:underline break-all"
+            >
+              {segment.url}
+            </a>
+          )
+          : <span class="text-ink">{segment.text}</span>}
     </For>
   );
 }
