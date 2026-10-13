@@ -54,9 +54,10 @@ export default function BanModal(props: Props) {
         broadcasterId: props.broadcasterId,
         userId: props.userId,
       };
-      await (choice() === "unban" ? unbanUser(target) : banUser({
+      const picked = choice();
+      await (picked === "unban" ? unbanUser(target) : banUser({
         ...target,
-        duration: secondsFor(choice()),
+        duration: secondsFor(picked),
         reason: reason(),
       }));
       props.onClose();
