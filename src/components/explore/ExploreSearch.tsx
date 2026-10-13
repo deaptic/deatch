@@ -19,14 +19,7 @@ export default function ExploreSearch(props: Props) {
       onInput={(e) => props.onInput(e.currentTarget.value)}
       placeholder="Search channels and categories"
       trailing={
-        <Show
-          when={props.value}
-          fallback={
-            <kbd class="text-small text-ink-faint bg-raised rounded-xs px-1.5 py-0.5 font-sans">
-              Ctrl K
-            </kbd>
-          }
-        >
+        <Show when={props.value}>
           <IconButton
             label="Clear search"
             size="sm"
