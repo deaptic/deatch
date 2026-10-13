@@ -13,7 +13,6 @@ import {
   computeChannelSections,
   computeGlobalSections,
   favorites,
-  isFavorite,
   toggleFavorite,
   userEmotes,
 } from "../../lib/stores/emotes.ts";
@@ -241,7 +240,6 @@ export default function EmotePicker(props: Props) {
         setActiveIndex(idx);
         props.onSelect(value, opts);
       }}
-      isFavorite={isFavorite}
       onToggleFavorite={onToggleFavorite}
       startIndex={section.startIndex}
       activeIndex={activeIndex()}

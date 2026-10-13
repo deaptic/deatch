@@ -25,7 +25,6 @@ type Props = {
   dimmed?: boolean;
   ref?: (el: HTMLButtonElement) => void;
   onClick?: () => void;
-  onDoubleClick?: () => void;
   onMiddleClick?: () => void;
   onContextMenu?: (x: number, y: number) => void;
   children: JSX.Element;
@@ -43,7 +42,6 @@ export default function RailRow(props: Props) {
         aria-label={expanded() ? undefined : props.label}
         aria-current={props.selected ? "page" : undefined}
         onClick={props.onClick}
-        onDblClick={props.onDoubleClick}
         onAuxClick={(e) => {
           if (e.button !== 1 || !props.onMiddleClick) return;
           e.preventDefault();

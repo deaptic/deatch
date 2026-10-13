@@ -52,7 +52,6 @@ export type ChatInputApi = {
 type Props = {
   broadcasterId: string;
   broadcasterName: string;
-  isActive: boolean;
   replyTo: () => ReplyTo | null;
   onClearReply: () => void;
   getMentions: () => Message[];
@@ -201,7 +200,6 @@ export default function ChatInput(props: Props) {
   }
 
   createEffect(() => {
-    if (!props.isActive) return;
     shortcuts.setContext(
       "chat:popupOpen",
       (autocomplete()?.isActive() ?? false) || commandMode() !== null,
@@ -213,7 +211,6 @@ export default function ChatInput(props: Props) {
   });
 
   createEffect(() => {
-    if (!props.isActive) return;
     shortcuts.setContext("chat:replyActive", props.replyTo() !== null);
     onCleanup(() => shortcuts.setContext("chat:replyActive", false));
   });
@@ -223,7 +220,6 @@ export default function ChatInput(props: Props) {
   });
 
   createEffect(() => {
-    if (!props.isActive) return;
     const unbind = bindShortcuts();
     onCleanup(() => {
       for (const u of unbind) u();
@@ -313,7 +309,7 @@ export default function ChatInput(props: Props) {
               onCommandSelected={setCommandMode}
               ref={setAutocomplete}
             />
-            <Show when={isOverlayOpen("emotePicker") && props.isActive}>
+            <Show when={isOverlayOpen("emotePicker")}>
               <Suspense>
                 <EmotePicker
                   onSelect={onEmoteSelect}

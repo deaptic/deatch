@@ -63,10 +63,6 @@ export function toggleFavorite(emote: FavoriteEmote) {
   else persistFavorites([...list, emote]);
 }
 
-export function isFavorite(value: string): boolean {
-  return favorites().some((e) => e.value === value);
-}
-
 /// Deduplicate a list of user emotes by id. Twitch's `Get User Emotes`
 /// endpoint returns the same emote once per emote-set it belongs to, so
 /// callers ingesting the raw response (e.g. the cache loader) must run
