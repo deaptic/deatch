@@ -14,7 +14,7 @@ import { copyField } from "../../lib/utils/clipboard.ts";
 import { isMention } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
-import ChatInput, { type ChatInputApi } from "./ChatInput.tsx";
+import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
 import ModBar from "./ModBar.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
@@ -89,9 +89,7 @@ export default function Chat(props: Props) {
   const userCard = createPopover<{ chatterId: string }>();
   const fontSize = createFontSizeWheel();
 
-  const [replyTo, setReplyTo] = createSignal<
-    { messageId: string; name: string; text: string } | null
-  >(null);
+  const [replyTo, setReplyTo] = createSignal<ReplyTo | null>(null);
   const [modAction, setModAction] = createSignal<
     { action: ModAction; userId: string; userName: string } | null
   >(null);
