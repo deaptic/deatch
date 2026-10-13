@@ -28,6 +28,10 @@ async function connect(): Promise<boolean> {
 }
 
 async function disconnect(): Promise<void> {
+  clearTimeout(pendingTimer);
+  pendingTimer = undefined;
+  pendingActivity = null;
+  activityMode = null;
   if (!connected) return;
   try {
     await discordDisconnect({ silent: true });
@@ -36,12 +40,6 @@ async function disconnect(): Promise<void> {
   }
   connected = false;
   lastSerialized = null;
-  pendingActivity = null;
-  activityMode = null;
-  if (pendingTimer !== undefined) {
-    clearTimeout(pendingTimer);
-    pendingTimer = undefined;
-  }
 }
 
 // Discord throttles activity updates server-side (~5 per 20s). Debounce
