@@ -1,4 +1,4 @@
-import { listenEventSub, unlistenAll } from "./listen.ts";
+import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { knownUser, recordChatter, user } from "../stores/users.ts";
@@ -34,8 +34,7 @@ export function start(): () => void {
   return unlistenAll([
     listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
       const raw = e.payload.event;
-      // Server time keeps live and backfilled messages on one clock.
-      const ts = new Date(e.payload.timestamp).getTime();
+      const ts = serverTime(e.payload);
       const msg = mapChatMessage(raw, ts);
       recordChatter(raw.broadcaster_user_id, chatterOf(msg));
       if (appendItem(raw.broadcaster_user_id, msg)) {
