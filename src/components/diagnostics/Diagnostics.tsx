@@ -90,6 +90,13 @@ export default function Diagnostics(props: Props) {
                     tone="negative"
                   />
                 </Show>
+                <Show when={s().app.eventsub.rejected > 0}>
+                  <MetricRow
+                    label="Rejected by Twitch"
+                    value={`${s().app.eventsub.rejected}`}
+                    tone="negative"
+                  />
+                </Show>
               </DiagnosticsSection>
 
               <DiagnosticsSection title="Cache">

@@ -24,4 +24,5 @@ pub struct EventSubStats {
     pub retrying: u32,
     pub waiting: u32,
     pub capped: u32,
+    pub rejected: u32,
 }

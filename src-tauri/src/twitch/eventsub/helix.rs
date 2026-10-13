@@ -5,7 +5,7 @@ use twitch_api::twitch_oauth2::UserToken;
 use super::super::moderation::get_moderated_channels;
 use super::super::{Authed, Twitch};
 use super::runner::Signal;
-use super::subscriptions::{Batch, Created, Subscription};
+use super::subscriptions::{Batch, CreateError, Created, Subscription};
 use super::EventKind;
 use crate::error::Result;
 use crate::twitch::ids::UserId;
@@ -21,6 +21,7 @@ use twitch_api::eventsub::{
     },
     Transport,
 };
+use twitch_api::helix::{ClientRequestError, HelixRequestPostError};
 
 const MAX_CONCURRENT: usize = 20;
 
@@ -106,7 +107,7 @@ async fn create(
     twitch: &Authed<'_>,
     subscription: &Subscription,
     session_id: &str,
-) -> Result<String> {
+) -> std::result::Result<String, CreateError> {
     let b = subscription.channel.as_str();
     let u = twitch.token.user_id.as_str();
     let transport = Transport::websocket(session_id);
@@ -136,15 +137,29 @@ async fn create(
     }
 }
 
-async fn send<E>(twitch: &Authed<'_>, condition: E, transport: Transport) -> Result<String>
+async fn send<E>(
+    twitch: &Authed<'_>,
+    condition: E,
+    transport: Transport,
+) -> std::result::Result<String, CreateError>
 where
     E: twitch_api::eventsub::EventSubscription + Send + 'static,
 {
-    let subscription = twitch
+    match twitch
         .helix
         .create_eventsub_subscription(condition, transport, &twitch.token)
-        .await?;
-    Ok(subscription.id.to_string())
+        .await
+    {
+        Ok(subscription) => Ok(subscription.id.to_string()),
+        Err(ClientRequestError::HelixRequestPostError(HelixRequestPostError::Error {
+            status,
+            message,
+            ..
+        })) if status.is_client_error() && status != http::StatusCode::TOO_MANY_REQUESTS => {
+            Err(CreateError::Rejected(message))
+        }
+        Err(e) => Err(CreateError::Transient(e.into())),
+    }
 }
 
 async fn delete(twitch: &Authed<'_>, subscription_id: &str) -> Result<()> {

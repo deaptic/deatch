@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 use super::dto::{ConnectionState, ConnectionStats, EventSubStats};
 use super::kind::{Focus, Role};
 use super::EventKind;
-use crate::error::{Error, Result};
+use crate::error::Error;
 use crate::twitch::ids::UserId;
 
 pub(super) const MAX_CONNECTIONS: usize = 3;
@@ -42,11 +42,17 @@ pub(super) struct Viewer {
     pub(super) moderated: HashSet<UserId>,
 }
 
+#[derive(Debug)]
+pub(super) enum CreateError {
+    Rejected(String),
+    Transient(Error),
+}
+
 pub(super) struct Created {
     pub(super) conn: ConnId,
     pub(super) generation: u64,
     pub(super) subscription: Subscription,
-    pub(super) result: Result<String>,
+    pub(super) result: std::result::Result<String, CreateError>,
 }
 
 pub(super) struct Batch {
@@ -76,6 +82,7 @@ pub(super) enum Outcome {
         error: Error,
         announce: bool,
     },
+    Rejected(String),
     Orphaned(String),
     Discarded,
 }
@@ -100,12 +107,19 @@ enum State {
         attempts: usize,
     },
     Capped,
+    /// Holds its connection so a session change (`down`) clears it and the
+    /// next plan tries again.
+    Rejected {
+        conn: ConnId,
+    },
 }
 
 impl State {
     fn conn(&self) -> Option<ConnId> {
         match self {
-            State::Creating { conn, .. } | State::Live { conn, .. } => Some(*conn),
+            State::Creating { conn, .. } | State::Live { conn, .. } | State::Rejected { conn } => {
+                Some(*conn)
+            }
             State::Retrying { .. } | State::Waiting { .. } | State::Capped => None,
         }
     }
@@ -208,6 +222,7 @@ impl Subs {
                 State::Retrying { .. } => &mut stats.retrying,
                 State::Waiting { .. } => &mut stats.waiting,
                 State::Capped => &mut stats.capped,
+                State::Rejected { .. } => &mut stats.rejected,
                 State::Creating { .. } | State::Live { .. } => continue,
             };
             *counter += 1;
@@ -401,7 +416,11 @@ impl Subs {
                     recovered_since: gap.map(|gap| gap.since_unix_ms),
                 }
             }
-            Err(error) => {
+            Err(CreateError::Rejected(message)) => {
+                self.states.insert(subscription, State::Rejected { conn });
+                Outcome::Rejected(message)
+            }
+            Err(CreateError::Transient(error)) => {
                 let delay = RETRY_DELAYS[attempts.min(RETRY_DELAYS.len() - 1)];
                 let attempts = attempts + 1;
                 let at = now + delay;
@@ -516,7 +535,11 @@ mod tests {
         subs.plan(Some(&viewer(&[])), Instant::now())
     }
 
-    fn created(batch: &Batch, subscription: Subscription, result: Result<String>) -> Created {
+    fn created(
+        batch: &Batch,
+        subscription: Subscription,
+        result: std::result::Result<String, CreateError>,
+    ) -> Created {
         Created {
             conn: batch.conn,
             generation: batch.generation,
@@ -702,7 +725,11 @@ mod tests {
                 .iter()
                 .find(|b| b.subscriptions.contains(&sub("c0", CHAT)))
                 .expect("chat is retried");
-            let failed = created(batch, sub("c0", CHAT), Err(Error::Http("boom".into())));
+            let failed = created(
+                batch,
+                sub("c0", CHAT),
+                Err(CreateError::Transient(Error::Http("boom".into()))),
+            );
             let Outcome::Retrying {
                 attempts,
                 delay,
@@ -721,6 +748,48 @@ mod tests {
     }
 
     #[test]
+    fn rejections_wait_for_a_new_session() {
+        let mut subs = subs_for(Channels::from([(id("c0"), Focus::Focused)]));
+        plan(&mut subs);
+        subs.up(0, "s0".into());
+        let now = Instant::now();
+        let next = subs.plan(Some(&viewer(&[])), now);
+        let batch = next
+            .create
+            .iter()
+            .find(|b| b.subscriptions.contains(&sub("c0", CHAT)))
+            .expect("chat is created");
+        let rejected = created(
+            batch,
+            sub("c0", CHAT),
+            Err(CreateError::Rejected("not a moderator".into())),
+        );
+        assert!(
+            matches!(subs.accept(rejected, now), Outcome::Rejected(m) if m == "not a moderator")
+        );
+        assert_eq!(subs.stats().rejected, 1);
+        let later = now + Duration::from_secs(3600);
+        assert!(
+            !subs
+                .plan(Some(&viewer(&[])), later)
+                .create
+                .iter()
+                .any(|b| b.subscriptions.contains(&sub("c0", CHAT))),
+            "rejected subscriptions are not retried on the same session"
+        );
+        subs.down(0, later, 0);
+        subs.plan(Some(&viewer(&[])), later);
+        subs.up(0, "s1".into());
+        assert!(
+            subs.plan(Some(&viewer(&[])), later)
+                .create
+                .iter()
+                .any(|b| b.subscriptions.contains(&sub("c0", CHAT))),
+            "a new session tries again"
+        );
+    }
+
+    #[test]
     fn backoff_survives_its_connection_closing() {
         let mut subs = subs_for(background(1));
         plan(&mut subs);
@@ -731,8 +800,11 @@ mod tests {
             let mut delay = Duration::ZERO;
             for batch in &next.create {
                 for subscription in &batch.subscriptions {
-                    let failed =
-                        created(batch, subscription.clone(), Err(Error::Http("boom".into())));
+                    let failed = created(
+                        batch,
+                        subscription.clone(),
+                        Err(CreateError::Transient(Error::Http("boom".into()))),
+                    );
                     let Outcome::Retrying {
                         attempts, delay: d, ..
                     } = subs.accept(failed, now)
@@ -764,7 +836,11 @@ mod tests {
         subs.up(0, "s0".into());
         let next = plan(&mut subs);
         let batch = &next.create[0];
-        let failed = created(batch, sub("bg", CHAT), Err(Error::Http("boom".into())));
+        let failed = created(
+            batch,
+            sub("bg", CHAT),
+            Err(CreateError::Transient(Error::Http("boom".into()))),
+        );
         subs.accept(failed, Instant::now());
 
         let stats = subs.stats();
