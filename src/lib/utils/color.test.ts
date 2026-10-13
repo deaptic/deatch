@@ -1,6 +1,6 @@
 /// <reference lib="deno.ns" />
 import { assertAlmostEquals, assertEquals } from "@std/assert";
-import { hexToOklch, hueOf, oklchCss, oklchToHex } from "./color.ts";
+import { hexToOklch, hueOf, oklchCss } from "./color.ts";
 
 Deno.test("maps white and black to the ends of the lightness axis", () => {
   const white = hexToOklch("#ffffff")!;
@@ -10,14 +10,19 @@ Deno.test("maps white and black to the ends of the lightness axis", () => {
   assertAlmostEquals(black.l, 0, 1e-3);
 });
 
-Deno.test("round-trips hex through oklch", () => {
-  for (const hex of ["#9481ff", "#e53935", "#1a1a1a", "#00ff7f"]) {
-    assertEquals(oklchToHex(hexToOklch(hex)!), hex);
-  }
+Deno.test("matches reference oklch values for pure primaries", () => {
+  const red = hexToOklch("#ff0000")!;
+  assertAlmostEquals(red.l, 0.628, 1e-3);
+  assertAlmostEquals(red.c, 0.2577, 1e-3);
+  assertAlmostEquals(red.h, 29.234, 1e-2);
+  const blue = hexToOklch("#0000ff")!;
+  assertAlmostEquals(blue.l, 0.452, 1e-3);
+  assertAlmostEquals(blue.c, 0.3132, 1e-3);
+  assertAlmostEquals(blue.h, 264.052, 1e-2);
 });
 
 Deno.test("accepts hex without # and rejects anything else", () => {
-  assertEquals(oklchToHex(hexToOklch("9481FF")!), "#9481ff");
+  assertEquals(hexToOklch("9481FF"), hexToOklch("#9481ff"));
   for (const bad of ["#fff", "red", "#12345g", ""]) {
     assertEquals(hexToOklch(bad), null, bad);
   }
