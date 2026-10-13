@@ -19,7 +19,7 @@ import {
 import { feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
-import { formatShortDuration } from "../format/duration.ts";
+import { formatApproxDuration } from "../format/duration.ts";
 import { mapFragment } from "./chat-mapper.ts";
 import { moderateNoticeType } from "../constants/events.ts";
 
@@ -46,7 +46,7 @@ function buildModerateMessage(
       );
       const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
       return `${mod} timed out ${p.timeout.user_name} for ${
-        formatShortDuration(secs)
+        formatApproxDuration(secs)
       }${r}`;
     }
     case "untimeout":

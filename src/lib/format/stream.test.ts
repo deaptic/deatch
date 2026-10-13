@@ -1,6 +1,6 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
-import { formatDuration, formatUptime, formatViewers } from "./stream.ts";
+import { formatClock, formatUptime, formatViewers } from "./stream.ts";
 
 Deno.test("abbreviates viewer counts", () => {
   assertEquals(formatViewers(999), "999");
@@ -10,10 +10,10 @@ Deno.test("abbreviates viewer counts", () => {
 });
 
 Deno.test("formats durations as h:mm:ss", () => {
-  assertEquals(formatDuration(0), "0:00:00");
-  assertEquals(formatDuration(61_000), "0:01:01");
-  assertEquals(formatDuration(3_723_999), "1:02:03");
-  assertEquals(formatDuration(-5_000), "0:00:00");
+  assertEquals(formatClock(0), "0:00:00");
+  assertEquals(formatClock(61_000), "0:01:01");
+  assertEquals(formatClock(3_723_999), "1:02:03");
+  assertEquals(formatClock(-5_000), "0:00:00");
 });
 
 Deno.test("formats uptime from the given moment", () => {

@@ -1,5 +1,5 @@
 import { updateChatSettings } from "../../lib/api/twitch/chat.ts";
-import { formatShortDuration } from "../../lib/format/duration.ts";
+import { formatDuration } from "../../lib/format/duration.ts";
 import type {
   ChatSettings,
   UpdateChatSettingsParams,
@@ -35,7 +35,7 @@ export function isOn(mode: ChatMode, s: ChatSettings): boolean {
   return mode.kind === "timed" ? mode.current(s) !== null : mode.isOn(s);
 }
 
-const followAge = (minutes: number) => formatShortDuration(minutes * 60);
+const followAge = (minutes: number) => formatDuration(minutes * 60);
 
 export const CHAT_MODES: ChatMode[] = [
   {
@@ -53,9 +53,9 @@ export const CHAT_MODES: ChatMode[] = [
     ],
     set: (seconds) => ({ slowMode: true, slowModeWaitTime: seconds }),
     off: { slowMode: false },
-    chip: (s) => `Slow ${formatShortDuration(s.slowModeSeconds ?? 0)}`,
+    chip: (s) => `Slow ${formatDuration(s.slowModeSeconds ?? 0)}`,
     description: (s) =>
-      `One message every ${formatShortDuration(s.slowModeSeconds ?? 0)}`,
+      `One message every ${formatDuration(s.slowModeSeconds ?? 0)}`,
   },
   {
     kind: "timed",
