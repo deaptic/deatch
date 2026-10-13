@@ -168,7 +168,7 @@ export function sanitize(raw: unknown): UserPreferences {
   const pinned = Array.isArray(rawPinned)
     ? rawPinned.filter((s): s is string => typeof s === "string")
     : DEFAULT_PREFERENCES.menu.channels.pinned;
-  return {
+  return structuredClone<UserPreferences>({
     feed: {
       fontSize: sanitizeStop(
         stored.feed?.fontSize,
@@ -282,5 +282,5 @@ export function sanitize(raw: unknown): UserPreferences {
         : DEFAULT_PREFERENCES.explore.language,
     },
     triggers: sanitizeTriggers(stored.triggers),
-  };
+  });
 }

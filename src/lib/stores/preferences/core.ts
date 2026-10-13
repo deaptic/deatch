@@ -1,9 +1,5 @@
 import { createStore, unwrap } from "solid-js/store";
-import {
-  DEFAULT_PREFERENCES,
-  sanitize,
-  type UserPreferences,
-} from "./schema.ts";
+import { sanitize, type UserPreferences } from "./schema.ts";
 
 export * from "./schema.ts";
 
@@ -12,7 +8,7 @@ function load(): UserPreferences {
     const raw = localStorage.getItem("user_preferences");
     return sanitize(raw ? JSON.parse(raw) : {});
   } catch {
-    return DEFAULT_PREFERENCES;
+    return sanitize({});
   }
 }
 
