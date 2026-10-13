@@ -4,13 +4,11 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "lint:ui": "oxlint src",
     "test": "deno test src/",
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml -- --export-bindings",
-    "serve": "vite preview",
     "tauri": "tauri",
     "release": "deno run -A scripts/release.ts",
     "pack:extension": "deno run -A scripts/pack-extension.ts"
