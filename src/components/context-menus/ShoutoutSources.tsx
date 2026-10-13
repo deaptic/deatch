@@ -34,7 +34,14 @@ async function liveSources(target: User): Promise<UserRef[]> {
 }
 
 export default function ShoutoutSources(props: Props) {
-  const [sources] = createResource(() => props.target, liveSources);
+  const [sources] = createResource(
+    () => props.target,
+    (target) =>
+      liveSources(target).catch((e) => {
+        console.warn("shoutout sources unavailable", e);
+        return [];
+      }),
+  );
   return (
     <>
       <MenuItem
