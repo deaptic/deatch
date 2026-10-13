@@ -129,3 +129,51 @@ fn build_activity(input: &ActivityInput) -> Activity<'_> {
     }
     activity
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{build_activity, ActivityInput, Button};
+
+    fn button(label: &str, url: &str) -> Button {
+        Button {
+            label: label.into(),
+            url: url.into(),
+        }
+    }
+
+    #[test]
+    fn empty_fields_are_left_out() {
+        let input = ActivityInput {
+            details: Some("Watching xqc".into()),
+            state_text: Some(String::new()),
+            large_text: Some(String::new()),
+            ..ActivityInput::default()
+        };
+        let value = serde_json::to_value(build_activity(&input)).unwrap();
+        assert_eq!(value["details"], "Watching xqc");
+        assert!(value.get("state").is_none());
+        assert!(value.get("assets").is_none());
+    }
+
+    #[test]
+    fn keeps_at_most_two_buttons_discord_accepts() {
+        let input = ActivityInput {
+            buttons: vec![
+                button("", "https://twitch.tv/a"),
+                button(&"x".repeat(33), "https://twitch.tv/b"),
+                button("Watch", "https://twitch.tv/c"),
+                button("Chat", "https://twitch.tv/d"),
+                button("Third", "https://twitch.tv/e"),
+            ],
+            ..ActivityInput::default()
+        };
+        let value = serde_json::to_value(build_activity(&input)).unwrap();
+        let labels: Vec<_> = value["buttons"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|b| b["label"].as_str().unwrap())
+            .collect();
+        assert_eq!(labels, ["Watch", "Chat"]);
+    }
+}
