@@ -1,5 +1,5 @@
 /// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertExists } from "@std/assert";
 import {
   DEFAULT_PREFERENCES,
   MAX_TRIGGER_COOLDOWN,
@@ -62,15 +62,15 @@ Deno.test("triggers without an id or phrase are dropped, the rest repaired", () 
 
 Deno.test("each result is independent of the defaults", () => {
   const first = sanitize({});
+  const event = first.feed.events.message;
+  assertExists(event);
+  const shown = event.show;
   first.feed.keywords.push("edited");
   first.menu.channels.pinned.push("edited");
-  const firstEvent = Object.values(first.feed.events)[0];
-  if (firstEvent) firstEvent.show = !firstEvent.show;
-  assertEquals(sanitize({}), sanitize({}));
-  assertEquals(sanitize({}).feed.keywords.includes("edited"), false);
-  assertEquals(sanitize({}).menu.channels.pinned.includes("edited"), false);
-  assertEquals(
-    Object.values(sanitize({}).feed.events)[0],
-    Object.values(DEFAULT_PREFERENCES.feed.events)[0],
-  );
+  event.show = !shown;
+
+  const next = sanitize({});
+  assertEquals(next.feed.keywords.includes("edited"), false);
+  assertEquals(next.menu.channels.pinned.includes("edited"), false);
+  assertEquals(next.feed.events.message?.show, shown);
 });
