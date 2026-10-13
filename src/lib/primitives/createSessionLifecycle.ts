@@ -6,15 +6,33 @@ import * as badges from "../services/badges.ts";
 import * as session from "../services/session.ts";
 import { showExplore } from "../stores/view.ts";
 
+const RETRY_MIN_MS = 30_000;
+const RETRY_MAX_MS = 300_000;
+
 let userScopedFetched = false;
+let retryTimer: number | undefined;
+let retryDelay = RETRY_MIN_MS;
 
 function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
-  emotes.loadGlobal().then(setGlobalEmotes).catch(() => {});
+  emotes.loadGlobal()
+    .then((list) => {
+      retryDelay = RETRY_MIN_MS;
+      setGlobalEmotes(list);
+    })
+    .catch(() => {
+      userScopedFetched = false;
+      if (user() === null) return;
+      retryTimer = window.setTimeout(fetchUserScopedData, retryDelay);
+      retryDelay = Math.min(retryDelay * 2, RETRY_MAX_MS);
+    });
 }
 
 function resetUserScopedCaches() {
+  window.clearTimeout(retryTimer);
+  retryTimer = undefined;
+  retryDelay = RETRY_MIN_MS;
   userScopedFetched = false;
   setModeratedChannels([]);
   badges.resetChannelCache();
