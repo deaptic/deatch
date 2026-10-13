@@ -7,6 +7,7 @@ import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
 import type { MentionReason } from "../../lib/utils/mention.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Card from "../ui/Card.tsx";
+import DisplayName from "../ui/DisplayName.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import Timestamp from "../ui/Timestamp.tsx";
 import ChatterAvatar from "../feed/message/ChatterAvatar.tsx";
@@ -79,12 +80,12 @@ export default function InboxItem(props: Props) {
         </span>
         <div class="flex-1 min-w-0 flex flex-col">
           <div class="flex items-baseline">
-            <span
-              class="font-semibold text-(--name) truncate"
-              style={{ "--name": m().chatterColor || "var(--color-ink)" }}
-            >
-              {m().chatterName}
-            </span>
+            <DisplayName
+              login={m().chatterLogin}
+              displayName={m().chatterName}
+              color={m().chatterColor}
+              truncate
+            />
             <Timestamp ts={m().timestamp} format="c" variant="inline" />
           </div>
           <div class="text-ink wrap-break-word line-clamp-3">
