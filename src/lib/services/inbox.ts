@@ -1,5 +1,5 @@
 import { createEffect } from "solid-js";
-import { mentions, pruneExpired } from "../stores/inbox.ts";
+import { flushMentions, mentions, pruneExpired } from "../stores/inbox.ts";
 import { msUntilNextExpiry } from "../stores/inboxRetention.ts";
 
 export function start(): () => void {
@@ -9,5 +9,10 @@ export function start(): () => void {
     const delay = msUntilNextExpiry(mentions(), Date.now());
     if (delay !== null) timer = window.setTimeout(pruneExpired, delay);
   });
-  return () => clearTimeout(timer);
+  globalThis.addEventListener("pagehide", flushMentions);
+  return () => {
+    clearTimeout(timer);
+    globalThis.removeEventListener("pagehide", flushMentions);
+    flushMentions();
+  };
 }
