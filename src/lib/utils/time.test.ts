@@ -29,3 +29,30 @@ Deno.test("calendar format shows the date for older times", () => {
   const d = new Date(2025, 8, 29, 22, 24);
   assertEquals(new Time(d, "c").toString(), "29/09/2025 22:24");
 });
+
+const fromNow = (ms: number) => new Date(Date.now() + ms);
+const MINUTE = 60_000;
+const HOUR = 60 * MINUTE;
+
+Deno.test("relative format names the largest unit, past and future", () => {
+  assertEquals(
+    new Time(fromNow(-2 * HOUR - 30_000), "r").toString(),
+    "2 hours ago",
+  );
+  assertEquals(
+    new Time(fromNow(3 * HOUR + 30_000), "r").toString(),
+    "in 3 hours",
+  );
+  assertEquals(new Time(fromNow(-20_000), "r").toString(), "now");
+});
+
+Deno.test("long relative format spells out each unit with its direction", () => {
+  assertEquals(
+    new Time(fromNow(-(3 * HOUR + 20 * MINUTE + 30_000)), "R").toString(),
+    "3 hours, 20 minutes ago",
+  );
+  assertEquals(
+    new Time(fromNow(45 * MINUTE + 30_000), "R").toString(),
+    "in 45 minutes",
+  );
+});
