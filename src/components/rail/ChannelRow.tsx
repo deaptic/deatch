@@ -17,7 +17,6 @@ type Props = {
   ephemeral?: boolean;
   onToggleMute?: () => void;
   onSelect: () => void;
-  onDoubleClick?: () => void;
   onMiddleClick: () => void;
   onContextMenu: (x: number, y: number) => void;
 };
@@ -44,7 +43,6 @@ export default function ChannelRow(props: Props) {
       mentions={props.mentions}
       dimmed={props.dimmed}
       onClick={props.onSelect}
-      onDoubleClick={props.onDoubleClick}
       onMiddleClick={props.onMiddleClick}
       onContextMenu={props.onContextMenu}
     >

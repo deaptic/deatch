@@ -8,7 +8,6 @@ type Props = {
     index: number,
     opts?: { keepOpen?: boolean },
   ) => void;
-  isFavorite: (value: string) => boolean;
   onToggleFavorite: (item: EmoteGridItem) => void;
   startIndex: number;
   activeIndex: number;

@@ -58,7 +58,6 @@ type Props = {
   broadcasterLogin: string;
   broadcasterName: string;
   userLogin: string;
-  isActive: boolean;
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
@@ -106,7 +105,7 @@ export default function Chat(props: Props) {
     const api = feedApi();
     if (!api) return;
     setFeedPaused(props.broadcasterId, api.isPaused());
-    if (props.isActive && !api.isPaused()) markSeen(props.broadcasterId);
+    if (!api.isPaused()) markSeen(props.broadcasterId);
   });
   onCleanup(() => setFeedPaused(props.broadcasterId, false));
 
@@ -238,7 +237,6 @@ export default function Chat(props: Props) {
   }
 
   createEffect(() => {
-    if (!props.isActive) return;
     const unbindDivider = shortcuts.registerLocal("escape", () => {
       clearDivider(props.broadcasterId);
       return false;
@@ -259,7 +257,7 @@ export default function Chat(props: Props) {
         />
       </Show>
       <Show
-        when={props.isActive && pendingRaid()}
+        when={pendingRaid()}
         fallback={
           <Show when={!chatConnected()}>
             <ConnectionBanner />
@@ -302,7 +300,6 @@ export default function Chat(props: Props) {
       <ChatInput
         broadcasterId={props.broadcasterId}
         broadcasterName={props.broadcasterName}
-        isActive={props.isActive}
         replyTo={replyTo}
         onClearReply={clearReply}
         getMentions={getMentions}
@@ -310,7 +307,7 @@ export default function Chat(props: Props) {
         openUserCard={openUserCardFromInput}
         ref={(api) => {
           inputApi = api;
-          if (props.isActive) api.focus();
+          api.focus();
         }}
       />
 
