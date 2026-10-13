@@ -161,7 +161,7 @@ pub fn run() {
             let hosts = link::ipc::Hosts::default();
             link::ipc::start_server(app.handle().clone(), hosts.clone());
             app.manage(hosts);
-            emotes::seventv_events::spawn(app.handle().clone());
+            app.manage(emotes::seventv_events::spawn(app.handle().clone()));
 
             if let Some(window) = app.get_webview_window("main") {
                 let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))?;

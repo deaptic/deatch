@@ -5,7 +5,6 @@ use futures_util::stream::SplitSink;
 use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use tauri::Manager;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
@@ -44,10 +43,10 @@ impl SevenTvEvents {
     }
 }
 
-pub fn spawn(app: tauri::AppHandle) {
+pub fn spawn(app: tauri::AppHandle) -> SevenTvEvents {
     let (tx, rx) = unbounded_channel();
-    app.manage(SevenTvEvents(tx));
     tauri::async_runtime::spawn(run(app, rx));
+    SevenTvEvents(tx)
 }
 
 enum End {
