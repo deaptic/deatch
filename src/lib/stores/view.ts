@@ -41,6 +41,12 @@ export function showExplore() {
   setLinkSynced(false);
 }
 
+export function resetView() {
+  setLastChannel(null);
+  beforeSettings = "explore";
+  showExplore();
+}
+
 export function setSelectedChannel(channel: User) {
   setLastChannel(channel);
   setActiveView(channel);
