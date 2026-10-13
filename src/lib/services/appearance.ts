@@ -31,7 +31,7 @@ const SHADES: Record<ResolvedTheme, (base: Oklch) => AccentShades> = {
   }),
 };
 
-export function deriveAccent(hex: string, theme: ResolvedTheme): AccentShades {
+function deriveAccent(hex: string, theme: ResolvedTheme): AccentShades {
   const parsed = hexToOklch(hex) ?? DEFAULT_ACCENT;
   return SHADES[theme]({ ...parsed, c: Math.min(parsed.c, 0.2) });
 }
