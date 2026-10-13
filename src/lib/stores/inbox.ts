@@ -51,6 +51,7 @@ let unsaved: Mention[] | undefined;
 
 export function flushMentions() {
   clearTimeout(saveTimer);
+  saveTimer = undefined;
   if (!unsaved) return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(unsaved));
@@ -62,8 +63,7 @@ export function flushMentions() {
 
 function save(list: Mention[]) {
   unsaved = list;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(flushMentions, SAVE_DELAY_MS);
+  saveTimer ??= setTimeout(flushMentions, SAVE_DELAY_MS);
   return list;
 }
 
