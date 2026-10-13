@@ -63,8 +63,14 @@ export async function loadGlobal(): Promise<BadgeMap> {
 
 /// Global badges show at once; channel badges replace them when they land.
 export function loadChannel(channel: ChannelRef) {
-  loadGlobal().then((map) => setBadges(channel.id, map));
-  channelBadges.show(channel, (map) => setBadges(channel.id, map));
+  let channelLanded = false;
+  loadGlobal().then((map) => {
+    if (!channelLanded) setBadges(channel.id, map);
+  });
+  channelBadges.show(channel, (map) => {
+    channelLanded = true;
+    setBadges(channel.id, map);
+  });
 }
 
 export function resetChannelCache() {
