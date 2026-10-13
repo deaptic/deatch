@@ -119,11 +119,12 @@ export default function EmotePicker(props: Props) {
     };
     const q = search().toLowerCase();
     if (q) {
-      add({
-        items: [...channelSections(), ...globalSections()].flatMap((s) =>
-          s.emotes.filter((e) => e.name.toLowerCase().includes(q)).map(toItem)
-        ),
-      });
+      const pool = tab() === "emoji"
+        ? tabSections().flatMap((s) => s.items)
+        : [...channelSections(), ...globalSections()].flatMap((s) =>
+          s.emotes.map(toItem)
+        );
+      add({ items: pool.filter((i) => i.label.toLowerCase().includes(q)) });
     } else {
       add({
         label: "Favourites",
