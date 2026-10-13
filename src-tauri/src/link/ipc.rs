@@ -41,6 +41,8 @@ struct Host {
     writer: HostWriter,
     state: LinkState,
     reported_at: u64,
+    /// Dropped with the host, which ends its reader task and closes the pipe.
+    _close: tokio::sync::oneshot::Sender<()>,
 }
 
 #[derive(Default)]
@@ -68,12 +70,17 @@ impl Hosts {
         }
         let mut payload = serde_json::to_vec(command)?;
         payload.push(b'\n');
-        for host in hosts.values_mut() {
+        let mut broken = Vec::new();
+        for (id, host) in hosts.iter_mut() {
             match tokio::time::timeout(WRITE_TIMEOUT, host.writer.write_all(&payload)).await {
-                Ok(Ok(())) => {}
-                Ok(Err(e)) => log::warn!("ipc write failed: {e}"),
-                Err(_) => log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}"),
+                Ok(Ok(())) => continue,
+                Ok(Err(e)) => log::warn!("ipc write failed, dropping host: {e}"),
+                Err(_) => log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}, dropping host"),
             }
+            broken.push(*id);
+        }
+        for id in broken {
+            hosts.remove(&id);
         }
         Ok(())
     }
@@ -181,6 +188,7 @@ async fn handle_connection(
     conn: interprocess::local_socket::tokio::Stream,
 ) {
     let (read_half, writer) = tokio::io::split(conn);
+    let (close, mut closed) = tokio::sync::oneshot::channel();
     let id = {
         let mut connected = hosts.0.lock().await;
         let id = connected.next_id;
@@ -194,6 +202,7 @@ async fn handle_connection(
                     current: None,
                 },
                 reported_at: 0,
+                _close: close,
             },
         );
         id
@@ -201,7 +210,11 @@ async fn handle_connection(
 
     let mut reader = tokio::io::BufReader::new(read_half);
     loop {
-        let line = match read_line(&mut reader).await {
+        let read = tokio::select! {
+            read = read_line(&mut reader) => read,
+            _ = &mut closed => break,
+        };
+        let line = match read {
             Ok(Some(line)) => line,
             Ok(None) => break,
             Err(e) => {
