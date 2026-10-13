@@ -29,7 +29,7 @@ import UserCard from "../user-card/UserCard.tsx";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
-import { moderatedChannels } from "../../lib/stores/users.ts";
+import { isModOfChannel } from "../../lib/stores/users.ts";
 import type {
   FeedEvent as EventItem,
   FeedMessage as Message,
@@ -99,9 +99,7 @@ export default function Chat(props: Props) {
   let inputApi: ChatInputApi | undefined;
 
   const isMod = createMemo(() =>
-    !moderationActionsDisabled() &&
-    (props.broadcasterLogin === props.userLogin ||
-      moderatedChannels().some((c) => c.id === props.broadcasterId))
+    !moderationActionsDisabled() && isModOfChannel(props.broadcasterId)
   );
 
   onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));

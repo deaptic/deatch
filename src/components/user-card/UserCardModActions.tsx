@@ -1,9 +1,6 @@
 import { Show } from "solid-js";
 import { banUser, unbanUser } from "../../lib/api/twitch/moderation.ts";
-import {
-  moderatedChannels,
-  user as currentUser,
-} from "../../lib/stores/users.ts";
+import { isModOfChannel, user as currentUser } from "../../lib/stores/users.ts";
 import { moderationActionsDisabled } from "../../lib/stores/preferences.ts";
 import BanChoiceStrip, {
   type BanChoice,
@@ -16,14 +13,10 @@ type Props = {
 };
 
 export default function UserCardModActions(props: Props) {
-  const canModerate = () => {
-    if (moderationActionsDisabled()) return false;
-    const me = currentUser();
-    if (!me) return false;
-    if (me.id === props.chatterId) return false;
-    if (me.id === props.broadcasterId) return true;
-    return moderatedChannels().some((c) => c.id === props.broadcasterId);
-  };
+  const canModerate = () =>
+    !moderationActionsDisabled() &&
+    currentUser()?.id !== props.chatterId &&
+    isModOfChannel(props.broadcasterId);
 
   function apply(choice: BanChoice) {
     const target = {
