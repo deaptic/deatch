@@ -47,7 +47,7 @@ export default function BanModal(props: Props) {
       : `Time out ${choice()}`;
 
   async function confirm() {
-    if (pending()) return;
+    if (pending() || banInfo() === undefined) return;
     setPending(true);
     try {
       const target = {
