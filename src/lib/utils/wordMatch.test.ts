@@ -1,6 +1,9 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
-import { matchesAnyKeyword, matchesTerms, wordPattern } from "./wordMatch.ts";
+import { matchesTerms, wordPattern } from "./wordMatch.ts";
+
+const matchesAnyKeyword = (text: string, keywords: string[]) =>
+  matchesTerms(text, keywords, "anywhere");
 
 Deno.test("matches keywords as whole words, case-insensitively", () => {
   assertEquals(matchesAnyKeyword("GG everyone", ["gg"]), true);

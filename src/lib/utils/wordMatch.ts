@@ -11,11 +11,11 @@ export type Anchor = "anywhere" | "start" | "exact";
 
 const compiled = new Map<string, RegExp>();
 
-export function escapeRegExp(text: string): string {
+function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function termPattern(term: string): string {
+function termPattern(term: string): string {
   return term.split("*").map(escapeRegExp).join(WILDCARD);
 }
 
@@ -41,10 +41,6 @@ export function matchesTerms(
   if (usable.length === 0) return false;
   return regExp(wordPattern(usable, anchor), caseSensitive ? "" : "i")
     .test(text);
-}
-
-export function matchesAnyKeyword(text: string, keywords: string[]): boolean {
-  return matchesTerms(text, keywords, "anywhere");
 }
 
 export function matchedKeyword(
