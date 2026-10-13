@@ -51,6 +51,7 @@ import RailRowSkeleton from "./RailRowSkeleton.tsx";
 import { railGap } from "../ui/rowHeight.ts";
 import TabMuteBadge from "./TabMuteBadge.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
+import { SIDE_GAP } from "../ui/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
@@ -148,7 +149,7 @@ export default function Rail(props: Props) {
   function openLinkMenu() {
     if (!linkBtn || linkMenu()) return setLinkMenu(null);
     const rect = linkBtn.getBoundingClientRect();
-    setLinkMenu({ x: rect.right + 8, y: rect.top });
+    setLinkMenu({ x: rect.right + SIDE_GAP, y: rect.top });
   }
 
   createEffect(() => {
@@ -223,7 +224,7 @@ export default function Rail(props: Props) {
     if (!addBtn) return;
     const rect = addBtn.getBoundingClientRect();
     setAddInput("");
-    setAddPop({ x: rect.right + 8, y: rect.top });
+    setAddPop({ x: rect.right + SIDE_GAP, y: rect.top });
   }
 
   function closeAdd() {

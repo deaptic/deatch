@@ -36,5 +36,5 @@ launch.
 
 ## Development
 
-See [DEVELOPING.md](./DEVELOPING.md) for the message protocol, dev-host
+See [docs/LINK.md](../docs/LINK.md) for the message protocol, dev-host
 registration, and how to load this extension as a temporary add-on.

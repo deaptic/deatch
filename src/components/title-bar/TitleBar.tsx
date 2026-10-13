@@ -14,6 +14,7 @@ import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
 import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
+import { OVERLAY_GAP } from "../ui/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
@@ -26,7 +27,9 @@ const PRESSED = "bg-raised text-ink";
 
 function below(button: HTMLElement | undefined) {
   const r = button?.getBoundingClientRect();
-  return r ? { x: r.left + r.width / 2, y: r.bottom + 4 } : { x: 0, y: 0 };
+  return r
+    ? { x: r.left + r.width / 2, y: r.bottom + OVERLAY_GAP }
+    : { x: 0, y: 0 };
 }
 
 type Props = {
