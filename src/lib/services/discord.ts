@@ -26,6 +26,10 @@ async function connect(): Promise<boolean> {
     await discordConnect({ silent: true });
     connected = true;
     lastSerialized = null;
+    if (activityMode === null) {
+      await disconnect();
+      return false;
+    }
     return true;
   } catch {
     connected = false;
