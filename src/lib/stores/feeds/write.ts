@@ -4,8 +4,6 @@ import { append, insert, prepend } from "./ops.ts";
 import type { FeedEntry } from "../../types/feed.ts";
 import { selectedChannel } from "../view.ts";
 
-// Writes never create a feed: joining does, and late events for a channel
-// that was left (disconnect notices, delayed gifts) must not resurrect it.
 export function appendItem(id: string, item: FeedEntry): boolean {
   if (!feeds[id]) return false;
   const isActive = selectedChannel()?.id === id;
