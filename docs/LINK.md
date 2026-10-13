@@ -1,0 +1,68 @@
+# Link
+
+Link is a browser extension that tells the app which Twitch tabs are open, and
+lets the app mute, focus, or close them.
+
+## How it works
+
+`extension/background.js` watches tab and focus events and talks to a native
+host over stdio. Twitch is an SPA, but `tabs.onUpdated` still fires on in-page
+navigation, so there is no content script. Each browser launches its own copy of
+the app exe as the host (`main.rs` routes it to host mode), and every host
+forwards lines to the running GUI over the `\\.\pipe\deatch-bridge` pipe. The
+GUI (`link/ipc.rs`) merges all browsers into one state: channels are the union,
+a channel is muted only if it is muted everywhere, and the browser that reported
+last decides the current channel. Commands fan out to every browser.
+
+One codebase serves Firefox and Chromium. `manifest.json` lists `background.js`
+as both an event page and a service worker, and each browser ignores the other's
+keys. The `key` in the manifest pins the Chrome id, which `bridge.rs`
+whitelists, so the two must agree.
+
+## Protocol
+
+Messages are JSON with a 4-byte little-endian length prefix, per the native
+messaging spec. The extension sends one message, `state`, on any tab, focus, or
+mute change:
+
+```json
+{
+  "type": "state",
+  "channels": [{ "login": "slug", "muted": false }],
+  "current": "slug"
+}
+```
+
+`current` is the active Twitch tab, else the most recently used one, else
+`null`. The host sends `get_state` to ask for a fresh state (it does so on every
+reconnect to the GUI), `set_muted` with `channel` and `muted` to mute every tab
+on a channel, `focus` with `channel` to activate its most recent tab without
+raising the window, and `close` with `channel` to close all of its tabs.
+
+## Developing
+
+Host changes need a release build, because debug builds never register
+themselves (Firefox would hold `target\debug\deatch.exe` open and block
+relinking):
+
+```powershell
+deno task build
+cd src-tauri && cargo build --release && .\target\release\deatch.exe
+```
+
+That writes the host manifests to `%LOCALAPPDATA%\Deatch\` and the `HKCU`
+registry keys for Firefox, Chrome, and Edge. Whichever release build ran last
+owns the host path. Reload the extension afterwards so the browser spawns a
+fresh host.
+
+In Firefox, open `about:debugging#/runtime/this-firefox`, load
+`extension/manifest.json` as a temporary add-on, and use Inspect for the
+console. In Chrome or Edge, open `chrome://extensions`, enable developer mode,
+load `extension/` unpacked, and check that the id matches `CHROME_EXTENSION_ID`
+in `link/bridge.rs`.
+
+The host logs every frame to `%TEMP%\deatch-host.log`
+(`Get-Content $env:TEMP\deatch-host.log -Wait -Tail 20`). It retries the GUI
+pipe every 1.5 s and exits only when the browser closes stdin.
+
+Releasing is in [RELEASING.md](./RELEASING.md#extension).

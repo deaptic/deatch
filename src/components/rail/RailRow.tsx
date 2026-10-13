@@ -1,6 +1,7 @@
 import { createSignal, type JSX, Show } from "solid-js";
 import Badge from "../ui/Badge.tsx";
 import Tooltip from "../ui/Tooltip.tsx";
+import { SIDE_GAP } from "../ui/Popover.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
 import { rowHeight } from "../ui/rowHeight.ts";
 
@@ -58,7 +59,7 @@ export default function RailRow(props: Props) {
         onMouseEnter={(e) => {
           if (expanded()) return;
           const r = e.currentTarget.getBoundingClientRect();
-          setTip({ x: r.right + 8, y: r.top + r.height / 2 });
+          setTip({ x: r.right + SIDE_GAP, y: r.top + r.height / 2 });
         }}
         onMouseLeave={() => setTip(null)}
         class={`group relative w-full ${rowHeight()} flex items-center pr-2 text-left cursor-pointer ${

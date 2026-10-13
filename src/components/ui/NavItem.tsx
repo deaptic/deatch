@@ -1,5 +1,6 @@
 import { createSignal, type JSX, Show } from "solid-js";
 import Tooltip from "./Tooltip.tsx";
+import { SIDE_GAP } from "./Popover.tsx";
 
 type Props = {
   label: string;
@@ -41,7 +42,7 @@ export default function NavItem(props: Props) {
         onMouseEnter={(e) => {
           if (!props.collapsed) return;
           const r = e.currentTarget.getBoundingClientRect();
-          setTip({ x: r.right + 8, y: r.top + r.height / 2 });
+          setTip({ x: r.right + SIDE_GAP, y: r.top + r.height / 2 });
         }}
         onMouseLeave={() => setTip(null)}
         class={`relative flex items-center gap-2.5 text-body font-semibold cursor-pointer transition-colors duration-snap ${shape()}`}

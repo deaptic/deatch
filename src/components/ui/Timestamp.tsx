@@ -1,6 +1,7 @@
 import { createSignal, onCleanup, Show } from "solid-js";
 import { Time, type TimeFormat } from "../../lib/utils/time.ts";
 import Tooltip from "./Tooltip.tsx";
+import { SIDE_GAP } from "./Popover.tsx";
 
 const TOOLTIP_DELAY_MS = 300;
 
@@ -33,7 +34,7 @@ export default function Timestamp(props: Props) {
     clearTimeout(timer);
     timer = setTimeout(() => {
       const r = el.getBoundingClientRect();
-      setTip({ x: r.left + r.width / 2, y: r.top - 8 });
+      setTip({ x: r.left + r.width / 2, y: r.top - SIDE_GAP });
     }, TOOLTIP_DELAY_MS);
   }
 

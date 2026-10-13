@@ -1,6 +1,7 @@
 import { ClipboardPaste, Ellipsis, Reply } from "lucide-solid";
 import { For, Show } from "solid-js";
 import type { FeedMessage } from "../../../lib/types/index.ts";
+import { OVERLAY_GAP } from "../../ui/Popover.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import { feedShowCopypasta } from "../../../lib/stores/preferences.ts";
@@ -43,7 +44,7 @@ export default function MessageToolbar(props: Props) {
         title="More options"
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
-          props.onMore(rect.left, rect.bottom + 4, props.item);
+          props.onMore(rect.left, rect.bottom + OVERLAY_GAP, props.item);
         }}
       >
         <Ellipsis />
