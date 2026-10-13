@@ -5,8 +5,8 @@ Run this before every commit; CI runs the same on every push.
 ```powershell
 deno fmt && deno lint && deno task lint:ui && deno check src/ && deno task test
 cd src-tauri
-cargo fmt && cargo clippy --no-default-features --all-targets -- -D warnings
-cargo test --no-default-features --lib
+cargo fmt && cargo clippy --all-targets -- -D warnings
+cargo test --lib
 ```
 
 Frontend tests are `*.test.ts` files next to the module they cover, using
