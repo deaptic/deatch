@@ -264,24 +264,20 @@ export default function CommandComposer(props: Props) {
     }
   }
 
+  async function resolvePending(idx: number): Promise<boolean> {
+    const slot = slots()[idx];
+    if (!slot.raw || slot.resolved !== null || slot.error) return true;
+    const type = options[idx]?.type;
+    if (type === "user") return await resolveUserSlot(idx);
+    if (type === "search") return await resolveSearchSlot(idx);
+    return true;
+  }
+
   async function advance(): Promise<boolean> {
     const idx = activeIdx();
     const opt = options[idx];
-    if (!opt) return false;
-    let slot = slots()[idx];
-    if (
-      opt.type === "user" && slot.raw && slot.resolved === null && !slot.error
-    ) {
-      if (!(await resolveUserSlot(idx))) return false;
-      slot = slots()[idx];
-    }
-    if (
-      opt.type === "search" && slot.raw && slot.resolved === null && !slot.error
-    ) {
-      if (!(await resolveSearchSlot(idx))) return false;
-      slot = slots()[idx];
-    }
-    if (!slotSatisfied(opt, slot)) return false;
+    if (!opt || !(await resolvePending(idx))) return false;
+    if (!slotSatisfied(opt, slots()[idx])) return false;
     if (idx + 1 >= options.length) return false;
     setActiveIdx(idx + 1);
     return true;
@@ -400,9 +396,10 @@ export default function CommandComposer(props: Props) {
         return;
       }
       void (async () => {
+        for (let i = 0; i < options.length; i++) await resolvePending(i);
+        if (canSubmit()) return submit();
         await advance();
-        if (canSubmit()) submit();
-        else flagMissingRequired();
+        flagMissingRequired();
       })();
       return;
     }
