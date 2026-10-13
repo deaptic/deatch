@@ -1,20 +1,25 @@
-import { Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import {
   installing,
   pendingUpdate,
   setInstalling,
 } from "../../lib/stores/updater.ts";
 import * as updater from "../../lib/services/updater.ts";
+import { errorMessage } from "../../lib/utils/error.ts";
 
 export default function UpdateBanner() {
+  const [error, setError] = createSignal<string | null>(null);
+
   async function onInstall() {
     const update = pendingUpdate();
     if (!update || installing()) return;
+    setError(null);
     setInstalling(true);
     try {
       await updater.install(update);
     } catch (e) {
       console.error("update install failed", e);
+      setError(errorMessage(e));
       setInstalling(false);
     }
   }
@@ -26,15 +31,21 @@ export default function UpdateBanner() {
           type="button"
           onClick={onInstall}
           disabled={installing()}
+          title={error() ?? undefined}
           class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 border-b border-line-soft text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
         >
           <span class="size-2 rounded-full bg-accent shrink-0" />
           <span class="text-ink truncate">
             <Show when={!installing()} fallback={<>Installing update…</>}>
-              <span class="font-semibold">Update ready</span>
+              <Show
+                when={error()}
+                fallback={<span class="font-semibold">Update ready</span>}
+              >
+                <span class="font-semibold text-negative">Update failed</span>
+              </Show>
               <span class="text-ink-soft">
                 {" "}
-                · {u().version} · click to install
+                · {u().version} · click to {error() ? "retry" : "install"}
               </span>
             </Show>
           </span>
