@@ -286,7 +286,7 @@ export default function CommandComposer(props: Props) {
   function submit() {
     const values: Record<string, unknown> = {};
     options.forEach((opt, i) => {
-      values[opt.name] = slots()[i].resolved ?? opt.default ?? null;
+      values[opt.name] = slots()[i].resolved ?? null;
     });
     props.onSubmit(values);
   }
