@@ -47,6 +47,7 @@ const SCOPES: [Scope; 28] = [
 ];
 
 pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<DcfAuthResponse> {
+    let generation = twitch.begin_login();
     let mut builder = DeviceUserTokenBuilder::new(CLIENT_ID, SCOPES.to_vec());
     let code = builder.start(&twitch.helix).await?;
     let response = DcfAuthResponse {
@@ -63,12 +64,12 @@ pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<Dc
             }
         }
     });
-    twitch.replace_login(Some(task));
+    twitch.attach_login(generation, task);
     Ok(response)
 }
 
 pub fn cancel_login(twitch: &Twitch) {
-    twitch.replace_login(None);
+    twitch.begin_login();
 }
 
 async fn login(twitch: &Twitch, mut builder: DeviceUserTokenBuilder) -> Result<User> {

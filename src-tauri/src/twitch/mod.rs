@@ -33,7 +33,15 @@ pub struct Twitch {
     eventsub: Arc<eventsub::Handle>,
     /// The device-code poll in flight, so a new or cancelled sign-in can
     /// stop it instead of letting it run for its 30 min lifetime.
-    login: Arc<Mutex<Option<JoinHandle<()>>>>,
+    login: Arc<Mutex<Login>>,
+}
+
+/// `generation` moves on every start and cancel, so a poll that only gets
+/// attached after a cancel (the code request was still in flight) is dropped.
+#[derive(Default)]
+struct Login {
+    generation: u64,
+    task: Option<JoinHandle<()>>,
 }
 
 pub struct Authed<'a> {
@@ -51,10 +59,21 @@ impl Twitch {
         }
     }
 
-    pub fn replace_login(&self, task: Option<JoinHandle<()>>) {
-        let previous = std::mem::replace(&mut *self.login.lock().unwrap(), task);
-        if let Some(previous) = previous {
-            previous.abort();
+    pub fn begin_login(&self) -> u64 {
+        let mut login = self.login.lock().unwrap();
+        login.generation += 1;
+        if let Some(task) = login.task.take() {
+            task.abort();
+        }
+        login.generation
+    }
+
+    pub fn attach_login(&self, generation: u64, task: JoinHandle<()>) {
+        let mut login = self.login.lock().unwrap();
+        if login.generation == generation {
+            login.task = Some(task);
+        } else {
+            task.abort();
         }
     }
 
