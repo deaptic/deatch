@@ -61,10 +61,15 @@ async function pack(browser: string, manifest: Manifest): Promise<string> {
   const zip = `${OUT}/deatch-link-${browser}-${manifest.version}.zip`;
   await Deno.mkdir(OUT, { recursive: true });
   await run([
-    "powershell",
-    "-NoProfile",
-    "-Command",
-    `Compress-Archive -Path '${stage}\\*' -DestinationPath '${zip}' -Force`,
+    `${Deno.env.get("SystemRoot")}\\System32\\tar.exe`,
+    "--format",
+    "zip",
+    "-cf",
+    zip,
+    "-C",
+    stage,
+    "manifest.json",
+    ...FILES,
   ]);
   await Deno.remove(stage, { recursive: true });
   return zip;
