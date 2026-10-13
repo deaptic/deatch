@@ -3,12 +3,12 @@ use super::MAX_MESSAGE_SIZE;
 use crate::emit::emit;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
 use std::time::Duration;
 
 const PIPE_NAME: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
-/// `send_to_host` holds the hosts lock while writing, so a browser that stops
+/// `Hosts::send` holds the hosts lock while writing, so a browser that stops
 /// reading its pipe must not block every other browser forever.
 const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 
@@ -43,31 +43,40 @@ struct Host {
     reported_at: u64,
 }
 
-static HOSTS: tokio::sync::Mutex<BTreeMap<u64, Host>> =
-    tokio::sync::Mutex::const_new(BTreeMap::new());
-static NEXT_ID: AtomicU64 = AtomicU64::new(0);
+#[derive(Default)]
+struct Connected {
+    hosts: BTreeMap<u64, Host>,
+    next_id: u64,
+    reports: u64,
+}
 
-/// Every browser gets every command; the extension ignores channels it has no
-/// tab for.
-pub async fn send_to_host(command: &HostCommand) -> std::io::Result<()> {
-    use tokio::io::AsyncWriteExt;
-    let mut hosts = HOSTS.lock().await;
-    if hosts.is_empty() {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::NotConnected,
-            "host not connected",
-        ));
-    }
-    let mut payload = serde_json::to_vec(command)?;
-    payload.push(b'\n');
-    for host in hosts.values_mut() {
-        match tokio::time::timeout(WRITE_TIMEOUT, host.writer.write_all(&payload)).await {
-            Ok(Ok(())) => {}
-            Ok(Err(e)) => log::warn!("ipc write failed: {e}"),
-            Err(_) => log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}"),
+#[derive(Clone, Default)]
+pub struct Hosts(Arc<tokio::sync::Mutex<Connected>>);
+
+impl Hosts {
+    /// Every browser gets every command; the extension ignores channels it has
+    /// no tab for.
+    pub async fn send(&self, command: &HostCommand) -> std::io::Result<()> {
+        use tokio::io::AsyncWriteExt;
+        let mut connected = self.0.lock().await;
+        let hosts = &mut connected.hosts;
+        if hosts.is_empty() {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::NotConnected,
+                "host not connected",
+            ));
         }
+        let mut payload = serde_json::to_vec(command)?;
+        payload.push(b'\n');
+        for host in hosts.values_mut() {
+            match tokio::time::timeout(WRITE_TIMEOUT, host.writer.write_all(&payload)).await {
+                Ok(Ok(())) => {}
+                Ok(Err(e)) => log::warn!("ipc write failed: {e}"),
+                Err(_) => log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}"),
+            }
+        }
+        Ok(())
     }
-    Ok(())
 }
 
 /// A channel open in several browsers is muted only when every tab is.
@@ -110,15 +119,15 @@ fn emit_merged(app: &tauri::AppHandle, hosts: &BTreeMap<u64, Host>) {
     }
 }
 
-pub fn start_server(app: tauri::AppHandle) {
+pub fn start_server(app: tauri::AppHandle, hosts: Hosts) {
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = run_server(app).await {
+        if let Err(e) = run_server(app, hosts).await {
             log::error!("ipc server stopped: {e}");
         }
     });
 }
 
-async fn run_server(app: tauri::AppHandle) -> std::io::Result<()> {
+async fn run_server(app: tauri::AppHandle, hosts: Hosts) -> std::io::Result<()> {
     use interprocess::local_socket::{
         tokio::prelude::*, GenericNamespaced, ListenerOptions, ToNsName,
     };
@@ -129,7 +138,7 @@ async fn run_server(app: tauri::AppHandle) -> std::io::Result<()> {
     loop {
         match listener.accept().await {
             Ok(conn) => {
-                tauri::async_runtime::spawn(handle_connection(app.clone(), conn));
+                tauri::async_runtime::spawn(handle_connection(app.clone(), hosts.clone(), conn));
             }
             Err(e) => {
                 log::warn!("ipc accept failed: {e}");
@@ -166,20 +175,29 @@ where
         .map_err(|e| invalid(e.to_string()))
 }
 
-async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_socket::tokio::Stream) {
-    let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
+async fn handle_connection(
+    app: tauri::AppHandle,
+    hosts: Hosts,
+    conn: interprocess::local_socket::tokio::Stream,
+) {
     let (read_half, writer) = tokio::io::split(conn);
-    HOSTS.lock().await.insert(
-        id,
-        Host {
-            writer,
-            state: LinkState {
-                channels: Vec::new(),
-                current: None,
+    let id = {
+        let mut connected = hosts.0.lock().await;
+        let id = connected.next_id;
+        connected.next_id += 1;
+        connected.hosts.insert(
+            id,
+            Host {
+                writer,
+                state: LinkState {
+                    channels: Vec::new(),
+                    current: None,
+                },
+                reported_at: 0,
             },
-            reported_at: 0,
-        },
-    );
+        );
+        id
+    };
 
     let mut reader = tokio::io::BufReader::new(read_half);
     loop {
@@ -193,20 +211,22 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
         };
         match serde_json::from_str::<HostMessage>(&line) {
             Ok(HostMessage::State(state)) => {
-                let mut hosts = HOSTS.lock().await;
-                if let Some(host) = hosts.get_mut(&id) {
+                let mut connected = hosts.0.lock().await;
+                connected.reports += 1;
+                let reported_at = connected.reports;
+                if let Some(host) = connected.hosts.get_mut(&id) {
                     host.state = state;
-                    host.reported_at = NEXT_ID.fetch_add(1, Ordering::Relaxed);
+                    host.reported_at = reported_at;
                 }
-                emit_merged(&app, &hosts);
+                emit_merged(&app, &connected.hosts);
             }
             Err(e) => log::warn!("ipc bad message: {e} — {line}"),
         }
     }
 
-    let mut hosts = HOSTS.lock().await;
-    hosts.remove(&id);
-    emit_merged(&app, &hosts);
+    let mut connected = hosts.0.lock().await;
+    connected.hosts.remove(&id);
+    emit_merged(&app, &connected.hosts);
 }
 
 #[cfg(test)]
