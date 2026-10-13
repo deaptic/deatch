@@ -1,4 +1,3 @@
-import { events } from "../bindings.ts";
 import { seventvGetChannelEmotes } from "../api/external/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
@@ -15,11 +14,6 @@ type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 const byBroadcaster = new Map<string, Entry>();
 const bySetId = new Map<string, Entry>();
 let activeChannelId: string | null = null;
-
-export function start(): () => void {
-  const unlisten = events.emoteSetUpdated.listen((e) => onUpdate(e.payload));
-  return () => void unlisten.then((stop) => stop());
-}
 
 export async function subscribe(broadcasterId: string): Promise<void> {
   if (byBroadcaster.has(broadcasterId)) return;
@@ -57,7 +51,7 @@ export function setActive(broadcasterId: string | null): void {
   );
 }
 
-function onUpdate(update: EmoteSetUpdated): void {
+export function applyUpdate(update: EmoteSetUpdated): void {
   const entry = bySetId.get(update.id);
   if (!entry) return;
   entry.emotes = emoteSetUpdate.apply(entry.emotes, update);
