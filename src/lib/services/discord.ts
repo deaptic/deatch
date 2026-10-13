@@ -86,8 +86,12 @@ const viewerFormatter = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
+// Cutting between the halves of a surrogate pair leaves invalid UTF-16 that
+// the backend's JSON parser rejects, so a dangling high half is dropped.
 const clamp = (s: string, max: number) =>
-  s.length > max ? s.slice(0, max - 1) + "…" : s;
+  s.length > max
+    ? s.slice(0, max - 1).replace(/[\uD800-\uDBFF]$/, "") + "…"
+    : s;
 
 let activityMode: string | null = null;
 let activityStartedAt = Math.floor(Date.now() / 1000);
