@@ -16,10 +16,6 @@ jobs:
     env:
       CARGO_INCREMENTAL: "0"
     steps:
-      # Keep LF on checkout so fmt checks see the same bytes as local commits.
-      - run: git config --global core.autocrlf false
-        shell: bash
-
       - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup
