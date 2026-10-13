@@ -7,7 +7,10 @@ pub mod dto;
 
 use crate::error::Result;
 use crate::http::get_json;
-use dto::{ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, RecentMessage, Reply};
+use dto::{
+    ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, MessageType, RecentMessage,
+    Reply,
+};
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -85,9 +88,9 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
             text,
         },
         message_type: if tag(tags, "first-msg") == "1" {
-            "user_intro".into()
+            MessageType::UserIntro
         } else {
-            "text".into()
+            MessageType::Text
         },
         badges: parse_badges(tags),
         reply: parse_reply(tags),
@@ -246,7 +249,7 @@ fn parse_messages(lines: &[String]) -> Vec<RecentMessage> {
             "CLEARCHAT" => {
                 let user = nonempty(&tags, "target-user-id");
                 mark_deleted(&mut messages, |m| {
-                    user.is_none_or(|u| m.chatter_user_id == u)
+                    user.is_none_or(|u| m.chatter_user_id.as_str() == u)
                 });
             }
             _ => {}
@@ -263,7 +266,7 @@ fn mark_deleted(messages: &mut [RecentMessage], cleared: impl Fn(&RecentMessage)
 
 #[cfg(test)]
 mod tests {
-    use super::parse_messages;
+    use super::{parse_messages, MessageType};
     use crate::history::dto::RecentMessage;
     use serde_json::{json, Value};
 
@@ -282,13 +285,13 @@ mod tests {
     #[test]
     fn parses_privmsg_fields() {
         let m = &parse(&[PRIVMSG])[0];
-        assert_eq!(m.message_id, "m1");
-        assert_eq!(m.broadcaster_user_id, "111");
-        assert_eq!(m.chatter_user_id, "222");
+        assert_eq!(m.message_id.as_str(), "m1");
+        assert_eq!(m.broadcaster_user_id.as_str(), "111");
+        assert_eq!(m.chatter_user_id.as_str(), "222");
         assert_eq!(m.chatter_user_login, "foo");
         assert_eq!(m.chatter_user_name, "Foo");
         assert_eq!(m.color, "#FF0000");
-        assert_eq!(m.message_type, "text");
+        assert_eq!(m.message_type, MessageType::Text);
         assert_eq!(m.timestamp_ms, 1000);
         assert!(!m.deleted);
         assert_eq!(
@@ -355,7 +358,7 @@ mod tests {
     #[test]
     fn marks_first_message_as_intro() {
         let line = "@first-msg=1;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :hi";
-        assert_eq!(parse(&[line])[0].message_type, "user_intro");
+        assert_eq!(parse(&[line])[0].message_type, MessageType::UserIntro);
     }
 
     #[test]

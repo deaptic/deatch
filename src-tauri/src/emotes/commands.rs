@@ -2,13 +2,14 @@ use super::dto::{ChannelResult, EmoteEntry};
 use super::seventv_events::{SevenTvEvents, SevenTvOp};
 use super::{bttv, ffz, seventv};
 use crate::error::Result;
+use crate::twitch::ids::UserId;
 use serde::Deserialize;
 use tauri::State;
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelIdParams {
-    pub channel_id: String,
+    pub channel_id: UserId,
 }
 
 #[derive(Deserialize, specta::Type)]

@@ -184,7 +184,7 @@ export type ChannelFocus = {
 };
 
 export type ChannelIdParams = {
-	channelId: string,
+	channelId: UserId,
 };
 
 export type ChannelInfo = {
@@ -392,6 +392,8 @@ export type MessageFragment = { type: "text"; text: string } | { type: "emote"; 
 
 export type MessageId = string;
 
+export type MessageType = "text" | "user_intro";
+
 export type ModeratedChannelsChanged = UserRef[];
 
 export type ModifyChannelInformationParams = {
@@ -416,14 +418,14 @@ export type ProcessStats = {
 };
 
 export type RecentMessage = {
-	broadcaster_user_id: string,
-	message_id: string,
-	chatter_user_id: string,
+	broadcaster_user_id: UserId,
+	message_id: MessageId,
+	chatter_user_id: UserId,
 	chatter_user_login: string,
 	chatter_user_name: string,
 	color: string,
 	message: MessageBody,
-	message_type: string,
+	message_type: MessageType,
 	badges: ChatterBadge[],
 	reply: Reply | null,
 	channel_points_custom_reward_id: string | null,
@@ -437,11 +439,11 @@ export type Rename = {
 };
 
 export type Reply = {
-	parent_message_id: string,
+	parent_message_id: MessageId,
 	parent_message_body: string,
 	parent_user_name: string,
 	parent_user_login: string,
-	parent_user_id: string,
+	parent_user_id: UserId,
 };
 
 export type SearchChannel = {
