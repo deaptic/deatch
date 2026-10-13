@@ -143,8 +143,32 @@ impl From<HelixChatSettings> for ChatSettings {
 
 #[cfg(test)]
 mod tests {
-    use super::ChatSettings;
+    use super::{ChatSettings, SendMessageResult};
     use serde_json::json;
+
+    fn sent(value: serde_json::Value) -> SendMessageResult {
+        SendMessageResult::from(
+            serde_json::from_value::<super::SendChatMessageResponse>(value).unwrap(),
+        )
+    }
+
+    #[test]
+    fn only_automod_rejections_count_as_held() {
+        let held = sent(json!({
+            "message_id": "",
+            "is_sent": false,
+            "drop_reason": { "code": "msg_rejected", "message": "held by AutoMod" }
+        }));
+        assert!(held.held);
+        assert_eq!(held.drop_reason.as_deref(), Some("held by AutoMod"));
+
+        let dropped = sent(json!({
+            "message_id": "",
+            "is_sent": false,
+            "drop_reason": { "code": "msg_duplicate", "message": "duplicate" }
+        }));
+        assert!(!dropped.held);
+    }
 
     fn helix_settings(value: serde_json::Value) -> ChatSettings {
         ChatSettings::from(serde_json::from_value::<super::HelixChatSettings>(value).unwrap())
