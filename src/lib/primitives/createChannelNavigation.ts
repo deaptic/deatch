@@ -1,6 +1,6 @@
 import { createEffect, on } from "solid-js";
 import type { User } from "../types/index.ts";
-import { knownUser } from "../stores/users.ts";
+import { addToast } from "../stores/toasts.ts";
 import * as users from "../services/users.ts";
 import {
   linkSynced,
@@ -33,10 +33,15 @@ export function createChannelNavigation(): ChannelNavigation {
   // The feed scrolls once it holds the message, so this works whether the
   // channel is already open or still has to mount and load its backlog.
   function jumpToMessage(channelId: string, messageId: string) {
-    const ch = knownUser(channelId);
-    if (!ch) return;
-    setJumpTarget({ channelId, messageId });
-    if (selectedChannel()?.id !== channelId) selectChannel(ch);
+    users.get([channelId])
+      .then(([ch]) => {
+        if (!ch) {
+          return addToast("Channel not found", "error");
+        }
+        setJumpTarget({ channelId, messageId });
+        if (selectedChannel()?.id !== channelId) selectChannel(ch);
+      })
+      .catch((e) => console.warn("jump channel lookup failed", e));
   }
 
   // Whatever channel is shown — picked manually or mirrored from the browser
