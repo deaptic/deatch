@@ -1,9 +1,22 @@
 import { selectedChannel } from "../stores/view.ts";
-import { linkMutedByLogin, linkWarmedChannels } from "../stores/link.ts";
+import {
+  linkConnected,
+  linkedChannel,
+  linkMutedByLogin,
+  linkWarmedChannels,
+  setLinkConnected,
+  setLinkedChannel,
+  setLinkMutedByLogin,
+  setLinkWarmedChannels,
+} from "../stores/link.ts";
 import { linkClose, linkSetMuted } from "../api/link.ts";
 import { getStreamsFromIds } from "../api/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
-import type { User } from "../types/index.ts";
+import * as users from "./users.ts";
+import type { LinkState, User } from "../types/index.ts";
+
+const RETRY_MIN_MS = 1000;
+const RETRY_MAX_MS = 15_000;
 
 function closeTabs(tabs: User[]) {
   for (const ch of tabs) if (ch?.login) void linkClose(ch.login);
@@ -76,4 +89,90 @@ export function toggleMute() {
   const target = selectedLinked();
   if (!target?.login) return;
   void linkSetMuted(target.login, !isMuted(target.login));
+}
+
+let pendingFetch = new Set<string>();
+let pendingCurrent: string | null = null;
+let retryTimer: number | undefined;
+let retryDelay = RETRY_MIN_MS;
+
+function scheduleRetry() {
+  if (retryTimer !== undefined || !linkConnected()) return;
+  retryTimer = window.setTimeout(() => {
+    retryTimer = undefined;
+    void drainPending();
+  }, retryDelay);
+  retryDelay = Math.min(retryDelay * 2, RETRY_MAX_MS);
+}
+
+// The tab list lands before `current` so a new tab counts as linked by the
+// time the app follows it.
+async function drainPending() {
+  if (!linkConnected()) return;
+
+  if (pendingFetch.size > 0) {
+    const toFetch = Array.from(pendingFetch);
+    try {
+      const fresh = await users.fetch({ logins: toFetch }, { silent: true });
+      for (const login of toFetch) pendingFetch.delete(login);
+      const current = linkWarmedChannels();
+      const known = new Set(current.map((c) => c.login));
+      setLinkWarmedChannels([
+        ...current,
+        ...fresh.filter((u) => !known.has(u.login)),
+      ]);
+    } catch (e) {
+      console.warn("link tab lookup failed, retrying", e);
+    }
+  }
+
+  if (pendingCurrent) {
+    const slug = pendingCurrent;
+    try {
+      const [ch] = await users.fetch({ logins: [slug] }, { silent: true });
+      // An unknown login (banned, renamed) resolves to nothing; retrying
+      // would never change that.
+      if (pendingCurrent === slug) pendingCurrent = null;
+      if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
+    } catch (e) {
+      console.warn("link current channel lookup failed, retrying", e);
+    }
+  }
+
+  if (pendingFetch.size > 0 || pendingCurrent) {
+    scheduleRetry();
+  } else {
+    retryDelay = RETRY_MIN_MS;
+  }
+}
+
+export async function applyState({ channels, current }: LinkState) {
+  setLinkConnected(true);
+
+  const muted: Record<string, boolean> = {};
+  for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
+  setLinkMutedByLogin(muted);
+
+  const incoming = new Set(channels.map((c) => c.login.toLowerCase()));
+  const warmed = linkWarmedChannels();
+  const keep = warmed.filter((c) => incoming.has(c?.login));
+  if (keep.length !== warmed.length) setLinkWarmedChannels(keep);
+
+  const known = new Set(keep.map((c) => c.login));
+  pendingFetch = new Set([...incoming].filter((l) => !known.has(l)));
+
+  const cur = current?.toLowerCase() ?? null;
+  pendingCurrent = cur && linkedChannel()?.login !== cur ? cur : null;
+  if (!cur && linkedChannel() !== null) setLinkedChannel(null);
+
+  await drainPending();
+}
+
+export function disconnect() {
+  setLinkConnected(false);
+  pendingFetch.clear();
+  pendingCurrent = null;
+  window.clearTimeout(retryTimer);
+  retryTimer = undefined;
+  retryDelay = RETRY_MIN_MS;
 }
