@@ -7,6 +7,9 @@ use std::time::Duration;
 
 const PIPE_NAME: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
+/// `send_to_host` holds the hosts lock while writing, so a browser that stops
+/// reading its pipe must not block every other browser forever.
+const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 
 #[derive(Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -57,8 +60,10 @@ pub async fn send_to_host(command: &HostCommand) -> std::io::Result<()> {
     let mut payload = serde_json::to_vec(command)?;
     payload.push(b'\n');
     for host in hosts.values_mut() {
-        if let Err(e) = host.writer.write_all(&payload).await {
-            log::warn!("ipc write failed: {e}");
+        match tokio::time::timeout(WRITE_TIMEOUT, host.writer.write_all(&payload)).await {
+            Ok(Ok(())) => {}
+            Ok(Err(e)) => log::warn!("ipc write failed: {e}"),
+            Err(_) => log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}"),
         }
     }
     Ok(())
