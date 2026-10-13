@@ -3,8 +3,8 @@ import { createEffect, createSignal, on } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { getFollowedAt } from "../../lib/api/twitch/channels.ts";
 import {
+  isModOfChannel,
   knownUser,
-  moderatedChannels,
   user as currentUser,
 } from "../../lib/stores/users.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -27,12 +27,8 @@ export default function UserCardHeader(props: Props) {
   const user = (): User | null => knownUser(props.chatterId) ?? null;
   const [followedAt, setFollowedAt] = createSignal<string | null>(null);
 
-  const canSeeFollow = (chatterId: string) => {
-    const me = currentUser();
-    if (!me) return false;
-    if (me.id === chatterId || me.id === props.broadcasterId) return true;
-    return moderatedChannels().some((c) => c.id === props.broadcasterId);
-  };
+  const canSeeFollow = (chatterId: string) =>
+    currentUser()?.id === chatterId || isModOfChannel(props.broadcasterId);
 
   createEffect(on(() => props.chatterId, (id) => {
     setFollowedAt(null);
