@@ -10,9 +10,12 @@ import {
 
 export async function login(): Promise<void> {
   setDeviceCode(null);
-  const code = await getDeviceCode();
-  setDeviceCode(code);
   setWaiting(true);
+  try {
+    setDeviceCode(await getDeviceCode());
+  } catch {
+    setWaiting(false);
+  }
 }
 
 export function abort(): void {
