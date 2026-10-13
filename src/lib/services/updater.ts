@@ -17,7 +17,10 @@ export function start(): () => void {
     if (pendingUpdate() || installing()) return;
     if (Date.now() - lastCheckedAt < THROTTLE_MS) return;
     lastCheckedAt = Date.now();
-    const update = await check().catch(() => null);
+    const update = await check().catch((e) => {
+      console.warn("update check failed", e);
+      return null;
+    });
     if (update && !pendingUpdate()) setPendingUpdate(update);
   }
 
