@@ -1,7 +1,6 @@
 import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type {
   AutomodHoldStatus,
-  FeedEvent,
   FeedMessage,
   RawAutomodMessageHold,
   RawAutomodMessageUpdate,
@@ -17,6 +16,7 @@ import {
   markUserMessagesDeleted,
   setAutomodHoldStatus,
 } from "../stores/feeds.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
 import { formatShortDuration } from "../format/duration.ts";
@@ -121,34 +121,29 @@ export function start(): () => void {
       markAllMessagesDeleted(broadcasterId);
       if (isModOfChannel(broadcasterId)) return;
       const now = serverTime(e.payload);
-      const notice: FeedEvent = {
-        kind: "event",
-        id: `chat-cleared-${broadcasterId}-${now}`,
-        notice_type: "chat_cleared",
-        system_message: "Chat has been cleared by a moderator.",
-        chatter_name: "",
-        color: "",
-        timestamp: now,
-      };
-      appendItem(broadcasterId, notice);
+      appendItem(
+        broadcasterId,
+        feedEvent(
+          "chat_cleared",
+          "Chat has been cleared by a moderator.",
+          now,
+          {
+            id: `chat-cleared-${broadcasterId}-${now}`,
+          },
+        ),
+      );
     }),
     listenEventSub<RawModerate>("channel.moderate", (e) => {
       const payload = e.payload.event;
       const now = serverTime(e.payload);
       const msg = buildModerateMessage(payload, now);
       if (!msg) return;
-      const notice: FeedEvent = {
-        kind: "event",
-        id: `moderate-${payload.broadcaster_user_id}-${payload.action}-${now}-${
-          Math.random().toString(36).slice(2, 8)
-        }`,
-        notice_type: moderateNoticeType(payload.action),
-        system_message: msg,
-        chatter_name: payload.moderator_user_name,
-        color: "",
-        timestamp: now,
-      };
-      appendItem(payload.broadcaster_user_id, notice);
+      appendItem(
+        payload.broadcaster_user_id,
+        feedEvent(moderateNoticeType(payload.action), msg, now, {
+          chatter_name: payload.moderator_user_name,
+        }),
+      );
     }),
     listenEventSub<RawAutomodMessageHold>("automod.message.hold", (e) => {
       const p = e.payload.event;

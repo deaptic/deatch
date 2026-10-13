@@ -8,6 +8,7 @@ import {
 } from "../../../lib/stores/preferences.ts";
 import { getUserChatColor } from "../../../lib/api/twitch/chat.ts";
 import { user } from "../../../lib/stores/users.ts";
+import { feedEvent } from "../../../lib/utils/feedEvent.ts";
 import { layoutFeed } from "../../../lib/utils/feedLayout.ts";
 import FeedItem from "../../feed/FeedItem.tsx";
 
@@ -39,15 +40,10 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
     message("p2", "We start in five minutes", 11.5),
     message("p3", "Wrong tab, ignore that", 11, { deleted: true }),
     message("p4", "Thanks for hanging out today", 1),
-    {
-      kind: "event",
+    feedEvent("sub", `${me.name} subscribed at Tier 1.`, at(0.5), {
       id: "p5",
-      notice_type: "sub",
-      system_message: `${me.name} subscribed at Tier 1.`,
       chatter_name: me.name,
-      color: "",
-      timestamp: at(0.5),
-    },
+    }),
   ];
 }
 

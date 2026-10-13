@@ -7,8 +7,8 @@ import {
 import * as emoteSetUpdate from "./emoteSetUpdate.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
 import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
-import type { FeedEvent } from "../types/feed.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 
@@ -73,22 +73,9 @@ function announce(channelId: string, update: EmoteSetUpdated): void {
   const actor = emoteSetUpdate.actor(update);
   const timestamp = Date.now();
   for (const message of emoteSetUpdate.describe(update)) {
-    appendItem(channelId, feedEvent(timestamp, actor, message));
+    appendItem(
+      channelId,
+      feedEvent("seventv_update", message, timestamp, { chatter_name: actor }),
+    );
   }
-}
-
-function feedEvent(
-  timestamp: number,
-  actor: string,
-  message: string,
-): FeedEvent {
-  return {
-    kind: "event",
-    id: crypto.randomUUID(),
-    notice_type: "seventv_update",
-    system_message: message,
-    chatter_name: actor,
-    color: "",
-    timestamp,
-  };
 }

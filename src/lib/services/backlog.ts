@@ -9,6 +9,7 @@ import {
   insertEntries,
   prependEntries,
 } from "../stores/feeds.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
 
@@ -52,16 +53,15 @@ export function load(broadcasterId: string, channelLogin: string) {
       rememberOwnMessages(broadcasterId, added);
     })
     .catch((e) => {
-      appendItem(broadcasterId, {
-        kind: "event",
-        id: `backlog-failed-${broadcasterId}`,
-        notice_type: "local",
-        system_message: `Couldn't load recent history: ${errorMessage(e)}`,
-        chatter_name: "",
-        color: "",
-        timestamp: Date.now(),
-        silent: true,
-      });
+      appendItem(
+        broadcasterId,
+        feedEvent(
+          "local",
+          `Couldn't load recent history: ${errorMessage(e)}`,
+          Date.now(),
+          { id: `backlog-failed-${broadcasterId}`, silent: true },
+        ),
+      );
     });
 }
 

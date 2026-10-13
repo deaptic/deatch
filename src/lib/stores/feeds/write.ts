@@ -2,6 +2,7 @@ import { produce } from "solid-js/store";
 import { feeds, getEntryId, isSilent, setFeeds } from "./core.ts";
 import { append, insert, prepend } from "./ops.ts";
 import type { FeedEntry } from "../../types/feed.ts";
+import { feedEvent } from "../../utils/feedEvent.ts";
 import { selectedChannel } from "../view.ts";
 
 export function appendItem(id: string, item: FeedEntry): boolean {
@@ -25,16 +26,7 @@ export function appendLocalNotice(
   text: string,
   noticeType = "local",
 ) {
-  appendItem(id, {
-    kind: "event",
-    id: crypto.randomUUID(),
-    notice_type: noticeType,
-    system_message: text,
-    chatter_name: "",
-    color: "",
-    timestamp: Date.now(),
-    silent: true,
-  });
+  appendItem(id, feedEvent(noticeType, text, Date.now(), { silent: true }));
 }
 
 /// Fills a gap after a dropped connection; returns the entries that were new.
