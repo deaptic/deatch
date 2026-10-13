@@ -7,7 +7,7 @@ use std::time::Duration;
 use interprocess::local_socket::Stream;
 use interprocess::TryClone;
 
-const MAX_MESSAGE_SIZE: usize = 1_048_576;
+use super::MAX_MESSAGE_SIZE;
 const RECONNECT_DELAY: Duration = Duration::from_millis(1500);
 const MAX_LOG_BYTES: u64 = 1_048_576;
 
