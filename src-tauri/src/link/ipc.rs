@@ -1,4 +1,5 @@
 use super::events::{LinkChannel, LinkDisconnected, LinkState};
+use super::MAX_MESSAGE_SIZE;
 use crate::emit::emit;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -138,9 +139,34 @@ async fn run_server(app: tauri::AppHandle) -> std::io::Result<()> {
     }
 }
 
-async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_socket::tokio::Stream) {
-    use tokio::io::AsyncBufReadExt;
+async fn read_line<R>(reader: &mut R) -> std::io::Result<Option<String>>
+where
+    R: tokio::io::AsyncBufRead + Unpin,
+{
+    use tokio::io::{AsyncBufReadExt, AsyncReadExt};
+    let invalid = |e: String| std::io::Error::new(std::io::ErrorKind::InvalidData, e);
+    let mut buf = Vec::new();
+    let read = (&mut *reader)
+        .take(MAX_MESSAGE_SIZE as u64 + 1)
+        .read_until(b'\n', &mut buf)
+        .await?;
+    if read == 0 {
+        return Ok(None);
+    }
+    if buf.last() == Some(&b'\n') {
+        buf.pop();
+        if buf.last() == Some(&b'\r') {
+            buf.pop();
+        }
+    } else if buf.len() > MAX_MESSAGE_SIZE {
+        return Err(invalid("line exceeds the message size limit".into()));
+    }
+    String::from_utf8(buf)
+        .map(Some)
+        .map_err(|e| invalid(e.to_string()))
+}
 
+async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_socket::tokio::Stream) {
     let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
     let (read_half, writer) = tokio::io::split(conn);
     HOSTS.lock().await.insert(
@@ -155,9 +181,9 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
         },
     );
 
-    let mut lines = tokio::io::BufReader::new(read_half).lines();
+    let mut reader = tokio::io::BufReader::new(read_half);
     loop {
-        let line = match lines.next_line().await {
+        let line = match read_line(&mut reader).await {
             Ok(Some(line)) => line,
             Ok(None) => break,
             Err(e) => {
@@ -185,8 +211,37 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
 
 #[cfg(test)]
 mod tests {
-    use super::{merge, HostCommand, LinkChannel, LinkState};
+    use super::{merge, read_line, HostCommand, LinkChannel, LinkState, MAX_MESSAGE_SIZE};
     use serde_json::json;
+
+    fn lines(input: &[u8]) -> Vec<std::io::Result<Option<String>>> {
+        let mut reader = input;
+        tauri::async_runtime::block_on(async {
+            let mut out = Vec::new();
+            loop {
+                let line = read_line(&mut reader).await;
+                let done = !matches!(line, Ok(Some(_)));
+                out.push(line);
+                if done {
+                    return out;
+                }
+            }
+        })
+    }
+
+    #[test]
+    fn reads_lines_until_the_pipe_closes() {
+        let read = lines(b"one\r\ntwo\n");
+        assert_eq!(read[0].as_ref().unwrap().as_deref(), Some("one"));
+        assert_eq!(read[1].as_ref().unwrap().as_deref(), Some("two"));
+        assert!(matches!(read[2], Ok(None)));
+    }
+
+    #[test]
+    fn rejects_a_line_longer_than_the_message_limit() {
+        let long = vec![b'x'; MAX_MESSAGE_SIZE + 1];
+        assert!(lines(&long)[0].is_err());
+    }
 
     fn state(channels: &[(&str, bool)], current: Option<&str>) -> LinkState {
         LinkState {
