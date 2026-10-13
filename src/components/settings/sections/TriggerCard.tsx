@@ -2,6 +2,7 @@ import { Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Toggle from "../../ui/Toggle.tsx";
+import Textarea from "../../ui/Textarea.tsx";
 import Field from "../../ui/Field.tsx";
 import Button from "../../ui/Button.tsx";
 import Segmented from "../../ui/Segmented.tsx";
@@ -38,6 +39,7 @@ export default function TriggerCard(props: {
     >
       <div class="flex items-center gap-3">
         <Toggle
+          label="Enabled"
           checked={draft.enabled}
           onChange={(v) => setDraft("enabled", v)}
         />
@@ -96,12 +98,12 @@ export default function TriggerCard(props: {
 
           <div class="flex flex-col gap-3">
             <TriggerSectionLabel>Match</TriggerSectionLabel>
-            <textarea
+            <Textarea
               rows={2}
+              resizable
               placeholder="Phrases to match, one per line. Use * as a wildcard, e.g. hi*"
               value={draft.phrase}
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
-              class="bg-surface text-ink text-body rounded-sm px-3 py-2 border border-line hover:border-ink-faint focus:outline-none focus:border-accent resize-y placeholder:text-ink-faint transition-colors duration-snap"
             />
             <TriggerField label="Location">
               <Segmented
@@ -116,6 +118,7 @@ export default function TriggerCard(props: {
             </TriggerField>
             <TriggerField label="Case sensitive">
               <Toggle
+                label="Case sensitive"
                 checked={draft.caseSensitive}
                 onChange={(v) => setDraft("caseSensitive", v)}
               />
