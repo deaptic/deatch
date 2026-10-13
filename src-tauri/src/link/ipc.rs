@@ -156,7 +156,15 @@ async fn handle_connection(app: tauri::AppHandle, conn: interprocess::local_sock
     );
 
     let mut lines = tokio::io::BufReader::new(read_half).lines();
-    while let Ok(Some(line)) = lines.next_line().await {
+    loop {
+        let line = match lines.next_line().await {
+            Ok(Some(line)) => line,
+            Ok(None) => break,
+            Err(e) => {
+                log::warn!("ipc read failed: {e}");
+                break;
+            }
+        };
         match serde_json::from_str::<HostMessage>(&line) {
             Ok(HostMessage::State(state)) => {
                 let mut hosts = HOSTS.lock().await;
