@@ -15,9 +15,11 @@ type Props = {
   y: number;
   chatterId: string;
   broadcasterId: string;
+  pinned: boolean;
   getBounds: () => DOMRect | null;
   getBoundsElement?: () => HTMLElement | null;
   onClose: () => void;
+  onTogglePin: () => void;
   onJumpToMessage?: (channelId: string, messageId: string) => void;
   onSwitchUser?: (identity: Partial<UserRef>) => void;
 };
@@ -72,7 +74,8 @@ export default function UserCard(props: Props) {
 
   const [pos, setPos] = createSignal({ x: props.x, y: props.y });
   const [room, setRoom] = createSignal(roomIn());
-  const [pinned, setPinned] = createSignal(false);
+  // bringToFront re-inserts the node, which would replay the entrance.
+  const [entered, setEntered] = createSignal(false);
 
   onMount(() => {
     if (!cardRef) return;
@@ -91,20 +94,24 @@ export default function UserCard(props: Props) {
   dismissOnOutside({
     ref: () => cardRef,
     onDismiss: props.onClose,
-    shouldDismiss: () => !pinned(),
+    shouldDismiss: () => !props.pinned,
   });
-  shortcuts.setContext("userCardOpen", true);
-  const unbindEsc = shortcuts.registerLocal(
-    "escape",
-    () => {
-      props.onClose();
-    },
-    "userCardOpen",
-  );
-  onCleanup(() => {
-    unbindEsc();
-    shortcuts.setContext("userCardOpen", false);
-  });
+  // Local bindings run newest first, so re-registering on focus makes Escape
+  // close the card used most recently.
+  const bindEscape = () =>
+    shortcuts.registerLocal("escape", () => props.onClose());
+  let unbindEscape = bindEscape();
+  onCleanup(() => unbindEscape());
+
+  // Overlays share one z-index, so the last body child paints on top.
+  function bringToFront() {
+    const host = cardRef?.parentElement;
+    if (host && host !== document.body.lastElementChild) {
+      document.body.appendChild(host);
+    }
+    unbindEscape();
+    unbindEscape = bindEscape();
+  }
 
   function startDrag(e: MouseEvent) {
     if (e.button !== 0) return;
@@ -139,9 +146,13 @@ export default function UserCard(props: Props) {
     <Portal>
       <div
         ref={cardRef}
+        on:mousedown={bringToFront}
         role="dialog"
         aria-label="User card"
-        class="fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-(--card-w) h-(--card-h) min-w-(--card-w) min-h-min resize transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+        onTransitionEnd={() => setEntered(true)}
+        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-(--card-w) h-(--card-h) min-w-(--card-w) min-h-min resize transition duration-quick ease-out ${
+          entered() ? "" : "starting:opacity-0 starting:translate-y-1"
+        }`}
         style={{
           ...CARD_VARS,
           "--x": `${pos().x}px`,
@@ -154,8 +165,8 @@ export default function UserCard(props: Props) {
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
           messages={messages()}
-          pinned={pinned()}
-          onTogglePin={() => setPinned((p) => !p)}
+          pinned={props.pinned}
+          onTogglePin={props.onTogglePin}
           onStartDrag={startDrag}
         />
         <UserCardModActions
