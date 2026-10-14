@@ -129,7 +129,7 @@ export default function UserCardHeader(props: Props) {
           <button
             type="button"
             title="Open channel on Twitch"
-            class="shrink-0 self-start flex rounded-xs cursor-pointer ring-2 ring-overlay -mt-(--avatar-lift)"
+            class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-(--avatar-lift)"
             onMouseDown={(e) => {
               e.stopPropagation();
               if (e.button === 1) e.preventDefault();
@@ -141,7 +141,6 @@ export default function UserCardHeader(props: Props) {
               src={user()?.profileImageUrl}
               alt={user()?.displayName ?? ""}
               size={80}
-              square
             />
           </button>
           <div class="ml-auto flex items-center pt-(--card-gap) text-(length:--card-name) [&>span]:mr-0">
