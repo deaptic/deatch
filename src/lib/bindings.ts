@@ -35,7 +35,7 @@ export const commands = {
 	getCheermotes: (params: BroadcasterParams) => __TAURI_INVOKE<Cheermote[]>("get_cheermotes", { params }),
 	getChatSettings: (params: BroadcasterParams) => __TAURI_INVOKE<ChatSettings>("get_chat_settings", { params }),
 	updateChatSettings: (params: UpdateChatSettingsParams) => __TAURI_INVOKE<null>("update_chat_settings", { params }),
-	getUserChatColor: () => __TAURI_INVOKE<string | null>("get_user_chat_color"),
+	getUserChatColor: (params: GetUserChatColorParams) => __TAURI_INVOKE<string | null>("get_user_chat_color", { params }),
 	updateUserChatColor: (params: UpdateUserChatColorParams) => __TAURI_INVOKE<null>("update_user_chat_color", { params }),
 	getUserEmotes: () => __TAURI_INVOKE<UserEmote[]>("get_user_emotes"),
 	getGlobalEmotes: () => __TAURI_INVOKE<Emote[]>("get_global_emotes"),
@@ -353,6 +353,10 @@ export type GetStreamsParams = {
 	language?: string | null,
 	first?: number | null,
 	after?: string | null,
+};
+
+export type GetUserChatColorParams = {
+	userId: UserId,
 };
 
 export type GetUsersParams = {

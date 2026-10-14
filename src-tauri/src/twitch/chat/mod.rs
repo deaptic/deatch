@@ -179,10 +179,19 @@ pub async fn update_chat_settings(
     Ok(())
 }
 
-pub async fn get_user_chat_color(twitch: &Authed<'_>) -> Result<Option<String>> {
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct GetUserChatColorParams {
+    pub user_id: UserId,
+}
+
+pub async fn get_user_chat_color(
+    twitch: &Authed<'_>,
+    params: GetUserChatColorParams,
+) -> Result<Option<String>> {
     let color = twitch
         .helix
-        .get_user_chat_color(&twitch.token.user_id, &twitch.token)
+        .get_user_chat_color(params.user_id.as_str(), &twitch.token)
         .await?;
     Ok(color.and_then(|c| c.color).map(|hex| hex.to_string()))
 }

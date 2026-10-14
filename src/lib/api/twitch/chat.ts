@@ -6,6 +6,7 @@ import type {
   ChatSettings,
   Emote,
   GetRecentMessagesParams,
+  GetUserChatColorParams,
   RecentMessage,
   SendChatAnnouncementParams,
   SendChatMessageParams,
@@ -89,9 +90,10 @@ export async function updateChatSettings(
 }
 
 export function getUserChatColor(
+  params: GetUserChatColorParams,
   options?: InvokeOptions,
 ): Promise<string | null> {
-  return invokeCommand(commands.getUserChatColor, [], options);
+  return invokeCommand(commands.getUserChatColor, [params], options);
 }
 
 export async function updateUserChatColor(
