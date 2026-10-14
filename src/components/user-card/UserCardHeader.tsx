@@ -1,7 +1,15 @@
 import type { FeedMessage, User } from "../../lib/types/index.ts";
-import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  createSignal,
+  on,
+  Show,
+} from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { getFollowedAt } from "../../lib/api/twitch/channels.ts";
+import { getUserChatColor } from "../../lib/api/twitch/chat.ts";
 import {
   isModOfChannel,
   knownUser,
@@ -51,7 +59,17 @@ export default function UserCardHeader(props: Props) {
       .catch(() => {});
   }));
 
-  const messageColor = createMemo(() =>
+  const [chatColor] = createResource(
+    () => props.chatterId,
+    (userId) =>
+      getUserChatColor({ userId }, { silent: true }).catch((e) => {
+        console.warn("[user-card] chat color not loaded", e);
+        return null;
+      }),
+  );
+  // A switched card keeps the last chatter's colour until the new one lands.
+  const color = createMemo(() =>
+    (!chatColor.loading && chatColor()) ||
     props.messages.find((m) => m.color)?.color
   );
   const openChannel = () => {
@@ -68,7 +86,7 @@ export default function UserCardHeader(props: Props) {
     >
       <div
         class="relative aspect-5/2 bg-(--banner)"
-        style={{ "--banner": messageColor() ?? "var(--color-raised)" }}
+        style={{ "--banner": color() ?? "var(--color-raised)" }}
       >
         <Show when={user()?.offlineImageUrl}>
           {(src) => (
@@ -136,7 +154,7 @@ export default function UserCardHeader(props: Props) {
         <UserCardIdentity
           chatterId={props.chatterId}
           user={user()}
-          color={messageColor()}
+          color={color()}
         />
         <UserCardMeta user={user()} follow={follow()} />
       </div>

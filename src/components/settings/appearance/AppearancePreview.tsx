@@ -49,7 +49,12 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
 
 export default function AppearancePreview() {
   const [color] = createResource(
-    () => getUserChatColor({ silent: true }).catch(() => null),
+    () => {
+      const id = user()?.id;
+      return id
+        ? getUserChatColor({ userId: id }, { silent: true }).catch(() => null)
+        : null;
+    },
     { initialValue: null },
   );
   const me = (): Me => {
