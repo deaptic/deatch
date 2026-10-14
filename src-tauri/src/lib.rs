@@ -4,10 +4,12 @@ mod discord;
 mod emit;
 mod emotes;
 mod error;
+mod graphics;
 mod history;
 mod http;
 mod keyring;
 mod link;
+mod local_dir;
 mod notifications;
 mod twitch;
 
@@ -97,6 +99,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             link::commands::link_close,
             link::commands::link_request_state,
             notifications::commands::set_mentions_badge,
+            graphics::commands::set_hardware_acceleration,
             diagnostics::commands::get_app_stats,
         ])
 }
@@ -118,6 +121,7 @@ pub fn run() {
     #[cfg(debug_assertions)]
     export_to(&bindings, std::path::Path::new(BINDINGS_PATH));
     let invoke_handler = bindings.invoke_handler();
+    graphics::apply_startup_flags();
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::new()

@@ -21,10 +21,7 @@ const CHROMIUM_REGISTRY_KEYS: [&str; 2] = [
 ];
 
 pub fn register() -> io::Result<()> {
-    let local = std::env::var("LOCALAPPDATA")
-        .map_err(|_| io::Error::new(io::ErrorKind::NotFound, "LOCALAPPDATA env var not set"))?;
-    let dir = PathBuf::from(local).join("Deatch");
-    fs::create_dir_all(&dir)?;
+    let dir = crate::local_dir::local_dir()?;
     let exe = std::env::current_exe()?;
 
     let firefox = write_manifest(

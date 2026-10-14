@@ -43,7 +43,8 @@
     "showLogs": false,
     "alwaysOnTop": false,
     "autostart": false,
-    "discordRichPresence": false
+    "discordRichPresence": false,
+    "hardwareAcceleration": true
   },
   "appearance": {
     "theme": "system",
