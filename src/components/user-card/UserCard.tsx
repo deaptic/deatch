@@ -204,7 +204,7 @@ export default function UserCard(props: Props) {
           loading={history.loading}
           onJumpToMessage={(messageId) => {
             props.onJumpToMessage?.(props.broadcasterId, messageId);
-            props.onClose();
+            if (!props.pinned) props.onClose();
           }}
           onShowUserCard={(_x, _y, identity) => props.onSwitchUser?.(identity)}
         />
