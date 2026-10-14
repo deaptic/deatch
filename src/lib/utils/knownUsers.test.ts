@@ -15,6 +15,7 @@ const full: User = {
   login: "maya",
   displayName: "Maya",
   profileImageUrl: "https://cdn/maya-300x300.png",
+  offlineImageUrl: null,
   description: "hi",
   broadcasterType: "affiliate",
   createdAt: "2020-01-01T00:00:00Z",
@@ -47,6 +48,14 @@ Deno.test("mergeUser takes a complete user from Twitch as is", () => {
 Deno.test("sameUser compares every field", () => {
   assertEquals(sameUser(full, { ...full }), true);
   assertEquals(sameUser(full, { ...full, description: "" }), false);
+});
+
+Deno.test("sameUser sees fields the cached user never had", () => {
+  const { offlineImageUrl: _, ...older } = full;
+  assertEquals(
+    sameUser(older as User, { ...full, offlineImageUrl: "x" }),
+    false,
+  );
 });
 
 Deno.test("isComplete is true only for users Twitch has returned", () => {

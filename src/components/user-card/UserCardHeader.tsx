@@ -1,5 +1,5 @@
 import type { FeedMessage, User } from "../../lib/types/index.ts";
-import { createEffect, createSignal, on } from "solid-js";
+import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { getFollowedAt } from "../../lib/api/twitch/channels.ts";
 import {
@@ -8,9 +8,12 @@ import {
   user as currentUser,
 } from "../../lib/stores/users.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { Pin } from "lucide-solid";
+import { AtSign, Hash, Pin } from "lucide-solid";
+import { feeds } from "../../lib/stores/feeds.ts";
 import Avatar from "../ui/Avatar.tsx";
+import BadgeBox from "../ui/BadgeBox.tsx";
 import IconButton from "../ui/IconButton.tsx";
+import CopyButton from "./CopyButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta, { type FollowStatus } from "./UserCardMeta.tsx";
 
@@ -48,49 +51,95 @@ export default function UserCardHeader(props: Props) {
       .catch(() => {});
   }));
 
+  const messageColor = createMemo(() =>
+    props.messages.find((m) => m.color)?.color
+  );
+  const openChannel = () => {
+    const login = user()?.login;
+    if (login) void openUrl(`https://twitch.tv/${login}`);
+  };
+  const channelBadges = () => feeds[props.broadcasterId]?.badges ?? {};
+  const latestBadges = () => props.messages.at(-1)?.badges ?? [];
+
   return (
     <div
-      class="flex gap-4 p-4 border-b border-line-soft cursor-move select-none"
+      class="relative shrink-0 border-b border-line-soft cursor-move select-none"
       onMouseDown={props.onStartDrag}
     >
-      <button
-        type="button"
-        title="Open channel on Twitch"
-        class="shrink-0 self-start flex rounded-sm cursor-pointer"
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={() =>
-          user()?.login && openUrl(`https://twitch.tv/${user()!.login}`)}
+      <div
+        class="relative aspect-5/2 bg-(--banner)"
+        style={{ "--banner": messageColor() ?? "var(--color-raised)" }}
       >
-        <Avatar
-          src={user()?.profileImageUrl}
-          alt={user()?.displayName ?? ""}
-          size={80}
-          square
-        />
-      </button>
-      <div class="flex-1 min-w-0 h-20 flex flex-col justify-center gap-2">
+        <Show when={user()?.offlineImageUrl}>
+          {(src) => (
+            <img
+              src={src()}
+              alt=""
+              draggable={false}
+              class="block size-full object-cover"
+            />
+          )}
+        </Show>
+      </div>
+      <div class="absolute top-(--card-gap) right-(--card-gap) flex gap-(--card-gap) [&_button]:text-on-accent">
+        <div class="flex rounded-sm bg-media-scrim">
+          <Show when={user()}>
+            {(u) => (
+              <CopyButton copy={u().login} label="Copy login">
+                <AtSign class="size-4" />
+              </CopyButton>
+            )}
+          </Show>
+          <CopyButton copy={props.chatterId} label="Copy user ID">
+            <Hash class="size-4" />
+          </CopyButton>
+        </div>
+        <div class="rounded-sm bg-media-scrim">
+          <IconButton
+            label={props.pinned ? "Unpin card" : "Keep card open"}
+            size="sm"
+            pressed={props.pinned}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={props.onTogglePin}
+          >
+            <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
+          </IconButton>
+        </div>
+      </div>
+      <div class="flex flex-col gap-(--card-gap) px-(--card-pad) pb-(--card-pad)">
+        <div class="flex gap-(--card-gap)">
+          <button
+            type="button"
+            title="Open channel on Twitch"
+            class="shrink-0 self-start flex rounded-xs cursor-pointer ring-2 ring-overlay -mt-(--avatar-lift)"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              if (e.button === 1) e.preventDefault();
+            }}
+            onClick={openChannel}
+            onAuxClick={(e) => e.button === 1 && openChannel()}
+          >
+            <Avatar
+              src={user()?.profileImageUrl}
+              alt={user()?.displayName ?? ""}
+              size={80}
+              square
+            />
+          </button>
+          <div class="ml-auto flex items-center pt-(--card-gap) text-(length:--card-name) [&>span]:mr-0">
+            <BadgeBox
+              badges={latestBadges()}
+              channelBadges={channelBadges()}
+            />
+          </div>
+        </div>
         <UserCardIdentity
           chatterId={props.chatterId}
-          broadcasterId={props.broadcasterId}
           user={user()}
-          messages={props.messages}
+          color={messageColor()}
         />
-        <UserCardMeta
-          chatterId={props.chatterId}
-          user={user()}
-          follow={follow()}
-        />
+        <UserCardMeta user={user()} follow={follow()} />
       </div>
-      <IconButton
-        label={props.pinned ? "Unpin card" : "Keep card open"}
-        size="sm"
-        pressed={props.pinned}
-        class="self-start"
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={props.onTogglePin}
-      >
-        <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
-      </IconButton>
     </div>
   );
 }

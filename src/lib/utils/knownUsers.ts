@@ -10,19 +10,25 @@ export function isUserId(id: string): boolean {
 
 export function mergeUser(prev: User | undefined, next: User): User {
   if (!prev || isComplete(next)) return next;
-  const merged: Record<keyof User, string> = { ...prev };
-  for (const [key, value] of Object.entries(next) as [keyof User, string][]) {
-    if (!merged[key] && value) merged[key] = value;
+  const merged = { ...prev };
+  for (const key of Object.keys(next) as (keyof User)[]) {
+    if (!merged[key] && next[key]) {
+      (merged as Record<keyof User, unknown>)[key] = next[key];
+    }
   }
   return {
-    ...(merged as User),
+    ...merged,
     login: next.login || prev.login,
     displayName: next.displayName || prev.displayName,
   };
 }
 
+// Keys come from both sides so a cached user from an older shape still differs.
 export function sameUser(a: User, b: User): boolean {
-  return (Object.keys(a) as (keyof User)[]).every((k) => a[k] === b[k]);
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]) as Set<
+    keyof User
+  >;
+  return [...keys].every((k) => a[k] === b[k]);
 }
 
 export function isComplete(user: User): boolean {

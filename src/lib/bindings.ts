@@ -16,6 +16,7 @@ export const commands = {
 	displayName: string,
 	description: string,
 	profileImageUrl: string,
+	offlineImageUrl: string | null,
 	broadcasterType: BroadcasterType,
 	createdAt: string,
 } | null>("restore_session"),
@@ -543,6 +544,7 @@ export type User = {
 	displayName: string,
 	description: string,
 	profileImageUrl: string,
+	offlineImageUrl: string | null,
 	broadcasterType: BroadcasterType,
 	createdAt: string,
 };

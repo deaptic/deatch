@@ -52,6 +52,7 @@ export default function SearchResults(props: Props) {
       login: channel.user.login,
       displayName: channel.user.displayName,
       profileImageUrl: channel.profileImageUrl,
+      offlineImageUrl: null,
       description: "",
       broadcasterType: "normal",
       createdAt: "",
