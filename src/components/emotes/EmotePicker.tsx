@@ -14,6 +14,7 @@ import {
   computeGlobalSections,
   favorites,
   toggleFavorite,
+  usableIn,
   userEmotes,
 } from "../../lib/stores/emotes.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
@@ -85,6 +86,10 @@ export default function EmotePicker(props: Props) {
     computeGlobalSections(selectedChannel())
   );
 
+  const usable = createMemo(() =>
+    usableIn([...channelSections(), ...globalSections()])
+  );
+
   const tabSections = createMemo<{ label: string; items: EmoteGridItem[] }[]>(
     () => {
       if (tab() === "channel") {
@@ -132,6 +137,7 @@ export default function EmotePicker(props: Props) {
           value: f.value,
           url: f.url,
           label: f.label,
+          disabled: !usable()(f.value),
         })),
         emptyHint: "Right-click any emote to keep it here.",
       });
@@ -238,7 +244,7 @@ export default function EmotePicker(props: Props) {
 
   function selectActive(keepOpen: boolean) {
     const item = activeItem();
-    if (item) props.onSelect(item.value, { keepOpen });
+    if (item && !item.disabled) props.onSelect(item.value, { keepOpen });
   }
 
   const renderGrid = (section: RenderSection) => (
@@ -328,7 +334,9 @@ export default function EmotePicker(props: Props) {
                   {item().label}
                 </span>
                 <span class="ml-auto text-ink-faint whitespace-nowrap">
-                  Enter to insert · Ctrl D to favourite
+                  {item().disabled
+                    ? "Not available here · Ctrl D to unfavourite"
+                    : "Enter to insert · Ctrl D to favourite"}
                 </span>
               </>
             )}

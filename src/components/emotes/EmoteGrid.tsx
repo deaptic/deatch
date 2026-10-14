@@ -24,16 +24,23 @@ export default function EmoteGrid(props: Props) {
             <button
               type="button"
               data-emote-index={idx()}
+              // Not `disabled`: that would also swallow the right-click unfavourite.
+              aria-disabled={item.disabled}
               onMouseDown={(e) => e.preventDefault()}
               onClick={(e) =>
+                !item.disabled &&
                 props.onSelect(item.value, idx(), { keepOpen: e.shiftKey })}
               onContextMenu={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 props.onToggleFavorite(item);
               }}
-              title={item.label}
-              class={`relative aspect-square grid place-items-center rounded-sm cursor-pointer transition-colors duration-snap ${
+              title={item.disabled
+                ? `${item.label} (not available in this channel)`
+                : item.label}
+              class={`relative aspect-square grid place-items-center rounded-sm transition-colors duration-snap ${
+                item.disabled ? "cursor-default" : "cursor-pointer"
+              } ${
                 active()
                   ? "bg-accent-soft outline outline-2 -outline-offset-2 outline-accent"
                   : "hover:bg-raised"
@@ -42,7 +49,9 @@ export default function EmoteGrid(props: Props) {
               <img
                 src={item.url}
                 alt={item.label}
-                class="size-7 object-contain"
+                class={`size-7 object-contain ${
+                  item.disabled ? "opacity-40 grayscale" : ""
+                }`}
               />
             </button>
           );
