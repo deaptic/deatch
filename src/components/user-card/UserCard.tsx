@@ -15,6 +15,7 @@ import * as shortcuts from "../../lib/services/shortcuts.ts";
 import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
+import { mergeMessages } from "./mergeMessages.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 
@@ -159,14 +160,9 @@ export default function UserCard(props: Props) {
         return [];
       }),
   );
-  const messages = createMemo<FeedMessage[]>(() => {
-    const ids = new Set(live().map((m) => m.message_id));
-    // `latest` outlives a switch to a chatter that needs no fetch.
-    const older = (history.latest ?? []).filter((m) =>
-      m.chatter_user_id === props.chatterId && !ids.has(m.message_id)
-    );
-    return [...older, ...live()];
-  });
+  const messages = createMemo(() =>
+    mergeMessages(history.latest ?? [], live(), props.chatterId)
+  );
 
   return (
     <Portal>
