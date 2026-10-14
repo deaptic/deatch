@@ -3,6 +3,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  For,
   onCleanup,
   onMount,
   Show,
@@ -26,6 +27,7 @@ import UserContextMenu, {
 } from "../context-menus/UserContextMenu.tsx";
 import WarnModal from "../warn-modal/WarnModal.tsx";
 import UserCard from "../user-card/UserCard.tsx";
+import { createUserCards } from "./createUserCards.ts";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
@@ -85,7 +87,7 @@ export default function Chat(props: Props) {
     { userId: string; userLogin: string; userDisplayName: string }
   >();
   const eventMenu = createPopover<{ item: EventItem }>();
-  const userCard = createPopover<{ chatterId: string }>();
+  const userCards = createUserCards();
   const fontSize = createFontSizeWheel();
 
   const [replyTo, setReplyTo] = createSignal<ReplyTo | null>(null);
@@ -169,7 +171,7 @@ export default function Chat(props: Props) {
     identity: Partial<UserRef>,
   ) {
     const id = identity.id ?? (await resolveIdentity(identity))?.id;
-    if (id) userCard.open(x, y, { chatterId: id });
+    if (id) userCards.open(x, y, id);
   }
 
   async function openUserContextMenu(
@@ -191,7 +193,7 @@ export default function Chat(props: Props) {
     const b = feedApi()?.getBounds();
     const x = b ? b.left : 0;
     const y = b ? b.bottom : window.innerHeight;
-    userCard.open(x, y, { chatterId: userId });
+    userCards.open(x, y, userId);
   }
 
   const mentionUser = (login: string) => inputApi?.insert(`@${login}`);
@@ -342,31 +344,33 @@ export default function Chat(props: Props) {
             developerMode={advancedDeveloperMode()}
             onClose={userMenu.close}
             onModerate={(action, t) => setModAction({ action, ...t })}
-            onShowProfile={(x, y, userId) =>
-              userCard.open(x, y, { chatterId: userId })}
+            onShowProfile={(x, y, userId) => userCards.open(x, y, userId)}
             onMention={mentionUser}
           />
         )}
       </Show>
-      <Show when={userCard.state()}>
-        {(uc) => (
+      <For each={userCards.cards}>
+        {(card) => (
           <UserCard
-            x={uc().x}
-            y={uc().y}
-            chatterId={uc().chatterId}
+            x={card.x}
+            y={card.y}
+            chatterId={card.chatterId}
             broadcasterId={props.broadcasterId}
+            pinned={card.pinned}
             getBounds={() => feedApi()?.getBounds() ?? null}
             getBoundsElement={() => feedApi()?.getElement() ?? null}
-            onClose={userCard.close}
+            onClose={() => userCards.close(card.key)}
+            onTogglePin={() =>
+              userCards.update(card.key, { pinned: !card.pinned })}
             onJumpToMessage={props.onJumpToMessage}
             onSwitchUser={async (identity) => {
               const id = identity.id ??
                 (await resolveIdentity(identity))?.id;
-              if (id) userCard.update({ chatterId: id });
+              if (id) userCards.update(card.key, { chatterId: id });
             }}
           />
         )}
-      </Show>
+      </For>
       <Show when={eventMenu.state()}>
         {(cm) => (
           <EventContextMenu
