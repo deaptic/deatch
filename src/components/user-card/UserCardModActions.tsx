@@ -10,6 +10,8 @@ import BanChoiceStrip, {
 type Props = {
   chatterId: string;
   broadcasterId: string;
+  /** After a ban or timeout lands, which clears the chatter's messages. */
+  onRemoved: () => void;
 };
 
 export default function UserCardModActions(props: Props) {
@@ -23,9 +25,13 @@ export default function UserCardModActions(props: Props) {
       broadcasterId: props.broadcasterId,
       userId: props.chatterId,
     };
-    void (choice === "unban"
-      ? unbanUser(target)
-      : banUser({ ...target, duration: secondsFor(choice) })).catch(() => {});
+    if (choice === "unban") {
+      void unbanUser(target).catch(() => {});
+      return;
+    }
+    banUser({ ...target, duration: secondsFor(choice) })
+      .then(props.onRemoved)
+      .catch(() => {});
   }
 
   return (
