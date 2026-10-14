@@ -1,44 +1,31 @@
-import { createMemo, Show } from "solid-js";
-import { feeds } from "../../lib/stores/feeds.ts";
-import type { FeedMessage, User } from "../../lib/types/index.ts";
-import BadgeBox from "../ui/BadgeBox.tsx";
+import { Show } from "solid-js";
+import type { User } from "../../lib/types/index.ts";
 import DisplayName from "../ui/DisplayName.tsx";
 
 type Props = {
   chatterId: string;
-  broadcasterId: string;
   user: User | null;
-  messages: FeedMessage[];
+  color: string | undefined;
 };
 
 export default function UserCardIdentity(props: Props) {
-  const messageColor = createMemo(() =>
-    props.messages.find((m) => m.color)?.color
-  );
-  const channelBadges = () => feeds[props.broadcasterId]?.badges ?? {};
-  const latestBadges = () => props.messages.at(-1)?.badges ?? [];
-
   return (
-    <div class="h-6 flex items-center gap-1 min-w-0">
-      <div class="flex items-center gap-1.5 flex-1 min-w-0 text-title leading-none">
+    <div class="min-w-0 flex items-center leading-tight">
+      <span class="truncate min-w-0 text-(length:--card-name)">
         <Show
           when={props.user}
           fallback={
-            <span class="font-semibold text-ink truncate min-w-0">
-              {props.chatterId}
-            </span>
+            <span class="font-semibold text-ink">{props.chatterId}</span>
           }
         >
           <DisplayName
             login={props.user!.login}
             displayName={props.user!.displayName}
-            color={messageColor()}
+            color={props.color}
             userId={props.chatterId}
-            truncate
           />
         </Show>
-        <BadgeBox badges={latestBadges()} channelBadges={channelBadges()} />
-      </div>
+      </span>
     </div>
   );
 }

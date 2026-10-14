@@ -73,6 +73,7 @@ export function userFromRef(ref: UserRef): User {
     login: ref.login,
     displayName: ref.displayName,
     profileImageUrl: "",
+    offlineImageUrl: null,
     description: "",
     broadcasterType: "normal",
     createdAt: "",

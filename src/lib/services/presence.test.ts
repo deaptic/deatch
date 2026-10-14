@@ -13,6 +13,7 @@ const channel: User = {
   displayName: "Maya",
   description: "",
   profileImageUrl: "https://cdn/maya.png",
+  offlineImageUrl: null,
   broadcasterType: "partner",
   createdAt: "2020-01-01T00:00:00Z",
 };

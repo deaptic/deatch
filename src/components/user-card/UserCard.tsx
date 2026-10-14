@@ -22,44 +22,69 @@ type Props = {
   onSwitchUser?: (identity: Partial<UserRef>) => void;
 };
 
-const CARD_W = 384;
-const CARD_MAX_H = 480;
 const PAD = 8;
+
+const CARD_VARS = {
+  "--card-w": "22.5rem",
+  "--card-h": "35rem",
+  "--feed-min-h": "calc(3lh + 0.5rem)",
+  "--card-max-w": "40rem",
+  "--card-max-h": "50rem",
+  "--card-pad": "1.25rem",
+  "--card-gap": "0.625rem",
+  "--card-name": "1.45rem",
+  "--card-meta": "0.95rem",
+  "--avatar-lift": "2.5rem",
+  "--meta-icon": "1em",
+};
 
 export default function UserCard(props: Props) {
   captureFocusForRestore();
   let cardRef: HTMLDivElement | undefined;
 
-  function clamp(x: number, y: number, w: number, h: number) {
+  function bounds() {
     const b = props.getBounds();
-    const left = b?.left ?? 0;
-    const top = b?.top ?? 0;
-    const right = b?.right ?? window.innerWidth;
-    const bottom = b?.bottom ?? window.innerHeight;
     return {
-      x: Math.max(left + PAD, Math.min(x, right - w - PAD)),
-      y: Math.max(top + PAD, Math.min(y, bottom - h - PAD)),
+      left: b?.left ?? 0,
+      top: b?.top ?? 0,
+      right: b?.right ?? window.innerWidth,
+      bottom: b?.bottom ?? window.innerHeight,
     };
   }
 
-  const [pos, setPos] = createSignal(
-    clamp(props.x, props.y, CARD_W, CARD_MAX_H),
-  );
+  function clamp(x: number, y: number) {
+    const b = bounds();
+    const w = cardRef?.offsetWidth ?? 0;
+    const h = cardRef?.offsetHeight ?? 0;
+    return {
+      x: Math.max(b.left + PAD, Math.min(x, b.right - w - PAD)),
+      y: Math.max(b.top + PAD, Math.min(y, b.bottom - h - PAD)),
+    };
+  }
+
+  function roomIn() {
+    const b = bounds();
+    return {
+      w: b.right - b.left - PAD * 2,
+      h: b.bottom - b.top - PAD * 2,
+    };
+  }
+
+  const [pos, setPos] = createSignal({ x: props.x, y: props.y });
+  const [room, setRoom] = createSignal(roomIn());
   const [pinned, setPinned] = createSignal(false);
 
   onMount(() => {
     if (!cardRef) return;
-    const rect = cardRef.getBoundingClientRect();
-    setPos(clamp(props.x, props.y, rect.width, rect.height));
+    setPos(clamp(props.x, props.y));
 
-    const target = props.getBoundsElement?.();
-    if (!target) return;
     const observer = new ResizeObserver(() => {
-      if (!cardRef) return;
-      const r = cardRef.getBoundingClientRect();
-      setPos((p) => clamp(p.x, p.y, r.width, r.height));
+      setRoom(roomIn());
+      setPos((p) => clamp(p.x, p.y));
     });
-    observer.observe(target);
+    observer.observe(cardRef);
+    const target = props.getBoundsElement?.();
+    if (target) observer.observe(target);
     onCleanup(() => observer.disconnect());
   });
 
@@ -88,9 +113,7 @@ export default function UserCard(props: Props) {
     const offsetX = e.clientX - start.x;
     const offsetY = e.clientY - start.y;
     const onMove = (ev: MouseEvent) => {
-      const w = cardRef?.offsetWidth ?? CARD_W;
-      const h = cardRef?.offsetHeight ?? CARD_MAX_H;
-      setPos(clamp(ev.clientX - offsetX, ev.clientY - offsetY, w, h));
+      setPos(clamp(ev.clientX - offsetX, ev.clientY - offsetY));
     };
     const onUp = () => {
       endDrag = undefined;
@@ -118,12 +141,13 @@ export default function UserCard(props: Props) {
         ref={cardRef}
         role="dialog"
         aria-label="User card"
-        class="fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col size-96 min-w-72 min-h-64 resize transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+        class="fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-(--card-w) h-(--card-h) min-w-(--card-w) min-h-min resize transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
         style={{
+          ...CARD_VARS,
           "--x": `${pos().x}px`,
           "--y": `${pos().y}px`,
-          "--max-w": `calc(100vw - ${pos().x}px - ${PAD}px)`,
-          "--max-h": `calc(100vh - ${pos().y}px - ${PAD}px)`,
+          "--max-w": `min(var(--card-max-w), ${room().w}px)`,
+          "--max-h": `min(var(--card-max-h), ${room().h}px)`,
         }}
       >
         <UserCardHeader

@@ -47,6 +47,7 @@ pub struct User {
     pub display_name: String,
     pub description: String,
     pub profile_image_url: String,
+    pub offline_image_url: Option<String>,
     pub broadcaster_type: BroadcasterType,
     pub created_at: String,
 }
@@ -59,6 +60,7 @@ impl From<helix_users::User> for User {
             display_name: u.display_name.to_string(),
             description: u.description.unwrap_or_default(),
             profile_image_url: u.profile_image_url.unwrap_or_default(),
+            offline_image_url: u.offline_image_url.filter(|url| !url.is_empty()),
             broadcaster_type: u
                 .broadcaster_type
                 .map(Into::into)

@@ -1,7 +1,7 @@
 import type { User } from "../../lib/types/index.ts";
-import { AtSign, Calendar, Hash, Heart } from "lucide-solid";
-import { Show } from "solid-js";
-import CopyableField from "./CopyableField.tsx";
+import { Calendar, Heart } from "lucide-solid";
+import { type JSX, Show } from "solid-js";
+import { createCopied } from "../../lib/primitives/createCopied.ts";
 import Timestamp from "../ui/Timestamp.tsx";
 
 export type FollowStatus =
@@ -11,59 +11,70 @@ export type FollowStatus =
   | { kind: "since"; at: string };
 
 type Props = {
-  chatterId: string;
   user: User | null;
   follow: FollowStatus;
 };
 
 export default function UserCardMeta(props: Props) {
+  const followedAt = () =>
+    props.follow.kind === "since" ? props.follow.at : undefined;
+
   return (
-    <div class="grid grid-meta gap-x-5 gap-y-2 text-small min-w-0">
-      <Show when={props.user} fallback={<span />}>
-        <CopyableField copy={props.user!.login} icon={<AtSign />} truncate>
-          {props.user!.login}
-        </CopyableField>
+    <div class="flex gap-(--card-pad) text-(length:--card-meta) min-w-0">
+      <Show when={props.user?.createdAt}>
+        {(createdAt) => (
+          <DateCell
+            icon={<Calendar />}
+            title="Account created"
+            copyable
+          >
+            <Timestamp ts={createdAt()} format="D" />
+          </DateCell>
+        )}
       </Show>
-      <CopyableField
-        copy={props.chatterId}
-        title="Click to copy ID"
-        icon={<Hash />}
+      <DateCell
+        icon={<Heart />}
+        title={followTitle(props.follow)}
+        copyable={!!followedAt()}
       >
-        {props.chatterId}
-      </CopyableField>
-      <Show when={props.user?.createdAt} fallback={<span />}>
-        <CopyableField copy={props.user!.createdAt} icon={<Calendar />}>
-          <Timestamp ts={props.user!.createdAt} format="D" />
-        </CopyableField>
-      </Show>
-      <FollowField follow={props.follow} />
+        <Show
+          when={followedAt()}
+          fallback={props.follow.kind === "none" ? "Not following" : "Unknown"}
+        >
+          {(at) => <Timestamp ts={at()} format="D" />}
+        </Show>
+      </DateCell>
     </div>
   );
 }
 
-function FollowField(props: { follow: FollowStatus }) {
-  const since = () => props.follow.kind === "since" ? props.follow.at : null;
-  const text = () => props.follow.kind === "none" ? "Not following" : "Unknown";
+function followTitle(follow: FollowStatus): string {
+  return follow.kind === "hidden"
+    ? "Mod permission required to view follow status"
+    : "Following since";
+}
+
+function DateCell(props: {
+  icon: JSX.Element;
+  title: string;
+  copyable: boolean;
+  children: JSX.Element;
+}) {
+  const { copied, copy } = createCopied();
+
   return (
-    <Show
-      when={since()}
-      fallback={
-        <CopyableField
-          copy={text()}
-          icon={<Heart />}
-          title={props.follow.kind === "hidden"
-            ? "Mod permission required to view follow status"
-            : undefined}
-        >
-          {text()}
-        </CopyableField>
-      }
+    <button
+      type="button"
+      title={props.title}
+      disabled={!props.copyable}
+      class={`flex-1 min-w-0 flex items-center gap-(--card-gap) text-left transition-colors duration-snap enabled:cursor-pointer [&>svg]:size-(--meta-icon) [&>svg]:shrink-0 [&>svg]:text-ink-faint ${
+        copied() ? "text-positive" : "text-ink-soft enabled:hover:text-ink"
+      }`}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => copy(e.currentTarget.textContent ?? "")}
     >
-      {(at) => (
-        <CopyableField copy={at()} icon={<Heart />}>
-          <Timestamp ts={at()} format="D" />
-        </CopyableField>
-      )}
-    </Show>
+      {props.icon}
+      <span class="truncate">{props.children}</span>
+    </button>
   );
 }
