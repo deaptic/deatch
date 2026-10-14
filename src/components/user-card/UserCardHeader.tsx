@@ -85,7 +85,7 @@ export default function UserCardHeader(props: Props) {
       onMouseDown={props.onStartDrag}
     >
       <div
-        class="relative aspect-5/2 bg-(--banner)"
+        class="relative aspect-3/1 bg-(--banner)"
         style={{ "--banner": color() ?? "var(--color-raised)" }}
       >
         <Show when={user()?.offlineImageUrl}>
