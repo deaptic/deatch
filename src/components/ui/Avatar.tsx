@@ -1,4 +1,5 @@
 import { createEffect, createSignal, type JSX, Show } from "solid-js";
+import { avatarZoom } from "../../lib/utils/avatar.ts";
 
 export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80;
 export type Presence = "live" | "online" | "offline";
@@ -48,15 +49,18 @@ export default function Avatar(props: Props) {
           : ""
       }`}
     >
-      <Show when={props.src && !failed()} fallback={initial()}>
-        <img
-          src={props.src}
-          alt={props.alt ?? ""}
-          loading="lazy"
-          decoding="async"
-          onError={() => setFailed(true)}
-          class={`absolute inset-0 size-full object-cover ${shape()}`}
-        />
+      <Show when={!failed() && props.src} fallback={initial()}>
+        {(src) => (
+          <img
+            src={src()}
+            {...avatarZoom(src())}
+            alt={props.alt ?? ""}
+            loading="lazy"
+            decoding="async"
+            onError={() => setFailed(true)}
+            class={`absolute inset-0 size-full object-cover ${shape()}`}
+          />
+        )}
       </Show>
       <Show when={props.presence}>
         {(presence) => (

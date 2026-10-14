@@ -4,7 +4,7 @@ import "blobatar/motion.css";
 import * as users from "../../../lib/services/users.ts";
 import { knownUser } from "../../../lib/stores/users.ts";
 import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
-import { sizedAvatarUrl } from "../../../lib/utils/avatar.ts";
+import { avatarZoom, sizedAvatarUrl } from "../../../lib/utils/avatar.ts";
 import { chatterLook } from "./chatterLook.ts";
 
 const IMAGE_PX = 70;
@@ -72,6 +72,7 @@ export default function ChatterPicture(props: Props) {
               shownAt = performance.now();
             }}
             src={sizedAvatarUrl(src(), IMAGE_PX)}
+            {...avatarZoom(src())}
             alt=""
             decoding="async"
             onLoad={onLoad}
