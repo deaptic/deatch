@@ -11,13 +11,19 @@ import {
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
-import type { FeedMessage } from "../types/index.ts";
+import type { FeedMessage, RecentMessage } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
 
 const GAP_MARGIN_MS = 5_000;
 const GAP_LIMIT = 300;
 const CHATTER_LIMIT = 800;
+const PAGE_TTL_MS = 30_000;
+
+const deepPages = new Map<
+  string,
+  { at: number; page: Promise<RecentMessage[]> }
+>();
 
 function noteChatters(broadcasterId: string, added: FeedEntry[]) {
   for (const it of added) {
@@ -86,13 +92,31 @@ export function forChatter(
   channelLogin: string,
   chatterId: string,
 ): Promise<FeedMessage[]> {
-  return getRecentMessages({ channelLogin, limit: CHATTER_LIMIT }, {
-    silent: true,
-  }).then((msgs) =>
+  return deepPage(channelLogin).then((msgs) =>
     msgs
       .filter((m) => m.chatter_user_id === chatterId)
       .map((m) => mapChatMessage(m, m.timestamp_ms))
   );
+}
+
+/// Shared by every card opened on the channel within PAGE_TTL_MS. A failed
+/// fetch is forgotten so the next card retries.
+function deepPage(channelLogin: string): Promise<RecentMessage[]> {
+  const now = Date.now();
+  for (const [login, entry] of deepPages) {
+    if (now - entry.at >= PAGE_TTL_MS) deepPages.delete(login);
+  }
+  const cached = deepPages.get(channelLogin);
+  if (cached) return cached.page;
+  const page = getRecentMessages(
+    { channelLogin, limit: CHATTER_LIMIT },
+    { silent: true },
+  ).catch((e) => {
+    deepPages.delete(channelLogin);
+    throw e;
+  });
+  deepPages.set(channelLogin, { at: now, page });
+  return page;
 }
 
 /// Newest first, so the newest backlog entry lands just behind anything
