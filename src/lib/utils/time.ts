@@ -72,7 +72,7 @@ export class Time {
       month: "long",
       year: "numeric",
     }).format(date);
-    return `${weekdayDate} at ${this.timeShort(date)}`;
+    return `${weekdayDate}\n${this.timeShort(date)}`;
   }
 
   private relativeShort(date: Date): string {

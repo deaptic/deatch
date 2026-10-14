@@ -5,7 +5,7 @@ type Placement = "right" | "above";
 
 const PLACEMENTS: Record<Placement, string> = {
   right: "-translate-y-1/2",
-  above: "-translate-x-1/2 -translate-y-full",
+  above: "-translate-x-1/2 -translate-y-full text-center",
 };
 
 type Props = {
@@ -23,7 +23,7 @@ export default function Tooltip(props: Props) {
         style={{ "--x": `${props.x}px`, "--y": `${props.y}px` }}
         class={`pointer-events-none fixed left-(--x) top-(--y) z-50 ${
           PLACEMENTS[props.placement ?? "right"]
-        } w-max max-w-75 rounded-sm border border-line bg-overlay px-2.5 py-2 text-small text-ink`}
+        } w-max max-w-75 whitespace-pre-line rounded-sm border border-line bg-overlay px-2.5 py-2 text-small text-ink`}
       >
         {props.children}
       </div>
