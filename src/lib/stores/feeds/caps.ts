@@ -1,7 +1,8 @@
 import type { FeedEntry } from "../../types/feed.ts";
 
+export const MESSAGE_CAP = 400;
 const CATEGORY_CAPS: Record<string, number> = {
-  message: 400,
+  message: MESSAGE_CAP,
 };
 const DEFAULT_CAP = 50;
 // A paused feed keeps scrollback, but still needs a ceiling or a busy

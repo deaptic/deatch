@@ -7,6 +7,7 @@ import {
   type FeedEntry,
   feeds,
   insertEntries,
+  MESSAGE_CAP,
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
@@ -59,7 +60,7 @@ export function fillGap(
 /// a failed fetch leaves it unset so the next visit tries again.
 export function load(broadcasterId: string, channelLogin: string) {
   if (feeds[broadcasterId]?.backfilled) return;
-  getRecentMessages({ channelLogin, limit: 50 }, { silent: true })
+  getRecentMessages({ channelLogin, limit: MESSAGE_CAP }, { silent: true })
     .then((msgs) => {
       const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
       const added = prependEntries(broadcasterId, items);
