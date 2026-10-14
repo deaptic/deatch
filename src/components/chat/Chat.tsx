@@ -356,6 +356,7 @@ export default function Chat(props: Props) {
             y={card.y}
             chatterId={card.chatterId}
             broadcasterId={props.broadcasterId}
+            broadcasterLogin={props.broadcasterLogin}
             pinned={card.pinned}
             getBounds={() => feedApi()?.getBounds() ?? null}
             getBoundsElement={() => feedApi()?.getElement() ?? null}

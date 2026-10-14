@@ -49,6 +49,8 @@ export type FeedApi = {
 
 type Props = {
   broadcasterId: string;
+  /** Rendered instead of the channel's feed; badges still come from it. */
+  entries?: FeedEntry[];
   userLogin?: string;
   filter?: (item: FeedEntry) => boolean;
   density?: Density;
@@ -89,7 +91,7 @@ export default function Feed(props: Props) {
   const scroll = createFeedScroll(() => scrollRef);
 
   const entries = createMemo<FeedEntry[]>(() => {
-    const all = feeds[props.broadcasterId]?.messages ?? [];
+    const all = props.entries ?? feeds[props.broadcasterId]?.messages ?? [];
     return props.filter ? all.filter(props.filter) : all;
   });
   const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});

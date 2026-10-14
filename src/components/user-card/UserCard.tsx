@@ -1,5 +1,13 @@
-import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import {
+  createMemo,
+  createResource,
+  createSignal,
+  onCleanup,
+  onMount,
+  untrack,
+} from "solid-js";
 import { feeds } from "../../lib/stores/feeds.ts";
+import * as backlog from "../../lib/services/backlog.ts";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
@@ -15,6 +23,7 @@ type Props = {
   y: number;
   chatterId: string;
   broadcasterId: string;
+  broadcasterLogin: string;
   pinned: boolean;
   getBounds: () => DOMRect | null;
   getBoundsElement?: () => HTMLElement | null;
@@ -135,12 +144,28 @@ export default function UserCard(props: Props) {
   let endDrag: (() => void) | undefined;
   onCleanup(() => endDrag?.());
 
-  const messages = createMemo<FeedMessage[]>(() =>
+  const live = createMemo<FeedMessage[]>(() =>
     (feeds[props.broadcasterId]?.messages ?? []).filter(
       (m): m is FeedMessage =>
         m.kind === "message" && m.chatter_user_id === props.chatterId,
     )
   );
+  const [history] = createResource(
+    () => untrack(live).length === 0 && props.chatterId,
+    (chatterId) =>
+      backlog.forChatter(props.broadcasterLogin, chatterId).catch((e) => {
+        console.warn("[user-card] history not loaded", e);
+        return [];
+      }),
+  );
+  const messages = createMemo<FeedMessage[]>(() => {
+    const ids = new Set(live().map((m) => m.message_id));
+    // `latest` outlives a switch to a chatter that needs no fetch.
+    const older = (history.latest ?? []).filter((m) =>
+      m.chatter_user_id === props.chatterId && !ids.has(m.message_id)
+    );
+    return [...older, ...live()];
+  });
 
   return (
     <Portal>
@@ -174,9 +199,9 @@ export default function UserCard(props: Props) {
           broadcasterId={props.broadcasterId}
         />
         <UserCardFeed
-          chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
-          hasMessages={messages().length > 0}
+          messages={messages()}
+          loading={history.loading}
           onJumpToMessage={(messageId) => {
             props.onJumpToMessage?.(props.broadcasterId, messageId);
             props.onClose();
