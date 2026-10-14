@@ -43,6 +43,7 @@ import {
   setPaused as setFeedPaused,
   trimToLatest,
 } from "../../lib/stores/feeds.ts";
+import { addToast } from "../../lib/stores/toasts.ts";
 import {
   advancedDeveloperMode,
   feedDensity,
@@ -158,6 +159,19 @@ export default function Chat(props: Props) {
   function copypasta(msg: Message) {
     const text = textOf({ fragments: withoutReplyMention(msg) }).trim();
     if (text) inputApi?.replace(text);
+  }
+
+  // This feed is mounted with its backlog, so a message it lacks never arrives.
+  function jumpToMessage(messageId: string): boolean {
+    const held = feeds[props.broadcasterId]?.messages.some((m) =>
+      m.kind === "message" && m.message_id === messageId
+    );
+    if (!held) {
+      addToast("That message is no longer in chat");
+      return false;
+    }
+    props.onJumpToMessage(props.broadcasterId, messageId);
+    return true;
   }
 
   function jumpToLatest() {
@@ -280,8 +294,7 @@ export default function Chat(props: Props) {
         onReply={startReply}
         onReact={react}
         onCopypasta={copypasta}
-        onJumpToMessage={(messageId) =>
-          props.onJumpToMessage(props.broadcasterId, messageId)}
+        onJumpToMessage={jumpToMessage}
         onShowUserCard={openUserCard}
         onUserContextMenu={openUserContextMenu}
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
@@ -326,8 +339,7 @@ export default function Chat(props: Props) {
             onClose={messageMenu.close}
             onReply={startReply}
             onCopypasta={copypasta}
-            onJumpToMessage={(messageId) =>
-              props.onJumpToMessage(props.broadcasterId, messageId)}
+            onJumpToMessage={jumpToMessage}
           />
         )}
       </Show>
@@ -363,7 +375,7 @@ export default function Chat(props: Props) {
             onClose={() => userCards.close(card.key)}
             onTogglePin={() =>
               userCards.update(card.key, { pinned: !card.pinned })}
-            onJumpToMessage={props.onJumpToMessage}
+            onJumpToMessage={jumpToMessage}
             onSwitchUser={async (identity) => {
               const id = identity.id ??
                 (await resolveIdentity(identity))?.id;
