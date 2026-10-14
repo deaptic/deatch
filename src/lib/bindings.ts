@@ -74,6 +74,7 @@ export const commands = {
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
 	linkRequestState: () => __TAURI_INVOKE<null>("link_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
+	setHardwareAcceleration: (params: SetHardwareAccelerationParams) => __TAURI_INVOKE<null>("set_hardware_acceleration", { params }),
 	getAppStats: () => __TAURI_INVOKE<AppStats>("get_app_stats"),
 };
 
@@ -485,6 +486,10 @@ export type SessionEnded = null;
 
 export type SetChannelsParams = {
 	channels: ChannelFocus[],
+};
+
+export type SetHardwareAccelerationParams = {
+	enabled: boolean,
 };
 
 export type SetMentionsBadgeParams = {

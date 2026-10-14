@@ -6,6 +6,8 @@ export const advancedAlwaysOnTop = () => prefs.advanced.alwaysOnTop;
 export const advancedAutostart = () => prefs.advanced.autostart;
 export const advancedDiscordRichPresence = () =>
   prefs.advanced.discordRichPresence;
+export const advancedHardwareAcceleration = () =>
+  prefs.advanced.hardwareAcceleration;
 
 export function setAdvancedDeveloperMode(value: boolean) {
   setPrefs("advanced", "developerMode", value);
@@ -29,5 +31,10 @@ export function setAdvancedAutostart(value: boolean) {
 
 export function setAdvancedDiscordRichPresence(value: boolean) {
   setPrefs("advanced", "discordRichPresence", value);
+  persist();
+}
+
+export function setAdvancedHardwareAcceleration(value: boolean) {
+  setPrefs("advanced", "hardwareAcceleration", value);
   persist();
 }

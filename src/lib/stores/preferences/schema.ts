@@ -69,6 +69,7 @@ export type UserPreferences = {
     alwaysOnTop: boolean;
     autostart: boolean;
     discordRichPresence: boolean;
+    hardwareAcceleration: boolean;
   };
   appearance: {
     theme: Theme;
@@ -251,6 +252,10 @@ export function sanitize(raw: unknown): UserPreferences {
       discordRichPresence: bool(
         stored.advanced?.discordRichPresence,
         DEFAULT_PREFERENCES.advanced.discordRichPresence,
+      ),
+      hardwareAcceleration: bool(
+        stored.advanced?.hardwareAcceleration,
+        DEFAULT_PREFERENCES.advanced.hardwareAcceleration,
       ),
     },
     appearance: {
