@@ -29,7 +29,8 @@ type Props = {
   getBoundsElement?: () => HTMLElement | null;
   onClose: () => void;
   onTogglePin: () => void;
-  onJumpToMessage?: (channelId: string, messageId: string) => void;
+  /** Returns whether the jump happened. */
+  onJumpToMessage: (messageId: string) => boolean;
   onSwitchUser?: (identity: Partial<UserRef>) => void;
 };
 
@@ -203,8 +204,9 @@ export default function UserCard(props: Props) {
           messages={messages()}
           loading={history.loading}
           onJumpToMessage={(messageId) => {
-            props.onJumpToMessage?.(props.broadcasterId, messageId);
-            if (!props.pinned) props.onClose();
+            if (props.onJumpToMessage(messageId) && !props.pinned) {
+              props.onClose();
+            }
           }}
           onShowUserCard={(_x, _y, identity) => props.onSwitchUser?.(identity)}
         />
