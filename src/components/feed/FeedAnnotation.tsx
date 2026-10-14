@@ -6,7 +6,7 @@ const LEADS: Record<Density, { box: string; spine: string }> = {
   compact: { box: "h-lh aspect-square mr-1", spine: "left-0 -right-0.5" },
   comfortable: {
     box: "w-(--chat-tile) self-stretch mr-3",
-    spine: "left-1/2 -right-2",
+    spine: "left-1/2 -ml-px -right-2",
   },
 };
 

@@ -45,7 +45,9 @@ export default function ReplyLine(props: Props) {
           userId={props.reply.parent_user_id}
         />
       </span>
-      <span class="truncate">{props.reply.parent_message_body}</span>
+      <span class="truncate" title={props.reply.parent_message_body}>
+        {props.reply.parent_message_body}
+      </span>
     </div>
   );
 }

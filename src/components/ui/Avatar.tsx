@@ -1,7 +1,8 @@
 import { createEffect, createSignal, type JSX, Show } from "solid-js";
 import { avatarZoom } from "../../lib/utils/avatar.ts";
 
-export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80;
+/** Pixel sizes are fixed; "fill" takes its parent's box. */
+export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
 export type Presence = "live" | "online" | "offline";
 
 type Props = {
@@ -27,6 +28,7 @@ const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
   40: { box: "size-10 text-body", dot: "size-2.5" },
   64: { box: "size-16 text-heading", dot: "size-3" },
   80: { box: "size-20 text-heading", dot: "size-4" },
+  fill: { box: "size-full", dot: "size-2" },
 };
 
 export default function Avatar(props: Props) {

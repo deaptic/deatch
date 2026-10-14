@@ -3,30 +3,10 @@ import notificationSound from "../../assets/notification.mp3";
 import { notificationsMentionSound } from "./preferences.ts";
 import { selectedChannel } from "./view.ts";
 import { fresh } from "./inboxRetention.ts";
-import type { Fragment } from "../types/feed.ts";
-import type { MentionReason } from "../utils/mention.ts";
+import type { Mention } from "../types/index.ts";
+import { upgradeMention } from "./inboxUpgrade.ts";
 
 const audio = new Audio(notificationSound);
-
-export type Mention = {
-  id: string;
-  channelId: string;
-  channelLogin: string;
-  channelName: string;
-  messageId: string;
-  chatterId: string;
-  chatterLogin: string;
-  chatterName: string;
-  chatterColor: string;
-  fragments: Fragment[];
-  reason: MentionReason;
-  timestamp: number;
-  unread: boolean;
-};
-
-// Entries saved before fragments and reason existed can't be rendered.
-const complete = (m: Partial<Mention>): m is Mention =>
-  Array.isArray(m.fragments) && m.reason !== undefined;
 
 const MAX = 100;
 const STORAGE_KEY = "mentions";
@@ -34,10 +14,11 @@ const SAVE_DELAY_MS = 1000;
 
 const initialMentions: Mention[] = (() => {
   try {
-    const stored: Partial<Mention>[] = JSON.parse(
+    const stored: Parameters<typeof upgradeMention>[0][] = JSON.parse(
       localStorage.getItem(STORAGE_KEY) ?? "[]",
     );
-    return fresh(stored.filter(complete), Date.now());
+    const upgraded = stored.map(upgradeMention).filter((m) => m !== null);
+    return fresh(upgraded, Date.now());
   } catch {
     return [];
   }
