@@ -172,8 +172,15 @@ export default function EmotePicker(props: Props) {
     });
   });
 
-  const onToggleFavorite = (item: EmoteGridItem) =>
+  // Favourites lead the list, so a cursor past them moves by however much
+  // they grew or shrank to stay on the same emote.
+  const onToggleFavorite = (item: EmoteGridItem) => {
+    const before = favorites().length;
     toggleFavorite({ value: item.value, url: item.url, label: item.label });
+    if (!search() && activeIndex() >= before) {
+      setActiveIndex((i) => i + favorites().length - before);
+    }
+  };
 
   dismissOnOutside({
     ref: () => panelRef,
