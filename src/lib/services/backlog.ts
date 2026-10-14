@@ -10,11 +10,13 @@ import {
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
+import type { FeedMessage } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
 
 const GAP_MARGIN_MS = 5_000;
 const GAP_LIMIT = 300;
+const CHATTER_LIMIT = 800;
 
 function noteChatters(broadcasterId: string, added: FeedEntry[]) {
   for (const it of added) {
@@ -75,6 +77,21 @@ export function load(broadcasterId: string, channelLogin: string) {
         ),
       );
     });
+}
+
+/// For a user card whose chatter has nothing in the live feed: robotty's
+/// deepest page, narrowed to that chatter, held by the card and not the feed.
+export function forChatter(
+  channelLogin: string,
+  chatterId: string,
+): Promise<FeedMessage[]> {
+  return getRecentMessages({ channelLogin, limit: CHATTER_LIMIT }, {
+    silent: true,
+  }).then((msgs) =>
+    msgs
+      .filter((m) => m.chatter_user_id === chatterId)
+      .map((m) => mapChatMessage(m, m.timestamp_ms))
+  );
 }
 
 /// Newest first, so the newest backlog entry lands just behind anything
