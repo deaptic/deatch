@@ -20,6 +20,12 @@ export default function HoverZoom() {
   };
   const release = () => setCtrl(false);
   const clear = () => setTarget(null);
+  // Only a scroll that moves the hovered image hides it; a busy feed
+  // elsewhere keeps scrolling while you look at the rail.
+  const onScroll = (e: Event) => {
+    const anchor = target();
+    if (anchor && (e.target as Node).contains(anchor)) clear();
+  };
 
   onMount(() => {
     const root = document.documentElement;
@@ -27,14 +33,14 @@ export default function HoverZoom() {
     globalThis.addEventListener("keyup", onKey);
     globalThis.addEventListener("blur", release);
     document.addEventListener("mouseover", onOver);
-    document.addEventListener("scroll", clear, true);
+    document.addEventListener("scroll", onScroll, true);
     root.addEventListener("mouseleave", clear);
     onCleanup(() => {
       globalThis.removeEventListener("keydown", onKey);
       globalThis.removeEventListener("keyup", onKey);
       globalThis.removeEventListener("blur", release);
       document.removeEventListener("mouseover", onOver);
-      document.removeEventListener("scroll", clear, true);
+      document.removeEventListener("scroll", onScroll, true);
       root.removeEventListener("mouseleave", clear);
     });
   });
