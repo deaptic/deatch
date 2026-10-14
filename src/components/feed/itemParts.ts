@@ -29,5 +29,7 @@ export type ItemLayout = {
   continued?: boolean;
   selected?: boolean;
   flush?: boolean;
+  /** p-2, no tone stripe, avatar slot hugging the avatar: a row in a card. */
+  bare?: boolean;
   showTimestamp?: boolean;
 };

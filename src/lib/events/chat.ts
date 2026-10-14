@@ -68,12 +68,7 @@ export function start(): () => void {
         channelId: raw.broadcaster_user_id,
         channelLogin: ch?.login ?? raw.broadcaster_user_id,
         channelName: ch?.displayName ?? raw.broadcaster_user_id,
-        messageId: raw.message_id,
-        chatterId: raw.chatter_user_id,
-        chatterLogin: raw.chatter_user_login,
-        chatterName: raw.chatter_user_name,
-        chatterColor: raw.color,
-        fragments: msg.fragments,
+        message: msg,
         reason,
         timestamp: ts,
       });

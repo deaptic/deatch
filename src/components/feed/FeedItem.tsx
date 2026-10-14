@@ -73,9 +73,13 @@ export default function FeedItem(props: Props) {
         }
       >
         {(tile) => (
-          <span class="relative w-(--chat-tile) h-(--chat-two-lines) self-start shrink-0 mr-3">
+          <span
+            class={`relative w-(--chat-tile) ${
+              props.bare ? "h-(--chat-tile)" : "h-(--chat-two-lines)"
+            } self-start shrink-0 mr-3`}
+          >
             <Show when={hasConnector()}>
-              <span class="absolute left-1/2 top-0 bottom-1/2 border-l-2 border-ink-faint" />
+              <span class="absolute left-1/2 -ml-px top-0 bottom-1/2 border-l-2 border-ink-faint" />
             </Show>
             <span class="absolute inset-x-0 top-1/2 -translate-y-1/2">
               {tile()(active)}
@@ -90,7 +94,9 @@ export default function FeedItem(props: Props) {
     <div
       data-item-id={entry.kind === "message" ? entry.message_id : entry.id}
       tabIndex={-1}
-      class={`relative group leading-normal pl-3 pr-2 ${spacing()} border-l-3 outline-accent transition-colors duration-snap ${
+      class={`relative group leading-normal ${
+        props.bare ? "p-2" : `pl-3 pr-2 border-l-3 ${spacing()}`
+      } outline-accent transition-colors duration-snap ${
         props.flush ? "rounded-r-sm" : "rounded-sm"
       } ${TONES[parts.tone]} ${
         props.selected

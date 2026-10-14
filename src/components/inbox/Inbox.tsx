@@ -4,9 +4,9 @@ import InboxGroup from "./InboxGroup.tsx";
 import {
   dismissAllMentions,
   dismissMention,
-  type Mention,
   mentions,
 } from "../../lib/stores/inbox.ts";
+import type { Mention } from "../../lib/types/index.ts";
 import * as users from "../../lib/services/users.ts";
 import Button from "../ui/Button.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
@@ -22,7 +22,9 @@ type Props = {
 export default function Inbox(props: Props) {
   createEffect(() => {
     const ids = [
-      ...new Set(mentions().flatMap((m) => [m.chatterId, m.channelId])),
+      ...new Set(
+        mentions().flatMap((m) => [m.message.chatter_user_id, m.channelId]),
+      ),
     ];
     if (ids.length) users.get(ids).catch(() => {});
   });
@@ -31,7 +33,7 @@ export default function Inbox(props: Props) {
   const seen = () => mentions().filter((m) => !m.unread);
 
   function jump(m: Mention) {
-    props.onJump(m.channelId, m.messageId);
+    props.onJump(m.channelId, m.message.message_id);
     props.onClose();
   }
 
