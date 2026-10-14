@@ -152,7 +152,7 @@ export default function UserCard(props: Props) {
         m.kind === "message" && m.chatter_user_id === props.chatterId,
     )
   );
-  const [history] = createResource(
+  const [history, { mutate: setHistory }] = createResource(
     () => untrack(live).length === 0 && props.chatterId,
     (chatterId) =>
       backlog.forChatter(props.broadcasterLogin, chatterId).catch((e) => {
@@ -194,6 +194,10 @@ export default function UserCard(props: Props) {
         <UserCardModActions
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
+          // Live messages strike through via the moderation event; fetched
+          // history is a copy outside the feed store.
+          onRemoved={() =>
+            setHistory((h) => h?.map((m) => ({ ...m, deleted: true })))}
         />
         <UserCardFeed
           broadcasterId={props.broadcasterId}
