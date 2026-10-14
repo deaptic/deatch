@@ -63,6 +63,22 @@ export function toggleFavorite(emote: FavoriteEmote) {
   else persistFavorites([...list, emote]);
 }
 
+const EMOJI = /^\p{RGI_Emoji}$/v;
+
+/// Emoji work in every channel; emotes only where these sections offer them.
+export function usableIn(sections: EmoteSection[]): (value: string) => boolean {
+  const names = new Set(sections.flatMap((s) => s.emotes.map((e) => e.name)));
+  return (value) => names.has(value) || EMOJI.test(value);
+}
+
+export function usableFavorites(broadcaster: User | null): FavoriteEmote[] {
+  const usable = usableIn([
+    ...computeChannelSections(broadcaster),
+    ...computeGlobalSections(broadcaster),
+  ]);
+  return favorites().filter((f) => usable(f.value));
+}
+
 /// Deduplicate a list of user emotes by id. Twitch's `Get User Emotes`
 /// endpoint returns the same emote once per emote-set it belongs to, so
 /// callers ingesting the raw response (e.g. the cache loader) must run

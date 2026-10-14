@@ -20,7 +20,11 @@ import {
   getEntryId,
   isFeedEntryVisible,
 } from "../../lib/stores/feeds.ts";
-import { favorites, thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
+import {
+  thirdPartyEmoteMap,
+  usableFavorites,
+} from "../../lib/stores/emotes.ts";
+import { knownUser } from "../../lib/stores/users.ts";
 import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
 import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
 import { createFeedScroll } from "./createFeedScroll.ts";
@@ -99,7 +103,9 @@ export default function Feed(props: Props) {
     props.showDivider === false
       ? null
       : (feeds[props.broadcasterId]?.dividerAtEntryId ?? null);
-  const reactions = createMemo(() => favorites().slice(0, 3));
+  const reactions = createMemo(() =>
+    usableFavorites(knownUser(props.broadcasterId) ?? null).slice(0, 3)
+  );
 
   const dividerBeforeId = createMemo(() => {
     const at = dividerAt();
