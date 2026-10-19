@@ -89,12 +89,15 @@ export function openTab() {
   );
 }
 
-export function closeTab() {
+/// Passes the key on (false) when the open channel has no tab, so one key can
+/// close a tab and otherwise open it.
+export function closeTab(): boolean {
   const tab = selectedLinked();
-  if (!tab) return;
+  if (!tab) return false;
   keepingFocus(() => linkClose(tab.login)).catch((e) =>
     console.warn("browser tab not closed", e)
   );
+  return true;
 }
 
 export function anyUnmuted(): boolean {
