@@ -437,6 +437,13 @@ export type RecentMessage = {
 	channel_points_custom_reward_id: string | null,
 	timestamp_ms: number,
 	deleted: boolean,
+	/**
+	 *  Set only for shared chat messages sent in a partner channel, like
+	 *  EventSub's `source_*` fields; IRC carries no login or name for it.
+	 */
+	source_broadcaster_user_id: UserId | null,
+	source_message_id: MessageId | null,
+	source_badges: ChatterBadge[] | null,
 };
 
 export type Rename = {

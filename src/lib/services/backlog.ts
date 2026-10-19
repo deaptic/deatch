@@ -14,6 +14,7 @@ import { feedEvent } from "../utils/feedEvent.ts";
 import type { FeedMessage, RecentMessage } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
+import * as badges from "./badges.ts";
 
 const GAP_MARGIN_MS = 5_000;
 const GAP_LIMIT = 300;
@@ -27,7 +28,9 @@ const deepPages = new Map<
 
 function noteChatters(broadcasterId: string, added: FeedEntry[]) {
   for (const it of added) {
-    if (it.kind === "message") recordChatter(broadcasterId, chatterOf(it));
+    if (it.kind !== "message") continue;
+    recordChatter(broadcasterId, chatterOf(it));
+    if (it.source) badges.loadSource(it.source);
   }
 }
 

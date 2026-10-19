@@ -75,6 +75,8 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
         .and_then(|s| s.strip_suffix('\u{0001}'))
         .unwrap_or(body)
         .to_string();
+    // During shared chat every line names a source room, its own included.
+    let source_room = nonempty(tags, "source-room-id").filter(|id| *id != tag(tags, "room-id"));
 
     RecentMessage {
         broadcaster_user_id: tag(tags, "room-id").into(),
@@ -92,20 +94,24 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
         } else {
             MessageType::Text
         },
-        badges: parse_badges(tags),
+        badges: parse_badges(tags, "badges", "badge-info"),
         reply: parse_reply(tags),
         channel_points_custom_reward_id: nonempty(tags, "custom-reward-id").map(Into::into),
         timestamp_ms: tag(tags, "tmi-sent-ts").parse().unwrap_or(0),
         deleted: false,
+        source_broadcaster_user_id: source_room.map(Into::into),
+        source_message_id: source_room.and(nonempty(tags, "source-id")).map(Into::into),
+        source_badges: source_room
+            .map(|_| parse_badges(tags, "source-badges", "source-badge-info")),
     }
 }
 
-fn parse_badges(tags: &Tags) -> Vec<ChatterBadge> {
-    let info: HashMap<&str, &str> = tag(tags, "badge-info")
+fn parse_badges(tags: &Tags, badges_key: &str, info_key: &str) -> Vec<ChatterBadge> {
+    let info: HashMap<&str, &str> = tag(tags, info_key)
         .split(',')
         .filter_map(|b| b.split_once('/'))
         .collect();
-    tag(tags, "badges")
+    tag(tags, badges_key)
         .split(',')
         .filter_map(|b| b.split_once('/'))
         .map(|(set_id, id)| ChatterBadge {
@@ -301,6 +307,33 @@ mod tests {
                 { "set_id": "premium", "id": "1", "info": "" },
             ])
         );
+    }
+
+    #[test]
+    fn keeps_shared_chat_source_only_for_partner_messages() {
+        let partner = "@badges=;room-id=111;id=m1;user-id=2;source-room-id=999;\
+            source-id=orig;source-badges=subscriber/6;source-badge-info=subscriber/7 \
+            :foo!foo@foo PRIVMSG #chan :hi";
+        let local = "@room-id=111;id=m2;user-id=2;source-room-id=111;source-id=m2 \
+            :foo!foo@foo PRIVMSG #chan :hi";
+        let m = parse(&[partner, local]);
+        assert_eq!(
+            m[0].source_broadcaster_user_id
+                .as_ref()
+                .map(|id| id.as_str()),
+            Some("999")
+        );
+        assert_eq!(
+            m[0].source_message_id.as_ref().map(|id| id.as_str()),
+            Some("orig")
+        );
+        assert_eq!(
+            to_json(&m[0].source_badges),
+            json!([{ "set_id": "subscriber", "id": "6", "info": "7" }])
+        );
+        assert!(m[1].source_broadcaster_user_id.is_none());
+        assert!(m[1].source_message_id.is_none());
+        assert!(m[1].source_badges.is_none());
     }
 
     #[test]

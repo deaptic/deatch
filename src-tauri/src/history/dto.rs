@@ -16,6 +16,11 @@ pub struct RecentMessage {
     pub channel_points_custom_reward_id: Option<String>,
     pub timestamp_ms: i64,
     pub deleted: bool,
+    /// Set only for shared chat messages sent in a partner channel, like
+    /// EventSub's `source_*` fields; IRC carries no login or name for it.
+    pub source_broadcaster_user_id: Option<UserId>,
+    pub source_message_id: Option<MessageId>,
+    pub source_badges: Option<Vec<ChatterBadge>>,
 }
 
 #[derive(Debug, PartialEq, Serialize, specta::Type)]
