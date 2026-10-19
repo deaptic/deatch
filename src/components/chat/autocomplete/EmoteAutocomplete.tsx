@@ -11,6 +11,7 @@ import {
   userEmotes,
 } from "../../../lib/stores/emotes.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
+import { emoteZoom } from "../../../lib/utils/emoteZoom.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
 type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
@@ -60,7 +61,12 @@ export default function EmoteAutocomplete(props: Props) {
 
   const render = (s: EmoteSuggestion) => (
     <>
-      <img src={s.url} alt={s.name} class="size-6 object-contain shrink-0" />
+      <img
+        src={s.url}
+        {...emoteZoom(s.url)}
+        alt={s.name}
+        class="size-6 object-contain shrink-0"
+      />
       <span class="text-ink flex-1 text-left truncate">{s.name}</span>
       <span class="text-small font-semibold shrink-0 text-ink-soft">
         {s.source}

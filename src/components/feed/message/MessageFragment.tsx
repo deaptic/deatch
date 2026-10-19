@@ -1,6 +1,7 @@
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { Fragment } from "../../../lib/types/index.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
+import { emoteZoom } from "../../../lib/utils/emoteZoom.ts";
 import {
   type UserActions,
   userLink,
@@ -20,16 +21,20 @@ type Props = UserActions & {
 export default function MessageFragment(props: Props) {
   const frag = props.frag;
   switch (frag.type) {
-    case "emote":
+    case "emote": {
+      const url =
+        `https://static-cdn.jtvnw.net/emoticons/v2/${frag.id}/default/dark/1.0`;
       return (
         <img
-          src={`https://static-cdn.jtvnw.net/emoticons/v2/${frag.id}/default/dark/1.0`}
+          src={url}
+          {...emoteZoom(url)}
           alt={frag.text}
           title={frag.text}
           decoding="async"
           class={INLINE_EMOTE}
         />
       );
+    }
     case "cheermote":
       return (
         <Cheermote

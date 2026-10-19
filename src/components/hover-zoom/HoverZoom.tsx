@@ -57,16 +57,18 @@ function ZoomImage(props: { anchor: HTMLElement }) {
   const [pos, setPos] = createSignal<{ x: number; y: number } | null>(null);
   const [src, setSrc] = createSignal(props.anchor.dataset.zoomSrc);
 
-  // Measured once mounted, so the size follows the theme's rem scale.
-  onMount(() => {
+  // Images show at their own size up to the cap, so emotes are not blown up
+  // to avatar size; placement waits for the loaded size.
+  const place = () => {
     if (!ref) return;
     setPos(
-      zoomPlacement(props.anchor.getBoundingClientRect(), ref.offsetWidth, {
-        width: globalThis.innerWidth,
-        height: globalThis.innerHeight,
-      }),
+      zoomPlacement(
+        props.anchor.getBoundingClientRect(),
+        { width: ref.offsetWidth, height: ref.offsetHeight },
+        { width: globalThis.innerWidth, height: globalThis.innerHeight },
+      ),
     );
-  });
+  };
 
   return (
     <Portal>
@@ -74,12 +76,13 @@ function ZoomImage(props: { anchor: HTMLElement }) {
         ref={ref}
         src={src()}
         alt=""
+        onLoad={place}
         onError={() => {
           const fallback = props.anchor.dataset.zoomFallback;
           if (fallback && src() !== fallback) setSrc(fallback);
         }}
         style={{ "--x": `${pos()?.x ?? 0}px`, "--y": `${pos()?.y ?? 0}px` }}
-        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 size-100 rounded-md border border-line bg-overlay object-cover ${
+        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 max-w-100 max-h-100 rounded-md border border-line bg-overlay ${
           pos() ? "" : "invisible"
         }`}
       />
