@@ -20,8 +20,10 @@ export default function SourceChannel(props: Props) {
     );
   });
 
-  const name = () => props.source.name || props.source.login;
   const channel = () => knownUser(props.source.id);
+  // History messages carry only the channel id.
+  const name = () =>
+    props.source.name || channel()?.displayName || props.source.login;
   const link = createChannelLink(
     channel,
     props.onOpen && (() => props.onOpen!(props.source.id)),
@@ -29,7 +31,7 @@ export default function SourceChannel(props: Props) {
 
   return (
     <span
-      data-tip={`Sent in ${name()}'s chat`}
+      data-tip={name() ? `Sent in ${name()}'s chat` : "Sent in a shared chat"}
       {...link.handlers}
       class={`feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
         props.round ? "rounded-full" : "rounded-xs"
