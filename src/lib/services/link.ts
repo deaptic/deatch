@@ -10,6 +10,7 @@ import {
   setLinkWarmedChannels,
 } from "../stores/link.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { linkClose, linkFocus, linkSetMuted } from "../api/link.ts";
 import { channelUrl } from "../utils/twitchUrl.ts";
 import { getStreamsFromIds } from "../api/twitch/streams.ts";
@@ -56,18 +57,44 @@ export function selectedLinked() {
   return sel && linkWarmedChannels().some((c) => c?.id === sel.id) ? sel : null;
 }
 
+/// Opening or closing a browser tab can bring the browser to the front; the
+/// app takes focus back if it loses it this soon after. Switching away by
+/// hand within that time is pulled back too, which is the trade-off.
+const REFOCUS_MS = 2000;
+
+async function keepingFocus(action: () => Promise<unknown>) {
+  const win = getCurrentWindow();
+  const unlisten = await win.onFocusChanged(({ payload: focused }) => {
+    if (focused) return;
+    stop();
+    void win.setFocus();
+  });
+  const timer = setTimeout(stop, REFOCUS_MS);
+  function stop() {
+    clearTimeout(timer);
+    unlisten();
+  }
+  await action();
+}
+
 /// Shows the open channel's browser tab, or opens the channel in the browser
 /// when it has none; the extension then links the new tab.
 export function openTab() {
   const tab = selectedLinked();
   if (tab) return void linkFocus(tab.login);
   const ch = selectedChannel();
-  if (ch) void openUrl(channelUrl(ch.login));
+  if (!ch) return;
+  keepingFocus(() => openUrl(channelUrl(ch.login))).catch((e) =>
+    console.warn("browser tab not opened", e)
+  );
 }
 
 export function closeTab() {
   const tab = selectedLinked();
-  if (tab) void linkClose(tab.login);
+  if (!tab) return;
+  keepingFocus(() => linkClose(tab.login)).catch((e) =>
+    console.warn("browser tab not closed", e)
+  );
 }
 
 export function anyUnmuted(): boolean {
