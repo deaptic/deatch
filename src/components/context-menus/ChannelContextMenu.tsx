@@ -64,6 +64,8 @@ export default function ChannelContextMenu(props: Props) {
   const hasTab = () => linkWarmedChannels().some((c) => c?.id === props.ch.id);
   const muted = () => linkMutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);
+  // Shortcuts act on the open channel, so only its menu shows them.
+  const selected = () => selectedChannel()?.id === props.ch.id;
   const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
   const movePin = (by: number) => () =>
     reorderPinnedChannels(pinIndex(), pinIndex() + by);
@@ -121,6 +123,9 @@ export default function ChannelContextMenu(props: Props) {
             <MenuItem
               label="Open in browser"
               icon={<ExternalLink />}
+              shortcut={selected()
+                ? shortcuts.keyFor("link::openTab")
+                : undefined}
               onClick={run(() => openUrl(url()))}
             />
           }
@@ -128,6 +133,9 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label="Show browser tab"
             icon={<ExternalLink />}
+            shortcut={selected()
+              ? shortcuts.keyFor("link::openTab")
+              : undefined}
             onClick={run(() =>
               linkFocus(props.ch.login)
             )}
@@ -135,16 +143,17 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label={muted() ? "Unmute tab" : "Mute tab"}
             icon={muted() ? <Volume2 /> : <VolumeX />}
-            shortcut={selectedChannel()?.id === props.ch.id
+            shortcut={selected()
               ? shortcuts.keyFor("link::toggleMute")
               : undefined}
-            onClick={run(() =>
-              link.toggleMuted(props.ch.login)
-            )}
+            onClick={run(() => link.toggleMuted(props.ch.login))}
           />
           <MenuItem
             label="Close browser tab"
             icon={<X />}
+            shortcut={selected()
+              ? shortcuts.keyFor("link::closeTab")
+              : undefined}
             onClick={run(() => linkClose(props.ch.login))}
           />
         </Show>

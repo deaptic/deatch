@@ -27,6 +27,8 @@ const ACTION_LABELS: Record<string, string> = {
   "link::toggleMute": "Link: mute current tab",
   "link::toggleMuteAll": "Link: mute all tabs",
   "link::muteOthers": "Link: mute other tabs",
+  "link::openTab": "Link: show or open the channel's browser tab",
+  "link::closeTab": "Link: close the channel's browser tab",
   "view::toggleAlwaysOnTop": "Always on top",
   "panel::close": "Close the open overlay, or leave Settings and Explore",
   "feed::toggleDensity": "Switch between default and spacious chat",

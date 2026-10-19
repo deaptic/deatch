@@ -9,7 +9,9 @@ import {
   setLinkMutedByLogin,
   setLinkWarmedChannels,
 } from "../stores/link.ts";
-import { linkClose, linkSetMuted } from "../api/link.ts";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { linkClose, linkFocus, linkSetMuted } from "../api/link.ts";
+import { channelUrl } from "../utils/twitchUrl.ts";
 import { getStreamsFromIds } from "../api/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
@@ -51,6 +53,20 @@ function isMuted(login: string): boolean {
 function selectedLinked() {
   const sel = selectedChannel();
   return sel && linkWarmedChannels().some((c) => c?.id === sel.id) ? sel : null;
+}
+
+/// Shows the open channel's browser tab, or opens the channel in the browser
+/// when it has none; the extension then links the new tab.
+export function openTab() {
+  const tab = selectedLinked();
+  if (tab) return void linkFocus(tab.login);
+  const ch = selectedChannel();
+  if (ch) void openUrl(channelUrl(ch.login));
+}
+
+export function closeTab() {
+  const tab = selectedLinked();
+  if (tab) void linkClose(tab.login);
 }
 
 export function anyUnmuted(): boolean {
