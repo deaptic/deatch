@@ -35,6 +35,7 @@ export default function AppLayout(props: AppLayoutProps) {
           markMentionRead(messageId);
           c.jumpToMessage(channelId, messageId);
         }}
+        onOpenChannel={c.openChannel}
       />
       <UpdateBanner />
       <div class="relative flex-1 min-h-0 flex overflow-hidden">

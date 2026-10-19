@@ -34,6 +34,7 @@ function below(button: HTMLElement | undefined) {
 
 type Props = {
   onJumpToMessage: (channelId: string, messageId: string) => void;
+  onOpenChannel: (channelId: string) => void;
 };
 
 export default function TitleBar(props: Props) {
@@ -144,6 +145,7 @@ export default function TitleBar(props: Props) {
           {...below(inboxBtn)}
           onClose={() => toggleOverlay("inbox")}
           onJump={props.onJumpToMessage}
+          onOpenChannel={props.onOpenChannel}
         />
       </Show>
       <Show when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}>

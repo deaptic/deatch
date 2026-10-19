@@ -557,6 +557,7 @@ export default function Rail(props: Props) {
             x={m().x}
             y={m().y}
             ch={m().ch}
+            place="rail"
             onClose={() => setChMenu(null)}
             onPin={pin}
             onLogout={m().ch?.id === user()?.id

@@ -15,6 +15,7 @@ import {
 import * as users from "../../lib/services/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
+import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
@@ -46,17 +47,19 @@ export default function SearchResults(props: Props) {
 
   const ranked = () => results() ?? [];
 
+  const toUser = (channel: SearchChannel): User => ({
+    id: channel.user.id,
+    login: channel.user.login,
+    displayName: channel.user.displayName,
+    profileImageUrl: channel.profileImageUrl,
+    offlineImageUrl: null,
+    description: "",
+    broadcasterType: "normal",
+    createdAt: "",
+  });
+
   function open(channel: SearchChannel) {
-    const user: User = {
-      id: channel.user.id,
-      login: channel.user.login,
-      displayName: channel.user.displayName,
-      profileImageUrl: channel.profileImageUrl,
-      offlineImageUrl: null,
-      description: "",
-      broadcasterType: "normal",
-      createdAt: "",
-    };
+    const user = toUser(channel);
     users.set([user]);
     props.onSelect(user);
   }
@@ -157,42 +160,49 @@ export default function SearchResults(props: Props) {
           <h2 class="mb-3 text-heading text-ink">Channels</h2>
           <div class="flex flex-col gap-0.5">
             <For each={ranked()}>
-              {(channel, index) => (
-                <button
-                  type="button"
-                  ref={(el) => (rows[index()] = el)}
-                  onClick={() => open(channel)}
-                  onMouseMove={() => setActive(index())}
-                  class="flex items-center gap-3 h-14 rounded-sm px-3 text-left cursor-pointer transition-colors duration-snap"
-                  classList={{
-                    "bg-raised": active() === index(),
-                    "hover:bg-surface": active() !== index(),
-                  }}
-                >
-                  <Avatar
-                    src={channel.profileImageUrl}
-                    alt={channel.user.displayName}
-                    size={36}
-                    presence={channel.isLive ? "live" : "offline"}
-                  />
-                  <div class="min-w-0 flex-1">
-                    <p class="truncate text-body font-semibold text-ink">
-                      {channel.user.displayName}
-                    </p>
-                    <p class="truncate text-small text-ink-soft">
-                      <Show when={channel.isLive} fallback="Offline">
-                        Live
-                        <Show when={channel.gameName}>
-                          {` · ${channel.gameName}`}
+              {(channel, index) => {
+                const link = createChannelLink(
+                  () => toUser(channel),
+                  () => open(channel),
+                );
+                return (
+                  <button
+                    type="button"
+                    ref={(el) => (rows[index()] = el)}
+                    {...link.handlers}
+                    onMouseMove={() => setActive(index())}
+                    class={`flex items-center gap-3 h-14 rounded-sm px-3 text-left transition-colors duration-snap ${link.cursor}`}
+                    classList={{
+                      "bg-raised": active() === index(),
+                      "hover:bg-surface": active() !== index(),
+                    }}
+                  >
+                    <Avatar
+                      src={channel.profileImageUrl}
+                      alt={channel.user.displayName}
+                      size={36}
+                      presence={channel.isLive ? "live" : "offline"}
+                    />
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate text-body font-semibold text-ink">
+                        {channel.user.displayName}
+                      </p>
+                      <p class="truncate text-small text-ink-soft">
+                        <Show when={channel.isLive} fallback="Offline">
+                          Live
+                          <Show when={channel.gameName}>
+                            {` · ${channel.gameName}`}
+                          </Show>
                         </Show>
-                      </Show>
-                    </p>
-                  </div>
-                  <Show when={channel.isLive}>
-                    <LivePill />
-                  </Show>
-                </button>
-              )}
+                      </p>
+                    </div>
+                    <Show when={channel.isLive}>
+                      <LivePill />
+                    </Show>
+                    {link.menu()}
+                  </button>
+                );
+              }}
             </For>
           </div>
         </section>

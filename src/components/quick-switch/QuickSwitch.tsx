@@ -22,6 +22,7 @@ import { errorMessage } from "../../lib/utils/error.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
+import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Field from "../ui/Field.tsx";
 import Loading from "../ui/Loading.tsx";
 
@@ -165,79 +166,89 @@ export default function QuickSwitch(props: Props) {
               }
             >
               <For each={rows()}>
-                {(row, i) => (
-                  <button
-                    type="button"
-                    data-switch-index={i()}
-                    onMouseMove={() => setActive(i())}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={(e) => void open(row, e.ctrlKey)}
-                    class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
-                      active() === i() ? "bg-raised" : "hover:bg-raised"
-                    }`}
-                  >
-                    <Show
-                      when={row.kind === "channel" ? row : null}
-                      fallback={
-                        <>
-                          <span class="size-8 rounded-full bg-raised grid place-items-center text-ink-soft">
-                            <Show
-                              when={!searching()}
-                              fallback={<Loading size={16} />}
-                            >
-                              <Search class="size-4" />
-                            </Show>
-                          </span>
-                          <span class="flex-1 min-w-0 flex flex-col">
-                            <span class="text-body font-semibold text-ink truncate">
-                              Search Twitch for “{query().trim()}”
-                            </span>
-                            <span class="text-small text-ink-soft">
-                              Not in your rail yet
-                            </span>
-                          </span>
-                        </>
-                      }
+                {(row, i) => {
+                  const link = createChannelLink(() =>
+                    row.kind === "channel" ? row.user : undefined
+                  );
+                  return (
+                    <button
+                      type="button"
+                      data-switch-index={i()}
+                      onMouseMove={() => setActive(i())}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={(e) => void open(row, e.ctrlKey)}
+                      onContextMenu={link.handlers.onContextMenu}
+                      onAuxClick={link.handlers.onAuxClick}
+                      class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
+                        active() === i() ? "bg-raised" : "hover:bg-raised"
+                      }`}
                     >
-                      {(r) => {
-                        const stream = () => streamForUserId(r().user.id);
-                        return (
+                      <Show
+                        when={row.kind === "channel" ? row : null}
+                        fallback={
                           <>
-                            <Avatar
-                              src={r().user.profileImageUrl}
-                              alt={r().user.displayName}
-                              size={32}
-                              presence={stream() ? "live" : "offline"}
-                            />
+                            <span class="size-8 rounded-full bg-raised grid place-items-center text-ink-soft">
+                              <Show
+                                when={!searching()}
+                                fallback={<Loading size={16} />}
+                              >
+                                <Search class="size-4" />
+                              </Show>
+                            </span>
                             <span class="flex-1 min-w-0 flex flex-col">
                               <span class="text-body font-semibold text-ink truncate">
-                                {r().user.displayName}
+                                Search Twitch for “{query().trim()}”
                               </span>
-                              <span
-                                class={`text-small truncate ${
-                                  stream() ? "text-live" : "text-ink-soft"
-                                }`}
-                              >
-                                <Show when={stream()} fallback="Offline">
-                                  Live · {stream()!.game.name} ·{" "}
-                                  {formatViewers(stream()!.viewerCount)}
-                                </Show>
-                                <Show
-                                  when={pinnedChannels().includes(r().user.id)}
-                                >
-                                  {" · pinned"}
-                                </Show>
+                              <span class="text-small text-ink-soft">
+                                Not in your rail yet
                               </span>
                             </span>
                           </>
-                        );
-                      }}
-                    </Show>
-                    <Show when={active() === i()}>
-                      <kbd class={KBD}>↵</kbd>
-                    </Show>
-                  </button>
-                )}
+                        }
+                      >
+                        {(r) => {
+                          const stream = () => streamForUserId(r().user.id);
+                          return (
+                            <>
+                              <Avatar
+                                src={r().user.profileImageUrl}
+                                alt={r().user.displayName}
+                                size={32}
+                                presence={stream() ? "live" : "offline"}
+                              />
+                              <span class="flex-1 min-w-0 flex flex-col">
+                                <span class="text-body font-semibold text-ink truncate">
+                                  {r().user.displayName}
+                                </span>
+                                <span
+                                  class={`text-small truncate ${
+                                    stream() ? "text-live" : "text-ink-soft"
+                                  }`}
+                                >
+                                  <Show when={stream()} fallback="Offline">
+                                    Live · {stream()!.game.name} ·{" "}
+                                    {formatViewers(stream()!.viewerCount)}
+                                  </Show>
+                                  <Show
+                                    when={pinnedChannels().includes(
+                                      r().user.id,
+                                    )}
+                                  >
+                                    {" · pinned"}
+                                  </Show>
+                                </span>
+                              </span>
+                            </>
+                          );
+                        }}
+                      </Show>
+                      <Show when={active() === i()}>
+                        <kbd class={KBD}>↵</kbd>
+                      </Show>
+                      {link.menu()}
+                    </button>
+                  );
+                }}
               </For>
             </Show>
           </div>
