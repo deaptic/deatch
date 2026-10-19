@@ -5,6 +5,7 @@ import { SIDE_GAP } from "../ui/Popover.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
 import { rowHeight } from "../ui/rowHeight.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
+import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
 export type SubTone = "soft" | "live" | "positive" | "caution";
 
@@ -49,12 +50,14 @@ export default function RailRow(props: Props) {
           props.onMiddleClick();
         })}
         onMouseDown={(e) => e.preventDefault()}
-        onContextMenu={(e) => {
-          if (!props.onContextMenu) return;
-          e.preventDefault();
-          setTip(null);
-          props.onContextMenu(e.clientX, e.clientY);
-        }}
+        onContextMenu={(e) =>
+          openMenuAt(
+            e,
+            props.onContextMenu && ((x, y) => {
+              setTip(null);
+              props.onContextMenu!(x, y);
+            }),
+          )}
         onMouseEnter={(e) => {
           if (expanded()) return;
           const r = e.currentTarget.getBoundingClientRect();

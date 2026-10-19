@@ -6,6 +6,7 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 import { createPopover } from "../chat/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";
 
@@ -26,10 +27,7 @@ export function createChannelLink(
     },
     onContextMenu: (e: MouseEvent) => {
       const ch = channel();
-      if (!ch) return;
-      e.preventDefault();
-      e.stopPropagation();
-      popover.open(e.clientX, e.clientY, { ch });
+      openMenuAt(e, ch && ((x, y) => popover.open(x, y, { ch })));
     },
     onAuxClick: onMiddleClick(() => {
       const ch = channel();
