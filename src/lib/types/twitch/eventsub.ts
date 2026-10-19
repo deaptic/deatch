@@ -56,6 +56,7 @@ export type RawChatMessage = {
   source_broadcaster_user_login?: string | null;
   source_broadcaster_user_name?: string | null;
   source_message_id?: string | null;
+  source_badges?: MessageBadge[] | null;
   /// Synthetic field set by the robotty backlog mapper when a CLEARMSG /
   /// CLEARCHAT in the same window targets this message. EventSub messages
   /// never carry this — they use a separate delete event.

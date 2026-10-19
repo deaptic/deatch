@@ -9,6 +9,7 @@ import { chatterOf, mapChatMessage } from "./chat-mapper.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as users from "../services/users.ts";
+import * as badges from "../services/badges.ts";
 import { userFromRef } from "../stores/channels.ts";
 import * as triggers from "../services/triggers.ts";
 
@@ -36,6 +37,7 @@ export function start(): () => void {
       const raw = e.payload.event;
       const ts = serverTime(e.payload);
       const msg = mapChatMessage(raw, ts);
+      if (msg.source) badges.loadSource(msg.source);
       recordChatter(raw.broadcaster_user_id, chatterOf(msg));
       if (appendItem(raw.broadcaster_user_id, msg)) {
         chatActivity.record(raw.broadcaster_user_id, ts);
