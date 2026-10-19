@@ -7,7 +7,7 @@ type Props = {
 };
 
 // A mouse shortcut on top of the row's own button; keyboard and screen
-// readers reach the same toggle through the channel menu and Alt+M.
+// readers reach the same toggle through the channel menu and Ctrl+M.
 export default function TabMuteBadge(props: Props) {
   return (
     <span

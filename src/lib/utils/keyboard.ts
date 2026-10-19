@@ -12,6 +12,8 @@ const KEY_LABELS: Record<string, string> = {
   enter: "Enter",
   escape: "Esc",
   tab: "Tab",
+  pageup: "PgUp",
+  pagedown: "PgDn",
 };
 
 export function keyLabels(combo: string): string[] {
