@@ -77,6 +77,7 @@ export default function AppLayout(props: AppLayoutProps) {
                 <Show when={typeof activeView() === "object"}>
                   <ChatPanes
                     userLogin={u().login}
+                    onOpenChannel={c.openChannel}
                     onJumpToMessage={c.jumpToMessage}
                   />
                 </Show>

@@ -1,6 +1,10 @@
 import { For } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import {
+  onMiddleClick,
+  preventAutoscroll,
+} from "../../../lib/utils/middleClick.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
 import { textSegments } from "./textSegments.ts";
 
@@ -28,14 +32,8 @@ export default function TextWithEmotes(
                 e.preventDefault();
                 openUrl(segment.url);
               }}
-              onAuxClick={(e) => {
-                if (e.button !== 1) return;
-                e.preventDefault();
-                openUrl(segment.url);
-              }}
-              onMouseDown={(e) => {
-                if (e.button === 1) e.preventDefault();
-              }}
+              onAuxClick={onMiddleClick(() => openUrl(segment.url))}
+              onMouseDown={preventAutoscroll}
               class="text-accent-ink hover:underline break-all"
             >
               {segment.url}

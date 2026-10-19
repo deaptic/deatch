@@ -6,6 +6,11 @@ import {
 import { resolvedTheme } from "../../lib/stores/theme.ts";
 import { readableColor } from "../../lib/utils/color.ts";
 import type { UserRef } from "../../lib/types/index.ts";
+import {
+  onMiddleClick,
+  preventAutoscroll,
+} from "../../lib/utils/middleClick.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 
 type Props = {
   login: string;
@@ -47,14 +52,8 @@ export default function DisplayName(props: Props) {
         e.stopPropagation();
         props.onUserContextMenu(e.clientX, e.clientY, id());
       }}
-      onAuxClick={(e) => {
-        if (e.button !== 1) return;
-        e.preventDefault();
-        openUrl(`https://twitch.tv/${props.login}`);
-      }}
-      onMouseDown={(e) => {
-        if (e.button === 1) e.preventDefault();
-      }}
+      onAuxClick={onMiddleClick(() => openUrl(channelUrl(props.login)))}
+      onMouseDown={preventAutoscroll}
     >
       {props.prefix}
       {text()}

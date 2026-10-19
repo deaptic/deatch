@@ -6,6 +6,8 @@ import * as clock from "../../lib/services/clock.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
 import type { User } from "../../lib/types/index.ts";
+import { onMiddleClick } from "../../lib/utils/middleClick.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Stat from "../ui/Stat.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
@@ -28,7 +30,7 @@ export default function ChannelHeader(props: Props) {
     return s ? formatUptime(s.startedAt, clock.now()) : "";
   };
 
-  const openInBrowser = (ch: User) => openUrl(`https://twitch.tv/${ch.login}`);
+  const openInBrowser = (ch: User) => openUrl(channelUrl(ch.login));
 
   return (
     <header
@@ -38,16 +40,10 @@ export default function ChannelHeader(props: Props) {
         setMenu({ x: e.clientX, y: e.clientY });
       }}
     >
-      <button
-        type="button"
-        title="Open channel on Twitch"
+      <span
+        title="Middle-click for browser"
         class="shrink-0 flex rounded-sm cursor-pointer"
-        onClick={() => openInBrowser(props.channel)}
-        onAuxClick={(e) => {
-          if (e.button !== 1) return;
-          e.preventDefault();
-          openInBrowser(props.channel);
-        }}
+        onAuxClick={onMiddleClick(() => openInBrowser(props.channel))}
         onMouseDown={(e) => e.preventDefault()}
       >
         <Avatar
@@ -57,7 +53,7 @@ export default function ChannelHeader(props: Props) {
           square
           presence={stream() ? "live" : "offline"}
         />
-      </button>
+      </span>
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
         <h1
           class={`text-title truncate cursor-pointer transition-colors duration-snap ${

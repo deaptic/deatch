@@ -32,6 +32,7 @@ type Props = {
   onTogglePin: () => void;
   /** Returns whether the jump happened. */
   onJumpToMessage: (messageId: string) => boolean;
+  onOpenChannel: (channelId: string) => void;
   onSwitchUser?: (identity: Partial<UserRef>) => void;
 };
 
@@ -190,6 +191,7 @@ export default function UserCard(props: Props) {
           pinned={props.pinned}
           onTogglePin={props.onTogglePin}
           onStartDrag={startDrag}
+          onOpenChannel={props.onOpenChannel}
         />
         <UserCardModActions
           chatterId={props.chatterId}

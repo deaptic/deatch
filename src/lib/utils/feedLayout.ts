@@ -19,6 +19,7 @@ function continues(
 ): boolean {
   return prev.kind === "message" && item.kind === "message" &&
     prev.chatter_user_id === item.chatter_user_id &&
+    prev.source?.id === item.source?.id &&
     !prev.automod_hold && !standsAlone(item) &&
     item.timestamp - groupStart < GROUP_WINDOW_MS;
 }

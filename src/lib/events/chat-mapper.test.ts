@@ -90,6 +90,24 @@ Deno.test("classifies channel point messages", () => {
   assertEquals(mapChatMessage(raw(), 0).channel_points, undefined);
 });
 
+Deno.test("marks only shared chat messages with their source channel", () => {
+  const shared = mapChatMessage(
+    raw({
+      source_broadcaster_user_id: "333",
+      source_broadcaster_user_login: "mira",
+      source_broadcaster_user_name: "Mira",
+    }),
+    0,
+  );
+  const unshared = mapChatMessage(
+    raw({ source_broadcaster_user_id: null }),
+    0,
+  );
+  assertEquals(shared.source, { id: "333", login: "mira", name: "Mira" });
+  assertEquals(unshared.source, undefined);
+  assertEquals(mapChatMessage(raw(), 0).source, undefined);
+});
+
 Deno.test("marks first-time chatters and keeps deleted backlog flag", () => {
   const msg = mapChatMessage(
     raw({ message_type: "user_intro", deleted: true }),

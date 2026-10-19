@@ -3,6 +3,7 @@ import type {
   Stream,
   User,
 } from "../types/index.ts";
+import { channelUrl } from "../utils/twitchUrl.ts";
 
 export const SELF_LURK_PHRASES = [
   "Talking to themselves",
@@ -73,23 +74,23 @@ export function buildPresence(
   const streamStartedAt = stream
     ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
     : null;
-  const channelUrl = `https://twitch.tv/${ch.login}`;
+  const url = channelUrl(ch.login);
   const categoryUrl = gameName
     ? `https://www.twitch.tv/directory/game/${encodeURIComponent(gameName)}`
     : undefined;
   return {
     details: ch.displayName || ch.login,
-    detailsUrl: channelUrl,
+    detailsUrl: url,
     stateText,
     stateUrl: categoryUrl,
     largeImage: ch.profileImageUrl || "app_logo",
     largeText: stream?.title
       ? clamp(stream.title, 128)
       : ch.displayName || ch.login,
-    largeUrl: channelUrl,
+    largeUrl: url,
     smallImage: "app_logo",
     smallText: "Deatch",
     startedAt: streamStartedAt ?? session.startedAt,
-    buttons: [{ label: "Open on Twitch", url: channelUrl }],
+    buttons: [{ label: "Open on Twitch", url }],
   };
 }

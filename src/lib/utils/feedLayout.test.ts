@@ -118,6 +118,17 @@ Deno.test("cheers stand alone", () => {
   assertEquals(continued(rows), [false, false, true]);
 });
 
+Deno.test("a change of shared chat channel breaks a group", () => {
+  const mira = { id: "m", login: "mira", name: "Mira" };
+  const rows = layoutFeed([
+    msg("1", "maya", T0),
+    msg("2", "maya", T0, { source: mira }),
+    msg("3", "maya", T0, { source: mira }),
+    msg("4", "maya", T0),
+  ], true);
+  assertEquals(continued(rows), [false, false, true, false]);
+});
+
 Deno.test("events break a group", () => {
   const rows = layoutFeed([
     msg("1", "maya", T0),

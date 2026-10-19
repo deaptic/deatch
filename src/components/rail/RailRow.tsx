@@ -4,6 +4,7 @@ import Tooltip from "../ui/Tooltip.tsx";
 import { SIDE_GAP } from "../ui/Popover.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
 import { rowHeight } from "../ui/rowHeight.ts";
+import { onMiddleClick } from "../../lib/utils/middleClick.ts";
 
 export type SubTone = "soft" | "live" | "positive" | "caution";
 
@@ -42,12 +43,11 @@ export default function RailRow(props: Props) {
         aria-label={expanded() ? undefined : props.label}
         aria-current={props.selected ? "page" : undefined}
         onClick={props.onClick}
-        onAuxClick={(e) => {
-          if (e.button !== 1 || !props.onMiddleClick) return;
-          e.preventDefault();
+        onAuxClick={onMiddleClick(() => {
+          if (!props.onMiddleClick) return;
           setTip(null);
           props.onMiddleClick();
-        }}
+        })}
         onMouseDown={(e) => e.preventDefault()}
         onContextMenu={(e) => {
           if (!props.onContextMenu) return;

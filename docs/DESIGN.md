@@ -118,6 +118,10 @@ Each row has one tone, in precedence: held by AutoMod (`caution`), mentions you
 (`line` on `surface`), event (its colour), plain. Selected adds an `accent`
 outline. Hover lifts the row one tone.
 
+In shared chat, a message sent in a partner channel shows that channel's avatar
+at badge size, named in its tooltip: square before the badges by default, round
+on the bottom-right corner of the chatter tile when spacious.
+
 Notes sit above the message, never beside the name: AutoMod reason, "Cheered N
 bits", reward, "First message", then the reply line with a connector down to the
 message. Notes start where the message text starts.
@@ -125,7 +129,7 @@ message. Notes start where the message text starts.
 There are two layouts. Default (compact in code) is one line per message with an
 optional timestamp column. Spacious (comfortable in code) groups a chatter's
 messages (same chatter, within seven minutes of the group's first message, same
-day, nothing between) under one header with a tile in a gutter; the tile sits
+day, same shared chat channel, nothing between) under one header with a tile in a gutter; the tile sits
 centred on the first two lines of every row. Replies, holds, cheers, rewards,
 and first messages always start a group. The gap before each group is the user's
 group spacing. Every feed and the settings preview follow the user's text size,

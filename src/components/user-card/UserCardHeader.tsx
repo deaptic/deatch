@@ -18,6 +18,11 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { AtSign, Hash, Pin } from "lucide-solid";
 import { feeds } from "../../lib/stores/feeds.ts";
+import {
+  onMiddleClick,
+  preventAutoscroll,
+} from "../../lib/utils/middleClick.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import Avatar from "../ui/Avatar.tsx";
 import BadgeBox from "../ui/BadgeBox.tsx";
 import IconButton from "../ui/IconButton.tsx";
@@ -32,6 +37,7 @@ type Props = {
   pinned: boolean;
   onTogglePin: () => void;
   onStartDrag: (e: MouseEvent) => void;
+  onOpenChannel: (channelId: string) => void;
 };
 
 export default function UserCardHeader(props: Props) {
@@ -72,9 +78,9 @@ export default function UserCardHeader(props: Props) {
     (!chatColor.loading && chatColor()) ||
     props.messages.find((m) => m.color)?.color
   );
-  const openChannel = () => {
+  const openInBrowser = () => {
     const login = user()?.login;
-    if (login) void openUrl(`https://twitch.tv/${login}`);
+    if (login) void openUrl(channelUrl(login));
   };
   const channelBadges = () => feeds[props.broadcasterId]?.badges ?? {};
   const latestBadges = () => props.messages.at(-1)?.badges ?? [];
@@ -128,14 +134,14 @@ export default function UserCardHeader(props: Props) {
         <div class="flex gap-(--card-gap)">
           <button
             type="button"
-            title="Open channel on Twitch"
+            title="Open chat · middle-click for browser"
             class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-(--avatar-lift)"
             onMouseDown={(e) => {
               e.stopPropagation();
-              if (e.button === 1) e.preventDefault();
+              preventAutoscroll(e);
             }}
-            onClick={openChannel}
-            onAuxClick={(e) => e.button === 1 && openChannel()}
+            onClick={() => props.onOpenChannel(props.chatterId)}
+            onAuxClick={onMiddleClick(openInBrowser)}
           >
             <Avatar
               src={user()?.profileImageUrl}

@@ -73,5 +73,16 @@ export function mapChatMessage(
     first_message: raw.message_type === "user_intro",
     cheer: raw.cheer ?? undefined,
     deleted: raw.deleted,
+    source: sourceOf(raw),
+  };
+}
+
+function sourceOf(raw: RawChatMessage): FeedMessage["source"] {
+  const id = raw.source_broadcaster_user_id;
+  if (!id) return undefined;
+  return {
+    id,
+    login: raw.source_broadcaster_user_login ?? "",
+    name: raw.source_broadcaster_user_name ?? "",
   };
 }
