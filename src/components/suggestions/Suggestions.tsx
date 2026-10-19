@@ -1,4 +1,5 @@
-import { createEffect, createSignal, For, type JSX, onMount } from "solid-js";
+import { createEffect, For, type JSX, onMount } from "solid-js";
+import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import SuggestionItem from "./SuggestionItem.tsx";
 
 type Props<T> = {
@@ -11,17 +12,15 @@ type Props<T> = {
 };
 
 export default function Suggestions<T>(props: Props<T>) {
-  const [acIndex, setAcIndex] = createSignal(0);
   let containerRef: HTMLDivElement | undefined;
-
-  createEffect(() => {
-    props.suggestions();
-    setAcIndex(0);
+  const { active, setActive, move } = createListNavigation({
+    count: () => props.suggestions().length,
+    rowAt: (i) => containerRef?.children[i],
   });
 
   createEffect(() => {
-    const item = containerRef?.children[acIndex()] as HTMLElement | undefined;
-    item?.scrollIntoView({ block: "nearest" });
+    props.suggestions();
+    setActive(0);
   });
 
   onMount(() => {
@@ -29,14 +28,9 @@ export default function Suggestions<T>(props: Props<T>) {
       handleKey: (e) => {
         const s = props.suggestions();
         if (s.length === 0) return false;
-        if (e.key === "ArrowDown") {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
-          setAcIndex((i) => Math.min(i + 1, s.length - 1));
-          return true;
-        }
-        if (e.key === "ArrowUp") {
-          e.preventDefault();
-          setAcIndex((i) => Math.max(i - 1, 0));
+          move(e.key === "ArrowDown" ? 1 : -1);
           return true;
         }
         if (
@@ -44,7 +38,7 @@ export default function Suggestions<T>(props: Props<T>) {
           (props.selectOnSpace && e.key === " ")
         ) {
           e.preventDefault();
-          props.onSelect(s[acIndex()]);
+          props.onSelect(s[active()]);
           return true;
         }
         if (e.key === "Escape") {
@@ -66,7 +60,8 @@ export default function Suggestions<T>(props: Props<T>) {
       <For each={props.suggestions()}>
         {(s, i) => (
           <SuggestionItem
-            active={i() === acIndex()}
+            active={i() === active()}
+            onHover={() => setActive(i())}
             onClick={() => props.onSelect(s)}
           >
             {props.renderItem(s)}
