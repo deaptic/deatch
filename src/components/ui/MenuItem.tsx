@@ -35,7 +35,7 @@ export default function MenuItem(props: Props) {
       >
         {props.icon}
       </span>
-      <span class="truncate" title={props.label}>{props.label}</span>
+      <span class="truncate">{props.label}</span>
       <Show when={props.hint || props.shortcut || props.submenu}>
         <span class="ml-auto pl-4 shrink-0 flex items-center gap-3 text-small text-ink-soft">
           {props.hint}

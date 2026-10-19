@@ -32,7 +32,6 @@ export default function LiveCard(props: Props) {
     <button
       type="button"
       {...link.handlers}
-      title="Open chat · middle-click for browser"
       class={`group flex flex-col text-left bg-surface rounded-lg overflow-hidden border border-transparent [[data-theme=light]_&]:border-line-soft transition-colors duration-snap hover:bg-raised ${link.cursor}`}
     >
       <Artwork src={thumbnail()} shape="video" fit="bleed">

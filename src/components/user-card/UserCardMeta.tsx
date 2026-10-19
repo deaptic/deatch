@@ -65,7 +65,7 @@ function DateCell(props: {
   return (
     <button
       type="button"
-      title={props.copyable ? copyable.title(props.title) : props.title}
+      data-tip={props.copyable ? copyable.tip(props.title) : props.title}
       disabled={!props.copyable}
       class={`flex-1 min-w-0 flex items-center gap-(--card-gap) text-left [&>svg]:size-(--meta-icon) [&>svg]:shrink-0 [&>svg]:text-ink-faint ${
         props.copyable ? copyable.class() : "text-ink-soft"

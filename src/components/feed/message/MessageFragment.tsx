@@ -29,7 +29,7 @@ export default function MessageFragment(props: Props) {
           src={url}
           {...emoteZoom(url)}
           alt={frag.text}
-          title={frag.text}
+          data-tip={frag.text}
           decoding="async"
           class={INLINE_EMOTE}
         />

@@ -58,7 +58,7 @@ export default function ReplyLine(props: Props) {
           onUserContextMenu={props.onUserContextMenu}
         />
       </span>
-      <span class="truncate" title={props.reply.parent_message_body}>
+      <span class="truncate" data-tip={props.reply.parent_message_body}>
         {props.reply.parent_message_body}
       </span>
     </div>

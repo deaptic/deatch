@@ -12,7 +12,7 @@ export default function TabMuteBadge(props: Props) {
   return (
     <span
       aria-hidden
-      title={props.muted ? "Unmute browser tab" : "Mute browser tab"}
+      data-tip={props.muted ? "Unmute browser tab" : "Mute browser tab"}
       onClick={(e) => {
         e.stopPropagation();
         props.onToggle();

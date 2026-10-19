@@ -30,7 +30,7 @@ export default function Cheermote(props: Props) {
               <img
                 src={image().animated}
                 alt={props.text}
-                title={props.text}
+                data-tip={props.text}
                 decoding="async"
                 class={INLINE_EMOTE}
               />

@@ -10,7 +10,7 @@ export function createCopyable(idle: string) {
       `cursor-pointer transition-colors duration-snap ${
         copied() ? "text-positive" : `${idle} hover:text-ink`
       }`,
-    title: (label?: string) =>
+    tip: (label?: string) =>
       label ? `${label}\nClick to copy` : "Click to copy",
   };
 }

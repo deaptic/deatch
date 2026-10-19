@@ -20,7 +20,7 @@ export default function ToolbarItem(props: Props) {
   return (
     <button
       type="button"
-      title={props.title}
+      data-tip={props.title}
       aria-label={props.title}
       disabled={props.disabled}
       onMouseDown={(e) => e.preventDefault()}

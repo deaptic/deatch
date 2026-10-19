@@ -36,7 +36,6 @@ export default function NavItem(props: Props) {
         type="button"
         aria-current={props.active ? "page" : undefined}
         aria-label={props.collapsed ? props.label : undefined}
-        title={props.collapsed ? undefined : props.label}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => props.onClick?.()}
         onMouseEnter={(e) => {

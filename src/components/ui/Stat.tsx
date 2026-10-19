@@ -17,7 +17,7 @@ export default function Stat(props: Props) {
         class={`flex items-center gap-2 tabular-nums whitespace-nowrap ${
           props.truncate ? "min-w-0" : "shrink-0"
         } ${props.copy ? copyable.class() : "text-ink-soft"}`}
-        title={props.copy ? copyable.title() : undefined}
+        data-tip={props.copy ? copyable.tip() : undefined}
         onClick={() => {
           if (props.copy) copyable.copy(props.copy);
         }}

@@ -19,7 +19,7 @@ export default function IconButton(props: Props) {
       variant={local.variant ?? "ghost"}
       icon={local.children}
       aria-label={local.label}
-      title={local.label}
+      data-tip={local.label}
     />
   );
 }

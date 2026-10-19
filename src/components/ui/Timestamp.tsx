@@ -1,9 +1,4 @@
-import { createSignal, onCleanup, Show } from "solid-js";
 import { Time, type TimeFormat } from "../../lib/utils/time.ts";
-import Tooltip from "./Tooltip.tsx";
-import { SIDE_GAP } from "./Popover.tsx";
-
-const TOOLTIP_DELAY_MS = 300;
 
 type Variant = "plain" | "column" | "gutter" | "inline";
 
@@ -22,40 +17,12 @@ type Props = {
 };
 
 export default function Timestamp(props: Props) {
-  const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
-  let timer: number | undefined;
-
-  function hide() {
-    clearTimeout(timer);
-    setTip(null);
-  }
-
-  function show(el: HTMLElement) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      const r = el.getBoundingClientRect();
-      setTip({ x: r.left + r.width / 2, y: r.top - SIDE_GAP });
-    }, TOOLTIP_DELAY_MS);
-  }
-
-  onCleanup(hide);
-
   return (
-    <>
-      <span
-        class={`tabular-nums ${VARIANTS[props.variant ?? "plain"]}`}
-        onMouseEnter={(e) => show(e.currentTarget)}
-        onMouseLeave={hide}
-      >
-        {new Time(props.ts, props.format ?? "t").toString()}
-      </span>
-      <Show when={tip()}>
-        {(t) => (
-          <Tooltip x={t().x} y={t().y} placement="above">
-            {new Time(props.ts, "F").toString()}
-          </Tooltip>
-        )}
-      </Show>
-    </>
+    <span
+      class={`tabular-nums ${VARIANTS[props.variant ?? "plain"]}`}
+      data-tip={new Time(props.ts, "F").toString()}
+    >
+      {new Time(props.ts, props.format ?? "t").toString()}
+    </span>
   );
 }

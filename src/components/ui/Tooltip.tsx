@@ -1,11 +1,12 @@
 import type { JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 
-type Placement = "right" | "above";
+type Placement = "right" | "above" | "below";
 
 const PLACEMENTS: Record<Placement, string> = {
   right: "-translate-y-1/2",
   above: "-translate-x-1/2 -translate-y-full text-center",
+  below: "-translate-x-1/2 text-center",
 };
 
 type Props = {

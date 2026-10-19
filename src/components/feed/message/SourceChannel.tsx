@@ -29,7 +29,7 @@ export default function SourceChannel(props: Props) {
 
   return (
     <span
-      title={`Sent in ${name()}'s chat`}
+      data-tip={`Sent in ${name()}'s chat`}
       {...link.handlers}
       class={`feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
         props.round ? "rounded-full" : "rounded-xs"
