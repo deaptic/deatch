@@ -70,6 +70,7 @@ export type RawNotification = {
   system_message: string;
   chatter_is_anonymous?: boolean;
   chatter_user_id?: string;
+  chatter_user_login?: string;
   chatter_user_name?: string;
   color?: string;
 };
@@ -83,6 +84,7 @@ export type RawShoutout = {
 export type RawFollow = {
   broadcaster_user_id: string;
   user_id: string;
+  user_login: string;
   user_name: string;
 };
 
