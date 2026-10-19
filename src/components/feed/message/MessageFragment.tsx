@@ -1,28 +1,20 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { Fragment } from "../../../lib/types/index.ts";
-import type { UserRef } from "../../../lib/types/index.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../../lib/utils/twitchUrl.ts";
+  type UserActions,
+  userLink,
+  userLinkHover,
+} from "../../ui/userLink.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
 import Cheermote from "./Cheermote.tsx";
 import TextWithEmotes from "./TextWithEmotes.tsx";
 
-type Props = {
+type Props = UserActions & {
   frag: Fragment;
   emotes: EmoteMap;
   cheermotes: CheermoteMap;
   mentionsYou?: boolean;
-  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
-  onUserContextMenu?: (
-    x: number,
-    y: number,
-    identity: Partial<UserRef>,
-  ) => void;
 };
 
 export default function MessageFragment(props: Props) {
@@ -50,25 +42,12 @@ export default function MessageFragment(props: Props) {
     case "mention":
       return (
         <span
-          class={`cursor-pointer hover:underline ${
+          class={`${userLinkHover(props)} ${
             props.mentionsYou
               ? "text-accent-ink font-semibold"
               : "text-ink font-medium"
           }`}
-          onClick={(e) =>
-            props.onShowUserCard?.(e.clientX, e.clientY, {
-              login: frag.user_login,
-            })}
-          onContextMenu={(e) => {
-            if (!props.onUserContextMenu) return;
-            e.preventDefault();
-            e.stopPropagation();
-            props.onUserContextMenu(e.clientX, e.clientY, {
-              login: frag.user_login,
-            });
-          }}
-          onAuxClick={onMiddleClick(() => openUrl(channelUrl(frag.user_login)))}
-          onMouseDown={preventAutoscroll}
+          {...userLink(() => ({ login: frag.user_login }), props)}
         >
           {frag.text}
         </span>

@@ -379,6 +379,7 @@ export default function Chat(props: Props) {
               userCards.update(card.key, { pinned: !card.pinned })}
             onJumpToMessage={jumpToMessage}
             onOpenChannel={props.onOpenChannel}
+            onUserContextMenu={openUserContextMenu}
             onSwitchUser={async (identity) => {
               const id = identity.id ??
                 (await resolveIdentity(identity))?.id;

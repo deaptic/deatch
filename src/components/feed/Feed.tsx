@@ -39,7 +39,7 @@ import FeedDivider from "./FeedDivider.tsx";
 import FeedDayDivider from "./FeedDayDivider.tsx";
 import type { Density } from "../../lib/constants/density.ts";
 import { layoutFeed } from "../../lib/utils/feedLayout.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { UserActions } from "../ui/userLink.ts";
 
 export type FeedApi = {
   scrollToBottom: () => void;
@@ -51,7 +51,7 @@ export type FeedApi = {
   getSelectedMessage: () => Message | null;
 };
 
-type Props = {
+type Props = UserActions & {
   broadcasterId: string;
   /** Rendered instead of the channel's feed; badges still come from it. */
   entries?: FeedEntry[];
@@ -70,12 +70,6 @@ type Props = {
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
   onOpenChannel?: (channelId: string) => void;
-  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
-  onUserContextMenu?: (
-    x: number,
-    y: number,
-    identity: Partial<UserRef>,
-  ) => void;
   onEventContextMenu?: (x: number, y: number, item: FeedEvent) => void;
   header?: JSX.Element;
   footer?: JSX.Element;

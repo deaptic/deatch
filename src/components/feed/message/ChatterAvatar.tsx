@@ -1,47 +1,34 @@
 import { Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import type { FeedMessage, UserRef } from "../../../lib/types/index.ts";
 import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../../lib/utils/twitchUrl.ts";
+  type UserAction,
+  type UserActions,
+  userLink,
+  userLinkHover,
+} from "../../ui/userLink.ts";
 import FeedTile from "../FeedTile.tsx";
 import { chatterLook } from "./chatterLook.ts";
 import ChatterPicture from "./ChatterPicture.tsx";
 import SourceChannel from "./SourceChannel.tsx";
 
-type Props = {
-  userId: string;
-  login: string;
+type Props = UserActions & {
+  chatter: UserRef;
   color: string;
   active: boolean;
   source?: FeedMessage["source"];
   onOpenSource?: (channelId: string) => void;
-  onSourceContextMenu?: (
-    x: number,
-    y: number,
-    identity: Partial<UserRef>,
-  ) => void;
-  onClick?: (x: number, y: number) => void;
-  onContextMenu?: (x: number, y: number) => void;
+  onSourceContextMenu?: UserAction;
 };
 
 export default function ChatterAvatar(props: Props) {
   return (
     <span
-      class="relative shrink-0 grid"
-      onAuxClick={onMiddleClick(() => openUrl(channelUrl(props.login)))}
-      onMouseDown={preventAutoscroll}
+      class={`relative shrink-0 grid ${userLinkHover(props)}`}
+      {...userLink(() => props.chatter, props)}
     >
-      <FeedTile
-        round
-        color={chatterLook(props.color).tint}
-        onClick={props.onClick}
-        onContextMenu={props.onContextMenu}
-      >
+      <FeedTile round color={chatterLook(props.color).tint}>
         <ChatterPicture
-          userId={props.userId}
+          userId={props.chatter.id}
           color={props.color}
           active={props.active}
         />

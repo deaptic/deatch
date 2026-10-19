@@ -3,8 +3,6 @@ import type { JSX } from "solid-js";
 type Props = {
   color?: string;
   round?: boolean;
-  onClick?: (x: number, y: number) => void;
-  onContextMenu?: (x: number, y: number) => void;
   children: JSX.Element;
 };
 
@@ -14,17 +12,8 @@ export default function FeedTile(props: Props) {
       aria-hidden="true"
       class={`size-(--chat-tile) shrink-0 grid place-items-center overflow-hidden select-none ${
         props.round ? "rounded-full" : "rounded-sm"
-      } ${props.color ? "bg-(--tile)/16 text-(--tile)" : "bg-raised"} ${
-        props.onClick ? "cursor-pointer" : ""
-      }`}
+      } ${props.color ? "bg-(--tile)/16 text-(--tile)" : "bg-raised"}`}
       style={props.color ? { "--tile": props.color } : undefined}
-      onClick={(e) => props.onClick?.(e.clientX, e.clientY)}
-      onContextMenu={(e) => {
-        if (!props.onContextMenu) return;
-        e.preventDefault();
-        e.stopPropagation();
-        props.onContextMenu(e.clientX, e.clientY);
-      }}
     >
       {props.children}
     </span>

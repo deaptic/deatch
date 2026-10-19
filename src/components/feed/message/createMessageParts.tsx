@@ -2,17 +2,14 @@ import { Check, X } from "lucide-solid";
 import { createMemo, For, Show } from "solid-js";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
-import type {
-  BadgeMap,
-  FeedMessage,
-  UserRef,
-} from "../../../lib/types/index.ts";
+import type { BadgeMap, FeedMessage } from "../../../lib/types/index.ts";
 import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
 import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
 import DisplayName from "../../ui/DisplayName.tsx";
+import type { UserActions } from "../../ui/userLink.ts";
 import Timestamp from "../../ui/Timestamp.tsx";
 import type {
   Annotation,
@@ -28,7 +25,7 @@ import RichNotice from "./RichNotice.tsx";
 import SourceChannel from "./SourceChannel.tsx";
 import type { Reaction } from "./reaction.ts";
 
-export type MessageOptions = {
+export type MessageOptions = UserActions & {
   emotes: EmoteMap;
   cheermotes: CheermoteMap;
   badges: BadgeMap;
@@ -46,12 +43,6 @@ export type MessageOptions = {
   onCopypasta?: (msg: FeedMessage) => void;
   onJumpToMessage?: (messageId: string) => void;
   onOpenChannel?: (channelId: string) => void;
-  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
-  onUserContextMenu?: (
-    x: number,
-    y: number,
-    identity: Partial<UserRef>,
-  ) => void;
 };
 
 export function createMessageParts(
@@ -161,6 +152,8 @@ export function createMessageParts(
             reply={item.reply}
             showAvatar={comfortable()}
             onJump={props.onJumpToMessage}
+            onShowUserCard={props.onShowUserCard}
+            onUserContextMenu={props.onUserContextMenu}
           />
         ),
       });
@@ -225,25 +218,20 @@ export function createMessageParts(
     </Show>
   );
 
-  const chatter = () => ({
-    id: item.chatter_user_id,
-    login: item.chatter_login,
-    displayName: item.chatter_name,
-  });
-
   const avatar = (active: () => boolean) => (
     <ChatterAvatar
-      userId={item.chatter_user_id}
-      login={item.chatter_login}
+      chatter={{
+        id: item.chatter_user_id,
+        login: item.chatter_login,
+        displayName: item.chatter_name,
+      }}
       color={item.color}
       active={active()}
       source={item.source}
       onOpenSource={props.onOpenChannel}
       onSourceContextMenu={props.onUserContextMenu}
-      onClick={props.onShowUserCard &&
-        ((x, y) => props.onShowUserCard!(x, y, chatter()))}
-      onContextMenu={props.onUserContextMenu &&
-        ((x, y) => props.onUserContextMenu!(x, y, chatter()))}
+      onShowUserCard={props.onShowUserCard}
+      onUserContextMenu={props.onUserContextMenu}
     />
   );
 

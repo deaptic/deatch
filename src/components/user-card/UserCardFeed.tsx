@@ -1,13 +1,14 @@
 import { Show } from "solid-js";
 import Feed from "../feed/Feed.tsx";
-import type { FeedMessage, UserRef } from "../../lib/types/index.ts";
+import type { FeedMessage } from "../../lib/types/index.ts";
+import type { UserActions } from "../ui/userLink.ts";
 
-type Props = {
+type Props = UserActions & {
   broadcasterId: string;
   messages: FeedMessage[];
   loading: boolean;
   onJumpToMessage?: (messageId: string) => void;
-  onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
+  onOpenChannel?: (channelId: string) => void;
 };
 
 export default function UserCardFeed(props: Props) {
@@ -35,6 +36,8 @@ export default function UserCardFeed(props: Props) {
             showDivider={false}
             onJumpToMessage={props.onJumpToMessage}
             onShowUserCard={props.onShowUserCard}
+            onUserContextMenu={props.onUserContextMenu}
+            onOpenChannel={props.onOpenChannel}
             scrollClass="px-2 py-1 feed-meta"
           />
         </Show>
