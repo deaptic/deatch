@@ -159,7 +159,10 @@ shows the full date. Day dividers mark where the date changes.
 ## Keyboard and focus
 
 Everything reachable by mouse has a key; bindings live in
-`src/default-keymap.json` and show in tooltips and Settings → Keyboard.
+`src/default-keymap.json` and show in tooltips and Settings → Keyboard. Ctrl
+acts on channels and their browser tabs, like a browser's tab keys; Alt toggles
+app-wide modes. Never Ctrl+Alt: on many layouts it is AltGr and types a
+character instead.
 `:focus-visible` draws a 2px `accent` outline; text fields show focus through
 their border; mouse clicks never show the outline. Focus returns to the composer
 when an overlay closes.
