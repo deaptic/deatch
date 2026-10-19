@@ -47,6 +47,8 @@ export function createAppShortcuts(
       shortcuts.register("link::toggleMute", linkAudio.toggleMute),
       shortcuts.register("link::muteOthers", linkAudio.muteOthers),
       shortcuts.register("link::toggleMuteAll", linkAudio.toggleMuteAll),
+      shortcuts.register("link::openTab", linkAudio.openTab),
+      shortcuts.register("link::closeTab", linkAudio.closeTab),
       shortcuts.register("settings::toggle", toggleSettings),
       shortcuts.register("explore::show", showExplore),
       shortcuts.register(
