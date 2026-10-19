@@ -3,6 +3,11 @@ import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { Fragment } from "../../../lib/types/index.ts";
 import type { UserRef } from "../../../lib/types/index.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
+import {
+  onMiddleClick,
+  preventAutoscroll,
+} from "../../../lib/utils/middleClick.ts";
+import { channelUrl } from "../../../lib/utils/twitchUrl.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
 import Cheermote from "./Cheermote.tsx";
 import TextWithEmotes from "./TextWithEmotes.tsx";
@@ -62,14 +67,8 @@ export default function MessageFragment(props: Props) {
               login: frag.user_login,
             });
           }}
-          onAuxClick={(e) => {
-            if (e.button !== 1) return;
-            e.preventDefault();
-            openUrl(`https://twitch.tv/${frag.user_login}`);
-          }}
-          onMouseDown={(e) => {
-            if (e.button === 1) e.preventDefault();
-          }}
+          onAuxClick={onMiddleClick(() => openUrl(channelUrl(frag.user_login)))}
+          onMouseDown={preventAutoscroll}
         >
           {frag.text}
         </span>

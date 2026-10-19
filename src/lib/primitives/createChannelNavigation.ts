@@ -16,6 +16,7 @@ import { markChannelMentionsRead } from "../stores/inbox.ts";
 
 export type ChannelNavigation = {
   selectChannel(ch: User): void;
+  openChannel(channelId: string): void;
   jumpToMessage(channelId: string, messageId: string): void;
 };
 
@@ -30,18 +31,22 @@ export function createChannelNavigation(): ChannelNavigation {
     setSelectedChannel(ch);
   }
 
-  // The feed scrolls once it holds the message, so this works whether the
-  // channel is already open or still has to mount and load its backlog.
-  function jumpToMessage(channelId: string, messageId: string) {
+  function openChannel(channelId: string, then?: () => void) {
     users.get([channelId])
       .then(([ch]) => {
         if (!ch) {
           return addToast("Channel not found", "error");
         }
-        setJumpTarget({ channelId, messageId });
+        then?.();
         if (selectedChannel()?.id !== channelId) selectChannel(ch);
       })
-      .catch((e) => console.warn("jump channel lookup failed", e));
+      .catch((e) => console.warn("channel lookup failed", e));
+  }
+
+  // The feed scrolls once it holds the message, so this works whether the
+  // channel is already open or still has to mount and load its backlog.
+  function jumpToMessage(channelId: string, messageId: string) {
+    openChannel(channelId, () => setJumpTarget({ channelId, messageId }));
   }
 
   // Whatever channel is shown — picked manually or mirrored from the browser
@@ -56,5 +61,9 @@ export function createChannelNavigation(): ChannelNavigation {
     }),
   );
 
-  return { selectChannel, jumpToMessage };
+  return {
+    selectChannel,
+    openChannel: (channelId) => openChannel(channelId),
+    jumpToMessage,
+  };
 }

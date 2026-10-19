@@ -51,6 +51,10 @@ export type RawChatMessage = {
   reply: RawReply | null;
   channel_points_custom_reward_id: string | null;
   cheer?: { bits: number } | null;
+  /// Set only during shared chat, on every message including local ones.
+  source_broadcaster_user_id?: string | null;
+  source_broadcaster_user_login?: string | null;
+  source_broadcaster_user_name?: string | null;
   /// Synthetic field set by the robotty backlog mapper when a CLEARMSG /
   /// CLEARCHAT in the same window targets this message. EventSub messages
   /// never carry this — they use a separate delete event.

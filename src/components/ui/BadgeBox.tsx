@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { children, For, type JSX, Show } from "solid-js";
 import { badgeCategoryFor } from "../../lib/constants.ts";
 import { feedBadges } from "../../lib/stores/preferences.ts";
 import type { BadgeMap } from "../../lib/types/index.ts";
@@ -16,9 +16,12 @@ type Props = {
   badges: Badge[];
   channelBadges: BadgeMap;
   placement?: BadgePlacement;
+  /// Shown first, inside the same box as the badges.
+  children?: JSX.Element;
 };
 
 export default function BadgeBox(props: Props) {
+  const lead = children(() => props.children);
   const items = () =>
     props.badges.flatMap((b) => {
       if (feedBadges()[badgeCategoryFor(b.set_id)]?.show === false) return [];
@@ -27,20 +30,21 @@ export default function BadgeBox(props: Props) {
     });
 
   return (
-    <Show when={items().length > 0}>
+    <Show when={lead() || items().length > 0}>
       <span
         class={`feed-badge-box inline-flex items-center ${
           PLACEMENTS[props.placement ?? "before"]
         }`}
       >
+        {lead()}
         <For each={items()}>
           {(b) => (
-            <img
-              src={b.url}
-              alt={b.title}
+            <span
               title={`${b.title}${b.info ? ` (${b.info})` : ""}`}
-              class="feed-badge rounded-xs bg-ink/15"
-            />
+              class="feed-badge grid place-items-center rounded-xs bg-ink/15"
+            >
+              <img src={b.url} alt={b.title} class="size-3/4 object-contain" />
+            </span>
           )}
         </For>
       </span>

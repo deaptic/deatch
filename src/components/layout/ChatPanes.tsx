@@ -9,6 +9,7 @@ import Boundary from "../ui/Boundary.tsx";
 
 type ChatPanesProps = {
   userLogin: string;
+  onOpenChannel: (channelId: string) => void;
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
@@ -40,6 +41,7 @@ export default function ChatPanes(props: ChatPanesProps) {
                 broadcasterLogin={ch.login}
                 broadcasterName={ch.displayName}
                 userLogin={props.userLogin}
+                onOpenChannel={props.onOpenChannel}
                 onJumpToMessage={props.onJumpToMessage}
               />
             </Boundary>

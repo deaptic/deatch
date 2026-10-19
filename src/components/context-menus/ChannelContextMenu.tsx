@@ -40,6 +40,7 @@ import * as raid from "../../lib/services/raid.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
 import { copyField } from "../../lib/utils/clipboard.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import type { User } from "../../lib/types/index.ts";
 
 type Props = {
@@ -53,7 +54,7 @@ type Props = {
 };
 
 export default function ChannelContextMenu(props: Props) {
-  const url = () => `https://twitch.tv/${props.ch.login}`;
+  const url = () => channelUrl(props.ch.login);
   const hasTab = () => linkWarmedChannels().some((c) => c?.id === props.ch.id);
   const muted = () => linkMutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);

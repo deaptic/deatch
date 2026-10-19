@@ -69,6 +69,7 @@ type Props = {
   onReact?: (msg: Message, value: string) => void;
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
+  onOpenChannel?: (channelId: string) => void;
   onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
   onUserContextMenu?: (
     x: number,
@@ -265,6 +266,7 @@ export default function Feed(props: Props) {
       onReact={props.onReact}
       onCopypasta={props.onCopypasta}
       onJumpToMessage={props.onJumpToMessage}
+      onOpenChannel={props.onOpenChannel}
       onShowUserCard={props.onShowUserCard}
       onUserContextMenu={props.onUserContextMenu}
       onEventContextMenu={props.onEventContextMenu}

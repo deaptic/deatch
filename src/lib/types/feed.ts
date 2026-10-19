@@ -53,6 +53,8 @@ export type FeedMessage = {
   cheer?: { bits: number };
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
+  /// The channel a shared chat message was sent in.
+  source?: { id: string; login: string; name: string };
 };
 
 export type FeedEvent = {

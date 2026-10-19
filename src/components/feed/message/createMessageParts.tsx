@@ -25,6 +25,7 @@ import MessageFragment from "./MessageFragment.tsx";
 import MessageToolbar from "./MessageToolbar.tsx";
 import ReplyLine from "./ReplyLine.tsx";
 import RichNotice from "./RichNotice.tsx";
+import SourceChannel from "./SourceChannel.tsx";
 import type { Reaction } from "./reaction.ts";
 
 export type MessageOptions = {
@@ -44,6 +45,7 @@ export type MessageOptions = {
   onReact?: (msg: FeedMessage, value: string) => void;
   onCopypasta?: (msg: FeedMessage) => void;
   onJumpToMessage?: (messageId: string) => void;
+  onOpenChannel?: (channelId: string) => void;
   onShowUserCard?: (x: number, y: number, identity: Partial<UserRef>) => void;
   onUserContextMenu?: (
     x: number,
@@ -166,14 +168,23 @@ export function createMessageParts(
     return list;
   });
 
+  // Spacious rows pin the source channel to the avatar instead.
   const badges = (placement: BadgePlacement) => (
-    <Show when={props.showBadges !== false}>
-      <BadgeBox
-        badges={item.badges}
-        channelBadges={props.badges}
-        placement={placement}
-      />
-    </Show>
+    <BadgeBox
+      badges={props.showBadges !== false ? item.badges : []}
+      channelBadges={props.badges}
+      placement={placement}
+    >
+      <Show when={!comfortable() && item.source}>
+        {(source) => (
+          <SourceChannel
+            source={source()}
+            onOpen={props.onOpenChannel}
+            onContextMenu={props.onUserContextMenu}
+          />
+        )}
+      </Show>
+    </BadgeBox>
   );
 
   const name = () => (
@@ -223,8 +234,12 @@ export function createMessageParts(
   const avatar = (active: () => boolean) => (
     <ChatterAvatar
       userId={item.chatter_user_id}
+      login={item.chatter_login}
       color={item.color}
       active={active()}
+      source={item.source}
+      onOpenSource={props.onOpenChannel}
+      onSourceContextMenu={props.onUserContextMenu}
       onClick={props.onShowUserCard &&
         ((x, y) => props.onShowUserCard!(x, y, chatter()))}
       onContextMenu={props.onUserContextMenu &&

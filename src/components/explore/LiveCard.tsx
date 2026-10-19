@@ -7,6 +7,11 @@ import { resolveUser } from "../../lib/stores/channels.ts";
 import * as chatActivity from "../../lib/services/chatActivity.ts";
 import { formatUptime } from "../../lib/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
+import {
+  onMiddleClick,
+  preventAutoscroll,
+} from "../../lib/utils/middleClick.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
@@ -30,14 +35,8 @@ export default function LiveCard(props: Props) {
     <button
       type="button"
       onClick={() => props.onSelect(channel())}
-      onAuxClick={(e) => {
-        if (e.button !== 1) return;
-        e.preventDefault();
-        openUrl(`https://twitch.tv/${channel().login}`);
-      }}
-      onMouseDown={(e) => {
-        if (e.button === 1) e.preventDefault();
-      }}
+      onAuxClick={onMiddleClick(() => openUrl(channelUrl(channel().login)))}
+      onMouseDown={preventAutoscroll}
       title="Open chat · middle-click for browser"
       class="group flex flex-col text-left bg-surface rounded-lg overflow-hidden border border-transparent [[data-theme=light]_&]:border-line-soft transition-colors duration-snap hover:bg-raised cursor-pointer"
     >

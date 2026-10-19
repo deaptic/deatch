@@ -61,6 +61,7 @@ type Props = {
   broadcasterLogin: string;
   broadcasterName: string;
   userLogin: string;
+  onOpenChannel: (channelId: string) => void;
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
 
@@ -295,6 +296,7 @@ export default function Chat(props: Props) {
         onReact={react}
         onCopypasta={copypasta}
         onJumpToMessage={jumpToMessage}
+        onOpenChannel={props.onOpenChannel}
         onShowUserCard={openUserCard}
         onUserContextMenu={openUserContextMenu}
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
@@ -376,6 +378,7 @@ export default function Chat(props: Props) {
             onTogglePin={() =>
               userCards.update(card.key, { pinned: !card.pinned })}
             onJumpToMessage={jumpToMessage}
+            onOpenChannel={props.onOpenChannel}
             onSwitchUser={async (identity) => {
               const id = identity.id ??
                 (await resolveIdentity(identity))?.id;

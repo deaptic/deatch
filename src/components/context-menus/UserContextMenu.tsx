@@ -8,6 +8,7 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -65,7 +66,7 @@ export default function UserContextMenu(props: Props) {
       <MenuItem
         label="Open in browser"
         icon={<ExternalLink />}
-        onClick={run(() => openUrl(`https://twitch.tv/${props.userLogin}`))}
+        onClick={run(() => openUrl(channelUrl(props.userLogin)))}
       />
       <Show when={props.isMod}>
         <MenuDivider />
