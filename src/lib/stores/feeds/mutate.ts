@@ -4,26 +4,37 @@ import { enforceCaps } from "./caps.ts";
 import type { BadgeMap, Redemption } from "../../types/feed.ts";
 import type { AutomodHoldStatus } from "../../types/index.ts";
 
+/// Matches this channel's copy of a message or, in shared chat, the original
+/// it was copied from.
 export function markMessageDeleted(id: string, messageId: string) {
   if (!feeds[id]) return;
   setFeeds(
     id,
     produce((f) => {
       const m = f.messages.find((m) =>
-        m.kind === "message" && m.message_id === messageId
+        m.kind === "message" &&
+        (m.message_id === messageId || m.source?.messageId === messageId)
       );
       if (m && m.kind === "message") m.deleted = true;
     }),
   );
 }
 
-export function markUserMessagesDeleted(id: string, userId: string) {
+/// With `sourceId`, only the user's messages sent in that shared chat channel.
+export function markUserMessagesDeleted(
+  id: string,
+  userId: string,
+  sourceId?: string,
+) {
   if (!feeds[id]) return;
   setFeeds(
     id,
     produce((f) => {
       for (const m of f.messages) {
-        if (m.kind === "message" && m.chatter_user_id === userId) {
+        if (
+          m.kind === "message" && m.chatter_user_id === userId &&
+          (!sourceId || m.source?.id === sourceId)
+        ) {
           m.deleted = true;
         }
       }
