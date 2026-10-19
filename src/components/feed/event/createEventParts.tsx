@@ -31,6 +31,7 @@ import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import FeedTile from "../FeedTile.tsx";
 import RedemptionReward from "../RedemptionReward.tsx";
+import { splitName } from "./splitName.ts";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
 export type EventOptions = UserActions & {
@@ -89,6 +90,26 @@ export function createEventParts(
     </Show>
   );
 
+  // Only a known chatter becomes a name link; mod and local notices stay text.
+  const named = () =>
+    item.chatter_user_id
+      ? splitName(item.system_message, item.chatter_name)
+      : null;
+
+  const chatterName = (shown: string) => (
+    <DisplayName
+      login={item.chatter_login ?? item.chatter_name.toLowerCase()}
+      displayName={shown}
+      color={item.color ||
+        (item.chatter_user_id
+          ? knownChatterColor(item.chatter_user_id)
+          : undefined)}
+      userId={item.chatter_user_id}
+      onShowUserCard={props.onShowUserCard}
+      onUserContextMenu={props.onUserContextMenu}
+    />
+  );
+
   const time = () => (
     <Show when={props.density === "comfortable"}>
       <Timestamp ts={item.timestamp} format="c" variant="inline" />
@@ -106,23 +127,22 @@ export function createEventParts(
         when={item.redemption}
         fallback={
           <>
-            {item.system_message}
+            <Show when={named()} fallback={item.system_message}>
+              {(n) => (
+                <>
+                  {n().before}
+                  {chatterName(n().name)}
+                  {n().after}
+                </>
+              )}
+            </Show>
             {time()}
           </>
         }
       >
         {(redemption) => (
           <>
-            <DisplayName
-              login={item.chatter_login ?? item.chatter_name.toLowerCase()}
-              displayName={item.chatter_name}
-              color={item.chatter_user_id
-                ? knownChatterColor(item.chatter_user_id)
-                : undefined}
-              userId={item.chatter_user_id}
-              onShowUserCard={props.onShowUserCard}
-              onUserContextMenu={props.onUserContextMenu}
-            />
+            {chatterName(item.chatter_name)}
             {" redeemed "}
             <RedemptionReward redemption={redemption()} />
             {time()}

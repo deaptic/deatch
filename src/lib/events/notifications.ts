@@ -33,6 +33,9 @@ function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   }
   return feedEvent(raw.notice_type, system_message, timestamp, {
     chatter_user_id: raw.chatter_is_anonymous ? undefined : raw.chatter_user_id,
+    chatter_login: raw.chatter_is_anonymous
+      ? undefined
+      : raw.chatter_user_login,
     chatter_name: raw.chatter_user_name ?? "anonymous",
     color: raw.color ?? "",
   });
@@ -50,6 +53,7 @@ function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   return feedEvent("follow", `${raw.user_name} followed!`, timestamp, {
     chatter_user_id: raw.user_id,
+    chatter_login: raw.user_login,
     chatter_name: raw.user_name,
   });
 }
