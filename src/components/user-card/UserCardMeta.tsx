@@ -1,7 +1,7 @@
 import type { User } from "../../lib/types/index.ts";
 import { Calendar, Heart } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
-import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { createCopyable } from "../ui/copyable.ts";
 import Timestamp from "../ui/Timestamp.tsx";
 
 export type FollowStatus =
@@ -60,18 +60,18 @@ function DateCell(props: {
   copyable: boolean;
   children: JSX.Element;
 }) {
-  const { copied, copy } = createCopied();
+  const copyable = createCopyable("text-ink-soft");
 
   return (
     <button
       type="button"
-      title={props.title}
+      title={props.copyable ? copyable.title(props.title) : props.title}
       disabled={!props.copyable}
-      class={`flex-1 min-w-0 flex items-center gap-(--card-gap) text-left transition-colors duration-snap enabled:cursor-pointer [&>svg]:size-(--meta-icon) [&>svg]:shrink-0 [&>svg]:text-ink-faint ${
-        copied() ? "text-positive" : "text-ink-soft enabled:hover:text-ink"
+      class={`flex-1 min-w-0 flex items-center gap-(--card-gap) text-left [&>svg]:size-(--meta-icon) [&>svg]:shrink-0 [&>svg]:text-ink-faint ${
+        props.copyable ? copyable.class() : "text-ink-soft"
       }`}
       onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => copy(e.currentTarget.textContent ?? "")}
+      onClick={(e) => copyable.copy(e.currentTarget.textContent ?? "")}
     >
       {props.icon}
       <span class="truncate">{props.children}</span>

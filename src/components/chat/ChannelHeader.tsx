@@ -3,7 +3,7 @@ import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
-import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { createCopyable } from "../ui/copyable.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Stat from "../ui/Stat.tsx";
@@ -19,8 +19,8 @@ export default function ChannelHeader(props: Props) {
   const title = () => stream()?.title ?? info()?.title ?? "";
   const game = () => stream()?.game.name ?? info()?.game.name ?? "";
   const link = createChannelLink(() => props.channel);
-  const name = createCopied();
-  const titleCopy = createCopied();
+  const name = createCopyable("text-ink");
+  const titleCopy = createCopyable("text-ink-soft");
 
   const uptime = () => {
     const s = stream();
@@ -41,10 +41,8 @@ export default function ChannelHeader(props: Props) {
       />
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
         <h1
-          class={`text-title truncate cursor-pointer transition-colors duration-snap ${
-            name.copied() ? "text-positive" : "text-ink hover:text-accent-ink"
-          }`}
-          title="Click to copy"
+          class={`text-title truncate ${name.class()}`}
+          title={name.title()}
           onClick={() => name.copy(props.channel.displayName)}
         >
           {props.channel.displayName}
@@ -52,12 +50,8 @@ export default function ChannelHeader(props: Props) {
         <Show when={title()}>
           {(t) => (
             <p
-              class={`text-body truncate cursor-pointer transition-colors duration-snap ${
-                titleCopy.copied()
-                  ? "text-positive"
-                  : "text-ink-soft hover:text-ink"
-              }`}
-              title={t()}
+              class={`text-body truncate ${titleCopy.class()}`}
+              title={titleCopy.title(t())}
               onClick={() => titleCopy.copy(t())}
             >
               {t()}
