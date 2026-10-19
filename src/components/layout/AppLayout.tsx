@@ -3,6 +3,7 @@ import TitleBar from "../title-bar/TitleBar.tsx";
 import UpdateBanner from "../update-banner/UpdateBanner.tsx";
 import Toaster from "../toaster/Toaster.tsx";
 import HoverZoom from "../hover-zoom/HoverZoom.tsx";
+import TooltipHost from "../ui/TooltipHost.tsx";
 import Login from "../login/Login.tsx";
 import Loading from "../ui/Loading.tsx";
 import Boundary from "../ui/Boundary.tsx";
@@ -97,6 +98,7 @@ export default function AppLayout(props: AppLayoutProps) {
         </Show>
         <Toaster toasts={toasts} onDismiss={removeToast} />
         <HoverZoom />
+        <TooltipHost />
       </div>
     </div>
   );

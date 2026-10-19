@@ -67,7 +67,7 @@ export default function Avatar(props: Props) {
       <Show when={props.presence}>
         {(presence) => (
           <span
-            title={PRESENCE[presence()].label}
+            data-tip={PRESENCE[presence()].label}
             class={`absolute -bottom-px -right-px rounded-full ring-2 ring-surface ${
               PRESENCE[presence()].dot
             } ${SIZES[props.size].dot}`}

@@ -21,7 +21,7 @@ export default function TextWithEmotes(
               src={segment.url}
               {...emoteZoom(segment.url)}
               alt={segment.name}
-              title={segment.name}
+              data-tip={segment.name}
               decoding="async"
               class={INLINE_EMOTE}
             />

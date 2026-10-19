@@ -40,7 +40,7 @@ export default function BadgeBox(props: Props) {
         <For each={items()}>
           {(b) => (
             <span
-              title={`${b.title}${b.info ? ` (${b.info})` : ""}`}
+              data-tip={`${b.title}${b.info ? ` (${b.info})` : ""}`}
               class="feed-badge grid place-items-center rounded-xs bg-ink/15"
             >
               <img src={b.url} alt={b.title} class="size-3/4 object-contain" />

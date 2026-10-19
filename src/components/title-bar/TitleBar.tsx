@@ -90,7 +90,7 @@ export default function TitleBar(props: Props) {
                 isOverlayOpen("diagnostics") ? PRESSED : ""
               }`}
               aria-label="Diagnostics"
-              title="Diagnostics"
+              data-tip="Diagnostics"
               aria-pressed={isOverlayOpen("diagnostics")}
               {...{ [POPOVER_TOGGLE]: "" }}
               onMouseDown={(e) => e.preventDefault()}
@@ -103,7 +103,7 @@ export default function TitleBar(props: Props) {
             ref={inboxBtn}
             class={`${CONTROL} ${isOverlayOpen("inbox") ? PRESSED : ""}`}
             aria-label="Inbox"
-            title="Inbox"
+            data-tip="Inbox"
             aria-pressed={isOverlayOpen("inbox")}
             {...{ [POPOVER_TOGGLE]: "" }}
             onMouseDown={(e) => e.preventDefault()}

@@ -289,7 +289,7 @@ export default function ChatInput(props: Props) {
                   variant={outgoing() && !tooLong() ? "accent" : "ghost"}
                   icon={<SendHorizontal class="size-4" />}
                   aria-label="Send"
-                  title={tooLong()
+                  data-tip={tooLong()
                     ? `Too long: Twitch allows ${MAX_LEN} characters`
                     : "Send"}
                   disabled={tooLong()}

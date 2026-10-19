@@ -134,7 +134,7 @@ export default function UserCardHeader(props: Props) {
         <div class="flex gap-(--card-gap)">
           <button
             type="button"
-            title="Open chat · middle-click for browser"
+            aria-label="Open chat"
             class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-(--avatar-lift)"
             onMouseDown={(e) => {
               e.stopPropagation();

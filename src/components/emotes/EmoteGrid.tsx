@@ -34,9 +34,6 @@ export default function EmoteGrid(props: Props) {
                 props.onSelect(item.value, idx(), { keepOpen: e.shiftKey })}
               onContextMenu={(e) =>
                 openMenuAt(e, () => props.onToggleFavorite(item))}
-              title={item.disabled
-                ? `${item.label} (not available in this channel)`
-                : item.label}
               class={`relative aspect-square grid place-items-center rounded-sm transition-colors duration-snap ${
                 item.disabled ? "cursor-default" : "cursor-pointer"
               } ${

@@ -35,7 +35,7 @@ export default function MenuButton(props: Props) {
         variant={props.variant ?? "neutral"}
         size="sm"
         icon={props.icon}
-        title={props.title}
+        data-tip={props.title}
         pressed={props.pressed}
         aria-haspopup="menu"
         aria-expanded={anchor() !== null}

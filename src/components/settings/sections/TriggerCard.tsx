@@ -68,7 +68,7 @@ export default function TriggerCard(props: {
           <Button
             variant="accent"
             icon={<Check class="size-4" />}
-            title={valid()
+            data-tip={valid()
               ? "Save trigger"
               : "Name, phrase and response are required"}
             disabled={!valid()}
@@ -78,7 +78,7 @@ export default function TriggerCard(props: {
         <Button
           variant="danger"
           icon={<Trash2 class="size-4" />}
-          title="Delete trigger"
+          data-tip="Delete trigger"
           onClick={props.onDelete}
         />
       </div>

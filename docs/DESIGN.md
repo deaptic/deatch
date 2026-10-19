@@ -86,6 +86,12 @@ CSS variables set once where that state lives. One component per file;
 primitives live in `src/components/ui/` and feature code composes them without
 restyling. A missing look is a new variant on the primitive.
 
+Tooltips are the app's own, never the native `title`: an element carries
+`data-tip` and one host shows it after a short delay, above the element (below
+near the top of the window). A tip only says what is not already on screen: the
+name of an icon or image, a full date, hidden detail. Visible labels and usage
+hints get none. Icon-only controls also carry an `aria-label`.
+
 Overlays are `overlay` with a 1px `line`, open 4px below what opened them (8px
 when beside it or above it, as tooltips and rail popovers are), stay inside an
 8px viewport margin, and close on Escape or outside click. The opener toggles.

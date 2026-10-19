@@ -14,10 +14,11 @@ export default function ColorPicker(props: Props) {
       <label
         class="relative size-7 rounded-full border border-line cursor-pointer overflow-hidden bg-(--swatch)"
         style={{ "--swatch": props.swatchColor }}
-        title="Pick colour"
+        data-tip="Pick colour"
       >
         <input
           type="color"
+          aria-label="Pick colour"
           class="absolute inset-0 opacity-0 cursor-pointer"
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
