@@ -41,7 +41,7 @@ export default function ChannelHeader(props: Props) {
       />
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
         <h1
-          class={`text-title truncate ${name.class()}`}
+          class={`self-start max-w-full text-title truncate ${name.class()}`}
           data-tip={name.tip()}
           onClick={() => name.copy(props.channel.displayName)}
         >
@@ -50,7 +50,7 @@ export default function ChannelHeader(props: Props) {
         <Show when={title()}>
           {(t) => (
             <p
-              class={`text-body truncate ${titleCopy.class()}`}
+              class={`self-start max-w-full text-body truncate ${titleCopy.class()}`}
               data-tip={titleCopy.tip(t())}
               onClick={() => titleCopy.copy(t())}
             >
