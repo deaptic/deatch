@@ -1,5 +1,5 @@
 import { type JSX, Show } from "solid-js";
-import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { createCopyable } from "./copyable.ts";
 
 type Props = {
   icon: JSX.Element;
@@ -9,23 +9,17 @@ type Props = {
 };
 
 export default function Stat(props: Props) {
-  const { copied, copy } = createCopied();
+  const copyable = createCopyable("text-ink-soft");
 
   return (
     <Show when={props.value}>
       <span
-        class={`flex items-center gap-2 tabular-nums whitespace-nowrap transition-colors duration-snap ${
+        class={`flex items-center gap-2 tabular-nums whitespace-nowrap ${
           props.truncate ? "min-w-0" : "shrink-0"
-        } ${
-          copied()
-            ? "text-positive"
-            : props.copy
-            ? "text-ink-soft hover:text-ink"
-            : "text-ink-soft"
-        } ${props.copy ? "cursor-pointer" : ""}`}
-        title={props.copy ? "Click to copy" : undefined}
+        } ${props.copy ? copyable.class() : "text-ink-soft"}`}
+        title={props.copy ? copyable.title() : undefined}
         onClick={() => {
-          if (props.copy) copy(props.copy);
+          if (props.copy) copyable.copy(props.copy);
         }}
       >
         <span class="shrink-0 text-ink-faint [&>svg]:size-3.5">

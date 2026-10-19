@@ -1,13 +1,15 @@
-import { Copy } from "lucide-solid";
+import { Check, Copy } from "lucide-solid";
 import { Show } from "solid-js";
 import TwitchIcon from "./TwitchIcon.tsx";
 import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import { createCopied } from "../../lib/primitives/createCopied.ts";
 
 export default function Login() {
+  const codeCopy = createCopied();
+
   return (
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
@@ -61,10 +63,12 @@ export default function Login() {
                   <Button
                     variant="neutral"
                     size="sm"
-                    icon={<Copy class="size-4" />}
-                    onClick={() => copyField(code().user_code)}
+                    icon={codeCopy.copied()
+                      ? <Check class="size-4 text-positive" />
+                      : <Copy class="size-4" />}
+                    onClick={() => codeCopy.copy(code().user_code)}
                   >
-                    Copy code
+                    {codeCopy.copied() ? "Copied" : "Copy code"}
                   </Button>
                 </>
               )}
