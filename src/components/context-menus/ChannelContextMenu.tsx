@@ -133,9 +133,6 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label="Show browser tab"
             icon={<ExternalLink />}
-            shortcut={selected()
-              ? shortcuts.keyFor("link::openTab")
-              : undefined}
             onClick={run(() =>
               linkFocus(props.ch.login)
             )}
@@ -146,7 +143,9 @@ export default function ChannelContextMenu(props: Props) {
             shortcut={selected()
               ? shortcuts.keyFor("link::toggleMute")
               : undefined}
-            onClick={run(() => link.toggleMuted(props.ch.login))}
+            onClick={run(() =>
+              link.toggleMuted(props.ch.login)
+            )}
           />
           <MenuItem
             label="Close browser tab"
