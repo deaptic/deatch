@@ -43,6 +43,12 @@ export default function TooltipHost() {
     });
   }
 
+  // Only a scroll that moves the hovered element hides the tip; a feed
+  // scrolling in new messages leaves the header's tip alone.
+  const onScroll = (e: Event) => {
+    if (anchor && (e.target as Node).contains(anchor)) hide();
+  };
+
   const onMove = (e: MouseEvent) => {
     pointerX = e.clientX;
   };
@@ -61,7 +67,7 @@ export default function TooltipHost() {
     document.addEventListener("mouseover", onOver);
     document.addEventListener("mousemove", onMove, { passive: true });
     document.addEventListener("mousedown", hide, true);
-    document.addEventListener("scroll", hide, true);
+    document.addEventListener("scroll", onScroll, true);
     globalThis.addEventListener("blur", hide);
     root.addEventListener("mouseleave", hide);
     onCleanup(() => {
@@ -69,7 +75,7 @@ export default function TooltipHost() {
       document.removeEventListener("mouseover", onOver);
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mousedown", hide, true);
-      document.removeEventListener("scroll", hide, true);
+      document.removeEventListener("scroll", onScroll, true);
       globalThis.removeEventListener("blur", hide);
       root.removeEventListener("mouseleave", hide);
     });
