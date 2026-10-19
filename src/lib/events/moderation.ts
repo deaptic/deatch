@@ -19,76 +19,26 @@ import {
 import { feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
-import { formatApproxDuration } from "../format/duration.ts";
 import { mapFragment } from "./chat-mapper.ts";
+import { moderateMessage } from "./moderate-message.ts";
 import { moderateNoticeType } from "../constants/events.ts";
 
-function buildModerateMessage(
-  p: RawModerate,
-  serverNowMs: number,
-): string | null {
-  const mod = p.moderator_user_name;
+/// Twitch strikes a message, or a user's messages, from the partner channel
+/// out of the shared feed; local actions arrive as their own delete events.
+function applySharedChatAction(p: RawModerate) {
+  const here = p.broadcaster_user_id;
+  const source = p.source_broadcaster_user_id ?? undefined;
   switch (p.action) {
-    case "clear":
-      return `${mod} cleared the chat`;
-    case "ban": {
-      const r = p.ban.reason ? `: ${p.ban.reason}` : "";
-      return `${mod} banned ${p.ban.user_name}${r}`;
-    }
-    case "unban":
-      return `${mod} unbanned ${p.unban.user_name}`;
-    case "timeout": {
-      const secs = Math.max(
-        0,
-        Math.ceil(
-          (new Date(p.timeout.expires_at).getTime() - serverNowMs) / 1000,
-        ),
+    case "shared_chat_delete":
+      return markMessageDeleted(here, p.shared_chat_delete.message_id);
+    case "shared_chat_ban":
+      return markUserMessagesDeleted(here, p.shared_chat_ban.user_id, source);
+    case "shared_chat_timeout":
+      return markUserMessagesDeleted(
+        here,
+        p.shared_chat_timeout.user_id,
+        source,
       );
-      const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
-      return `${mod} timed out ${p.timeout.user_name} for ${
-        formatApproxDuration(secs)
-      }${r}`;
-    }
-    case "untimeout":
-      return `${mod} removed timeout on ${p.untimeout.user_name}`;
-    case "delete":
-      return `${mod} deleted message from ${p.delete.user_name} saying: ${p.delete.message_body}`;
-    case "mod":
-      return `${mod} added ${p.mod.user_name} as a moderator`;
-    case "unmod":
-      return `${mod} removed ${p.unmod.user_name} as a moderator`;
-    case "vip":
-      return `${mod} added ${p.vip.user_name} as a VIP`;
-    case "unvip":
-      return `${mod} removed ${p.unvip.user_name} as a VIP`;
-    case "raid":
-      return `${mod} initiated a raid on ${p.raid.user_name}`;
-    case "unraid":
-      return `${mod} cancelled the raid`;
-    case "slow":
-      return `${mod} enabled slow mode (${p.slow.wait_time_seconds}s)`;
-    case "slowoff":
-      return `${mod} disabled slow mode`;
-    case "followers":
-      return `${mod} enabled followers-only mode (${p.followers.follow_duration_minutes}m)`;
-    case "followersoff":
-      return `${mod} disabled followers-only mode`;
-    case "emoteonly":
-      return `${mod} enabled emote-only mode`;
-    case "emoteonlyoff":
-      return `${mod} disabled emote-only mode`;
-    case "subscribers":
-      return `${mod} enabled subscribers-only mode`;
-    case "subscribersoff":
-      return `${mod} disabled subscribers-only mode`;
-    case "uniquechat":
-      return `${mod} enabled unique-chat mode`;
-    case "uniquechatoff":
-      return `${mod} disabled unique-chat mode`;
-    case "warn": {
-      const r = p.warn.reason ? `: ${p.warn.reason}` : "";
-      return `${mod} warned ${p.warn.user_name}${r}`;
-    }
   }
 }
 
@@ -135,8 +85,9 @@ export function start(): () => void {
     }),
     listenEventSub<RawModerate>("channel.moderate", (e) => {
       const payload = e.payload.event;
+      applySharedChatAction(payload);
       const now = serverTime(e.payload);
-      const msg = buildModerateMessage(payload, now);
+      const msg = moderateMessage(payload, now);
       if (!msg) return;
       appendItem(
         payload.broadcaster_user_id,

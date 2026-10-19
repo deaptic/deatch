@@ -96,6 +96,7 @@ Deno.test("marks only shared chat messages with their source channel", () => {
       source_broadcaster_user_id: "333",
       source_broadcaster_user_login: "mira",
       source_broadcaster_user_name: "Mira",
+      source_message_id: "orig",
     }),
     0,
   );
@@ -103,7 +104,12 @@ Deno.test("marks only shared chat messages with their source channel", () => {
     raw({ source_broadcaster_user_id: null }),
     0,
   );
-  assertEquals(shared.source, { id: "333", login: "mira", name: "Mira" });
+  assertEquals(shared.source, {
+    id: "333",
+    login: "mira",
+    name: "Mira",
+    messageId: "orig",
+  });
   assertEquals(unshared.source, undefined);
   assertEquals(mapChatMessage(raw(), 0).source, undefined);
 });

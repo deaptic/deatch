@@ -55,6 +55,7 @@ export type RawChatMessage = {
   source_broadcaster_user_id?: string | null;
   source_broadcaster_user_login?: string | null;
   source_broadcaster_user_name?: string | null;
+  source_message_id?: string | null;
   /// Synthetic field set by the robotty backlog mapper when a CLEARMSG /
   /// CLEARCHAT in the same window targets this message. EventSub messages
   /// never carry this — they use a separate delete event.
@@ -142,25 +143,30 @@ type RawModerateBase = {
   moderator_user_id: string;
   moderator_user_login: string;
   moderator_user_name: string;
+  /// The shared chat channel the action happened in; null when it was here.
+  source_broadcaster_user_id?: string | null;
+  source_broadcaster_user_name?: string | null;
 };
 
 type RawModUser = { user_id: string; user_login: string; user_name: string };
+type RawBan = RawModUser & { reason: string | null };
+type RawTimeout = RawModUser & { reason: string | null; expires_at: string };
+type RawDelete = RawModUser & { message_id: string; message_body: string };
 
 export type RawModerate =
   & RawModerateBase
   & (
     | { action: "clear" }
-    | { action: "ban"; ban: RawModUser & { reason: string | null } }
+    | { action: "ban"; ban: RawBan }
     | { action: "unban"; unban: RawModUser }
-    | {
-      action: "timeout";
-      timeout: RawModUser & { reason: string | null; expires_at: string };
-    }
+    | { action: "timeout"; timeout: RawTimeout }
     | { action: "untimeout"; untimeout: RawModUser }
-    | {
-      action: "delete";
-      delete: RawModUser & { message_id: string; message_body: string };
-    }
+    | { action: "delete"; delete: RawDelete }
+    | { action: "shared_chat_ban"; shared_chat_ban: RawBan }
+    | { action: "shared_chat_unban"; shared_chat_unban: RawModUser }
+    | { action: "shared_chat_timeout"; shared_chat_timeout: RawTimeout }
+    | { action: "shared_chat_untimeout"; shared_chat_untimeout: RawModUser }
+    | { action: "shared_chat_delete"; shared_chat_delete: RawDelete }
     | { action: "mod"; mod: RawModUser }
     | { action: "unmod"; unmod: RawModUser }
     | { action: "vip"; vip: RawModUser }

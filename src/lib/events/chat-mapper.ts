@@ -84,5 +84,6 @@ function sourceOf(raw: RawChatMessage): FeedMessage["source"] {
     id,
     login: raw.source_broadcaster_user_login ?? "",
     name: raw.source_broadcaster_user_name ?? "",
+    messageId: raw.source_message_id ?? "",
   };
 }
