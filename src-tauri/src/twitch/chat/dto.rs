@@ -6,8 +6,8 @@ use twitch_api::helix::chat::{
     GlobalEmote, UserEmote as HelixUserEmote,
 };
 
-fn emote_url(id: &str) -> String {
-    format!("https://static-cdn.jtvnw.net/emoticons/v2/{id}/default/dark/1.0")
+fn emote_url(id: &twitch_api::types::EmoteIdRef) -> String {
+    id.url().size_1x().dark_mode().render()
 }
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
@@ -21,7 +21,7 @@ pub struct Emote {
 impl From<GlobalEmote> for Emote {
     fn from(e: GlobalEmote) -> Self {
         Self {
-            url: emote_url(e.id.as_str()),
+            url: emote_url(&e.id),
             id: e.id.to_string(),
             name: e.name,
         }
@@ -42,7 +42,7 @@ pub struct UserEmote {
 impl From<HelixUserEmote> for UserEmote {
     fn from(e: HelixUserEmote) -> Self {
         Self {
-            url: emote_url(e.id.as_str()),
+            url: emote_url(&e.id),
             id: e.id.to_string(),
             name: e.name,
             emote_type: e.emote_type,
@@ -143,8 +143,18 @@ impl From<HelixChatSettings> for ChatSettings {
 
 #[cfg(test)]
 mod tests {
-    use super::{ChatSettings, SendMessageResult};
+    use super::{emote_url, ChatSettings, SendMessageResult};
     use serde_json::json;
+
+    // The frontend's Ctrl-zoom and inline emotes expect this exact shape.
+    #[test]
+    fn emote_url_is_the_small_dark_cdn_image() {
+        let id = twitch_api::types::EmoteId::new("25".into());
+        assert_eq!(
+            emote_url(&id),
+            "https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/1.0"
+        );
+    }
 
     fn sent(value: serde_json::Value) -> SendMessageResult {
         SendMessageResult::from(
