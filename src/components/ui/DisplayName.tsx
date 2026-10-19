@@ -1,35 +1,21 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   feedUserOverrideNameColor,
   feedUserShowDisplayName,
 } from "../../lib/stores/preferences.ts";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
 import { readableColor } from "../../lib/utils/color.ts";
-import type { UserRef } from "../../lib/types/index.ts";
-import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import { type UserActions, userLink, userLinkHover } from "./userLink.ts";
 
-type Props = {
+type Props = UserActions & {
   login: string;
   displayName: string;
   color?: string;
   userId?: string;
   truncate?: boolean;
   prefix?: string;
-  onShowUserCard?: (x: number, y: number, id: Partial<UserRef>) => void;
-  onUserContextMenu?: (x: number, y: number, id: Partial<UserRef>) => void;
 };
 
 export default function DisplayName(props: Props) {
-  const id = (): Partial<UserRef> => ({
-    id: props.userId,
-    login: props.login,
-    displayName: props.displayName,
-  });
-
   const text = () =>
     feedUserShowDisplayName() === false ? props.login : props.displayName;
 
@@ -41,19 +27,15 @@ export default function DisplayName(props: Props) {
 
   return (
     <span
-      class={`font-semibold text-(--name) ${
-        props.onShowUserCard ? "cursor-pointer hover:underline" : ""
-      } ${props.truncate ? "truncate min-w-0" : ""}`}
+      class={`font-semibold text-(--name) ${userLinkHover(props)} ${
+        props.truncate ? "truncate min-w-0" : ""
+      }`}
       style={{ "--name": color() }}
-      onClick={(e) => props.onShowUserCard?.(e.clientX, e.clientY, id())}
-      onContextMenu={(e) => {
-        if (!props.onUserContextMenu) return;
-        e.preventDefault();
-        e.stopPropagation();
-        props.onUserContextMenu(e.clientX, e.clientY, id());
-      }}
-      onAuxClick={onMiddleClick(() => openUrl(channelUrl(props.login)))}
-      onMouseDown={preventAutoscroll}
+      {...userLink(() => ({
+        id: props.userId,
+        login: props.login,
+        displayName: props.displayName,
+      }), props)}
     >
       {props.prefix}
       {text()}

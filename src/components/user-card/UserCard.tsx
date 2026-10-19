@@ -16,6 +16,7 @@ import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
 import { mergeMessages } from "./mergeMessages.ts";
+import type { UserAction } from "../ui/userLink.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 
@@ -33,6 +34,7 @@ type Props = {
   /** Returns whether the jump happened. */
   onJumpToMessage: (messageId: string) => boolean;
   onOpenChannel: (channelId: string) => void;
+  onUserContextMenu: UserAction;
   onSwitchUser?: (identity: Partial<UserRef>) => void;
 };
 
@@ -211,6 +213,8 @@ export default function UserCard(props: Props) {
             }
           }}
           onShowUserCard={(_x, _y, identity) => props.onSwitchUser?.(identity)}
+          onUserContextMenu={props.onUserContextMenu}
+          onOpenChannel={props.onOpenChannel}
         />
       </div>
     </Portal>

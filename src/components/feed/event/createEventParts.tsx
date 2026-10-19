@@ -25,6 +25,7 @@ import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
 import type { FeedEvent } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
+import type { UserActions } from "../../ui/userLink.ts";
 import Timestamp from "../../ui/Timestamp.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
@@ -32,7 +33,7 @@ import FeedTile from "../FeedTile.tsx";
 import RedemptionReward from "../RedemptionReward.tsx";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
-export type EventOptions = {
+export type EventOptions = UserActions & {
   onEventContextMenu?: (x: number, y: number, item: FeedEvent) => void;
 };
 
@@ -119,6 +120,8 @@ export function createEventParts(
                 ? knownChatterColor(item.chatter_user_id)
                 : undefined}
               userId={item.chatter_user_id}
+              onShowUserCard={props.onShowUserCard}
+              onUserContextMenu={props.onUserContextMenu}
             />
             {" redeemed "}
             <RedemptionReward redemption={redemption()} />
