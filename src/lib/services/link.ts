@@ -50,7 +50,8 @@ function isMuted(login: string): boolean {
   return linkMutedByLogin()[login] === true;
 }
 
-function selectedLinked() {
+/// The open channel, when it has a browser tab.
+export function selectedLinked() {
   const sel = selectedChannel();
   return sel && linkWarmedChannels().some((c) => c?.id === sel.id) ? sel : null;
 }
