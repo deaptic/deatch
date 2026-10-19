@@ -1,6 +1,7 @@
 import { For } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import { emoteZoom } from "../../../lib/utils/emoteZoom.ts";
 import {
   onMiddleClick,
   preventAutoscroll,
@@ -18,6 +19,7 @@ export default function TextWithEmotes(
           ? (
             <img
               src={segment.url}
+              {...emoteZoom(segment.url)}
               alt={segment.name}
               title={segment.name}
               decoding="async"

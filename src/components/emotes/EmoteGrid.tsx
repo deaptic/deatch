@@ -1,6 +1,7 @@
 import { For } from "solid-js";
 import type { EmoteGridItem } from "./types.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import { emoteZoom } from "../../lib/utils/emoteZoom.ts";
 
 type Props = {
   items: EmoteGridItem[];
@@ -46,6 +47,7 @@ export default function EmoteGrid(props: Props) {
             >
               <img
                 src={item.url}
+                {...emoteZoom(item.url)}
                 alt={item.label}
                 class={`size-7 object-contain ${
                   item.disabled ? "opacity-40 grayscale" : ""

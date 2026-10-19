@@ -2,6 +2,7 @@ import { createEffect, Show } from "solid-js";
 import type { FeedMessage } from "../../../lib/types/index.ts";
 import * as users from "../../../lib/services/users.ts";
 import { knownUser } from "../../../lib/stores/users.ts";
+import { avatarZoom } from "../../../lib/utils/avatar.ts";
 import { createChannelLink } from "../../context-menus/createChannelLink.tsx";
 
 type Props = {
@@ -36,7 +37,12 @@ export default function SourceChannel(props: Props) {
     >
       <Show when={channel()?.profileImageUrl}>
         {(src) => (
-          <img src={src()} alt={name()} class="size-full object-cover" />
+          <img
+            src={src()}
+            {...avatarZoom(src())}
+            alt={name()}
+            class="size-full object-cover"
+          />
         )}
       </Show>
       {link.menu()}
