@@ -1,5 +1,6 @@
 import { For } from "solid-js";
 import type { EmoteGridItem } from "./types.ts";
+import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
 type Props = {
   items: EmoteGridItem[];
@@ -30,11 +31,8 @@ export default function EmoteGrid(props: Props) {
               onClick={(e) =>
                 !item.disabled &&
                 props.onSelect(item.value, idx(), { keepOpen: e.shiftKey })}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                props.onToggleFavorite(item);
-              }}
+              onContextMenu={(e) =>
+                openMenuAt(e, () => props.onToggleFavorite(item))}
               title={item.disabled
                 ? `${item.label} (not available in this channel)`
                 : item.label}

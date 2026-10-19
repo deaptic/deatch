@@ -1,6 +1,7 @@
 import { createSignal, For, Show } from "solid-js";
 import type { FeedEntry } from "../../lib/types/index.ts";
 import Timestamp from "../ui/Timestamp.tsx";
+import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 import FeedAnnotation from "./FeedAnnotation.tsx";
 import type { ItemLayout, ItemParts, RowTone } from "./itemParts.ts";
 import {
@@ -106,12 +107,7 @@ export default function FeedItem(props: Props) {
       style={parts.toneColor ? { "--tone": parts.toneColor } : undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onContextMenu={(e) => {
-        if (!parts.onContextMenu) return;
-        e.preventDefault();
-        e.stopPropagation();
-        parts.onContextMenu(e.clientX, e.clientY);
-      }}
+      onContextMenu={(e) => openMenuAt(e, parts.onContextMenu)}
     >
       {parts.overlay?.(hovered)}
       <For each={parts.annotations}>

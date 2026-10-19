@@ -5,6 +5,7 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
 export type UserAction = (
   x: number,
@@ -29,12 +30,12 @@ export function userLink(
       e.stopPropagation();
       actions.onShowUserCard(e.clientX, e.clientY, identity());
     },
-    onContextMenu: (e: MouseEvent) => {
-      if (!actions.onUserContextMenu) return;
-      e.preventDefault();
-      e.stopPropagation();
-      actions.onUserContextMenu(e.clientX, e.clientY, identity());
-    },
+    onContextMenu: (e: MouseEvent) =>
+      openMenuAt(
+        e,
+        actions.onUserContextMenu &&
+          ((x, y) => actions.onUserContextMenu!(x, y, identity())),
+      ),
     onAuxClick: onMiddleClick(() => openUrl(channelUrl(identity().login))),
     onMouseDown: preventAutoscroll,
   };
