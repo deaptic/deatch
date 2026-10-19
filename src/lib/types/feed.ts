@@ -54,7 +54,14 @@ export type FeedMessage = {
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
   /// The channel a shared chat message was sent in.
-  source?: { id: string; login: string; name: string; messageId: string };
+  source?: {
+    id: string;
+    login: string;
+    name: string;
+    messageId: string;
+    /// The chatter's badges in that channel; `badges` holds them here.
+    badges: MessageBadge[];
+  };
 };
 
 export type FeedEvent = {

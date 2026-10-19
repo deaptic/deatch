@@ -7,6 +7,7 @@ import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
+import { sourceBadges } from "../../../lib/stores/sourceBadges.ts";
 import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
 import DisplayName from "../../ui/DisplayName.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
@@ -161,11 +162,17 @@ export function createMessageParts(
     return list;
   });
 
+  // A partner chatter wears the badges of the channel they chatted in, which
+  // fall back to this channel's map (global badges) until that set loads.
+  const chatterBadges = () => item.source?.badges ?? item.badges;
+  const badgeMap = () =>
+    (item.source && sourceBadges[item.source.id]) || props.badges;
+
   // Spacious rows pin the source channel to the avatar instead.
   const badges = (placement: BadgePlacement) => (
     <BadgeBox
-      badges={props.showBadges !== false ? item.badges : []}
-      channelBadges={props.badges}
+      badges={props.showBadges !== false ? chatterBadges() : []}
+      channelBadges={badgeMap()}
       placement={placement}
     >
       <Show when={!comfortable() && item.source}>

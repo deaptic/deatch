@@ -4,6 +4,11 @@ import {
 } from "../api/twitch/chat.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 import { setBadges } from "../stores/feeds.ts";
+import {
+  clearSourceBadges,
+  setSourceBadges,
+  sourceBadges,
+} from "../stores/sourceBadges.ts";
 import type { BadgeSet } from "../types/index.ts";
 import type { BadgeMap } from "../types/feed.ts";
 import { type ChannelRef, channelResource } from "./channelResource.ts";
@@ -74,6 +79,15 @@ export function loadChannel(channel: ChannelRef) {
   });
 }
 
+/// A shared chat partner's badges, fetched once and kept while signed in.
+export function loadSource(channel: ChannelRef) {
+  if (sourceBadges[channel.id]) return;
+  channelBadges.get(channel)
+    .then((map) => setSourceBadges(channel.id, map))
+    .catch((e) => console.warn("shared chat badges not loaded", e));
+}
+
 export function resetChannelCache() {
   channelBadges.clear();
+  clearSourceBadges();
 }
