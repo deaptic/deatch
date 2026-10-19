@@ -2,6 +2,7 @@ import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { Fragment } from "../../../lib/types/index.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import { emoteZoom } from "../../../lib/utils/emoteZoom.ts";
+import { emoteUrl } from "../../../lib/utils/twitchUrl.ts";
 import {
   type UserActions,
   userLink,
@@ -22,8 +23,7 @@ export default function MessageFragment(props: Props) {
   const frag = props.frag;
   switch (frag.type) {
     case "emote": {
-      const url =
-        `https://static-cdn.jtvnw.net/emoticons/v2/${frag.id}/default/dark/1.0`;
+      const url = emoteUrl(frag.id);
       return (
         <img
           src={url}
