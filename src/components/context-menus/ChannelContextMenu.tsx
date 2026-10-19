@@ -6,6 +6,7 @@ import {
   Link2,
   LogOut,
   Megaphone,
+  MessageSquare,
   Pin,
   PinOff,
   Radio,
@@ -43,15 +44,20 @@ import { copyField } from "../../lib/utils/clipboard.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import type { User } from "../../lib/types/index.ts";
 
-type Props = {
-  x: number;
-  y: number;
-  align?: "start" | "center" | "end";
-  ch: User;
-  onClose: () => void;
-  onPin?: (ch: User) => void;
-  onLogout?: () => void;
-};
+/// The rail menu also manages the row itself (unread, Link tab, pin order,
+/// logout); anywhere else the menu only acts on the channel.
+type Props =
+  & {
+    x: number;
+    y: number;
+    align?: "start" | "center" | "end";
+    ch: User;
+    onClose: () => void;
+  }
+  & (
+    | { place: "rail"; onPin?: (ch: User) => void; onLogout?: () => void }
+    | { place: "link"; onOpen?: () => void }
+  );
 
 export default function ChannelContextMenu(props: Props) {
   const url = () => channelUrl(props.ch.login);
@@ -85,18 +91,32 @@ export default function ChannelContextMenu(props: Props) {
           />
         }
       >
-        <MenuItem
-          label="Mark as read"
-          icon={<CheckCheck />}
-          disabled={!unread()}
-          onClick={run(() => {
-            markSeen(props.ch.id);
-            markChannelMentionsRead(props.ch.id);
-          })}
-        />
-        <MenuDivider />
+        <Show when={props.place === "link" && props.onOpen}>
+          {(open) => (
+            <>
+              <MenuItem
+                label="Open chat"
+                icon={<MessageSquare />}
+                onClick={run(open())}
+              />
+              <MenuDivider />
+            </>
+          )}
+        </Show>
+        <Show when={props.place === "rail"}>
+          <MenuItem
+            label="Mark as read"
+            icon={<CheckCheck />}
+            disabled={!unread()}
+            onClick={run(() => {
+              markSeen(props.ch.id);
+              markChannelMentionsRead(props.ch.id);
+            })}
+          />
+          <MenuDivider />
+        </Show>
         <Show
-          when={hasTab()}
+          when={props.place === "rail" && hasTab()}
           fallback={
             <MenuItem
               label="Open in browser"
@@ -138,7 +158,9 @@ export default function ChannelContextMenu(props: Props) {
                 label="Pin"
                 icon={<Pin />}
                 onClick={run(() =>
-                  props.onPin ? props.onPin(props.ch) : pinChannel(props.ch.id)
+                  props.place === "rail" && props.onPin
+                    ? props.onPin(props.ch)
+                    : pinChannel(props.ch.id)
                 )}
               />
             }
@@ -148,14 +170,17 @@ export default function ChannelContextMenu(props: Props) {
               icon={<PinOff />}
               onClick={run(() => unpinChannel(props.ch.id))}
             />
-            <Show when={pinIndex() > 0}>
+            <Show when={props.place === "rail" && pinIndex() > 0}>
               <MenuItem
                 label="Move up"
                 icon={<ArrowUp />}
                 onClick={run(movePin(-1))}
               />
             </Show>
-            <Show when={pinIndex() < pinnedChannels().length - 1}>
+            <Show
+              when={props.place === "rail" &&
+                pinIndex() < pinnedChannels().length - 1}
+            >
               <MenuItem
                 label="Move down"
                 icon={<ArrowDown />}
@@ -196,14 +221,18 @@ export default function ChannelContextMenu(props: Props) {
           data={props.ch}
           onClose={props.onClose}
         />
-        <Show when={props.onLogout}>
-          <MenuDivider />
-          <MenuItem
-            label="Log out"
-            icon={<LogOut />}
-            tone="negative"
-            onClick={run(() => props.onLogout?.())}
-          />
+        <Show when={props.place === "rail" && props.onLogout}>
+          {(logout) => (
+            <>
+              <MenuDivider />
+              <MenuItem
+                label="Log out"
+                icon={<LogOut />}
+                tone="negative"
+                onClick={run(logout())}
+              />
+            </>
+          )}
         </Show>
       </Show>
     </Menu>

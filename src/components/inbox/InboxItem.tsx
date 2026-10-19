@@ -14,10 +14,12 @@ import Avatar from "../ui/Avatar.tsx";
 import Card from "../ui/Card.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import FeedItem from "../feed/FeedItem.tsx";
+import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 
 type Props = {
   mention: Mention;
   onJump: () => void;
+  onOpenChannel: () => void;
   onClear: () => void;
 };
 
@@ -34,25 +36,30 @@ function reasonLabel(reason: MentionReason): string {
 
 export default function InboxItem(props: Props) {
   const m = () => props.mention;
-  const channelAvatar = () => knownUser(m().channelId)?.profileImageUrl;
+  const channel = () => knownUser(m().channelId);
+  const link = createChannelLink(channel, props.onOpenChannel);
 
   return (
     <Card tone={m().unread ? "accent" : "plain"}>
       <header class="flex items-center gap-2 p-2 border-b border-line-soft text-(length:--chat-size)">
         {/* Shrunk like the feed-meta text beside it (0.85em). */}
         <span
-          class="shrink-0 size-(--tile)"
+          class={`shrink-0 size-(--tile) ${link.cursor}`}
           style={{ "--tile": "calc(var(--chat-tile) * 0.85)" }}
+          {...link.handlers}
         >
           <Avatar
-            src={channelAvatar()}
+            src={channel()?.profileImageUrl}
             alt={m().channelName}
             size="fill"
             square
           />
         </span>
         <span class="feed-meta min-w-0 flex flex-col leading-tight">
-          <span class="font-semibold text-ink truncate">
+          <span
+            class={`font-semibold text-ink truncate hover:underline ${link.cursor}`}
+            {...link.handlers}
+          >
             {m().channelName}
           </span>
           <span class="feed-meta text-ink-faint truncate">
@@ -94,6 +101,7 @@ export default function InboxItem(props: Props) {
           highlightMentions={false}
         />
       </div>
+      {link.menu()}
     </Card>
   );
 }

@@ -170,11 +170,7 @@ export function createMessageParts(
     >
       <Show when={!comfortable() && item.source}>
         {(source) => (
-          <SourceChannel
-            source={source()}
-            onOpen={props.onOpenChannel}
-            onContextMenu={props.onUserContextMenu}
-          />
+          <SourceChannel source={source()} onOpen={props.onOpenChannel} />
         )}
       </Show>
     </BadgeBox>
@@ -229,7 +225,6 @@ export function createMessageParts(
       active={active()}
       source={item.source}
       onOpenSource={props.onOpenChannel}
-      onSourceContextMenu={props.onUserContextMenu}
       onShowUserCard={props.onShowUserCard}
       onUserContextMenu={props.onUserContextMenu}
     />

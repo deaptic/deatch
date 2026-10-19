@@ -17,6 +17,7 @@ type Props = {
   y: number;
   onClose: () => void;
   onJump: (channelId: string, messageId: string) => void;
+  onOpenChannel: (channelId: string) => void;
 };
 
 export default function Inbox(props: Props) {
@@ -34,6 +35,11 @@ export default function Inbox(props: Props) {
 
   function jump(m: Mention) {
     props.onJump(m.channelId, m.message.message_id);
+    props.onClose();
+  }
+
+  function openChannel(m: Mention) {
+    props.onOpenChannel(m.channelId);
     props.onClose();
   }
 
@@ -65,12 +71,14 @@ export default function Inbox(props: Props) {
               label="New"
               mentions={unread()}
               onJump={jump}
+              onOpenChannel={openChannel}
               onClear={clear}
             />
             <InboxGroup
               label="Earlier"
               mentions={seen()}
               onJump={jump}
+              onOpenChannel={openChannel}
               onClear={clear}
             />
           </div>

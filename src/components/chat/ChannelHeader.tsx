@@ -1,16 +1,13 @@
 import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
-import { createSignal, Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
 import type { User } from "../../lib/types/index.ts";
-import { onMiddleClick } from "../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Stat from "../ui/Stat.tsx";
-import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
+import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 
 type Props = {
   channel: User;
@@ -21,7 +18,7 @@ export default function ChannelHeader(props: Props) {
   const info = () => channelInfoFor(props.channel.id);
   const title = () => stream()?.title ?? info()?.title ?? "";
   const game = () => stream()?.game.name ?? info()?.game.name ?? "";
-  const [menu, setMenu] = createSignal<{ x: number; y: number } | null>(null);
+  const link = createChannelLink(() => props.channel);
   const name = createCopied();
   const titleCopy = createCopied();
 
@@ -30,30 +27,18 @@ export default function ChannelHeader(props: Props) {
     return s ? formatUptime(s.startedAt, clock.now()) : "";
   };
 
-  const openInBrowser = (ch: User) => openUrl(channelUrl(ch.login));
-
   return (
     <header
       class="h-28 shrink-0 flex items-center gap-4 pl-4 pr-6 border-b border-line-soft"
-      onContextMenu={(e) => {
-        e.preventDefault();
-        setMenu({ x: e.clientX, y: e.clientY });
-      }}
+      {...link.handlers}
     >
-      <span
-        title="Middle-click for browser"
-        class="shrink-0 flex rounded-sm cursor-pointer"
-        onAuxClick={onMiddleClick(() => openInBrowser(props.channel))}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <Avatar
-          src={props.channel.profileImageUrl}
-          alt={props.channel.displayName}
-          size={80}
-          square
-          presence={stream() ? "live" : "offline"}
-        />
-      </span>
+      <Avatar
+        src={props.channel.profileImageUrl}
+        alt={props.channel.displayName}
+        size={80}
+        square
+        presence={stream() ? "live" : "offline"}
+      />
       <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
         <h1
           class={`text-title truncate cursor-pointer transition-colors duration-snap ${
@@ -98,16 +83,7 @@ export default function ChannelHeader(props: Props) {
           </Show>
         </div>
       </div>
-      <Show when={menu()}>
-        {(m) => (
-          <ChannelContextMenu
-            x={m().x}
-            y={m().y}
-            ch={props.channel}
-            onClose={() => setMenu(null)}
-          />
-        )}
-      </Show>
+      {link.menu()}
     </header>
   );
 }

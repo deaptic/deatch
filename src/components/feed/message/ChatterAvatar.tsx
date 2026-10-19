@@ -1,7 +1,6 @@
 import { Show } from "solid-js";
 import type { FeedMessage, UserRef } from "../../../lib/types/index.ts";
 import {
-  type UserAction,
   type UserActions,
   userLink,
   userLinkHover,
@@ -17,7 +16,6 @@ type Props = UserActions & {
   active: boolean;
   source?: FeedMessage["source"];
   onOpenSource?: (channelId: string) => void;
-  onSourceContextMenu?: UserAction;
 };
 
 export default function ChatterAvatar(props: Props) {
@@ -40,7 +38,6 @@ export default function ChatterAvatar(props: Props) {
               source={source()}
               round
               onOpen={props.onOpenSource}
-              onContextMenu={props.onSourceContextMenu}
             />
           </span>
         )}

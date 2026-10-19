@@ -6,6 +6,7 @@ type Props = {
   label: string;
   mentions: Mention[];
   onJump: (m: Mention) => void;
+  onOpenChannel: (m: Mention) => void;
   onClear: (m: Mention) => void;
 };
 
@@ -21,6 +22,7 @@ export default function InboxGroup(props: Props) {
             <InboxItem
               mention={m}
               onJump={() => props.onJump(m)}
+              onOpenChannel={() => props.onOpenChannel(m)}
               onClear={() => props.onClear(m)}
             />
           )}

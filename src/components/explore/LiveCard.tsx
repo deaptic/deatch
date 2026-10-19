@@ -1,17 +1,12 @@
 import { Show } from "solid-js";
 import { MessageSquare } from "lucide-solid";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import type { Stream } from "../../lib/types/index.ts";
 import type { User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
 import * as chatActivity from "../../lib/services/chatActivity.ts";
 import { formatUptime } from "../../lib/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
-import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
@@ -31,14 +26,14 @@ export default function LiveCard(props: Props) {
   const thumbnail = () =>
     `${props.stream.thumbnailUrl}?v=${props.thumbnailVersion}`;
 
+  const link = createChannelLink(channel, () => props.onSelect(channel()));
+
   return (
     <button
       type="button"
-      onClick={() => props.onSelect(channel())}
-      onAuxClick={onMiddleClick(() => openUrl(channelUrl(channel().login)))}
-      onMouseDown={preventAutoscroll}
+      {...link.handlers}
       title="Open chat · middle-click for browser"
-      class="group flex flex-col text-left bg-surface rounded-lg overflow-hidden border border-transparent [[data-theme=light]_&]:border-line-soft transition-colors duration-snap hover:bg-raised cursor-pointer"
+      class={`group flex flex-col text-left bg-surface rounded-lg overflow-hidden border border-transparent [[data-theme=light]_&]:border-line-soft transition-colors duration-snap hover:bg-raised ${link.cursor}`}
     >
       <Artwork src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">
@@ -77,6 +72,7 @@ export default function LiveCard(props: Props) {
           </p>
         </div>
       </div>
+      {link.menu()}
     </button>
   );
 }

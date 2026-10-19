@@ -1,0 +1,57 @@
+import { Show } from "solid-js";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import type { User } from "../../lib/types/index.ts";
+import {
+  onMiddleClick,
+  preventAutoscroll,
+} from "../../lib/utils/middleClick.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import { createPopover } from "../chat/createPopover.ts";
+import ChannelContextMenu from "./ChannelContextMenu.tsx";
+
+/// The one way a channel responds to the mouse: left opens its chat, right
+/// its channel menu, middle the channel in the browser. Spread `handlers` on
+/// the element and render `menu()` beside it.
+export function createChannelLink(
+  channel: () => User | undefined,
+  onOpen?: () => void,
+) {
+  const popover = createPopover<{ ch: User }>();
+
+  const handlers = {
+    onClick: (e: MouseEvent) => {
+      if (!onOpen) return;
+      e.stopPropagation();
+      onOpen();
+    },
+    onContextMenu: (e: MouseEvent) => {
+      const ch = channel();
+      if (!ch) return;
+      e.preventDefault();
+      e.stopPropagation();
+      popover.open(e.clientX, e.clientY, { ch });
+    },
+    onAuxClick: onMiddleClick(() => {
+      const ch = channel();
+      if (ch) void openUrl(channelUrl(ch.login));
+    }),
+    onMouseDown: preventAutoscroll,
+  };
+
+  const menu = () => (
+    <Show when={popover.state()}>
+      {(m) => (
+        <ChannelContextMenu
+          x={m().x}
+          y={m().y}
+          ch={m().ch}
+          place="link"
+          onOpen={onOpen}
+          onClose={popover.close}
+        />
+      )}
+    </Show>
+  );
+
+  return { handlers, menu, cursor: onOpen ? "cursor-pointer" : "" };
+}

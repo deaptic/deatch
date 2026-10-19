@@ -281,7 +281,9 @@ export default function Chat(props: Props) {
           </Show>
         }
       >
-        {(raid) => <RaidBanner raid={raid()} />}
+        {(raid) => (
+          <RaidBanner raid={raid()} onOpenChannel={props.onOpenChannel} />
+        )}
       </Show>
       <Feed
         broadcasterId={props.broadcasterId}
