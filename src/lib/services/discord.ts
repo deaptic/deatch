@@ -53,7 +53,7 @@ async function disconnect(): Promise<void> {
 }
 
 // Discord throttles activity updates server-side (~5 per 20s). Debounce
-// rapid changes — e.g. quickly cycling channels with Alt+Arrow.
+// rapid changes — e.g. quickly cycling channels with Ctrl+Tab.
 const UPDATE_DEBOUNCE_MS = 1500;
 
 function scheduleActivity(activity: DiscordActivity): void {

@@ -29,4 +29,17 @@ Deno.test("labels each key of a combo for display", () => {
   assertEquals(keyLabels("enter"), ["Enter"]);
   assertEquals(keyLabels("ctrl-,"), ["Ctrl", ","]);
   assertEquals(keyLabels("ctrl--"), ["Ctrl", "-"]);
+  assertEquals(keyLabels("ctrl-shift-tab"), ["Ctrl", "Shift", "Tab"]);
+  assertEquals(keyLabels("ctrl-pagedown"), ["Ctrl", "PgDn"]);
+});
+
+Deno.test("names page and tab combos the way the keymap writes them", () => {
+  assertEquals(
+    comboFor(key({ key: "PageDown", ctrlKey: true })),
+    "ctrl-pagedown",
+  );
+  assertEquals(
+    comboFor(key({ key: "Tab", ctrlKey: true, shiftKey: true })),
+    "ctrl-shift-tab",
+  );
 });
