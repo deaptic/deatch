@@ -87,10 +87,11 @@ primitives live in `src/components/ui/` and feature code composes them without
 restyling. A missing look is a new variant on the primitive.
 
 Tooltips are the app's own, never the native `title`: an element carries
-`data-tip` and one host shows it after a short delay, above the element (below
-near the top of the window). A tip only says what is not already on screen: the
-name of an icon or image, a full date, hidden detail. Visible labels and usage
-hints get none. Icon-only controls also carry an `aria-label`.
+`data-tip` and one host shows it after a short delay, above the element, or
+below it when above would reach the title bar; tips never cover the title bar. A
+tip only says what is not already on screen: the name of an icon or image, a
+full date, hidden detail. Visible labels and usage hints get none. Icon-only
+controls also carry an `aria-label`.
 
 Overlays are `overlay` with a 1px `line`, open 4px below what opened them (8px
 when beside it or above it, as tooltips and rail popovers are), stay inside an
@@ -135,11 +136,11 @@ message. Notes start where the message text starts.
 There are two layouts. Default (compact in code) is one line per message with an
 optional timestamp column. Spacious (comfortable in code) groups a chatter's
 messages (same chatter, within seven minutes of the group's first message, same
-day, same shared chat channel, nothing between) under one header with a tile in a gutter; the tile sits
-centred on the first two lines of every row. Replies, holds, cheers, rewards,
-and first messages always start a group. The gap before each group is the user's
-group spacing. Every feed and the settings preview follow the user's text size,
-group spacing, zoom, and density.
+day, same shared chat channel, nothing between) under one header with a tile in
+a gutter; the tile sits centred on the first two lines of every row. Replies,
+holds, cheers, rewards, and first messages always start a group. The gap before
+each group is the user's group spacing. Every feed and the settings preview
+follow the user's text size, group spacing, zoom, and density.
 
 The chatter tile shows the chatter's Twitch avatar, fading in once it has loaded
 (at once when the browser already has it). While the chatter is being looked up
