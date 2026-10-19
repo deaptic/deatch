@@ -13,6 +13,7 @@ import {
   searchChannels,
 } from "../../lib/api/twitch/search.ts";
 import * as users from "../../lib/services/users.ts";
+import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
@@ -79,26 +80,22 @@ export default function SearchResults(props: Props) {
     }
   }
 
-  const [active, setActive] = createSignal(-1);
   const rows: HTMLButtonElement[] = [];
-
-  createEffect(() => {
-    ranked();
-    setActive(-1);
+  const { active, setActive, move } = createListNavigation({
+    count: () => ranked().length,
+    rowAt: (i) => rows[i],
   });
 
   createEffect(() => {
-    if (active() >= 0) rows[active()]?.scrollIntoView({ block: "nearest" });
+    ranked();
+    setActive(0);
   });
 
   onMount(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
-        setActive((i) => Math.min(i + 1, ranked().length - 1));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setActive((i) => Math.max(i - 1, 0));
+        move(e.key === "ArrowDown" ? 1 : -1);
       } else if (e.key === "Enter") {
         e.preventDefault();
         const channel = ranked()[active()];
@@ -172,10 +169,7 @@ export default function SearchResults(props: Props) {
                     {...link.handlers}
                     onMouseMove={() => setActive(index())}
                     class={`flex items-center gap-3 h-14 rounded-sm px-3 text-left transition-colors duration-snap ${link.cursor}`}
-                    classList={{
-                      "bg-raised": active() === index(),
-                      "hover:bg-surface": active() !== index(),
-                    }}
+                    classList={{ "bg-raised": active() === index() }}
                   >
                     <Avatar
                       src={channel.profileImageUrl}

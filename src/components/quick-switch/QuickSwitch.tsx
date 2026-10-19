@@ -11,6 +11,7 @@ import {
 } from "solid-js";
 import { Portal } from "solid-js/web";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
+import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
@@ -59,7 +60,6 @@ function matches(u: User, q: string): boolean {
 export default function QuickSwitch(props: Props) {
   captureFocusForRestore();
   const [query, setQuery] = createSignal("");
-  const [active, setActive] = createSignal(0);
   const [searching, setSearching] = createSignal(false);
   let inputRef: HTMLInputElement | undefined;
 
@@ -73,23 +73,13 @@ export default function QuickSwitch(props: Props) {
     return out;
   });
 
-  // Only typing resets the highlight; the live poll must not move it.
-  createEffect(on(query, () => setActive(0)));
-
-  createEffect(() => {
-    const idx = active();
-    queueMicrotask(() => {
-      document
-        .querySelector<HTMLElement>(`[data-switch-index="${idx}"]`)
-        ?.scrollIntoView({ block: "nearest" });
-    });
+  const { active, setActive, move } = createListNavigation({
+    count: () => rows().length,
+    rowAt: (i) => document.querySelector(`[data-switch-index="${i}"]`),
   });
 
-  function move(delta: number) {
-    const n = rows().length;
-    if (n === 0) return;
-    setActive((i) => (i + delta + n) % n);
-  }
+  // Only typing resets the highlight; the live poll must not move it.
+  createEffect(on(query, () => setActive(0)));
 
   async function open(row: Row, pin: boolean) {
     if (row.kind === "channel") {

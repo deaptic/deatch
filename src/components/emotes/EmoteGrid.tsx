@@ -11,6 +11,7 @@ type Props = {
     opts?: { keepOpen?: boolean },
   ) => void;
   onToggleFavorite: (item: EmoteGridItem) => void;
+  onHover: (index: number) => void;
   startIndex: number;
   activeIndex: number;
 };
@@ -29,6 +30,7 @@ export default function EmoteGrid(props: Props) {
               // Not `disabled`: that would also swallow the right-click unfavourite.
               aria-disabled={item.disabled}
               onMouseDown={(e) => e.preventDefault()}
+              onMouseMove={() => props.onHover(idx())}
               onClick={(e) =>
                 !item.disabled &&
                 props.onSelect(item.value, idx(), { keepOpen: e.shiftKey })}
@@ -39,7 +41,7 @@ export default function EmoteGrid(props: Props) {
               } ${
                 active()
                   ? "bg-accent-soft outline outline-2 -outline-offset-2 outline-accent"
-                  : "hover:bg-raised"
+                  : ""
               }`}
             >
               <img

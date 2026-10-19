@@ -3,12 +3,12 @@ import {
   createSignal,
   For,
   type JSX,
-  on,
   onCleanup,
   Show,
 } from "solid-js";
 import { Check, ChevronDown, X } from "lucide-solid";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
+import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import Field from "./Field.tsx";
 
 type Props = {
@@ -26,13 +26,16 @@ export default function Combobox(props: Props) {
   const [open, setOpen] = createSignal(false);
   const [query, setQuery] = createSignal("");
   const [typed, setTyped] = createSignal(false);
-  const [active, setActive] = createSignal(0);
   let input: HTMLInputElement | undefined;
   let list: HTMLDivElement | undefined;
 
   const text = () => (props.value ? props.label(props.value) : "");
   const shown = () =>
     typed() && query().trim() ? props.search(query()) : props.options;
+  const { active, setActive, move } = createListNavigation({
+    count: () => shown().length,
+    rowAt: (i) => list?.children[i],
+  });
 
   function show() {
     if (open()) return;
@@ -52,16 +55,6 @@ export default function Combobox(props: Props) {
     props.onChange(value);
     hide();
   }
-
-  function move(step: number) {
-    const count = shown().length;
-    if (count === 0) return;
-    setActive((i) => (i + step + count) % count);
-  }
-
-  createEffect(on(active, () => {
-    list?.children[active()]?.scrollIntoView({ block: "nearest" });
-  }));
 
   createEffect(() => {
     if (open()) onCleanup(shortcuts.registerLocal("escape", hide));

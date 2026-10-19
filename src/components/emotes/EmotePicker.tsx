@@ -26,6 +26,7 @@ import NavItem from "../ui/NavItem.tsx";
 import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import type { EmoteGridItem } from "./types.ts";
 import {
   emojiUrl,
@@ -56,7 +57,6 @@ export default function EmotePicker(props: Props) {
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
   const [bottomOffset, setBottomOffset] = createSignal(64);
-  const [activeIndex, setActiveIndex] = createSignal(0);
   let panelRef: HTMLDivElement | undefined;
   let searchRef: HTMLInputElement | undefined;
 
@@ -149,6 +149,14 @@ export default function EmotePicker(props: Props) {
   const totalItems = createMemo(() =>
     sections().reduce((n, s) => n + s.items.length, 0)
   );
+  const {
+    active: activeIndex,
+    setActive: setActiveIndex,
+    move,
+  } = createListNavigation({
+    count: totalItems,
+    rowAt: (i) => panelRef?.querySelector(`[data-emote-index="${i}"]`),
+  });
 
   const activeItem = createMemo<EmoteGridItem | undefined>(() => {
     const idx = activeIndex();
@@ -163,19 +171,6 @@ export default function EmotePicker(props: Props) {
     tab();
     search();
     setActiveIndex(0);
-  });
-
-  createEffect(() => {
-    setActiveIndex((idx) => Math.min(idx, Math.max(0, totalItems() - 1)));
-  });
-
-  createEffect(() => {
-    const idx = activeIndex();
-    queueMicrotask(() => {
-      panelRef
-        ?.querySelector<HTMLElement>(`[data-emote-index="${idx}"]`)
-        ?.scrollIntoView({ block: "nearest" });
-    });
   });
 
   // Favourites lead the list, so a cursor past them moves by however much
@@ -195,12 +190,8 @@ export default function EmotePicker(props: Props) {
   onMount(() => {
     queueMicrotask(() => searchRef?.focus());
     const unbind = shortcuts.bindScope("emotePickerOpen", {
-      left: () => {
-        setActiveIndex(Math.max(activeIndex() - 1, 0));
-      },
-      right: () => {
-        setActiveIndex(Math.min(activeIndex() + 1, totalItems() - 1));
-      },
+      left: () => move(-1),
+      right: () => move(1),
       up: () => moveVertical(-1),
       down: () => moveVertical(1),
       tab: () => cycleTab(1),
@@ -255,6 +246,7 @@ export default function EmotePicker(props: Props) {
         props.onSelect(value, opts);
       }}
       onToggleFavorite={onToggleFavorite}
+      onHover={setActiveIndex}
       startIndex={section.startIndex}
       activeIndex={activeIndex()}
     />
