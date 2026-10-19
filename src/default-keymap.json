@@ -7,7 +7,7 @@
   "ctrl-up": ["channel::cyclePrev"],
   "ctrl-m": ["link::toggleMute"],
   "ctrl-shift-m": ["link::muteOthers"],
-  "ctrl-alt-m": ["link::toggleMuteAll"],
+  "ctrl-shift-d": ["link::toggleMuteAll"],
   "alt-w": ["link::toggle"],
   "alt-f": ["link::toggleAudioLink"],
   "ctrl-,": ["settings::toggle"],
