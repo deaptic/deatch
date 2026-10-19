@@ -118,7 +118,9 @@ export default function RailRow(props: Props) {
         </span>
       </button>
       <Show when={tip() && props.tooltip}>
-        <Tooltip x={tip()!.x} y={tip()!.y}>{props.tooltip}</Tooltip>
+        <Tooltip side="right" x={tip()!.x} y={tip()!.y}>
+          {props.tooltip}
+        </Tooltip>
       </Show>
     </>
   );

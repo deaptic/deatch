@@ -64,7 +64,7 @@ export default function NavItem(props: Props) {
       </button>
       <Show when={tip()}>
         {(t) => (
-          <Tooltip x={t().x} y={t().y}>
+          <Tooltip side="right" x={t().x} y={t().y}>
             <p class="font-semibold whitespace-nowrap">{props.label}</p>
           </Tooltip>
         )}

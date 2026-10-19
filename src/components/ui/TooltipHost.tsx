@@ -1,20 +1,13 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
-import Tooltip from "./Tooltip.tsx";
+import Tooltip, { type TooltipPlace } from "./Tooltip.tsx";
 import { SIDE_GAP } from "./Popover.tsx";
 
 const DELAY_MS = 300;
-/// Below this much room above the element the tip opens beneath it instead.
-const ROOM_ABOVE = 64;
 /// Wider elements (a stream title, a header line) anchor the tip at the
 /// pointer, since their centre can be far from it.
 const CENTRED_UP_TO = 120;
 
-type Tip = {
-  text: string;
-  x: number;
-  y: number;
-  placement: "above" | "below";
-};
+type Tip = TooltipPlace & { text: string };
 
 /// Shows `data-tip` on any hovered element after a short delay, in place of
 /// the native `title` tooltip. One delegated listener serves the whole app.
@@ -34,12 +27,12 @@ export default function TooltipHost() {
     const text = el.dataset.tip;
     if (!text || !el.isConnected) return;
     const r = el.getBoundingClientRect();
-    const above = r.top >= ROOM_ABOVE;
     setTip({
       text,
+      side: "over",
       x: r.width <= CENTRED_UP_TO ? r.left + r.width / 2 : pointerX,
-      y: above ? r.top - SIDE_GAP : r.bottom + SIDE_GAP,
-      placement: above ? "above" : "below",
+      above: r.top - SIDE_GAP,
+      below: r.bottom + SIDE_GAP,
     });
   }
 
@@ -83,11 +76,7 @@ export default function TooltipHost() {
 
   return (
     <Show when={tip()}>
-      {(t) => (
-        <Tooltip x={t().x} y={t().y} placement={t().placement}>
-          {t().text}
-        </Tooltip>
-      )}
+      {(t) => <Tooltip {...t()}>{t().text}</Tooltip>}
     </Show>
   );
 }
