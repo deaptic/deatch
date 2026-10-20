@@ -15,11 +15,18 @@
       }
     }
   },
-  "permissions": ["tabs", "nativeMessaging"],
+  "permissions": ["tabs", "nativeMessaging", "storage"],
   "background": {
     "scripts": ["background.js"],
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://www.twitch.tv/*"],
+      "js": ["compressor.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"

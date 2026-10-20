@@ -73,6 +73,7 @@ export const commands = {
 	linkSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("link_set_muted", { params }),
 	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
+	linkSetAudio: (params: SetAudioParams) => __TAURI_INVOKE<null>("link_set_audio", { params }),
 	linkRequestState: () => __TAURI_INVOKE<null>("link_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
 	setHardwareAcceleration: (params: SetHardwareAccelerationParams) => __TAURI_INVOKE<null>("set_hardware_acceleration", { params }),
@@ -244,6 +245,19 @@ export type CheermoteTier = {
 	light: CheermoteImage,
 };
 
+/**
+ *  The compressor's controls as the listener sets them: threshold and gain in
+ *  dB, ratio as N:1, attack and release in milliseconds. The extension clamps
+ *  each to its range.
+ */
+export type Compressor = {
+	threshold: number | null,
+	ratio: number | null,
+	attack: number | null,
+	release: number | null,
+	gain: number | null,
+};
+
 export type ConnectionState = "connecting" | "up" | "lost";
 
 export type ConnectionStats = {
@@ -378,6 +392,8 @@ export type LinkDisconnected = null;
 export type LinkState = {
 	channels: LinkChannel[],
 	current: string | null,
+	/**  The extension can process audio (`set_audio`); older ones leave it out. */
+	audio?: boolean,
 };
 
 export type ManageHeldAutomodMessageParams = {
@@ -495,6 +511,16 @@ export type SendMessageResult = {
 
 /**  Twitch rejected the stored token for good (revoked, password changed). */
 export type SessionEnded = null;
+
+/**
+ *  Audio processing for the Twitch tabs: the compressor, on or off with its
+ *  controls, and a gain per channel login (1 is unchanged).
+ */
+export type SetAudioParams = {
+	enabled: boolean,
+	compressor: Compressor,
+	gains: { [key in string]: number | null },
+};
 
 export type SetChannelsParams = {
 	channels: ChannelFocus[],

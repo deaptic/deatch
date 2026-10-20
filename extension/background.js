@@ -80,7 +80,8 @@ function buildState() {
     : null;
   const current = activeCh ?? tabChannels.get(mostRecentTwitchTab()) ?? null;
 
-  return { type: "state", channels, current };
+  // `audio`: supports set_audio.
+  return { type: "state", channels, current, audio: true };
 }
 
 function emitState() {
@@ -146,15 +147,24 @@ async function closeChannel(channel) {
   );
 }
 
+// compressor.js in each Twitch tab picks the settings up from storage and
+// checks them itself.
+function setAudio({ enabled, compressor, gains }) {
+  return chrome.storage.local.set({ audio: { enabled, compressor, gains } });
+}
+
 const COMMANDS = {
   get_state: () => {
     lastStateKey = "";
     emitState();
   },
+  set_audio: setAudio,
   set_muted: (msg) => applyMute(msg.channel, !!msg.muted),
   focus: (msg) => focusChannel(msg.channel),
   close: (msg) => closeChannel(msg.channel),
 };
+/// Commands for the whole browser; every other one names a channel.
+const BROWSER_COMMANDS = new Set(["get_state", "set_audio"]);
 
 function scheduleReconnect() {
   clearTimeout(reconnectTimer);
@@ -180,7 +190,7 @@ function connect() {
     if (!run) return;
     if (typeof msg.channel === "string") {
       msg.channel = msg.channel.toLowerCase();
-    } else if (msg.type !== "get_state") return;
+    } else if (!BROWSER_COMMANDS.has(msg.type)) return;
     void run(msg);
   });
   lastStateKey = "";

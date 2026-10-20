@@ -9,6 +9,13 @@ import {
   type UiDensity,
   ZOOM_STOPS,
 } from "../../constants/accessibility.ts";
+import {
+  clampControl,
+  COMPRESSOR_CONTROLS,
+  type CompressorSettings,
+  DEFAULT_COMPRESSOR,
+  MAX_CHANNEL_GAIN,
+} from "../../constants/audio.ts";
 import defaults from "../default-preferences.json" with { type: "json" };
 
 export type EventPref = { show: boolean };
@@ -80,6 +87,10 @@ export type UserPreferences = {
   };
   link: {
     audioLink: boolean;
+    compressor: boolean;
+    compressorSettings: CompressorSettings;
+    /// Gain in percent by channel login; channels at 100% are left out.
+    channelGains: Record<string, number>;
   };
   menu: {
     channels: {
@@ -92,7 +103,11 @@ export type UserPreferences = {
   triggers: Trigger[];
 };
 
-export const DEFAULT_PREFERENCES = defaults as UserPreferences;
+// The compressor's defaults live with its ranges in constants/audio.ts.
+export const DEFAULT_PREFERENCES: UserPreferences = {
+  ...defaults,
+  link: { ...defaults.link, compressorSettings: DEFAULT_COMPRESSOR },
+} as UserPreferences;
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
@@ -157,6 +172,32 @@ function sanitizeTriggers(raw: unknown): Trigger[] {
       action: t.action === "send" ? "send" : "reply",
       response: typeof t.response === "string" ? t.response : "",
     });
+  }
+  return out;
+}
+
+function sanitizeCompressor(raw: unknown): CompressorSettings {
+  const stored = (raw && typeof raw === "object" ? raw : {}) as Record<
+    string,
+    unknown
+  >;
+  const out = { ...DEFAULT_COMPRESSOR };
+  for (const control of COMPRESSOR_CONTROLS) {
+    const value = stored[control];
+    if (typeof value === "number" && Number.isFinite(value)) {
+      out[control] = clampControl(control, value);
+    }
+  }
+  return out;
+}
+
+function sanitizeChannelGains(raw: unknown): Record<string, number> {
+  if (!raw || typeof raw !== "object") return {};
+  const out: Record<string, number> = {};
+  for (const [login, gain] of Object.entries(raw)) {
+    if (typeof gain === "number" && Number.isFinite(gain)) {
+      out[login] = Math.round(Math.min(MAX_CHANNEL_GAIN, Math.max(0, gain)));
+    }
   }
   return out;
 }
@@ -277,6 +318,12 @@ export function sanitize(raw: unknown): UserPreferences {
         stored.link?.audioLink,
         DEFAULT_PREFERENCES.link.audioLink,
       ),
+      compressor: bool(
+        stored.link?.compressor,
+        DEFAULT_PREFERENCES.link.compressor,
+      ),
+      compressorSettings: sanitizeCompressor(stored.link?.compressorSettings),
+      channelGains: sanitizeChannelGains(stored.link?.channelGains),
     },
     menu: {
       channels: { pinned },

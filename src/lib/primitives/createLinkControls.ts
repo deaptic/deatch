@@ -8,7 +8,12 @@ import {
   setLinkSynced,
 } from "../stores/view.ts";
 import { linkedChannel, linkWarmedChannels } from "../stores/link.ts";
-import { linkAudioLink } from "../stores/preferences.ts";
+import {
+  compressorSettings,
+  linkAudioLink,
+  linkChannelGains,
+  linkCompressor,
+} from "../stores/preferences.ts";
 import * as link from "../services/link.ts";
 
 export type LinkControls = {
@@ -21,6 +26,10 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
     on(linkedChannel, (wc) => {
       if (linkSynced() && wc) nav.selectChannel(wc);
     }, { defer: true }),
+  );
+
+  createEffect(() =>
+    link.sendAudio(linkCompressor(), compressorSettings(), linkChannelGains())
   );
 
   // With audio linked while synced, only the shown tab plays.

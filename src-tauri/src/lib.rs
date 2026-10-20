@@ -97,6 +97,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             link::commands::link_set_muted,
             link::commands::link_focus,
             link::commands::link_close,
+            link::commands::link_set_audio,
             link::commands::link_request_state,
             notifications::commands::set_mentions_badge,
             graphics::commands::set_hardware_acceleration,

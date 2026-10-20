@@ -2,8 +2,9 @@
 
 Bridges the [Deatch desktop app](https://github.com/Deaptic/deatch) with your
 browser's open Twitch tabs — so its **Link** view can follow what you're
-watching, and you can mute background streams from inside Deatch without
-alt-tabbing.
+watching, you can mute background streams from inside Deatch without
+alt-tabbing, and an optional compressor and per-channel volume can even out how
+loud each stream plays.
 
 ## How it works
 
@@ -13,20 +14,23 @@ desktop app over
 [native messaging](https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)
 — no network, no localhost server, no firewall prompts.
 
-Deatch can also send commands back: toggle mute on a tab, or pull a fresh state
-dump when the app starts.
+Deatch can also send commands back: toggle mute on a tab, set the compressor and
+each channel's volume, or pull a fresh state dump when the app starts.
 
 ## Permissions
 
-| Permission        | Why                                                                                |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| `tabs`            | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
-| `nativeMessaging` | Talk to the Deatch desktop app over a local pipe.                                  |
+| Permission          | Why                                                                                |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| `tabs`              | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
+| `nativeMessaging`   | Talk to the Deatch desktop app over a local pipe.                                  |
+| `storage`           | Keep the compressor and channel volume settings for your Twitch tabs.              |
+| Access to twitch.tv | Route the Twitch player's audio through the compressor and channel volume.         |
 
-The extension does **not** read chat, modify pages, send data to any third
-party, or talk to the network. The only data it transmits is your open channel
-slugs and per-tab mute state, and only to the locally installed Deatch desktop
-app.
+The extension does **not** read chat, change what pages show, send data to any
+third party, or talk to the network. On twitch.tv it only processes the player's
+audio, and only while you have the compressor or a channel volume turned on in
+Deatch. The only data it transmits is your open channel slugs and per-tab mute
+state, and only to the locally installed Deatch desktop app.
 
 ## Requirements
 

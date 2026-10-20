@@ -6,13 +6,20 @@ import {
   linkWarmedChannels,
   setLinkConnected,
   setLinkedChannel,
+  setLinkHasAudio,
   setLinkMutedByLogin,
   setLinkWarmedChannels,
 } from "../stores/link.ts";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { linkClose, linkFocus, linkSetMuted } from "../api/link.ts";
+import {
+  linkClose,
+  linkFocus,
+  linkSetAudio,
+  linkSetMuted,
+} from "../api/link.ts";
 import { channelUrl } from "../utils/twitchUrl.ts";
+import type { CompressorSettings } from "../constants/audio.ts";
 import { getStreamsFromIds } from "../api/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
@@ -98,6 +105,30 @@ export function closeTab(): boolean {
     console.warn("browser tab not closed", e)
   );
   return true;
+}
+
+/// A dragged volume slider changes the settings every few milliseconds; they
+/// go out at most this often, the latest ones last.
+const AUDIO_SEND_MS = 50;
+let audioTimer: number | undefined;
+let audioPending: Parameters<typeof linkSetAudio> | null = null;
+
+/// Channel gains go out as factors (1 is unchanged), not percent.
+export function sendAudio(
+  enabled: boolean,
+  compressor: CompressorSettings,
+  gains: Record<string, number>,
+) {
+  const factors = Object.fromEntries(
+    Object.entries(gains).map(([login, percent]) => [login, percent / 100]),
+  );
+  audioPending = [enabled, { ...compressor }, factors];
+  audioTimer ??= window.setTimeout(() => {
+    audioTimer = undefined;
+    linkSetAudio(...audioPending!).catch((e) =>
+      console.warn("audio settings not sent", e)
+    );
+  }, AUDIO_SEND_MS);
 }
 
 export function anyUnmuted(): boolean {
@@ -201,8 +232,9 @@ async function drainPending() {
   }
 }
 
-export async function applyState({ channels, current }: LinkState) {
+export async function applyState({ channels, current, audio }: LinkState) {
   setLinkConnected(true);
+  setLinkHasAudio(audio === true);
 
   const muted: Record<string, boolean> = {};
   for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
@@ -225,6 +257,7 @@ export async function applyState({ channels, current }: LinkState) {
 
 export function disconnect() {
   setLinkConnected(false);
+  setLinkHasAudio(false);
   pendingFetch.clear();
   pendingCurrent = null;
   window.clearTimeout(retryTimer);

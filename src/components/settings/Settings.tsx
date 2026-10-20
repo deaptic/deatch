@@ -1,5 +1,6 @@
 import {
   Ban,
+  Eye,
   Keyboard,
   Megaphone,
   Palette,
@@ -21,12 +22,14 @@ import AppearanceSection from "./sections/AppearanceSection.tsx";
 import KeyboardSection from "./sections/KeyboardSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
 import TriggersSection from "./sections/TriggersSection.tsx";
+import LinkSection from "./sections/LinkSection.tsx";
 
 type SectionKey =
   | "notifications"
   | "moderation"
   | "triggers"
   | "appearance"
+  | "link"
   | "keyboard"
   | "advanced";
 
@@ -48,6 +51,7 @@ const SECTIONS: {
     Icon: Palette,
     Section: AppearanceSection,
   },
+  { key: "link", label: "Link", Icon: Eye, Section: LinkSection },
   {
     key: "moderation",
     label: "Moderation",

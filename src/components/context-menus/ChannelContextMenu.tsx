@@ -20,6 +20,7 @@ import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
+import TabVolume from "./TabVolume.tsx";
 import {
   advancedDeveloperMode,
   pinChannel,
@@ -27,7 +28,11 @@ import {
   reorderPinnedChannels,
   unpinChannel,
 } from "../../lib/stores/preferences.ts";
-import { linkMutedByLogin, linkWarmedChannels } from "../../lib/stores/link.ts";
+import {
+  linkHasAudio,
+  linkMutedByLogin,
+  linkWarmedChannels,
+} from "../../lib/stores/link.ts";
 import { linkClose, linkFocus } from "../../lib/api/link.ts";
 import * as link from "../../lib/services/link.ts";
 import { hasUnread, markSeen } from "../../lib/stores/feeds.ts";
@@ -155,6 +160,10 @@ export default function ChannelContextMenu(props: Props) {
               : undefined}
             onClick={run(() => linkClose(props.ch.login))}
           />
+          <Show when={linkHasAudio()}>
+            <MenuDivider />
+            <TabVolume login={props.ch.login} />
+          </Show>
         </Show>
 
         <MenuDivider />
