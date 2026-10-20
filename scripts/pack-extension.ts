@@ -12,7 +12,7 @@ import { nextVersion } from "./version.ts";
 
 const SRC = "extension";
 const OUT = `${SRC}/dist`;
-const FILES = ["background.js", "icons"];
+const FILES = ["background.js", "compressor.js", "icons"];
 
 const CHROME_ONLY = ["minimum_chrome_version"];
 const FIREFOX_ONLY = ["browser_specific_settings"];

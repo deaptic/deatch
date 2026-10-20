@@ -105,6 +105,10 @@ attached below and selects the text so typing filters it; one row is always
 highlighted, arrows and hover move it, Enter picks it; focus never leaves the
 field; Escape, Tab, or clicking away close it unchanged.
 
+A value on a range is a `StopSlider` when it snaps to a few labelled choices
+(text size, zoom), or a `Slider` when it is continuous and changes live while
+dragging (a volume); a `Slider`'s value shows next to it, where it fits.
+
 Fading means unusable: 40% for anything that can't be used or is finished
 (disabled controls, resolved AutoMod holds, a dragged rail row). Something
 switched off but still editable is not faded; its state shows in its own
@@ -162,10 +166,9 @@ Everything reachable by mouse has a key; bindings live in
 `src/default-keymap.json` and show in tooltips and Settings → Keyboard. Ctrl
 acts on channels and their browser tabs, like a browser's tab keys; Alt toggles
 app-wide modes. Never Ctrl+Alt: on many layouts it is AltGr and types a
-character instead.
-`:focus-visible` draws a 2px `accent` outline; text fields show focus through
-their border; mouse clicks never show the outline. Focus returns to the composer
-when an overlay closes.
+character instead. `:focus-visible` draws a 2px `accent` outline; text fields
+show focus through their border; mouse clicks never show the outline. Focus
+returns to the composer when an overlay closes.
 
 ## Voice
 

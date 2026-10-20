@@ -12,12 +12,36 @@ const ACCEPT_RETRY: Duration = Duration::from_secs(1);
 /// reading its pipe must not block every other browser forever.
 const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 
+/// The compressor's controls as the listener sets them: threshold and gain in
+/// dB, ratio as N:1, attack and release in milliseconds. The extension clamps
+/// each to its range.
+#[derive(Clone, Serialize, Deserialize, specta::Type)]
+pub struct Compressor {
+    pub threshold: f64,
+    pub ratio: f64,
+    pub attack: f64,
+    pub release: f64,
+    pub gain: f64,
+}
+
 #[derive(Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum HostCommand {
-    SetMuted { channel: String, muted: bool },
-    Focus { channel: String },
-    Close { channel: String },
+    SetMuted {
+        channel: String,
+        muted: bool,
+    },
+    Focus {
+        channel: String,
+    },
+    Close {
+        channel: String,
+    },
+    SetAudio {
+        enabled: bool,
+        compressor: Compressor,
+        gains: BTreeMap<String, f64>,
+    },
     GetState,
 }
 
@@ -50,6 +74,44 @@ struct Connected {
     hosts: BTreeMap<u64, Host>,
     next_id: u64,
     reports: u64,
+    /// The last `set_audio`, replayed to each browser as it connects.
+    audio: Option<Vec<u8>>,
+}
+
+fn encode(command: &HostCommand) -> std::io::Result<Vec<u8>> {
+    let mut payload = serde_json::to_vec(command)?;
+    payload.push(b'\n');
+    Ok(payload)
+}
+
+async fn write(writer: &mut HostWriter, payload: &[u8]) -> bool {
+    use tokio::io::AsyncWriteExt;
+    match tokio::time::timeout(WRITE_TIMEOUT, writer.write_all(payload)).await {
+        Ok(Ok(())) => true,
+        Ok(Err(e)) => {
+            log::warn!("ipc write failed: {e}");
+            false
+        }
+        Err(_) => {
+            log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}");
+            false
+        }
+    }
+}
+
+impl Connected {
+    /// Writes to every browser, dropping any that stopped reading.
+    async fn broadcast(&mut self, payload: &[u8]) {
+        let mut broken = Vec::new();
+        for (id, host) in self.hosts.iter_mut() {
+            if !write(&mut host.writer, payload).await {
+                broken.push(*id);
+            }
+        }
+        for id in broken {
+            self.hosts.remove(&id);
+        }
+    }
 }
 
 #[derive(Clone, Default)]
@@ -59,38 +121,45 @@ impl Hosts {
     /// Every browser gets every command; the extension ignores channels it has
     /// no tab for.
     pub async fn send(&self, command: &HostCommand) -> std::io::Result<()> {
-        use tokio::io::AsyncWriteExt;
         let mut connected = self.0.lock().await;
-        let hosts = &mut connected.hosts;
-        if hosts.is_empty() {
+        if connected.hosts.is_empty() {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::NotConnected,
                 "host not connected",
             ));
         }
-        let mut payload = serde_json::to_vec(command)?;
-        payload.push(b'\n');
-        let mut broken = Vec::new();
-        for (id, host) in hosts.iter_mut() {
-            match tokio::time::timeout(WRITE_TIMEOUT, host.writer.write_all(&payload)).await {
-                Ok(Ok(())) => continue,
-                Ok(Err(e)) => log::warn!("ipc write failed, dropping host: {e}"),
-                Err(_) => log::warn!("ipc write timed out after {WRITE_TIMEOUT:?}, dropping host"),
-            }
-            broken.push(*id);
-        }
-        for id in broken {
-            hosts.remove(&id);
-        }
+        connected.broadcast(&encode(command)?).await;
+        Ok(())
+    }
+
+    /// Audio settings outlive connections: they are kept and replayed to each
+    /// browser as it connects, so one that connects later gets them too.
+    pub async fn set_audio(
+        &self,
+        enabled: bool,
+        compressor: Compressor,
+        gains: BTreeMap<String, f64>,
+    ) -> std::io::Result<()> {
+        let payload = encode(&HostCommand::SetAudio {
+            enabled,
+            compressor,
+            gains,
+        })?;
+        let mut connected = self.0.lock().await;
+        connected.broadcast(&payload).await;
+        connected.audio = Some(payload);
         Ok(())
     }
 }
 
-/// A channel open in several browsers is muted only when every tab is.
+/// A channel open in several browsers is muted only when every tab is, and
+/// audio processing is offered when any browser can do it.
 fn merge<'a>(states: impl Iterator<Item = (u64, &'a LinkState)>) -> LinkState {
     let mut channels: BTreeMap<&str, bool> = BTreeMap::new();
     let mut current: Option<(u64, &str)> = None;
+    let mut audio = false;
     for (reported_at, state) in states {
+        audio |= state.audio;
         for ch in &state.channels {
             channels
                 .entry(&ch.login)
@@ -112,6 +181,7 @@ fn merge<'a>(states: impl Iterator<Item = (u64, &'a LinkState)>) -> LinkState {
             })
             .collect(),
         current: current.map(|(_, login)| login.to_string()),
+        audio,
     }
 }
 
@@ -187,10 +257,13 @@ async fn handle_connection(
     hosts: Hosts,
     conn: interprocess::local_socket::tokio::Stream,
 ) {
-    let (read_half, writer) = tokio::io::split(conn);
+    let (read_half, mut writer) = tokio::io::split(conn);
     let (close, mut closed) = tokio::sync::oneshot::channel();
     let id = {
         let mut connected = hosts.0.lock().await;
+        if let Some(audio) = &connected.audio {
+            write(&mut writer, audio).await;
+        }
         let id = connected.next_id;
         connected.next_id += 1;
         connected.hosts.insert(
@@ -200,6 +273,7 @@ async fn handle_connection(
                 state: LinkState {
                     channels: Vec::new(),
                     current: None,
+                    audio: false,
                 },
                 reported_at: 0,
                 _close: close,
@@ -244,7 +318,9 @@ async fn handle_connection(
 
 #[cfg(test)]
 mod tests {
-    use super::{merge, read_line, HostCommand, LinkChannel, LinkState, MAX_MESSAGE_SIZE};
+    use super::{
+        merge, read_line, Compressor, HostCommand, LinkChannel, LinkState, MAX_MESSAGE_SIZE,
+    };
     use serde_json::json;
 
     fn lines(input: &[u8]) -> Vec<std::io::Result<Option<String>>> {
@@ -286,6 +362,7 @@ mod tests {
                 })
                 .collect(),
             current: current.map(str::to_string),
+            audio: false,
         }
     }
 
@@ -303,8 +380,27 @@ mod tests {
                     { "login": "xqc", "muted": false },
                 ],
                 "current": "xqc",
+                "audio": false,
             })
         );
+    }
+
+    #[test]
+    fn merge_offers_audio_when_any_browser_supports_it() {
+        let old = state(&[], None);
+        let new = LinkState {
+            audio: true,
+            ..state(&[], None)
+        };
+        assert!(merge([(1, &old), (2, &new)].into_iter()).audio);
+        assert!(!merge([(1, &old)].into_iter()).audio);
+    }
+
+    #[test]
+    fn reads_state_from_extensions_without_audio() {
+        let state: LinkState =
+            serde_json::from_value(json!({ "channels": [], "current": null })).unwrap();
+        assert!(!state.audio);
     }
 
     #[test]
@@ -333,6 +429,28 @@ mod tests {
         assert_eq!(
             wire(HostCommand::Close { channel: channel() }),
             json!({ "type": "close", "channel": "xqc" })
+        );
+        assert_eq!(
+            wire(HostCommand::SetAudio {
+                enabled: true,
+                compressor: Compressor {
+                    threshold: -27.0,
+                    ratio: 3.2,
+                    attack: 10.0,
+                    release: 250.0,
+                    gain: 0.0,
+                },
+                gains: [("xqc".to_string(), 1.5)].into(),
+            }),
+            json!({
+                "type": "set_audio",
+                "enabled": true,
+                "compressor": {
+                    "threshold": -27.0, "ratio": 3.2, "attack": 10.0,
+                    "release": 250.0, "gain": 0.0,
+                },
+                "gains": { "xqc": 1.5 },
+            })
         );
         assert_eq!(wire(HostCommand::GetState), json!({ "type": "get_state" }));
     }

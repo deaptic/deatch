@@ -54,7 +54,9 @@
     "zoom": 100
   },
   "link": {
-    "audioLink": false
+    "audioLink": false,
+    "compressor": false,
+    "channelGains": {}
   },
   "menu": {
     "channels": {

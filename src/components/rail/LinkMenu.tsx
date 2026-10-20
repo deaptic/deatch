@@ -1,5 +1,6 @@
 import {
   AudioLines,
+  AudioWaveform,
   Puzzle,
   RefreshCw,
   Volume2,
@@ -13,10 +14,16 @@ import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import { FIREFOX_ADDON_URL } from "../../lib/constants/links.ts";
-import { linkConnected, linkWarmedChannels } from "../../lib/stores/link.ts";
+import {
+  linkConnected,
+  linkHasAudio,
+  linkWarmedChannels,
+} from "../../lib/stores/link.ts";
 import {
   linkAudioLink,
+  linkCompressor,
   setLinkAudioLink,
+  setLinkCompressor,
 } from "../../lib/stores/preferences.ts";
 import * as link from "../../lib/services/link.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
@@ -75,6 +82,16 @@ export default function LinkMenu(props: Props) {
             setLinkAudioLink(!linkAudioLink())
           )}
         />
+        <Show when={linkHasAudio()}>
+          <MenuItem
+            label="Compressor"
+            icon={<AudioWaveform />}
+            active={linkCompressor()}
+            onClick={run(() =>
+              setLinkCompressor(!linkCompressor())
+            )}
+          />
+        </Show>
         <MenuDivider />
         <MenuItem
           label={link.currentMuted() ? "Unmute" : "Mute"}
@@ -102,9 +119,7 @@ export default function LinkMenu(props: Props) {
           label="Close offline tabs"
           icon={<X />}
           disabled={!hasTabs()}
-          onClick={run(() =>
-            link.closeOffline().catch(() => {})
-          )}
+          onClick={run(() => link.closeOffline().catch(() => {}))}
         />
         <MenuItem
           label="Close all tabs"
