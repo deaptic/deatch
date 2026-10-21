@@ -4,7 +4,14 @@ import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import { formatApproxDuration } from "../format/duration.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 import { formatAmount } from "../format/currency.ts";
-import { AD_BREAK, CHARITY_CAMPAIGN } from "../constants/events.ts";
+import {
+  AD_BREAK,
+  CHANNEL_UPDATE,
+  CHARITY_CAMPAIGN,
+  SHARED_CHAT_SESSION,
+  STREAM_OFFLINE,
+  STREAM_ONLINE,
+} from "../constants/events.ts";
 import type {
   EventEnvelope,
   RawAdBreak,
@@ -23,9 +30,6 @@ import {
 } from "../stores/channels.ts";
 import { appendItem, appendLocalNotice } from "../stores/feeds.ts";
 
-const NOTICE = "channel_update";
-const SHARED_CHAT = "shared_chat_session";
-
 function appendSharedChat(
   raw: RawSharedChatSession,
   key: "SHARED_CHAT_BEGIN" | "SHARED_CHAT_UPDATE",
@@ -36,7 +40,7 @@ function appendSharedChat(
   appendLocalNotice(
     raw.broadcaster_user_id,
     t(key, { channels: formatList(partners) }),
-    SHARED_CHAT,
+    SHARED_CHAT_SESSION,
   );
 }
 
@@ -82,7 +86,7 @@ export function start(): () => void {
         appendLocalNotice(
           id,
           t("CHANNEL_TITLE_CHANGED", { title: raw.title }),
-          NOTICE,
+          CHANNEL_UPDATE,
         );
       }
       if (!before || before.game.id !== raw.category_id) {
@@ -91,7 +95,7 @@ export function start(): () => void {
           t("CHANNEL_CATEGORY_CHANGED", {
             category: raw.category_name || t("CHANNEL_CATEGORY_NONE"),
           }),
-          NOTICE,
+          CHANNEL_UPDATE,
         );
       }
     }),
@@ -109,7 +113,7 @@ export function start(): () => void {
         appendLocalNotice(
           e.payload.event.broadcaster_user_id,
           t("SHARED_CHAT_END"),
-          SHARED_CHAT,
+          SHARED_CHAT_SESSION,
         ),
     ),
     listenEventSub<RawAdBreak>("channel.ad_break.begin", (e) => {
@@ -143,7 +147,7 @@ export function start(): () => void {
           channel: raw.broadcaster_user_name,
           type: raw.type,
         }),
-        "stream_online",
+        STREAM_ONLINE,
       );
     }),
     listenEventSub<RawStreamOffline>("stream.offline", (e) => {
@@ -151,7 +155,7 @@ export function start(): () => void {
       appendLocalNotice(
         raw.broadcaster_user_id,
         t("STREAM_OFFLINE", { channel: raw.broadcaster_user_name }),
-        "stream_offline",
+        STREAM_OFFLINE,
       );
     }),
   ]);

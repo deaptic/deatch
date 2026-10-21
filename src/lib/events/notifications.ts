@@ -24,6 +24,7 @@ import { mapNotice } from "./notice-mapper.ts";
 import { mapAutomaticRedemption } from "./automatic-redemption-mapper.ts";
 import { mapBitsUse } from "./bits-use-mapper.ts";
 import { giftGroup } from "./gift-group.ts";
+import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
 
 function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
@@ -72,7 +73,7 @@ function redemptionEvent(
   timestamp: number,
 ): FeedEvent {
   return feedEvent(
-    "channel_points_redemption",
+    CHANNEL_POINTS_REDEMPTION,
     withDetail(
       t("EVENT_REDEMPTION", {
         user: raw.user_name,

@@ -88,7 +88,8 @@ const LOOKS: Record<string, Look> = {
 };
 
 function lookFor(noticeType: string): Look {
-  return LOOKS[NOTICE_TO_EVENT[noticeType] ?? noticeType] ?? LOOKS.local;
+  return LOOKS[noticeType] ?? LOOKS[NOTICE_TO_EVENT[noticeType]] ??
+    LOOKS.local;
 }
 
 export function createEventParts(
