@@ -18,7 +18,8 @@ use twitch_api::eventsub::{
     },
     channel::{
         ChannelChatSettingsUpdateV1, ChannelFollowV2, ChannelModerateV2,
-        ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1, ChannelUpdateV2,
+        ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1,
+        ChannelShoutoutReceiveV1, ChannelUpdateV2,
     },
     Transport,
 };
@@ -127,6 +128,7 @@ async fn create(
         }
         EventKind::ChannelChatSettingsUpdate => subscribe!(ChannelChatSettingsUpdateV1::new(b, u)),
         EventKind::ChannelShoutoutCreate => subscribe!(ChannelShoutoutCreateV1::new(b, u)),
+        EventKind::ChannelShoutoutReceive => subscribe!(ChannelShoutoutReceiveV1::new(b, u)),
         EventKind::ChannelFollow => subscribe!(ChannelFollowV2::new(b, u)),
         EventKind::ChannelModerate => subscribe!(ChannelModerateV2::new(b, u)),
         EventKind::AutomodMessageHold => subscribe!(AutomodMessageHoldV2::new(b, u)),
