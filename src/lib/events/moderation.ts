@@ -22,6 +22,7 @@ import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
 import { mapFragment } from "./chat-mapper.ts";
 import { moderateMessage } from "./moderate-message.ts";
+import { automodReason } from "./automod-reason.ts";
 import { moderateNoticeType } from "../constants/events.ts";
 
 /// Twitch strikes a message, or a user's messages, from the partner channel
@@ -41,14 +42,6 @@ function applySharedChatAction(p: RawModerate) {
         source,
       );
   }
-}
-
-function automodReasonLabel(p: RawAutomodMessageHold): string {
-  if (p.reason === "blocked_term") return t("AUTOMOD_BLOCKED_TERM");
-  return t("AUTOMOD_CATEGORY", {
-    category: p.automod.category,
-    level: p.automod.level,
-  });
 }
 
 export function start(): () => void {
@@ -113,7 +106,7 @@ export function start(): () => void {
         badges: [],
         timestamp: new Date(p.held_at).getTime() || serverTime(e.payload),
         automod_hold: {
-          reason: automodReasonLabel(p),
+          reason: automodReason(p),
           status: "pending",
           broadcaster_user_id: p.broadcaster_user_id,
         },
