@@ -7,18 +7,48 @@ use twitch_api::eventsub::{EventSubscription, EventType};
 use twitch_api::twitch_oauth2::{validator, Scope, Validator};
 use twitch_api::types::UserId;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub(super) struct ChannelPointsAutomaticRewardRedemptionAddV2 {
-    pub broadcaster_user_id: UserId,
+/// A subscription whose condition is the broadcaster alone.
+macro_rules! broadcaster_subscription {
+    ($name:ident, $event:ident, $version:literal, $scope:expr) => {
+        #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+        pub(super) struct $name {
+            pub broadcaster_user_id: UserId,
+        }
+
+        impl EventSubscription for $name {
+            type Payload = serde_json::Value;
+
+            const EVENT_TYPE: EventType = EventType::$event;
+            const SCOPE: Validator = $scope;
+            const VERSION: &'static str = $version;
+        }
+    };
 }
 
-impl EventSubscription for ChannelPointsAutomaticRewardRedemptionAddV2 {
-    type Payload = serde_json::Value;
-
-    const EVENT_TYPE: EventType = EventType::ChannelPointsAutomaticRewardRedemptionAdd;
-    const SCOPE: Validator = validator![any(
+broadcaster_subscription!(
+    ChannelPointsAutomaticRewardRedemptionAddV2,
+    ChannelPointsAutomaticRewardRedemptionAdd,
+    "2",
+    validator![any(
         Scope::ChannelReadRedemptions,
         Scope::ChannelManageRedemptions
-    )];
-    const VERSION: &'static str = "2";
-}
+    )]
+);
+broadcaster_subscription!(
+    ChannelHypeTrainBeginV2,
+    ChannelHypeTrainBegin,
+    "2",
+    validator![Scope::ChannelReadHypeTrain]
+);
+broadcaster_subscription!(
+    ChannelHypeTrainProgressV2,
+    ChannelHypeTrainProgress,
+    "2",
+    validator![Scope::ChannelReadHypeTrain]
+);
+broadcaster_subscription!(
+    ChannelHypeTrainEndV2,
+    ChannelHypeTrainEnd,
+    "2",
+    validator![Scope::ChannelReadHypeTrain]
+);
