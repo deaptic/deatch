@@ -42,6 +42,7 @@ export const WARNING_ACKNOWLEDGED = "warning_acknowledged";
 export const HYPE_TRAIN = "hype_train";
 export const POLL = "poll";
 export const PREDICTION = "prediction";
+export const GOAL = "goal";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -131,6 +132,13 @@ export const EVENTS = [
     label: "EVENT_TYPE_PREDICTION",
     description: "EVENT_TYPE_PREDICTION_DESCRIPTION",
     types: [PREDICTION],
+    modOnly: false,
+  },
+  {
+    key: "goal",
+    label: "EVENT_TYPE_GOAL",
+    description: "EVENT_TYPE_GOAL_DESCRIPTION",
+    types: [GOAL],
     modOnly: false,
   },
   {

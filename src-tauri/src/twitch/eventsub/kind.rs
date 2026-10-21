@@ -72,6 +72,10 @@ pub enum EventKind {
     ChannelPredictionLock,
     #[serde(rename = "channel.prediction.end")]
     ChannelPredictionEnd,
+    #[serde(rename = "channel.goal.begin")]
+    ChannelGoalBegin,
+    #[serde(rename = "channel.goal.end")]
+    ChannelGoalEnd,
     #[serde(rename = "stream.online")]
     StreamOnline,
     #[serde(rename = "stream.offline")]
@@ -81,7 +85,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 31] = [
+    pub const ALL: [Self; 33] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -111,6 +115,8 @@ impl EventKind {
         Self::ChannelPredictionBegin,
         Self::ChannelPredictionLock,
         Self::ChannelPredictionEnd,
+        Self::ChannelGoalBegin,
+        Self::ChannelGoalEnd,
         Self::StreamOnline,
         Self::StreamOffline,
     ];
@@ -148,6 +154,8 @@ impl EventKind {
             Self::ChannelPredictionBegin => "channel-prediction-begin",
             Self::ChannelPredictionLock => "channel-prediction-lock",
             Self::ChannelPredictionEnd => "channel-prediction-end",
+            Self::ChannelGoalBegin => "channel-goal-begin",
+            Self::ChannelGoalEnd => "channel-goal-end",
             Self::StreamOnline => "stream-online",
             Self::StreamOffline => "stream-offline",
         }
@@ -191,7 +199,9 @@ impl EventKind {
             | Self::ChannelPollEnd
             | Self::ChannelPredictionBegin
             | Self::ChannelPredictionLock
-            | Self::ChannelPredictionEnd => (Role::Broadcaster, Focused),
+            | Self::ChannelPredictionEnd
+            | Self::ChannelGoalBegin
+            | Self::ChannelGoalEnd => (Role::Broadcaster, Focused),
         }
     }
 }
