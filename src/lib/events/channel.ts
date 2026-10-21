@@ -3,10 +3,13 @@ import { formatList } from "../format/list.ts";
 import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import { formatApproxDuration } from "../format/duration.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
-import { AD_BREAK } from "../constants/events.ts";
+import { formatAmount } from "../format/currency.ts";
+import { AD_BREAK, CHARITY_CAMPAIGN } from "../constants/events.ts";
 import type {
+  EventEnvelope,
   RawAdBreak,
   RawChannelUpdate,
+  RawCharityCampaign,
   RawSharedChatEnd,
   RawSharedChatSession,
   RawStreamOffline,
@@ -33,6 +36,25 @@ function appendSharedChat(
     raw.broadcaster_user_id,
     t(key, { channels: formatList(partners) }),
     SHARED_CHAT,
+  );
+}
+
+function appendCharity(
+  raw: RawCharityCampaign,
+  key: "CHARITY_START" | "CHARITY_STOP",
+  envelope: EventEnvelope<RawCharityCampaign>,
+) {
+  appendItem(
+    raw.broadcaster_user_id,
+    feedEvent(
+      CHARITY_CAMPAIGN,
+      t(key, {
+        charity: raw.charity_name,
+        current: formatAmount(raw.current_amount),
+        target: formatAmount(raw.target_amount),
+      }),
+      serverTime(envelope),
+    ),
   );
 }
 
@@ -100,6 +122,14 @@ export function start(): () => void {
         ),
       );
     }),
+    listenEventSub<RawCharityCampaign>(
+      "channel.charity_campaign.start",
+      (e) => appendCharity(e.payload.event, "CHARITY_START", e.payload),
+    ),
+    listenEventSub<RawCharityCampaign>(
+      "channel.charity_campaign.stop",
+      (e) => appendCharity(e.payload.event, "CHARITY_STOP", e.payload),
+    ),
     listenEventSub<RawStreamOnline>("stream.online", (e) => {
       const raw = e.payload.event;
       appendLocalNotice(

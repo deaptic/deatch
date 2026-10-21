@@ -20,6 +20,7 @@ use twitch_api::eventsub::{
         ChannelChatMessageV1, ChannelChatNotificationV1,
     },
     channel::{ChannelAdBreakBeginV1, ChannelBitsUseV1, ChannelGoalBeginV1, ChannelGoalEndV1},
+    channel::{ChannelCharityCampaignStartV1, ChannelCharityCampaignStopV1},
     channel::{
         ChannelChatSettingsUpdateV1, ChannelFollowV2, ChannelModerateV2,
         ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1,
@@ -195,6 +196,12 @@ async fn create(
             subscribe!(ChannelAdBreakBeginV1::broadcaster_user_id(b))
         }
         EventKind::ChannelBitsUse => subscribe!(ChannelBitsUseV1::broadcaster_user_id(b)),
+        EventKind::ChannelCharityCampaignStart => {
+            subscribe!(ChannelCharityCampaignStartV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelCharityCampaignStop => {
+            subscribe!(ChannelCharityCampaignStopV1::broadcaster_user_id(b))
+        }
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }

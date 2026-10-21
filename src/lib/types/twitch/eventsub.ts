@@ -96,8 +96,15 @@ export type RawNoticeDetails = {
   bits_badge_tier: { tier: number };
   charity_donation: {
     charity_name: string;
-    amount: { value: number; decimal_place: number; currency: string };
+    amount: RawAmount;
   };
+};
+
+/// Money as an integer `value` scaled by `decimal_place`.
+export type RawAmount = {
+  value: number;
+  decimal_place: number;
+  currency: string;
 };
 
 export type RawNotification =
@@ -433,6 +440,15 @@ export type RawBitsUse = {
   } | null;
   custom_power_up?: { title: string } | null;
   message: { text: string; fragments: RawFragment[] } | null;
+};
+
+// channel.charity_campaign.start / stop
+export type RawCharityCampaign = {
+  broadcaster_user_id: string;
+  id: string;
+  charity_name: string;
+  current_amount: RawAmount;
+  target_amount: RawAmount;
 };
 
 // stream.online / stream.offline

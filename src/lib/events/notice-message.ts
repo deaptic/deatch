@@ -1,7 +1,8 @@
 // Our own text for channel.chat.notification, built from the structured
 // fields so it follows the app locale; null leaves Twitch's system_message.
 
-import { formatLocale, t } from "../i18n/index.ts";
+import { formatAmount } from "../format/currency.ts";
+import { t } from "../i18n/index.ts";
 import type { RawNoticeDetails, RawNotification } from "../types/index.ts";
 
 type Plan = { sub_tier: string; is_prime?: boolean | null };
@@ -28,13 +29,6 @@ function gifter(g: RawNoticeDetails["pay_it_forward"]) {
     anonymous: String(g.gifter_is_anonymous || !g.gifter_user_name),
     gifter: g.gifter_user_name ?? "",
   };
-}
-
-function currency(amount: RawNoticeDetails["charity_donation"]["amount"]) {
-  return new Intl.NumberFormat(formatLocale(), {
-    style: "currency",
-    currency: amount.currency,
-  }).format(amount.value / 10 ** amount.decimal_place);
 }
 
 export function noticeMessage(raw: RawNotification): string | null {
@@ -108,7 +102,7 @@ export function noticeMessage(raw: RawNotification): string | null {
       return d
         ? t("NOTICE_CHARITY_DONATION", {
           name,
-          amount: currency(d.amount),
+          amount: formatAmount(d.amount),
           charity: d.charity_name,
         })
         : null;
