@@ -6,6 +6,7 @@ use super::super::moderation::get_moderated_channels;
 use super::super::{Authed, Twitch};
 use super::runner::Signal;
 use super::subscriptions::{Batch, CreateError, Created, Subscription};
+use super::versions::ChannelPointsAutomaticRewardRedemptionAddV2;
 use super::EventKind;
 use crate::error::Result;
 use crate::twitch::ids::UserId;
@@ -132,6 +133,11 @@ async fn create(
         EventKind::AutomodMessageUpdate => subscribe!(AutomodMessageUpdateV2::new(b, u)),
         EventKind::ChannelPointsCustomRewardRedemptionAdd => {
             subscribe!(ChannelPointsCustomRewardRedemptionAddV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelPointsAutomaticRewardRedemptionAdd => {
+            subscribe!(ChannelPointsAutomaticRewardRedemptionAddV2 {
+                broadcaster_user_id: b.into()
+            })
         }
         EventKind::ChannelUpdate => subscribe!(ChannelUpdateV2::broadcaster_user_id(b)),
     }

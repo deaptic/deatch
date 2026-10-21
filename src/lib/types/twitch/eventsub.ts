@@ -152,6 +152,22 @@ export type RawChannelPointsRedemption = {
   redeemed_at: string;
 };
 
+// channel.channel_points_automatic_reward_redemption.add v2
+export type RawAutomaticRedemption = {
+  broadcaster_user_id: string;
+  id: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  reward: {
+    type: string;
+    channel_points: number;
+    emote: { id: string; name: string } | null;
+  };
+  message: { text: string; fragments: RawFragment[] } | null;
+  redeemed_at: string;
+};
+
 // channel.chat.message_delete / clear / clear_user_messages
 export type RawChatMessageDelete = {
   broadcaster_user_id: string;
