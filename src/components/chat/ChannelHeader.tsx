@@ -1,5 +1,6 @@
 import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
 import { Show } from "solid-js";
+import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
@@ -48,13 +49,13 @@ export default function ChannelHeader(props: Props) {
           {props.channel.displayName}
         </h1>
         <Show when={title()}>
-          {(t) => (
+          {(streamTitle) => (
             <p
               class={`self-start max-w-full text-body truncate ${titleCopy.class()}`}
-              data-tip={titleCopy.tip(t())}
-              onClick={() => titleCopy.copy(t())}
+              data-tip={titleCopy.tip(streamTitle())}
+              onClick={() => titleCopy.copy(streamTitle())}
             >
-              {t()}
+              {streamTitle()}
             </p>
           )}
         </Show>
@@ -62,7 +63,7 @@ export default function ChannelHeader(props: Props) {
           <Stat icon={<Gamepad2 />} value={game()} copy={game()} truncate />
           <Show
             when={stream()}
-            fallback={<Stat icon={<Moon />} value="Offline" />}
+            fallback={<Stat icon={<Moon />} value={t("CHAT_HEADER_OFFLINE")} />}
           >
             {(s) => (
               <>

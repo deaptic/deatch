@@ -1,4 +1,5 @@
 import { Unplug } from "lucide-solid";
+import { t } from "../../lib/i18n/index.ts";
 
 export default function ConnectionBanner() {
   return (
@@ -8,9 +9,9 @@ export default function ConnectionBanner() {
     >
       <Unplug class="size-4 shrink-0 text-caution" />
       <span class="min-w-0 truncate text-body text-ink">
-        Chat disconnected.{" "}
+        {t("CHAT_DISCONNECTED_BANNER")}{" "}
         <span class="text-ink-soft">
-          Reconnecting… messages sent meanwhile are filled in afterwards.
+          {t("CHAT_DISCONNECTED_BANNER_DETAIL")}
         </span>
       </span>
     </div>

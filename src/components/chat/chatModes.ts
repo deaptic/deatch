@@ -1,5 +1,6 @@
 import { updateChatSettings } from "../../lib/api/twitch/chat.ts";
 import { formatDuration } from "../../lib/format/duration.ts";
+import { type MessageKey, t } from "../../lib/i18n/index.ts";
 import type {
   ChatSettings,
   UpdateChatSettingsParams,
@@ -7,10 +8,10 @@ import type {
 
 type Change = Omit<UpdateChatSettingsParams, "broadcasterId">;
 
-type Preset = { value: number; label: string };
+type Preset = { value: number; label: MessageKey; count?: number };
 
 type Base = {
-  label: string;
+  label: MessageKey;
   chip: (s: ChatSettings) => string;
   description: (s: ChatSettings) => string;
   off: Change;
@@ -24,6 +25,7 @@ type SwitchMode = Base & {
 
 export type TimedMode = Base & {
   kind: "timed";
+  offLabel: MessageKey;
   current: (s: ChatSettings) => number | null;
   presets: Preset[];
   set: (value: number) => Change;
@@ -35,81 +37,94 @@ export function isOn(mode: ChatMode, s: ChatSettings): boolean {
   return mode.kind === "timed" ? mode.current(s) !== null : mode.isOn(s);
 }
 
+export function presetLabel(preset: Preset): string {
+  return t(preset.label, { count: preset.count });
+}
+
 const followAge = (minutes: number) => formatDuration(minutes * 60);
 
 export const CHAT_MODES: ChatMode[] = [
   {
     kind: "timed",
-    label: "Slow mode",
+    label: "CHAT_MODE_SLOW",
+    offLabel: "CHAT_MODE_SLOW_OFF",
     current: (s) => s.slowModeSeconds,
     presets: [
-      { value: 3, label: "3 seconds" },
-      { value: 5, label: "5 seconds" },
-      { value: 10, label: "10 seconds" },
-      { value: 20, label: "20 seconds" },
-      { value: 30, label: "30 seconds" },
-      { value: 60, label: "1 minute" },
-      { value: 120, label: "2 minutes" },
+      { value: 3, label: "CHAT_MODE_SECONDS", count: 3 },
+      { value: 5, label: "CHAT_MODE_SECONDS", count: 5 },
+      { value: 10, label: "CHAT_MODE_SECONDS", count: 10 },
+      { value: 20, label: "CHAT_MODE_SECONDS", count: 20 },
+      { value: 30, label: "CHAT_MODE_SECONDS", count: 30 },
+      { value: 60, label: "CHAT_MODE_MINUTES", count: 1 },
+      { value: 120, label: "CHAT_MODE_MINUTES", count: 2 },
     ],
     set: (seconds) => ({ slowMode: true, slowModeWaitTime: seconds }),
     off: { slowMode: false },
-    chip: (s) => `Slow ${formatDuration(s.slowModeSeconds ?? 0)}`,
+    chip: (s) =>
+      t("CHAT_MODE_SLOW_CHIP", {
+        duration: formatDuration(s.slowModeSeconds ?? 0),
+      }),
     description: (s) =>
-      `One message every ${formatDuration(s.slowModeSeconds ?? 0)}`,
+      t("CHAT_MODE_SLOW_DESCRIPTION", {
+        duration: formatDuration(s.slowModeSeconds ?? 0),
+      }),
   },
   {
     kind: "timed",
-    label: "Followers-only",
+    label: "CHAT_MODE_FOLLOWERS",
+    offLabel: "CHAT_MODE_FOLLOWERS_OFF",
     current: (s) => s.followerModeMinutes,
     presets: [
-      { value: 0, label: "Any follower" },
-      { value: 10, label: "10 minutes" },
-      { value: 30, label: "30 minutes" },
-      { value: 60, label: "1 hour" },
-      { value: 1440, label: "1 day" },
-      { value: 10080, label: "1 week" },
-      { value: 43200, label: "1 month" },
-      { value: 129600, label: "3 months" },
+      { value: 0, label: "CHAT_MODE_FOLLOWERS_ANY" },
+      { value: 10, label: "CHAT_MODE_MINUTES", count: 10 },
+      { value: 30, label: "CHAT_MODE_MINUTES", count: 30 },
+      { value: 60, label: "CHAT_MODE_HOURS", count: 1 },
+      { value: 1440, label: "CHAT_MODE_DAYS", count: 1 },
+      { value: 10080, label: "CHAT_MODE_WEEKS", count: 1 },
+      { value: 43200, label: "CHAT_MODE_MONTHS", count: 1 },
+      { value: 129600, label: "CHAT_MODE_MONTHS", count: 3 },
     ],
     set: (minutes) => ({ followerMode: true, followerModeDuration: minutes }),
     off: { followerMode: false },
     chip: (s) =>
       s.followerModeMinutes
-        ? `Followers ${followAge(s.followerModeMinutes)}`
-        : "Followers only",
+        ? t("CHAT_MODE_FOLLOWERS_CHIP_AGE", {
+          age: followAge(s.followerModeMinutes),
+        })
+        : t("CHAT_MODE_FOLLOWERS_CHIP"),
     description: (s) =>
       s.followerModeMinutes
-        ? `Only chatters who followed ${
-          followAge(s.followerModeMinutes)
-        } ago or more`
-        : "Only followers can chat",
+        ? t("CHAT_MODE_FOLLOWERS_DESCRIPTION_AGE", {
+          age: followAge(s.followerModeMinutes),
+        })
+        : t("CHAT_MODE_FOLLOWERS_DESCRIPTION"),
   },
   {
     kind: "switch",
-    label: "Subscribers-only",
+    label: "CHAT_MODE_SUBSCRIBERS",
     isOn: (s) => s.subscriberMode,
     on: { subscriberMode: true },
     off: { subscriberMode: false },
-    chip: () => "Subs only",
-    description: () => "Only subscribers can chat",
+    chip: () => t("CHAT_MODE_SUBSCRIBERS_CHIP"),
+    description: () => t("CHAT_MODE_SUBSCRIBERS_DESCRIPTION"),
   },
   {
     kind: "switch",
-    label: "Emote-only",
+    label: "CHAT_MODE_EMOTE_ONLY",
     isOn: (s) => s.emoteMode,
     on: { emoteMode: true },
     off: { emoteMode: false },
-    chip: () => "Emote only",
-    description: () => "Messages can only contain emotes",
+    chip: () => t("CHAT_MODE_EMOTE_ONLY_CHIP"),
+    description: () => t("CHAT_MODE_EMOTE_ONLY_DESCRIPTION"),
   },
   {
     kind: "switch",
-    label: "Unique chat",
+    label: "CHAT_MODE_UNIQUE",
     isOn: (s) => s.uniqueChatMode,
     on: { uniqueChatMode: true },
     off: { uniqueChatMode: false },
-    chip: () => "Unique chat",
-    description: () => "Repeated messages are blocked",
+    chip: () => t("CHAT_MODE_UNIQUE"),
+    description: () => t("CHAT_MODE_UNIQUE_DESCRIPTION"),
   },
 ];
 
