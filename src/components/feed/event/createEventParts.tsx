@@ -18,7 +18,7 @@ import {
   Unplug,
   UserPlus,
 } from "lucide-solid";
-import { type Component, Show } from "solid-js";
+import { type Component, For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
@@ -31,11 +31,16 @@ import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import FeedTile from "../FeedTile.tsx";
 import RedemptionReward from "../RedemptionReward.tsx";
+import MessageFragment from "../message/MessageFragment.tsx";
+import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import { splitName } from "./splitName.ts";
 import { t } from "../../../lib/i18n/index.ts";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
 export type EventOptions = UserActions & {
+  emotes: EmoteMap;
+  cheermotes: CheermoteMap;
   onEventContextMenu?: (x: number, y: number, item: FeedEvent) => void;
 };
 
@@ -138,6 +143,23 @@ export function createEventParts(
               )}
             </Show>
             {time()}
+            <Show when={item.message}>
+              {(fragments) => (
+                <span class="block">
+                  <For each={fragments()}>
+                    {(frag) => (
+                      <MessageFragment
+                        frag={frag}
+                        emotes={props.emotes}
+                        cheermotes={props.cheermotes}
+                        onShowUserCard={props.onShowUserCard}
+                        onUserContextMenu={props.onUserContextMenu}
+                      />
+                    )}
+                  </For>
+                </span>
+              )}
+            </Show>
           </>
         }
       >

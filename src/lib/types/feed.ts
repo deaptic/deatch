@@ -75,6 +75,7 @@ export type FeedEvent = {
   color: string;
   timestamp: number;
   silent?: boolean;
+  message?: Fragment[];
   clip?: { id: string };
   redemption?: Redemption;
 };

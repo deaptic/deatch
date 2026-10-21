@@ -105,6 +105,8 @@ export type RawNotification =
     broadcaster_user_id: string;
     notice_type: string;
     system_message: string;
+    /// The chatter's own text, e.g. a resub message or an announcement.
+    message?: { text: string; fragments: RawFragment[] };
     chatter_is_anonymous?: boolean;
     chatter_user_id?: string;
     chatter_user_login?: string;
