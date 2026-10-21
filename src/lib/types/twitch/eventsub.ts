@@ -463,12 +463,18 @@ export type RawBitsUse = {
 };
 
 // channel.charity_campaign.start / stop
+/// Unlike every other event, these name the channel `broadcaster_id` and
+/// spell the amount's scale `decimal_places`.
 export type RawCharityCampaign = {
-  broadcaster_user_id: string;
+  broadcaster_id: string;
   id: string;
   charity_name: string;
-  current_amount: RawAmount;
-  target_amount: RawAmount;
+  current_amount: RawCampaignAmount;
+  target_amount: RawCampaignAmount;
+};
+
+export type RawCampaignAmount = Omit<RawAmount, "decimal_place"> & {
+  decimal_places: number;
 };
 
 // stream.online / stream.offline

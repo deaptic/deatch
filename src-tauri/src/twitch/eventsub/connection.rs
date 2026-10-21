@@ -244,7 +244,12 @@ fn classify(text: &str) -> serde_json::Result<Received> {
 
 fn notification(metadata: Metadata, event: Option<serde_json::Value>) -> Option<Notification> {
     let event = event?;
-    let broadcaster_id = UserId::from(event.get("broadcaster_user_id")?.as_str()?);
+    // Charity campaign events alone name the channel `broadcaster_id`.
+    let broadcaster_id = event
+        .get("broadcaster_user_id")
+        .or_else(|| event.get("broadcaster_id"))?
+        .as_str()?
+        .into();
     Some(Notification {
         kind: metadata.subscription_type?,
         broadcaster_id,
@@ -316,6 +321,15 @@ mod tests {
             }
         );
         assert!(classify("garbage").is_err());
+    }
+
+    #[test]
+    fn reads_the_channel_from_charity_events() {
+        let charity = r#"{"metadata":{"message_type":"notification","message_timestamp":"t","subscription_type":"channel.charity_campaign.start"},"payload":{"event":{"broadcaster_id":"42"}}}"#;
+        let Received::Notification(n) = classify(charity).unwrap() else {
+            panic!("expected a notification");
+        };
+        assert_eq!(n.broadcaster_id, UserId::from("42"));
     }
 
     #[test]
