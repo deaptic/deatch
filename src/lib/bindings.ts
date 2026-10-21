@@ -289,6 +289,14 @@ export type DeleteChatMessagesParams = {
 	messageId?: MessageId | null,
 };
 
+/**
+ *  Why Twitch refused a message; the frontend owns the wording. Unknown codes
+ *  keep Twitch's own text so nothing is lost.
+ */
+export type DropReason = 
+/**  AutoMod is holding the message for a moderator to approve or deny. */
+{ code: "held" } | { code: "rejected" } | { code: "banned" } | { code: "timedOut" } | { code: "suspended" } | { code: "channelBlocked" } | { code: "channelSuspended" } | { code: "badCharacters" } | { code: "duplicate" } | { code: "uniqueChat" } | { code: "rateLimit" } | { code: "slowMode" } | { code: "emoteOnly" } | { code: "followersOnly" } | { code: "subscribersOnly" } | { code: "phoneRequired" } | { code: "emailRequired" } | { code: "unknown"; message: string };
+
 export type Emote = {
 	id: string,
 	name: string,
@@ -504,9 +512,7 @@ export type SendChatMessageParams = {
 export type SendMessageResult = {
 	messageId: MessageId | null,
 	isSent: boolean,
-	/**  AutoMod is holding the message for a moderator to approve or deny. */
-	held: boolean,
-	dropReason: string | null,
+	dropReason: DropReason | null,
 };
 
 /**  Twitch rejected the stored token for good (revoked, password changed). */
