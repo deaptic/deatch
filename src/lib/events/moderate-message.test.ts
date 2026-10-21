@@ -22,6 +22,18 @@ Deno.test("describes an action taken here", () => {
   assertEquals(moderateMessage(p, 0), "Mod banned Foo: spam");
 });
 
+Deno.test("counts the viewers sent on a raid", () => {
+  const p: RawModerate = {
+    ...base,
+    action: "raid",
+    raid: { ...user, viewer_count: 1200 },
+  };
+  assertEquals(
+    moderateMessage(p, 0),
+    "Mod initiated a raid on Foo with 1,200 viewers",
+  );
+});
+
 Deno.test("names the partner channel for a shared chat action", () => {
   const p: RawModerate = {
     ...base,
