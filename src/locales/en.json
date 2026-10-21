@@ -350,7 +350,7 @@
   "MODERATION_FOLLOWERS": "{mod} enabled followers-only mode ({minutes}m)",
   "MODERATION_FOLLOWERS_OFF": "{mod} disabled followers-only mode",
   "MODERATION_MOD": "{mod} added {user} as a moderator",
-  "MODERATION_RAID": "{mod} initiated a raid on {user}",
+  "MODERATION_RAID": "{mod} initiated a raid on {user} with {count, plural, one {# viewer} other {# viewers}}",
   "MODERATION_SHARED": "In {channel}'s chat, {text}",
   "MODERATION_SLOW": "{mod} enabled slow mode ({seconds}s)",
   "MODERATION_SLOW_OFF": "{mod} disabled slow mode",

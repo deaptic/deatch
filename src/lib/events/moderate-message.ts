@@ -80,7 +80,11 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
     case "unvip":
       return t("MODERATION_UNVIP", { mod, user: p.unvip.user_name });
     case "raid":
-      return t("MODERATION_RAID", { mod, user: p.raid.user_name });
+      return t("MODERATION_RAID", {
+        mod,
+        user: p.raid.user_name,
+        count: p.raid.viewer_count,
+      });
     case "unraid":
       return t("MODERATION_UNRAID", { mod });
     case "slow":
