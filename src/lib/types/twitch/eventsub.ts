@@ -51,7 +51,8 @@ export type RawChatMessage = {
   reply: RawReply | null;
   channel_points_custom_reward_id: string | null;
   cheer?: { bits: number } | null;
-  /// Set only during shared chat, on every message including local ones.
+  /// The partner channel a shared chat message was sent in; null for
+  /// messages sent in this channel.
   source_broadcaster_user_id?: string | null;
   source_broadcaster_user_login?: string | null;
   source_broadcaster_user_name?: string | null;

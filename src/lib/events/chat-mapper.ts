@@ -78,9 +78,11 @@ export function mapChatMessage(
   };
 }
 
+/// Only a message sent in a partner channel has a source; your own channel's
+/// messages never show one, whatever the payload carries.
 function sourceOf(raw: RawChatMessage): FeedMessage["source"] {
   const id = raw.source_broadcaster_user_id;
-  if (!id) return undefined;
+  if (!id || id === raw.broadcaster_user_id) return undefined;
   return {
     id,
     login: raw.source_broadcaster_user_login ?? "",
