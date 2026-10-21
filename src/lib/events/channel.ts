@@ -1,6 +1,10 @@
 import { t } from "../i18n/index.ts";
 import { listenEventSub, unlistenAll } from "./listen.ts";
-import type { RawChannelUpdate } from "../types/twitch/eventsub.ts";
+import type {
+  RawChannelUpdate,
+  RawStreamOffline,
+  RawStreamOnline,
+} from "../types/twitch/eventsub.ts";
 import {
   applyChannelInfo,
   channelInfoFor,
@@ -41,6 +45,25 @@ export function start(): () => void {
           NOTICE,
         );
       }
+    }),
+    listenEventSub<RawStreamOnline>("stream.online", (e) => {
+      const raw = e.payload.event;
+      appendLocalNotice(
+        raw.broadcaster_user_id,
+        t("STREAM_ONLINE", {
+          channel: raw.broadcaster_user_name,
+          type: raw.type,
+        }),
+        "stream_online",
+      );
+    }),
+    listenEventSub<RawStreamOffline>("stream.offline", (e) => {
+      const raw = e.payload.event;
+      appendLocalNotice(
+        raw.broadcaster_user_id,
+        t("STREAM_OFFLINE", { channel: raw.broadcaster_user_name }),
+        "stream_offline",
+      );
     }),
   ]);
 }

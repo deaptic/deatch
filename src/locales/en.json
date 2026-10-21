@@ -596,6 +596,8 @@
   "SEVENTV_REMOVED": "{actor} removed 7TV emote {emote}",
   "SEVENTV_RENAMED": "{actor} renamed 7TV emote {from} to {to}",
   "SEVENTV_SOMEONE": "Someone",
+  "STREAM_OFFLINE": "{channel} went offline",
+  "STREAM_ONLINE": "{channel} went live{type, select, rerun { with a rerun} premiere { with a premiere} playlist { with a playlist} watch_party { with a watch party} other {}}",
   "SYSTEM_ALWAYS_ON_TOP_FAILED": "Always on top failed",
   "SYSTEM_AUTOSTART_FAILED": "Autostart failed",
   "TIME_DATE_AT": "{date} at {time}",

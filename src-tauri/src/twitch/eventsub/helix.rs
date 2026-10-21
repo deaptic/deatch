@@ -22,6 +22,7 @@ use twitch_api::eventsub::{
         ChannelShoutoutReceiveV1, ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1,
         ChannelUpdateV2, ChannelWarningAcknowledgeV1,
     },
+    stream::{StreamOfflineV1, StreamOnlineV1},
     Transport,
 };
 use twitch_api::helix::{ClientRequestError, HelixRequestPostError};
@@ -152,6 +153,8 @@ async fn create(
             })
         }
         EventKind::ChannelUpdate => subscribe!(ChannelUpdateV2::broadcaster_user_id(b)),
+        EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
+        EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }
 }
 
