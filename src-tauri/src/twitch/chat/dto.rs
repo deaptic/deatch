@@ -1,7 +1,7 @@
 use crate::twitch::ids::{MessageId, UserId};
 use serde::Serialize;
 use twitch_api::helix::chat::{
-    send_chat_message::{ChatMessageDropCode, SendChatMessageResponse},
+    send_chat_message::{ChatMessageDropCode, ChatMessageDropReason, SendChatMessageResponse},
     BadgeSet as HelixBadgeSet, ChatBadge as HelixChatBadge, ChatSettings as HelixChatSettings,
     GlobalEmote, UserEmote as HelixUserEmote,
 };
@@ -97,22 +97,69 @@ impl From<HelixBadgeSet> for BadgeSet {
 pub struct SendMessageResult {
     pub message_id: Option<MessageId>,
     pub is_sent: bool,
+    pub drop_reason: Option<DropReason>,
+}
+
+/// Why Twitch refused a message; the frontend owns the wording. Unknown codes
+/// keep Twitch's own text so nothing is lost.
+#[derive(Debug, Clone, PartialEq, Serialize, specta::Type)]
+#[serde(tag = "code", content = "message", rename_all = "camelCase")]
+pub enum DropReason {
     /// AutoMod is holding the message for a moderator to approve or deny.
-    pub held: bool,
-    pub drop_reason: Option<String>,
+    Held,
+    Rejected,
+    Banned,
+    TimedOut,
+    Suspended,
+    ChannelBlocked,
+    ChannelSuspended,
+    BadCharacters,
+    Duplicate,
+    UniqueChat,
+    RateLimit,
+    SlowMode,
+    EmoteOnly,
+    FollowersOnly,
+    SubscribersOnly,
+    PhoneRequired,
+    EmailRequired,
+    Unknown(String),
+}
+
+impl From<ChatMessageDropReason> for DropReason {
+    fn from(d: ChatMessageDropReason) -> Self {
+        use ChatMessageDropCode as Code;
+        match d.code {
+            Code::MsgRejected => Self::Held,
+            Code::MsgRejectedMandatory => Self::Rejected,
+            Code::MsgBanned => Self::Banned,
+            Code::MsgTimedout => Self::TimedOut,
+            Code::MsgSuspended => Self::Suspended,
+            Code::MsgChannelBlocked => Self::ChannelBlocked,
+            Code::MsgChannelSuspended => Self::ChannelSuspended,
+            Code::MsgBadCharacters => Self::BadCharacters,
+            Code::MsgDuplicate => Self::Duplicate,
+            Code::MsgR9k => Self::UniqueChat,
+            Code::MsgRatelimit => Self::RateLimit,
+            Code::MsgSlowmode => Self::SlowMode,
+            Code::MsgEmoteonly => Self::EmoteOnly,
+            Code::MsgFollowersonly
+            | Code::MsgFollowersonlyFollowed
+            | Code::MsgFollowersonlyZero => Self::FollowersOnly,
+            Code::MsgSubsonly => Self::SubscribersOnly,
+            Code::MsgRequiresVerifiedPhoneNumber => Self::PhoneRequired,
+            Code::MsgVerifiedEmail => Self::EmailRequired,
+            _ => Self::Unknown(d.message),
+        }
+    }
 }
 
 impl From<SendChatMessageResponse> for SendMessageResult {
     fn from(r: SendChatMessageResponse) -> Self {
-        let held = r
-            .drop_reason
-            .as_ref()
-            .is_some_and(|d| matches!(d.code, ChatMessageDropCode::MsgRejected));
         Self {
             message_id: r.message_id.map(|m| MessageId(m.to_string())),
             is_sent: r.is_sent,
-            held,
-            drop_reason: r.drop_reason.map(|d| d.message),
+            drop_reason: r.drop_reason.map(DropReason::from),
         }
     }
 }
@@ -143,7 +190,7 @@ impl From<HelixChatSettings> for ChatSettings {
 
 #[cfg(test)]
 mod tests {
-    use super::{emote_url, ChatSettings, SendMessageResult};
+    use super::{emote_url, ChatSettings, DropReason, SendMessageResult};
     use serde_json::json;
 
     // The frontend's Ctrl-zoom and inline emotes expect this exact shape.
@@ -162,22 +209,42 @@ mod tests {
         )
     }
 
-    #[test]
-    fn only_automod_rejections_count_as_held() {
-        let held = sent(json!({
+    fn dropped(code: &str, message: &str) -> Option<DropReason> {
+        sent(json!({
             "message_id": "",
             "is_sent": false,
-            "drop_reason": { "code": "msg_rejected", "message": "held by AutoMod" }
-        }));
-        assert!(held.held);
-        assert_eq!(held.drop_reason.as_deref(), Some("held by AutoMod"));
+            "drop_reason": { "code": code, "message": message }
+        }))
+        .drop_reason
+    }
 
-        let dropped = sent(json!({
-            "message_id": "",
-            "is_sent": false,
-            "drop_reason": { "code": "msg_duplicate", "message": "duplicate" }
-        }));
-        assert!(!dropped.held);
+    #[test]
+    fn maps_drop_codes_to_reasons() {
+        assert_eq!(dropped("msg_rejected", "held"), Some(DropReason::Held));
+        assert_eq!(
+            dropped("msg_followersonly_zero", "follow"),
+            Some(DropReason::FollowersOnly)
+        );
+    }
+
+    #[test]
+    fn keeps_twitch_text_for_unknown_codes() {
+        assert_eq!(
+            dropped("msg_brand_new", "something new"),
+            Some(DropReason::Unknown("something new".into()))
+        );
+    }
+
+    #[test]
+    fn serializes_as_code_and_message() {
+        assert_eq!(
+            serde_json::to_value(DropReason::SlowMode).unwrap(),
+            json!({ "code": "slowMode" })
+        );
+        assert_eq!(
+            serde_json::to_value(DropReason::Unknown("x".into())).unwrap(),
+            json!({ "code": "unknown", "message": "x" })
+        );
     }
 
     fn helix_settings(value: serde_json::Value) -> ChatSettings {
