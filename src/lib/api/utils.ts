@@ -1,6 +1,7 @@
 import { advancedShowLogs } from "../stores/preferences.ts";
 import { addToast } from "../stores/toasts.ts";
 import { errorMessage } from "../utils/error.ts";
+import { t } from "../i18n/index.ts";
 
 export type InvokeOptions = {
   silent?: boolean;
@@ -27,15 +28,10 @@ export async function invokeCommand<A extends unknown[], T>(
     const ms = Math.round(performance.now() - start);
     console.error(`[cmd] ${name} failed`, { args, error: e, ms });
     if (!options.silent) {
-      addToast(`${humanizeCommand(name)} failed`, "error", errorMessage(e));
+      addToast(t("API_ACTION_FAILED"), "error", errorMessage(e));
     }
     throw e;
   }
-}
-
-function humanizeCommand(name: string): string {
-  const spaced = name.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`);
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 function summarize(result: unknown, ms: number): string {

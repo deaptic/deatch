@@ -23,6 +23,7 @@ import { liveStreams } from "../stores/channels.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
 import { addToast } from "../stores/toasts.ts";
 import { errorMessage } from "../utils/error.ts";
+import { t } from "../i18n/index.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
@@ -45,7 +46,9 @@ export function createSystemIntegration(): void {
   createEffect(() => {
     getCurrentWindow()
       .setAlwaysOnTop(advancedAlwaysOnTop())
-      .catch((e) => addToast("Always on top failed", "error", errorMessage(e)));
+      .catch((e) =>
+        addToast(t("SYSTEM_ALWAYS_ON_TOP_FAILED"), "error", errorMessage(e))
+      );
   });
 
   createEffect(() => {
@@ -54,7 +57,9 @@ export function createSystemIntegration(): void {
       const have = await isAutostartEnabled();
       if (have === want) return;
       await (want ? enableAutostart() : disableAutostart());
-    })().catch((e) => addToast("Autostart failed", "error", errorMessage(e)));
+    })().catch((e) =>
+      addToast(t("SYSTEM_AUTOSTART_FAILED"), "error", errorMessage(e))
+    );
   });
 
   createEffect(() => {

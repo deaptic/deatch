@@ -7,6 +7,7 @@ import type {
   Stream,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
+import { t } from "../../i18n/index.ts";
 
 export function getStreams(
   params: GetStreamsParams = {},
@@ -31,7 +32,7 @@ export async function createStreamMarker(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.createStreamMarker, [params], {
-    successMessage: "Marker added",
+    successMessage: t("TOAST_MARKER_ADDED"),
     ...options,
   });
 }

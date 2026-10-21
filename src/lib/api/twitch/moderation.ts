@@ -8,12 +8,15 @@ import type {
   WarnUserParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
+import { t } from "../../i18n/index.ts";
 
 export async function deleteChatMessages(
   params: DeleteChatMessagesParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  const successMessage = params.messageId ? "Message deleted" : "Chat cleared";
+  const successMessage = params.messageId
+    ? t("TOAST_MESSAGE_DELETED")
+    : t("TOAST_CHAT_CLEARED");
   await invokeCommand(commands.deleteChatMessages, [params], {
     successMessage,
     ...options,
@@ -24,7 +27,9 @@ export async function banUser(
   params: BanUserParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  const successMessage = params.duration ? "User timed out" : "User banned";
+  const successMessage = params.duration
+    ? t("TOAST_USER_TIMED_OUT")
+    : t("TOAST_USER_BANNED");
   await invokeCommand(commands.banUser, [params], {
     successMessage,
     ...options,
@@ -36,7 +41,7 @@ export async function unbanUser(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.unbanUser, [params], {
-    successMessage: "User unbanned",
+    successMessage: t("TOAST_USER_UNBANNED"),
     ...options,
   });
 }
@@ -53,7 +58,7 @@ export async function warnUser(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.warnUser, [params], {
-    successMessage: "User warned",
+    successMessage: t("TOAST_USER_WARNED"),
     ...options,
   });
 }
@@ -63,8 +68,8 @@ export async function manageHeldAutomodMessage(
   options?: InvokeOptions,
 ): Promise<void> {
   const successMessage = params.action === "allow"
-    ? "Message approved"
-    : "Message denied";
+    ? t("TOAST_MESSAGE_APPROVED")
+    : t("TOAST_MESSAGE_DENIED");
   await invokeCommand(commands.manageHeldAutomodMessage, [params], {
     successMessage,
     ...options,

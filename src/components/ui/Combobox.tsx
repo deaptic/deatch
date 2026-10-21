@@ -119,7 +119,9 @@ export default function Combobox(props: Props) {
           <For
             each={shown()}
             fallback={
-              <p class="px-2.5 py-2 text-small text-ink-faint">No matches</p>
+              <p class="px-2.5 py-2 text-small text-ink-faint">
+                {t("UI_COMBOBOX_NO_MATCHES")}
+              </p>
             }
           >
             {(value, i) => (

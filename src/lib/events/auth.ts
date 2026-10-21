@@ -5,6 +5,7 @@ import { setUser } from "../stores/users.ts";
 import { setDeviceCode, setWaiting } from "../stores/auth.ts";
 import { errorMessage } from "../utils/error.ts";
 import * as users from "../services/users.ts";
+import { t } from "../i18n/index.ts";
 
 export function start(): () => void {
   return unlistenAll([
@@ -13,7 +14,7 @@ export function start(): () => void {
       setDeviceCode(null);
       setUser(e.payload);
       users.set([e.payload]);
-      addToast("Connected to Twitch!", "success");
+      addToast(t("AUTH_CONNECTED"), "success");
     }),
     events.authFailed.listen((e) => {
       setWaiting(false);
@@ -22,7 +23,7 @@ export function start(): () => void {
     }),
     events.sessionEnded.listen(() => {
       setUser(null);
-      addToast("Twitch signed you out, please sign in again", "error");
+      addToast(t("AUTH_SIGNED_OUT"), "error");
     }),
   ]);
 }

@@ -7,6 +7,7 @@ import type {
   StartCommercialParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
+import { t } from "../../i18n/index.ts";
 
 export function getChannelInformation(
   params: GetChannelInformationParams,
@@ -37,7 +38,7 @@ export async function startCommercial(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.startCommercial, [params], {
-    successMessage: "Commercial started",
+    successMessage: t("TOAST_COMMERCIAL_STARTED"),
     ...options,
   });
 }
@@ -47,7 +48,7 @@ export async function addChannelVip(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.addChannelVip, [params], {
-    successMessage: "VIP added",
+    successMessage: t("TOAST_VIP_ADDED"),
     ...options,
   });
 }
@@ -57,7 +58,7 @@ export async function removeChannelVip(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.removeChannelVip, [params], {
-    successMessage: "VIP removed",
+    successMessage: t("TOAST_VIP_REMOVED"),
     ...options,
   });
 }
