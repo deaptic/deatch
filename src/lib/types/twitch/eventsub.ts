@@ -294,6 +294,11 @@ export type RawUnbanRequestResolve = RawModUser & {
   status: "approved" | "canceled" | "denied";
 };
 
+// channel.warning.acknowledge
+export type RawWarningAcknowledge = RawModUser & {
+  broadcaster_user_id: string;
+};
+
 // automod.message.hold
 export type AutomodHeldReason =
   | {

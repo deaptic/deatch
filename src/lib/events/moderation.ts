@@ -11,6 +11,7 @@ import type {
   RawModerate,
   RawUnbanRequestCreate,
   RawUnbanRequestResolve,
+  RawWarningAcknowledge,
 } from "../types/index.ts";
 import {
   appendItem,
@@ -25,7 +26,11 @@ import { events } from "../bindings.ts";
 import { mapFragment } from "./chat-mapper.ts";
 import { moderateMessage } from "./moderate-message.ts";
 import { automodReason } from "./automod-reason.ts";
-import { moderateNoticeType, UNBAN_REQUEST } from "../constants/events.ts";
+import {
+  moderateNoticeType,
+  UNBAN_REQUEST,
+  WARNING_ACKNOWLEDGED,
+} from "../constants/events.ts";
 
 /// Twitch strikes a message, or a user's messages, from the partner channel
 /// out of the shared feed; local actions arrive as their own delete events.
@@ -129,6 +134,25 @@ export function start(): () => void {
           feedEvent(
             UNBAN_REQUEST,
             t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
+            serverTime(e.payload),
+            {
+              chatter_user_id: raw.user_id,
+              chatter_login: raw.user_login,
+              chatter_name: raw.user_name,
+            },
+          ),
+        );
+      },
+    ),
+    listenEventSub<RawWarningAcknowledge>(
+      "channel.warning.acknowledge",
+      (e) => {
+        const raw = e.payload.event;
+        appendItem(
+          raw.broadcaster_user_id,
+          feedEvent(
+            WARNING_ACKNOWLEDGED,
+            t("EVENT_WARNING_ACKNOWLEDGED", { user: raw.user_name }),
             serverTime(e.payload),
             {
               chatter_user_id: raw.user_id,
