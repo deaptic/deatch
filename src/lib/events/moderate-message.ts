@@ -118,6 +118,27 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
         t("MODERATION_WARN", { mod, user: p.warn.user_name }),
         p.warn.reason,
       );
+    case "add_blocked_term":
+    case "add_permitted_term":
+    case "remove_blocked_term":
+    case "remove_permitted_term":
+      return t("MODERATION_AUTOMOD_TERMS", {
+        mod,
+        action: p.automod_terms.action,
+        list: p.automod_terms.list,
+        count: p.automod_terms.terms.length,
+        terms: p.automod_terms.terms.join(", "),
+      });
+    case "approve_unban_request":
+    case "deny_unban_request":
+      return withDetail(
+        t("MODERATION_UNBAN_REQUEST", {
+          mod,
+          approved: String(p.unban_request.is_approved),
+          user: p.unban_request.user_name,
+        }),
+        p.unban_request.moderator_message,
+      );
     default:
       return null;
   }

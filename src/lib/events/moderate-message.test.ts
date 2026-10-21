@@ -34,6 +34,29 @@ Deno.test("counts the viewers sent on a raid", () => {
   );
 });
 
+Deno.test("lists the AutoMod terms a mod changed", () => {
+  const p: RawModerate = {
+    ...base,
+    action: "add_blocked_term",
+    automod_terms: {
+      action: "add",
+      list: "blocked",
+      terms: ["foo", "bar"],
+      from_automod: false,
+    },
+  };
+  assertEquals(moderateMessage(p, 0), "Mod added blocked terms: foo, bar");
+});
+
+Deno.test("describes a resolved unban request with its note", () => {
+  const p: RawModerate = {
+    ...base,
+    action: "deny_unban_request",
+    unban_request: { ...user, is_approved: false, moderator_message: "no" },
+  };
+  assertEquals(moderateMessage(p, 0), "Mod denied Foo's unban request: no");
+});
+
 Deno.test("names the partner channel for a shared chat action", () => {
   const p: RawModerate = {
     ...base,

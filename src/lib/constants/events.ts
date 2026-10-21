@@ -29,6 +29,12 @@ const MODERATE_ACTIONS = [
   "uniquechat",
   "uniquechatoff",
   "warn",
+  "add_blocked_term",
+  "add_permitted_term",
+  "remove_blocked_term",
+  "remove_permitted_term",
+  "approve_unban_request",
+  "deny_unban_request",
 ] as const satisfies readonly RawModerate["action"][];
 
 export function moderateNoticeType(action: RawModerate["action"]): string {

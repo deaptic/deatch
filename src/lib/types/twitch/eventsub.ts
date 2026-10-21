@@ -198,6 +198,16 @@ type RawModUser = { user_id: string; user_login: string; user_name: string };
 type RawBan = RawModUser & { reason: string | null };
 type RawTimeout = RawModUser & { reason: string | null; expires_at: string };
 type RawDelete = RawModUser & { message_id: string; message_body: string };
+type RawAutomodTerms = {
+  action: "add" | "remove";
+  list: "blocked" | "permitted";
+  terms: string[];
+  from_automod: boolean;
+};
+type RawUnbanRequest = RawModUser & {
+  is_approved: boolean;
+  moderator_message: string;
+};
 
 export type RawModerate =
   & RawModerateBase
@@ -230,6 +240,18 @@ export type RawModerate =
     | { action: "uniquechat" }
     | { action: "uniquechatoff" }
     | { action: "warn"; warn: RawModUser & { reason: string | null } }
+    | {
+      action:
+        | "add_blocked_term"
+        | "add_permitted_term"
+        | "remove_blocked_term"
+        | "remove_permitted_term";
+      automod_terms: RawAutomodTerms;
+    }
+    | {
+      action: "approve_unban_request" | "deny_unban_request";
+      unban_request: RawUnbanRequest;
+    }
   );
 
 // automod.message.hold
