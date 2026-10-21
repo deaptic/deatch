@@ -349,6 +349,26 @@ export type RawSharedChatSession = RawSharedChatEnd & {
   }[];
 };
 
+// channel.hype_train.begin / progress / end v2
+type RawHypeTrainContribution = {
+  user_name: string;
+  type: "bits" | "subscription" | "other";
+  total: number;
+};
+
+export type RawHypeTrain = {
+  broadcaster_user_id: string;
+  id: string;
+  level: number;
+  total: number;
+  /// Points toward the next level; absent once the train ends.
+  progress?: number;
+  goal?: number;
+  top_contributions: RawHypeTrainContribution[];
+  type: "regular" | "golden_kappa" | "treasure" | string;
+  is_shared_train: boolean;
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;

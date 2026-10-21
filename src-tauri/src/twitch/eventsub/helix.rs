@@ -6,7 +6,10 @@ use super::super::moderation::get_moderated_channels;
 use super::super::{Authed, Twitch};
 use super::runner::Signal;
 use super::subscriptions::{Batch, CreateError, Created, Subscription};
-use super::versions::ChannelPointsAutomaticRewardRedemptionAddV2;
+use super::versions::{
+    ChannelHypeTrainBeginV2, ChannelHypeTrainEndV2, ChannelHypeTrainProgressV2,
+    ChannelPointsAutomaticRewardRedemptionAddV2,
+};
 use super::EventKind;
 use crate::error::Result;
 use crate::twitch::ids::UserId;
@@ -163,6 +166,15 @@ async fn create(
         EventKind::ChannelSharedChatEnd => {
             subscribe!(ChannelSharedChatEndV1::broadcaster_user_id(b))
         }
+        EventKind::ChannelHypeTrainBegin => subscribe!(ChannelHypeTrainBeginV2 {
+            broadcaster_user_id: b.into()
+        }),
+        EventKind::ChannelHypeTrainProgress => subscribe!(ChannelHypeTrainProgressV2 {
+            broadcaster_user_id: b.into()
+        }),
+        EventKind::ChannelHypeTrainEnd => subscribe!(ChannelHypeTrainEndV2 {
+            broadcaster_user_id: b.into()
+        }),
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }

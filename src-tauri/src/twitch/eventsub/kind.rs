@@ -56,6 +56,12 @@ pub enum EventKind {
     ChannelPointsAutomaticRewardRedemptionAdd,
     #[serde(rename = "channel.update")]
     ChannelUpdate,
+    #[serde(rename = "channel.hype_train.begin")]
+    ChannelHypeTrainBegin,
+    #[serde(rename = "channel.hype_train.progress")]
+    ChannelHypeTrainProgress,
+    #[serde(rename = "channel.hype_train.end")]
+    ChannelHypeTrainEnd,
     #[serde(rename = "stream.online")]
     StreamOnline,
     #[serde(rename = "stream.offline")]
@@ -65,7 +71,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 23] = [
+    pub const ALL: [Self; 26] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -87,6 +93,9 @@ impl EventKind {
         Self::ChannelPointsCustomRewardRedemptionAdd,
         Self::ChannelPointsAutomaticRewardRedemptionAdd,
         Self::ChannelUpdate,
+        Self::ChannelHypeTrainBegin,
+        Self::ChannelHypeTrainProgress,
+        Self::ChannelHypeTrainEnd,
         Self::StreamOnline,
         Self::StreamOffline,
     ];
@@ -116,6 +125,9 @@ impl EventKind {
                 "channel-points-automatic-redemption-add"
             }
             Self::ChannelUpdate => "channel-update",
+            Self::ChannelHypeTrainBegin => "channel-hype-train-begin",
+            Self::ChannelHypeTrainProgress => "channel-hype-train-progress",
+            Self::ChannelHypeTrainEnd => "channel-hype-train-end",
             Self::StreamOnline => "stream-online",
             Self::StreamOffline => "stream-offline",
         }
@@ -151,7 +163,10 @@ impl EventKind {
             | Self::ChannelWarningAcknowledge => (Role::Moderator, Focused),
             Self::ChannelPointsCustomRewardRedemptionAdd
             | Self::ChannelPointsAutomaticRewardRedemptionAdd
-            | Self::ChannelUpdate => (Role::Broadcaster, Focused),
+            | Self::ChannelUpdate
+            | Self::ChannelHypeTrainBegin
+            | Self::ChannelHypeTrainProgress
+            | Self::ChannelHypeTrainEnd => (Role::Broadcaster, Focused),
         }
     }
 }
