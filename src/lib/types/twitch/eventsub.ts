@@ -399,6 +399,18 @@ export type RawPrediction = {
   status?: "resolved" | "canceled";
 };
 
+// channel.goal.begin / end
+export type RawGoal = {
+  broadcaster_user_id: string;
+  id: string;
+  type: string;
+  description: string;
+  current_amount: number;
+  target_amount: number;
+  /// Only on end.
+  is_achieved?: boolean;
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;

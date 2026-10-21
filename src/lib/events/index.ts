@@ -4,6 +4,7 @@ import * as chat from "./chat.ts";
 import * as chatSettings from "./chatSettings.ts";
 import * as emoteSets from "./emoteSets.ts";
 import * as eventsub from "./eventsub.ts";
+import * as goals from "./goals.ts";
 import * as hypeTrain from "./hypeTrain.ts";
 import * as moderation from "./moderation.ts";
 import * as notifications from "./notifications.ts";
@@ -19,6 +20,7 @@ export function start(): () => void {
     chatSettings.start(),
     emoteSets.start(),
     eventsub.start(),
+    goals.start(),
     hypeTrain.start(),
     moderation.start(),
     notifications.start(),
