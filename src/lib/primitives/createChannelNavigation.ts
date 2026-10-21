@@ -13,6 +13,7 @@ import { linkWarmedChannels } from "../stores/link.ts";
 import { linkFocus } from "../api/link.ts";
 import { ensureFeed, markSeen } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
+import { t } from "../i18n/index.ts";
 
 export type ChannelNavigation = {
   selectChannel(ch: User): void;
@@ -35,7 +36,7 @@ export function createChannelNavigation(): ChannelNavigation {
     users.get([channelId])
       .then(([ch]) => {
         if (!ch) {
-          return addToast("Channel not found", "error");
+          return addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");
         }
         then?.();
         if (selectedChannel()?.id !== channelId) selectChannel(ch);

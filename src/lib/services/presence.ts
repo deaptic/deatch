@@ -4,19 +4,20 @@ import type {
   User,
 } from "../types/index.ts";
 import { channelUrl } from "../utils/twitchUrl.ts";
+import { formatLocale, type MessageKey, t } from "../i18n/index.ts";
 
-export const SELF_LURK_PHRASES = [
-  "Talking to themselves",
-  "Empty room energy",
-  "Practicing the intro",
-  "Solo in the chat",
-  "Self-lurking",
-  "Reading own chat alone",
-  "Plotting the next stream",
-  "Tumbleweeds rolling by",
+export const SELF_LURK_PHRASES: MessageKey[] = [
+  "PRESENCE_LURK_TALKING_TO_THEMSELVES",
+  "PRESENCE_LURK_EMPTY_ROOM",
+  "PRESENCE_LURK_PRACTICING_INTRO",
+  "PRESENCE_LURK_SOLO",
+  "PRESENCE_LURK_SELF_LURKING",
+  "PRESENCE_LURK_READING_OWN_CHAT",
+  "PRESENCE_LURK_PLOTTING",
+  "PRESENCE_LURK_TUMBLEWEEDS",
 ];
 
-const viewerFormatter = new Intl.NumberFormat("en", {
+const viewerFormatter = new Intl.NumberFormat(formatLocale(), {
   notation: "compact",
   maximumFractionDigits: 1,
 });
@@ -37,7 +38,7 @@ export type PresenceContext = {
   liveStreams: Stream[];
 };
 
-export type PresenceSession = { startedAt: number; lurkPhrase: string };
+export type PresenceSession = { startedAt: number; lurkPhrase: MessageKey };
 
 function activeChannel(ctx: PresenceContext): User | null {
   return ctx.exploreOpen ? null : ctx.channel;
@@ -56,8 +57,8 @@ export function buildPresence(
   const ch = activeChannel(ctx);
   if (!ch) {
     return {
-      details: "Browsing channels",
-      stateText: "On Twitch",
+      details: t("PRESENCE_BROWSING"),
+      stateText: t("PRESENCE_ON_TWITCH"),
       largeImage: "app_logo",
       largeText: "Deatch",
       startedAt: session.startedAt,
@@ -67,10 +68,14 @@ export function buildPresence(
   const isOwnChannel = ch.id === ctx.userId;
   const gameName = stream?.game.name;
   const stateText = gameName
-    ? `${gameName} · ${viewerFormatter.format(stream!.viewerCount)} viewers`
+    ? t("PRESENCE_PLAYING", {
+      game: gameName,
+      count: stream!.viewerCount,
+      viewers: viewerFormatter.format(stream!.viewerCount),
+    })
     : isOwnChannel
-    ? session.lurkPhrase
-    : "Offline";
+    ? t(session.lurkPhrase)
+    : t("COMMON_OFFLINE");
   const streamStartedAt = stream
     ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
     : null;
@@ -91,6 +96,6 @@ export function buildPresence(
     smallImage: "app_logo",
     smallText: "Deatch",
     startedAt: streamStartedAt ?? session.startedAt,
-    buttons: [{ label: "Open on Twitch", url }],
+    buttons: [{ label: t("PRESENCE_OPEN_ON_TWITCH"), url }],
   };
 }

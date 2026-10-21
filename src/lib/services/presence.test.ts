@@ -42,7 +42,10 @@ const ctx = (extra: Partial<PresenceContext> = {}): PresenceContext => ({
   ...extra,
 });
 
-const session = { startedAt: 100, lurkPhrase: "Self-lurking" };
+const session = {
+  startedAt: 100,
+  lurkPhrase: "PRESENCE_LURK_SELF_LURKING",
+} as const;
 
 Deno.test("no presence when disabled or signed out", () => {
   assertEquals(presenceMode(ctx({ enabled: false })), null);

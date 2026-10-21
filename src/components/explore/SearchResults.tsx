@@ -72,7 +72,7 @@ export default function SearchResults(props: Props) {
     try {
       const [channel] = await users.fetch({ logins: [login] });
       if (!channel) {
-        addToast(t("EXPLORE_CHANNEL_NOT_FOUND"), "error");
+        addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");
         return;
       }
       props.onSelect(channel);

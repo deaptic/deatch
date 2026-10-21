@@ -16,6 +16,7 @@ import type {
   UserEmote,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
+import { t } from "../../i18n/index.ts";
 
 export function getGlobalEmotes(options?: InvokeOptions): Promise<Emote[]> {
   return invokeCommand(commands.getGlobalEmotes, [], options);
@@ -43,7 +44,7 @@ export async function sendShoutout(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.sendShoutout, [params], {
-    successMessage: "Shoutout sent",
+    successMessage: t("TOAST_SHOUTOUT_SENT"),
     ...options,
   });
 }
@@ -67,7 +68,7 @@ export async function sendChatAnnouncement(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.sendChatAnnouncement, [params], {
-    successMessage: "Announcement sent",
+    successMessage: t("TOAST_ANNOUNCEMENT_SENT"),
     ...options,
   });
 }
@@ -84,7 +85,7 @@ export async function updateChatSettings(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.updateChatSettings, [params], {
-    successMessage: "Chat settings updated",
+    successMessage: t("TOAST_CHAT_SETTINGS_UPDATED"),
     ...options,
   });
 }
@@ -101,7 +102,7 @@ export async function updateUserChatColor(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.updateUserChatColor, [params], {
-    successMessage: "Chat color updated",
+    successMessage: t("TOAST_CHAT_COLOR_UPDATED"),
     ...options,
   });
 }

@@ -24,6 +24,7 @@ import { getStreamsFromIds } from "../api/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
 import type { LinkState, User } from "../types/index.ts";
+import { t } from "../i18n/index.ts";
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
@@ -44,12 +45,12 @@ export async function closeOffline() {
   const live = new Set(streams.map((s) => s.user.id));
   const offline = tabs.filter((c) => !live.has(c.id));
   if (offline.length === 0) {
-    addToast("Every tab is live");
+    addToast(t("LINK_ALL_TABS_LIVE"));
     return;
   }
   closeTabs(offline);
   addToast(
-    `Closed ${offline.length} offline ${offline.length === 1 ? "tab" : "tabs"}`,
+    t("LINK_CLOSED_OFFLINE", { count: offline.length }),
     "success",
   );
 }
@@ -166,7 +167,7 @@ export function currentMuted(): boolean | null {
 export function toggleMuted(login: string) {
   linkSetMuted(login, !isMuted(login)).catch(() =>
     addToast(
-      "Couldn't reach the browser tab. Check that Link is connected.",
+      t("LINK_TAB_UNREACHABLE"),
       "error",
     )
   );

@@ -4,13 +4,14 @@ import type {
   BroadcasterParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
+import { t } from "../../i18n/index.ts";
 
 export async function startRaid(
   params: BroadcasterPairParams,
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.startRaid, [params], {
-    successMessage: "Raid started",
+    successMessage: t("TOAST_RAID_STARTED"),
     ...options,
   });
 }
@@ -20,7 +21,7 @@ export async function cancelRaid(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.cancelRaid, [params], {
-    successMessage: "Raid cancelled",
+    successMessage: t("TOAST_RAID_CANCELLED"),
     ...options,
   });
 }
