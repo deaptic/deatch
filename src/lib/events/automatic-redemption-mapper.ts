@@ -4,6 +4,7 @@ import { t } from "../i18n/index.ts";
 import type { FeedEvent } from "../types/feed.ts";
 import type { RawAutomaticRedemption } from "../types/twitch/eventsub.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
+import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
 
 // These arrive as a chat message of their own, which already shows them. The
 // last two are v1 names Twitch documents only there, kept in case v2 sends them.
@@ -22,7 +23,7 @@ export function mapAutomaticRedemption(
   if (MESSAGE_REWARDS.has(raw.reward.type)) return null;
   const emote = raw.reward.emote;
   return feedEvent(
-    "channel_points_redemption",
+    CHANNEL_POINTS_REDEMPTION,
     t("EVENT_AUTOMATIC_REDEMPTION", {
       user: raw.user_name,
       type: raw.reward.type,

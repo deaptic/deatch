@@ -47,6 +47,11 @@ export const GOAL = "goal";
 export const AD_BREAK = "ad_break";
 export const BITS_USE = "bits_use";
 export const CHARITY_CAMPAIGN = "charity_campaign";
+export const CHANNEL_POINTS_REDEMPTION = "channel_points_redemption";
+export const CHANNEL_UPDATE = "channel_update";
+export const SHARED_CHAT_SESSION = "shared_chat_session";
+export const STREAM_ONLINE = "stream_online";
+export const STREAM_OFFLINE = "stream_offline";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -115,10 +120,24 @@ export const EVENTS = [
     modOnly: false,
   },
   {
+    key: "channel_points",
+    label: "EVENT_TYPE_CHANNEL_POINTS",
+    description: "EVENT_TYPE_CHANNEL_POINTS_DESCRIPTION",
+    types: [CHANNEL_POINTS_REDEMPTION],
+    modOnly: false,
+  },
+  {
+    key: "channel",
+    label: "EVENT_TYPE_CHANNEL",
+    description: "EVENT_TYPE_CHANNEL_DESCRIPTION",
+    types: [CHANNEL_UPDATE, STREAM_ONLINE, STREAM_OFFLINE, SHARED_CHAT_SESSION],
+    modOnly: false,
+  },
+  {
     key: "bits_badge_tier",
     label: "EVENT_TYPE_BITS_BADGE_TIER",
     description: "EVENT_TYPE_BITS_BADGE_TIER_DESCRIPTION",
-    types: ["bits_badge_tier"],
+    types: ["bits_badge_tier", "shared_chat_bits_badge_tier"],
     modOnly: false,
   },
   {
