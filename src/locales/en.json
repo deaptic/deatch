@@ -236,6 +236,7 @@
   "EVENT_AUTOMATIC_REDEMPTION": "{user} redeemed {type, select, random_sub_emote_unlock {Unlock a Random Sub Emote} chosen_sub_emote_unlock {Choose an Emote to Unlock} chosen_modified_sub_emote_unlock {Modify a Single Emote} other {an automatic reward}} for {cost, plural, one {# point} other {# points}}",
   "EVENT_REDEMPTION": "{user} redeemed {reward} for {cost, plural, one {# point} other {# points}}",
   "EVENT_REDEMPTION_COST": "for {cost, plural, one {# point} other {# points}}",
+  "EVENT_WARNING_ACKNOWLEDGED": "{user} acknowledged their warning",
   "EVENT_UNBAN_REQUEST": "{user} requested to be unbanned",
   "EVENT_UNBAN_REQUEST_CANCELED": "{user} withdrew their unban request",
   "EVENT_SHOUTOUT_RECEIVED": "{channel} gave you a shoutout in front of {count, plural, one {# viewer} other {# viewers}}!",

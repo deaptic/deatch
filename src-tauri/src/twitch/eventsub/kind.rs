@@ -38,6 +38,8 @@ pub enum EventKind {
     ChannelUnbanRequestCreate,
     #[serde(rename = "channel.unban_request.resolve")]
     ChannelUnbanRequestResolve,
+    #[serde(rename = "channel.warning.acknowledge")]
+    ChannelWarningAcknowledge,
     #[serde(rename = "automod.message.hold")]
     AutomodMessageHold,
     #[serde(rename = "automod.message.update")]
@@ -53,7 +55,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 17] = [
+    pub const ALL: [Self; 18] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -66,6 +68,7 @@ impl EventKind {
         Self::ChannelModerate,
         Self::ChannelUnbanRequestCreate,
         Self::ChannelUnbanRequestResolve,
+        Self::ChannelWarningAcknowledge,
         Self::AutomodMessageHold,
         Self::AutomodMessageUpdate,
         Self::ChannelPointsCustomRewardRedemptionAdd,
@@ -87,6 +90,7 @@ impl EventKind {
             Self::ChannelModerate => "channel-moderate",
             Self::ChannelUnbanRequestCreate => "channel-unban-request-create",
             Self::ChannelUnbanRequestResolve => "channel-unban-request-resolve",
+            Self::ChannelWarningAcknowledge => "channel-warning-acknowledge",
             Self::AutomodMessageHold => "automod-message-hold",
             Self::AutomodMessageUpdate => "automod-message-update",
             Self::ChannelPointsCustomRewardRedemptionAdd => "channel-points-redemption-add",
@@ -118,7 +122,8 @@ impl EventKind {
             | Self::ChannelFollow
             | Self::ChannelModerate
             | Self::ChannelUnbanRequestCreate
-            | Self::ChannelUnbanRequestResolve => (Role::Moderator, Focused),
+            | Self::ChannelUnbanRequestResolve
+            | Self::ChannelWarningAcknowledge => (Role::Moderator, Focused),
             Self::ChannelPointsCustomRewardRedemptionAdd
             | Self::ChannelPointsAutomaticRewardRedemptionAdd
             | Self::ChannelUpdate => (Role::Broadcaster, Focused),

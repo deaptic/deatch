@@ -20,7 +20,7 @@ use twitch_api::eventsub::{
         ChannelChatSettingsUpdateV1, ChannelFollowV2, ChannelModerateV2,
         ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1,
         ChannelShoutoutReceiveV1, ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1,
-        ChannelUpdateV2,
+        ChannelUpdateV2, ChannelWarningAcknowledgeV1,
     },
     Transport,
 };
@@ -137,6 +137,9 @@ async fn create(
         }
         EventKind::ChannelUnbanRequestResolve => {
             subscribe!(ChannelUnbanRequestResolveV1::new(b, u))
+        }
+        EventKind::ChannelWarningAcknowledge => {
+            subscribe!(ChannelWarningAcknowledgeV1::new(b, u))
         }
         EventKind::AutomodMessageHold => subscribe!(AutomodMessageHoldV2::new(b, u)),
         EventKind::AutomodMessageUpdate => subscribe!(AutomodMessageUpdateV2::new(b, u)),
