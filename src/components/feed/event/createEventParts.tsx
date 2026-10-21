@@ -168,6 +168,9 @@ export function createEventParts(
             {chatterName(item.chatter_name)}
             {` ${t("EVENT_REDEEMED")} `}
             <RedemptionReward redemption={redemption()} />
+            {` ${
+              t("EVENT_REDEMPTION_COST", { cost: redemption().reward.cost })
+            }`}
             {time()}
             <Show when={redemption().input}>
               {(input) => <span class="block">{input()}</span>}
