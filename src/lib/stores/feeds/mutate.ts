@@ -1,7 +1,7 @@
 import { produce } from "solid-js/store";
 import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
-import type { BadgeMap, Redemption } from "../../types/feed.ts";
+import type { BadgeMap, Redemption, SuspiciousInfo } from "../../types/feed.ts";
 import type { AutomodHoldStatus } from "../../types/index.ts";
 
 /// Matches this channel's copy of a message or, in shared chat, the original
@@ -97,6 +97,23 @@ export function setChannelPointsRedemption(
       ) {
         item.channel_points.redemption = redemption;
       }
+    }),
+  );
+}
+
+export function setSuspicious(
+  broadcasterId: string,
+  messageId: string,
+  info: SuspiciousInfo,
+) {
+  if (!feeds[broadcasterId]) return;
+  setFeeds(
+    broadcasterId,
+    produce((f) => {
+      const item = f.messages.find(
+        (m) => m.kind === "message" && m.message_id === messageId,
+      );
+      if (item?.kind === "message") item.suspicious = info;
     }),
   );
 }

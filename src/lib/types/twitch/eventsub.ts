@@ -306,6 +306,23 @@ export type RawWarningAcknowledge = RawModUser & {
   broadcaster_user_id: string;
 };
 
+// channel.suspicious_user.message / update
+export type LowTrustStatus = "none" | "active_monitoring" | "restricted";
+
+export type RawSuspiciousUserMessage = RawModUser & {
+  broadcaster_user_id: string;
+  low_trust_status: LowTrustStatus;
+  types: string[];
+  ban_evasion_evaluation: "unknown" | "possible" | "likely";
+  message: { message_id: string; text: string; fragments: RawFragment[] };
+};
+
+export type RawSuspiciousUserUpdate = RawModUser & {
+  broadcaster_user_id: string;
+  moderator_user_name: string;
+  low_trust_status: LowTrustStatus;
+};
+
 // automod.message.hold
 export type AutomodHeldReason =
   | {

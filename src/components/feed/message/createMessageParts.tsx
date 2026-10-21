@@ -8,6 +8,7 @@ import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
+import { formatSuspicious } from "../../../lib/format/suspicious.ts";
 import { sourceBadges } from "../../../lib/stores/sourceBadges.ts";
 import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
 import DisplayName from "../../ui/DisplayName.tsx";
@@ -114,6 +115,16 @@ export function createMessageParts(
   const annotations = createMemo((): Annotation[] => {
     const list: Annotation[] = [];
     if (hold()) list.push({ content: holdNotice() });
+    if (item.suspicious) {
+      list.push({
+        content: (
+          <RichNotice
+            class="text-caution"
+            label={formatSuspicious(item.suspicious)}
+          />
+        ),
+      });
+    }
     if (item.cheer) {
       list.push({
         content: (

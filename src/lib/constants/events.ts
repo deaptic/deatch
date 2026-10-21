@@ -39,6 +39,7 @@ const MODERATE_ACTIONS = [
 
 export const UNBAN_REQUEST = "unban_request";
 export const WARNING_ACKNOWLEDGED = "warning_acknowledged";
+export const SUSPICIOUS_USER = "suspicious_user";
 export const HYPE_TRAIN = "hype_train";
 export const POLL = "poll";
 export const PREDICTION = "prediction";
@@ -176,6 +177,7 @@ export const EVENTS = [
     types: [
       UNBAN_REQUEST,
       WARNING_ACKNOWLEDGED,
+      SUSPICIOUS_USER,
       ...MODERATE_ACTIONS.map(moderateNoticeType),
     ],
     modOnly: true,

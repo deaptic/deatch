@@ -30,6 +30,13 @@ export type AutomodHoldInfo = {
   broadcaster_user_id: string;
 };
 
+/// Why Twitch flags the chatter, shown to mods on their messages.
+export type SuspiciousInfo = {
+  status: "active_monitoring" | "restricted";
+  evasion: "unknown" | "possible" | "likely";
+  bannedElsewhere: boolean;
+};
+
 export type Redemption = {
   reward: { id: string; title: string; prompt: string; cost: number };
   input?: string;
@@ -60,6 +67,7 @@ export type FeedMessage = {
   cheer?: { bits: number };
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
+  suspicious?: SuspiciousInfo;
   /// The channel a shared chat message was sent in.
   source?: {
     id: string;
