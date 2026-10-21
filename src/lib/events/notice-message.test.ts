@@ -5,6 +5,7 @@ import { noticeMessage } from "./notice-message.ts";
 
 const base = {
   broadcaster_user_id: "1",
+  message_id: "n1",
   system_message: "from twitch",
   chatter_user_name: "Viewer",
 };

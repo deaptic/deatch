@@ -1,4 +1,4 @@
-use super::dto::RecentMessage;
+use super::dto::RecentHistory;
 use crate::error::Result;
 use serde::Deserialize;
 use tauri::State;
@@ -17,6 +17,6 @@ pub struct GetRecentMessagesParams {
 pub async fn get_recent_messages(
     http: State<'_, reqwest::Client>,
     params: GetRecentMessagesParams,
-) -> Result<Vec<RecentMessage>> {
+) -> Result<RecentHistory> {
     super::fetch_recent_messages(&http, &params.channel_login, params.limit, params.after).await
 }

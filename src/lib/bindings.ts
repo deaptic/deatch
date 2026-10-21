@@ -69,7 +69,7 @@ export const commands = {
 	seventvGetChannelEmotes: (params: ChannelIdParams) => __TAURI_INVOKE<ChannelResult>("seventv_get_channel_emotes", { params }),
 	seventvSubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_subscribe_emote_set", { params }),
 	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_unsubscribe_emote_set", { params }),
-	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentMessage[]>("get_recent_messages", { params }),
+	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentHistory>("get_recent_messages", { params }),
 	linkSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("link_set_muted", { params }),
 	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
@@ -154,6 +154,10 @@ export type BannedUser = {
 	expiresAt: string,
 };
 
+export type BitsBadgeTierNotice = {
+	tier: number,
+};
+
 export type BroadcasterPairParams = {
 	fromBroadcasterId: UserId,
 	toBroadcasterId: UserId,
@@ -205,6 +209,17 @@ export type ChannelResult = {
 	emote_set_id: string | null,
 };
 
+export type CharityAmount = {
+	value: number,
+	decimal_place: number,
+	currency: string,
+};
+
+export type CharityDonationNotice = {
+	charity_name: string,
+	amount: CharityAmount,
+};
+
 export type ChatColor = "blue" | "blue_violet" | "cadet_blue" | "chocolate" | "coral" | "dodger_blue" | "firebrick" | "golden_rod" | "green" | "hot_pink" | "orange_red" | "red" | "sea_green" | "spring_green" | "yellow_green";
 
 export type ChatSettings = {
@@ -243,6 +258,12 @@ export type CheermoteTier = {
 	color: string,
 	dark: CheermoteImage,
 	light: CheermoteImage,
+};
+
+export type CommunitySubGiftNotice = {
+	sub_tier: SubTier,
+	total: number,
+	cumulative_total: number | null,
 };
 
 /**
@@ -386,6 +407,11 @@ export type GetUsersParams = {
 	logins?: string[],
 };
 
+export type GifterNotice = {
+	gifter_is_anonymous: boolean,
+	gifter_user_name: string | null,
+};
+
 export type LinkChannel = {
 	login: string,
 	muted?: boolean,
@@ -441,10 +467,24 @@ export type Pagination = {
 	cursor: string | null,
 };
 
+export type PrimePaidUpgradeNotice = {
+	sub_tier: SubTier,
+};
+
 export type ProcessStats = {
 	memoryBytes: number,
 	cpuPercent: number | null,
 	processes: number,
+};
+
+export type RaidNotice = {
+	user_name: string,
+	viewer_count: number,
+};
+
+export type RecentHistory = {
+	messages: RecentMessage[],
+	notices: RecentNotice[],
 };
 
 export type RecentMessage = {
@@ -470,6 +510,35 @@ export type RecentMessage = {
 	source_badges: ChatterBadge[] | null,
 };
 
+/**
+ *  A USERNOTICE in the shape of EventSub's `channel.chat.notification`, so
+ *  the renderer reads history and live notices alike. Only the detail that
+ *  matches `notice_type` is set.
+ */
+export type RecentNotice = {
+	broadcaster_user_id: UserId,
+	message_id: MessageId,
+	notice_type: string,
+	system_message: string,
+	chatter_is_anonymous: boolean,
+	chatter_user_id: UserId,
+	chatter_user_login: string,
+	chatter_user_name: string,
+	color: string,
+	message: MessageBody,
+	timestamp_ms: number,
+	sub: SubNotice | null,
+	resub: ResubNotice | null,
+	sub_gift: SubGiftNotice | null,
+	community_sub_gift: CommunitySubGiftNotice | null,
+	gift_paid_upgrade: GifterNotice | null,
+	prime_paid_upgrade: PrimePaidUpgradeNotice | null,
+	pay_it_forward: GifterNotice | null,
+	raid: RaidNotice | null,
+	bits_badge_tier: BitsBadgeTierNotice | null,
+	charity_donation: CharityDonationNotice | null,
+};
+
 export type Rename = {
 	from: string,
 	to: string,
@@ -481,6 +550,13 @@ export type Reply = {
 	parent_user_name: string,
 	parent_user_login: string,
 	parent_user_id: UserId,
+};
+
+export type ResubNotice = {
+	sub_tier: SubTier,
+	is_prime: boolean,
+	cumulative_months: number,
+	streak_months: number | null,
 };
 
 export type SearchChannel = {
@@ -565,6 +641,19 @@ export type Stream = {
 };
 
 export type StreamId = string;
+
+export type SubGiftNotice = {
+	sub_tier: SubTier,
+	recipient_user_name: string,
+	cumulative_total: number | null,
+};
+
+export type SubNotice = {
+	sub_tier: SubTier,
+	is_prime: boolean,
+};
+
+export type SubTier = "1000" | "2000" | "3000";
 
 export type UpdateChatSettingsParams = {
 	broadcasterId: UserId,

@@ -12,7 +12,8 @@ import {
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
-import type { FeedMessage, RecentMessage } from "../types/index.ts";
+import { mapNotice } from "../events/notice-mapper.ts";
+import type { FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
 import * as badges from "./badges.ts";
@@ -24,8 +25,15 @@ const PAGE_TTL_MS = 30_000;
 
 const deepPages = new Map<
   string,
-  { at: number; page: Promise<RecentMessage[]> }
+  { at: number; page: Promise<RecentHistory> }
 >();
+
+function entriesOf(history: RecentHistory): FeedEntry[] {
+  return [
+    ...history.messages.map((m) => mapChatMessage(m, m.timestamp_ms)),
+    ...history.notices.flatMap((n) => mapNotice(n, n.timestamp_ms) ?? []),
+  ].sort((a, b) => a.timestamp - b.timestamp);
+}
 
 function noteChatters(broadcasterId: string, added: FeedEntry[]) {
   for (const it of added) {
@@ -46,17 +54,18 @@ export function fillGap(
     { channelLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
     { silent: true },
   )
-    .then((msgs) => {
-      const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
+    .then((history) => {
+      const items = entriesOf(history);
       noteChatters(broadcasterId, insertEntries(broadcasterId, items));
       // A full page means robotty dropped the oldest messages of the gap;
       // it keeps the newest `limit`, so the hole sits before the first one.
-      if (msgs.length >= GAP_LIMIT) {
+      const lines = history.messages.length + history.notices.length;
+      if (lines >= GAP_LIMIT && items.length > 0) {
         insertEntries(broadcasterId, [
           feedEvent(
             "local",
             t("BACKLOG_GAP"),
-            msgs[0].timestamp_ms - 1,
+            items[0].timestamp - 1,
             { silent: true },
           ),
         ]);
@@ -71,9 +80,8 @@ export function fillGap(
 export function load(broadcasterId: string, channelLogin: string) {
   if (feeds[broadcasterId]?.backfilled) return;
   getRecentMessages({ channelLogin, limit: MESSAGE_CAP }, { silent: true })
-    .then((msgs) => {
-      const items = msgs.map((m) => mapChatMessage(m, m.timestamp_ms));
-      const added = prependEntries(broadcasterId, items);
+    .then((history) => {
+      const added = prependEntries(broadcasterId, entriesOf(history));
       noteChatters(broadcasterId, added);
       rememberOwnMessages(broadcasterId, added);
     })
@@ -96,8 +104,8 @@ export function forChatter(
   channelLogin: string,
   chatterId: string,
 ): Promise<FeedMessage[]> {
-  return deepPage(channelLogin).then((msgs) =>
-    msgs
+  return deepPage(channelLogin).then((history) =>
+    history.messages
       .filter((m) => m.chatter_user_id === chatterId)
       .map((m) => mapChatMessage(m, m.timestamp_ms))
   );
@@ -105,7 +113,7 @@ export function forChatter(
 
 /// Shared by every card opened on the channel within PAGE_TTL_MS. A failed
 /// fetch is forgotten so the next card retries.
-function deepPage(channelLogin: string): Promise<RecentMessage[]> {
+function deepPage(channelLogin: string): Promise<RecentHistory> {
   const now = Date.now();
   for (const [login, entry] of deepPages) {
     if (now - entry.at >= PAGE_TTL_MS) deepPages.delete(login);
