@@ -97,6 +97,7 @@ export type RawNoticeDetails = {
   pay_it_forward: Gifter;
   raid: { user_name: string; viewer_count: number };
   bits_badge_tier: { tier: number };
+  modiversary: { months: number };
   charity_donation: {
     charity_name: string;
     amount: RawAmount;

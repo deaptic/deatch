@@ -107,6 +107,10 @@ export function noticeMessage(raw: RawNotification): string | null {
         })
         : null;
     }
+    case "modiversary": {
+      const d = detail(raw, "modiversary");
+      return d ? t("NOTICE_MODIVERSARY", { name, months: d.months }) : null;
+    }
     case "announcement":
       return t("NOTICE_ANNOUNCEMENT", { name });
     default:
