@@ -43,6 +43,7 @@ export const HYPE_TRAIN = "hype_train";
 export const POLL = "poll";
 export const PREDICTION = "prediction";
 export const GOAL = "goal";
+export const AD_BREAK = "ad_break";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -139,6 +140,13 @@ export const EVENTS = [
     label: "EVENT_TYPE_GOAL",
     description: "EVENT_TYPE_GOAL_DESCRIPTION",
     types: [GOAL],
+    modOnly: false,
+  },
+  {
+    key: "ad_break",
+    label: "EVENT_TYPE_AD_BREAK",
+    description: "EVENT_TYPE_AD_BREAK_DESCRIPTION",
+    types: [AD_BREAK],
     modOnly: false,
   },
   {
