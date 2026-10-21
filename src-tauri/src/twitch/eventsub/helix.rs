@@ -24,8 +24,9 @@ use twitch_api::eventsub::{
     channel::{
         ChannelChatSettingsUpdateV1, ChannelFollowV2, ChannelModerateV2,
         ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1,
-        ChannelShoutoutReceiveV1, ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1,
-        ChannelUpdateV2, ChannelWarningAcknowledgeV1,
+        ChannelShoutoutReceiveV1, ChannelSuspiciousUserMessageV1, ChannelSuspiciousUserUpdateV1,
+        ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1, ChannelUpdateV2,
+        ChannelWarningAcknowledgeV1,
     },
     channel::{ChannelPollBeginV1, ChannelPollEndV1},
     channel::{ChannelPredictionBeginV1, ChannelPredictionEndV1, ChannelPredictionLockV1},
@@ -149,6 +150,12 @@ async fn create(
         }
         EventKind::ChannelWarningAcknowledge => {
             subscribe!(ChannelWarningAcknowledgeV1::new(b, u))
+        }
+        EventKind::ChannelSuspiciousUserMessage => {
+            subscribe!(ChannelSuspiciousUserMessageV1::new(b, u))
+        }
+        EventKind::ChannelSuspiciousUserUpdate => {
+            subscribe!(ChannelSuspiciousUserUpdateV1::new(b, u))
         }
         EventKind::AutomodMessageHold => subscribe!(AutomodMessageHoldV2::new(b, u)),
         EventKind::AutomodMessageUpdate => subscribe!(AutomodMessageUpdateV2::new(b, u)),

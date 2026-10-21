@@ -9,6 +9,8 @@ import type {
   RawChatClearUserMessages,
   RawChatMessageDelete,
   RawModerate,
+  RawSuspiciousUserMessage,
+  RawSuspiciousUserUpdate,
   RawUnbanRequestCreate,
   RawUnbanRequestResolve,
   RawWarningAcknowledge,
@@ -19,6 +21,7 @@ import {
   markMessageDeleted,
   markUserMessagesDeleted,
   setAutomodHoldStatus,
+  setSuspicious,
 } from "../stores/feeds.ts";
 import { feedEvent, withDetail } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
@@ -27,7 +30,13 @@ import { mapFragment } from "./chat-mapper.ts";
 import { moderateMessage } from "./moderate-message.ts";
 import { automodReason } from "./automod-reason.ts";
 import {
+  suspiciousInfo,
+  suspiciousMessage,
+  suspiciousUpdate,
+} from "./suspicious-mapper.ts";
+import {
   moderateNoticeType,
+  SUSPICIOUS_USER,
   UNBAN_REQUEST,
   WARNING_ACKNOWLEDGED,
 } from "../constants/events.ts";
@@ -159,6 +168,33 @@ export function start(): () => void {
               chatter_login: raw.user_login,
               chatter_name: raw.user_name,
             },
+          ),
+        );
+      },
+    ),
+    listenEventSub<RawSuspiciousUserMessage>(
+      "channel.suspicious_user.message",
+      (e) => {
+        const raw = e.payload.event;
+        const info = suspiciousInfo(raw);
+        if (!info) return;
+        const id = raw.broadcaster_user_id;
+        const item = suspiciousMessage(raw, info, serverTime(e.payload));
+        // A monitored chatter's message also arrives as chat; flag that copy.
+        if (!appendItem(id, item)) setSuspicious(id, item.message_id, info);
+      },
+    ),
+    listenEventSub<RawSuspiciousUserUpdate>(
+      "channel.suspicious_user.update",
+      (e) => {
+        const raw = e.payload.event;
+        appendItem(
+          raw.broadcaster_user_id,
+          feedEvent(
+            SUSPICIOUS_USER,
+            suspiciousUpdate(raw),
+            serverTime(e.payload),
+            { chatter_name: raw.moderator_user_name },
           ),
         );
       },
