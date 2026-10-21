@@ -281,6 +281,19 @@ export type RawModerate =
     }
   );
 
+// channel.unban_request.create / resolve
+export type RawUnbanRequestCreate = RawModUser & {
+  broadcaster_user_id: string;
+  id: string;
+  text: string;
+};
+
+export type RawUnbanRequestResolve = RawModUser & {
+  broadcaster_user_id: string;
+  id: string;
+  status: "approved" | "canceled" | "denied";
+};
+
 // automod.message.hold
 export type AutomodHeldReason =
   | {

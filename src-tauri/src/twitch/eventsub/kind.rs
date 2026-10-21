@@ -34,6 +34,10 @@ pub enum EventKind {
     ChannelFollow,
     #[serde(rename = "channel.moderate")]
     ChannelModerate,
+    #[serde(rename = "channel.unban_request.create")]
+    ChannelUnbanRequestCreate,
+    #[serde(rename = "channel.unban_request.resolve")]
+    ChannelUnbanRequestResolve,
     #[serde(rename = "automod.message.hold")]
     AutomodMessageHold,
     #[serde(rename = "automod.message.update")]
@@ -49,7 +53,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 15] = [
+    pub const ALL: [Self; 17] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -60,6 +64,8 @@ impl EventKind {
         Self::ChannelShoutoutReceive,
         Self::ChannelFollow,
         Self::ChannelModerate,
+        Self::ChannelUnbanRequestCreate,
+        Self::ChannelUnbanRequestResolve,
         Self::AutomodMessageHold,
         Self::AutomodMessageUpdate,
         Self::ChannelPointsCustomRewardRedemptionAdd,
@@ -79,6 +85,8 @@ impl EventKind {
             Self::ChannelShoutoutReceive => "channel-shoutout-receive",
             Self::ChannelFollow => "channel-follow",
             Self::ChannelModerate => "channel-moderate",
+            Self::ChannelUnbanRequestCreate => "channel-unban-request-create",
+            Self::ChannelUnbanRequestResolve => "channel-unban-request-resolve",
             Self::AutomodMessageHold => "automod-message-hold",
             Self::AutomodMessageUpdate => "automod-message-update",
             Self::ChannelPointsCustomRewardRedemptionAdd => "channel-points-redemption-add",
@@ -108,7 +116,9 @@ impl EventKind {
             Self::ChannelShoutoutCreate
             | Self::ChannelShoutoutReceive
             | Self::ChannelFollow
-            | Self::ChannelModerate => (Role::Moderator, Focused),
+            | Self::ChannelModerate
+            | Self::ChannelUnbanRequestCreate
+            | Self::ChannelUnbanRequestResolve => (Role::Moderator, Focused),
             Self::ChannelPointsCustomRewardRedemptionAdd
             | Self::ChannelPointsAutomaticRewardRedemptionAdd
             | Self::ChannelUpdate => (Role::Broadcaster, Focused),

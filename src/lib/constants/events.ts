@@ -37,6 +37,8 @@ const MODERATE_ACTIONS = [
   "deny_unban_request",
 ] as const satisfies readonly RawModerate["action"][];
 
+export const UNBAN_REQUEST = "unban_request";
+
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
 }
@@ -117,7 +119,7 @@ export const EVENTS = [
     key: "moderation",
     label: "EVENT_TYPE_MODERATION",
     description: "EVENT_TYPE_MODERATION_DESCRIPTION",
-    types: MODERATE_ACTIONS.map(moderateNoticeType),
+    types: [UNBAN_REQUEST, ...MODERATE_ACTIONS.map(moderateNoticeType)],
     modOnly: true,
   },
 ] as const;

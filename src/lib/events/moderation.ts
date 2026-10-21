@@ -9,6 +9,8 @@ import type {
   RawChatClearUserMessages,
   RawChatMessageDelete,
   RawModerate,
+  RawUnbanRequestCreate,
+  RawUnbanRequestResolve,
 } from "../types/index.ts";
 import {
   appendItem,
@@ -17,13 +19,13 @@ import {
   markUserMessagesDeleted,
   setAutomodHoldStatus,
 } from "../stores/feeds.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { feedEvent, withDetail } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
 import { mapFragment } from "./chat-mapper.ts";
 import { moderateMessage } from "./moderate-message.ts";
 import { automodReason } from "./automod-reason.ts";
-import { moderateNoticeType } from "../constants/events.ts";
+import { moderateNoticeType, UNBAN_REQUEST } from "../constants/events.ts";
 
 /// Twitch strikes a message, or a user's messages, from the partner channel
 /// out of the shared feed; local actions arrive as their own delete events.
@@ -93,6 +95,50 @@ export function start(): () => void {
         }),
       );
     }),
+    listenEventSub<RawUnbanRequestCreate>(
+      "channel.unban_request.create",
+      (e) => {
+        const raw = e.payload.event;
+        appendItem(
+          raw.broadcaster_user_id,
+          feedEvent(
+            UNBAN_REQUEST,
+            withDetail(
+              t("EVENT_UNBAN_REQUEST", { user: raw.user_name }),
+              raw.text,
+            ),
+            serverTime(e.payload),
+            {
+              id: `unban-request-${raw.id}`,
+              chatter_user_id: raw.user_id,
+              chatter_login: raw.user_login,
+              chatter_name: raw.user_name,
+            },
+          ),
+        );
+      },
+    ),
+    listenEventSub<RawUnbanRequestResolve>(
+      "channel.unban_request.resolve",
+      (e) => {
+        const raw = e.payload.event;
+        // A mod's approve or deny already arrives through channel.moderate.
+        if (raw.status !== "canceled") return;
+        appendItem(
+          raw.broadcaster_user_id,
+          feedEvent(
+            UNBAN_REQUEST,
+            t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
+            serverTime(e.payload),
+            {
+              chatter_user_id: raw.user_id,
+              chatter_login: raw.user_login,
+              chatter_name: raw.user_name,
+            },
+          ),
+        );
+      },
+    ),
     listenEventSub<RawAutomodMessageHold>("automod.message.hold", (e) => {
       const p = e.payload.event;
       const item: FeedMessage = {
