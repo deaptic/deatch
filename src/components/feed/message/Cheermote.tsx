@@ -6,6 +6,7 @@ import {
   cheermoteTier,
 } from "../../../lib/utils/cheermote.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
+import { formatLocale } from "../../../lib/i18n/index.ts";
 
 type Props = {
   text: string;
@@ -40,7 +41,7 @@ export default function Cheermote(props: Props) {
               class="font-semibold text-(--bits)"
               style={{ "--bits": readableColor(tier().color, resolvedTheme()) }}
             >
-              {props.bits.toLocaleString()}
+              {props.bits.toLocaleString(formatLocale())}
             </span>
           </span>
         );
