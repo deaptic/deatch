@@ -587,7 +587,7 @@ mod tests {
         assert!(!wanted.contains(&sub("bg", EventKind::ChannelChatSettingsUpdate)));
         assert!(wanted.contains(&sub("modded", EventKind::ChannelModerate)));
         assert!(!wanted.contains(&sub("modded", EventKind::ChannelPollBegin)));
-        assert!(wanted.contains(&sub("viewer", EventKind::ChannelUpdate)));
+        assert!(!wanted.contains(&sub("viewer", EventKind::StreamOnline)));
         let own = wanted.iter().filter(|s| s.channel == id("me")).count();
         assert_eq!(own, EventKind::ALL.len());
     }
