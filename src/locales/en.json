@@ -287,6 +287,7 @@
   "FEED_MORE_OPTIONS": "More options",
   "FEED_NEW_MESSAGES": "New messages",
   "FEED_REDEEMED_CHANNEL_POINTS": "Redeemed channel points",
+  "FEED_MESSAGE_PERK": "{perk, select, highlight {Highlighted message} sub_only {Sent in sub-only mode} message_effect {Message effect} other {Gigantified emote}}",
   "FEED_REDEEMED_REWARD": "Redeemed {reward} for {cost, plural, one {# point} other {# points}}",
   "FEED_SENT_IN_CHAT": "Sent in {channel}'s chat",
   "FEED_SENT_IN_SHARED_CHAT": "Sent in a shared chat",

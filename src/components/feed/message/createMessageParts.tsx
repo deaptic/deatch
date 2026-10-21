@@ -124,8 +124,19 @@ export function createMessageParts(
         ),
       });
     }
-    if (item.channel_points?.kind === "custom_reward") {
-      const redemption = item.channel_points.redemption;
+    const points = item.channel_points;
+    if (points && points.kind !== "custom_reward") {
+      list.push({
+        content: (
+          <RichNotice
+            class="text-event-channel-points"
+            label={t("FEED_MESSAGE_PERK", { perk: points.kind })}
+          />
+        ),
+      });
+    }
+    if (points?.kind === "custom_reward") {
+      const redemption = points.redemption;
       list.push({
         content: (
           <RichNotice

@@ -87,6 +87,11 @@ Deno.test("classifies channel point messages", () => {
   );
   assertEquals(reward.channel_points, { kind: "custom_reward" });
   assertEquals(highlight.channel_points, { kind: "highlight" });
+  assertEquals(
+    mapChatMessage(raw({ message_type: "power_ups_gigantified_emote" }), 0)
+      .channel_points,
+    { kind: "gigantified_emote" },
+  );
   assertEquals(mapChatMessage(raw(), 0).channel_points, undefined);
 });
 

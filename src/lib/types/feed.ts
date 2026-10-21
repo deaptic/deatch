@@ -35,6 +35,13 @@ export type Redemption = {
   input?: string;
 };
 
+/// A paid look Twitch gives the whole message.
+export type MessagePerk =
+  | "highlight"
+  | "sub_only"
+  | "message_effect"
+  | "gigantified_emote";
+
 export type FeedMessage = {
   kind: "message";
   message_id: string;
@@ -47,7 +54,7 @@ export type FeedMessage = {
   reply?: FeedReply;
   timestamp: number;
   channel_points?:
-    | { kind: "highlight" }
+    | { kind: MessagePerk }
     | { kind: "custom_reward"; redemption?: Redemption };
   first_message?: boolean;
   cheer?: { bits: number };
