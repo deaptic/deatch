@@ -7,7 +7,7 @@ import type { RawNoticeDetails, RawNotification } from "../types/index.ts";
 
 type Plan = { sub_tier: string; is_prime?: boolean | null };
 
-function detail<K extends keyof RawNoticeDetails>(
+export function detail<K extends keyof RawNoticeDetails>(
   raw: RawNotification,
   key: K,
 ): RawNoticeDetails[K] | undefined {

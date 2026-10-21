@@ -13,7 +13,7 @@ import type {
   RawChannelPointsRedemption,
   RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
-import { appendItem } from "../stores/feeds.ts";
+import { addGiftRecipient, appendItem } from "../stores/feeds.ts";
 import { feedEvent, withDetail } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
@@ -23,6 +23,7 @@ import { mapRedemption } from "./redemption-mapper.ts";
 import { mapNotice } from "./notice-mapper.ts";
 import { mapAutomaticRedemption } from "./automatic-redemption-mapper.ts";
 import { mapBitsUse } from "./bits-use-mapper.ts";
+import { giftGroup } from "./gift-group.ts";
 
 function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
@@ -91,15 +92,29 @@ function redemptionEvent(
   );
 }
 
+const GIFT_WINDOW_MS = 60_000;
+
 export function start(): () => void {
-  return unlistenAll([
+  // Community gift id → its feed row, while its subs are still arriving.
+  const communityRows = new Map<string, string>();
+  const stop = unlistenAll([
     listenEventSub<RawNotification>("channel.chat.notification", (e) => {
       const raw = e.payload.event;
       const id = raw.broadcaster_user_id;
       const item = mapNotice(raw, serverTime(e.payload));
       if (!item) return;
-      if (raw.notice_type === "sub_gift") {
-        setTimeout(() => appendItem(id, item), 600);
+      const group = giftGroup(raw);
+      if (group?.role === "community") {
+        communityRows.set(group.giftId, item.id);
+        setTimeout(() => communityRows.delete(group.giftId), GIFT_WINDOW_MS);
+        appendItem(id, item);
+      } else if (group?.role === "member") {
+        // Twitch may send the gifts before the community notice they belong to.
+        setTimeout(() => {
+          const row = communityRows.get(group.giftId);
+          if (row) addGiftRecipient(id, row, group.recipient);
+          else appendItem(id, item);
+        }, 600);
       } else {
         appendItem(id, item);
       }
@@ -168,4 +183,8 @@ export function start(): () => void {
       if (item) appendItem(raw.broadcaster_user_id, item);
     }),
   ]);
+  return () => {
+    stop();
+    communityRows.clear();
+  };
 }

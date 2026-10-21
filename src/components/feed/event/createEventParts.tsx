@@ -44,6 +44,7 @@ import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import { splitName } from "./splitName.ts";
 import { t } from "../../../lib/i18n/index.ts";
+import { formatList } from "../../../lib/format/list.ts";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
 export type EventOptions = UserActions & {
@@ -176,6 +177,13 @@ export function createEventParts(
                   </For>
                 </span>
               )}
+            </Show>
+            <Show when={item.recipients?.length}>
+              <span class="block text-ink-soft">
+                {t("EVENT_GIFT_RECIPIENTS", {
+                  names: formatList(item.recipients ?? []),
+                })}
+              </span>
             </Show>
           </>
         }

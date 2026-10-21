@@ -83,8 +83,11 @@ export type RawNoticeDetails = {
     sub_tier: SubTier;
     recipient_user_name: string;
     cumulative_total: number | null;
+    /// Set when the gift is one of a community gift's subs.
+    community_gift_id?: string | null;
   };
   community_sub_gift: {
+    id?: string;
     sub_tier: SubTier;
     total: number;
     cumulative_total: number | null;

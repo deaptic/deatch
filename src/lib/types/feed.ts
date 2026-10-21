@@ -91,6 +91,8 @@ export type FeedEvent = {
   timestamp: number;
   silent?: boolean;
   message?: Fragment[];
+  /// Who received a community gift's subs, as they arrive.
+  recipients?: string[];
   clip?: { id: string };
   redemption?: Redemption;
 };

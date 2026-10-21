@@ -118,6 +118,25 @@ export function setSuspicious(
   );
 }
 
+export function addGiftRecipient(
+  broadcasterId: string,
+  eventId: string,
+  recipient: string,
+) {
+  if (!feeds[broadcasterId]) return;
+  setFeeds(
+    broadcasterId,
+    produce((f) => {
+      const item = f.messages.find(
+        (m) => m.kind === "event" && m.id === eventId,
+      );
+      if (item?.kind === "event") {
+        item.recipients = [...(item.recipients ?? []), recipient];
+      }
+    }),
+  );
+}
+
 export function setAutomodHoldStatus(
   broadcasterId: string,
   messageId: string,
