@@ -46,6 +46,8 @@ export function mapFragment(f: RawFragment): Fragment {
         prefix: f.cheermote.prefix,
         bits: f.cheermote.bits,
       };
+    case "gif":
+      return { type: "gif", text: f.text, url: f.gif.url };
     default:
       return { type: "text", text: f.text };
   }
