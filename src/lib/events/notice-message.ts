@@ -113,6 +113,8 @@ export function noticeMessage(raw: RawNotification): string | null {
         })
         : null;
     }
+    case "announcement":
+      return t("NOTICE_ANNOUNCEMENT", { name });
     default:
       return null;
   }

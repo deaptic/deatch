@@ -85,6 +85,13 @@ Deno.test("formats a charity amount in its currency", () => {
   );
 });
 
+Deno.test("names who made an announcement", () => {
+  assertEquals(
+    notice({ notice_type: "announcement", system_message: "" }),
+    "Announcement from Viewer",
+  );
+});
+
 Deno.test("leaves unknown notices to Twitch's text", () => {
   assertEquals(notice({ notice_type: "modiversary" }), null);
   assertEquals(notice({ notice_type: "sub" }), null);

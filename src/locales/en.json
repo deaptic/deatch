@@ -365,6 +365,7 @@
   "MODERATION_UNVIP": "{mod} removed {user} as a VIP",
   "MODERATION_VIP": "{mod} added {user} as a VIP",
   "MODERATION_WARN": "{mod} warned {user}",
+  "NOTICE_ANNOUNCEMENT": "Announcement from {name}",
   "NOTICE_ANONYMOUS": "An anonymous gifter",
   "NOTICE_BITS_BADGE_TIER": "{name} just earned a new {tier, number} Bits badge!",
   "NOTICE_CHARITY_DONATION": "{name} donated {amount} to support {charity}.",
