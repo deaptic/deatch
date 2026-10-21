@@ -233,6 +233,7 @@
   "EVENT_CHAT_CLEARED": "Chat has been cleared by a moderator.",
   "EVENT_FOLLOW": "{user} followed!",
   "EVENT_REDEEMED": "redeemed",
+  "EVENT_AUTOMATIC_REDEMPTION": "{user} redeemed {type, select, random_sub_emote_unlock {Unlock a Random Sub Emote} chosen_sub_emote_unlock {Choose an Emote to Unlock} chosen_modified_sub_emote_unlock {Modify a Single Emote} other {an automatic reward}} for {cost, plural, one {# point} other {# points}}",
   "EVENT_REDEMPTION": "{user} redeemed {reward} for {cost, plural, one {# point} other {# points}}",
   "EVENT_REDEMPTION_COST": "for {cost, plural, one {# point} other {# points}}",
   "EVENT_SHOUTOUT": "Shoutout to {channel}!",

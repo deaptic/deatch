@@ -6,6 +6,7 @@ mod helix;
 mod kind;
 mod runner;
 mod subscriptions;
+mod versions;
 
 pub use kind::{EventKind, Focus};
 

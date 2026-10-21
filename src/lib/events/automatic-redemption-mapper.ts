@@ -1,0 +1,41 @@
+// Pure mapper for Twitch's built-in channel points rewards.
+
+import { t } from "../i18n/index.ts";
+import type { FeedEvent } from "../types/feed.ts";
+import type { RawAutomaticRedemption } from "../types/twitch/eventsub.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
+
+// These arrive as a chat message of their own, which already shows them.
+const MESSAGE_REWARDS = new Set([
+  "send_highlighted_message",
+  "single_message_bypass_sub_mode",
+  "send_gigantified_emote",
+  "send_animated_message",
+]);
+
+/// Null for rewards the chat message already shows.
+export function mapAutomaticRedemption(
+  raw: RawAutomaticRedemption,
+  timestamp: number,
+): FeedEvent | null {
+  if (MESSAGE_REWARDS.has(raw.reward.type)) return null;
+  const emote = raw.reward.emote;
+  return feedEvent(
+    "channel_points_redemption",
+    t("EVENT_AUTOMATIC_REDEMPTION", {
+      user: raw.user_name,
+      type: raw.reward.type,
+      cost: raw.reward.channel_points,
+    }),
+    timestamp,
+    {
+      id: raw.id,
+      chatter_user_id: raw.user_id,
+      chatter_login: raw.user_login,
+      chatter_name: raw.user_name,
+      message: emote
+        ? [{ type: "emote", text: emote.name, id: emote.id }]
+        : undefined,
+    },
+  );
+}

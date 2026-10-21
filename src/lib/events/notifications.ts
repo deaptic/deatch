@@ -7,7 +7,10 @@ import type {
   RawShoutout,
   Redemption,
 } from "../types/index.ts";
-import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
+import type {
+  RawAutomaticRedemption,
+  RawChannelPointsRedemption,
+} from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { feedEvent, withDetail } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
@@ -16,6 +19,7 @@ import { sendShoutout } from "../api/twitch/chat.ts";
 import { correlateRedemption } from "./channelPointsCorrelator.ts";
 import { mapRedemption } from "./redemption-mapper.ts";
 import { mapNotice } from "./notice-mapper.ts";
+import { mapAutomaticRedemption } from "./automatic-redemption-mapper.ts";
 
 function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
@@ -119,6 +123,14 @@ export function start(): () => void {
               redemptionEvent(raw, redemption, ts),
             ),
         );
+      },
+    ),
+    listenEventSub<RawAutomaticRedemption>(
+      "channel.channel_points_automatic_reward_redemption.add",
+      (e) => {
+        const raw = e.payload.event;
+        const item = mapAutomaticRedemption(raw, serverTime(e.payload));
+        if (item) appendItem(raw.broadcaster_user_id, item);
       },
     ),
   ]);

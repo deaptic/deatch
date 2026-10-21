@@ -38,6 +38,8 @@ pub enum EventKind {
     AutomodMessageUpdate,
     #[serde(rename = "channel.channel_points_custom_reward_redemption.add")]
     ChannelPointsCustomRewardRedemptionAdd,
+    #[serde(rename = "channel.channel_points_automatic_reward_redemption.add")]
+    ChannelPointsAutomaticRewardRedemptionAdd,
     #[serde(rename = "channel.update")]
     ChannelUpdate,
 }
@@ -45,7 +47,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 13] = [
+    pub const ALL: [Self; 14] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -58,6 +60,7 @@ impl EventKind {
         Self::AutomodMessageHold,
         Self::AutomodMessageUpdate,
         Self::ChannelPointsCustomRewardRedemptionAdd,
+        Self::ChannelPointsAutomaticRewardRedemptionAdd,
         Self::ChannelUpdate,
     ];
 
@@ -75,6 +78,9 @@ impl EventKind {
             Self::AutomodMessageHold => "automod-message-hold",
             Self::AutomodMessageUpdate => "automod-message-update",
             Self::ChannelPointsCustomRewardRedemptionAdd => "channel-points-redemption-add",
+            Self::ChannelPointsAutomaticRewardRedemptionAdd => {
+                "channel-points-automatic-redemption-add"
+            }
             Self::ChannelUpdate => "channel-update",
         }
     }
@@ -98,9 +104,9 @@ impl EventKind {
             Self::ChannelShoutoutCreate | Self::ChannelFollow | Self::ChannelModerate => {
                 (Role::Moderator, Focused)
             }
-            Self::ChannelPointsCustomRewardRedemptionAdd | Self::ChannelUpdate => {
-                (Role::Broadcaster, Focused)
-            }
+            Self::ChannelPointsCustomRewardRedemptionAdd
+            | Self::ChannelPointsAutomaticRewardRedemptionAdd
+            | Self::ChannelUpdate => (Role::Broadcaster, Focused),
         }
     }
 }
