@@ -8,6 +8,7 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { t } from "../../lib/i18n/index.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
 import Menu from "../ui/Menu.tsx";
@@ -54,24 +55,24 @@ export default function UserContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label="Profile"
+        label={t("MENU_PROFILE")}
         icon={<User />}
         onClick={run(() => props.onShowProfile(props.x, props.y, props.userId))}
       />
       <MenuItem
-        label="Mention"
+        label={t("MENU_MENTION")}
         icon={<AtSign />}
         onClick={run(() => props.onMention(props.userLogin))}
       />
       <MenuItem
-        label="Open in browser"
+        label={t("MENU_OPEN_IN_BROWSER")}
         icon={<ExternalLink />}
         onClick={run(() => openUrl(channelUrl(props.userLogin)))}
       />
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
-          label="Shoutout"
+          label={t("MENU_SHOUTOUT")}
           icon={<Megaphone />}
           onClick={run(() =>
             sendShoutout({
@@ -81,13 +82,13 @@ export default function UserContextMenu(props: Props) {
           )}
         />
         <MenuItem
-          label="Warn"
+          label={t("MENU_WARN")}
           icon={<TriangleAlert />}
           tone="caution"
           onClick={moderate("warn")}
         />
         <MenuItem
-          label="Ban / Timeout"
+          label={t("MENU_BAN_TIMEOUT")}
           tone="negative"
           icon={<Ban />}
           onClick={moderate("ban")}
