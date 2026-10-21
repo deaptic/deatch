@@ -20,6 +20,7 @@ import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   query: string;
@@ -71,7 +72,7 @@ export default function SearchResults(props: Props) {
     try {
       const [channel] = await users.fetch({ logins: [login] });
       if (!channel) {
-        addToast("Channel not found", "error");
+        addToast(t("EXPLORE_CHANNEL_NOT_FOUND"), "error");
         return;
       }
       props.onSelect(channel);
@@ -111,7 +112,7 @@ export default function SearchResults(props: Props) {
     <div class="flex flex-col gap-8">
       <Show when={categories()?.length}>
         <section>
-          <h2 class="mb-3 text-heading text-ink">Categories</h2>
+          <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_CATEGORIES")}</h2>
           <div class="flex gap-3 overflow-x-auto pb-2">
             <For each={categories()}>
               {(category) => (
@@ -144,17 +145,16 @@ export default function SearchResults(props: Props) {
             <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
               <Show
                 when={!results.loading && !categories.loading}
-                fallback="Searching…"
+                fallback={t("EXPLORE_SEARCHING")}
               >
-                No results for “{debounced()}”. Press Enter to open it by name
-                anyway.
+                {t("EXPLORE_NO_RESULTS", { query: debounced() })}
               </Show>
             </p>
           </Show>
         }
       >
         <section>
-          <h2 class="mb-3 text-heading text-ink">Channels</h2>
+          <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_CHANNELS")}</h2>
           <div class="flex flex-col gap-0.5">
             <For each={ranked()}>
               {(channel, index) => {
@@ -182,8 +182,11 @@ export default function SearchResults(props: Props) {
                         {channel.user.displayName}
                       </p>
                       <p class="truncate text-small text-ink-soft">
-                        <Show when={channel.isLive} fallback="Offline">
-                          Live
+                        <Show
+                          when={channel.isLive}
+                          fallback={t("COMMON_OFFLINE")}
+                        >
+                          {t("COMMON_LIVE")}
                           <Show when={channel.gameName}>
                             {` · ${channel.gameName}`}
                           </Show>

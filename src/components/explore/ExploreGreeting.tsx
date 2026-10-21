@@ -1,13 +1,14 @@
 import { Show } from "solid-js";
 import { user } from "../../lib/stores/users.ts";
 import { liveStreams } from "../../lib/stores/channels.ts";
+import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
-function timeGreeting(): string {
+function timeGreeting(): MessageKey {
   const hour = new Date().getHours();
-  if (hour < 5) return "Still up";
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+  if (hour < 5) return "EXPLORE_GREETING_NIGHT";
+  if (hour < 12) return "EXPLORE_GREETING_MORNING";
+  if (hour < 18) return "EXPLORE_GREETING_AFTERNOON";
+  return "EXPLORE_GREETING_EVENING";
 }
 
 export default function ExploreGreeting() {
@@ -16,18 +17,20 @@ export default function ExploreGreeting() {
   return (
     <div class="mb-6">
       <h1 class="text-hero text-ink">
-        {timeGreeting()}
-        <Show when={user()}>{(u) => <>, {u().displayName}</>}</Show>
+        <Show when={user()} fallback={t(timeGreeting())}>
+          {(u) =>
+            t("EXPLORE_GREETING_NAMED", {
+              greeting: t(timeGreeting()),
+              name: u().displayName,
+            })}
+        </Show>
       </h1>
       <p class="mt-2 text-body text-ink-soft max-w-prose">
         <Show
           when={liveCount() > 0}
-          fallback="Nobody you follow is live right now. Search for a channel, or browse what's on."
+          fallback={t("EXPLORE_NONE_LIVE")}
         >
-          {liveCount() === 1
-            ? "One channel you follow is live. "
-            : `${liveCount()} channels you follow are live. `}
-          Find a chat to settle into.
+          {t("EXPLORE_LIVE_COUNT", { count: liveCount() })}
         </Show>
       </p>
     </div>

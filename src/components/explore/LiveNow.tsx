@@ -25,6 +25,7 @@ import LanguageSelect from "./LanguageSelect.tsx";
 import Chip from "../ui/Chip.tsx";
 import Button from "../ui/Button.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -134,7 +135,7 @@ export default function LiveNow(props: Props) {
     <section>
       <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
         <div class="grow flex flex-wrap items-baseline gap-x-3 gap-y-2">
-          <h2 class="text-heading text-ink">Live now</h2>
+          <h2 class="text-heading text-ink">{t("EXPLORE_LIVE_NOW")}</h2>
           <Show when={exploreFilters.category}>
             {(category) => (
               <Chip
@@ -154,7 +155,7 @@ export default function LiveNow(props: Props) {
             pressed={exploreFilters.followingOnly}
             onClick={() => setExploreFilters("followingOnly", (v) => !v)}
           >
-            Following
+            {t("EXPLORE_FOLLOWING")}
           </Button>
           <LanguageSelect
             value={exploreLanguage()}
@@ -191,9 +192,9 @@ export default function LiveNow(props: Props) {
             <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
               <Show
                 when={exploreFilters.followingOnly}
-                fallback="No live channels match these filters right now."
+                fallback={t("EXPLORE_NO_MATCHES")}
               >
-                Nobody you follow is live right now. Try "Everyone".
+                {t("EXPLORE_NONE_FOLLOWED_LIVE")}
               </Show>
             </p>
           }
@@ -216,7 +217,9 @@ export default function LiveNow(props: Props) {
           when={!exploreFilters.followingOnly && fetching() &&
             remote().length > 0}
         >
-          <p class="py-4 text-center text-small text-ink-soft">Loading more…</p>
+          <p class="py-4 text-center text-small text-ink-soft">
+            {t("EXPLORE_LOADING_MORE")}
+          </p>
         </Show>
       </Show>
     </section>

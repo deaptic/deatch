@@ -1,5 +1,6 @@
 import { Volume2, VolumeOff } from "lucide-solid";
 import { Show } from "solid-js";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   muted: boolean;
@@ -12,7 +13,7 @@ export default function TabMuteBadge(props: Props) {
   return (
     <span
       aria-hidden
-      data-tip={props.muted ? "Unmute browser tab" : "Mute browser tab"}
+      data-tip={t(props.muted ? "RAIL_UNMUTE_TAB" : "RAIL_MUTE_TAB")}
       onClick={(e) => {
         e.stopPropagation();
         props.onToggle();

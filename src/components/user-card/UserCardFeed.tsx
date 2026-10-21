@@ -2,6 +2,7 @@ import { Show } from "solid-js";
 import Feed from "../feed/Feed.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import type { UserActions } from "../ui/userLink.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = UserActions & {
   broadcasterId: string;
@@ -20,9 +21,11 @@ export default function UserCardFeed(props: Props) {
           when={props.messages.length > 0}
           fallback={
             <div class="flex-1 min-h-0 flex items-center justify-center text-ink-soft p-(--card-pad) text-center">
-              {props.loading
-                ? "Loading their messages…"
-                : "Nothing from them in this channel yet."}
+              {t(
+                props.loading
+                  ? "USER_CARD_LOADING_MESSAGES"
+                  : "USER_CARD_NO_MESSAGES",
+              )}
             </div>
           }
         >
