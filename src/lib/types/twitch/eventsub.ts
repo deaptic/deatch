@@ -411,6 +411,14 @@ export type RawGoal = {
   is_achieved?: boolean;
 };
 
+// channel.ad_break.begin
+export type RawAdBreak = {
+  broadcaster_user_id: string;
+  duration_seconds: number;
+  is_automatic: boolean;
+  requester_user_name: string;
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;

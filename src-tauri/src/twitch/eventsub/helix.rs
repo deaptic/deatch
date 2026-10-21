@@ -19,13 +19,13 @@ use twitch_api::eventsub::{
         ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
         ChannelChatMessageV1, ChannelChatNotificationV1,
     },
+    channel::{ChannelAdBreakBeginV1, ChannelGoalBeginV1, ChannelGoalEndV1},
     channel::{
         ChannelChatSettingsUpdateV1, ChannelFollowV2, ChannelModerateV2,
         ChannelPointsCustomRewardRedemptionAddV1, ChannelShoutoutCreateV1,
         ChannelShoutoutReceiveV1, ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1,
         ChannelUpdateV2, ChannelWarningAcknowledgeV1,
     },
-    channel::{ChannelGoalBeginV1, ChannelGoalEndV1},
     channel::{ChannelPollBeginV1, ChannelPollEndV1},
     channel::{ChannelPredictionBeginV1, ChannelPredictionEndV1, ChannelPredictionLockV1},
     channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
@@ -191,6 +191,9 @@ async fn create(
         }
         EventKind::ChannelGoalBegin => subscribe!(ChannelGoalBeginV1::broadcaster_user_id(b)),
         EventKind::ChannelGoalEnd => subscribe!(ChannelGoalEndV1::broadcaster_user_id(b)),
+        EventKind::ChannelAdBreakBegin => {
+            subscribe!(ChannelAdBreakBeginV1::broadcaster_user_id(b))
+        }
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }

@@ -1,7 +1,11 @@
 import { t } from "../i18n/index.ts";
 import { formatList } from "../format/list.ts";
-import { listenEventSub, unlistenAll } from "./listen.ts";
+import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
+import { formatApproxDuration } from "../format/duration.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
+import { AD_BREAK } from "../constants/events.ts";
 import type {
+  RawAdBreak,
   RawChannelUpdate,
   RawSharedChatEnd,
   RawSharedChatSession,
@@ -13,7 +17,7 @@ import {
   channelInfoFor,
   streamForUserId,
 } from "../stores/channels.ts";
-import { appendLocalNotice } from "../stores/feeds.ts";
+import { appendItem, appendLocalNotice } from "../stores/feeds.ts";
 
 const NOTICE = "channel_update";
 const SHARED_CHAT = "shared_chat_session";
@@ -81,6 +85,21 @@ export function start(): () => void {
           SHARED_CHAT,
         ),
     ),
+    listenEventSub<RawAdBreak>("channel.ad_break.begin", (e) => {
+      const raw = e.payload.event;
+      appendItem(
+        raw.broadcaster_user_id,
+        feedEvent(
+          AD_BREAK,
+          t("AD_BREAK_BEGIN", {
+            duration: formatApproxDuration(raw.duration_seconds),
+            automatic: String(raw.is_automatic),
+            requester: raw.requester_user_name,
+          }),
+          serverTime(e.payload),
+        ),
+      );
+    }),
     listenEventSub<RawStreamOnline>("stream.online", (e) => {
       const raw = e.payload.event;
       appendLocalNotice(
