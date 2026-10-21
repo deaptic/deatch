@@ -55,6 +55,7 @@ export function apply({ theme, accent }: Appearance): void {
 }
 
 const TILE_SCALE = 2.5;
+const GIF_SCALE = 6;
 
 type FeedSizing = { fontSize: number; groupSpacing: number };
 
@@ -62,6 +63,7 @@ export function applyFeedSizing({ fontSize, groupSpacing }: FeedSizing): void {
   const style = document.documentElement.style;
   style.setProperty("--chat-size", `${fontSize}px`);
   style.setProperty("--chat-tile", `${fontSize * TILE_SCALE}px`);
+  style.setProperty("--chat-gif", `${fontSize * GIF_SCALE}px`);
   style.setProperty("--chat-two-lines", "2lh");
   style.setProperty("--feed-group-gap", `${groupSpacing}px`);
 }

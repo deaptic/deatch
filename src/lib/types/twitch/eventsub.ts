@@ -105,6 +105,8 @@ export type RawNoticeDetails = {
   raid: { user_name: string; viewer_count: number };
   bits_badge_tier: { tier: number };
   modiversary: { months: number };
+  /// Twitch doesn't document this one's casing; read it case-blind.
+  announcement: { color: string };
   charity_donation: {
     charity_name: string;
     amount: RawAmount;

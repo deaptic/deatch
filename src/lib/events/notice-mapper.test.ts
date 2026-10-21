@@ -20,6 +20,18 @@ Deno.test("drops a notice with nothing to show", () => {
   assertEquals(mapNotice(raw({ system_message: " " }), 0), null);
 });
 
+Deno.test("takes the announcement colour the broadcaster picked", () => {
+  const colored = (color: string) =>
+    mapNotice(
+      raw({ notice_type: "announcement", announcement: { color } }),
+      0,
+    )?.announcement_color;
+  assertEquals(colored("PURPLE"), "purple");
+  assertEquals(colored("green"), "green");
+  assertEquals(colored("PRIMARY"), "primary");
+  assertEquals(colored("teal"), undefined);
+});
+
 Deno.test("keeps the chatter's own text", () => {
   const item = mapNotice(
     raw({
