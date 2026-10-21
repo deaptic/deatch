@@ -15,6 +15,7 @@ import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
 import { correlateRedemption } from "./channelPointsCorrelator.ts";
 import { mapRedemption } from "./redemption-mapper.ts";
+import { noticeMessage } from "./notice-message.ts";
 
 // Most notices ship a complete `system_message` that already starts with the
 // chatter name (e.g. resub: "viewer23 subscribed at Tier 1..."). A few
@@ -24,7 +25,7 @@ const NOTICES_NEEDING_NAME = new Set(["modiversary"]);
 
 function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
   const name = raw.chatter_user_name;
-  let system_message = raw.system_message;
+  let system_message = noticeMessage(raw) ?? raw.system_message;
   if (
     name &&
     NOTICES_NEEDING_NAME.has(raw.notice_type) &&

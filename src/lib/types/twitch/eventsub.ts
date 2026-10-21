@@ -64,16 +64,57 @@ export type RawChatMessage = {
 };
 
 // channel.chat.notification / shoutout / follow
-export type RawNotification = {
-  broadcaster_user_id: string;
-  notice_type: string;
-  system_message: string;
-  chatter_is_anonymous?: boolean;
-  chatter_user_id?: string;
-  chatter_user_login?: string;
-  chatter_user_name?: string;
-  color?: string;
+type SubTier = "1000" | "2000" | "3000";
+
+type Gifter = {
+  gifter_is_anonymous: boolean;
+  gifter_user_name: string | null;
 };
+
+export type RawNoticeDetails = {
+  sub: { sub_tier: SubTier; is_prime: boolean };
+  resub: {
+    sub_tier: SubTier;
+    is_prime: boolean | null;
+    cumulative_months: number;
+    streak_months: number | null;
+  };
+  sub_gift: {
+    sub_tier: SubTier;
+    recipient_user_name: string;
+    cumulative_total: number | null;
+  };
+  community_sub_gift: {
+    sub_tier: SubTier;
+    total: number;
+    cumulative_total: number | null;
+  };
+  gift_paid_upgrade: Gifter;
+  prime_paid_upgrade: { sub_tier: SubTier };
+  pay_it_forward: Gifter;
+  raid: { user_name: string; viewer_count: number };
+  bits_badge_tier: { tier: number };
+  charity_donation: {
+    charity_name: string;
+    amount: { value: number; decimal_place: number; currency: string };
+  };
+};
+
+export type RawNotification =
+  & {
+    broadcaster_user_id: string;
+    notice_type: string;
+    system_message: string;
+    chatter_is_anonymous?: boolean;
+    chatter_user_id?: string;
+    chatter_user_login?: string;
+    chatter_user_name?: string;
+    color?: string;
+  }
+  & Partial<RawNoticeDetails>
+  & {
+    [K in keyof RawNoticeDetails as `shared_chat_${K}`]?: RawNoticeDetails[K];
+  };
 
 export type RawShoutout = {
   broadcaster_user_id: string;
