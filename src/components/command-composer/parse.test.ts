@@ -22,7 +22,7 @@ Deno.test("rejects anything that is not a duration", () => {
 Deno.test("reports a value outside the option's range", () => {
   const opt: CommandOption = {
     name: "d",
-    description: "",
+    description: "COMMAND_SLOW_DURATION",
     type: "duration",
     min: 3,
     max: 120,
@@ -34,5 +34,8 @@ Deno.test("reports a value outside the option's range", () => {
     durationError({ ...opt, max: undefined }, 1),
     "Must be at least 3s",
   );
-  assertEquals(durationError({ ...opt, hint: "5m" }, null), "Try 5m");
+  assertEquals(
+    durationError({ ...opt, hint: "COMMAND_SLOW_DURATION_HINT" }, null),
+    "Try 3s–120s, default 30s",
+  );
 });

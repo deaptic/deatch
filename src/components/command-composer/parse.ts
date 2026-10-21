@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n/index.ts";
 import type { CommandOption, DurationOption } from "./types.ts";
 import { DURATION_UNITS, formatDuration } from "../../lib/format/duration.ts";
 
@@ -22,13 +23,20 @@ export function durationError(
   opt: DurationOption,
   seconds: number | null,
 ): string | null {
-  if (seconds === null) return `Try ${opt.hint ?? "30s, 5m, 1h"}`;
+  if (seconds === null) {
+    return t("COMMAND_DURATION_TRY", {
+      examples: t(opt.hint ?? "COMMAND_DURATION_EXAMPLES"),
+    });
+  }
   const min = opt.min ?? 0;
   const max = opt.max ?? Infinity;
   if (seconds >= min && seconds <= max) return null;
   return max === Infinity
-    ? `Must be at least ${formatDuration(min)}`
-    : `Must be ${formatDuration(min)}–${formatDuration(max)}`;
+    ? t("COMMAND_DURATION_MIN", { min: formatDuration(min) })
+    : t("COMMAND_DURATION_RANGE", {
+      min: formatDuration(min),
+      max: formatDuration(max),
+    });
 }
 
 export function slotSatisfied(opt: CommandOption, slot: Slot): boolean {

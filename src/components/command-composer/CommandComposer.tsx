@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n/index.ts";
 import {
   createEffect,
   createMemo,
@@ -202,15 +203,17 @@ export default function CommandComposer(props: Props) {
   const hintBody = createMemo(() => {
     if (resolving()) {
       return activeOption()?.type === "search"
-        ? "Searching…"
-        : "Looking up user…";
+        ? t("COMMAND_SEARCHING")
+        : t("COMMAND_LOOKING_UP_USER");
     }
     const opt = activeOption();
     const slot = activeSlot();
-    if (!opt || !slot) return hasSlots ? "" : props.command.description;
+    if (!opt || !slot) return hasSlots ? "" : t(props.command.description);
     if (slot.error) return slot.error;
-    const base = opt.hint ?? opt.description;
-    return opt.required && slot.resolved === null ? `Required · ${base}` : base;
+    const base = t(opt.hint ?? opt.description);
+    return opt.required && slot.resolved === null
+      ? t("COMMAND_REQUIRED_HINT", { hint: base })
+      : base;
   });
 
   const canSubmit = () =>
@@ -223,14 +226,14 @@ export default function CommandComposer(props: Props) {
     try {
       const u = (await users.fetch({ logins: [login] }))[0];
       if (!u) {
-        patchSlot(idx, { error: `User not found: ${login}` });
+        patchSlot(idx, { error: t("COMMAND_USER_NOT_FOUND", { login }) });
         return false;
       }
       fillUserSlot(idx, u.displayName, u.id);
       return true;
     } catch (e) {
       console.error("user lookup failed", e);
-      patchSlot(idx, { error: "Lookup failed" });
+      patchSlot(idx, { error: t("COMMAND_LOOKUP_FAILED") });
       return false;
     } finally {
       setResolving(false);
@@ -245,7 +248,7 @@ export default function CommandComposer(props: Props) {
     try {
       const match = (await opt.search(query))[0];
       if (!match) {
-        patchSlot(idx, { error: `No match for: ${query}` });
+        patchSlot(idx, { error: t("COMMAND_NO_MATCH", { query }) });
         return false;
       }
       patchSlot(idx, {
@@ -257,7 +260,7 @@ export default function CommandComposer(props: Props) {
       return true;
     } catch (e) {
       console.error("search lookup failed", e);
-      patchSlot(idx, { error: "Lookup failed" });
+      patchSlot(idx, { error: t("COMMAND_LOOKUP_FAILED") });
       return false;
     } finally {
       setResolving(false);
@@ -295,7 +298,7 @@ export default function CommandComposer(props: Props) {
     setSlots((prev) =>
       prev.map((slot, i) =>
         options[i]?.required && slot.resolved === null && !slot.error
-          ? { ...slot, error: "Required" }
+          ? { ...slot, error: t("COMMAND_REQUIRED") }
           : slot
       )
     );
@@ -305,7 +308,10 @@ export default function CommandComposer(props: Props) {
       setSlots((prev) =>
         prev.map((
           slot,
-        ) => (slot.error === "Required" ? { ...slot, error: null } : slot))
+        ) => (slot.error === t("COMMAND_REQUIRED")
+          ? { ...slot, error: null }
+          : slot)
+        )
       );
     }, 1500);
   }
