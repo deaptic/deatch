@@ -119,6 +119,11 @@ Deno.test("marks only shared chat messages with their source channel", () => {
   });
   assertEquals(unshared.source, undefined);
   assertEquals(mapChatMessage(raw(), 0).source, undefined);
+  const local = mapChatMessage(
+    raw({ source_broadcaster_user_id: raw().broadcaster_user_id }),
+    0,
+  );
+  assertEquals(local.source, undefined);
 });
 
 Deno.test("marks first-time chatters and keeps deleted backlog flag", () => {
