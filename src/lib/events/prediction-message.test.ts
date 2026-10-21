@@ -23,21 +23,21 @@ const prediction = (p: Partial<RawPrediction> = {}): RawPrediction => ({
 Deno.test("describes the start and the locked stakes", () => {
   assertEquals(
     predictionBegin(prediction()),
-    "Prediction started for 5m: Win? (Yes and No)",
+    "Prediction “Win?” started for 5m: Yes and No",
   );
   assertEquals(
     predictionLock(prediction()),
-    "Prediction locked: Win?. Yes 1,000 points from 4 viewers and No 500 points from 1 viewer",
+    "Prediction “Win?” locked: Yes 1,000 points from 4 viewers and No 500 points from 1 viewer",
   );
 });
 
 Deno.test("names the winner and the pot, or the refund", () => {
   assertEquals(
     predictionEnd(prediction({ status: "resolved", winning_outcome_id: "a" })),
-    "Prediction resolved: Win?. Yes won, splitting 1,500 points between 4 viewers",
+    "Prediction “Win?” resolved: Yes won, splitting 1,500 points between 4 viewers",
   );
   assertEquals(
     predictionEnd(prediction({ status: "canceled" })),
-    "Prediction canceled: Win?. Points were refunded",
+    "Prediction “Win?” was canceled and points were refunded",
   );
 });

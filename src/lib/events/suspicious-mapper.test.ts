@@ -28,7 +28,7 @@ Deno.test("explains why a chatter is flagged", () => {
   }));
   assertEquals(
     info && formatSuspicious(info),
-    "Restricted user, only mods see this, likely ban evader, banned in a shared channel",
+    "Restricted chatter, only mods see this, likely ban evader, banned in a shared channel",
   );
   assertEquals(suspiciousInfo(message({ low_trust_status: "none" })), null);
 });

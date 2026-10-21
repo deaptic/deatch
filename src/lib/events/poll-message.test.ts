@@ -17,13 +17,13 @@ const poll = (p: Partial<RawPoll> = {}): RawPoll => ({
 });
 
 Deno.test("lists the choices and how long a poll runs", () => {
-  assertEquals(pollBegin(poll()), "Poll started for 2m: Pizza? (Yes and No)");
+  assertEquals(pollBegin(poll()), "Poll “Pizza?” started for 2m: Yes and No");
 });
 
 Deno.test("ranks the results, noting an early end", () => {
   assertEquals(
     pollEnd(poll({ status: "terminated" })),
-    "Poll ended early: Pizza?. Results: No 7 votes and Yes 3 votes",
+    "Poll “Pizza?” ended early. Results: No 7 votes and Yes 3 votes",
   );
   assertEquals(pollEnd(poll({ status: "archived" })), null);
 });
