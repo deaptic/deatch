@@ -1,6 +1,7 @@
 import { Languages } from "lucide-solid";
 import { languageName, searchLanguages } from "../../lib/utils/languages.ts";
 import Combobox from "../ui/Combobox.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   value: string;
@@ -15,8 +16,8 @@ export default function LanguageSelect(props: Props) {
       options={props.options}
       search={searchLanguages}
       label={languageName}
-      placeholder="All languages"
-      ariaLabel="Language"
+      placeholder={t("EXPLORE_ALL_LANGUAGES")}
+      ariaLabel={t("EXPLORE_LANGUAGE")}
       icon={<Languages />}
       onChange={props.onChange}
     />

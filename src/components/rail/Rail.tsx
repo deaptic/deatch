@@ -57,6 +57,7 @@ import { SIDE_GAP } from "../ui/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -107,25 +108,25 @@ export default function Rail(props: Props) {
   const linkStatus = (): LinkStatus => {
     if (!linkConnected()) {
       return {
-        sub: "Add the Firefox add-on",
+        sub: t("RAIL_LINK_ADD_FIREFOX"),
         tone: "soft",
         tile: false,
         onClick: openLinkMenu,
       };
     }
     if (linkWarmedChannels().length === 0) {
-      return { sub: "No Twitch tabs open", tone: "soft", tile: false };
+      return { sub: t("RAIL_LINK_NO_TABS"), tone: "soft", tile: false };
     }
     if (linkSynced()) {
       return {
-        sub: linkAudioLink() ? "Synced with audio" : "Synced",
+        sub: t(linkAudioLink() ? "RAIL_LINK_SYNCED_AUDIO" : "RAIL_LINK_SYNCED"),
         tone: "positive",
         tile: "positive",
         onClick: props.onToggleLink,
       };
     }
     return {
-      sub: "Sync with browser",
+      sub: t("RAIL_LINK_SYNC_BROWSER"),
       tone: "soft",
       tile: false,
       onClick: props.onToggleLink,
@@ -173,8 +174,8 @@ export default function Rail(props: Props) {
       const targets = document.querySelectorAll(
         `[data-channel-id="${sel.id}"]`,
       );
-      for (const t of targets) {
-        (t as HTMLElement).scrollIntoView({
+      for (const target of targets) {
+        (target as HTMLElement).scrollIntoView({
           block: "nearest",
           behavior: "smooth",
         });
@@ -240,9 +241,9 @@ export default function Rail(props: Props) {
     setAddLoading(true);
     try {
       const [u] = await users.fetch({ logins: [login] });
-      if (!u) throw new Error("User not found");
+      if (!u) throw new Error(t("RAIL_USER_NOT_FOUND"));
       if (pinnedChannels().includes(u.id)) {
-        addToast("Already pinned", "error");
+        addToast(t("RAIL_ALREADY_PINNED"), "error");
         closeAdd();
         return;
       }
@@ -264,14 +265,14 @@ export default function Rail(props: Props) {
 
   return (
     <nav
-      aria-label="Channels"
+      aria-label={t("RAIL_CHANNELS")}
       class={`flex flex-col h-full shrink-0 bg-surface border-r border-line-soft overflow-hidden transition-all duration-settle ease-out ${
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
     >
       <button
         type="button"
-        aria-label={expanded() ? "Collapse rail" : "Expand rail"}
+        aria-label={t(expanded() ? "RAIL_COLLAPSE_RAIL" : "RAIL_EXPAND_RAIL")}
         aria-expanded={expanded()}
         onClick={() => setAppearanceRailExpanded(!expanded())}
         class="shrink-0 h-9 mx-2 mt-2 mb-0.5 pl-2 flex items-center gap-3 rounded-sm text-ink-faint hover:bg-raised hover:text-ink cursor-pointer transition-colors duration-snap overflow-hidden"
@@ -289,7 +290,7 @@ export default function Rail(props: Props) {
             expanded() ? "opacity-100" : "opacity-0"
           }`}
         >
-          Collapse
+          {t("RAIL_COLLAPSE")}
         </span>
       </button>
 
@@ -349,9 +350,11 @@ export default function Rail(props: Props) {
             </Show>
             <RailRow
               ref={(el) => (addBtn = el)}
-              label="Pin a channel"
+              label={t("RAIL_PIN_CHANNEL")}
               tooltip={
-                <p class="font-semibold whitespace-nowrap">Pin a channel</p>
+                <p class="font-semibold whitespace-nowrap">
+                  {t("RAIL_PIN_CHANNEL")}
+                </p>
               }
               onClick={openAdd}
             >
@@ -459,12 +462,12 @@ export default function Rail(props: Props) {
       <div class={`flex flex-col py-1.5 shrink-0 ${railGap()}`}>
         <RailRow
           ref={(el) => (linkBtn = el)}
-          label="Link"
+          label={t("SETTINGS_LINK")}
           sub={linkStatus().sub}
           subTone={linkStatus().tone}
           tooltip={
             <p class="font-semibold whitespace-nowrap">
-              Link · {linkStatus().sub}
+              {t("RAIL_LINK_TOOLTIP", { status: linkStatus().sub })}
             </p>
           }
           onClick={() => linkStatus().onClick?.()}
@@ -475,9 +478,11 @@ export default function Rail(props: Props) {
           </RailTile>
         </RailRow>
         <RailRow
-          label="Explore"
-          sub="Find live channels"
-          tooltip={<p class="font-semibold whitespace-nowrap">Explore</p>}
+          label={t("RAIL_EXPLORE")}
+          sub={t("RAIL_EXPLORE_SUB")}
+          tooltip={
+            <p class="font-semibold whitespace-nowrap">{t("RAIL_EXPLORE")}</p>
+          }
           selected={activeView() === "explore"}
           onClick={showExplore}
         >
@@ -486,9 +491,11 @@ export default function Rail(props: Props) {
           </RailTile>
         </RailRow>
         <RailRow
-          label="Settings"
-          sub="Preferences and keys"
-          tooltip={<p class="font-semibold whitespace-nowrap">Settings</p>}
+          label={t("SETTINGS_TITLE")}
+          sub={t("RAIL_SETTINGS_SUB")}
+          tooltip={
+            <p class="font-semibold whitespace-nowrap">{t("SETTINGS_TITLE")}</p>
+          }
           selected={isSettingsOpen()}
           onClick={toggleSettings}
         >
@@ -504,7 +511,7 @@ export default function Rail(props: Props) {
           {(u) => (
             <RailRow
               label={u().displayName}
-              sub="Your channel"
+              sub={t("RAIL_YOUR_CHANNEL")}
               tooltip={
                 <p class="font-semibold whitespace-nowrap">
                   {u().displayName}
@@ -574,7 +581,7 @@ export default function Rail(props: Props) {
             y={p().y}
             value={addInput()}
             loading={addLoading()}
-            placeholder="Channel name"
+            placeholder={t("RAIL_CHANNEL_NAME")}
             onInput={setAddInput}
             onSubmit={submitAdd}
             onClose={closeAdd}

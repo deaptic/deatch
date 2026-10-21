@@ -19,6 +19,7 @@ import { mergeMessages } from "./mergeMessages.ts";
 import type { UserAction } from "../ui/userLink.ts";
 import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
 import type { UserRef } from "../../lib/types/index.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   x: number;
@@ -173,7 +174,7 @@ export default function UserCard(props: Props) {
         ref={cardRef}
         on:mousedown={bringToFront}
         role="dialog"
-        aria-label="User card"
+        aria-label={t("USER_CARD_LABEL")}
         onTransitionEnd={() => setEntered(true)}
         class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-(--card-w) h-(--card-h) min-w-(--card-w) min-h-min resize transition duration-quick ease-out ${
           entered() ? "" : "starting:opacity-0 starting:translate-y-1"

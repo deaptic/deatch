@@ -29,6 +29,7 @@ import IconButton from "../ui/IconButton.tsx";
 import CopyButton from "./CopyButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardMeta, { type FollowStatus } from "./UserCardMeta.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   chatterId: string;
@@ -109,18 +110,18 @@ export default function UserCardHeader(props: Props) {
         <div class="flex rounded-sm bg-media-scrim">
           <Show when={user()}>
             {(u) => (
-              <CopyButton copy={u().login} label="Copy login">
+              <CopyButton copy={u().login} label={t("USER_CARD_COPY_LOGIN")}>
                 <AtSign class="size-4" />
               </CopyButton>
             )}
           </Show>
-          <CopyButton copy={props.chatterId} label="Copy user ID">
+          <CopyButton copy={props.chatterId} label={t("USER_CARD_COPY_ID")}>
             <Hash class="size-4" />
           </CopyButton>
         </div>
         <div class="rounded-sm bg-media-scrim">
           <IconButton
-            label={props.pinned ? "Unpin card" : "Keep card open"}
+            label={t(props.pinned ? "USER_CARD_UNPIN" : "USER_CARD_PIN")}
             size="sm"
             pressed={props.pinned}
             onMouseDown={(e) => e.stopPropagation()}
@@ -134,7 +135,7 @@ export default function UserCardHeader(props: Props) {
         <div class="flex gap-(--card-gap)">
           <button
             type="button"
-            aria-label="Open chat"
+            aria-label={t("MENU_OPEN_CHAT")}
             class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-(--avatar-lift)"
             onMouseDown={(e) => {
               e.stopPropagation();

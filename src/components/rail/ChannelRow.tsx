@@ -6,6 +6,7 @@ import Avatar from "../ui/Avatar.tsx";
 import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
 import TabMuteBadge from "./TabMuteBadge.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   ch: User;
@@ -26,8 +27,12 @@ export default function ChannelRow(props: Props) {
   const info = () => channelInfoFor(props.ch.id);
   const sub = () => {
     const s = stream();
-    if (s) return `${s.game.name || "Live"} · ${formatViewers(s.viewerCount)}`;
-    return info()?.game.name || "Offline";
+    if (s) {
+      return `${s.game.name || t("COMMON_LIVE")} · ${
+        formatViewers(s.viewerCount)
+      }`;
+    }
+    return info()?.game.name || t("COMMON_OFFLINE");
   };
 
   return (

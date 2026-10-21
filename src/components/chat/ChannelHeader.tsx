@@ -63,7 +63,7 @@ export default function ChannelHeader(props: Props) {
           <Stat icon={<Gamepad2 />} value={game()} copy={game()} truncate />
           <Show
             when={stream()}
-            fallback={<Stat icon={<Moon />} value={t("CHAT_HEADER_OFFLINE")} />}
+            fallback={<Stat icon={<Moon />} value={t("COMMON_OFFLINE")} />}
           >
             {(s) => (
               <>

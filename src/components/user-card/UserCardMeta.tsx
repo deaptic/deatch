@@ -3,6 +3,7 @@ import { Calendar, Heart } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { createCopyable } from "../ui/copyable.ts";
 import Timestamp from "../ui/Timestamp.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 export type FollowStatus =
   | { kind: "unknown" }
@@ -25,7 +26,7 @@ export default function UserCardMeta(props: Props) {
         {(createdAt) => (
           <DateCell
             icon={<Calendar />}
-            title="Account created"
+            title={t("USER_CARD_ACCOUNT_CREATED")}
             copyable
           >
             <Timestamp ts={createdAt()} format="D" />
@@ -39,7 +40,11 @@ export default function UserCardMeta(props: Props) {
       >
         <Show
           when={followedAt()}
-          fallback={props.follow.kind === "none" ? "Not following" : "Unknown"}
+          fallback={t(
+            props.follow.kind === "none"
+              ? "USER_CARD_NOT_FOLLOWING"
+              : "USER_CARD_FOLLOW_UNKNOWN",
+          )}
         >
           {(at) => <Timestamp ts={at()} format="D" />}
         </Show>
@@ -49,9 +54,11 @@ export default function UserCardMeta(props: Props) {
 }
 
 function followTitle(follow: FollowStatus): string {
-  return follow.kind === "hidden"
-    ? "Mod permission required to view follow status"
-    : "Following since";
+  return t(
+    follow.kind === "hidden"
+      ? "USER_CARD_FOLLOW_HIDDEN"
+      : "USER_CARD_FOLLOWING_SINCE",
+  );
 }
 
 function DateCell(props: {

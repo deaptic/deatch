@@ -2,6 +2,7 @@ import { Search, X } from "lucide-solid";
 import { Show } from "solid-js";
 import Field from "../ui/Field.tsx";
 import IconButton from "../ui/IconButton.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   value: string;
@@ -17,11 +18,11 @@ export default function ExploreSearch(props: Props) {
       ref={(el) => queueMicrotask(() => el.focus())}
       value={props.value}
       onInput={(e) => props.onInput(e.currentTarget.value)}
-      placeholder="Search channels and categories"
+      placeholder={t("EXPLORE_SEARCH_PLACEHOLDER")}
       trailing={
         <Show when={props.value}>
           <IconButton
-            label="Clear search"
+            label={t("EXPLORE_CLEAR_SEARCH")}
             size="sm"
             onClick={() => props.onInput("")}
           >
