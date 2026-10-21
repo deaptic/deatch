@@ -3,7 +3,7 @@
   "AUTH_CONNECTED": "Connected to Twitch!",
   "AUTH_SIGNED_OUT": "Twitch signed you out, please sign in again",
   "AD_BREAK_BEGIN": "{duration} ad break started {automatic, select, true {automatically} other {by {requester}}}",
-  "AUTOMOD_BLOCKED_TERM": "Blocked term: {terms}",
+  "AUTOMOD_BLOCKED_TERM": "{kind, select, blocked_link {Blocked link} other {Blocked term}}: {terms}",
   "AUTOMOD_CATEGORY": "AutoMod: {category, select, aggression {Aggression} aggressive {Aggression} bullying {Bullying} disability {Disability} misogyny {Misogyny} race_ethnicity_or_religion {Race, ethnicity or religion} sex_based_terms {Sex-based terms} sexual {Sex-based terms} sexuality_sex_or_gender {Sexuality, sex or gender} identity {Sexuality, sex or gender} swearing {Swearing} profanity {Swearing} other {{category}}} (level {level})",
   "BACKLOG_FAILED": "Couldn't load recent history: {error}",
   "BACKLOG_GAP": "Some messages may be missing here",
