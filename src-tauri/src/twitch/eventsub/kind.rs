@@ -199,13 +199,16 @@ impl EventKind {
             | Self::ChannelChatMessageDelete
             | Self::ChannelChatClear
             | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
-            Self::ChannelChatSettingsUpdate
-            | Self::ChannelUpdate
+            Self::ChannelChatSettingsUpdate => (Role::Viewer, Focused),
+            // These need no authorization, so on a channel you don't own each
+            // costs 1 of the 10 Twitch allows a token's WebSockets; on your
+            // own channel they are free.
+            Self::ChannelUpdate
             | Self::ChannelSharedChatBegin
             | Self::ChannelSharedChatUpdate
             | Self::ChannelSharedChatEnd
             | Self::StreamOnline
-            | Self::StreamOffline => (Role::Viewer, Focused),
+            | Self::StreamOffline => (Role::Broadcaster, Focused),
             Self::AutomodMessageHold | Self::AutomodMessageUpdate => (Role::Moderator, Background),
             Self::ChannelShoutoutCreate
             | Self::ChannelShoutoutReceive
