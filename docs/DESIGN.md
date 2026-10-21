@@ -48,8 +48,8 @@ negative share a hue; shape tells them apart (a dot or pill is live). Events
 have `event-*`, one per Twitch event, shown as a 3px bar and a 10% tint, never a
 fill. When Twitch says which colour an event wears, it wears that one: an
 announcement takes the broadcaster's pick from `event-announce-*`, or
-`event-announce` for the default. A chatter's Twitch colour is lightness-clamped per theme so it reads; a
-chatter with no colour is `ink-soft` grey everywhere.
+`event-announce` for the default. A chatter's Twitch colour is lightness-clamped
+per theme so it reads; a chatter with no colour is `ink-soft` grey everywhere.
 
 ### Type, space, shape
 
@@ -74,8 +74,8 @@ content are `Artwork` and keep their native shape, never cropped to another one:
 `boxart` 3:4, `video` 16:9, `native` for kinds with no fixed shape (chat GIFs);
 a new kind of picture is a new shape there. Artwork sits on `raised` while
 loading, and its radius follows where it sits (`xs` inline in a row, `md` on its
-own, none when it bleeds to a card's edge).
-Anything laid over it uses `media-scrim`.
+own, none when it bleeds to a card's edge). Anything laid over it uses
+`media-scrim`.
 
 Icons are Lucide and inherit text colour: 16 on every control and menu item, 20
 in headers and rail tiles, 24 in empty states; a glyph inside a chip or badge
@@ -128,26 +128,29 @@ Every entry is one `FeedItem`, which owns all row layout. Each kind (message,
 event) only supplies its parts: tone, tile, notes, overlay, content.
 
 Each row has one tone, in precedence: held by AutoMod (`caution`), mentions you
-(`accent`), cheer (`event-bits`), reward (`event-channel-points`), first message
-(`line` on `surface`), event (its colour), plain. Selected adds an `accent`
-outline. Hover lifts the row one tone.
+(`accent`), cheer or Power-up (`event-bits`), reward or channel points perk
+(`event-channel-points`), first message (`line` on `surface`), event (its
+colour), plain. Whatever bought the look sets the colour: bits are `event-bits`,
+channel points are `event-channel-points`. Selected adds an `accent` outline.
+Hover lifts the row one tone.
 
 In shared chat, a message sent in a partner channel shows that channel's avatar
 at badge size, named in its tooltip: square before the badges by default, round
 on the bottom-right corner of the chatter tile when spacious.
 
-Notes sit above the message, never beside the name: AutoMod reason, "Cheered N
-bits", reward, "First message", then the reply line with a connector down to the
-message. Notes start where the message text starts.
+Notes sit above the message, never beside the name: AutoMod reason, why a
+suspicious chatter is flagged (`caution`, shown to mods), "Cheered N bits", the
+Power-up or channel points perk, reward, "First message", then the reply line
+with a connector down to the message. Notes start where the message text starts.
 
 There are two layouts. Default (compact in code) is one line per message with an
 optional timestamp column. Spacious (comfortable in code) groups a chatter's
 messages (same chatter, within seven minutes of the group's first message, same
 day, same shared chat channel, nothing between) under one header with a tile in
 a gutter; the tile sits centred on the first two lines of every row. Replies,
-holds, cheers, rewards, and first messages always start a group. The gap before
-each group is the user's group spacing. Every feed and the settings preview
-follow the user's text size, group spacing, zoom, and density.
+holds, cheers, Power-ups, rewards, perks, and first messages always start a
+group. The gap before each group is the user's group spacing. Every feed and the
+settings preview follow the user's text size, group spacing, zoom, and density.
 
 The chatter tile shows the chatter's Twitch avatar, fading in once it has loaded
 (at once when the browser already has it). While the chatter is being looked up
