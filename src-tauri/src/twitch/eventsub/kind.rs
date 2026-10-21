@@ -200,6 +200,7 @@ impl EventKind {
             | Self::ChannelChatClear
             | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
             Self::ChannelChatSettingsUpdate
+            | Self::ChannelUpdate
             | Self::ChannelSharedChatBegin
             | Self::ChannelSharedChatUpdate
             | Self::ChannelSharedChatEnd
@@ -217,7 +218,6 @@ impl EventKind {
             | Self::ChannelSuspiciousUserUpdate => (Role::Moderator, Focused),
             Self::ChannelPointsCustomRewardRedemptionAdd
             | Self::ChannelPointsAutomaticRewardRedemptionAdd
-            | Self::ChannelUpdate
             | Self::ChannelHypeTrainBegin
             | Self::ChannelHypeTrainProgress
             | Self::ChannelHypeTrainEnd
