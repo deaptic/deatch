@@ -1,10 +1,12 @@
-const LOCALE = "en";
+import { formatLocale, t } from "../i18n/index.ts";
+
 const OTHER = "other";
 
-const names = new Intl.DisplayNames([LOCALE], { type: "language" });
+// ponytail: built once; rebuild per locale when a language picker lands.
+const names = new Intl.DisplayNames([formatLocale()], { type: "language" });
 
 export function languageName(code: string): string {
-  if (code === OTHER) return "Other";
+  if (code === OTHER) return t("LANGUAGE_OTHER");
   try {
     return names.of(code) ?? code;
   } catch {
@@ -12,7 +14,7 @@ export function languageName(code: string): string {
   }
 }
 
-const known = new Intl.DisplayNames([LOCALE], {
+const known = new Intl.DisplayNames([formatLocale()], {
   type: "language",
   fallback: "none",
 });
@@ -49,7 +51,7 @@ export function searchLanguages(query: string): string[] {
     .filter((m) => m.rank >= 0)
     .sort((a, b) =>
       a.rank - b.rank ||
-      languageName(a.code).localeCompare(languageName(b.code), LOCALE)
+      languageName(a.code).localeCompare(languageName(b.code), formatLocale())
     )
     .map((m) => m.code);
 }
@@ -61,6 +63,8 @@ export function orderLanguages(
   const first = [...new Set(pinned.filter(Boolean))];
   const rest = [...new Set(seen)]
     .filter((code) => code && !first.includes(code))
-    .sort((a, b) => languageName(a).localeCompare(languageName(b), LOCALE));
+    .sort((a, b) =>
+      languageName(a).localeCompare(languageName(b), formatLocale())
+    );
   return [...first, ...rest];
 }

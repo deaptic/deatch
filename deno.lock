@@ -15,6 +15,7 @@
     "npm:@tauri-apps/plugin-process@^2.4.0": "2.4.0",
     "npm:@tauri-apps/plugin-updater@^2.13.0": "2.13.0",
     "npm:blobatar@^2.7.0": "2.7.0",
+    "npm:intl-messageformat@^12.1.4": "12.1.4",
     "npm:lucide-solid@^1.48.0": "1.48.0_solid-js@1.9.15",
     "npm:oxlint@^1.86.0": "1.86.0",
     "npm:solid-js@^1.9.15": "1.9.15",
@@ -187,6 +188,18 @@
       "dependencies": [
         "@types/json-schema"
       ]
+    },
+    "@formatjs/fast-memoize@3.1.7": {
+      "integrity": "sha512-zXfhLpvA6T7+efdt9JLbBwZ00tT7NsBMDVnDu8rpHeNNv8KfRZAMo2gkG0k9lK/Nzc//3kJ9pImsfuJxk3KhUA=="
+    },
+    "@formatjs/icu-messageformat-parser@3.5.22": {
+      "integrity": "sha512-YuwN+dDKgssfuYwtOyGQD0CSn7K46g9cv1Fp0VgKpjZDDFvv8b8crzP990IcJhRPWHhKzCGsbUSJVIguyyFA5A==",
+      "dependencies": [
+        "@formatjs/icu-skeleton-parser"
+      ]
+    },
+    "@formatjs/icu-skeleton-parser@2.1.12": {
+      "integrity": "sha512-ca7tZMLpfHX3sUD7hP6gE/qr6Iq89EDd3ZLeRhbsB7r0UD55DGJq+tmFLzrGrnx5StahUevQmQQVtbDRHsfDHA=="
     },
     "@jridgewell/gen-mapping@0.3.13": {
       "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
@@ -834,6 +847,13 @@
     "html-entities@2.3.3": {
       "integrity": "sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA=="
     },
+    "intl-messageformat@12.1.4": {
+      "integrity": "sha512-JUkmv3cAEyijN3oiRiV3ctel7yVMuUCgfh7Pu8pj1/z6L1DSEPRyhuMaLjVw3pGmGJ5RDH54WVFxfMHZWTwyHw==",
+      "dependencies": [
+        "@formatjs/fast-memoize",
+        "@formatjs/icu-messageformat-parser"
+      ]
+    },
     "is-what@4.1.16": {
       "integrity": "sha512-ZhMwEosbFJkA0YhFnNDgTM4ZxDRsS6HqTo7qsZM08fehyRYIYa0yHu5R6mgo1n/8MgaPBXiPimPD77baVFYg+A=="
     },
@@ -1250,6 +1270,7 @@
         "npm:@tauri-apps/plugin-process@^2.4.0",
         "npm:@tauri-apps/plugin-updater@^2.13.0",
         "npm:blobatar@^2.7.0",
+        "npm:intl-messageformat@^12.1.4",
         "npm:lucide-solid@^1.48.0",
         "npm:oxlint@^1.86.0",
         "npm:solid-js@^1.9.15",

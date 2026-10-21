@@ -1,3 +1,5 @@
+import { formatLocale } from "../i18n/index.ts";
+
 export type TimeFormat =
   | "t"
   | "T"
@@ -19,7 +21,7 @@ export class Time {
   ] as const;
 
   readonly date: Date;
-  readonly locale: string = "en-GB";
+  readonly locale = formatLocale();
 
   constructor(
     input: number | string | Date,
