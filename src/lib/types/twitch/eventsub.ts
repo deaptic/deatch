@@ -135,8 +135,16 @@ export type RawNotification =
 
 export type RawShoutout = {
   broadcaster_user_id: string;
+  to_broadcaster_user_id: string;
+  to_broadcaster_user_login: string;
   to_broadcaster_user_name: string;
   moderator_user_name: string;
+  viewer_count: number;
+  started_at: string;
+  /// When this channel may send its next shoutout, to anyone.
+  cooldown_ends_at: string;
+  /// When this channel may shout out the same target again.
+  target_cooldown_ends_at: string;
 };
 
 export type RawShoutoutReceive = {

@@ -24,35 +24,8 @@ import { mapNotice } from "./notice-mapper.ts";
 import { mapAutomaticRedemption } from "./automatic-redemption-mapper.ts";
 import { mapBitsUse } from "./bits-use-mapper.ts";
 import { giftGroup } from "./gift-group.ts";
+import { mapShoutout, mapShoutoutReceive } from "./shoutout-mapper.ts";
 import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
-
-function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
-  return feedEvent(
-    "shoutout",
-    t("EVENT_SHOUTOUT", { channel: raw.to_broadcaster_user_name }),
-    timestamp,
-    { chatter_name: raw.moderator_user_name },
-  );
-}
-
-function mapShoutoutReceive(
-  raw: RawShoutoutReceive,
-  timestamp: number,
-): FeedEvent {
-  return feedEvent(
-    "shoutout",
-    t("EVENT_SHOUTOUT_RECEIVED", {
-      channel: raw.from_broadcaster_user_name,
-      count: raw.viewer_count,
-    }),
-    timestamp,
-    {
-      chatter_user_id: raw.from_broadcaster_user_id,
-      chatter_login: raw.from_broadcaster_user_login,
-      chatter_name: raw.from_broadcaster_user_name,
-    },
-  );
-}
 
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   return feedEvent(
