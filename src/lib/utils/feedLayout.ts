@@ -1,9 +1,8 @@
 import type { FeedEntry, FeedMessage } from "../types/feed.ts";
+import { formatLocale, t } from "../i18n/index.ts";
 import { daysBetween } from "./time.ts";
 
 export const GROUP_WINDOW_MS = 7 * 60 * 1000;
-
-const LOCALE = "en-GB";
 
 export type RowLayout = { dayStart: boolean; continued: boolean };
 
@@ -42,10 +41,10 @@ export function layoutFeed(
 
 export function dayLabel(ts: number, now: number): string {
   const days = daysBetween(ts, now);
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
+  if (days === 0) return t("FEED_DAY_TODAY");
+  if (days === 1) return t("FEED_DAY_YESTERDAY");
   const sameYear = new Date(ts).getFullYear() === new Date(now).getFullYear();
-  return new Intl.DateTimeFormat(LOCALE, {
+  return new Intl.DateTimeFormat(formatLocale(), {
     weekday: sameYear ? "long" : undefined,
     day: "numeric",
     month: "long",
