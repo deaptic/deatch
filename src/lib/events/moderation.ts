@@ -60,6 +60,8 @@ function applySharedChatAction(p: RawModerate) {
   }
 }
 
+const CHAT_COPY_WAIT_MS = 600;
+
 export function start(): () => void {
   return unlistenAll([
     events.moderatedChannelsChanged.listen((e) =>
@@ -180,8 +182,11 @@ export function start(): () => void {
         if (!info) return;
         const id = raw.broadcaster_user_id;
         const item = suspiciousMessage(raw, info, serverTime(e.payload));
-        // A monitored chatter's message also arrives as chat; flag that copy.
-        if (!appendItem(id, item)) setSuspicious(id, item.message_id, info);
+        // The chat copy, when Twitch sends one, may come first or just after;
+        // flag it so it keeps its badges, else show this event's copy.
+        setTimeout(() => {
+          if (!setSuspicious(id, item.message_id, info)) appendItem(id, item);
+        }, CHAT_COPY_WAIT_MS);
       },
     ),
     listenEventSub<RawSuspiciousUserUpdate>(
