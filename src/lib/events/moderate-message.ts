@@ -3,6 +3,8 @@
 
 import type { RawModerate } from "../types/index.ts";
 import { formatApproxDuration } from "../format/duration.ts";
+import { t } from "../i18n/index.ts";
+import { withDetail } from "../utils/feedEvent.ts";
 
 /// A shared chat action reads like the same action taken here.
 function asLocal(p: RawModerate): RawModerate {
@@ -27,9 +29,9 @@ export function moderateMessage(
   serverNowMs: number,
 ): string | null {
   const text = localMessage(asLocal(p), serverNowMs);
-  const where = p.source_broadcaster_user_name;
-  return text && where && p.action.startsWith("shared_chat_")
-    ? `In ${where}'s chat, ${text}`
+  const channel = p.source_broadcaster_user_name;
+  return text && channel && p.action.startsWith("shared_chat_")
+    ? t("MODERATION_SHARED", { channel, text })
     : text;
 }
 
@@ -37,13 +39,14 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
   const mod = p.moderator_user_name;
   switch (p.action) {
     case "clear":
-      return `${mod} cleared the chat`;
-    case "ban": {
-      const r = p.ban.reason ? `: ${p.ban.reason}` : "";
-      return `${mod} banned ${p.ban.user_name}${r}`;
-    }
+      return t("MODERATION_CLEAR", { mod });
+    case "ban":
+      return withDetail(
+        t("MODERATION_BAN", { mod, user: p.ban.user_name }),
+        p.ban.reason,
+      );
     case "unban":
-      return `${mod} unbanned ${p.unban.user_name}`;
+      return t("MODERATION_UNBAN", { mod, user: p.unban.user_name });
     case "timeout": {
       const secs = Math.max(
         0,
@@ -51,51 +54,66 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
           (new Date(p.timeout.expires_at).getTime() - serverNowMs) / 1000,
         ),
       );
-      const r = p.timeout.reason ? `: ${p.timeout.reason}` : "";
-      return `${mod} timed out ${p.timeout.user_name} for ${
-        formatApproxDuration(secs)
-      }${r}`;
+      return withDetail(
+        t("MODERATION_TIMEOUT", {
+          mod,
+          user: p.timeout.user_name,
+          duration: formatApproxDuration(secs),
+        }),
+        p.timeout.reason,
+      );
     }
     case "untimeout":
-      return `${mod} removed timeout on ${p.untimeout.user_name}`;
+      return t("MODERATION_UNTIMEOUT", { mod, user: p.untimeout.user_name });
     case "delete":
-      return `${mod} deleted message from ${p.delete.user_name} saying: ${p.delete.message_body}`;
+      return t("MODERATION_DELETE", {
+        mod,
+        user: p.delete.user_name,
+        message: p.delete.message_body,
+      });
     case "mod":
-      return `${mod} added ${p.mod.user_name} as a moderator`;
+      return t("MODERATION_MOD", { mod, user: p.mod.user_name });
     case "unmod":
-      return `${mod} removed ${p.unmod.user_name} as a moderator`;
+      return t("MODERATION_UNMOD", { mod, user: p.unmod.user_name });
     case "vip":
-      return `${mod} added ${p.vip.user_name} as a VIP`;
+      return t("MODERATION_VIP", { mod, user: p.vip.user_name });
     case "unvip":
-      return `${mod} removed ${p.unvip.user_name} as a VIP`;
+      return t("MODERATION_UNVIP", { mod, user: p.unvip.user_name });
     case "raid":
-      return `${mod} initiated a raid on ${p.raid.user_name}`;
+      return t("MODERATION_RAID", { mod, user: p.raid.user_name });
     case "unraid":
-      return `${mod} cancelled the raid`;
+      return t("MODERATION_UNRAID", { mod });
     case "slow":
-      return `${mod} enabled slow mode (${p.slow.wait_time_seconds}s)`;
+      return t("MODERATION_SLOW", {
+        mod,
+        seconds: p.slow.wait_time_seconds,
+      });
     case "slowoff":
-      return `${mod} disabled slow mode`;
+      return t("MODERATION_SLOW_OFF", { mod });
     case "followers":
-      return `${mod} enabled followers-only mode (${p.followers.follow_duration_minutes}m)`;
+      return t("MODERATION_FOLLOWERS", {
+        mod,
+        minutes: p.followers.follow_duration_minutes,
+      });
     case "followersoff":
-      return `${mod} disabled followers-only mode`;
+      return t("MODERATION_FOLLOWERS_OFF", { mod });
     case "emoteonly":
-      return `${mod} enabled emote-only mode`;
+      return t("MODERATION_EMOTE_ONLY", { mod });
     case "emoteonlyoff":
-      return `${mod} disabled emote-only mode`;
+      return t("MODERATION_EMOTE_ONLY_OFF", { mod });
     case "subscribers":
-      return `${mod} enabled subscribers-only mode`;
+      return t("MODERATION_SUBSCRIBERS", { mod });
     case "subscribersoff":
-      return `${mod} disabled subscribers-only mode`;
+      return t("MODERATION_SUBSCRIBERS_OFF", { mod });
     case "uniquechat":
-      return `${mod} enabled unique-chat mode`;
+      return t("MODERATION_UNIQUE_CHAT", { mod });
     case "uniquechatoff":
-      return `${mod} disabled unique-chat mode`;
-    case "warn": {
-      const r = p.warn.reason ? `: ${p.warn.reason}` : "";
-      return `${mod} warned ${p.warn.user_name}${r}`;
-    }
+      return t("MODERATION_UNIQUE_CHAT_OFF", { mod });
+    case "warn":
+      return withDetail(
+        t("MODERATION_WARN", { mod, user: p.warn.user_name }),
+        p.warn.reason,
+      );
     default:
       return null;
   }

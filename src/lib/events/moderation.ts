@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type {
   AutomodHoldStatus,
@@ -43,8 +44,11 @@ function applySharedChatAction(p: RawModerate) {
 }
 
 function automodReasonLabel(p: RawAutomodMessageHold): string {
-  if (p.reason === "blocked_term") return "Blocked term";
-  return `AutoMod: ${p.automod.category} (level ${p.automod.level})`;
+  if (p.reason === "blocked_term") return t("AUTOMOD_BLOCKED_TERM");
+  return t("AUTOMOD_CATEGORY", {
+    category: p.automod.category,
+    level: p.automod.level,
+  });
 }
 
 export function start(): () => void {
@@ -75,7 +79,7 @@ export function start(): () => void {
         broadcasterId,
         feedEvent(
           "chat_cleared",
-          "Chat has been cleared by a moderator.",
+          t("EVENT_CHAT_CLEARED"),
           now,
           {
             id: `chat-cleared-${broadcasterId}-${now}`,

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import { postChatMessage } from "../api/twitch/chat.ts";
 import type { InvokeOptions } from "../api/utils.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
@@ -16,11 +17,11 @@ export async function send(
     if (result.held) {
       appendLocalNotice(
         params.broadcasterId,
-        "Your message is with the mods for review.",
+        t("CHAT_MESSAGE_HELD"),
       );
       return "held";
     }
-    addToast(result.dropReason ?? "Message dropped", "error");
+    addToast(result.dropReason ?? t("CHAT_MESSAGE_DROPPED"), "error");
     return "failed";
   } catch {
     return "failed";

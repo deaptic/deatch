@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type {
   FeedEvent,
@@ -8,7 +9,7 @@ import type {
 } from "../types/index.ts";
 import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { feedEvent, withDetail } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
@@ -44,18 +45,23 @@ function mapNotice(raw: RawNotification, timestamp: number): FeedEvent {
 function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
     "shoutout",
-    `Shoutout to ${raw.to_broadcaster_user_name}!`,
+    t("EVENT_SHOUTOUT", { channel: raw.to_broadcaster_user_name }),
     timestamp,
     { chatter_name: raw.moderator_user_name },
   );
 }
 
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
-  return feedEvent("follow", `${raw.user_name} followed!`, timestamp, {
-    chatter_user_id: raw.user_id,
-    chatter_login: raw.user_login,
-    chatter_name: raw.user_name,
-  });
+  return feedEvent(
+    "follow",
+    t("EVENT_FOLLOW", { user: raw.user_name }),
+    timestamp,
+    {
+      chatter_user_id: raw.user_id,
+      chatter_login: raw.user_login,
+      chatter_name: raw.user_name,
+    },
+  );
 }
 
 function redemptionEvent(
@@ -63,10 +69,12 @@ function redemptionEvent(
   redemption: Redemption,
   timestamp: number,
 ): FeedEvent {
-  const said = redemption.input ? `: ${redemption.input}` : "";
   return feedEvent(
     "channel_points_redemption",
-    `${raw.user_name} redeemed ${raw.reward.title}${said}`,
+    withDetail(
+      t("EVENT_REDEMPTION", { user: raw.user_name, reward: raw.reward.title }),
+      redemption.input,
+    ),
     timestamp,
     {
       id: raw.id,

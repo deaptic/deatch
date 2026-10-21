@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import { getRecentMessages } from "../api/twitch/chat.ts";
 import { chatterOf, mapChatMessage } from "../events/chat-mapper.ts";
 import { errorMessage } from "../utils/error.ts";
@@ -54,7 +55,7 @@ export function fillGap(
         insertEntries(broadcasterId, [
           feedEvent(
             "local",
-            "Some messages may be missing here",
+            t("BACKLOG_GAP"),
             msgs[0].timestamp_ms - 1,
             { silent: true },
           ),
@@ -81,7 +82,7 @@ export function load(broadcasterId: string, channelLogin: string) {
         broadcasterId,
         feedEvent(
           "local",
-          `Couldn't load recent history: ${errorMessage(e)}`,
+          t("BACKLOG_FAILED", { error: errorMessage(e) }),
           Date.now(),
           { id: `backlog-failed-${broadcasterId}`, silent: true },
         ),

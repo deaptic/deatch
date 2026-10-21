@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 
 export function apply(
@@ -17,14 +18,18 @@ export function apply(
 export function describe(update: EmoteSetUpdated): string[] {
   const who = actor(update);
   return [
-    ...update.added.map((e) => `${who} added 7TV emote ${e.name}`),
-    ...update.removed.map((n) => `${who} removed 7TV emote ${n}`),
+    ...update.added.map((e) =>
+      t("SEVENTV_ADDED", { actor: who, emote: e.name })
+    ),
+    ...update.removed.map((n) =>
+      t("SEVENTV_REMOVED", { actor: who, emote: n })
+    ),
     ...update.renamed.map((r) =>
-      `${who} renamed 7TV emote ${r.from} to ${r.to}`
+      t("SEVENTV_RENAMED", { actor: who, from: r.from, to: r.to })
     ),
   ];
 }
 
 export function actor(update: EmoteSetUpdated): string {
-  return update.actor ?? "Someone";
+  return update.actor ?? t("SEVENTV_SOMEONE");
 }

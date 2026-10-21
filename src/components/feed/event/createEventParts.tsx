@@ -32,6 +32,7 @@ import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import FeedTile from "../FeedTile.tsx";
 import RedemptionReward from "../RedemptionReward.tsx";
 import { splitName } from "./splitName.ts";
+import { t } from "../../../lib/i18n/index.ts";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
 export type EventOptions = UserActions & {
@@ -79,7 +80,7 @@ export function createEventParts(
       {(clip) => (
         <Toolbar alwaysVisible>
           <ToolbarItem
-            title="View clip"
+            title={t("EVENT_VIEW_CLIP")}
             tone="success"
             onClick={() => openUrl(`https://clips.twitch.tv/${clip().id}`)}
           >
@@ -143,7 +144,7 @@ export function createEventParts(
         {(redemption) => (
           <>
             {chatterName(item.chatter_name)}
-            {" redeemed "}
+            {` ${t("EVENT_REDEEMED")} `}
             <RedemptionReward redemption={redemption()} />
             {time()}
             <Show when={redemption().input}>
