@@ -194,7 +194,7 @@ export default function LiveNow(props: Props) {
                 when={exploreFilters.followingOnly}
                 fallback={t("EXPLORE_NO_MATCHES")}
               >
-                {t("EXPLORE_NONE_FOLLOWED_LIVE")}
+                {t("EXPLORE_NONE_LIVE")}
               </Show>
             </p>
           }
