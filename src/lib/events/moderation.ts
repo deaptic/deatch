@@ -62,6 +62,12 @@ function applySharedChatAction(p: RawModerate) {
 
 const CHAT_COPY_WAIT_MS = 600;
 
+const HOLD_OUTCOMES: Record<string, AutomodHoldStatus> = {
+  approved: "approved",
+  denied: "denied",
+  expired: "expired",
+};
+
 export function start(): () => void {
   return unlistenAll([
     events.moderatedChannelsChanged.listen((e) =>
@@ -228,13 +234,13 @@ export function start(): () => void {
       "automod.message.update",
       (e) => {
         const p = e.payload.event;
-        const s = p.status.toLowerCase();
-        const status: AutomodHoldStatus = s.startsWith("appro")
-          ? "approved"
-          : s.startsWith("den")
-          ? "denied"
-          : "expired";
-        setAutomodHoldStatus(p.broadcaster_user_id, p.message_id, status);
+        const status = HOLD_OUTCOMES[p.status.toLowerCase()] ?? "expired";
+        setAutomodHoldStatus(
+          p.broadcaster_user_id,
+          p.message_id,
+          status,
+          status === "expired" ? undefined : p.moderator_user_name,
+        );
       },
     ),
   ]);

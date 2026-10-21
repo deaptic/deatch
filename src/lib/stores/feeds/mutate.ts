@@ -147,6 +147,7 @@ export function setAutomodHoldStatus(
   broadcasterId: string,
   messageId: string,
   status: AutomodHoldStatus,
+  moderator?: string,
 ) {
   if (!feeds[broadcasterId]) return;
   setFeeds(
@@ -157,6 +158,7 @@ export function setAutomodHoldStatus(
       );
       if (item && item.kind === "message" && item.automod_hold) {
         item.automod_hold.status = status;
+        if (moderator) item.automod_hold.moderator = moderator;
       }
     }),
   );

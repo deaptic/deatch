@@ -374,7 +374,9 @@ export type RawAutomodMessageHold = {
 export type RawAutomodMessageUpdate = {
   broadcaster_user_id: string;
   message_id: string;
+  /// The reference capitalises it ("Approved"), the example does not.
   status: string;
+  moderator_user_name: string;
 };
 
 // channel.shared_chat.begin / update / end
