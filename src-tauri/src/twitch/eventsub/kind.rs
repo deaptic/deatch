@@ -62,6 +62,10 @@ pub enum EventKind {
     ChannelHypeTrainProgress,
     #[serde(rename = "channel.hype_train.end")]
     ChannelHypeTrainEnd,
+    #[serde(rename = "channel.poll.begin")]
+    ChannelPollBegin,
+    #[serde(rename = "channel.poll.end")]
+    ChannelPollEnd,
     #[serde(rename = "stream.online")]
     StreamOnline,
     #[serde(rename = "stream.offline")]
@@ -71,7 +75,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 26] = [
+    pub const ALL: [Self; 28] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -96,6 +100,8 @@ impl EventKind {
         Self::ChannelHypeTrainBegin,
         Self::ChannelHypeTrainProgress,
         Self::ChannelHypeTrainEnd,
+        Self::ChannelPollBegin,
+        Self::ChannelPollEnd,
         Self::StreamOnline,
         Self::StreamOffline,
     ];
@@ -128,6 +134,8 @@ impl EventKind {
             Self::ChannelHypeTrainBegin => "channel-hype-train-begin",
             Self::ChannelHypeTrainProgress => "channel-hype-train-progress",
             Self::ChannelHypeTrainEnd => "channel-hype-train-end",
+            Self::ChannelPollBegin => "channel-poll-begin",
+            Self::ChannelPollEnd => "channel-poll-end",
             Self::StreamOnline => "stream-online",
             Self::StreamOffline => "stream-offline",
         }
@@ -166,7 +174,9 @@ impl EventKind {
             | Self::ChannelUpdate
             | Self::ChannelHypeTrainBegin
             | Self::ChannelHypeTrainProgress
-            | Self::ChannelHypeTrainEnd => (Role::Broadcaster, Focused),
+            | Self::ChannelHypeTrainEnd
+            | Self::ChannelPollBegin
+            | Self::ChannelPollEnd => (Role::Broadcaster, Focused),
         }
     }
 }

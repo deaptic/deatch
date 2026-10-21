@@ -25,6 +25,7 @@ use twitch_api::eventsub::{
         ChannelShoutoutReceiveV1, ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1,
         ChannelUpdateV2, ChannelWarningAcknowledgeV1,
     },
+    channel::{ChannelPollBeginV1, ChannelPollEndV1},
     channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
     stream::{StreamOfflineV1, StreamOnlineV1},
     Transport,
@@ -175,6 +176,8 @@ async fn create(
         EventKind::ChannelHypeTrainEnd => subscribe!(ChannelHypeTrainEndV2 {
             broadcaster_user_id: b.into()
         }),
+        EventKind::ChannelPollBegin => subscribe!(ChannelPollBeginV1::broadcaster_user_id(b)),
+        EventKind::ChannelPollEnd => subscribe!(ChannelPollEndV1::broadcaster_user_id(b)),
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }
