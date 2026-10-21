@@ -1,3 +1,4 @@
+import { type MessageKey, t } from "../../../lib/i18n/index.ts";
 import { For, Show } from "solid-js";
 import Button from "../../ui/Button.tsx";
 import Card from "../../ui/Card.tsx";
@@ -26,32 +27,35 @@ const ms = (value: number) => `${value} ms`;
 
 const CONTROLS: Record<
   CompressorControl,
-  { label: string; description: string; format: (value: number) => string }
+  {
+    label: MessageKey;
+    description: MessageKey;
+    format: (value: number) => string;
+  }
 > = {
   threshold: {
-    label: "Threshold",
-    description: "The level where compression starts.",
+    label: "SETTINGS_LINK_THRESHOLD",
+    description: "SETTINGS_LINK_THRESHOLD_DESCRIPTION",
     format: db,
   },
   ratio: {
-    label: "Ratio",
-    description: "How firmly it compresses above the threshold.",
+    label: "SETTINGS_LINK_RATIO",
+    description: "SETTINGS_LINK_RATIO_DESCRIPTION",
     format: (value) => `${value.toFixed(1)}:1`,
   },
   attack: {
-    label: "Attack",
-    description: "How fast it reacts when a stream gets louder.",
+    label: "SETTINGS_LINK_ATTACK",
+    description: "SETTINGS_LINK_ATTACK_DESCRIPTION",
     format: ms,
   },
   release: {
-    label: "Release",
-    description: "How fast it lets go once it's quieter again.",
+    label: "SETTINGS_LINK_RELEASE",
+    description: "SETTINGS_LINK_RELEASE_DESCRIPTION",
     format: ms,
   },
   gain: {
-    label: "Gain",
-    description:
-      "Trims the level after compression. The compressor already adds some on its own as it works.",
+    label: "SETTINGS_LINK_GAIN",
+    description: "SETTINGS_LINK_GAIN_DESCRIPTION",
     format: (value) => `${value > 0 ? "+" : ""}${value} dB`,
   },
 };
@@ -64,44 +68,46 @@ const isDefault = () =>
 export default function LinkSection() {
   return (
     <PageBody
-      title="Link"
-      lede="How Deatch works with the Twitch tabs in your browser."
+      title={t("SETTINGS_LINK")}
+      lede={t("SETTINGS_LINK_LEDE")}
     >
       <Card>
         <SettingsRow
-          label="Compressor"
-          description="Evens out every Twitch tab: quiet streams come up, loud moments come down, and nothing clips. Set a channel's own tab volume by right-clicking it in the rail."
+          label={t("SETTINGS_LINK_COMPRESSOR")}
+          description={t("SETTINGS_LINK_COMPRESSOR_DESCRIPTION")}
         >
           <Toggle
-            label="Compressor"
+            label={t("SETTINGS_LINK_COMPRESSOR")}
             checked={linkCompressor()}
             onChange={setLinkCompressor}
           />
         </SettingsRow>
         <Show when={linkConnected() && !linkHasAudio()}>
           <p class="px-5 pb-4 text-small text-caution">
-            Update the Deatch Link extension in your browser to use the
-            compressor and channel volumes.
+            {t("SETTINGS_LINK_UPDATE_EXTENSION")}
           </p>
         </Show>
-        <Disclosure label="Advanced">
+        <Disclosure label={t("SETTINGS_LINK_ADVANCED")}>
           <For each={COMPRESSOR_CONTROLS}>
             {(control) => {
               const { label, description, format } = CONTROLS[control];
               const range = COMPRESSOR[control];
               const value = () => compressorSettings()[control];
               return (
-                <SettingsRow label={label} description={description} stacked>
+                <SettingsRow
+                  label={t(label)}
+                  description={t(description)}
+                  stacked
+                >
                   <div class="flex items-center gap-3">
                     <Slider
-                      label={label}
+                      label={t(label)}
                       value={value()}
                       min={range.min}
                       max={range.max}
                       step={range.step}
                       format={format}
-                      onChange={(v) =>
-                        setCompressorControl(control, v)}
+                      onChange={(v) => setCompressorControl(control, v)}
                     />
                     <span class="w-16 shrink-0 text-right text-small tabular-nums text-ink">
                       {format(value())}
@@ -118,7 +124,7 @@ export default function LinkSection() {
               disabled={isDefault()}
               onClick={resetCompressorSettings}
             >
-              Reset to defaults
+              {t("SETTINGS_LINK_RESET")}
             </Button>
           </div>
         </Disclosure>

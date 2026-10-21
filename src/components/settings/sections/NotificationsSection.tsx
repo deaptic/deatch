@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import { For, Show } from "solid-js";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
@@ -16,16 +17,19 @@ import {
 export default function NotificationsSection() {
   return (
     <PageBody
-      title="Notifications"
-      lede="How Deatch gets your attention when something needs it."
+      title={t("SETTINGS_NOTIFICATIONS")}
+      lede={t("SETTINGS_NOTIFICATIONS_LEDE")}
     >
       <Card>
         <SettingsRow
-          label="Highlight keywords"
-          description="Messages with these words light up like mentions and land in your inbox. Use * for part of a word: drop* matches drops and dropped."
+          label={t("SETTINGS_NOTIFICATIONS_KEYWORDS")}
+          description={t("SETTINGS_NOTIFICATIONS_KEYWORDS_DESCRIPTION")}
           stacked
         >
-          <ChipInput placeholder="Add a keyword" onAdd={addFeedKeyword} />
+          <ChipInput
+            placeholder={t("SETTINGS_NOTIFICATIONS_KEYWORDS_PLACEHOLDER")}
+            onAdd={addFeedKeyword}
+          />
           <Show when={feedKeywords().length > 0}>
             <div class="flex flex-wrap gap-1.5">
               <For each={feedKeywords()}>
@@ -40,11 +44,11 @@ export default function NotificationsSection() {
           </Show>
         </SettingsRow>
         <SettingsRow
-          label="Mention sound"
-          description="Play a sound when someone mentions you or uses one of your keywords."
+          label={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND")}
+          description={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND_DESCRIPTION")}
         >
           <Toggle
-            label="Mention sound"
+            label={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND")}
             checked={notificationsMentionSound()}
             onChange={setNotificationsMentionSound}
           />

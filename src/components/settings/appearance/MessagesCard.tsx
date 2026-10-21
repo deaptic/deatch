@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
@@ -17,45 +18,45 @@ import {
 export default function MessagesCard() {
   return (
     <Card>
-      <CardLabel>Messages</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_MESSAGES")}</CardLabel>
       <SettingsRow
-        label="Show timestamps"
-        description="Show the time next to each message. The spacious layout always shows it."
+        label={t("SETTINGS_APPEARANCE_TIMESTAMPS")}
+        description={t("SETTINGS_APPEARANCE_TIMESTAMPS_DESCRIPTION")}
       >
         <Toggle
-          label="Show timestamps"
+          label={t("SETTINGS_APPEARANCE_TIMESTAMPS")}
           disabled={feedDensity() === "comfortable"}
           checked={feedShowTimestamp()}
           onChange={setFeedShowTimestamp}
         />
       </SettingsRow>
       <SettingsRow
-        label="Profile pictures"
-        description="Show chatters' Twitch pictures in the spacious layout. Off uses a generated picture for everyone."
+        label={t("SETTINGS_APPEARANCE_AVATARS")}
+        description={t("SETTINGS_APPEARANCE_AVATARS_DESCRIPTION")}
       >
         <Toggle
-          label="Profile pictures"
+          label={t("SETTINGS_APPEARANCE_AVATARS")}
           disabled={feedDensity() !== "comfortable"}
           checked={feedShowAvatars()}
           onChange={setFeedShowAvatars}
         />
       </SettingsRow>
       <SettingsRow
-        label="Show deleted messages"
-        description="Keep deleted messages readable, dimmed, instead of hiding what they said."
+        label={t("SETTINGS_APPEARANCE_DELETED")}
+        description={t("SETTINGS_APPEARANCE_DELETED_DESCRIPTION")}
       >
         <Toggle
-          label="Show deleted messages"
+          label={t("SETTINGS_APPEARANCE_DELETED")}
           checked={feedShowDeletedContent()}
           onChange={setFeedShowDeletedContent}
         />
       </SettingsRow>
       <SettingsRow
-        label="Copypasta button"
-        description="Add a button to each message that copies it into your message box."
+        label={t("SETTINGS_APPEARANCE_COPYPASTA")}
+        description={t("SETTINGS_APPEARANCE_COPYPASTA_DESCRIPTION")}
       >
         <Toggle
-          label="Copypasta button"
+          label={t("SETTINGS_APPEARANCE_COPYPASTA")}
           checked={feedShowCopypasta()}
           onChange={setFeedShowCopypasta}
         />

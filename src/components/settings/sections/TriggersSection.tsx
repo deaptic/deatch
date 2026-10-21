@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import { Plus } from "lucide-solid";
 import { createSignal, For } from "solid-js";
 import PageBody from "../../ui/PageBody.tsx";
@@ -38,8 +39,8 @@ export default function TriggersSection() {
 
   return (
     <PageBody
-      title="Triggers"
-      lede="Send or reply automatically when a message in your own channel matches a phrase. Changes apply when you save."
+      title={t("SETTINGS_TRIGGERS")}
+      lede={t("SETTINGS_TRIGGERS_LEDE")}
     >
       <For each={triggers()}>
         {(t) => (
@@ -71,7 +72,7 @@ export default function TriggersSection() {
         icon={<Plus class="size-4" />}
         onClick={addDraft}
       >
-        Add trigger
+        {t("SETTINGS_TRIGGERS_ADD")}
       </Button>
     </PageBody>
   );

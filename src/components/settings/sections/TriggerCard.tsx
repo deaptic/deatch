@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import { Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
@@ -39,7 +40,7 @@ export default function TriggerCard(props: {
     >
       <div class="flex items-center gap-3">
         <Toggle
-          label="Enabled"
+          label={t("SETTINGS_TRIGGERS_ENABLED")}
           checked={draft.enabled}
           onChange={(v) => setDraft("enabled", v)}
         />
@@ -53,7 +54,7 @@ export default function TriggerCard(props: {
               draft.enabled ? "text-ink" : "text-ink-soft"
             }`}
           >
-            {draft.name.trim() || "Untitled trigger"}
+            {draft.name.trim() || t("SETTINGS_TRIGGERS_UNTITLED")}
             <Show when={canSave()}>
               <span class="text-accent-ink ml-1">*</span>
             </Show>
@@ -69,8 +70,8 @@ export default function TriggerCard(props: {
             variant="accent"
             icon={<Check class="size-4" />}
             data-tip={valid()
-              ? "Save trigger"
-              : "Name, phrase and response are required"}
+              ? t("SETTINGS_TRIGGERS_SAVE")
+              : t("SETTINGS_TRIGGERS_REQUIRED")}
             disabled={!valid()}
             onClick={() => props.onSave({ ...unwrap(draft) })}
           />
@@ -78,7 +79,7 @@ export default function TriggerCard(props: {
         <Button
           variant="danger"
           icon={<Trash2 class="size-4" />}
-          data-tip="Delete trigger"
+          data-tip={t("SETTINGS_TRIGGERS_DELETE")}
           onClick={props.onDelete}
         />
       </div>
@@ -88,37 +89,50 @@ export default function TriggerCard(props: {
           <div class="h-px -mx-4 bg-line-soft" />
 
           <div class="flex flex-col gap-3">
-            <TriggerSectionLabel>Name</TriggerSectionLabel>
+            <TriggerSectionLabel>
+              {t("SETTINGS_TRIGGERS_NAME")}
+            </TriggerSectionLabel>
             <Field
-              placeholder="Trigger name..."
+              placeholder={t("SETTINGS_TRIGGERS_NAME_PLACEHOLDER")}
               value={draft.name}
               onInput={(e) => setDraft("name", e.currentTarget.value)}
             />
           </div>
 
           <div class="flex flex-col gap-3">
-            <TriggerSectionLabel>Match</TriggerSectionLabel>
+            <TriggerSectionLabel>
+              {t("SETTINGS_TRIGGERS_MATCH")}
+            </TriggerSectionLabel>
             <Textarea
               rows={2}
               resizable
-              placeholder="Phrases to match, one per line. Use * as a wildcard, e.g. hi*"
+              placeholder={t("SETTINGS_TRIGGERS_MATCH_PLACEHOLDER")}
               value={draft.phrase}
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
             />
-            <TriggerField label="Location">
+            <TriggerField label={t("SETTINGS_TRIGGERS_LOCATION")}>
               <Segmented
                 value={draft.location}
                 options={[
-                  { value: "start", label: "Start" },
-                  { value: "exact", label: "Exact" },
-                  { value: "anywhere", label: "Anywhere" },
+                  {
+                    value: "start",
+                    label: t("SETTINGS_TRIGGERS_LOCATION_START"),
+                  },
+                  {
+                    value: "exact",
+                    label: t("SETTINGS_TRIGGERS_LOCATION_EXACT"),
+                  },
+                  {
+                    value: "anywhere",
+                    label: t("SETTINGS_TRIGGERS_LOCATION_ANYWHERE"),
+                  },
                 ]}
                 onChange={(v) => setDraft("location", v)}
               />
             </TriggerField>
-            <TriggerField label="Case sensitive">
+            <TriggerField label={t("SETTINGS_TRIGGERS_CASE_SENSITIVE")}>
               <Toggle
-                label="Case sensitive"
+                label={t("SETTINGS_TRIGGERS_CASE_SENSITIVE")}
                 checked={draft.caseSensitive}
                 onChange={(v) => setDraft("caseSensitive", v)}
               />
@@ -126,23 +140,28 @@ export default function TriggerCard(props: {
           </div>
 
           <div class="flex flex-col gap-3">
-            <TriggerSectionLabel>Response</TriggerSectionLabel>
+            <TriggerSectionLabel>
+              {t("SETTINGS_TRIGGERS_RESPONSE")}
+            </TriggerSectionLabel>
             <Field
-              placeholder="Response message..."
+              placeholder={t("SETTINGS_TRIGGERS_RESPONSE_PLACEHOLDER")}
               value={draft.response}
               onInput={(e) => setDraft("response", e.currentTarget.value)}
             />
-            <TriggerField label="Action">
+            <TriggerField label={t("SETTINGS_TRIGGERS_ACTION")}>
               <Segmented
                 value={draft.action}
                 options={[
-                  { value: "reply", label: "Reply" },
-                  { value: "send", label: "Send" },
+                  {
+                    value: "reply",
+                    label: t("SETTINGS_TRIGGERS_ACTION_REPLY"),
+                  },
+                  { value: "send", label: t("SETTINGS_TRIGGERS_ACTION_SEND") },
                 ]}
                 onChange={(v) => setDraft("action", v)}
               />
             </TriggerField>
-            <TriggerField label="Cooldown">
+            <TriggerField label={t("SETTINGS_TRIGGERS_COOLDOWN")}>
               <div class="flex items-center gap-2">
                 <Field
                   type="number"
@@ -157,7 +176,9 @@ export default function TriggerCard(props: {
                     setDraft("cooldown", clampCooldown(draft.cooldown))}
                   class="w-20"
                 />
-                <span class="text-small text-ink-soft">seconds</span>
+                <span class="text-small text-ink-soft">
+                  {t("SETTINGS_TRIGGERS_SECONDS")}
+                </span>
               </div>
             </TriggerField>
           </div>

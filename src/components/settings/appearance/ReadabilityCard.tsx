@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
@@ -20,14 +21,14 @@ const px = (value: number) => `${value}px`;
 export default function ReadabilityCard() {
   return (
     <Card>
-      <CardLabel>Text</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_TEXT")}</CardLabel>
       <SettingsRow
-        label="Chat text size"
-        description="You can also hold Alt and scroll over the chat."
+        label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
+        description={t("SETTINGS_APPEARANCE_FONT_SIZE_DESCRIPTION")}
         stacked
       >
         <StopSlider
-          label="Chat text size"
+          label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
           value={feedFontSize()}
           stops={FONT_SIZE_STOPS}
           format={px}
@@ -35,18 +36,18 @@ export default function ReadabilityCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label="Show display names"
-        description="Show names with the capitals chatters picked, like MayaOnAir instead of mayaonair."
+        label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES")}
+        description={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_DESCRIPTION")}
       >
         <Toggle
-          label="Show display names"
+          label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES")}
           checked={feedUserShowDisplayName()}
           onChange={setFeedUserShowDisplayName}
         />
       </SettingsRow>
       <SettingsRow
-        label="One colour for all names"
-        description="Give every name the same colour. Reset to use each chatter's own colour."
+        label={t("SETTINGS_APPEARANCE_NAME_COLOR")}
+        description={t("SETTINGS_APPEARANCE_NAME_COLOR_DESCRIPTION")}
       >
         <ColorPicker
           swatchColor={feedUserOverrideNameColor() || "transparent"}

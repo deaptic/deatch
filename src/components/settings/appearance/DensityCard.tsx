@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import Segmented from "../../ui/Segmented.tsx";
@@ -20,51 +21,47 @@ import {
   setFeedGroupSpacing,
 } from "../../../lib/stores/preferences.ts";
 
-const UI_DENSITY_OPTIONS: { value: UiDensity; label: string }[] = [
-  { value: "compact", label: "Compact" },
-  { value: "default", label: "Default" },
-  { value: "spacious", label: "Spacious" },
-];
-
-const MESSAGE_DISPLAY_OPTIONS: { value: Density; label: string }[] = [
-  { value: "compact", label: "Default" },
-  { value: "comfortable", label: "Spacious" },
-];
-
 const px = (value: number) => `${value}px`;
 const percent = (value: number) => `${value}%`;
 
 export default function DensityCard() {
   return (
     <Card>
-      <CardLabel>Layout</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_LAYOUT")}</CardLabel>
       <SettingsRow
-        label="Channel list spacing"
-        description="How much room each channel takes in the list on the left."
+        label={t("SETTINGS_APPEARANCE_CHANNEL_SPACING")}
+        description={t("SETTINGS_APPEARANCE_CHANNEL_SPACING_DESCRIPTION")}
       >
         <Segmented
           value={appearanceUiDensity()}
-          options={UI_DENSITY_OPTIONS}
+          options={[
+            { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT") },
+            { value: "default", label: t("SETTINGS_APPEARANCE_DEFAULT") },
+            { value: "spacious", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
+          ] satisfies { value: UiDensity; label: string }[]}
           onChange={setAppearanceUiDensity}
         />
       </SettingsRow>
       <SettingsRow
-        label="Message layout"
-        description="Default fits the most chat on screen. Spacious groups each chatter's messages under their name and picture. Alt+D switches."
+        label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
+        description={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_DESCRIPTION")}
       >
         <Segmented
           value={feedDensity()}
-          options={MESSAGE_DISPLAY_OPTIONS}
+          options={[
+            { value: "compact", label: t("SETTINGS_APPEARANCE_DEFAULT") },
+            { value: "comfortable", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
+          ] satisfies { value: Density; label: string }[]}
           onChange={setFeedDensity}
         />
       </SettingsRow>
       <SettingsRow
-        label="Space between message groups"
-        description="Only in the spacious layout."
+        label={t("SETTINGS_APPEARANCE_GROUP_SPACING")}
+        description={t("SETTINGS_APPEARANCE_GROUP_SPACING_DESCRIPTION")}
         stacked
       >
         <StopSlider
-          label="Space between message groups"
+          label={t("SETTINGS_APPEARANCE_GROUP_SPACING")}
           disabled={feedDensity() !== "comfortable"}
           value={feedGroupSpacing()}
           stops={GROUP_SPACING_STOPS}
@@ -73,12 +70,12 @@ export default function DensityCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label="Zoom"
-        description="Make everything bigger or smaller. Ctrl + and Ctrl − also work, Ctrl 0 resets."
+        label={t("SETTINGS_APPEARANCE_ZOOM")}
+        description={t("SETTINGS_APPEARANCE_ZOOM_DESCRIPTION")}
         stacked
       >
         <StopSlider
-          label="Zoom"
+          label={t("SETTINGS_APPEARANCE_ZOOM")}
           value={appearanceZoom()}
           stops={ZOOM_STOPS}
           format={percent}
