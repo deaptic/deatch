@@ -27,6 +27,8 @@ export type AutomodHoldStatus =
 export type AutomodHoldInfo = {
   reason: string;
   status: AutomodHoldStatus;
+  /// Who approved or denied it, once Twitch says.
+  moderator?: string;
   broadcaster_user_id: string;
 };
 

@@ -305,6 +305,7 @@
   "FEED_AUTOMOD_DENY": "Deny",
   "FEED_AUTOMOD_HELD": "Held by AutoMod · {reason}",
   "FEED_AUTOMOD_STATUS": "{status, select, approved {approved} denied {denied} other {expired}}",
+  "FEED_AUTOMOD_STATUS_BY": "{status, select, approved {approved} other {denied}} by {mod}",
   "FEED_CHEERED": "Cheered {bits, plural, one {# bit} other {# bits}}",
   "FEED_DAY_TODAY": "Today",
   "FEED_DAY_YESTERDAY": "Yesterday",

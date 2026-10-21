@@ -3,7 +3,11 @@ import { createMemo, For, Show } from "solid-js";
 import { t } from "../../../lib/i18n/index.ts";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
-import type { BadgeMap, FeedMessage } from "../../../lib/types/index.ts";
+import type {
+  AutomodHoldInfo,
+  BadgeMap,
+  FeedMessage,
+} from "../../../lib/types/index.ts";
 import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
@@ -48,6 +52,12 @@ export type MessageOptions = UserActions & {
   onOpenChannel?: (channelId: string) => void;
 };
 
+function holdOutcome(hold: AutomodHoldInfo): string {
+  return hold.moderator
+    ? t("FEED_AUTOMOD_STATUS_BY", { status: hold.status, mod: hold.moderator })
+    : t("FEED_AUTOMOD_STATUS", { status: hold.status });
+}
+
 export function createMessageParts(
   item: FeedMessage,
   props: ItemLayout & MessageOptions,
@@ -90,9 +100,7 @@ export function createMessageParts(
     <RichNotice
       class="text-caution"
       label={t("FEED_AUTOMOD_HELD", { reason: hold()!.reason })}
-      suffix={holdResolved()
-        ? t("FEED_AUTOMOD_STATUS", { status: hold()!.status })
-        : undefined}
+      suffix={holdResolved() ? holdOutcome(hold()!) : undefined}
       actions={holdPending()
         ? [
           {
