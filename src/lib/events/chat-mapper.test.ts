@@ -63,17 +63,34 @@ Deno.test("carries the cheered amount", () => {
   assertEquals(mapChatMessage(raw({ cheer: null }), 0).cheer, undefined);
 });
 
-Deno.test("shows fragment types it doesn't know as their text", () => {
-  const gif = {
-    type: "gif",
-    text: "[Hello GIF]",
-    gif: { id: "x", url: "https://media0.giphy.com/x.gif" },
-  } as unknown as RawChatMessage["message"]["fragments"][number];
+Deno.test("keeps a GIF's URL exactly as Twitch sent it", () => {
+  const url = "https://media0.giphy.com/x.gif?cid=abc&rid=x.gif";
   const msg = mapChatMessage(
-    raw({ message: { text: "[Hello GIF]", fragments: [gif] } }),
+    raw({
+      message: {
+        text: "[Hello GIF]",
+        fragments: [{
+          type: "gif",
+          text: "[Hello GIF]",
+          gif: { id: "x", url },
+        }],
+      },
+    }),
     0,
   );
-  assertEquals(msg.fragments, [{ type: "text", text: "[Hello GIF]" }]);
+  assertEquals(msg.fragments, [{ type: "gif", text: "[Hello GIF]", url }]);
+});
+
+Deno.test("shows fragment types it doesn't know as their text", () => {
+  const sticker = {
+    type: "sticker",
+    text: "[Sticker]",
+  } as unknown as RawChatMessage["message"]["fragments"][number];
+  const msg = mapChatMessage(
+    raw({ message: { text: "[Sticker]", fragments: [sticker] } }),
+    0,
+  );
+  assertEquals(msg.fragments, [{ type: "text", text: "[Sticker]" }]);
 });
 
 Deno.test("classifies channel point messages", () => {

@@ -4,7 +4,9 @@ export type Fragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; id: string }
   | { type: "mention"; text: string; user_login: string }
-  | { type: "cheermote"; text: string; prefix: string; bits: number };
+  | { type: "cheermote"; text: string; prefix: string; bits: number }
+  /// Twitch requires the URL be shown exactly as given.
+  | { type: "gif"; text: string; url: string };
 
 type FeedReply = {
   parent_message_id: string;

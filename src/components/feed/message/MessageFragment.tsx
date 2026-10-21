@@ -44,6 +44,16 @@ export default function MessageFragment(props: Props) {
           cheermotes={props.cheermotes}
         />
       );
+    case "gif":
+      return (
+        <img
+          src={frag.url}
+          alt={frag.text}
+          data-tip={frag.text}
+          decoding="async"
+          class="block feed-gif w-auto object-contain my-1 rounded-sm"
+        />
+      );
     case "mention":
       return (
         <span

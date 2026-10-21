@@ -18,7 +18,8 @@ export type RawFragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; emote: { id: string } }
   | { type: "mention"; text: string; mention: { user_login: string } }
-  | { type: "cheermote"; text: string; cheermote: RawCheermote };
+  | { type: "cheermote"; text: string; cheermote: RawCheermote }
+  | { type: "gif"; text: string; gif: { id: string; url: string } };
 
 type RawCheermote = { prefix: string; bits: number; tier: number };
 

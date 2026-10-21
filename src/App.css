@@ -237,6 +237,11 @@
   margin-block: -0.35em;
 }
 
+@utility feed-gif {
+  height: 6em;
+  max-width: 100%;
+}
+
 @utility feed-meta {
   font-size: 0.85em;
 }
