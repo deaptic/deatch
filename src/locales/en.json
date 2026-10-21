@@ -1,4 +1,10 @@
 {
+  "ERROR_AUTH": "Twitch sign-in failed",
+  "ERROR_DISCORD": "Discord isn't reachable",
+  "ERROR_INVALID": "Unexpected response",
+  "ERROR_IO": "Something went wrong on this device",
+  "ERROR_NETWORK": "Network request failed",
+  "ERROR_NOT_AUTHENTICATED": "Not signed in to Twitch",
   "FEED_DAY_TODAY": "Today",
   "FEED_DAY_YESTERDAY": "Yesterday",
   "LANGUAGE_OTHER": "Other"

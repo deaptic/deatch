@@ -2,18 +2,18 @@
 import { assertEquals } from "@std/assert";
 import { errorMessage } from "./error.ts";
 
-Deno.test("reads the message out of each backend error kind", () => {
+Deno.test("shows Twitch's helix message as-is", () => {
+  assertEquals(errorMessage({ kind: "helix", message: "nope" }), "nope");
+});
+
+Deno.test("translates other backend error kinds", () => {
   assertEquals(
     errorMessage({ kind: "notAuthenticated" }),
     "Not signed in to Twitch",
   );
   assertEquals(
-    errorMessage({ kind: "helix", message: "nope" }),
-    "nope",
-  );
-  assertEquals(
     errorMessage({ kind: "http", message: "timed out" }),
-    "timed out",
+    "Network request failed",
   );
 });
 
