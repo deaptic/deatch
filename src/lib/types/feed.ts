@@ -50,12 +50,11 @@ export type Redemption = {
   input?: string;
 };
 
-/// A paid look Twitch gives the whole message.
-export type MessagePerk =
-  | "highlight"
-  | "sub_only"
-  | "message_effect"
-  | "gigantified_emote";
+/// A look bought with channel points for the whole message.
+export type MessagePerk = "highlight" | "sub_only";
+
+/// A look bought with bits for the whole message.
+export type PowerUp = "message_effect" | "gigantified_emote";
 
 export type FeedMessage = {
   kind: "message";
@@ -73,6 +72,7 @@ export type FeedMessage = {
     | { kind: "custom_reward"; redemption?: Redemption };
   first_message?: boolean;
   cheer?: { bits: number };
+  power_up?: PowerUp;
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
   suspicious?: SuspiciousInfo;
