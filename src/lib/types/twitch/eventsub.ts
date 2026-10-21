@@ -127,6 +127,14 @@ export type RawShoutout = {
   moderator_user_name: string;
 };
 
+export type RawShoutoutReceive = {
+  broadcaster_user_id: string;
+  from_broadcaster_user_id: string;
+  from_broadcaster_user_login: string;
+  from_broadcaster_user_name: string;
+  viewer_count: number;
+};
+
 export type RawFollow = {
   broadcaster_user_id: string;
   user_id: string;

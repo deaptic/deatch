@@ -28,6 +28,8 @@ pub enum EventKind {
     ChannelChatSettingsUpdate,
     #[serde(rename = "channel.shoutout.create")]
     ChannelShoutoutCreate,
+    #[serde(rename = "channel.shoutout.receive")]
+    ChannelShoutoutReceive,
     #[serde(rename = "channel.follow")]
     ChannelFollow,
     #[serde(rename = "channel.moderate")]
@@ -47,7 +49,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 14] = [
+    pub const ALL: [Self; 15] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -55,6 +57,7 @@ impl EventKind {
         Self::ChannelChatClearUserMessages,
         Self::ChannelChatSettingsUpdate,
         Self::ChannelShoutoutCreate,
+        Self::ChannelShoutoutReceive,
         Self::ChannelFollow,
         Self::ChannelModerate,
         Self::AutomodMessageHold,
@@ -73,6 +76,7 @@ impl EventKind {
             Self::ChannelChatClearUserMessages => "channel-chat-clear-user-messages",
             Self::ChannelChatSettingsUpdate => "channel-chat-settings-update",
             Self::ChannelShoutoutCreate => "channel-shoutout-create",
+            Self::ChannelShoutoutReceive => "channel-shoutout-receive",
             Self::ChannelFollow => "channel-follow",
             Self::ChannelModerate => "channel-moderate",
             Self::AutomodMessageHold => "automod-message-hold",
@@ -101,9 +105,10 @@ impl EventKind {
             | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
             Self::ChannelChatSettingsUpdate => (Role::Viewer, Focused),
             Self::AutomodMessageHold | Self::AutomodMessageUpdate => (Role::Moderator, Background),
-            Self::ChannelShoutoutCreate | Self::ChannelFollow | Self::ChannelModerate => {
-                (Role::Moderator, Focused)
-            }
+            Self::ChannelShoutoutCreate
+            | Self::ChannelShoutoutReceive
+            | Self::ChannelFollow
+            | Self::ChannelModerate => (Role::Moderator, Focused),
             Self::ChannelPointsCustomRewardRedemptionAdd
             | Self::ChannelPointsAutomaticRewardRedemptionAdd
             | Self::ChannelUpdate => (Role::Broadcaster, Focused),

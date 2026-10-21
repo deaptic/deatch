@@ -10,6 +10,7 @@ import type {
 import type {
   RawAutomaticRedemption,
   RawChannelPointsRedemption,
+  RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { feedEvent, withDetail } from "../utils/feedEvent.ts";
@@ -27,6 +28,25 @@ function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
     t("EVENT_SHOUTOUT", { channel: raw.to_broadcaster_user_name }),
     timestamp,
     { chatter_name: raw.moderator_user_name },
+  );
+}
+
+function mapShoutoutReceive(
+  raw: RawShoutoutReceive,
+  timestamp: number,
+): FeedEvent {
+  return feedEvent(
+    "shoutout",
+    t("EVENT_SHOUTOUT_RECEIVED", {
+      channel: raw.from_broadcaster_user_name,
+      count: raw.viewer_count,
+    }),
+    timestamp,
+    {
+      chatter_user_id: raw.from_broadcaster_user_id,
+      chatter_login: raw.from_broadcaster_user_login,
+      chatter_name: raw.from_broadcaster_user_name,
+    },
   );
 }
 
@@ -98,6 +118,13 @@ export function start(): () => void {
       appendItem(
         raw.broadcaster_user_id,
         mapShoutout(raw, serverTime(e.payload)),
+      );
+    }),
+    listenEventSub<RawShoutoutReceive>("channel.shoutout.receive", (e) => {
+      const raw = e.payload.event;
+      appendItem(
+        raw.broadcaster_user_id,
+        mapShoutoutReceive(raw, serverTime(e.payload)),
       );
     }),
     listenEventSub<RawFollow>("channel.follow", (e) => {
