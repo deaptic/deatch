@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-solid";
+import { t } from "../../lib/i18n/index.ts";
 import {
   createEffect,
   createMemo,
@@ -168,7 +169,7 @@ export default function Chat(props: Props) {
       m.kind === "message" && m.message_id === messageId
     );
     if (!held) {
-      addToast("That message is no longer in chat");
+      addToast(t("CHAT_MESSAGE_GONE"));
       return false;
     }
     props.onJumpToMessage(props.broadcasterId, messageId);
@@ -309,7 +310,7 @@ export default function Chat(props: Props) {
               class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 h-8 pl-2.5 pr-3.5 bg-accent hover:bg-accent-hover text-on-accent text-small font-semibold rounded-full transition-colors duration-snap cursor-pointer"
             >
               <ChevronDown class="size-4" />
-              New messages
+              {t("CHAT_NEW_MESSAGES")}
             </button>
           </Show>
         }

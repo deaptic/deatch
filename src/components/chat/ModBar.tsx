@@ -1,5 +1,6 @@
 import { Bookmark, Eraser, SlidersHorizontal, Tv } from "lucide-solid";
 import { For, Show } from "solid-js";
+import { t } from "../../lib/i18n/index.ts";
 import { startCommercial } from "../../lib/api/twitch/channels.ts";
 import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
 import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
@@ -28,18 +29,18 @@ export default function ModBar(props: Props) {
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => run(createStreamMarker())}
         >
-          Add marker
+          {t("CHAT_MOD_BAR_ADD_MARKER")}
         </Button>
         <MenuButton
           variant="ghost"
-          label="Run ad"
+          label={t("CHAT_MOD_BAR_RUN_AD")}
           icon={<Tv class="size-4" />}
         >
           {(close) => (
             <For each={AD_LENGTHS}>
               {(length) => (
                 <MenuItem
-                  label={`${length} seconds`}
+                  label={t("CHAT_MODE_SECONDS", { count: length })}
                   onClick={() => {
                     close();
                     run(
@@ -57,7 +58,7 @@ export default function ModBar(props: Props) {
       </Show>
       <MenuButton
         variant="ghost"
-        label="Chat modes"
+        label={t("CHAT_MOD_BAR_CHAT_MODES")}
         icon={<SlidersHorizontal class="size-4" />}
       >
         {(close) => (
@@ -66,12 +67,12 @@ export default function ModBar(props: Props) {
       </MenuButton>
       <MenuButton
         variant="ghost"
-        label="Clear chat"
+        label={t("CHAT_MOD_BAR_CLEAR_CHAT")}
         icon={<Eraser class="size-4" />}
       >
         {(close) => (
           <MenuItem
-            label="Clear every message"
+            label={t("CHAT_MOD_BAR_CLEAR_EVERY_MESSAGE")}
             tone="negative"
             onClick={() => {
               close();

@@ -1,5 +1,6 @@
 import { Check, ChevronLeft } from "lucide-solid";
 import { createSignal, For, Show } from "solid-js";
+import { t } from "../../lib/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
@@ -8,6 +9,7 @@ import {
   CHAT_MODES,
   type ChatMode,
   isOn,
+  presetLabel,
   type TimedMode,
 } from "./chatModes.ts";
 import ChatModePresets from "./ChatModePresets.tsx";
@@ -28,7 +30,8 @@ export default function ChatModesList(props: Props) {
     const s = settings();
     if (mode.kind !== "timed" || !s || !isOn(mode, s)) return undefined;
     const value = mode.current(s);
-    return mode.presets.find((p) => p.value === value)?.label;
+    const preset = mode.presets.find((p) => p.value === value);
+    return preset && presetLabel(preset);
   };
 
   function pick(mode: ChatMode) {
@@ -44,7 +47,7 @@ export default function ChatModesList(props: Props) {
         <For each={CHAT_MODES}>
           {(mode) => (
             <MenuItem
-              label={mode.label}
+              label={t(mode.label)}
               icon={on(mode) ? <Check /> : undefined}
               hint={hint(mode)}
               submenu={mode.kind === "timed"}
@@ -57,7 +60,7 @@ export default function ChatModesList(props: Props) {
       {(mode) => (
         <>
           <MenuItem
-            label={mode().label}
+            label={t(mode().label)}
             icon={<ChevronLeft />}
             onClick={() => setTimed(null)}
           />

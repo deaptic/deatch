@@ -1,4 +1,5 @@
 import { SendHorizontal, Smile, X } from "lucide-solid";
+import { t } from "../../lib/i18n/index.ts";
 import {
   createEffect,
   createSignal,
@@ -233,12 +234,12 @@ export default function ChatInput(props: Props) {
         {(reply) => (
           <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft">
             <span class="shrink-0">
-              Replying to{" "}
+              {t("CHAT_INPUT_REPLYING_TO")}{" "}
               <span class="font-semibold text-ink">{reply().name}</span>
             </span>
             <span class="flex-1 min-w-0 truncate">{reply().text}</span>
             <IconButton
-              label="Cancel reply"
+              label={t("CHAT_INPUT_CANCEL_REPLY")}
               size="sm"
               onClick={props.onClearReply}
             >
@@ -257,7 +258,9 @@ export default function ChatInput(props: Props) {
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             maxLength={MAX_LEN}
-            placeholder={`Message #${props.broadcasterName}`}
+            placeholder={t("CHAT_INPUT_PLACEHOLDER", {
+              channel: props.broadcasterName,
+            })}
             ref={(api) => {
               textAreaApi = api;
               props.ref?.({
@@ -278,7 +281,7 @@ export default function ChatInput(props: Props) {
               >
                 <CharCounter value={input} max={MAX_LEN} />
                 <IconButton
-                  label="Emote picker"
+                  label={t("CHAT_INPUT_EMOTE_PICKER")}
                   pressed={isOverlayOpen("emotePicker")}
                   {...{ [POPOVER_TOGGLE]: "" }}
                   onClick={() => toggleOverlay("emotePicker")}
@@ -288,10 +291,10 @@ export default function ChatInput(props: Props) {
                 <Button
                   variant={outgoing() && !tooLong() ? "accent" : "ghost"}
                   icon={<SendHorizontal class="size-4" />}
-                  aria-label="Send"
+                  aria-label={t("CHAT_INPUT_SEND")}
                   data-tip={tooLong()
-                    ? `Too long: Twitch allows ${MAX_LEN} characters`
-                    : "Send"}
+                    ? t("CHAT_INPUT_TOO_LONG", { max: MAX_LEN })
+                    : t("CHAT_INPUT_SEND")}
                   disabled={tooLong()}
                   loading={sending()}
                   onMouseDown={(e) => e.preventDefault()}
