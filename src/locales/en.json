@@ -399,6 +399,7 @@
   "NOTICE_CHARITY_DONATION": "{name} donated {amount} to support {charity}.",
   "NOTICE_COMMUNITY_SUB_GIFT": "{name} is gifting {count, plural, one {# Tier {tier} Sub} other {# Tier {tier} Subs}} to the community!{total, plural, =0 {} other { They've gifted a total of # in the channel!}}",
   "NOTICE_GIFT_PAID_UPGRADE": "{name} is continuing the Gift Sub they got from {anonymous, select, true {an anonymous user} other {{gifter}}}!",
+  "NOTICE_MODIVERSARY": "{name} has been a moderator for {months, plural, one {# month} other {# months}}!",
   "NOTICE_PAY_IT_FORWARD": "{name} is paying forward the Gift they got from {anonymous, select, true {an anonymous user} other {{gifter}}} to the community!",
   "NOTICE_PRIME_PAID_UPGRADE": "{name} converted from a Prime sub to a Tier {tier} sub!",
   "NOTICE_RAID": "{count, plural, one {# raider from {name} has joined!} other {# raiders from {name} have joined!}}",

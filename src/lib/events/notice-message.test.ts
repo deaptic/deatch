@@ -93,7 +93,14 @@ Deno.test("names who made an announcement", () => {
   );
 });
 
+Deno.test("counts a moderator's months", () => {
+  assertEquals(
+    notice({ notice_type: "modiversary", modiversary: { months: 84 } }),
+    "Viewer has been a moderator for 84 months!",
+  );
+});
+
 Deno.test("leaves unknown notices to Twitch's text", () => {
-  assertEquals(notice({ notice_type: "modiversary" }), null);
+  assertEquals(notice({ notice_type: "watch_streak" }), null);
   assertEquals(notice({ notice_type: "sub" }), null);
 });
