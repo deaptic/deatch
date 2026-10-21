@@ -4,12 +4,13 @@
 
 pub mod commands;
 pub mod dto;
+mod notice;
 
 use crate::error::Result;
 use crate::http::get_json;
 use dto::{
-    ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, MessageType, RecentMessage,
-    Reply,
+    ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, MessageType, RecentHistory,
+    RecentMessage, Reply,
 };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -227,7 +228,7 @@ pub async fn fetch_recent_messages(
     channel_login: &str,
     limit: usize,
     after_unix_ms: Option<u64>,
-) -> Result<Vec<RecentMessage>> {
+) -> Result<RecentHistory> {
     let mut url = format!(
         "https://recent-messages.robotty.de/api/v2/recent-messages/{channel_login}?limit={limit}"
     );
@@ -240,28 +241,31 @@ pub async fn fetch_recent_messages(
 
 /// Lines arrive in chat order, so a clear only ever touches messages
 /// already collected.
-fn parse_messages(lines: &[String]) -> Vec<RecentMessage> {
-    let mut messages: Vec<RecentMessage> = Vec::new();
+fn parse_messages(lines: &[String]) -> RecentHistory {
+    let mut history = RecentHistory::default();
     for line in lines {
         let Some((tags, nick, command, body)) = split_irc(line) else {
             continue;
         };
         match command {
-            "PRIVMSG" => messages.push(parse_privmsg(&tags, nick, body)),
+            "PRIVMSG" => history.messages.push(parse_privmsg(&tags, nick, body)),
+            "USERNOTICE" => history.notices.push(notice::parse_usernotice(&tags, body)),
             "CLEARMSG" => {
                 let target = nonempty(&tags, "target-msg-id");
-                mark_deleted(&mut messages, |m| Some(m.message_id.as_str()) == target);
+                mark_deleted(&mut history.messages, |m| {
+                    Some(m.message_id.as_str()) == target
+                });
             }
             "CLEARCHAT" => {
                 let user = nonempty(&tags, "target-user-id");
-                mark_deleted(&mut messages, |m| {
+                mark_deleted(&mut history.messages, |m| {
                     user.is_none_or(|u| m.chatter_user_id.as_str() == u)
                 });
             }
             _ => {}
         }
     }
-    messages
+    history
 }
 
 fn mark_deleted(messages: &mut [RecentMessage], cleared: impl Fn(&RecentMessage) -> bool) {
@@ -273,15 +277,30 @@ fn mark_deleted(messages: &mut [RecentMessage], cleared: impl Fn(&RecentMessage)
 #[cfg(test)]
 mod tests {
     use super::{parse_messages, MessageType};
-    use crate::history::dto::RecentMessage;
+    use crate::history::dto::{RecentHistory, RecentMessage};
     use serde_json::{json, Value};
 
     const PRIVMSG: &str = "@badge-info=subscriber/12;badges=subscriber/12,premium/1;color=#FF0000;\
         display-name=Foo;emotes=25:6-10;first-msg=0;id=m1;room-id=111;tmi-sent-ts=1000;user-id=222 \
         :foo!foo@foo.tmi.twitch.tv PRIVMSG #chan :hello Kappa @Bar";
 
-    fn parse(lines: &[&str]) -> Vec<RecentMessage> {
+    fn history(lines: &[&str]) -> RecentHistory {
         parse_messages(&lines.iter().map(|l| l.to_string()).collect::<Vec<_>>())
+    }
+
+    fn parse(lines: &[&str]) -> Vec<RecentMessage> {
+        history(lines).messages
+    }
+
+    #[test]
+    fn collects_notices_apart_from_messages() {
+        let h = history(&[
+            "@id=m1;user-id=1 :a!a@a PRIVMSG #chan :one",
+            "@msg-id=raid;id=n1;login=b :tmi.twitch.tv USERNOTICE #chan",
+            "@tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #chan",
+        ]);
+        assert_eq!(h.messages.len(), 1);
+        assert_eq!(h.notices[0].message_id.as_str(), "n1");
     }
 
     fn to_json<T: serde::Serialize>(value: &T) -> Value {

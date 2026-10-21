@@ -103,6 +103,7 @@ export type RawNoticeDetails = {
 export type RawNotification =
   & {
     broadcaster_user_id: string;
+    message_id: string;
     notice_type: string;
     system_message: string;
     /// The chatter's own text, e.g. a resub message or an announcement.
@@ -113,9 +114,11 @@ export type RawNotification =
     chatter_user_name?: string;
     color?: string;
   }
-  & Partial<RawNoticeDetails>
+  & { [K in keyof RawNoticeDetails]?: RawNoticeDetails[K] | null }
   & {
-    [K in keyof RawNoticeDetails as `shared_chat_${K}`]?: RawNoticeDetails[K];
+    [K in keyof RawNoticeDetails as `shared_chat_${K}`]?:
+      | RawNoticeDetails[K]
+      | null;
   };
 
 export type RawShoutout = {

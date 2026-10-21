@@ -7,7 +7,7 @@ import type {
   Emote,
   GetRecentMessagesParams,
   GetUserChatColorParams,
-  RecentMessage,
+  RecentHistory,
   SendChatAnnouncementParams,
   SendChatMessageParams,
   SendMessageResult,
@@ -59,7 +59,7 @@ export function postChatMessage(
 export function getRecentMessages(
   params: GetRecentMessagesParams,
   options?: InvokeOptions,
-): Promise<RecentMessage[]> {
+): Promise<RecentHistory> {
   return invokeCommand(commands.getRecentMessages, [params], options);
 }
 
