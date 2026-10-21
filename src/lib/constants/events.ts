@@ -44,6 +44,7 @@ export const POLL = "poll";
 export const PREDICTION = "prediction";
 export const GOAL = "goal";
 export const AD_BREAK = "ad_break";
+export const BITS_USE = "bits_use";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -147,6 +148,13 @@ export const EVENTS = [
     label: "EVENT_TYPE_AD_BREAK",
     description: "EVENT_TYPE_AD_BREAK_DESCRIPTION",
     types: [AD_BREAK],
+    modOnly: false,
+  },
+  {
+    key: "bits_use",
+    label: "EVENT_TYPE_BITS_USE",
+    description: "EVENT_TYPE_BITS_USE_DESCRIPTION",
+    types: [BITS_USE],
     modOnly: false,
   },
   {
