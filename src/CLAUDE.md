@@ -10,7 +10,11 @@ import downward:
 - `api/` — one thin typed wrapper per command; the only layer that calls
   `bindings.ts`. No state, no logic beyond toasts.
 - `stores/` — signals and state only. Never call the backend.
-- `types/`, `constants/`, `utils/`, `format/` — shared leaves.
+- `types/`, `constants/`, `utils/`, `format/`, `i18n/` — shared leaves.
+
+All user-facing text goes through `t()` from `i18n/`, keyed in
+`src/locales/en.json`. Names of things (Deatch, Link, Twitch, badges) stay as
+plain text inside messages.
 
 A component may call an `api/` wrapper directly for a plain one-shot call; once
 caching, state, or outcome logic is involved, it belongs in a service. Types
