@@ -26,6 +26,7 @@ import Avatar from "../ui/Avatar.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Field from "../ui/Field.tsx";
 import Loading from "../ui/Loading.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -84,7 +85,10 @@ export default function QuickSwitch(props: Props) {
   async function open(row: Row, pin: boolean) {
     if (row.kind === "channel") {
       if (pin && pinChannel(row.user.id)) {
-        addToast(`Pinned ${row.user.displayName}`, "success");
+        addToast(
+          t("QUICK_SWITCH_PINNED", { name: row.user.displayName }),
+          "success",
+        );
       }
       props.onSelect(row.user);
       props.onClose();
@@ -94,7 +98,7 @@ export default function QuickSwitch(props: Props) {
     try {
       const found = (await users.fetch({ logins: [row.query] }))[0];
       if (!found) {
-        addToast("No channel with that name", "error");
+        addToast(t("QUICK_SWITCH_NOT_FOUND"), "error");
         return;
       }
       if (pin) pinChannel(found.id);
@@ -134,14 +138,14 @@ export default function QuickSwitch(props: Props) {
       >
         <div
           role="dialog"
-          aria-label="Quick switch"
+          aria-label={t("QUICK_SWITCH_LABEL")}
           class="w-140 max-w-full max-h-3/5 flex flex-col bg-overlay border border-line rounded-lg p-2.5 transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
         >
           <Field
             size="lg"
             icon={<Search />}
             ref={(el) => (inputRef = el)}
-            placeholder="Jump to a channel…"
+            placeholder={t("QUICK_SWITCH_PLACEHOLDER")}
             value={query()}
             onInput={(e) => setQuery(e.currentTarget.value)}
             trailing={<kbd class={KBD}>Esc</kbd>}
@@ -151,7 +155,7 @@ export default function QuickSwitch(props: Props) {
               when={rows().length > 0}
               fallback={
                 <p class="py-8 text-center text-body text-ink-soft">
-                  Nothing matches. Type a channel name to search Twitch.
+                  {t("QUICK_SWITCH_EMPTY")}
                 </p>
               }
             >
@@ -187,10 +191,12 @@ export default function QuickSwitch(props: Props) {
                             </span>
                             <span class="flex-1 min-w-0 flex flex-col">
                               <span class="text-body font-semibold text-ink truncate">
-                                Search Twitch for “{query().trim()}”
+                                {t("QUICK_SWITCH_SEARCH_TWITCH", {
+                                  query: query().trim(),
+                                })}
                               </span>
                               <span class="text-small text-ink-soft">
-                                Not in your rail yet
+                                {t("QUICK_SWITCH_NOT_IN_RAIL")}
                               </span>
                             </span>
                           </>
@@ -215,8 +221,12 @@ export default function QuickSwitch(props: Props) {
                                     stream() ? "text-live" : "text-ink-soft"
                                   }`}
                                 >
-                                  <Show when={stream()} fallback="Offline">
-                                    Live · {stream()!.game.name} ·{" "}
+                                  <Show
+                                    when={stream()}
+                                    fallback={t("COMMON_OFFLINE")}
+                                  >
+                                    {t("COMMON_LIVE")} · {stream()!.game.name} ·
+                                    {" "}
                                     {formatViewers(stream()!.viewerCount)}
                                   </Show>
                                   <Show
@@ -224,7 +234,7 @@ export default function QuickSwitch(props: Props) {
                                       r().user.id,
                                     )}
                                   >
-                                    {" · pinned"}
+                                    {` · ${t("QUICK_SWITCH_PINNED_TAG")}`}
                                   </Show>
                                 </span>
                               </span>
@@ -244,13 +254,13 @@ export default function QuickSwitch(props: Props) {
           </div>
           <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 border-t border-line-soft text-small text-ink-faint">
             <span class="flex items-center gap-1.5">
-              <kbd class={KBD}>↑↓</kbd> move
+              <kbd class={KBD}>↑↓</kbd> {t("QUICK_SWITCH_MOVE")}
             </span>
             <span class="flex items-center gap-1.5">
-              <kbd class={KBD}>↵</kbd> open
+              <kbd class={KBD}>↵</kbd> {t("QUICK_SWITCH_OPEN")}
             </span>
             <span class="flex items-center gap-1.5">
-              <kbd class={KBD}>Ctrl ↵</kbd> open and pin
+              <kbd class={KBD}>Ctrl ↵</kbd> {t("QUICK_SWITCH_OPEN_PIN")}
             </span>
           </div>
         </div>

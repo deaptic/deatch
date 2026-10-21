@@ -6,6 +6,7 @@ import {
 } from "../../lib/stores/updater.ts";
 import * as updater from "../../lib/services/updater.ts";
 import { errorMessage } from "../../lib/utils/error.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 export default function UpdateBanner() {
   const [error, setError] = createSignal<string | null>(null);
@@ -36,16 +37,23 @@ export default function UpdateBanner() {
         >
           <span class="size-2 rounded-full bg-accent shrink-0" />
           <span class="text-ink truncate">
-            <Show when={!installing()} fallback={<>Installing update…</>}>
+            <Show when={!installing()} fallback={t("UPDATE_INSTALLING")}>
               <Show
                 when={error()}
-                fallback={<span class="font-semibold">Update ready</span>}
+                fallback={
+                  <span class="font-semibold">{t("UPDATE_READY")}</span>
+                }
               >
-                <span class="font-semibold text-negative">Update failed</span>
+                <span class="font-semibold text-negative">
+                  {t("UPDATE_FAILED")}
+                </span>
               </Show>
               <span class="text-ink-soft">
                 {" "}
-                · {u().version} · click to {error() ? "retry" : "install"}
+                {t("UPDATE_ACTION", {
+                  version: u().version,
+                  failed: error() ? "yes" : "no",
+                })}
               </span>
             </Show>
           </span>

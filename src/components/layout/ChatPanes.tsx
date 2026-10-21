@@ -6,6 +6,7 @@ import ChannelHeader from "../chat/ChannelHeader.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import Button from "../ui/Button.tsx";
 import Boundary from "../ui/Boundary.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type ChatPanesProps = {
   userLogin: string;
@@ -21,11 +22,11 @@ export default function ChatPanes(props: ChatPanesProps) {
         fallback={
           <EmptyState
             icon={<MessagesSquare />}
-            title="Pick a channel"
-            body="Choose one from the rail, or find something live."
+            title={t("LAYOUT_EMPTY_TITLE")}
+            body={t("LAYOUT_EMPTY_BODY")}
             action={
               <Button variant="accent" onClick={showExplore}>
-                Explore live channels
+                {t("LAYOUT_EXPLORE")}
               </Button>
             }
           />
@@ -35,7 +36,7 @@ export default function ChatPanes(props: ChatPanesProps) {
         {(ch) => (
           <div class="absolute inset-0 flex flex-col">
             <ChannelHeader channel={ch} />
-            <Boundary label="This channel hit an error">
+            <Boundary label={t("LAYOUT_CHANNEL_ERROR")}>
               <Chat
                 broadcasterId={ch.id}
                 broadcasterLogin={ch.login}

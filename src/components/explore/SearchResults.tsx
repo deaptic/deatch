@@ -145,7 +145,7 @@ export default function SearchResults(props: Props) {
             <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
               <Show
                 when={!results.loading && !categories.loading}
-                fallback={t("EXPLORE_SEARCHING")}
+                fallback={t("COMMON_SEARCHING")}
               >
                 {t("EXPLORE_NO_RESULTS", { query: debounced() })}
               </Show>

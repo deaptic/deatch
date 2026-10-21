@@ -39,7 +39,7 @@ export default function MessageContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label={t("MENU_REPLY")}
+        label={t("MESSAGE_REPLY")}
         icon={<Reply />}
         onClick={run(() => props.onReply(props.msg))}
       />
@@ -61,7 +61,7 @@ export default function MessageContextMenu(props: Props) {
       />
       <Show when={props.showCopypasta}>
         <MenuItem
-          label={t("MENU_COPYPASTA")}
+          label={t("MESSAGE_COPYPASTA")}
           icon={<ClipboardPaste />}
           onClick={run(() => props.onCopypasta(props.msg))}
         />

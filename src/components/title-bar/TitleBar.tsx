@@ -18,6 +18,7 @@ import { OVERLAY_GAP } from "../ui/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 const win = getCurrentWindow();
 
@@ -89,8 +90,8 @@ export default function TitleBar(props: Props) {
               class={`${CONTROL} ${
                 isOverlayOpen("diagnostics") ? PRESSED : ""
               }`}
-              aria-label="Diagnostics"
-              data-tip="Diagnostics"
+              aria-label={t("DIAGNOSTICS_TITLE")}
+              data-tip={t("DIAGNOSTICS_TITLE")}
               aria-pressed={isOverlayOpen("diagnostics")}
               {...{ [POPOVER_TOGGLE]: "" }}
               onMouseDown={(e) => e.preventDefault()}
@@ -102,8 +103,8 @@ export default function TitleBar(props: Props) {
           <button
             ref={inboxBtn}
             class={`${CONTROL} ${isOverlayOpen("inbox") ? PRESSED : ""}`}
-            aria-label="Inbox"
-            data-tip="Inbox"
+            aria-label={t("INBOX_TITLE")}
+            data-tip={t("INBOX_TITLE")}
             aria-pressed={isOverlayOpen("inbox")}
             {...{ [POPOVER_TOGGLE]: "" }}
             onMouseDown={(e) => e.preventDefault()}
@@ -120,21 +121,23 @@ export default function TitleBar(props: Props) {
           <button
             class={CONTROL}
             onClick={() => win.minimize()}
-            aria-label="Minimize"
+            aria-label={t("TITLE_BAR_MINIMIZE")}
           >
             <Minus class="size-3" />
           </button>
           <button
             class={CONTROL}
             onClick={() => win.toggleMaximize()}
-            aria-label={maximized() ? "Restore" : "Maximize"}
+            aria-label={maximized()
+              ? t("TITLE_BAR_RESTORE")
+              : t("TITLE_BAR_MAXIMIZE")}
           >
             {maximized() ? <Copy class="size-3" /> : <Square class="size-3" />}
           </button>
           <button
             class={`${CONTROL} hover:bg-negative! hover:text-on-accent!`}
             onClick={() => win.close()}
-            aria-label="Close"
+            aria-label={t("COMMON_CLOSE")}
           >
             <X class="size-3" />
           </button>

@@ -1,10 +1,10 @@
-import type { JSX } from "solid-js";
 import { ShieldBan, ShieldCheck } from "lucide-solid";
 import Segmented from "../ui/Segmented.tsx";
 import {
   TIMEOUT_PRESETS,
   type TimeoutLabel,
 } from "../../lib/constants/timeouts.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 // A preset label picks a timeout; "ban" and "unban" are the two ends.
 export type BanChoice = "unban" | "ban" | TimeoutLabel;
@@ -17,16 +17,6 @@ export function secondsFor(choice: Exclude<BanChoice, "unban">): number | null {
   return preset.seconds;
 }
 
-const OPTIONS: { value: BanChoice; label: string; icon?: JSX.Element }[] = [
-  {
-    value: "unban",
-    label: "Unban",
-    icon: <ShieldCheck class="text-positive" />,
-  },
-  ...TIMEOUT_PRESETS.map((p) => ({ value: p.label, label: p.label })),
-  { value: "ban", label: "Ban", icon: <ShieldBan class="text-negative" /> },
-];
-
 type Props = {
   value?: BanChoice;
   onChange: (choice: BanChoice) => void;
@@ -36,7 +26,19 @@ export default function BanChoiceStrip(props: Props) {
   return (
     <Segmented
       value={props.value}
-      options={OPTIONS}
+      options={[
+        {
+          value: "unban",
+          label: t("BAN_UNBAN"),
+          icon: <ShieldCheck class="text-positive" />,
+        },
+        ...TIMEOUT_PRESETS.map((p) => ({ value: p.label, label: p.label })),
+        {
+          value: "ban",
+          label: t("BAN_BAN"),
+          icon: <ShieldBan class="text-negative" />,
+        },
+      ]}
       onChange={props.onChange}
       fill
     />

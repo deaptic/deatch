@@ -18,8 +18,9 @@ export default function Cheermote(props: Props) {
   const tier = () => cheermoteTier(props.cheermotes, props.prefix, props.bits);
   return (
     <Show when={tier()} fallback={props.text}>
-      {(t) => {
-        const image = () => resolvedTheme() === "dark" ? t().dark : t().light;
+      {(tier) => {
+        const image = () =>
+          resolvedTheme() === "dark" ? tier().dark : tier().light;
         return (
           <span class="whitespace-nowrap">
             <picture>
@@ -37,7 +38,7 @@ export default function Cheermote(props: Props) {
             </picture>
             <span
               class="font-semibold text-(--bits)"
-              style={{ "--bits": readableColor(t().color, resolvedTheme()) }}
+              style={{ "--bits": readableColor(tier().color, resolvedTheme()) }}
             >
               {props.bits.toLocaleString()}
             </span>

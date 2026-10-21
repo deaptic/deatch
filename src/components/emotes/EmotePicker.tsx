@@ -37,13 +37,14 @@ import {
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with {
   type: "json",
 };
+import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
 type Tab = "channel" | "global" | "emoji";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "channel", label: "Channel" },
-  { id: "global", label: "Global" },
-  { id: "emoji", label: "Emoji" },
+const TABS: { id: Tab; label: MessageKey }[] = [
+  { id: "channel", label: "EMOTES_TAB_CHANNEL" },
+  { id: "global", label: "EMOTES_TAB_GLOBAL" },
+  { id: "emoji", label: "EMOTES_TAB_EMOJI" },
 ];
 
 type Props = {
@@ -132,14 +133,14 @@ export default function EmotePicker(props: Props) {
       add({ items: pool.filter((i) => i.label.toLowerCase().includes(q)) });
     } else {
       add({
-        label: "Favourites",
+        label: t("EMOTES_FAVOURITES"),
         items: favorites().map((f) => ({
           value: f.value,
           url: f.url,
           label: f.label,
           disabled: !usable()(f.value),
         })),
-        emptyHint: "Right-click any emote to keep it here.",
+        emptyHint: t("EMOTES_FAVOURITES_EMPTY"),
       });
       for (const s of tabSections()) add(s);
     }
@@ -224,7 +225,7 @@ export default function EmotePicker(props: Props) {
   });
 
   function cycleTab(direction: 1 | -1) {
-    const idx = TABS.findIndex((t) => t.id === tab());
+    const idx = TABS.findIndex((entry) => entry.id === tab());
     setTab(TABS[(idx + direction + TABS.length) % TABS.length].id);
     setSearch("");
   }
@@ -257,7 +258,7 @@ export default function EmotePicker(props: Props) {
       <div
         ref={panelRef}
         role="dialog"
-        aria-label="Emotes"
+        aria-label={t("EMOTES_LABEL")}
         class="fixed right-4 bottom-(--bottom) z-40 w-100 h-110 max-w-full bg-overlay border border-line rounded-lg flex flex-col overflow-hidden transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
         style={{ "--bottom": `${bottomOffset()}px` }}
       >
@@ -267,20 +268,20 @@ export default function EmotePicker(props: Props) {
             class="w-full"
             icon={<Search />}
             ref={(el) => (searchRef = el)}
-            placeholder="Search emotes"
+            placeholder={t("EMOTES_SEARCH")}
             value={search()}
             onInput={(e) => setSearch(e.currentTarget.value)}
           />
         </div>
         <div class="flex px-2.5 border-b border-line-soft shrink-0">
           <For each={TABS}>
-            {(t) => (
+            {(entry) => (
               <NavItem
                 orientation="horizontal"
-                label={t.label}
-                active={tab() === t.id}
+                label={t(entry.label)}
+                active={tab() === entry.id}
                 onClick={() => {
-                  setTab(t.id);
+                  setTab(entry.id);
                   setSearch("");
                   searchRef?.focus();
                 }}
@@ -316,7 +317,7 @@ export default function EmotePicker(props: Props) {
           <Show
             when={activeItem()}
             fallback={
-              <span class="text-ink-faint">Shift + Enter keeps this open</span>
+              <span class="text-ink-faint">{t("EMOTES_KEEP_OPEN")}</span>
             }
           >
             {(item) => (
@@ -327,8 +328,8 @@ export default function EmotePicker(props: Props) {
                 </span>
                 <span class="ml-auto text-ink-faint whitespace-nowrap">
                   {item().disabled
-                    ? "Not available here · Ctrl D to unfavourite"
-                    : "Enter to insert · Ctrl D to favourite"}
+                    ? t("EMOTES_HINT_UNAVAILABLE")
+                    : t("EMOTES_HINT_AVAILABLE")}
                 </span>
               </>
             )}

@@ -3,6 +3,7 @@ import { warnUser } from "../../lib/api/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import Textarea from "../ui/Textarea.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   userId: string;
@@ -34,25 +35,27 @@ export default function WarnModal(props: Props) {
 
   return (
     <Dialog
-      title={`Warn ${props.userName}`}
-      description="They must acknowledge the warning before chatting again."
+      title={t("WARN_TITLE", { name: props.userName })}
+      description={t("WARN_DESCRIPTION")}
       onClose={props.onClose}
       actions={
         <>
-          <Button variant="neutral" onClick={props.onClose}>Cancel</Button>
+          <Button variant="neutral" onClick={props.onClose}>
+            {t("COMMON_CANCEL")}
+          </Button>
           <Button
             variant="danger"
             onClick={warn}
             loading={pending()}
             disabled={!reason().trim()}
           >
-            Warn
+            {t("MENU_WARN")}
           </Button>
         </>
       }
     >
       <Textarea
-        placeholder="Reason"
+        placeholder={t("WARN_REASON_PLACEHOLDER")}
         value={reason()}
         onInput={(e) => setReason(e.currentTarget.value)}
         onKeyDown={(e) => {

@@ -7,6 +7,7 @@ import Popover from "../ui/Popover.tsx";
 import ConnectionSlot from "./ConnectionSlot.tsx";
 import DiagnosticsSection from "./DiagnosticsSection.tsx";
 import MetricRow from "./MetricRow.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   x: number;
@@ -22,7 +23,9 @@ export default function Diagnostics(props: Props) {
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div class="w-96 max-w-full max-h-160 flex flex-col">
         <header class="h-header shrink-0 flex items-center pl-5 pr-3 border-b border-line-soft">
-          <h2 class="text-title text-ink flex-1">Diagnostics</h2>
+          <h2 class="text-title text-ink flex-1">
+            {t("DIAGNOSTICS_TITLE")}
+          </h2>
         </header>
         <Show
           when={sample()}
@@ -34,27 +37,29 @@ export default function Diagnostics(props: Props) {
         >
           {(s) => (
             <div class="flex-1 min-h-0 overflow-y-auto px-5 py-4 flex flex-col gap-5">
-              <DiagnosticsSection title="App">
+              <DiagnosticsSection title={t("DIAGNOSTICS_APP")}>
                 <MetricRow
-                  label="Memory"
+                  label={t("DIAGNOSTICS_MEMORY")}
                   value={formatBytes(s().app.app.memoryBytes)}
                 />
                 <MetricRow
-                  label="CPU"
+                  label={t("DIAGNOSTICS_CPU")}
                   value={formatPercent(s().app.app.cpuPercent ?? 0)}
                 />
                 <MetricRow
-                  label="WebView memory"
-                  detail={`${s().app.webview.processes} processes`}
+                  label={t("DIAGNOSTICS_WEBVIEW_MEMORY")}
+                  detail={t("DIAGNOSTICS_WEBVIEW_PROCESSES", {
+                    count: s().app.webview.processes,
+                  })}
                   value={formatBytes(s().app.webview.memoryBytes)}
                 />
                 <MetricRow
-                  label="WebView CPU"
+                  label={t("DIAGNOSTICS_WEBVIEW_CPU")}
                   value={formatPercent(s().app.webview.cpuPercent ?? 0)}
                 />
               </DiagnosticsSection>
 
-              <DiagnosticsSection title="EventSub connections">
+              <DiagnosticsSection title={t("DIAGNOSTICS_EVENTSUB")}>
                 <For
                   each={Array.from(
                     { length: s().app.eventsub.maxConnections },
@@ -72,41 +77,44 @@ export default function Diagnostics(props: Props) {
                 </For>
                 <Show when={s().app.eventsub.waiting > 0}>
                   <MetricRow
-                    label="Waiting for a connection"
+                    label={t("DIAGNOSTICS_WAITING")}
                     value={`${s().app.eventsub.waiting}`}
                   />
                 </Show>
                 <Show when={s().app.eventsub.retrying > 0}>
                   <MetricRow
-                    label="Retrying"
+                    label={t("DIAGNOSTICS_RETRYING")}
                     value={`${s().app.eventsub.retrying}`}
                     tone="caution"
                   />
                 </Show>
                 <Show when={s().app.eventsub.capped > 0}>
                   <MetricRow
-                    label="Over Twitch's limit"
+                    label={t("DIAGNOSTICS_OVER_LIMIT")}
                     value={`${s().app.eventsub.capped}`}
                     tone="negative"
                   />
                 </Show>
                 <Show when={s().app.eventsub.rejected > 0}>
                   <MetricRow
-                    label="Rejected by Twitch"
+                    label={t("DIAGNOSTICS_REJECTED")}
                     value={`${s().app.eventsub.rejected}`}
                     tone="negative"
                   />
                 </Show>
               </DiagnosticsSection>
 
-              <DiagnosticsSection title="Cache">
-                <MetricRow label="Users" value={`${s().cache.users}`} />
+              <DiagnosticsSection title={t("DIAGNOSTICS_CACHE")}>
                 <MetricRow
-                  label="Channels"
+                  label={t("DIAGNOSTICS_USERS")}
+                  value={`${s().cache.users}`}
+                />
+                <MetricRow
+                  label={t("DIAGNOSTICS_CHANNELS")}
                   value={`${s().cache.channels}`}
                 />
                 <MetricRow
-                  label="Messages"
+                  label={t("DIAGNOSTICS_MESSAGES")}
                   value={`${s().cache.messages}`}
                 />
               </DiagnosticsSection>

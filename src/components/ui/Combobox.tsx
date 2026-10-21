@@ -10,6 +10,7 @@ import { Check, ChevronDown, X } from "lucide-solid";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import Field from "./Field.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   value: string;
@@ -78,7 +79,9 @@ export default function Combobox(props: Props) {
           >
             <button
               type="button"
-              aria-label={`Clear ${props.ariaLabel.toLowerCase()}`}
+              aria-label={t("UI_CLEAR_FIELD", {
+                field: props.ariaLabel.toLowerCase(),
+              })}
               class="shrink-0 grid place-items-center text-ink-soft hover:text-ink cursor-pointer"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => props.onChange("")}
