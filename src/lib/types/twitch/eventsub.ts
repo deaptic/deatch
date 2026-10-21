@@ -330,10 +330,11 @@ export type RawSuspiciousUserUpdate = RawModUser & {
 export type AutomodHeldReason =
   | {
     reason: "automod";
-    automod: { category: string; level: number; boosts_immunity: boolean };
+    automod: { category: string; level: number };
   }
   | {
-    reason: "blocked_term";
+    /// A blocked link also arrives in `blocked_term`.
+    reason: "blocked_term" | "blocked_link";
     blocked_term: {
       terms_found: {
         term_id: string;

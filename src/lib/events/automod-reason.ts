@@ -7,7 +7,9 @@ import { t } from "../i18n/index.ts";
 /// Twitch sends only where each blocked term sits, so read it from the text.
 // ponytail: boundaries read as code point indexes, end inclusive; adjust if
 // Twitch turns out to count UTF-16 units or bytes.
-function blockedTerms(p: RawAutomodMessageHold & { reason: "blocked_term" }) {
+function blockedTerms(
+  p: Exclude<RawAutomodMessageHold, { reason: "automod" }>,
+) {
   const chars = Array.from(p.message.text);
   const terms = p.blocked_term.terms_found.map(({ boundary }) =>
     chars.slice(boundary.start_pos, boundary.end_pos + 1).join("")
@@ -16,8 +18,11 @@ function blockedTerms(p: RawAutomodMessageHold & { reason: "blocked_term" }) {
 }
 
 export function automodReason(p: RawAutomodMessageHold): string {
-  if (p.reason === "blocked_term") {
-    return t("AUTOMOD_BLOCKED_TERM", { terms: blockedTerms(p) });
+  if (p.reason !== "automod") {
+    return t("AUTOMOD_BLOCKED_TERM", {
+      kind: p.reason,
+      terms: blockedTerms(p),
+    });
   }
   return t("AUTOMOD_CATEGORY", {
     category: p.automod.category,

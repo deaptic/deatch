@@ -30,12 +30,23 @@ Deno.test("quotes each blocked term once from the message", () => {
   assertEquals(automodReason(p), "Blocked term: bad, words");
 });
 
+Deno.test("quotes a blocked link", () => {
+  const text = "see evil.example";
+  const p: RawAutomodMessageHold = {
+    ...base,
+    message: { text, fragments: [{ type: "text", text }] },
+    reason: "blocked_link",
+    blocked_term: { terms_found: [term(4, 15)] },
+  };
+  assertEquals(automodReason(p), "Blocked link: evil.example");
+});
+
 Deno.test("names the AutoMod category and level", () => {
   const p: RawAutomodMessageHold = {
     ...base,
     message: { text: "x", fragments: [] },
     reason: "automod",
-    automod: { category: "swearing", level: 2, boosts_immunity: false },
+    automod: { category: "swearing", level: 2 },
   };
   assertEquals(automodReason(p), "AutoMod: Swearing (level 2)");
 });
