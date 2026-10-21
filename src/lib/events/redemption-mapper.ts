@@ -8,6 +8,7 @@ export function mapRedemption(raw: RawChannelPointsRedemption): Redemption {
       id: raw.reward.id,
       title: raw.reward.title,
       prompt: raw.reward.prompt.trim(),
+      cost: raw.reward.cost,
     },
     input: input || undefined,
   };

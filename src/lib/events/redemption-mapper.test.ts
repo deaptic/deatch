@@ -23,6 +23,7 @@ Deno.test("keeps the reward and its trimmed prompt", () => {
     id: "w1",
     title: "Hydrate",
     prompt: "Drink!",
+    cost: 5000,
   });
 });
 

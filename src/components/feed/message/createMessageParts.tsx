@@ -131,7 +131,10 @@ export function createMessageParts(
           <RichNotice
             class="text-event-channel-points"
             label={redemption
-              ? t("FEED_REDEEMED_REWARD", { reward: redemption.reward.title })
+              ? t("FEED_REDEEMED_REWARD", {
+                reward: redemption.reward.title,
+                cost: redemption.reward.cost,
+              })
               : t("FEED_REDEEMED_CHANNEL_POINTS")}
           />
         ),

@@ -31,7 +31,7 @@ export type AutomodHoldInfo = {
 };
 
 export type Redemption = {
-  reward: { id: string; title: string; prompt: string };
+  reward: { id: string; title: string; prompt: string; cost: number };
   input?: string;
 };
 

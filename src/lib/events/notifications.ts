@@ -77,7 +77,11 @@ function redemptionEvent(
   return feedEvent(
     "channel_points_redemption",
     withDetail(
-      t("EVENT_REDEMPTION", { user: raw.user_name, reward: raw.reward.title }),
+      t("EVENT_REDEMPTION", {
+        user: raw.user_name,
+        reward: raw.reward.title,
+        cost: raw.reward.cost,
+      }),
       redemption.input,
     ),
     timestamp,
