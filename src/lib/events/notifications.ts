@@ -9,6 +9,7 @@ import type {
 } from "../types/index.ts";
 import type {
   RawAutomaticRedemption,
+  RawBitsUse,
   RawChannelPointsRedemption,
   RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
@@ -21,6 +22,7 @@ import { correlateRedemption } from "./channelPointsCorrelator.ts";
 import { mapRedemption } from "./redemption-mapper.ts";
 import { mapNotice } from "./notice-mapper.ts";
 import { mapAutomaticRedemption } from "./automatic-redemption-mapper.ts";
+import { mapBitsUse } from "./bits-use-mapper.ts";
 
 function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
@@ -160,5 +162,10 @@ export function start(): () => void {
         if (item) appendItem(raw.broadcaster_user_id, item);
       },
     ),
+    listenEventSub<RawBitsUse>("channel.bits.use", (e) => {
+      const raw = e.payload.event;
+      const item = mapBitsUse(raw, serverTime(e.payload));
+      if (item) appendItem(raw.broadcaster_user_id, item);
+    }),
   ]);
 }

@@ -76,6 +76,7 @@ const LOOKS: Record<string, Look> = {
   channel_update: { color: "var(--color-info)", Icon: PenLine },
   poll: { color: "var(--color-info)", Icon: Vote },
   prediction: { color: "var(--color-event-channel-points)", Icon: Trophy },
+  bits_use: { color: "var(--color-event-bits)", Icon: Gem },
   ad_break: { color: "var(--color-caution)", Icon: Tv },
   goal: { color: "var(--color-positive)", Icon: Target },
   hype_train: { color: "var(--color-event-bits)", Icon: TrainFront },

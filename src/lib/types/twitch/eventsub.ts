@@ -419,6 +419,22 @@ export type RawAdBreak = {
   requester_user_name: string;
 };
 
+// channel.bits.use
+export type RawBitsUse = {
+  broadcaster_user_id: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
+  bits: number;
+  type: "cheer" | "power_up" | "custom_power_up" | string;
+  power_up: {
+    type: string;
+    emote: { id: string; name: string } | null;
+  } | null;
+  custom_power_up?: { title: string } | null;
+  message: { text: string; fragments: RawFragment[] } | null;
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;
