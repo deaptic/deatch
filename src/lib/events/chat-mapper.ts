@@ -6,17 +6,18 @@
 import type {
   FeedMessage,
   Fragment,
+  MessagePerk,
   RawChatMessage,
   RawFragment,
 } from "../types/index.ts";
 import type { Chatter } from "../stores/users.ts";
 
-const CHANNEL_POINT_TYPES = new Set([
-  "channel_points_highlighted",
-  "channel_points_sub_only",
-  "power_ups_message_effect",
-  "power_ups_gigantified_emote",
-]);
+const PERKS: Record<string, MessagePerk> = {
+  channel_points_highlighted: "highlight",
+  channel_points_sub_only: "sub_only",
+  power_ups_message_effect: "message_effect",
+  power_ups_gigantified_emote: "gigantified_emote",
+};
 
 export function chatterOf(msg: FeedMessage): Chatter {
   return {
@@ -67,8 +68,8 @@ export function mapChatMessage(
     timestamp,
     channel_points: raw.channel_points_custom_reward_id
       ? { kind: "custom_reward" }
-      : CHANNEL_POINT_TYPES.has(raw.message_type)
-      ? { kind: "highlight" }
+      : PERKS[raw.message_type]
+      ? { kind: PERKS[raw.message_type] }
       : undefined,
     first_message: raw.message_type === "user_intro",
     cheer: raw.cheer ?? undefined,
