@@ -50,12 +50,16 @@ pub enum EventKind {
     ChannelPointsAutomaticRewardRedemptionAdd,
     #[serde(rename = "channel.update")]
     ChannelUpdate,
+    #[serde(rename = "stream.online")]
+    StreamOnline,
+    #[serde(rename = "stream.offline")]
+    StreamOffline,
 }
 
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 18] = [
+    pub const ALL: [Self; 20] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -74,6 +78,8 @@ impl EventKind {
         Self::ChannelPointsCustomRewardRedemptionAdd,
         Self::ChannelPointsAutomaticRewardRedemptionAdd,
         Self::ChannelUpdate,
+        Self::StreamOnline,
+        Self::StreamOffline,
     ];
 
     pub fn event_name(self) -> &'static str {
@@ -98,6 +104,8 @@ impl EventKind {
                 "channel-points-automatic-redemption-add"
             }
             Self::ChannelUpdate => "channel-update",
+            Self::StreamOnline => "stream-online",
+            Self::StreamOffline => "stream-offline",
         }
     }
 
@@ -115,7 +123,9 @@ impl EventKind {
             | Self::ChannelChatMessageDelete
             | Self::ChannelChatClear
             | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
-            Self::ChannelChatSettingsUpdate => (Role::Viewer, Focused),
+            Self::ChannelChatSettingsUpdate | Self::StreamOnline | Self::StreamOffline => {
+                (Role::Viewer, Focused)
+            }
             Self::AutomodMessageHold | Self::AutomodMessageUpdate => (Role::Moderator, Background),
             Self::ChannelShoutoutCreate
             | Self::ChannelShoutoutReceive

@@ -339,6 +339,14 @@ export type RawAutomodMessageUpdate = {
   status: string;
 };
 
+// stream.online / stream.offline
+export type RawStreamOffline = {
+  broadcaster_user_id: string;
+  broadcaster_user_name: string;
+};
+
+export type RawStreamOnline = RawStreamOffline & { type: string };
+
 // channel.update
 export type RawChannelUpdate = {
   broadcaster_user_id: string;

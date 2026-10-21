@@ -17,6 +17,8 @@ import {
   TriangleAlert,
   Unplug,
   UserPlus,
+  Video,
+  VideoOff,
 } from "lucide-solid";
 import { type Component, For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
@@ -66,6 +68,8 @@ const LOOKS: Record<string, Look> = {
   moderation: { color: "var(--color-caution)", Icon: Shield },
   seventv_update: { color: "var(--color-info)", Icon: Sparkles },
   channel_update: { color: "var(--color-info)", Icon: PenLine },
+  stream_online: { color: "var(--color-positive)", Icon: Video },
+  stream_offline: { color: "var(--color-ink-faint)", Icon: VideoOff },
   local: { color: "var(--color-ink-faint)", Icon: Info },
 };
 
