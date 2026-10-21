@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import { events } from "../bindings.ts";
 import { unlistenAll } from "./listen.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
@@ -12,21 +13,21 @@ export function start(): () => void {
         case "connected":
           appendLocalNotice(
             broadcasterId,
-            "Connected to chat",
+            t("CHAT_CONNECTED"),
             "chat_connected",
           );
           break;
         case "disconnected":
           appendLocalNotice(
             broadcasterId,
-            "Disconnected from chat",
+            t("CHAT_DISCONNECTED"),
             "chat_disconnected",
           );
           break;
         case "failed":
           appendLocalNotice(
             broadcasterId,
-            `Failed to connect to chat: ${state.error}`,
+            t("CHAT_CONNECT_FAILED", { error: state.error }),
             "chat_connect_failed",
           );
           break;
