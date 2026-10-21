@@ -40,6 +40,7 @@ const MODERATE_ACTIONS = [
 export const UNBAN_REQUEST = "unban_request";
 export const WARNING_ACKNOWLEDGED = "warning_acknowledged";
 export const HYPE_TRAIN = "hype_train";
+export const POLL = "poll";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -115,6 +116,13 @@ export const EVENTS = [
     label: "EVENT_TYPE_HYPE_TRAIN",
     description: "EVENT_TYPE_HYPE_TRAIN_DESCRIPTION",
     types: [HYPE_TRAIN],
+    modOnly: false,
+  },
+  {
+    key: "poll",
+    label: "EVENT_TYPE_POLL",
+    description: "EVENT_TYPE_POLL_DESCRIPTION",
+    types: [POLL],
     modOnly: false,
   },
   {

@@ -21,6 +21,7 @@ import {
   Users,
   Video,
   VideoOff,
+  Vote,
 } from "lucide-solid";
 import { type Component, For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
@@ -70,6 +71,7 @@ const LOOKS: Record<string, Look> = {
   moderation: { color: "var(--color-caution)", Icon: Shield },
   seventv_update: { color: "var(--color-info)", Icon: Sparkles },
   channel_update: { color: "var(--color-info)", Icon: PenLine },
+  poll: { color: "var(--color-info)", Icon: Vote },
   hype_train: { color: "var(--color-event-bits)", Icon: TrainFront },
   shared_chat_session: { color: "var(--color-info)", Icon: Users },
   stream_online: { color: "var(--color-positive)", Icon: Video },

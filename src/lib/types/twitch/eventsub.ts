@@ -369,6 +369,18 @@ export type RawHypeTrain = {
   is_shared_train: boolean;
 };
 
+// channel.poll.begin / end
+export type RawPoll = {
+  broadcaster_user_id: string;
+  id: string;
+  title: string;
+  choices: { id: string; title: string; votes?: number }[];
+  started_at: string;
+  ends_at?: string;
+  /// Only on end.
+  status?: "completed" | "terminated" | "archived";
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;
