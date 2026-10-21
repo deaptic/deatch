@@ -550,6 +550,9 @@ export type Reply = {
 	parent_user_name: string,
 	parent_user_login: string,
 	parent_user_id: UserId,
+	/**  IRC names the thread's first message by id and login only. */
+	thread_message_id: MessageId | null,
+	thread_user_login: string | null,
 };
 
 export type ResubNotice = {

@@ -175,4 +175,7 @@ pub struct Reply {
     pub parent_user_name: String,
     pub parent_user_login: String,
     pub parent_user_id: UserId,
+    /// IRC names the thread's first message by id and login only.
+    pub thread_message_id: Option<MessageId>,
+    pub thread_user_login: Option<String>,
 }
