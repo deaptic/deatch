@@ -1,7 +1,9 @@
-import { t } from "../i18n/index.ts";
+import { formatLocale, t } from "../i18n/index.ts";
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   RawChannelUpdate,
+  RawSharedChatEnd,
+  RawSharedChatSession,
   RawStreamOffline,
   RawStreamOnline,
 } from "../types/twitch/eventsub.ts";
@@ -13,6 +15,21 @@ import {
 import { appendLocalNotice } from "../stores/feeds.ts";
 
 const NOTICE = "channel_update";
+const SHARED_CHAT = "shared_chat_session";
+
+function appendSharedChat(
+  raw: RawSharedChatSession,
+  key: "SHARED_CHAT_BEGIN" | "SHARED_CHAT_UPDATE",
+) {
+  const partners = raw.participants
+    .filter((p) => p.broadcaster_user_id !== raw.broadcaster_user_id)
+    .map((p) => p.broadcaster_user_name);
+  appendLocalNotice(
+    raw.broadcaster_user_id,
+    t(key, { channels: new Intl.ListFormat(formatLocale()).format(partners) }),
+    SHARED_CHAT,
+  );
+}
 
 export function start(): () => void {
   return unlistenAll([
@@ -46,6 +63,23 @@ export function start(): () => void {
         );
       }
     }),
+    listenEventSub<RawSharedChatSession>(
+      "channel.shared_chat.begin",
+      (e) => appendSharedChat(e.payload.event, "SHARED_CHAT_BEGIN"),
+    ),
+    listenEventSub<RawSharedChatSession>(
+      "channel.shared_chat.update",
+      (e) => appendSharedChat(e.payload.event, "SHARED_CHAT_UPDATE"),
+    ),
+    listenEventSub<RawSharedChatEnd>(
+      "channel.shared_chat.end",
+      (e) =>
+        appendLocalNotice(
+          e.payload.event.broadcaster_user_id,
+          t("SHARED_CHAT_END"),
+          SHARED_CHAT,
+        ),
+    ),
     listenEventSub<RawStreamOnline>("stream.online", (e) => {
       const raw = e.payload.event;
       appendLocalNotice(

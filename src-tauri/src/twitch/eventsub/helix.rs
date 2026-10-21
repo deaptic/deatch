@@ -22,6 +22,7 @@ use twitch_api::eventsub::{
         ChannelShoutoutReceiveV1, ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1,
         ChannelUpdateV2, ChannelWarningAcknowledgeV1,
     },
+    channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
     stream::{StreamOfflineV1, StreamOnlineV1},
     Transport,
 };
@@ -153,6 +154,15 @@ async fn create(
             })
         }
         EventKind::ChannelUpdate => subscribe!(ChannelUpdateV2::broadcaster_user_id(b)),
+        EventKind::ChannelSharedChatBegin => {
+            subscribe!(ChannelSharedChatBeginV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelSharedChatUpdate => {
+            subscribe!(ChannelSharedChatUpdateV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelSharedChatEnd => {
+            subscribe!(ChannelSharedChatEndV1::broadcaster_user_id(b))
+        }
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }

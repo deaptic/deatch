@@ -339,6 +339,16 @@ export type RawAutomodMessageUpdate = {
   status: string;
 };
 
+// channel.shared_chat.begin / update / end
+export type RawSharedChatEnd = { broadcaster_user_id: string };
+
+export type RawSharedChatSession = RawSharedChatEnd & {
+  participants: {
+    broadcaster_user_id: string;
+    broadcaster_user_name: string;
+  }[];
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;

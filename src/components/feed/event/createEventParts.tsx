@@ -17,6 +17,7 @@ import {
   TriangleAlert,
   Unplug,
   UserPlus,
+  Users,
   Video,
   VideoOff,
 } from "lucide-solid";
@@ -68,6 +69,7 @@ const LOOKS: Record<string, Look> = {
   moderation: { color: "var(--color-caution)", Icon: Shield },
   seventv_update: { color: "var(--color-info)", Icon: Sparkles },
   channel_update: { color: "var(--color-info)", Icon: PenLine },
+  shared_chat_session: { color: "var(--color-info)", Icon: Users },
   stream_online: { color: "var(--color-positive)", Icon: Video },
   stream_offline: { color: "var(--color-ink-faint)", Icon: VideoOff },
   local: { color: "var(--color-ink-faint)", Icon: Info },
