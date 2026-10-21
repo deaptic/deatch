@@ -86,7 +86,7 @@ export function createMessageParts(
       ? "held"
       : props.highlightMentions !== false && mentioned()
       ? "mention"
-      : item.cheer
+      : item.cheer || item.power_up
       ? "cheer"
       : item.channel_points
       ? "redemption"
@@ -139,6 +139,16 @@ export function createMessageParts(
           <RichNotice
             class="text-event-bits"
             label={t("FEED_CHEERED", { bits: item.cheer.bits })}
+          />
+        ),
+      });
+    }
+    if (item.power_up) {
+      list.push({
+        content: (
+          <RichNotice
+            class="text-event-bits"
+            label={t("FEED_MESSAGE_PERK", { perk: item.power_up })}
           />
         ),
       });

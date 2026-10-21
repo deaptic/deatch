@@ -8,7 +8,7 @@ export type RowLayout = { dayStart: boolean; continued: boolean };
 
 function standsAlone(msg: FeedMessage): boolean {
   return !!(msg.reply || msg.automod_hold || msg.channel_points ||
-    msg.cheer || msg.first_message);
+    msg.cheer || msg.power_up || msg.first_message);
 }
 
 function continues(

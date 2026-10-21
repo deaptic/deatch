@@ -7,6 +7,7 @@ import type {
   FeedMessage,
   Fragment,
   MessagePerk,
+  PowerUp,
   RawChatMessage,
   RawFragment,
 } from "../types/index.ts";
@@ -15,6 +16,9 @@ import type { Chatter } from "../stores/users.ts";
 const PERKS: Record<string, MessagePerk> = {
   channel_points_highlighted: "highlight",
   channel_points_sub_only: "sub_only",
+};
+
+const POWER_UPS: Record<string, PowerUp> = {
   power_ups_message_effect: "message_effect",
   power_ups_gigantified_emote: "gigantified_emote",
 };
@@ -75,6 +79,7 @@ export function mapChatMessage(
       : undefined,
     first_message: raw.message_type === "user_intro",
     cheer: raw.cheer ?? undefined,
+    power_up: POWER_UPS[raw.message_type],
     deleted: raw.deleted,
     source: sourceOf(raw),
   };
