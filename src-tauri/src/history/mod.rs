@@ -130,6 +130,8 @@ fn parse_reply(tags: &Tags) -> Option<Reply> {
         parent_user_name: tag(tags, "reply-parent-display-name").into(),
         parent_user_login: tag(tags, "reply-parent-user-login").into(),
         parent_user_id: tag(tags, "reply-parent-user-id").into(),
+        thread_message_id: nonempty(tags, "reply-thread-parent-msg-id").map(Into::into),
+        thread_user_login: nonempty(tags, "reply-thread-parent-user-login").map(Into::into),
     })
 }
 
@@ -417,6 +419,7 @@ mod tests {
     fn falls_back_to_nick_and_unescapes_tags() {
         let line = "@display-name=;reply-parent-msg-id=p1;reply-parent-msg-body=hey\\sthere;\
             reply-parent-display-name=Bar;reply-parent-user-login=bar;reply-parent-user-id=7;\
+            reply-thread-parent-msg-id=t1;reply-thread-parent-user-login=baz;\
             id=m1;user-id=1 \
             :foo!foo@foo PRIVMSG #chan :@bar yes";
         let m = &parse(&[line])[0];
@@ -429,6 +432,8 @@ mod tests {
                 "parent_user_name": "Bar",
                 "parent_user_login": "bar",
                 "parent_user_id": "7",
+                "thread_message_id": "t1",
+                "thread_user_login": "baz",
             })
         );
     }

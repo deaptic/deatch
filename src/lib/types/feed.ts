@@ -14,6 +14,9 @@ type FeedReply = {
   parent_user_name: string;
   parent_user_login: string;
   parent_user_id: string;
+  thread_message_id?: string | null;
+  thread_user_login?: string | null;
+  thread_user_name?: string | null;
 };
 
 export type BadgeMap = Record<string, { url: string; title: string }>;

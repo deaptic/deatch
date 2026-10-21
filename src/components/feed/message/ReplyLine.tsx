@@ -1,6 +1,7 @@
 import { Show } from "solid-js";
 import type { FeedMessage } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
+import { t } from "../../../lib/i18n/index.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
 import {
   type UserActions,
@@ -23,6 +24,15 @@ export default function ReplyLine(props: Props) {
     login: props.reply.parent_user_login,
     displayName: props.reply.parent_user_name,
   });
+  // A direct reply to the thread's first message needs no second pointer.
+  const threadStart = () => {
+    const r = props.reply;
+    if (!r.thread_message_id || r.thread_message_id === r.parent_message_id) {
+      return null;
+    }
+    const name = r.thread_user_name || r.thread_user_login;
+    return name ? { id: r.thread_message_id, name } : null;
+  };
 
   return (
     <div
@@ -61,6 +71,19 @@ export default function ReplyLine(props: Props) {
       <span class="truncate" data-tip={props.reply.parent_message_body}>
         {props.reply.parent_message_body}
       </span>
+      <Show when={threadStart()}>
+        {(thread) => (
+          <span
+            class="shrink-0 hover:text-ink-soft"
+            onClick={(e) => {
+              e.stopPropagation();
+              props.onJump?.(thread().id);
+            }}
+          >
+            {t("FEED_REPLY_THREAD", { user: thread().name })}
+          </span>
+        )}
+      </Show>
     </div>
   );
 }
