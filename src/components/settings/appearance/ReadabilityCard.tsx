@@ -24,7 +24,6 @@ export default function ReadabilityCard() {
       <CardLabel>{t("SETTINGS_APPEARANCE_TEXT")}</CardLabel>
       <SettingsRow
         label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
-        description={t("SETTINGS_APPEARANCE_FONT_SIZE_DESCRIPTION")}
         stacked
       >
         <StopSlider
