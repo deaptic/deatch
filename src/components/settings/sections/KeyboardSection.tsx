@@ -20,7 +20,6 @@ const ACTION_LABELS: Record<string, MessageKey> = {
   "link::toggleMuteAll": "SETTINGS_KEYBOARD_LINK_MUTE_ALL",
   "link::muteOthers": "SETTINGS_KEYBOARD_LINK_MUTE_OTHERS",
   "link::closeTab": "SETTINGS_KEYBOARD_LINK_CLOSE_TAB",
-  "link::openTab": "SETTINGS_KEYBOARD_LINK_OPEN_TAB",
   "view::toggleAlwaysOnTop": "SETTINGS_KEYBOARD_ALWAYS_ON_TOP",
   "panel::close": "SETTINGS_KEYBOARD_CLOSE_PANEL",
   "feed::toggleDensity": "SETTINGS_KEYBOARD_TOGGLE_DENSITY",
@@ -65,11 +64,10 @@ function actionLabel(action: string): string {
 
 function rowsFor(prefixes: string[]): Row[] {
   return Object.entries(defaultKeymap as Record<string, string[]>)
-    .flatMap(([combo, actions]) =>
-      actions
-        .filter((a) => prefixes.some((p) => a.startsWith(p)))
-        .map((a) => ({ combo, label: actionLabel(a) }))
-    );
+    .flatMap(([combo, actions]) => {
+      const action = actions.find((a) => prefixes.some((p) => a.startsWith(p)));
+      return action ? [{ combo, label: actionLabel(action) }] : [];
+    });
 }
 
 export default function KeyboardSection() {
