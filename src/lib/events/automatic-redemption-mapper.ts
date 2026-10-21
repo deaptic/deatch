@@ -5,12 +5,13 @@ import type { FeedEvent } from "../types/feed.ts";
 import type { RawAutomaticRedemption } from "../types/twitch/eventsub.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 
-// These arrive as a chat message of their own, which already shows them.
+// These arrive as a chat message of their own, which already shows them. The
+// last two are v1 names Twitch documents only there, kept in case v2 sends them.
 const MESSAGE_REWARDS = new Set([
   "send_highlighted_message",
   "single_message_bypass_sub_mode",
-  "send_gigantified_emote",
-  "send_animated_message",
+  "message_effect",
+  "gigantify_an_emote",
 ]);
 
 /// Null for rewards the chat message already shows.

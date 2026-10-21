@@ -38,4 +38,15 @@ Deno.test("leaves message rewards to their chat message", () => {
     mapAutomaticRedemption(raw({ type: "send_highlighted_message" }), 0),
     null,
   );
+  assertEquals(
+    mapAutomaticRedemption(raw({ type: "gigantify_an_emote" }), 0),
+    null,
+  );
+});
+
+Deno.test("names an On-Screen Celebration", () => {
+  assertEquals(
+    mapAutomaticRedemption(raw({ type: "celebration" }), 0)?.system_message,
+    "Foo redeemed an On-Screen Celebration for 300 points",
+  );
 });

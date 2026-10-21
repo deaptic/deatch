@@ -238,7 +238,7 @@
   "EVENT_REDEEMED": "redeemed",
   "EVENT_GIFT_RECIPIENTS": "To {names}",
   "EVENT_BITS_USE": "{user} used {bits, plural, one {# bit} other {# bits}}{kind, select, celebration { on an On-Screen Celebration} custom_power_up { on {title}} other {}}",
-  "EVENT_AUTOMATIC_REDEMPTION": "{user} redeemed {type, select, random_sub_emote_unlock {Unlock a Random Sub Emote} chosen_sub_emote_unlock {Choose an Emote to Unlock} chosen_modified_sub_emote_unlock {Modify a Single Emote} other {an automatic reward}} for {cost, plural, one {# point} other {# points}}",
+  "EVENT_AUTOMATIC_REDEMPTION": "{user} redeemed {type, select, random_sub_emote_unlock {Unlock a Random Sub Emote} chosen_sub_emote_unlock {Choose an Emote to Unlock} chosen_modified_sub_emote_unlock {Modify a Single Emote} celebration {an On-Screen Celebration} other {an automatic reward}} for {cost, plural, one {# point} other {# points}}",
   "EVENT_REDEMPTION": "{user} redeemed {reward} for {cost, plural, one {# point} other {# points}}",
   "EVENT_REDEMPTION_COST": "for {cost, plural, one {# point} other {# points}}",
   "EVENT_WARNING_ACKNOWLEDGED": "{user} acknowledged their warning",
