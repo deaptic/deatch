@@ -42,7 +42,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_MESSAGE_DESCRIPTION",
     types: [],
     modOnly: false,
-    testMessage: "Hello chat! This is a test message.",
   },
   {
     key: "follow",
@@ -50,7 +49,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_FOLLOW_DESCRIPTION",
     types: ["follow"],
     modOnly: true,
-    testMessage: "TestUser is now following the channel!",
   },
   {
     key: "sub",
@@ -73,8 +71,6 @@ export const EVENTS = [
       "shared_chat_prime_paid_upgrade",
     ],
     modOnly: false,
-    testMessage:
-      "TestUser subscribed at Tier 1. They've subscribed for 3 months!",
   },
   {
     key: "raid",
@@ -82,7 +78,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_RAID_DESCRIPTION",
     types: ["raid", "unraid", "shared_chat_raid"],
     modOnly: false,
-    testMessage: "TestRaider is raiding the channel with a party of 42!",
   },
   {
     key: "announcement",
@@ -90,7 +85,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_ANNOUNCEMENT_DESCRIPTION",
     types: ["announcement", "shared_chat_announcement"],
     modOnly: false,
-    testMessage: "This is a test announcement from the broadcaster.",
   },
   {
     key: "charity_donation",
@@ -98,7 +92,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_CHARITY_DONATION_DESCRIPTION",
     types: ["charity_donation"],
     modOnly: false,
-    testMessage: "TestUser has donated $10.00 to charity.",
   },
   {
     key: "bits_badge_tier",
@@ -106,7 +99,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_BITS_BADGE_TIER_DESCRIPTION",
     types: ["bits_badge_tier"],
     modOnly: false,
-    testMessage: "TestUser just earned a new 1000 Bits badge!",
   },
   {
     key: "shoutout",
@@ -114,7 +106,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_SHOUTOUT_DESCRIPTION",
     types: ["shoutout"],
     modOnly: true,
-    testMessage: "Check out AnotherStreamer at twitch.tv/another!",
   },
   {
     key: "moderation",
@@ -122,7 +113,6 @@ export const EVENTS = [
     description: "EVENT_TYPE_MODERATION_DESCRIPTION",
     types: MODERATE_ACTIONS.map(moderateNoticeType),
     modOnly: true,
-    testMessage: "TestMod timed out TestUser for 10m",
   },
 ] as const;
 
