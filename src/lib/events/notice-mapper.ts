@@ -1,10 +1,33 @@
 // Pure mapper from channel.chat.notification, live or from history, to the
 // feed shape. No side effects, so the backlog service can use it too.
 
-import type { FeedEvent, RawNotification } from "../types/index.ts";
+import type {
+  AnnouncementColor,
+  FeedEvent,
+  RawNotification,
+} from "../types/index.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 import { mapFragment } from "./chat-mapper.ts";
-import { noticeMessage } from "./notice-message.ts";
+import { detail, noticeMessage } from "./notice-message.ts";
+
+const ANNOUNCEMENT_COLORS = new Set<string>(
+  [
+    "primary",
+    "blue",
+    "green",
+    "orange",
+    "purple",
+  ] satisfies AnnouncementColor[],
+);
+
+function announcementColor(
+  raw: RawNotification,
+): AnnouncementColor | undefined {
+  const color = detail(raw, "announcement")?.color.toLowerCase() ?? "";
+  return ANNOUNCEMENT_COLORS.has(color)
+    ? color as AnnouncementColor
+    : undefined;
+}
 
 /// Null when the notice has no text to show.
 export function mapNotice(
@@ -25,5 +48,6 @@ export function mapNotice(
     message: raw.message?.text.trim()
       ? raw.message.fragments.map(mapFragment)
       : undefined,
+    announcement_color: announcementColor(raw),
   });
 }

@@ -55,6 +55,12 @@ pub struct RecentNotice {
     pub raid: Option<RaidNotice>,
     pub bits_badge_tier: Option<BitsBadgeTierNotice>,
     pub charity_donation: Option<CharityDonationNotice>,
+    pub announcement: Option<AnnouncementNotice>,
+}
+
+#[derive(Debug, PartialEq, Serialize, specta::Type)]
+pub struct AnnouncementNotice {
+    pub color: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, specta::Type)]

@@ -114,6 +114,10 @@ export type ActivityInput = {
 
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
 
+export type AnnouncementNotice = {
+	color: string,
+};
+
 export type AppStats = {
 	app: ProcessStats,
 	webview: ProcessStats,
@@ -537,6 +541,7 @@ export type RecentNotice = {
 	raid: RaidNotice | null,
 	bits_badge_tier: BitsBadgeTierNotice | null,
 	charity_donation: CharityDonationNotice | null,
+	announcement: AnnouncementNotice | null,
 };
 
 export type Rename = {

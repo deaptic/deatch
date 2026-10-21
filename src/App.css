@@ -193,6 +193,12 @@
   --color-event-follow: oklch(0.82 0.16 145);
   --color-event-bits: oklch(0.85 0.15 90);
   --color-event-channel-points: oklch(0.74 0.22 340);
+  /* The colour a broadcaster picks for an announcement; "primary" uses
+     event-announce. */
+  --color-event-announce-blue: oklch(0.74 0.13 255);
+  --color-event-announce-green: oklch(0.78 0.15 150);
+  --color-event-announce-orange: oklch(0.76 0.16 55);
+  --color-event-announce-purple: oklch(0.72 0.17 305);
 }
 
 [data-theme="light"] {
@@ -227,6 +233,10 @@
   --color-event-follow: oklch(0.55 0.16 145);
   --color-event-bits: oklch(0.62 0.15 85);
   --color-event-channel-points: oklch(0.56 0.22 340);
+  --color-event-announce-blue: oklch(0.52 0.14 255);
+  --color-event-announce-green: oklch(0.54 0.15 150);
+  --color-event-announce-orange: oklch(0.58 0.16 55);
+  --color-event-announce-purple: oklch(0.52 0.18 305);
 }
 
 /* Feed rows scale with the user's chat text size, so their parts are sized
@@ -235,11 +245,6 @@
   height: 1.7em;
   max-width: 4.5em;
   margin-block: -0.35em;
-}
-
-@utility feed-gif {
-  height: 6em;
-  max-width: 100%;
 }
 
 @utility feed-meta {

@@ -2,9 +2,9 @@
 //! translating IRC `msg-id`s and `msg-param-*` tags to EventSub's names.
 
 use super::dto::{
-    BitsBadgeTierNotice, CharityAmount, CharityDonationNotice, CommunitySubGiftNotice,
-    GifterNotice, MessageBody, PrimePaidUpgradeNotice, RaidNotice, RecentNotice, ResubNotice,
-    SubGiftNotice, SubNotice, SubTier,
+    AnnouncementNotice, BitsBadgeTierNotice, CharityAmount, CharityDonationNotice,
+    CommunitySubGiftNotice, GifterNotice, MessageBody, PrimePaidUpgradeNotice, RaidNotice,
+    RecentNotice, ResubNotice, SubGiftNotice, SubNotice, SubTier,
 };
 use super::{build_fragments, nonempty, tag, Tags};
 use std::str::FromStr;
@@ -64,6 +64,7 @@ pub(super) fn parse_usernotice(tags: &Tags, body: &str) -> RecentNotice {
         raid: None,
         bits_badge_tier: None,
         charity_donation: None,
+        announcement: None,
     };
     let notice_type = add_detail(&mut notice, msg_id, tags);
     notice.notice_type = if shared {
@@ -153,6 +154,13 @@ fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'
                 });
             "charity_donation"
         }
+        "announcement" => {
+            notice.announcement =
+                nonempty(tags, "msg-param-color").map(|color| AnnouncementNotice {
+                    color: color.into(),
+                });
+            "announcement"
+        }
         other => other,
     }
 }
@@ -234,6 +242,15 @@ mod tests {
              :tmi.twitch.tv USERNOTICE #chan :hello",
         );
         assert_eq!(n["notice_type"], "shared_chat_announcement");
+    }
+
+    #[test]
+    fn keeps_an_announcement_colour() {
+        let n = notice(
+            "@msg-id=announcement;msg-param-color=PURPLE;login=foo;id=n1 \
+             :tmi.twitch.tv USERNOTICE #chan :hello",
+        );
+        assert_eq!(n["announcement"], json!({ "color": "PURPLE" }));
     }
 
     #[test]

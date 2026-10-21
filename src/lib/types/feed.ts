@@ -1,3 +1,4 @@
+import type { AnnouncementColor } from "../bindings.ts";
 import type { MessageBadge } from "./twitch/eventsub.ts";
 
 export type Fragment =
@@ -100,6 +101,7 @@ export type FeedEvent = {
   message?: Fragment[];
   /// Who received a community gift's subs, as they arrive.
   recipients?: string[];
+  announcement_color?: AnnouncementColor;
   clip?: { id: string };
   redemption?: Redemption;
 };

@@ -46,7 +46,9 @@ chroma are kept, so the set stays readable.
 Status colours are `live`, `positive`, `caution`, `negative`, `info`. Live and
 negative share a hue; shape tells them apart (a dot or pill is live). Events
 have `event-*`, one per Twitch event, shown as a 3px bar and a 10% tint, never a
-fill. A chatter's Twitch colour is lightness-clamped per theme so it reads; a
+fill. When Twitch says which colour an event wears, it wears that one: an
+announcement takes the broadcaster's pick from `event-announce-*`, or
+`event-announce` for the default. A chatter's Twitch colour is lightness-clamped per theme so it reads; a
 chatter with no colour is `ink-soft` grey everywhere.
 
 ### Type, space, shape
@@ -69,9 +71,10 @@ pages), always `ease-out`.
 People and channels are `Avatar`: round for chatters in the feed, square (`xs`)
 in the rail, inbox channel line, and beside a multi-line block. Pictures of
 content are `Artwork` and keep their native shape, never cropped to another one:
-`boxart` 3:4, `video` 16:9; a new kind of picture is a new shape there. Artwork
-sits on `raised` while loading, and its radius follows where it sits (`xs`
-inline in a row, `md` on its own, none when it bleeds to a card's edge).
+`boxart` 3:4, `video` 16:9, `native` for kinds with no fixed shape (chat GIFs);
+a new kind of picture is a new shape there. Artwork sits on `raised` while
+loading, and its radius follows where it sits (`xs` inline in a row, `md` on its
+own, none when it bleeds to a card's edge).
 Anything laid over it uses `media-scrim`.
 
 Icons are Lucide and inherit text colour: 16 on every control and menu item, 20

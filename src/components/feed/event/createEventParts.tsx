@@ -96,7 +96,13 @@ export function createEventParts(
   item: FeedEvent,
   props: ItemLayout & EventOptions,
 ): ItemParts {
-  const look = () => lookFor(item.notice_type);
+  const look = (): Look => {
+    const base = lookFor(item.notice_type);
+    const picked = item.announcement_color;
+    return picked && picked !== "primary"
+      ? { ...base, color: `var(--color-event-announce-${picked})` }
+      : base;
+  };
   const icon = () => <Dynamic component={look().Icon} />;
 
   const clipToolbar = () => (

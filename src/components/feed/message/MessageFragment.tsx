@@ -10,6 +10,7 @@ import {
 } from "../../ui/userLink.ts";
 import { INLINE_EMOTE } from "./inlineEmote.ts";
 import Cheermote from "./Cheermote.tsx";
+import Artwork from "../../ui/Artwork.tsx";
 import TextWithEmotes from "./TextWithEmotes.tsx";
 
 type Props = UserActions & {
@@ -46,13 +47,15 @@ export default function MessageFragment(props: Props) {
       );
     case "gif":
       return (
-        <img
-          src={frag.url}
-          alt={frag.text}
-          data-tip={frag.text}
-          decoding="async"
-          class="block feed-gif w-auto object-contain my-1 rounded-sm"
-        />
+        <span class="block my-1">
+          <Artwork
+            src={frag.url}
+            alt={frag.text}
+            tip={frag.text}
+            shape="native"
+            fit="feed"
+          />
+        </span>
       );
     case "mention":
       return (
