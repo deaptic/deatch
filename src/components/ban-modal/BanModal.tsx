@@ -9,6 +9,7 @@ import BanChoiceStrip, {
   secondsFor,
 } from "./BanChoiceStrip.tsx";
 import { user } from "../../lib/stores/users.ts";
+import { formatLocale, t } from "../../lib/i18n/index.ts";
 
 type Props = {
   userId: string;
@@ -20,7 +21,7 @@ type Props = {
 const DEFAULT_CHOICE: BanChoice = "10m";
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("en-GB", {
+  return new Date(iso).toLocaleString(formatLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -41,10 +42,10 @@ export default function BanModal(props: Props) {
   const isBroadcaster = () => user()?.id === props.broadcasterId;
   const confirmLabel = () =>
     choice() === "unban"
-      ? "Unban"
+      ? t("BAN_UNBAN")
       : choice() === "ban"
-      ? "Ban"
-      : `Time out ${choice()}`;
+      ? t("BAN_BAN")
+      : t("BAN_TIME_OUT", { duration: choice() });
 
   async function confirm() {
     if (pending() || banInfo() === undefined) return;
@@ -88,11 +89,13 @@ export default function BanModal(props: Props) {
 
   return (
     <Dialog
-      title={`Ban or time out ${props.userName}`}
+      title={t("BAN_TITLE", { name: props.userName })}
       onClose={props.onClose}
       actions={
         <>
-          <Button variant="neutral" onClick={props.onClose}>Cancel</Button>
+          <Button variant="neutral" onClick={props.onClose}>
+            {t("COMMON_CANCEL")}
+          </Button>
           <Button
             variant={choice() === "unban" ? "accent" : "danger"}
             onClick={confirm}
@@ -107,15 +110,19 @@ export default function BanModal(props: Props) {
         {(info) => (
           <div class="bg-negative/10 border-l-3 border-negative rounded-sm px-3 py-2.5 flex flex-col gap-0.5 text-small">
             <span class="text-ink">
-              {info().expiresAt ? "Timed out" : "Banned"} by{" "}
+              {t("BAN_STATUS_BY", {
+                status: info().expiresAt ? "timeout" : "ban",
+              })}{" "}
               <span class="font-semibold">{info().moderator.displayName}</span>
             </span>
             <Show when={info().reason}>
-              <span class="text-ink-soft">Reason: {info().reason}</span>
+              <span class="text-ink-soft">
+                {t("BAN_REASON", { reason: info().reason })}
+              </span>
             </Show>
             <Show when={info().expiresAt}>
               <span class="text-ink-soft">
-                Expires: {formatDate(info().expiresAt)}
+                {t("BAN_EXPIRES", { date: formatDate(info().expiresAt) })}
               </span>
             </Show>
           </div>
@@ -125,7 +132,7 @@ export default function BanModal(props: Props) {
       <BanChoiceStrip value={choice()} onChange={setChoice} />
 
       <Textarea
-        placeholder="Reason (optional)"
+        placeholder={t("BAN_REASON_PLACEHOLDER")}
         value={reason()}
         disabled={choice() === "unban"}
         onInput={(e) => setReason(e.currentTarget.value)}

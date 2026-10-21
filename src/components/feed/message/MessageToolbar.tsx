@@ -31,14 +31,14 @@ export default function MessageToolbar(props: Props) {
         )}
       </For>
       <ToolbarItem
-        title={t("FEED_REPLY")}
+        title={t("MESSAGE_REPLY")}
         onClick={() => props.onReply(props.item)}
       >
         <Reply />
       </ToolbarItem>
       <Show when={feedShowCopypasta()}>
         <ToolbarItem
-          title={t("FEED_COPYPASTA")}
+          title={t("MESSAGE_COPYPASTA")}
           onClick={() => props.onCopypasta(props.item)}
         >
           <ClipboardPaste />

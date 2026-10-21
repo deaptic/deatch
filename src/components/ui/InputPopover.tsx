@@ -2,6 +2,7 @@ import { Check } from "lucide-solid";
 import Field from "./Field.tsx";
 import IconButton from "./IconButton.tsx";
 import Popover from "./Popover.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   x: number;
@@ -30,7 +31,7 @@ export default function InputPopover(props: Props) {
           }}
         />
         <IconButton
-          label="Apply"
+          label={t("COMMON_APPLY")}
           variant="neutral"
           onClick={props.onSubmit}
           loading={props.loading}

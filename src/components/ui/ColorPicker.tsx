@@ -1,4 +1,5 @@
 import Button from "./Button.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   swatchColor: string;
@@ -14,11 +15,11 @@ export default function ColorPicker(props: Props) {
       <label
         class="relative size-7 rounded-full border border-line cursor-pointer overflow-hidden bg-(--swatch)"
         style={{ "--swatch": props.swatchColor }}
-        data-tip="Pick colour"
+        data-tip={t("UI_PICK_COLOUR")}
       >
         <input
           type="color"
-          aria-label="Pick colour"
+          aria-label={t("UI_PICK_COLOUR")}
           class="absolute inset-0 opacity-0 cursor-pointer"
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
@@ -30,7 +31,7 @@ export default function ColorPicker(props: Props) {
         disabled={props.resetDisabled}
         onClick={() => props.onReset()}
       >
-        Reset
+        {t("COMMON_RESET")}
       </Button>
     </div>
   );

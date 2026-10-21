@@ -11,6 +11,7 @@ import * as users from "../../lib/services/users.ts";
 import Button from "../ui/Button.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import Popover from "../ui/Popover.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   x: number;
@@ -49,10 +50,10 @@ export default function Inbox(props: Props) {
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div class="w-120 max-w-full max-h-160 flex flex-col">
         <header class="h-header shrink-0 flex items-center gap-2 pl-5 pr-3 border-b border-line-soft">
-          <h2 class="text-title text-ink flex-1">Inbox</h2>
+          <h2 class="text-title text-ink flex-1">{t("INBOX_TITLE")}</h2>
           <Show when={mentions().length > 0}>
             <Button variant="ghost" size="sm" onClick={dismissAllMentions}>
-              Clear all
+              {t("INBOX_CLEAR_ALL")}
             </Button>
           </Show>
         </header>
@@ -61,21 +62,21 @@ export default function Inbox(props: Props) {
           fallback={
             <EmptyState
               icon={<AtSign />}
-              title="Nothing here yet"
-              body="Mentions and keyword hits from every channel land here."
+              title={t("INBOX_EMPTY_TITLE")}
+              body={t("INBOX_EMPTY_BODY")}
             />
           }
         >
           <div class="flex-1 min-h-0 overflow-y-auto p-3 flex flex-col gap-4">
             <InboxGroup
-              label="New"
+              label={t("INBOX_NEW")}
               mentions={unread()}
               onJump={jump}
               onOpenChannel={openChannel}
               onClear={clear}
             />
             <InboxGroup
-              label="Earlier"
+              label={t("INBOX_EARLIER")}
               mentions={seen()}
               onJump={jump}
               onOpenChannel={openChannel}

@@ -15,6 +15,7 @@ import Card from "../ui/Card.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import FeedItem from "../feed/FeedItem.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   mention: Mention;
@@ -23,15 +24,12 @@ type Props = {
   onClear: () => void;
 };
 
-function reasonLabel(reason: MentionReason): string {
-  switch (reason.kind) {
-    case "mention":
-      return "mentioned you";
-    case "reply":
-      return "replied to you";
-    case "keyword":
-      return `matched ${reason.term}`;
-  }
+function reasonLabel(name: string, reason: MentionReason): string {
+  return t("INBOX_REASON", {
+    name,
+    reason: reason.kind,
+    term: reason.kind === "keyword" ? reason.term : undefined,
+  });
 }
 
 export default function InboxItem(props: Props) {
@@ -63,14 +61,14 @@ export default function InboxItem(props: Props) {
             {m().channelName}
           </span>
           <span class="feed-meta text-ink-faint truncate">
-            {m().message.chatter_name} {reasonLabel(m().reason)}
+            {reasonLabel(m().message.chatter_name, m().reason)}
           </span>
         </span>
         <span class="ml-auto flex items-center gap-1">
           <IconButton
             size="sm"
             variant="neutral"
-            label="Jump to message"
+            label={t("INBOX_JUMP")}
             onClick={props.onJump}
           >
             <CornerDownRight class="size-4" />
@@ -78,7 +76,7 @@ export default function InboxItem(props: Props) {
           <IconButton
             size="sm"
             variant="neutral"
-            label="Clear"
+            label={t("INBOX_CLEAR")}
             onClick={props.onClear}
           >
             <Check class="size-4" />

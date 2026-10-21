@@ -6,6 +6,7 @@ import Loading from "../ui/Loading.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
 import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 export default function Login() {
   const codeCopy = createCopied();
@@ -13,9 +14,9 @@ export default function Login() {
   return (
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
-        <h1 class="text-hero text-ink">Welcome to Deatch</h1>
+        <h1 class="text-hero text-ink">{t("LOGIN_WELCOME")}</h1>
         <p class="text-body text-ink-soft">
-          Every Twitch chat you care about, in one warm little window.
+          {t("LOGIN_TAGLINE")}
         </p>
 
         <Show
@@ -28,7 +29,7 @@ export default function Login() {
                 icon={<TwitchIcon class="size-5" />}
                 onClick={() => session.login()}
               >
-                Log in with Twitch
+                {t("LOGIN_BUTTON")}
               </Button>
             </>
           }
@@ -40,7 +41,7 @@ export default function Login() {
                 <>
                   <Loading size={24} />
                   <p class="text-small text-ink-soft">
-                    Asking Twitch for a code…
+                    {t("LOGIN_REQUESTING")}
                   </p>
                 </>
               }
@@ -48,7 +49,7 @@ export default function Login() {
               {(code) => (
                 <>
                   <p class="text-small text-ink-soft">
-                    Enter this code at{" "}
+                    {t("LOGIN_ENTER_CODE")}{" "}
                     <a
                       href={code().verification_uri}
                       target="_blank"
@@ -68,14 +69,16 @@ export default function Login() {
                       : <Copy class="size-4" />}
                     onClick={() => codeCopy.copy(code().user_code)}
                   >
-                    {codeCopy.copied() ? "Copied" : "Copy code"}
+                    {codeCopy.copied()
+                      ? t("COMMON_COPIED")
+                      : t("LOGIN_COPY_CODE")}
                   </Button>
                 </>
               )}
             </Show>
           </div>
           <Button variant="ghost" onClick={() => session.abort()}>
-            Cancel
+            {t("COMMON_CANCEL")}
           </Button>
         </Show>
       </div>

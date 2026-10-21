@@ -9,6 +9,7 @@ import {
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { Component } from "solid-js";
 import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 const TONE: Record<ToastType, string> = {
   error: "text-negative",
@@ -74,7 +75,7 @@ export default function ToasterItem(props: Props) {
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Dismiss"
+        aria-label={t("COMMON_DISMISS")}
         class="shrink-0 size-7 grid place-items-center rounded-sm text-ink-faint hover:text-ink hover:bg-raised transition-colors duration-snap cursor-pointer"
       >
         <X class="size-4" />

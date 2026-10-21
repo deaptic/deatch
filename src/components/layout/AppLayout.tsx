@@ -18,6 +18,7 @@ import { authChecked } from "../../lib/stores/auth.ts";
 import { markMentionRead } from "../../lib/stores/inbox.ts";
 import { removeToast, toasts } from "../../lib/stores/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
+import { t } from "../../lib/i18n/index.ts";
 
 const Settings = lazy(() => import("../settings/Settings.tsx"));
 const QuickSwitch = lazy(() => import("../quick-switch/QuickSwitch.tsx"));
@@ -70,7 +71,7 @@ export default function AppLayout(props: AppLayoutProps) {
                   <Explore onSelectChannel={c.selectChannel} />
                 </Show>
                 <Show when={activeView() === "settings"}>
-                  <Boundary label="Settings failed to load">
+                  <Boundary label={t("LAYOUT_SETTINGS_ERROR")}>
                     <Suspense>
                       <Settings />
                     </Suspense>

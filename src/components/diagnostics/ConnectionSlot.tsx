@@ -4,6 +4,7 @@ import type {
   ConnectionStats,
 } from "../../lib/types/index.ts";
 import Meter from "../ui/Meter.tsx";
+import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
 type Props = {
   number: number;
@@ -11,10 +12,10 @@ type Props = {
   capacity: number;
 };
 
-const STATE: Record<ConnectionState, { label: string; class: string }> = {
-  up: { label: "Connected", class: "text-positive" },
-  connecting: { label: "Connecting", class: "text-caution" },
-  lost: { label: "Disconnected", class: "text-negative" },
+const STATE: Record<ConnectionState, { label: MessageKey; class: string }> = {
+  up: { label: "DIAGNOSTICS_CONNECTED", class: "text-positive" },
+  connecting: { label: "DIAGNOSTICS_CONNECTING", class: "text-caution" },
+  lost: { label: "DIAGNOSTICS_DISCONNECTED", class: "text-negative" },
 };
 
 export default function ConnectionSlot(props: Props) {
@@ -25,18 +26,25 @@ export default function ConnectionSlot(props: Props) {
       class={`flex flex-col gap-1.5 ${props.connection ? "" : "opacity-40"}`}
     >
       <div class="flex items-baseline gap-3 text-body">
-        <span class="flex-1 text-ink-soft">Connection {props.number}</span>
+        <span class="flex-1 text-ink-soft">
+          {t("DIAGNOSTICS_CONNECTION", { number: props.number })}
+        </span>
         <Show
           when={props.connection}
-          fallback={<span class="text-ink-soft">Not open</span>}
+          fallback={
+            <span class="text-ink-soft">{t("DIAGNOSTICS_NOT_OPEN")}</span>
+          }
         >
           {(connection) => (
             <>
               <span class={`text-small ${STATE[connection().state].class}`}>
-                {STATE[connection().state].label}
+                {t(STATE[connection().state].label)}
               </span>
               <span class="text-ink tabular-nums">
-                {used()} of {props.capacity}
+                {t("DIAGNOSTICS_USAGE", {
+                  used: used(),
+                  capacity: props.capacity,
+                })}
               </span>
             </>
           )}
@@ -45,7 +53,9 @@ export default function ConnectionSlot(props: Props) {
       <Meter
         value={used()}
         max={props.capacity}
-        label={`Subscriptions on connection ${props.number}`}
+        label={t("DIAGNOSTICS_CONNECTION_SUBSCRIPTIONS", {
+          number: props.number,
+        })}
         tone={used() >= props.capacity ? "caution" : "neutral"}
       />
     </div>

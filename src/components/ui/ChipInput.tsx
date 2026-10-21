@@ -2,6 +2,7 @@ import { Plus } from "lucide-solid";
 import { createSignal } from "solid-js";
 import Field from "./Field.tsx";
 import IconButton from "./IconButton.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   placeholder: string;
@@ -36,7 +37,7 @@ export default function ChipInput(props: Props) {
         }}
       />
       <IconButton
-        label="Add"
+        label={t("COMMON_ADD")}
         variant="neutral"
         onClick={submit}
         loading={busy()}

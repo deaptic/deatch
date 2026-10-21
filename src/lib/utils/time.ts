@@ -1,4 +1,4 @@
-import { formatLocale } from "../i18n/index.ts";
+import { formatLocale, t } from "../i18n/index.ts";
 
 export type TimeFormat =
   | "t"
@@ -64,7 +64,10 @@ export class Time {
   }
 
   private dateTimeShort(date: Date): string {
-    return `${this.dateLong(date)} at ${this.timeShort(date)}`;
+    return t("TIME_DATE_AT", {
+      date: this.dateLong(date),
+      time: this.timeShort(date),
+    });
   }
 
   private dateTimeLong(date: Date): string {
@@ -97,7 +100,10 @@ export class Time {
     const formatted = new Intl.DurationFormat(this.locale, {
       style: "long",
     }).format(partial);
-    return dur.sign < 0 ? `${formatted} ago` : `in ${formatted}`;
+    return t("TIME_RELATIVE", {
+      direction: dur.sign < 0 ? "past" : "future",
+      duration: formatted,
+    });
   }
 
   private duration(date: Date): Temporal.Duration {
@@ -110,7 +116,9 @@ export class Time {
   private calendar(date: Date): string {
     const days = daysBetween(date, new Date());
     if (days === 0) return this.timeShort(date);
-    if (days === 1) return `Yesterday at ${this.timeShort(date)}`;
+    if (days === 1) {
+      return t("TIME_YESTERDAY_AT", { time: this.timeShort(date) });
+    }
     return `${this.dateShort(date)} ${this.timeShort(date)}`;
   }
 

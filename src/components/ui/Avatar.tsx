@@ -1,5 +1,6 @@
 import { createEffect, createSignal, type JSX, Show } from "solid-js";
 import { avatarZoom } from "../../lib/utils/avatar.ts";
+import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
 /** Pixel sizes are fixed; "fill" takes its parent's box. */
 export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
@@ -15,10 +16,10 @@ type Props = {
   children?: JSX.Element;
 };
 
-const PRESENCE: Record<Presence, { dot: string; label: string }> = {
-  live: { dot: "bg-live", label: "Live" },
-  online: { dot: "bg-positive", label: "Online" },
-  offline: { dot: "bg-ink-faint", label: "Offline" },
+const PRESENCE: Record<Presence, { dot: string; label: MessageKey }> = {
+  live: { dot: "bg-live", label: "COMMON_LIVE" },
+  online: { dot: "bg-positive", label: "COMMON_ONLINE" },
+  offline: { dot: "bg-ink-faint", label: "COMMON_OFFLINE" },
 };
 
 const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
@@ -67,7 +68,7 @@ export default function Avatar(props: Props) {
       <Show when={props.presence}>
         {(presence) => (
           <span
-            data-tip={PRESENCE[presence()].label}
+            data-tip={t(PRESENCE[presence()].label)}
             class={`absolute -bottom-px -right-px rounded-full ring-2 ring-surface ${
               PRESENCE[presence()].dot
             } ${SIZES[props.size].dot}`}
