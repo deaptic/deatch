@@ -1,4 +1,5 @@
 import { Copy } from "lucide-solid";
+import { t } from "../../lib/i18n/index.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import { copyField } from "../../lib/utils/clipboard.ts";
@@ -17,7 +18,7 @@ export default function EventContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label="Copy text"
+        label={t("MENU_COPY_TEXT")}
         icon={<Copy />}
         onClick={() => {
           copyField(props.item.system_message);

@@ -6,6 +6,7 @@ import {
   Trash2,
 } from "lucide-solid";
 import { Show } from "solid-js";
+import { t } from "../../lib/i18n/index.ts";
 import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -38,14 +39,14 @@ export default function MessageContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label="Reply"
+        label={t("MENU_REPLY")}
         icon={<Reply />}
         onClick={run(() => props.onReply(props.msg))}
       />
       <Show when={props.msg.reply}>
         {(reply) => (
           <MenuItem
-            label="Jump to parent"
+            label={t("MENU_JUMP_TO_PARENT")}
             icon={<CornerUpLeft />}
             onClick={run(() =>
               props.onJumpToMessage(reply().parent_message_id)
@@ -54,13 +55,13 @@ export default function MessageContextMenu(props: Props) {
         )}
       </Show>
       <MenuItem
-        label="Copy text"
+        label={t("MENU_COPY_TEXT")}
         icon={<Copy />}
         onClick={run(() => copyField(textOf(props.msg)))}
       />
       <Show when={props.showCopypasta}>
         <MenuItem
-          label="Copypasta"
+          label={t("MENU_COPYPASTA")}
           icon={<ClipboardPaste />}
           onClick={run(() => props.onCopypasta(props.msg))}
         />
@@ -68,7 +69,7 @@ export default function MessageContextMenu(props: Props) {
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
-          label="Delete message"
+          label={t("MENU_DELETE_MESSAGE")}
           tone="negative"
           icon={<Trash2 />}
           onClick={run(() =>

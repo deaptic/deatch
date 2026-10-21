@@ -1,3 +1,4 @@
+import { t } from "../../lib/i18n/index.ts";
 import Button from "../ui/Button.tsx";
 import Slider from "../ui/Slider.tsx";
 import {
@@ -19,9 +20,9 @@ export default function TabVolume(props: Props) {
 
   return (
     <div class="px-2.5 pt-2 pb-1 flex flex-col gap-1">
-      <span class="text-small text-ink-soft">Tab volume</span>
+      <span class="text-small text-ink-soft">{t("MENU_TAB_VOLUME")}</span>
       <Slider
-        label="Tab volume"
+        label={t("MENU_TAB_VOLUME")}
         value={gain()}
         min={0}
         max={MAX_CHANNEL_GAIN}
@@ -36,7 +37,7 @@ export default function TabVolume(props: Props) {
           disabled={gain() === DEFAULT_CHANNEL_GAIN}
           onClick={() => setChannelGain(props.login, DEFAULT_CHANNEL_GAIN)}
         >
-          Reset
+          {t("COMMON_RESET")}
         </Button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { ChevronLeft } from "lucide-solid";
 import { createResource, For, Show } from "solid-js";
+import { t } from "../../lib/i18n/index.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import { moderatedChannels, user } from "../../lib/stores/users.ts";
@@ -45,20 +46,22 @@ export default function ShoutoutSources(props: Props) {
   return (
     <>
       <MenuItem
-        label="Shoutout to"
+        label={t("MENU_SHOUTOUT_TO")}
         icon={<ChevronLeft />}
         onClick={props.onBack}
       />
       <MenuDivider />
       <Show
         when={!sources.loading}
-        fallback={<MenuItem label="Checking…" disabled onClick={() => {}} />}
+        fallback={
+          <MenuItem label={t("MENU_CHECKING")} disabled onClick={() => {}} />
+        }
       >
         <For
           each={sources() ?? []}
           fallback={
             <MenuItem
-              label="No live channels"
+              label={t("MENU_NO_LIVE_CHANNELS")}
               disabled
               onClick={() => {}}
             />

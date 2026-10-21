@@ -1,4 +1,5 @@
 import { createEffect, Show } from "solid-js";
+import { t } from "../../../lib/i18n/index.ts";
 import type { FeedMessage } from "../../../lib/types/index.ts";
 import * as users from "../../../lib/services/users.ts";
 import { knownUser } from "../../../lib/stores/users.ts";
@@ -31,7 +32,9 @@ export default function SourceChannel(props: Props) {
 
   return (
     <span
-      data-tip={name() ? `Sent in ${name()}'s chat` : "Sent in a shared chat"}
+      data-tip={name()
+        ? t("FEED_SENT_IN_CHAT", { channel: name() })
+        : t("FEED_SENT_IN_SHARED_CHAT")}
       {...link.handlers}
       class={`feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
         props.round ? "rounded-full" : "rounded-xs"

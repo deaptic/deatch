@@ -1,5 +1,6 @@
 import { ClipboardPaste, Ellipsis, Reply } from "lucide-solid";
 import { For, Show } from "solid-js";
+import { t } from "../../../lib/i18n/index.ts";
 import type { FeedMessage } from "../../../lib/types/index.ts";
 import { OVERLAY_GAP } from "../../ui/Popover.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
@@ -29,19 +30,22 @@ export default function MessageToolbar(props: Props) {
           </ToolbarItem>
         )}
       </For>
-      <ToolbarItem title="Reply" onClick={() => props.onReply(props.item)}>
+      <ToolbarItem
+        title={t("FEED_REPLY")}
+        onClick={() => props.onReply(props.item)}
+      >
         <Reply />
       </ToolbarItem>
       <Show when={feedShowCopypasta()}>
         <ToolbarItem
-          title="Copypasta"
+          title={t("FEED_COPYPASTA")}
           onClick={() => props.onCopypasta(props.item)}
         >
           <ClipboardPaste />
         </ToolbarItem>
       </Show>
       <ToolbarItem
-        title="More options"
+        title={t("FEED_MORE_OPTIONS")}
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           props.onMore(rect.left, rect.bottom + OVERLAY_GAP, props.item);

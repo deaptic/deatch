@@ -1,5 +1,6 @@
 import { Check, X } from "lucide-solid";
 import { createMemo, For, Show } from "solid-js";
+import { t } from "../../../lib/i18n/index.ts";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import type { BadgeMap, FeedMessage } from "../../../lib/types/index.ts";
@@ -87,24 +88,20 @@ export function createMessageParts(
   const holdNotice = () => (
     <RichNotice
       class="text-caution"
-      label={`Held by AutoMod · ${hold()!.reason}`}
+      label={t("FEED_AUTOMOD_HELD", { reason: hold()!.reason })}
       suffix={holdResolved()
-        ? (hold()!.status === "approved"
-          ? "approved"
-          : hold()!.status === "denied"
-          ? "denied"
-          : "expired")
+        ? t("FEED_AUTOMOD_STATUS", { status: hold()!.status })
         : undefined}
       actions={holdPending()
         ? [
           {
-            title: "Approve",
+            title: t("FEED_AUTOMOD_APPROVE"),
             icon: () => <Check class="size-4" />,
             tone: "success",
             onClick: () => handleHold("approve"),
           },
           {
-            title: "Deny",
+            title: t("FEED_AUTOMOD_DENY"),
             icon: () => <X class="size-4" />,
             tone: "danger",
             onClick: () => handleHold("deny"),
@@ -122,9 +119,7 @@ export function createMessageParts(
         content: (
           <RichNotice
             class="text-event-bits"
-            label={`Cheered ${item.cheer.bits.toLocaleString()} ${
-              item.cheer.bits === 1 ? "bit" : "bits"
-            }`}
+            label={t("FEED_CHEERED", { bits: item.cheer.bits })}
           />
         ),
       });
@@ -135,14 +130,18 @@ export function createMessageParts(
         content: (
           <RichNotice
             class="text-event-channel-points"
-            label={`Redeemed ${redemption?.reward.title ?? "channel points"}`}
+            label={redemption
+              ? t("FEED_REDEEMED_REWARD", { reward: redemption.reward.title })
+              : t("FEED_REDEEMED_CHANNEL_POINTS")}
           />
         ),
       });
     }
     if (item.first_message && !hold()) {
       list.push({
-        content: <RichNotice class="text-ink-soft" label="First message" />,
+        content: (
+          <RichNotice class="text-ink-soft" label={t("FEED_FIRST_MESSAGE")} />
+        ),
       });
     }
     if (item.reply) {
@@ -197,7 +196,9 @@ export function createMessageParts(
   const body = () => (
     <Show
       when={!item.deleted || props.showDeletedContent}
-      fallback={<span class="italic text-ink-soft">Message deleted</span>}
+      fallback={
+        <span class="italic text-ink-soft">{t("FEED_MESSAGE_DELETED")}</span>
+      }
     >
       <span class={item.deleted ? "*:text-ink-faint" : ""}>
         <For each={visibleFragments()}>
