@@ -1,3 +1,5 @@
+import type { MessageKey } from "../../lib/i18n/index.ts";
+
 export type CommandContext = {
   broadcasterId: string;
   openUserCard: (userId: string) => void;
@@ -7,9 +9,9 @@ export type OptionSuggestion = { id: string; label: string; image?: string };
 
 type OptionBase = {
   name: string;
-  description: string;
+  description: MessageKey;
   required?: boolean;
-  hint?: string;
+  hint?: MessageKey;
 };
 
 export type DurationOption = OptionBase & {
@@ -33,7 +35,7 @@ export type CommandRole = "broadcaster" | "mod" | "regular";
 export type Command = {
   name: string;
   aliases?: string[];
-  description: string;
+  description: MessageKey;
   role: CommandRole;
   options: CommandOption[];
   execute: (

@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import { banUser } from "../../../lib/api/twitch/moderation.ts";
 import { createClip } from "../../../lib/api/twitch/clips.ts";
 import { getStreamsFromIds } from "../../../lib/api/twitch/streams.ts";
@@ -12,12 +13,12 @@ import type { Command } from "../types.ts";
 export const deatchCommands: Command[] = [
   {
     name: "user",
-    description: "Open a user's profile card",
+    description: "COMMAND_USER",
     role: "regular",
     options: [
       {
         name: "username",
-        description: "User to view",
+        description: "COMMAND_USER_USERNAME",
         type: "user",
         required: true,
       },
@@ -28,12 +29,12 @@ export const deatchCommands: Command[] = [
   },
   {
     name: "purge",
-    description: "Clear a user's recent messages",
+    description: "COMMAND_PURGE",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "User to purge",
+        description: "COMMAND_PURGE_USERNAME",
         type: "user",
         required: true,
       },
@@ -49,17 +50,17 @@ export const deatchCommands: Command[] = [
   },
   {
     name: "clip",
-    description: "Create a clip of the stream",
+    description: "COMMAND_CLIP",
     role: "regular",
     options: [
-      { name: "title", description: "Clip title", type: "string" },
+      { name: "title", description: "COMMAND_CLIP_TITLE", type: "string" },
       {
         name: "duration",
-        description: "Clip length (5-60s, default 30s)",
+        description: "COMMAND_CLIP_DURATION",
         type: "duration",
         min: 5,
         max: 60,
-        hint: "between 5s and 60s, e.g. 15s, 30s, 60s",
+        hint: "COMMAND_CLIP_DURATION_HINT",
       },
     ],
     execute: async ({ title, duration }, ctx) => {
@@ -74,7 +75,7 @@ export const deatchCommands: Command[] = [
         );
         appendItem(
           ctx.broadcasterId,
-          feedEvent("clip_created", "Clip created", Date.now(), {
+          feedEvent("clip_created", t("COMMAND_CLIP_CREATED"), Date.now(), {
             id: clip.id,
             clip: { id: clip.id },
           }),
@@ -82,33 +83,36 @@ export const deatchCommands: Command[] = [
       } catch {
         appendLocalNotice(
           ctx.broadcasterId,
-          "Failed to create clip (stream may be offline)",
+          t("COMMAND_CLIP_FAILED"),
         );
       }
     },
   },
   {
     name: "uptime",
-    description: "Show how long the stream has been live",
+    description: "COMMAND_UPTIME",
     role: "regular",
     options: [],
     execute: async (_, ctx) => {
       try {
         const [s] = await getStreamsFromIds({ userIds: [ctx.broadcasterId] });
         if (!s) {
-          appendLocalNotice(ctx.broadcasterId, "Stream is offline");
+          appendLocalNotice(ctx.broadcasterId, t("COMMAND_UPTIME_OFFLINE"));
           return;
         }
         const ms = Date.now() - new Date(s.startedAt).getTime();
-        appendLocalNotice(ctx.broadcasterId, `Uptime: ${formatClock(ms)}`);
+        appendLocalNotice(
+          ctx.broadcasterId,
+          t("COMMAND_UPTIME_RESULT", { uptime: formatClock(ms) }),
+        );
       } catch {
-        appendLocalNotice(ctx.broadcasterId, "Failed to fetch uptime");
+        appendLocalNotice(ctx.broadcasterId, t("COMMAND_UPTIME_FAILED"));
       }
     },
   },
   {
     name: "followage",
-    description: "Show how long you've followed this channel",
+    description: "COMMAND_FOLLOWAGE",
     role: "regular",
     options: [],
     execute: async (_, ctx) => {
@@ -122,16 +126,18 @@ export const deatchCommands: Command[] = [
         if (!followedAt) {
           appendLocalNotice(
             ctx.broadcasterId,
-            "You're not following this channel",
+            t("COMMAND_FOLLOWAGE_NOT_FOLLOWING"),
           );
           return;
         }
         appendLocalNotice(
           ctx.broadcasterId,
-          `You started following ${new Time(followedAt, "R")}`,
+          t("COMMAND_FOLLOWAGE_RESULT", {
+            since: new Time(followedAt, "R").toString(),
+          }),
         );
       } catch {
-        appendLocalNotice(ctx.broadcasterId, "Failed to fetch followage");
+        appendLocalNotice(ctx.broadcasterId, t("COMMAND_FOLLOWAGE_FAILED"));
       }
     },
   },

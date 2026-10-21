@@ -35,18 +35,18 @@ const ANNOUNCEMENT_COLORS: AnnouncementColor[] = [
 export const twitchCommands: Command[] = [
   {
     name: "ban",
-    description: "Permanently ban a user from chat",
+    description: "COMMAND_BAN",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "User to ban",
+        description: "COMMAND_BAN_USERNAME",
         type: "user",
         required: true,
       },
       {
         name: "reason",
-        description: "Reason shown to the user",
+        description: "COMMAND_BAN_REASON",
         type: "string",
       },
     ],
@@ -60,12 +60,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "unban",
-    description: "Lift a user's ban",
+    description: "COMMAND_UNBAN",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "User to unban",
+        description: "COMMAND_UNBAN_USERNAME",
         type: "user",
         required: true,
       },
@@ -79,27 +79,27 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "timeout",
-    description: "Time a user out",
+    description: "COMMAND_TIMEOUT",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "User to time out",
+        description: "COMMAND_TIMEOUT_USERNAME",
         type: "user",
         required: true,
       },
       {
         name: "duration",
-        description: "Length of the timeout",
+        description: "COMMAND_TIMEOUT_DURATION",
         type: "duration",
         required: true,
         min: 1,
         max: 1209600,
-        hint: "1s–2w, e.g. 30s, 5m, 1h, 1d",
+        hint: "COMMAND_TIMEOUT_DURATION_HINT",
       },
       {
         name: "reason",
-        description: "Reason shown to the user",
+        description: "COMMAND_TIMEOUT_REASON",
         type: "string",
       },
     ],
@@ -114,12 +114,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "untimeout",
-    description: "Lift a user's timeout",
+    description: "COMMAND_UNTIMEOUT",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "User to untimeout",
+        description: "COMMAND_UNTIMEOUT_USERNAME",
         type: "user",
         required: true,
       },
@@ -133,7 +133,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "clear",
-    description: "Delete all messages in chat",
+    description: "COMMAND_CLEAR",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -145,21 +145,21 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "announce",
-    description: "Post a highlighted announcement",
+    description: "COMMAND_ANNOUNCE",
     role: "mod",
     options: [
       {
         name: "message",
-        description: "Announcement text",
+        description: "COMMAND_ANNOUNCE_MESSAGE",
         type: "string",
         required: true,
       },
       {
         name: "color",
-        description: "Highlight color",
+        description: "COMMAND_ANNOUNCE_COLOR",
         type: "enum",
         values: [...ANNOUNCEMENT_COLORS],
-        hint: "primary, blue, green, orange, purple",
+        hint: "COMMAND_ANNOUNCE_COLOR_HINT",
       },
     ],
     execute: async ({ message, color }, ctx) => {
@@ -172,16 +172,16 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "slow",
-    description: "Enable slow mode",
+    description: "COMMAND_SLOW",
     role: "mod",
     options: [
       {
         name: "duration",
-        description: "Wait time between messages",
+        description: "COMMAND_SLOW_DURATION",
         type: "duration",
         min: 3,
         max: 120,
-        hint: "3s–120s, default 30s",
+        hint: "COMMAND_SLOW_DURATION_HINT",
       },
     ],
     execute: async ({ duration }, ctx) => {
@@ -194,7 +194,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "slowoff",
-    description: "Disable slow mode",
+    description: "COMMAND_SLOWOFF",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -206,16 +206,16 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "followers",
-    description: "Restrict chat to followers only",
+    description: "COMMAND_FOLLOWERS",
     role: "mod",
     options: [
       {
         name: "duration",
-        description: "Minimum follow age to chat",
+        description: "COMMAND_FOLLOWERS_DURATION",
         type: "duration",
         min: 60,
         max: 7776000,
-        hint: "1m–90d, e.g. 10m, 1h, 1d",
+        hint: "COMMAND_FOLLOWERS_DURATION_HINT",
       },
     ],
     execute: async ({ duration }, ctx) => {
@@ -229,7 +229,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "followersoff",
-    description: "Disable followers-only mode",
+    description: "COMMAND_FOLLOWERSOFF",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -241,7 +241,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "emoteonly",
-    description: "Restrict chat to emotes only",
+    description: "COMMAND_EMOTEONLY",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -253,7 +253,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "emoteonlyoff",
-    description: "Disable emote-only mode",
+    description: "COMMAND_EMOTEONLYOFF",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -265,7 +265,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "subscribers",
-    description: "Restrict chat to subscribers only",
+    description: "COMMAND_SUBSCRIBERS",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -277,7 +277,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "subscribersoff",
-    description: "Disable subscriber-only mode",
+    description: "COMMAND_SUBSCRIBERSOFF",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -289,7 +289,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "uniquechat",
-    description: "Require each message to be unique",
+    description: "COMMAND_UNIQUECHAT",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -301,7 +301,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "uniquechatoff",
-    description: "Disable unique-chat mode",
+    description: "COMMAND_UNIQUECHATOFF",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -314,12 +314,12 @@ export const twitchCommands: Command[] = [
   {
     name: "shoutout",
     aliases: ["so"],
-    description: "Shout out another channel",
+    description: "COMMAND_SHOUTOUT",
     role: "mod",
     options: [
       {
         name: "channel",
-        description: "Channel to shout out",
+        description: "COMMAND_SHOUTOUT_CHANNEL",
         type: "user",
         required: true,
       },
@@ -333,12 +333,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "vip",
-    description: "Grant a user VIP status",
+    description: "COMMAND_VIP",
     role: "broadcaster",
     options: [
       {
         name: "username",
-        description: "User to grant VIP status",
+        description: "COMMAND_VIP_USERNAME",
         type: "user",
         required: true,
       },
@@ -352,12 +352,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "unvip",
-    description: "Revoke a user's VIP status",
+    description: "COMMAND_UNVIP",
     role: "broadcaster",
     options: [
       {
         name: "username",
-        description: "User to revoke VIP from",
+        description: "COMMAND_UNVIP_USERNAME",
         type: "user",
         required: true,
       },
@@ -371,12 +371,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "raid",
-    description: "Raid another channel",
+    description: "COMMAND_RAID",
     role: "broadcaster",
     options: [
       {
         name: "channel",
-        description: "Channel to raid",
+        description: "COMMAND_RAID_CHANNEL",
         type: "user",
         required: true,
       },
@@ -393,7 +393,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "unraid",
-    description: "Cancel a pending raid",
+    description: "COMMAND_UNRAID",
     role: "broadcaster",
     options: [],
     execute: async (_, ctx) => {
@@ -402,12 +402,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "me",
-    description: "Send a message as an action",
+    description: "COMMAND_ME",
     role: "regular",
     options: [
       {
         name: "message",
-        description: "Action text",
+        description: "COMMAND_ME_MESSAGE",
         type: "string",
         required: true,
       },
@@ -421,18 +421,18 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "warn",
-    description: "Warn a user without timing them out",
+    description: "COMMAND_WARN",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "User to warn",
+        description: "COMMAND_WARN_USERNAME",
         type: "user",
         required: true,
       },
       {
         name: "reason",
-        description: "Reason for the warning",
+        description: "COMMAND_WARN_REASON",
         type: "string",
         required: true,
       },
@@ -447,12 +447,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "marker",
-    description: "Add a stream marker",
+    description: "COMMAND_MARKER",
     role: "broadcaster",
     options: [
       {
         name: "description",
-        description: "Note for the marker (max 140 chars)",
+        description: "COMMAND_MARKER_DESCRIPTION",
         type: "string",
       },
     ],
@@ -464,12 +464,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "color",
-    description: "Change your display color in chat",
+    description: "COMMAND_COLOR",
     role: "regular",
     options: [
       {
         name: "color",
-        description: "Display color",
+        description: "COMMAND_COLOR_COLOR",
         type: "enum",
         required: true,
         values: [
@@ -497,12 +497,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "title",
-    description: "Change the stream title",
+    description: "COMMAND_TITLE",
     role: "broadcaster",
     options: [
       {
         name: "title",
-        description: "New stream title",
+        description: "COMMAND_TITLE_TITLE",
         type: "string",
         required: true,
       },
@@ -517,15 +517,15 @@ export const twitchCommands: Command[] = [
   {
     name: "game",
     aliases: ["category"],
-    description: "Set the stream category",
+    description: "COMMAND_GAME",
     role: "broadcaster",
     options: [
       {
         name: "game",
-        description: "Category to search for",
+        description: "COMMAND_GAME_GAME",
         type: "search",
         required: true,
-        hint: "e.g. Just Chatting",
+        hint: "COMMAND_GAME_GAME_HINT",
         search: async (query) => {
           const results = await searchCategories({ query, first: 8 });
           return results.map((c) => ({
@@ -546,12 +546,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "commercial",
-    description: "Run a commercial break",
+    description: "COMMAND_COMMERCIAL",
     role: "broadcaster",
     options: [
       {
         name: "length",
-        description: "Commercial length in seconds",
+        description: "COMMAND_COMMERCIAL_LENGTH",
         type: "enum",
         required: true,
         values: ["30", "60", "90", "120", "150", "180"],
