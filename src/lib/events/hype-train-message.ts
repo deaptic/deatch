@@ -1,11 +1,12 @@
 // Pure text for hype train events, kept apart from the listener so it can be
 // tested without Tauri.
 
-import { formatLocale, t } from "../i18n/index.ts";
+import { formatList } from "../format/list.ts";
+import { t } from "../i18n/index.ts";
 import type { RawHypeTrain } from "../types/twitch/eventsub.ts";
 
 function contributors(raw: RawHypeTrain): string {
-  return new Intl.ListFormat(formatLocale()).format(
+  return formatList(
     raw.top_contributions.map((c) =>
       t("HYPE_TRAIN_CONTRIBUTION", {
         name: c.user_name,

@@ -41,6 +41,7 @@ export const UNBAN_REQUEST = "unban_request";
 export const WARNING_ACKNOWLEDGED = "warning_acknowledged";
 export const HYPE_TRAIN = "hype_train";
 export const POLL = "poll";
+export const PREDICTION = "prediction";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -123,6 +124,13 @@ export const EVENTS = [
     label: "EVENT_TYPE_POLL",
     description: "EVENT_TYPE_POLL_DESCRIPTION",
     types: [POLL],
+    modOnly: false,
+  },
+  {
+    key: "prediction",
+    label: "EVENT_TYPE_PREDICTION",
+    description: "EVENT_TYPE_PREDICTION_DESCRIPTION",
+    types: [PREDICTION],
     modOnly: false,
   },
   {

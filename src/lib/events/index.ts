@@ -8,6 +8,7 @@ import * as hypeTrain from "./hypeTrain.ts";
 import * as moderation from "./moderation.ts";
 import * as notifications from "./notifications.ts";
 import * as polls from "./polls.ts";
+import * as predictions from "./predictions.ts";
 import * as link from "./link.ts";
 
 export function start(): () => void {
@@ -22,6 +23,7 @@ export function start(): () => void {
     moderation.start(),
     notifications.start(),
     polls.start(),
+    predictions.start(),
     link.start(),
   ];
   return () => {
