@@ -66,6 +66,12 @@ pub enum EventKind {
     ChannelPollBegin,
     #[serde(rename = "channel.poll.end")]
     ChannelPollEnd,
+    #[serde(rename = "channel.prediction.begin")]
+    ChannelPredictionBegin,
+    #[serde(rename = "channel.prediction.lock")]
+    ChannelPredictionLock,
+    #[serde(rename = "channel.prediction.end")]
+    ChannelPredictionEnd,
     #[serde(rename = "stream.online")]
     StreamOnline,
     #[serde(rename = "stream.offline")]
@@ -75,7 +81,7 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 28] = [
+    pub const ALL: [Self; 31] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
@@ -102,6 +108,9 @@ impl EventKind {
         Self::ChannelHypeTrainEnd,
         Self::ChannelPollBegin,
         Self::ChannelPollEnd,
+        Self::ChannelPredictionBegin,
+        Self::ChannelPredictionLock,
+        Self::ChannelPredictionEnd,
         Self::StreamOnline,
         Self::StreamOffline,
     ];
@@ -136,6 +145,9 @@ impl EventKind {
             Self::ChannelHypeTrainEnd => "channel-hype-train-end",
             Self::ChannelPollBegin => "channel-poll-begin",
             Self::ChannelPollEnd => "channel-poll-end",
+            Self::ChannelPredictionBegin => "channel-prediction-begin",
+            Self::ChannelPredictionLock => "channel-prediction-lock",
+            Self::ChannelPredictionEnd => "channel-prediction-end",
             Self::StreamOnline => "stream-online",
             Self::StreamOffline => "stream-offline",
         }
@@ -176,7 +188,10 @@ impl EventKind {
             | Self::ChannelHypeTrainProgress
             | Self::ChannelHypeTrainEnd
             | Self::ChannelPollBegin
-            | Self::ChannelPollEnd => (Role::Broadcaster, Focused),
+            | Self::ChannelPollEnd
+            | Self::ChannelPredictionBegin
+            | Self::ChannelPredictionLock
+            | Self::ChannelPredictionEnd => (Role::Broadcaster, Focused),
         }
     }
 }

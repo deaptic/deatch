@@ -26,6 +26,7 @@ use twitch_api::eventsub::{
         ChannelUpdateV2, ChannelWarningAcknowledgeV1,
     },
     channel::{ChannelPollBeginV1, ChannelPollEndV1},
+    channel::{ChannelPredictionBeginV1, ChannelPredictionEndV1, ChannelPredictionLockV1},
     channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
     stream::{StreamOfflineV1, StreamOnlineV1},
     Transport,
@@ -178,6 +179,15 @@ async fn create(
         }),
         EventKind::ChannelPollBegin => subscribe!(ChannelPollBeginV1::broadcaster_user_id(b)),
         EventKind::ChannelPollEnd => subscribe!(ChannelPollEndV1::broadcaster_user_id(b)),
+        EventKind::ChannelPredictionBegin => {
+            subscribe!(ChannelPredictionBeginV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelPredictionLock => {
+            subscribe!(ChannelPredictionLockV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelPredictionEnd => {
+            subscribe!(ChannelPredictionEndV1::broadcaster_user_id(b))
+        }
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
     }

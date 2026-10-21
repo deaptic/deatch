@@ -1,4 +1,5 @@
-import { formatLocale, t } from "../i18n/index.ts";
+import { t } from "../i18n/index.ts";
+import { formatList } from "../format/list.ts";
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   RawChannelUpdate,
@@ -26,7 +27,7 @@ function appendSharedChat(
     .map((p) => p.broadcaster_user_name);
   appendLocalNotice(
     raw.broadcaster_user_id,
-    t(key, { channels: new Intl.ListFormat(formatLocale()).format(partners) }),
+    t(key, { channels: formatList(partners) }),
     SHARED_CHAT,
   );
 }

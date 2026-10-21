@@ -381,6 +381,24 @@ export type RawPoll = {
   status?: "completed" | "terminated" | "archived";
 };
 
+// channel.prediction.begin / lock / end
+export type RawPrediction = {
+  broadcaster_user_id: string;
+  id: string;
+  title: string;
+  outcomes: {
+    id: string;
+    title: string;
+    users?: number;
+    channel_points?: number;
+  }[];
+  started_at: string;
+  locks_at?: string;
+  /// Only on end.
+  winning_outcome_id?: string | null;
+  status?: "resolved" | "canceled";
+};
+
 // stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;

@@ -21,3 +21,10 @@ export function formatApproxDuration(seconds: number): string {
   if (seconds >= 60) return `${Math.round(seconds / 60)}m`;
   return `${seconds}s`;
 }
+
+/// Approximate time between two ISO timestamps.
+export function formatSpan(from: string, to: string): string {
+  return formatApproxDuration(
+    Math.max(0, Math.round((Date.parse(to) - Date.parse(from)) / 1000)),
+  );
+}
