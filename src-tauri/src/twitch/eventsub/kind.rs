@@ -26,6 +26,12 @@ pub enum EventKind {
     ChannelChatClearUserMessages,
     #[serde(rename = "channel.chat_settings.update")]
     ChannelChatSettingsUpdate,
+    #[serde(rename = "channel.shared_chat.begin")]
+    ChannelSharedChatBegin,
+    #[serde(rename = "channel.shared_chat.update")]
+    ChannelSharedChatUpdate,
+    #[serde(rename = "channel.shared_chat.end")]
+    ChannelSharedChatEnd,
     #[serde(rename = "channel.shoutout.create")]
     ChannelShoutoutCreate,
     #[serde(rename = "channel.shoutout.receive")]
@@ -59,13 +65,16 @@ pub enum EventKind {
 impl EventKind {
     /// Ordered by subscription priority: chat kinds first so every channel's
     /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 20] = [
+    pub const ALL: [Self; 23] = [
         Self::ChannelChatMessage,
         Self::ChannelChatNotification,
         Self::ChannelChatMessageDelete,
         Self::ChannelChatClear,
         Self::ChannelChatClearUserMessages,
         Self::ChannelChatSettingsUpdate,
+        Self::ChannelSharedChatBegin,
+        Self::ChannelSharedChatUpdate,
+        Self::ChannelSharedChatEnd,
         Self::ChannelShoutoutCreate,
         Self::ChannelShoutoutReceive,
         Self::ChannelFollow,
@@ -90,6 +99,9 @@ impl EventKind {
             Self::ChannelChatClear => "channel-chat-clear",
             Self::ChannelChatClearUserMessages => "channel-chat-clear-user-messages",
             Self::ChannelChatSettingsUpdate => "channel-chat-settings-update",
+            Self::ChannelSharedChatBegin => "channel-shared-chat-begin",
+            Self::ChannelSharedChatUpdate => "channel-shared-chat-update",
+            Self::ChannelSharedChatEnd => "channel-shared-chat-end",
             Self::ChannelShoutoutCreate => "channel-shoutout-create",
             Self::ChannelShoutoutReceive => "channel-shoutout-receive",
             Self::ChannelFollow => "channel-follow",
@@ -123,9 +135,12 @@ impl EventKind {
             | Self::ChannelChatMessageDelete
             | Self::ChannelChatClear
             | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
-            Self::ChannelChatSettingsUpdate | Self::StreamOnline | Self::StreamOffline => {
-                (Role::Viewer, Focused)
-            }
+            Self::ChannelChatSettingsUpdate
+            | Self::ChannelSharedChatBegin
+            | Self::ChannelSharedChatUpdate
+            | Self::ChannelSharedChatEnd
+            | Self::StreamOnline
+            | Self::StreamOffline => (Role::Viewer, Focused),
             Self::AutomodMessageHold | Self::AutomodMessageUpdate => (Role::Moderator, Background),
             Self::ChannelShoutoutCreate
             | Self::ChannelShoutoutReceive
