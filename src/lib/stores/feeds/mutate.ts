@@ -101,21 +101,27 @@ export function setChannelPointsRedemption(
   );
 }
 
+/// False when the message is not in the feed.
 export function setSuspicious(
   broadcasterId: string,
   messageId: string,
   info: SuspiciousInfo,
-) {
-  if (!feeds[broadcasterId]) return;
+): boolean {
+  if (!feeds[broadcasterId]) return false;
+  let found = false;
   setFeeds(
     broadcasterId,
     produce((f) => {
       const item = f.messages.find(
         (m) => m.kind === "message" && m.message_id === messageId,
       );
-      if (item?.kind === "message") item.suspicious = info;
+      if (item?.kind === "message") {
+        item.suspicious = info;
+        found = true;
+      }
     }),
   );
+  return found;
 }
 
 export function addGiftRecipient(

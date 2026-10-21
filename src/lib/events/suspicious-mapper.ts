@@ -21,8 +21,7 @@ export function suspiciousInfo(
   };
 }
 
-/// Restricted chatters' messages reach mods only through this event, so it
-/// carries the whole message.
+/// The whole message, for when no chat copy of it arrives.
 export function suspiciousMessage(
   raw: RawSuspiciousUserMessage,
   info: SuspiciousInfo,
