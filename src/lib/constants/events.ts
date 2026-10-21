@@ -45,6 +45,7 @@ export const PREDICTION = "prediction";
 export const GOAL = "goal";
 export const AD_BREAK = "ad_break";
 export const BITS_USE = "bits_use";
+export const CHARITY_CAMPAIGN = "charity_campaign";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -105,7 +106,11 @@ export const EVENTS = [
     key: "charity_donation",
     label: "EVENT_TYPE_CHARITY_DONATION",
     description: "EVENT_TYPE_CHARITY_DONATION_DESCRIPTION",
-    types: ["charity_donation"],
+    types: [
+      "charity_donation",
+      "shared_chat_charity_donation",
+      CHARITY_CAMPAIGN,
+    ],
     modOnly: false,
   },
   {
