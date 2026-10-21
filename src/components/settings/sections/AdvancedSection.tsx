@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import { createSignal, Show } from "solid-js";
 import { relaunch } from "@tauri-apps/plugin-process";
 import PageBody from "../../ui/PageBody.tsx";
@@ -35,7 +36,7 @@ export default function AdvancedSection() {
       setAdvancedHardwareAcceleration(enabled);
       await relaunch();
     } catch (e) {
-      addToast("Restart failed", "error", errorMessage(e));
+      addToast(t("SETTINGS_ADVANCED_RESTART_FAILED"), "error", errorMessage(e));
     } finally {
       setRestarting(false);
       setRestartFor(null);
@@ -43,27 +44,30 @@ export default function AdvancedSection() {
   }
 
   return (
-    <PageBody title="Advanced" lede="Window behaviour and developer tools.">
+    <PageBody
+      title={t("SETTINGS_ADVANCED")}
+      lede={t("SETTINGS_ADVANCED_LEDE")}
+    >
       <Show when={restartFor() !== null}>
         <Dialog
-          title={`Turn ${restartFor() ? "on" : "off"} hardware acceleration?`}
-          description="Deatch will quit and relaunch to apply the change."
-          onClose={() =>
-            setRestartFor(null)}
+          title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
+            enabled: restartFor(),
+          })}
+          description={t("SETTINGS_ADVANCED_RESTART_DESCRIPTION")}
+          onClose={() => setRestartFor(null)}
           actions={
             <>
               <Button
                 variant="neutral"
                 onClick={() => setRestartFor(null)}
               >
-                Cancel
+                {t("COMMON_CANCEL")}
               </Button>
               <Button
-                onClick={() =>
-                  restart(restartFor()!)}
+                onClick={() => restart(restartFor()!)}
                 loading={restarting()}
               >
-                Restart
+                {t("SETTINGS_ADVANCED_RESTART")}
               </Button>
             </>
           }
@@ -71,41 +75,41 @@ export default function AdvancedSection() {
       </Show>
       <Card>
         <SettingsRow
-          label="Always on top"
-          description="Keep the window above other applications."
+          label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP")}
+          description={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_DESCRIPTION")}
         >
           <Toggle
-            label="Always on top"
+            label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP")}
             checked={advancedAlwaysOnTop()}
             onChange={setAdvancedAlwaysOnTop}
           />
         </SettingsRow>
         <SettingsRow
-          label="Launch at startup"
-          description="Open Deatch when you sign in to Windows."
+          label={t("SETTINGS_ADVANCED_AUTOSTART")}
+          description={t("SETTINGS_ADVANCED_AUTOSTART_DESCRIPTION")}
         >
           <Toggle
-            label="Launch at startup"
+            label={t("SETTINGS_ADVANCED_AUTOSTART")}
             checked={advancedAutostart()}
             onChange={setAdvancedAutostart}
           />
         </SettingsRow>
         <SettingsRow
-          label="Hardware acceleration"
-          description="Render with the GPU. Turn off if the window flickers or shows artifacts. Changing this restarts Deatch."
+          label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION")}
+          description={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_DESCRIPTION")}
         >
           <Toggle
-            label="Hardware acceleration"
+            label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION")}
             checked={restartFor() ?? advancedHardwareAcceleration()}
             onChange={setRestartFor}
           />
         </SettingsRow>
         <SettingsRow
-          label="Discord presence"
-          description="Show the channel you're watching on Discord. Needs Discord running."
+          label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE")}
+          description={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_DESCRIPTION")}
         >
           <Toggle
-            label="Discord presence"
+            label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE")}
             checked={advancedDiscordRichPresence()}
             onChange={setAdvancedDiscordRichPresence}
           />
@@ -113,21 +117,21 @@ export default function AdvancedSection() {
       </Card>
       <Card>
         <SettingsRow
-          label="Developer mode"
-          description="Extra technical details and copy options in menus."
+          label={t("SETTINGS_ADVANCED_DEVELOPER_MODE")}
+          description={t("SETTINGS_ADVANCED_DEVELOPER_MODE_DESCRIPTION")}
         >
           <Toggle
-            label="Developer mode"
+            label={t("SETTINGS_ADVANCED_DEVELOPER_MODE")}
             checked={advancedDeveloperMode()}
             onChange={setAdvancedDeveloperMode}
           />
         </SettingsRow>
         <SettingsRow
-          label="Show logs"
-          description="Show technical log messages as pop-ups."
+          label={t("SETTINGS_ADVANCED_SHOW_LOGS")}
+          description={t("SETTINGS_ADVANCED_SHOW_LOGS_DESCRIPTION")}
         >
           <Toggle
-            label="Show logs"
+            label={t("SETTINGS_ADVANCED_SHOW_LOGS")}
             checked={advancedShowLogs()}
             onChange={setAdvancedShowLogs}
           />

@@ -1,32 +1,32 @@
 export const BADGE_CATEGORIES = [
   {
     key: "authority",
-    label: "Authority",
-    description: "Broadcaster, moderator, and VIP badges.",
+    label: "BADGE_AUTHORITY",
+    description: "BADGE_AUTHORITY_DESCRIPTION",
     setIds: ["broadcaster", "moderator", "lead_moderator", "vip"],
   },
   {
     key: "predictions",
-    label: "Predictions",
-    description: "Channel prediction participation badges.",
+    label: "BADGE_PREDICTIONS",
+    description: "BADGE_PREDICTIONS_DESCRIPTION",
     setIds: ["predictions"],
   },
   {
     key: "channel",
-    label: "Channel",
-    description: "Hype train, Bits, and sub-gifter badges.",
+    label: "BADGE_CHANNEL",
+    description: "BADGE_CHANNEL_DESCRIPTION",
     setIds: ["hype-train", "bits", "bits-leader", "sub-gifter"],
   },
   {
     key: "subscriber",
-    label: "Subscriber",
-    description: "Subscriber tier and founder badges.",
+    label: "BADGE_SUBSCRIBER",
+    description: "BADGE_SUBSCRIBER_DESCRIPTION",
     setIds: ["subscriber", "founder"],
   },
   {
     key: "vanity",
-    label: "Vanity",
-    description: "Twitch global, partner, and other miscellaneous badges.",
+    label: "BADGE_VANITY",
+    description: "BADGE_VANITY_DESCRIPTION",
     setIds: [] as string[],
   },
 ] as const;

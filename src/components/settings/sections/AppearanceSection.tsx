@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
@@ -12,11 +13,11 @@ import BadgesCard from "../appearance/BadgesCard.tsx";
 export default function AppearanceSection() {
   return (
     <PageBody
-      title="Appearance"
-      lede="How Deatch looks. Changes show straight away."
+      title={t("SETTINGS_APPEARANCE")}
+      lede={t("SETTINGS_APPEARANCE_LEDE")}
     >
       <Card>
-        <CardLabel>Preview</CardLabel>
+        <CardLabel>{t("SETTINGS_APPEARANCE_PREVIEW")}</CardLabel>
         <AppearancePreview />
       </Card>
       <ThemeCard />

@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import { createMemo, createResource, For } from "solid-js";
 import type { FeedEntry, FeedMessage } from "../../../lib/types/index.ts";
 import * as badges from "../../../lib/services/badges.ts";
@@ -40,10 +41,15 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
     message("p2", "We start in five minutes", 11.5),
     message("p3", "Wrong tab, ignore that", 11, { deleted: true }),
     message("p4", "Thanks for hanging out today", 1),
-    feedEvent("sub", `${me.name} subscribed at Tier 1.`, at(0.5), {
-      id: "p5",
-      chatter_name: me.name,
-    }),
+    feedEvent(
+      "sub",
+      t("SETTINGS_APPEARANCE_PREVIEW_SUB", { name: me.name }),
+      at(0.5),
+      {
+        id: "p5",
+        chatter_name: me.name,
+      },
+    ),
   ];
 }
 
@@ -62,7 +68,7 @@ export default function AppearancePreview() {
     return {
       id: u?.id ?? "preview",
       login: u?.login ?? "you",
-      name: u?.displayName ?? "You",
+      name: u?.displayName ?? t("SETTINGS_APPEARANCE_PREVIEW_YOU"),
       color: color() ?? "",
     };
   };

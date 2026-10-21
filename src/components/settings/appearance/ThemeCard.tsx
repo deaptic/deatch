@@ -1,3 +1,4 @@
+import { t } from "../../../lib/i18n/index.ts";
 import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
@@ -12,29 +13,27 @@ import {
   setAppearanceTheme,
 } from "../../../lib/stores/preferences.ts";
 
-const THEME_OPTIONS: { value: Theme; label: string }[] = [
-  { value: "system", label: "System" },
-  { value: "dark", label: "Dark" },
-  { value: "light", label: "Light" },
-];
-
 export default function ThemeCard() {
   return (
     <Card>
-      <CardLabel>Theme</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_THEME")}</CardLabel>
       <SettingsRow
-        label="Theme"
-        description="Match Windows, or pick dark or light."
+        label={t("SETTINGS_APPEARANCE_THEME")}
+        description={t("SETTINGS_APPEARANCE_THEME_DESCRIPTION")}
       >
         <Segmented
           value={appearanceTheme()}
-          options={THEME_OPTIONS}
+          options={[
+            { value: "system", label: t("SETTINGS_APPEARANCE_THEME_SYSTEM") },
+            { value: "dark", label: t("SETTINGS_APPEARANCE_THEME_DARK") },
+            { value: "light", label: t("SETTINGS_APPEARANCE_THEME_LIGHT") },
+          ] satisfies { value: Theme; label: string }[]}
           onChange={setAppearanceTheme}
         />
       </SettingsRow>
       <SettingsRow
-        label="Accent"
-        description="The colour of selected things, buttons, and messages that mention you."
+        label={t("SETTINGS_APPEARANCE_ACCENT")}
+        description={t("SETTINGS_APPEARANCE_ACCENT_DESCRIPTION")}
       >
         <ColorPicker
           swatchColor="var(--color-accent)"

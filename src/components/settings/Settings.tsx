@@ -1,3 +1,4 @@
+import { type MessageKey, t } from "../../lib/i18n/index.ts";
 import {
   Ban,
   Eye,
@@ -35,39 +36,44 @@ type SectionKey =
 
 const SECTIONS: {
   key: SectionKey;
-  label: string;
+  label: MessageKey;
   Icon: (p: { class?: string }) => JSX.Element;
   Section: () => JSX.Element;
 }[] = [
   {
     key: "notifications",
-    label: "Notifications",
+    label: "SETTINGS_NOTIFICATIONS",
     Icon: Megaphone,
     Section: NotificationsSection,
   },
   {
     key: "appearance",
-    label: "Appearance",
+    label: "SETTINGS_APPEARANCE",
     Icon: Palette,
     Section: AppearanceSection,
   },
-  { key: "link", label: "Link", Icon: Eye, Section: LinkSection },
+  { key: "link", label: "SETTINGS_LINK", Icon: Eye, Section: LinkSection },
   {
     key: "moderation",
-    label: "Moderation",
+    label: "SETTINGS_MODERATION",
     Icon: Ban,
     Section: ModerationSection,
   },
-  { key: "triggers", label: "Triggers", Icon: Zap, Section: TriggersSection },
+  {
+    key: "triggers",
+    label: "SETTINGS_TRIGGERS",
+    Icon: Zap,
+    Section: TriggersSection,
+  },
   {
     key: "keyboard",
-    label: "Keyboard",
+    label: "SETTINGS_KEYBOARD",
     Icon: Keyboard,
     Section: KeyboardSection,
   },
   {
     key: "advanced",
-    label: "Advanced",
+    label: "SETTINGS_ADVANCED",
     Icon: SettingsIcon,
     Section: AdvancedSection,
   },
@@ -94,11 +100,11 @@ export default function Settings() {
   return (
     <div ref={root} class="flex-1 flex flex-col min-h-0 min-w-0">
       <header class="h-header shrink-0 flex items-center px-5 border-b border-line-soft">
-        <h1 class="text-title text-ink">Settings</h1>
+        <h1 class="text-title text-ink">{t("SETTINGS_TITLE")}</h1>
       </header>
       <div class="flex-1 flex min-h-0">
         <nav
-          aria-label="Settings sections"
+          aria-label={t("SETTINGS_NAV_LABEL")}
           class={`shrink-0 flex flex-col gap-0.5 px-3 pt-3 border-r border-line-soft overflow-hidden transition-all duration-settle ease-out ${
             collapsed() ? "w-16" : "w-55"
           }`}
@@ -106,7 +112,7 @@ export default function Settings() {
           <For each={SECTIONS}>
             {(s) => (
               <NavItem
-                label={s.label}
+                label={t(s.label)}
                 icon={<s.Icon />}
                 active={section() === s.key}
                 collapsed={collapsed()}
