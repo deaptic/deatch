@@ -3,7 +3,7 @@ import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
 import type {
   BadgeMap,
-  GiftRecipient,
+  Person,
   Redemption,
   SuspiciousInfo,
 } from "../../types/feed.ts";
@@ -132,7 +132,7 @@ export function setSuspicious(
 export function addGiftRecipient(
   broadcasterId: string,
   eventId: string,
-  recipient: GiftRecipient,
+  recipient: Person,
 ) {
   if (!feeds[broadcasterId]) return;
   setFeeds(

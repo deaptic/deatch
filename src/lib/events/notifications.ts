@@ -14,7 +14,7 @@ import type {
   RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
 import { addGiftRecipient, appendItem } from "../stores/feeds.ts";
-import { feedEvent, withDetail } from "../utils/feedEvent.ts";
+import { feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
@@ -47,21 +47,20 @@ function redemptionEvent(
 ): FeedEvent {
   return feedEvent(
     CHANNEL_POINTS_REDEMPTION,
-    withDetail(
-      t("EVENT_REDEMPTION", {
-        user: raw.user_name,
-        reward: raw.reward.title,
-        cost: raw.reward.cost,
-      }),
-      redemption.input,
-    ),
+    t("EVENT_REDEMPTION", {
+      user: raw.user_name,
+      reward: raw.reward.title,
+      cost: raw.reward.cost,
+    }),
     timestamp,
     {
       id: raw.id,
       chatter_user_id: raw.user_id,
       chatter_login: raw.user_login,
       chatter_name: raw.user_name,
-      redemption,
+      message: redemption.input
+        ? [{ type: "text", text: redemption.input }]
+        : undefined,
     },
   );
 }
