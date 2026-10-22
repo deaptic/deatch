@@ -94,7 +94,7 @@ export type RawNoticeDetails = {
     community_gift_id?: string | null;
   };
   community_sub_gift: {
-    id?: string;
+    id?: string | null;
     sub_tier: SubTier;
     total: number;
     cumulative_total: number | null;

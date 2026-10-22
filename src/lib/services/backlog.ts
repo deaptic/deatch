@@ -13,6 +13,7 @@ import {
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 import { mapNotice } from "../events/notice-mapper.ts";
+import { groupGifts } from "../events/gift-group.ts";
 import type { FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
@@ -31,7 +32,10 @@ const deepPages = new Map<
 function entriesOf(history: RecentHistory): FeedEntry[] {
   return [
     ...history.messages.map((m) => mapChatMessage(m, m.timestamp_ms)),
-    ...history.notices.flatMap((n) => mapNotice(n, n.timestamp_ms) ?? []),
+    ...groupGifts(history.notices.flatMap((raw) => {
+      const item = mapNotice(raw, raw.timestamp_ms);
+      return item ? [{ raw, item }] : [];
+    })),
   ].sort((a, b) => a.timestamp - b.timestamp);
 }
 

@@ -265,6 +265,8 @@ export type CheermoteTier = {
 };
 
 export type CommunitySubGiftNotice = {
+	/**  Shared with each of its subs' `community_gift_id`. */
+	id: string | null,
 	sub_tier: SubTier,
 	total: number,
 	cumulative_total: number | null,
@@ -654,6 +656,7 @@ export type SubGiftNotice = {
 	sub_tier: SubTier,
 	recipient_user_name: string,
 	cumulative_total: number | null,
+	community_gift_id: string | null,
 };
 
 export type SubNotice = {

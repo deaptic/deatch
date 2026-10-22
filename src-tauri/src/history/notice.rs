@@ -31,6 +31,12 @@ fn plan(tags: &Tags) -> Option<(SubTier, bool)> {
     }
 }
 
+/// Links a community gift to each of its subs. Not in Twitch's IRC docs, but
+/// sent on both, and equal to EventSub's `community_gift_id`.
+fn community_gift_id(tags: &Tags) -> Option<String> {
+    nonempty(tags, "msg-param-community-gift-id").map(Into::into)
+}
+
 fn tier(tags: &Tags) -> Option<SubTier> {
     plan(tags).map(|(tier, _)| tier)
 }
@@ -97,11 +103,13 @@ fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'
                 sub_tier,
                 recipient_user_name: tag(tags, "msg-param-recipient-display-name").into(),
                 cumulative_total: shown_count(tags, "msg-param-sender-count"),
+                community_gift_id: community_gift_id(tags),
             });
             "sub_gift"
         }
         "submysterygift" => {
             notice.community_sub_gift = tier(tags).map(|sub_tier| CommunitySubGiftNotice {
+                id: community_gift_id(tags),
                 sub_tier,
                 total: num(tags, "msg-param-mass-gift-count").unwrap_or(0),
                 cumulative_total: shown_count(tags, "msg-param-sender-count"),
@@ -219,8 +227,30 @@ mod tests {
         assert_eq!(n["chatter_is_anonymous"], true);
         assert_eq!(
             n["sub_gift"],
-            json!({ "sub_tier": "1000", "recipient_user_name": "Bar", "cumulative_total": null })
+            json!({
+                "sub_tier": "1000",
+                "recipient_user_name": "Bar",
+                "cumulative_total": null,
+                "community_gift_id": null,
+            })
         );
+    }
+
+    // Tags as robotty serves them for one sub of a community gift.
+    #[test]
+    fn links_a_community_gift_and_its_subs() {
+        let community = notice(
+            "@msg-id=submysterygift;msg-param-community-gift-id=917;msg-param-sub-plan=1000;\
+             msg-param-mass-gift-count=1;msg-param-sender-count=213;login=luka;id=n1 \
+             :tmi.twitch.tv USERNOTICE #chan",
+        );
+        let member = notice(
+            "@msg-id=subgift;msg-param-community-gift-id=917;msg-param-sub-plan=1000;\
+             msg-param-recipient-display-name=o7nate_;msg-param-sender-count=0;login=luka;id=n2 \
+             :tmi.twitch.tv USERNOTICE #chan",
+        );
+        assert_eq!(community["community_sub_gift"]["id"], "917");
+        assert_eq!(member["sub_gift"]["community_gift_id"], "917");
     }
 
     #[test]
