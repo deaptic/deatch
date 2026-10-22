@@ -1,7 +1,6 @@
 import { createSignal, For, Match, Switch } from "solid-js";
 import type { Person } from "../../../lib/types/index.ts";
 import { formatLocale, t } from "../../../lib/i18n/index.ts";
-import { knownChatterColor } from "../../../lib/stores/users.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 
@@ -43,9 +42,7 @@ export default function GiftRecipients(props: Props) {
                 <DisplayName
                   login={recipient().login}
                   displayName={recipient().name}
-                  color={recipient().id
-                    ? knownChatterColor(recipient().id!)
-                    : undefined}
+                  color={recipient().color}
                   userId={recipient().id}
                   onShowUserCard={props.onShowUserCard}
                   onUserContextMenu={props.onUserContextMenu}

@@ -2,7 +2,6 @@ import { For, type JSX, Show } from "solid-js";
 import type { Fragment, Person } from "../../../lib/types/index.ts";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
-import { knownChatterColor } from "../../../lib/stores/users.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 import MessageFragment from "../message/MessageFragment.tsx";
@@ -32,8 +31,7 @@ export default function Notice(props: Props) {
     <DisplayName
       login={person.login}
       displayName={shown}
-      color={person.color ||
-        (person.id ? knownChatterColor(person.id) : undefined)}
+      color={person.color}
       userId={person.id}
       onShowUserCard={props.onShowUserCard}
       onUserContextMenu={props.onUserContextMenu}
