@@ -8,7 +8,7 @@ import type {
   RawNotification,
 } from "../types/index.ts";
 import { feedEvent, person } from "../utils/feedEvent.ts";
-import { mapFragment } from "./chat-mapper.ts";
+import { wordsOf } from "./chat-mapper.ts";
 import { detail, noticeMessage } from "./notice-message.ts";
 
 const ANNOUNCEMENT_COLORS = new Set<string>(
@@ -67,9 +67,7 @@ export function mapNotice(
       : raw.chatter_user_login,
     chatter_name: raw.chatter_user_name ?? "anonymous",
     color: raw.color ?? "",
-    message: raw.message?.text.trim()
-      ? raw.message.fragments.map(mapFragment)
-      : undefined,
+    message: wordsOf(raw.message),
     announcement_color: announcementColor(raw),
     people: namedIn(raw),
   });

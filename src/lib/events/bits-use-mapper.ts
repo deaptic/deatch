@@ -6,7 +6,7 @@ import type { FeedEvent, Fragment } from "../types/feed.ts";
 import type { RawBitsUse } from "../types/twitch/eventsub.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { BITS_USE } from "../constants/events.ts";
-import { mapFragment } from "./chat-mapper.ts";
+import { wordsOf } from "./chat-mapper.ts";
 
 // These arrive as a chat message of their own, which already shows them.
 const MESSAGE_POWER_UPS = new Set(["message_effect", "gigantify_an_emote"]);
@@ -20,9 +20,7 @@ function shownElsewhere(raw: RawBitsUse): boolean {
 function fragments(raw: RawBitsUse): Fragment[] | undefined {
   const emote = raw.power_up?.emote;
   if (emote) return [{ type: "emote", text: emote.name, id: emote.id }];
-  return raw.message?.text.trim()
-    ? raw.message.fragments.map(mapFragment)
-    : undefined;
+  return wordsOf(raw.message);
 }
 
 /// Null for bits a chat message already shows.
