@@ -95,8 +95,9 @@ export type Person = {
   color?: string;
 };
 
-/// A notice's words: the headline, and anything else for the quieter line.
-export type NoticeText = { text: string; detail?: string };
+/// A notice's words: the headline, anything else for the quieter line, and
+/// the people the headline names.
+export type NoticeText = { text: string; detail?: string; people?: Person[] };
 
 export type FeedEvent = {
   kind: "event";

@@ -37,8 +37,16 @@ Deno.test("describes a mod changing a chatter's status", () => {
   const raw: RawSuspiciousUserUpdate = {
     ...user,
     broadcaster_user_id: "1",
+    moderator_user_id: "9",
+    moderator_user_login: "mod",
     moderator_user_name: "Mod",
     low_trust_status: "active_monitoring",
   };
-  assertEquals(suspiciousUpdate(raw), "Mod started monitoring Foo");
+  assertEquals(suspiciousUpdate(raw), {
+    text: "Mod started monitoring Foo",
+    people: [
+      { id: "9", login: "mod", name: "Mod" },
+      { id: "2", login: "foo", name: "Foo" },
+    ],
+  });
 });

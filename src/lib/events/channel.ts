@@ -2,7 +2,7 @@ import { t } from "../i18n/index.ts";
 import { formatList } from "../format/list.ts";
 import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import { formatApproxDuration } from "../format/duration.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { feedEvent, person } from "../utils/feedEvent.ts";
 import { formatAmount } from "../format/currency.ts";
 import {
   AD_BREAK,
@@ -36,10 +36,19 @@ function appendSharedChat(
 ) {
   const partners = raw.participants
     .filter((p) => p.broadcaster_user_id !== raw.broadcaster_user_id)
-    .map((p) => p.broadcaster_user_name);
+    .flatMap((p) =>
+      person(
+        p.broadcaster_user_id,
+        p.broadcaster_user_login,
+        p.broadcaster_user_name,
+      )
+    );
   appendLocalNotice(
     raw.broadcaster_user_id,
-    t(key, { channels: formatList(partners) }),
+    {
+      text: t(key, { channels: formatList(partners.map((p) => p.name)) }),
+      people: partners,
+    },
     SHARED_CHAT_SESSION,
   );
 }
@@ -122,11 +131,18 @@ export function start(): () => void {
         raw.broadcaster_user_id,
         feedEvent(
           AD_BREAK,
-          t("AD_BREAK_BEGIN", {
-            duration: formatApproxDuration(raw.duration_seconds),
-            automatic: String(raw.is_automatic),
-            requester: raw.requester_user_name,
-          }),
+          {
+            text: t("AD_BREAK_BEGIN", {
+              duration: formatApproxDuration(raw.duration_seconds),
+              automatic: String(raw.is_automatic),
+              requester: raw.requester_user_name,
+            }),
+            people: raw.is_automatic ? [] : person(
+              raw.requester_user_id,
+              raw.requester_user_login,
+              raw.requester_user_name,
+            ),
+          },
           serverTime(e.payload),
         ),
       );

@@ -4,9 +4,10 @@
 import type {
   AnnouncementColor,
   FeedEvent,
+  Person,
   RawNotification,
 } from "../types/index.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { feedEvent, person } from "../utils/feedEvent.ts";
 import { mapFragment } from "./chat-mapper.ts";
 import { detail, noticeMessage } from "./notice-message.ts";
 
@@ -29,6 +30,27 @@ function announcementColor(
     : undefined;
 }
 
+/// The people a notice names besides its chatter.
+function namedIn(raw: RawNotification): Person[] {
+  const gift = detail(raw, "sub_gift");
+  if (gift) {
+    return person(
+      gift.recipient_user_id,
+      gift.recipient_user_login,
+      gift.recipient_user_name,
+    );
+  }
+  const gifter = detail(raw, "pay_it_forward") ??
+    detail(raw, "gift_paid_upgrade");
+  return gifter && !gifter.gifter_is_anonymous
+    ? person(
+      gifter.gifter_user_id,
+      gifter.gifter_user_login,
+      gifter.gifter_user_name,
+    )
+    : [];
+}
+
 /// Null when the notice has no text to show.
 export function mapNotice(
   raw: RawNotification,
@@ -49,5 +71,6 @@ export function mapNotice(
       ? raw.message.fragments.map(mapFragment)
       : undefined,
     announcement_color: announcementColor(raw),
+    people: namedIn(raw),
   });
 }

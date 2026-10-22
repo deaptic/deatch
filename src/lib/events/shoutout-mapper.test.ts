@@ -8,6 +8,8 @@ const shoutout: RawShoutout = {
   to_broadcaster_user_id: "9",
   to_broadcaster_user_login: "mira",
   to_broadcaster_user_name: "Mira",
+  moderator_user_id: "2",
+  moderator_user_login: "mod",
   moderator_user_name: "Mod",
   viewer_count: 120,
   started_at: "2026-10-01T00:00:00Z",
@@ -24,4 +26,5 @@ Deno.test("names who shouted out whom, the reach and the cooldowns", () => {
   assertEquals(item.detail, "Next shoutout in 2m, Mira again in 1h");
   assertEquals(item.chatter_user_id, "9");
   assertEquals(item.chatter_login, "mira");
+  assertEquals(item.people, [{ id: "2", login: "mod", name: "Mod" }]);
 });

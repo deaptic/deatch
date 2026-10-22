@@ -1,12 +1,12 @@
 // Pure text for channel.moderate notices, kept apart from the listener so it
 // can be tested without Tauri.
 
-import type { RawModerate } from "../types/index.ts";
+import type { RawModerate, RawModUser } from "../types/index.ts";
 import { formatApproxDuration } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
-import { noticeText } from "../utils/feedEvent.ts";
-import type { NoticeText } from "../types/feed.ts";
+import { noticeText, person } from "../utils/feedEvent.ts";
+import type { NoticeText, Person } from "../types/feed.ts";
 
 /// A shared chat action reads like the same action taken here.
 function asLocal(p: RawModerate): RawModerate {
@@ -26,19 +26,36 @@ function asLocal(p: RawModerate): RawModerate {
   }
 }
 
+/// Twitch puts the user an action is on in a field named after the action.
+function actedOn(p: RawModerate): Person[] {
+  const target = (p as unknown as Record<string, Partial<RawModUser>>)[
+    p.action
+  ];
+  return person(target?.user_id, target?.user_login, target?.user_name);
+}
+
 export function moderateMessage(
   p: RawModerate,
   serverNowMs: number,
 ): NoticeText | null {
   const local = localMessage(asLocal(p), serverNowMs);
+  if (!local) return null;
   const notice = typeof local === "string" ? noticeText(local) : local;
   const channel = p.source_broadcaster_user_name;
-  return notice && channel && p.action.startsWith("shared_chat_")
-    ? {
-      ...notice,
-      text: t("MODERATION_SHARED", { channel, text: notice.text }),
-    }
-    : notice;
+  return {
+    ...notice,
+    text: channel && p.action.startsWith("shared_chat_")
+      ? t("MODERATION_SHARED", { channel, text: notice.text })
+      : notice.text,
+    people: [
+      ...person(
+        p.moderator_user_id,
+        p.moderator_user_login,
+        p.moderator_user_name,
+      ),
+      ...actedOn(p),
+    ],
+  };
 }
 
 function localMessage(

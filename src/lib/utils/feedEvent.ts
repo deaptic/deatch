@@ -1,8 +1,17 @@
-import type { FeedEvent, NoticeText } from "../types/feed.ts";
+import type { FeedEvent, NoticeText, Person } from "../types/feed.ts";
 
 /// A headline, with the detail line only when there is something to say.
 export function noticeText(text: string, detail?: string | null): NoticeText {
   return detail ? { text, detail } : { text };
+}
+
+/// Someone a notice names, or nobody when Twitch didn't say who.
+export function person(
+  id: string | null | undefined,
+  login: string | null | undefined,
+  name: string | null | undefined,
+): Person[] {
+  return login && name ? [{ id: id ?? undefined, login, name }] : [];
 }
 
 type Extras = Partial<
@@ -15,8 +24,8 @@ export function feedEvent(
   timestamp: number,
   extras: Extras = {},
 ): FeedEvent {
-  const { text, detail } = typeof notice === "string"
-    ? { text: notice, detail: undefined }
+  const { text, detail, people } = typeof notice === "string"
+    ? { text: notice }
     : notice;
   return {
     kind: "event",
@@ -26,6 +35,7 @@ export function feedEvent(
     notice_type,
     system_message: text,
     detail,
+    people,
     timestamp,
     ...extras,
   };

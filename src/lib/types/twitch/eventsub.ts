@@ -75,6 +75,8 @@ type SubTier = "1000" | "2000" | "3000";
 
 type Gifter = {
   gifter_is_anonymous: boolean;
+  gifter_user_id?: string | null;
+  gifter_user_login?: string | null;
   gifter_user_name: string | null;
 };
 
@@ -149,6 +151,8 @@ export type RawShoutout = {
   to_broadcaster_user_id: string;
   to_broadcaster_user_login: string;
   to_broadcaster_user_name: string;
+  moderator_user_id: string;
+  moderator_user_login: string;
   moderator_user_name: string;
   viewer_count: number;
   started_at: string;
@@ -252,7 +256,11 @@ type RawModerateBase = {
   source_broadcaster_user_name?: string | null;
 };
 
-type RawModUser = { user_id: string; user_login: string; user_name: string };
+export type RawModUser = {
+  user_id: string;
+  user_login: string;
+  user_name: string;
+};
 type RawBan = RawModUser & { reason: string | null };
 type RawTimeout = RawModUser & { reason: string | null; expires_at: string };
 type RawDelete = RawModUser & { message_id: string; message_body: string };
@@ -343,6 +351,8 @@ export type RawSuspiciousUserMessage = RawModUser & {
 
 export type RawSuspiciousUserUpdate = RawModUser & {
   broadcaster_user_id: string;
+  moderator_user_id: string;
+  moderator_user_login: string;
   moderator_user_name: string;
   low_trust_status: LowTrustStatus;
 };
@@ -396,6 +406,7 @@ export type RawSharedChatEnd = { broadcaster_user_id: string };
 export type RawSharedChatSession = RawSharedChatEnd & {
   participants: {
     broadcaster_user_id: string;
+    broadcaster_user_login: string;
     broadcaster_user_name: string;
   }[];
 };
@@ -467,6 +478,8 @@ export type RawAdBreak = {
   broadcaster_user_id: string;
   duration_seconds: number;
   is_automatic: boolean;
+  requester_user_id: string;
+  requester_user_login: string;
   requester_user_name: string;
 };
 
