@@ -92,10 +92,13 @@ pub struct SubGiftNotice {
     pub sub_tier: SubTier,
     pub recipient_user_name: String,
     pub cumulative_total: Option<u32>,
+    pub community_gift_id: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Serialize, specta::Type)]
 pub struct CommunitySubGiftNotice {
+    /// Shared with each of its subs' `community_gift_id`.
+    pub id: Option<String>,
     pub sub_tier: SubTier,
     pub total: u32,
     pub cumulative_total: Option<u32>,
