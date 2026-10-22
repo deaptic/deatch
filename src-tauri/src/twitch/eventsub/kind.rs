@@ -1,241 +1,96 @@
 use std::collections::BTreeMap;
 
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    serde::Serialize,
-    serde::Deserialize,
-    specta::Type,
-)]
-pub enum EventKind {
-    #[serde(rename = "channel.chat.message")]
-    ChannelChatMessage,
-    #[serde(rename = "channel.chat.notification")]
-    ChannelChatNotification,
-    #[serde(rename = "channel.chat.message_delete")]
-    ChannelChatMessageDelete,
-    #[serde(rename = "channel.chat.clear")]
-    ChannelChatClear,
-    #[serde(rename = "channel.chat.clear_user_messages")]
-    ChannelChatClearUserMessages,
-    #[serde(rename = "channel.chat_settings.update")]
-    ChannelChatSettingsUpdate,
-    #[serde(rename = "channel.shared_chat.begin")]
-    ChannelSharedChatBegin,
-    #[serde(rename = "channel.shared_chat.update")]
-    ChannelSharedChatUpdate,
-    #[serde(rename = "channel.shared_chat.end")]
-    ChannelSharedChatEnd,
-    #[serde(rename = "channel.shoutout.create")]
-    ChannelShoutoutCreate,
-    #[serde(rename = "channel.shoutout.receive")]
-    ChannelShoutoutReceive,
-    #[serde(rename = "channel.follow")]
-    ChannelFollow,
-    #[serde(rename = "channel.moderate")]
-    ChannelModerate,
-    #[serde(rename = "channel.unban_request.create")]
-    ChannelUnbanRequestCreate,
-    #[serde(rename = "channel.unban_request.resolve")]
-    ChannelUnbanRequestResolve,
-    #[serde(rename = "channel.warning.acknowledge")]
-    ChannelWarningAcknowledge,
-    #[serde(rename = "channel.suspicious_user.message")]
-    ChannelSuspiciousUserMessage,
-    #[serde(rename = "channel.suspicious_user.update")]
-    ChannelSuspiciousUserUpdate,
-    #[serde(rename = "automod.message.hold")]
-    AutomodMessageHold,
-    #[serde(rename = "automod.message.update")]
-    AutomodMessageUpdate,
-    #[serde(rename = "channel.channel_points_custom_reward_redemption.add")]
-    ChannelPointsCustomRewardRedemptionAdd,
-    #[serde(rename = "channel.channel_points_automatic_reward_redemption.add")]
-    ChannelPointsAutomaticRewardRedemptionAdd,
-    #[serde(rename = "channel.update")]
-    ChannelUpdate,
-    #[serde(rename = "channel.hype_train.begin")]
-    ChannelHypeTrainBegin,
-    #[serde(rename = "channel.hype_train.progress")]
-    ChannelHypeTrainProgress,
-    #[serde(rename = "channel.hype_train.end")]
-    ChannelHypeTrainEnd,
-    #[serde(rename = "channel.poll.begin")]
-    ChannelPollBegin,
-    #[serde(rename = "channel.poll.end")]
-    ChannelPollEnd,
-    #[serde(rename = "channel.prediction.begin")]
-    ChannelPredictionBegin,
-    #[serde(rename = "channel.prediction.lock")]
-    ChannelPredictionLock,
-    #[serde(rename = "channel.prediction.end")]
-    ChannelPredictionEnd,
-    #[serde(rename = "channel.goal.begin")]
-    ChannelGoalBegin,
-    #[serde(rename = "channel.goal.end")]
-    ChannelGoalEnd,
-    #[serde(rename = "channel.ad_break.begin")]
-    ChannelAdBreakBegin,
-    #[serde(rename = "channel.bits.use")]
-    ChannelBitsUse,
-    #[serde(rename = "channel.charity_campaign.start")]
-    ChannelCharityCampaignStart,
-    #[serde(rename = "channel.charity_campaign.stop")]
-    ChannelCharityCampaignStop,
-    #[serde(rename = "stream.online")]
-    StreamOnline,
-    #[serde(rename = "stream.offline")]
-    StreamOffline,
+/// Every EventSub kind, once: its Twitch type, the Tauri event the backend
+/// emits it as, and the least role and focus a channel needs for it. Rows are
+/// in subscription priority: chat kinds first, so every channel's chat comes
+/// up before anything else on (re)connect.
+macro_rules! kinds {
+    ($($kind:ident = $twitch:literal, $event:literal => ($role:ident, $focus:ident),)*) => {
+        #[derive(
+            Debug,
+            Clone,
+            Copy,
+            PartialEq,
+            Eq,
+            PartialOrd,
+            Ord,
+            Hash,
+            serde::Serialize,
+            serde::Deserialize,
+            specta::Type,
+        )]
+        pub enum EventKind {
+            $(#[serde(rename = $twitch)] $kind,)*
+        }
+
+        impl EventKind {
+            pub const ALL: [Self; [$(stringify!($kind)),*].len()] = [$(Self::$kind),*];
+
+            pub fn event_name(self) -> &'static str {
+                match self {
+                    $(Self::$kind => $event,)*
+                }
+            }
+
+            /// The least role that may subscribe, and the least focus a channel
+            /// needs before it's worth the subscription.
+            pub(super) fn requires(self) -> (Role, Focus) {
+                match self {
+                    $(Self::$kind => (Role::$role, Focus::$focus),)*
+                }
+            }
+        }
+    };
+}
+
+kinds! {
+    ChannelChatMessage = "channel.chat.message", "channel-chat-message" => (Viewer, Background),
+    ChannelChatNotification = "channel.chat.notification", "channel-chat-notification" => (Viewer, Background),
+    ChannelChatMessageDelete = "channel.chat.message_delete", "channel-chat-message-delete" => (Viewer, Background),
+    ChannelChatClear = "channel.chat.clear", "channel-chat-clear" => (Viewer, Background),
+    ChannelChatClearUserMessages = "channel.chat.clear_user_messages", "channel-chat-clear-user-messages" => (Viewer, Background),
+    ChannelChatSettingsUpdate = "channel.chat_settings.update", "channel-chat-settings-update" => (Viewer, Focused),
+    // The broadcaster-only kinds marked "no auth" need no authorization, so on
+    // a channel you don't own each costs 1 of the 10 Twitch allows a token's
+    // WebSockets; on your own channel they are free.
+    ChannelSharedChatBegin = "channel.shared_chat.begin", "channel-shared-chat-begin" => (Broadcaster, Focused), // no auth
+    ChannelSharedChatUpdate = "channel.shared_chat.update", "channel-shared-chat-update" => (Broadcaster, Focused), // no auth
+    ChannelSharedChatEnd = "channel.shared_chat.end", "channel-shared-chat-end" => (Broadcaster, Focused), // no auth
+    ChannelShoutoutCreate = "channel.shoutout.create", "channel-shoutout-create" => (Moderator, Focused),
+    ChannelShoutoutReceive = "channel.shoutout.receive", "channel-shoutout-receive" => (Moderator, Focused),
+    ChannelFollow = "channel.follow", "channel-follow" => (Moderator, Focused),
+    ChannelModerate = "channel.moderate", "channel-moderate" => (Moderator, Focused),
+    ChannelUnbanRequestCreate = "channel.unban_request.create", "channel-unban-request-create" => (Moderator, Focused),
+    ChannelUnbanRequestResolve = "channel.unban_request.resolve", "channel-unban-request-resolve" => (Moderator, Focused),
+    ChannelWarningAcknowledge = "channel.warning.acknowledge", "channel-warning-acknowledge" => (Moderator, Focused),
+    ChannelSuspiciousUserMessage = "channel.suspicious_user.message", "channel-suspicious-user-message" => (Moderator, Focused),
+    ChannelSuspiciousUserUpdate = "channel.suspicious_user.update", "channel-suspicious-user-update" => (Moderator, Focused),
+    AutomodMessageHold = "automod.message.hold", "automod-message-hold" => (Moderator, Background),
+    AutomodMessageUpdate = "automod.message.update", "automod-message-update" => (Moderator, Background),
+    ChannelPointsCustomRewardRedemptionAdd = "channel.channel_points_custom_reward_redemption.add", "channel-points-redemption-add" => (Broadcaster, Focused),
+    ChannelPointsAutomaticRewardRedemptionAdd = "channel.channel_points_automatic_reward_redemption.add", "channel-points-automatic-redemption-add" => (Broadcaster, Focused),
+    ChannelUpdate = "channel.update", "channel-update" => (Broadcaster, Focused), // no auth
+    ChannelHypeTrainBegin = "channel.hype_train.begin", "channel-hype-train-begin" => (Broadcaster, Focused),
+    ChannelHypeTrainProgress = "channel.hype_train.progress", "channel-hype-train-progress" => (Broadcaster, Focused),
+    ChannelHypeTrainEnd = "channel.hype_train.end", "channel-hype-train-end" => (Broadcaster, Focused),
+    ChannelPollBegin = "channel.poll.begin", "channel-poll-begin" => (Broadcaster, Focused),
+    ChannelPollEnd = "channel.poll.end", "channel-poll-end" => (Broadcaster, Focused),
+    ChannelPredictionBegin = "channel.prediction.begin", "channel-prediction-begin" => (Broadcaster, Focused),
+    ChannelPredictionLock = "channel.prediction.lock", "channel-prediction-lock" => (Broadcaster, Focused),
+    ChannelPredictionEnd = "channel.prediction.end", "channel-prediction-end" => (Broadcaster, Focused),
+    ChannelGoalBegin = "channel.goal.begin", "channel-goal-begin" => (Broadcaster, Focused),
+    ChannelGoalEnd = "channel.goal.end", "channel-goal-end" => (Broadcaster, Focused),
+    ChannelAdBreakBegin = "channel.ad_break.begin", "channel-ad-break-begin" => (Broadcaster, Focused),
+    ChannelBitsUse = "channel.bits.use", "channel-bits-use" => (Broadcaster, Focused),
+    ChannelCharityCampaignStart = "channel.charity_campaign.start", "channel-charity-campaign-start" => (Broadcaster, Focused),
+    ChannelCharityCampaignStop = "channel.charity_campaign.stop", "channel-charity-campaign-stop" => (Broadcaster, Focused),
+    StreamOnline = "stream.online", "stream-online" => (Broadcaster, Focused), // no auth
+    StreamOffline = "stream.offline", "stream-offline" => (Broadcaster, Focused), // no auth
 }
 
 impl EventKind {
-    /// Ordered by subscription priority: chat kinds first so every channel's
-    /// chat comes up before anything else on (re)connect.
-    pub const ALL: [Self; 39] = [
-        Self::ChannelChatMessage,
-        Self::ChannelChatNotification,
-        Self::ChannelChatMessageDelete,
-        Self::ChannelChatClear,
-        Self::ChannelChatClearUserMessages,
-        Self::ChannelChatSettingsUpdate,
-        Self::ChannelSharedChatBegin,
-        Self::ChannelSharedChatUpdate,
-        Self::ChannelSharedChatEnd,
-        Self::ChannelShoutoutCreate,
-        Self::ChannelShoutoutReceive,
-        Self::ChannelFollow,
-        Self::ChannelModerate,
-        Self::ChannelUnbanRequestCreate,
-        Self::ChannelUnbanRequestResolve,
-        Self::ChannelWarningAcknowledge,
-        Self::ChannelSuspiciousUserMessage,
-        Self::ChannelSuspiciousUserUpdate,
-        Self::AutomodMessageHold,
-        Self::AutomodMessageUpdate,
-        Self::ChannelPointsCustomRewardRedemptionAdd,
-        Self::ChannelPointsAutomaticRewardRedemptionAdd,
-        Self::ChannelUpdate,
-        Self::ChannelHypeTrainBegin,
-        Self::ChannelHypeTrainProgress,
-        Self::ChannelHypeTrainEnd,
-        Self::ChannelPollBegin,
-        Self::ChannelPollEnd,
-        Self::ChannelPredictionBegin,
-        Self::ChannelPredictionLock,
-        Self::ChannelPredictionEnd,
-        Self::ChannelGoalBegin,
-        Self::ChannelGoalEnd,
-        Self::ChannelAdBreakBegin,
-        Self::ChannelBitsUse,
-        Self::ChannelCharityCampaignStart,
-        Self::ChannelCharityCampaignStop,
-        Self::StreamOnline,
-        Self::StreamOffline,
-    ];
-
-    pub fn event_name(self) -> &'static str {
-        match self {
-            Self::ChannelChatMessage => "channel-chat-message",
-            Self::ChannelChatNotification => "channel-chat-notification",
-            Self::ChannelChatMessageDelete => "channel-chat-message-delete",
-            Self::ChannelChatClear => "channel-chat-clear",
-            Self::ChannelChatClearUserMessages => "channel-chat-clear-user-messages",
-            Self::ChannelChatSettingsUpdate => "channel-chat-settings-update",
-            Self::ChannelSharedChatBegin => "channel-shared-chat-begin",
-            Self::ChannelSharedChatUpdate => "channel-shared-chat-update",
-            Self::ChannelSharedChatEnd => "channel-shared-chat-end",
-            Self::ChannelShoutoutCreate => "channel-shoutout-create",
-            Self::ChannelShoutoutReceive => "channel-shoutout-receive",
-            Self::ChannelFollow => "channel-follow",
-            Self::ChannelModerate => "channel-moderate",
-            Self::ChannelUnbanRequestCreate => "channel-unban-request-create",
-            Self::ChannelUnbanRequestResolve => "channel-unban-request-resolve",
-            Self::ChannelWarningAcknowledge => "channel-warning-acknowledge",
-            Self::ChannelSuspiciousUserMessage => "channel-suspicious-user-message",
-            Self::ChannelSuspiciousUserUpdate => "channel-suspicious-user-update",
-            Self::AutomodMessageHold => "automod-message-hold",
-            Self::AutomodMessageUpdate => "automod-message-update",
-            Self::ChannelPointsCustomRewardRedemptionAdd => "channel-points-redemption-add",
-            Self::ChannelPointsAutomaticRewardRedemptionAdd => {
-                "channel-points-automatic-redemption-add"
-            }
-            Self::ChannelUpdate => "channel-update",
-            Self::ChannelHypeTrainBegin => "channel-hype-train-begin",
-            Self::ChannelHypeTrainProgress => "channel-hype-train-progress",
-            Self::ChannelHypeTrainEnd => "channel-hype-train-end",
-            Self::ChannelPollBegin => "channel-poll-begin",
-            Self::ChannelPollEnd => "channel-poll-end",
-            Self::ChannelPredictionBegin => "channel-prediction-begin",
-            Self::ChannelPredictionLock => "channel-prediction-lock",
-            Self::ChannelPredictionEnd => "channel-prediction-end",
-            Self::ChannelGoalBegin => "channel-goal-begin",
-            Self::ChannelGoalEnd => "channel-goal-end",
-            Self::ChannelAdBreakBegin => "channel-ad-break-begin",
-            Self::ChannelBitsUse => "channel-bits-use",
-            Self::ChannelCharityCampaignStart => "channel-charity-campaign-start",
-            Self::ChannelCharityCampaignStop => "channel-charity-campaign-stop",
-            Self::StreamOnline => "stream-online",
-            Self::StreamOffline => "stream-offline",
-        }
-    }
-
     pub fn event_names() -> BTreeMap<Self, &'static str> {
         Self::ALL.iter().map(|&k| (k, k.event_name())).collect()
-    }
-
-    /// The least role that may subscribe, and the least focus a channel
-    /// needs before it's worth the subscription.
-    pub(super) fn requires(self) -> (Role, Focus) {
-        use Focus::{Background, Focused};
-        match self {
-            Self::ChannelChatMessage
-            | Self::ChannelChatNotification
-            | Self::ChannelChatMessageDelete
-            | Self::ChannelChatClear
-            | Self::ChannelChatClearUserMessages => (Role::Viewer, Background),
-            Self::ChannelChatSettingsUpdate => (Role::Viewer, Focused),
-            // These need no authorization, so on a channel you don't own each
-            // costs 1 of the 10 Twitch allows a token's WebSockets; on your
-            // own channel they are free.
-            Self::ChannelUpdate
-            | Self::ChannelSharedChatBegin
-            | Self::ChannelSharedChatUpdate
-            | Self::ChannelSharedChatEnd
-            | Self::StreamOnline
-            | Self::StreamOffline => (Role::Broadcaster, Focused),
-            Self::AutomodMessageHold | Self::AutomodMessageUpdate => (Role::Moderator, Background),
-            Self::ChannelShoutoutCreate
-            | Self::ChannelShoutoutReceive
-            | Self::ChannelFollow
-            | Self::ChannelModerate
-            | Self::ChannelUnbanRequestCreate
-            | Self::ChannelUnbanRequestResolve
-            | Self::ChannelWarningAcknowledge
-            | Self::ChannelSuspiciousUserMessage
-            | Self::ChannelSuspiciousUserUpdate => (Role::Moderator, Focused),
-            Self::ChannelPointsCustomRewardRedemptionAdd
-            | Self::ChannelPointsAutomaticRewardRedemptionAdd
-            | Self::ChannelHypeTrainBegin
-            | Self::ChannelHypeTrainProgress
-            | Self::ChannelHypeTrainEnd
-            | Self::ChannelPollBegin
-            | Self::ChannelPollEnd
-            | Self::ChannelPredictionBegin
-            | Self::ChannelPredictionLock
-            | Self::ChannelPredictionEnd
-            | Self::ChannelGoalBegin
-            | Self::ChannelGoalEnd
-            | Self::ChannelAdBreakBegin
-            | Self::ChannelBitsUse
-            | Self::ChannelCharityCampaignStart
-            | Self::ChannelCharityCampaignStop => (Role::Broadcaster, Focused),
-        }
     }
 }
 
@@ -265,15 +120,14 @@ mod tests {
     }
 
     #[test]
-    fn all_is_in_declaration_order() {
-        assert!(EventKind::ALL.is_sorted());
-    }
-
-    #[test]
-    fn all_lists_every_kind_once() {
-        let kinds: HashSet<_> = EventKind::ALL.iter().collect();
-        assert_eq!(kinds.len(), EventKind::ALL.len());
-        assert_eq!(EventKind::event_names().len(), EventKind::ALL.len());
+    fn event_names_follow_tauri_rules() {
+        for kind in EventKind::ALL {
+            let name = kind.event_name();
+            assert!(
+                name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-'),
+                "{name}"
+            );
+        }
     }
 
     #[test]
