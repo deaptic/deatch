@@ -8,7 +8,7 @@ import type {
   RawShoutout,
   RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
-import { feedEvent, noticeText } from "../utils/feedEvent.ts";
+import { feedEvent, noticeText, person } from "../utils/feedEvent.ts";
 
 const SHOUTOUT = "shoutout";
 
@@ -32,6 +32,11 @@ export function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
       chatter_user_id: raw.to_broadcaster_user_id,
       chatter_login: raw.to_broadcaster_user_login,
       chatter_name: raw.to_broadcaster_user_name,
+      people: person(
+        raw.moderator_user_id,
+        raw.moderator_user_login,
+        raw.moderator_user_name,
+      ),
     },
   );
 }

@@ -2,7 +2,8 @@
 // can be tested without Tauri.
 
 import { t } from "../i18n/index.ts";
-import type { FeedMessage, SuspiciousInfo } from "../types/feed.ts";
+import type { FeedMessage, NoticeText, SuspiciousInfo } from "../types/feed.ts";
+import { person } from "../utils/feedEvent.ts";
 import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
@@ -41,10 +42,20 @@ export function suspiciousMessage(
   };
 }
 
-export function suspiciousUpdate(raw: RawSuspiciousUserUpdate): string {
-  return t("MODERATION_SUSPICIOUS_UPDATE", {
-    mod: raw.moderator_user_name,
-    user: raw.user_name,
-    status: raw.low_trust_status,
-  });
+export function suspiciousUpdate(raw: RawSuspiciousUserUpdate): NoticeText {
+  return {
+    text: t("MODERATION_SUSPICIOUS_UPDATE", {
+      mod: raw.moderator_user_name,
+      user: raw.user_name,
+      status: raw.low_trust_status,
+    }),
+    people: [
+      ...person(
+        raw.moderator_user_id,
+        raw.moderator_user_login,
+        raw.moderator_user_name,
+      ),
+      ...person(raw.user_id, raw.user_login, raw.user_name),
+    ],
+  };
 }
