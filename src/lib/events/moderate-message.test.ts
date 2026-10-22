@@ -87,6 +87,10 @@ Deno.test("describes a resolved unban request with its note", () => {
     text: "Mod denied Foo's unban request",
     detail: "no",
   });
+  assertEquals(moderateMessage(p, 0)?.people, [
+    { id: "2", login: "mod", name: "Mod" },
+    { id: "3", login: "foo", name: "Foo" },
+  ]);
 });
 
 Deno.test("names the partner channel for a shared chat action", () => {
