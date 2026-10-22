@@ -28,7 +28,7 @@ import {
   setAutomodHoldStatus,
   setSuspicious,
 } from "../stores/feeds.ts";
-import { feedEvent, noticeText } from "../utils/feedEvent.ts";
+import { chatterFields, feedEvent, noticeText } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
 import { mapFragment } from "./chat-mapper.ts";
@@ -134,9 +134,7 @@ export function start(): () => void {
           timestamp,
           {
             id: `unban-request-${raw.id}`,
-            chatter_user_id: raw.user_id,
-            chatter_login: raw.user_login,
-            chatter_name: raw.user_name,
+            ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
           },
         ),
     ),
@@ -150,9 +148,7 @@ export function start(): () => void {
             t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
             timestamp,
             {
-              chatter_user_id: raw.user_id,
-              chatter_login: raw.user_login,
-              chatter_name: raw.user_name,
+              ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
             },
           )
           : null,
@@ -165,9 +161,7 @@ export function start(): () => void {
           t("EVENT_WARNING_ACKNOWLEDGED", { user: raw.user_name }),
           timestamp,
           {
-            chatter_user_id: raw.user_id,
-            chatter_login: raw.user_login,
-            chatter_name: raw.user_name,
+            ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
           },
         ),
     ),
@@ -198,9 +192,7 @@ export function start(): () => void {
       (p, timestamp): FeedMessage => ({
         kind: "message",
         message_id: p.message_id,
-        chatter_user_id: p.user_id,
-        chatter_login: p.user_login,
-        chatter_name: p.user_name,
+        ...chatterFields(p.user_id, p.user_login, p.user_name),
         color: "",
         fragments: p.message.fragments.map(mapFragment),
         badges: [],
