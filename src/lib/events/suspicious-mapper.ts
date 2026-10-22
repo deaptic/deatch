@@ -3,7 +3,7 @@
 
 import { t } from "../i18n/index.ts";
 import type { FeedMessage, NoticeText, SuspiciousInfo } from "../types/feed.ts";
-import { person } from "../utils/feedEvent.ts";
+import { chatterFields, person } from "../utils/feedEvent.ts";
 import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
@@ -31,9 +31,7 @@ export function suspiciousMessage(
   return {
     kind: "message",
     message_id: raw.message.message_id,
-    chatter_user_id: raw.user_id,
-    chatter_login: raw.user_login,
-    chatter_name: raw.user_name,
+    ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
     color: "",
     fragments: raw.message.fragments.map(mapFragment),
     badges: [],

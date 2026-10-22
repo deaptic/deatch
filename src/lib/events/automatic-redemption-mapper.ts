@@ -3,7 +3,7 @@
 import { t } from "../i18n/index.ts";
 import type { FeedEvent } from "../types/feed.ts";
 import type { RawAutomaticRedemption } from "../types/twitch/eventsub.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
 
 // These arrive as a chat message of their own, which already shows them. The
@@ -32,9 +32,7 @@ export function mapAutomaticRedemption(
     timestamp,
     {
       id: raw.id,
-      chatter_user_id: raw.user_id,
-      chatter_login: raw.user_login,
-      chatter_name: raw.user_name,
+      ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
       message: emote
         ? [{ type: "emote", text: emote.name, id: emote.id }]
         : undefined,

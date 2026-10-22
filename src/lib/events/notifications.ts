@@ -19,7 +19,7 @@ import type {
   RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
 import { addGiftRecipient, appendItem } from "../stores/feeds.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
@@ -38,9 +38,7 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
     t("EVENT_FOLLOW", { user: raw.user_name }),
     timestamp,
     {
-      chatter_user_id: raw.user_id,
-      chatter_login: raw.user_login,
-      chatter_name: raw.user_name,
+      ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
     },
   );
 }
@@ -60,9 +58,7 @@ function redemptionEvent(
     timestamp,
     {
       id: raw.id,
-      chatter_user_id: raw.user_id,
-      chatter_login: raw.user_login,
-      chatter_name: raw.user_name,
+      ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
       message: redemption.input
         ? [{ type: "text", text: redemption.input }]
         : undefined,

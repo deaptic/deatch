@@ -5,6 +5,11 @@ export function noticeText(text: string, detail?: string | null): NoticeText {
   return detail ? { text, detail } : { text };
 }
 
+/// Who a feed row is about, as the row stores it.
+export function chatterFields(id: string, login: string, name: string) {
+  return { chatter_user_id: id, chatter_login: login, chatter_name: name };
+}
+
 /// Someone a notice names, or nobody when Twitch didn't say who.
 export function person(
   id: string | null | undefined,

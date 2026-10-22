@@ -4,7 +4,7 @@
 import { t } from "../i18n/index.ts";
 import type { FeedEvent, Fragment } from "../types/feed.ts";
 import type { RawBitsUse } from "../types/twitch/eventsub.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
+import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { BITS_USE } from "../constants/events.ts";
 import { mapFragment } from "./chat-mapper.ts";
 
@@ -41,9 +41,7 @@ export function mapBitsUse(
     }),
     timestamp,
     {
-      chatter_user_id: raw.user_id,
-      chatter_login: raw.user_login,
-      chatter_name: raw.user_name,
+      ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
       message: fragments(raw),
     },
   );
