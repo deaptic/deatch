@@ -30,7 +30,7 @@ import { type Component, For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
-import type { FeedEvent } from "../../../lib/types/index.ts";
+import type { FeedEvent, Fragment } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
@@ -147,69 +147,89 @@ export function createEventParts(
     </Show>
   );
 
+  const compactIcon = () => (
+    <Show when={props.density === "compact"}>
+      <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
+        {icon()}
+      </span>
+    </Show>
+  );
+
+  // What happened, in the app's words or Twitch's.
+  const headline = () => (
+    <Show
+      when={item.redemption}
+      fallback={
+        <Show when={named()} fallback={item.system_message}>
+          {(n) => (
+            <>
+              {n().before}
+              {chatterName(n().name)}
+              {n().after}
+            </>
+          )}
+        </Show>
+      }
+    >
+      {(redemption) => (
+        <>
+          {chatterName(item.chatter_name)}
+          {` ${t("EVENT_REDEEMED")} `}
+          <RedemptionReward redemption={redemption()} />
+          {` ${t("EVENT_REDEMPTION_COST", { cost: redemption().reward.cost })}`}
+        </>
+      )}
+    </Show>
+  );
+
+  // What the chatter wrote with it, shown like their chat message.
+  const words = (): Fragment[] | undefined => {
+    const input = item.redemption?.input;
+    return item.message ??
+      (input ? [{ type: "text", text: input }] : undefined);
+  };
+
+  const recipients = () => (
+    <Show when={item.recipients?.length}>
+      <span class="block text-ink-soft">
+        {t("EVENT_GIFT_RECIPIENTS", {
+          names: formatList(item.recipients ?? []),
+        })}
+      </span>
+    </Show>
+  );
+
+  const body = (fragments: Fragment[]) => (
+    <span class="text-ink">
+      <For each={fragments}>
+        {(frag) => (
+          <MessageFragment
+            frag={frag}
+            emotes={props.emotes}
+            cheermotes={props.cheermotes}
+            onShowUserCard={props.onShowUserCard}
+            onUserContextMenu={props.onUserContextMenu}
+          />
+        )}
+      </For>
+    </span>
+  );
+
+  // Written the way chat writes a message, so it reads as the chatter's.
+  const saidLine = (fragments: Fragment[]) => (
+    <span class="block">
+      {chatterName(item.chatter_name)}
+      <span class="text-ink-soft">:</span> {body(fragments)}
+    </span>
+  );
+
   const content = (
     <span class="text-ink">
-      <Show when={props.density === "compact"}>
-        <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
-          {icon()}
-        </span>
-      </Show>
-      <Show
-        when={item.redemption}
-        fallback={
-          <>
-            <Show when={named()} fallback={item.system_message}>
-              {(n) => (
-                <>
-                  {n().before}
-                  {chatterName(n().name)}
-                  {n().after}
-                </>
-              )}
-            </Show>
-            {time()}
-            <Show when={item.message}>
-              {(fragments) => (
-                <span class="block">
-                  <For each={fragments()}>
-                    {(frag) => (
-                      <MessageFragment
-                        frag={frag}
-                        emotes={props.emotes}
-                        cheermotes={props.cheermotes}
-                        onShowUserCard={props.onShowUserCard}
-                        onUserContextMenu={props.onUserContextMenu}
-                      />
-                    )}
-                  </For>
-                </span>
-              )}
-            </Show>
-            <Show when={item.recipients?.length}>
-              <span class="block text-ink-soft">
-                {t("EVENT_GIFT_RECIPIENTS", {
-                  names: formatList(item.recipients ?? []),
-                })}
-              </span>
-            </Show>
-          </>
-        }
-      >
-        {(redemption) => (
-          <>
-            {chatterName(item.chatter_name)}
-            {` ${t("EVENT_REDEEMED")} `}
-            <RedemptionReward redemption={redemption()} />
-            {` ${
-              t("EVENT_REDEMPTION_COST", { cost: redemption().reward.cost })
-            }`}
-            {time()}
-            <Show when={redemption().input}>
-              {(input) => <span class="block">{input()}</span>}
-            </Show>
-          </>
-        )}
-      </Show>
+      {compactIcon()}
+      {headline()}
+      {time()}
+      <Show when={words()}>{(said) => saidLine(said())}</Show>
+      {recipients()}
     </span>
   );
 
