@@ -37,9 +37,7 @@ function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
     "follow",
     t("EVENT_FOLLOW", { user: raw.user_name }),
     timestamp,
-    {
-      ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
-    },
+    chatterFields(raw.user_id, raw.user_login, raw.user_name),
   );
 }
 
