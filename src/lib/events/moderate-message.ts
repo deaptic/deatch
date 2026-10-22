@@ -26,11 +26,13 @@ function asLocal(p: RawModerate): RawModerate {
   }
 }
 
-/// Twitch puts the user an action is on in a field named after the action.
+/// Twitch puts the user an action is on in a field named after the action,
+/// except that both unban request decisions share `unban_request`.
 function actedOn(p: RawModerate): Person[] {
-  const target = (p as unknown as Record<string, Partial<RawModUser>>)[
-    p.action
-  ];
+  const field = p.action.endsWith("_unban_request")
+    ? "unban_request"
+    : p.action;
+  const target = (p as unknown as Record<string, Partial<RawModUser>>)[field];
   return person(target?.user_id, target?.user_login, target?.user_name);
 }
 
