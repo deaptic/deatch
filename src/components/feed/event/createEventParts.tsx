@@ -30,7 +30,11 @@ import { type Component, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
-import type { FeedEvent, Person } from "../../../lib/types/index.ts";
+import type {
+  AnnouncementColor,
+  FeedEvent,
+  Person,
+} from "../../../lib/types/index.ts";
 import type { UserActions } from "../../ui/userLink.ts";
 import Timestamp from "../../ui/Timestamp.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
@@ -82,6 +86,18 @@ const LOOKS: Record<string, Look> = {
   local: { color: "var(--color-ink-faint)", Icon: Info },
 };
 
+// Spelled out in full: Tailwind only keeps theme colours whose names it finds
+// in the source, so a built-up name would never reach the page.
+const ANNOUNCEMENT_COLORS: Record<
+  Exclude<AnnouncementColor, "primary">,
+  string
+> = {
+  blue: "var(--color-event-announce-blue)",
+  green: "var(--color-event-announce-green)",
+  orange: "var(--color-event-announce-orange)",
+  purple: "var(--color-event-announce-purple)",
+};
+
 function lookFor(noticeType: string): Look {
   return LOOKS[noticeType] ?? LOOKS[NOTICE_TO_EVENT[noticeType]] ??
     LOOKS.local;
@@ -95,7 +111,7 @@ export function createEventParts(
     const base = lookFor(item.notice_type);
     const picked = item.announcement_color;
     return picked && picked !== "primary"
-      ? { ...base, color: `var(--color-event-announce-${picked})` }
+      ? { ...base, color: ANNOUNCEMENT_COLORS[picked] }
       : base;
   };
   const icon = () => <Dynamic component={look().Icon} />;
