@@ -3,25 +3,68 @@ import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
 import type {
   BadgeMap,
+  FeedEntry,
+  FeedEvent,
+  FeedMessage,
   Person,
   Redemption,
   SuspiciousInfo,
 } from "../../types/feed.ts";
 import type { AutomodHoldStatus } from "../../types/index.ts";
 
+/// Changes the first entry `find` picks; false when there is none.
+function updateFirst<T extends FeedEntry>(
+  channel: string,
+  find: (entry: FeedEntry) => entry is T,
+  change: (entry: T) => void,
+): boolean {
+  if (!feeds[channel]) return false;
+  let found = false;
+  setFeeds(
+    channel,
+    produce((f) => {
+      const entry = f.messages.find(find);
+      if (entry) {
+        change(entry);
+        found = true;
+      }
+    }),
+  );
+  return found;
+}
+
+/// Changes every entry `find` picks.
+function updateEach<T extends FeedEntry>(
+  channel: string,
+  find: (entry: FeedEntry) => entry is T,
+  change: (entry: T) => void,
+) {
+  if (!feeds[channel]) return;
+  setFeeds(
+    channel,
+    produce((f) => {
+      for (const entry of f.messages) if (find(entry)) change(entry);
+    }),
+  );
+}
+
+const messageWithId = (id: string) => (e: FeedEntry): e is FeedMessage =>
+  e.kind === "message" && e.message_id === id;
+
+const eventWithId = (id: string) => (e: FeedEntry): e is FeedEvent =>
+  e.kind === "event" && e.id === id;
+
 /// Matches this channel's copy of a message or, in shared chat, the original
 /// it was copied from.
 export function markMessageDeleted(id: string, messageId: string) {
-  if (!feeds[id]) return;
-  setFeeds(
+  updateFirst(
     id,
-    produce((f) => {
-      const m = f.messages.find((m) =>
-        m.kind === "message" &&
-        (m.message_id === messageId || m.source?.messageId === messageId)
-      );
-      if (m && m.kind === "message") m.deleted = true;
-    }),
+    (e): e is FeedMessage =>
+      e.kind === "message" &&
+      (e.message_id === messageId || e.source?.messageId === messageId),
+    (m) => {
+      m.deleted = true;
+    },
   );
 }
 
@@ -31,32 +74,21 @@ export function markUserMessagesDeleted(
   userId: string,
   sourceId?: string,
 ) {
-  if (!feeds[id]) return;
-  setFeeds(
+  updateEach(
     id,
-    produce((f) => {
-      for (const m of f.messages) {
-        if (
-          m.kind === "message" && m.chatter_user_id === userId &&
-          (!sourceId || m.source?.id === sourceId)
-        ) {
-          m.deleted = true;
-        }
-      }
-    }),
+    (e): e is FeedMessage =>
+      e.kind === "message" && e.chatter_user_id === userId &&
+      (!sourceId || e.source?.id === sourceId),
+    (m) => {
+      m.deleted = true;
+    },
   );
 }
 
 export function markAllMessagesDeleted(id: string) {
-  if (!feeds[id]) return;
-  setFeeds(
-    id,
-    produce((f) => {
-      for (const m of f.messages) {
-        if (m.kind === "message") m.deleted = true;
-      }
-    }),
-  );
+  updateEach(id, (e): e is FeedMessage => e.kind === "message", (m) => {
+    m.deleted = true;
+  });
 }
 
 export function setPaused(id: string, paused: boolean) {
@@ -89,21 +121,11 @@ export function setChannelPointsRedemption(
   messageId: string,
   redemption: Redemption,
 ) {
-  if (!feeds[broadcasterId]) return;
-  setFeeds(
-    broadcasterId,
-    produce((f) => {
-      const item = f.messages.find(
-        (m) => m.kind === "message" && m.message_id === messageId,
-      );
-      if (
-        item?.kind === "message" &&
-        item.channel_points?.kind === "custom_reward"
-      ) {
-        item.channel_points.redemption = redemption;
-      }
-    }),
-  );
+  updateFirst(broadcasterId, messageWithId(messageId), (m) => {
+    if (m.channel_points?.kind === "custom_reward") {
+      m.channel_points.redemption = redemption;
+    }
+  });
 }
 
 /// False when the message is not in the feed.
@@ -112,21 +134,9 @@ export function setSuspicious(
   messageId: string,
   info: SuspiciousInfo,
 ): boolean {
-  if (!feeds[broadcasterId]) return false;
-  let found = false;
-  setFeeds(
-    broadcasterId,
-    produce((f) => {
-      const item = f.messages.find(
-        (m) => m.kind === "message" && m.message_id === messageId,
-      );
-      if (item?.kind === "message") {
-        item.suspicious = info;
-        found = true;
-      }
-    }),
-  );
-  return found;
+  return updateFirst(broadcasterId, messageWithId(messageId), (m) => {
+    m.suspicious = info;
+  });
 }
 
 export function addGiftRecipient(
@@ -134,18 +144,9 @@ export function addGiftRecipient(
   eventId: string,
   recipient: Person,
 ) {
-  if (!feeds[broadcasterId]) return;
-  setFeeds(
-    broadcasterId,
-    produce((f) => {
-      const item = f.messages.find(
-        (m) => m.kind === "event" && m.id === eventId,
-      );
-      if (item?.kind === "event") {
-        item.recipients = [...(item.recipients ?? []), recipient];
-      }
-    }),
-  );
+  updateFirst(broadcasterId, eventWithId(eventId), (e) => {
+    e.recipients = [...(e.recipients ?? []), recipient];
+  });
 }
 
 export function setAutomodHoldStatus(
@@ -154,17 +155,9 @@ export function setAutomodHoldStatus(
   status: AutomodHoldStatus,
   moderator?: string,
 ) {
-  if (!feeds[broadcasterId]) return;
-  setFeeds(
-    broadcasterId,
-    produce((f) => {
-      const item = f.messages.find(
-        (m) => m.kind === "message" && m.message_id === messageId,
-      );
-      if (item && item.kind === "message" && item.automod_hold) {
-        item.automod_hold.status = status;
-        if (moderator) item.automod_hold.moderator = moderator;
-      }
-    }),
-  );
+  updateFirst(broadcasterId, messageWithId(messageId), (m) => {
+    if (!m.automod_hold) return;
+    m.automod_hold.status = status;
+    if (moderator) m.automod_hold.moderator = moderator;
+  });
 }
