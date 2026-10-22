@@ -1,5 +1,10 @@
 import { t } from "../i18n/index.ts";
-import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
+import {
+  listenEventSub,
+  listenFeed,
+  serverTime,
+  unlistenAll,
+} from "./listen.ts";
 import type {
   AutomodHoldStatus,
   FeedMessage,
@@ -117,68 +122,54 @@ export function start(): () => void {
         }),
       );
     }),
-    listenEventSub<RawUnbanRequestCreate>(
+    listenFeed<RawUnbanRequestCreate>(
       "channel.unban_request.create",
-      (e) => {
-        const raw = e.payload.event;
-        appendItem(
-          raw.broadcaster_user_id,
-          feedEvent(
-            UNBAN_REQUEST,
-            noticeText(
-              t("EVENT_UNBAN_REQUEST", { user: raw.user_name }),
-              raw.text,
-            ),
-            serverTime(e.payload),
-            {
-              id: `unban-request-${raw.id}`,
-              chatter_user_id: raw.user_id,
-              chatter_login: raw.user_login,
-              chatter_name: raw.user_name,
-            },
+      (raw, timestamp) =>
+        feedEvent(
+          UNBAN_REQUEST,
+          noticeText(
+            t("EVENT_UNBAN_REQUEST", { user: raw.user_name }),
+            raw.text,
           ),
-        );
-      },
+          timestamp,
+          {
+            id: `unban-request-${raw.id}`,
+            chatter_user_id: raw.user_id,
+            chatter_login: raw.user_login,
+            chatter_name: raw.user_name,
+          },
+        ),
     ),
-    listenEventSub<RawUnbanRequestResolve>(
+    listenFeed<RawUnbanRequestResolve>(
       "channel.unban_request.resolve",
-      (e) => {
-        const raw = e.payload.event;
+      (raw, timestamp) =>
         // A mod's approve or deny already arrives through channel.moderate.
-        if (raw.status !== "canceled") return;
-        appendItem(
-          raw.broadcaster_user_id,
-          feedEvent(
+        raw.status === "canceled"
+          ? feedEvent(
             UNBAN_REQUEST,
             t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
-            serverTime(e.payload),
+            timestamp,
             {
               chatter_user_id: raw.user_id,
               chatter_login: raw.user_login,
               chatter_name: raw.user_name,
             },
-          ),
-        );
-      },
+          )
+          : null,
     ),
-    listenEventSub<RawWarningAcknowledge>(
+    listenFeed<RawWarningAcknowledge>(
       "channel.warning.acknowledge",
-      (e) => {
-        const raw = e.payload.event;
-        appendItem(
-          raw.broadcaster_user_id,
-          feedEvent(
-            WARNING_ACKNOWLEDGED,
-            t("EVENT_WARNING_ACKNOWLEDGED", { user: raw.user_name }),
-            serverTime(e.payload),
-            {
-              chatter_user_id: raw.user_id,
-              chatter_login: raw.user_login,
-              chatter_name: raw.user_name,
-            },
-          ),
-        );
-      },
+      (raw, timestamp) =>
+        feedEvent(
+          WARNING_ACKNOWLEDGED,
+          t("EVENT_WARNING_ACKNOWLEDGED", { user: raw.user_name }),
+          timestamp,
+          {
+            chatter_user_id: raw.user_id,
+            chatter_login: raw.user_login,
+            chatter_name: raw.user_name,
+          },
+        ),
     ),
     listenEventSub<RawSuspiciousUserMessage>(
       "channel.suspicious_user.message",
@@ -195,24 +186,16 @@ export function start(): () => void {
         }, CHAT_COPY_WAIT_MS);
       },
     ),
-    listenEventSub<RawSuspiciousUserUpdate>(
+    listenFeed<RawSuspiciousUserUpdate>(
       "channel.suspicious_user.update",
-      (e) => {
-        const raw = e.payload.event;
-        appendItem(
-          raw.broadcaster_user_id,
-          feedEvent(
-            SUSPICIOUS_USER,
-            suspiciousUpdate(raw),
-            serverTime(e.payload),
-            { chatter_name: raw.moderator_user_name },
-          ),
-        );
-      },
+      (raw, timestamp) =>
+        feedEvent(SUSPICIOUS_USER, suspiciousUpdate(raw), timestamp, {
+          chatter_name: raw.moderator_user_name,
+        }),
     ),
-    listenEventSub<RawAutomodMessageHold>("automod.message.hold", (e) => {
-      const p = e.payload.event;
-      const item: FeedMessage = {
+    listenFeed<RawAutomodMessageHold>(
+      "automod.message.hold",
+      (p, timestamp): FeedMessage => ({
         kind: "message",
         message_id: p.message_id,
         chatter_user_id: p.user_id,
@@ -221,15 +204,14 @@ export function start(): () => void {
         color: "",
         fragments: p.message.fragments.map(mapFragment),
         badges: [],
-        timestamp: new Date(p.held_at).getTime() || serverTime(e.payload),
+        timestamp: new Date(p.held_at).getTime() || timestamp,
         automod_hold: {
           reason: automodReason(p),
           status: "pending",
           broadcaster_user_id: p.broadcaster_user_id,
         },
-      };
-      appendItem(p.broadcaster_user_id, item);
-    }),
+      }),
+    ),
     listenEventSub<RawAutomodMessageUpdate>(
       "automod.message.update",
       (e) => {

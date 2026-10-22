@@ -1,6 +1,6 @@
 import { t } from "../i18n/index.ts";
 import { formatList } from "../format/list.ts";
-import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
+import { listenEventSub, listenFeed, unlistenAll } from "./listen.ts";
 import { formatApproxDuration } from "../format/duration.ts";
 import { feedEvent, person } from "../utils/feedEvent.ts";
 import { formatAmount } from "../format/currency.ts";
@@ -13,7 +13,6 @@ import {
   STREAM_ONLINE,
 } from "../constants/events.ts";
 import type {
-  EventEnvelope,
   RawAdBreak,
   RawCampaignAmount,
   RawChannelUpdate,
@@ -28,7 +27,7 @@ import {
   channelInfoFor,
   streamForUserId,
 } from "../stores/channels.ts";
-import { appendItem, appendLocalNotice } from "../stores/feeds.ts";
+import { appendLocalNotice } from "../stores/feeds.ts";
 
 function appendSharedChat(
   raw: RawSharedChatSession,
@@ -57,22 +56,23 @@ function campaignAmount(amount: RawCampaignAmount): string {
   return formatAmount({ ...amount, decimal_place: amount.decimal_places });
 }
 
-function appendCharity(
-  envelope: EventEnvelope<RawCharityCampaign>,
+function listenCharity(
+  kind: "channel.charity_campaign.start" | "channel.charity_campaign.stop",
   key: "CHARITY_START" | "CHARITY_STOP",
 ) {
-  const raw = envelope.event;
-  appendItem(
-    raw.broadcaster_id,
-    feedEvent(
-      CHARITY_CAMPAIGN,
-      t(key, {
-        charity: raw.charity_name,
-        current: campaignAmount(raw.current_amount),
-        target: campaignAmount(raw.target_amount),
-      }),
-      serverTime(envelope),
-    ),
+  return listenFeed<RawCharityCampaign>(
+    kind,
+    (raw, timestamp) =>
+      feedEvent(
+        CHARITY_CAMPAIGN,
+        t(key, {
+          charity: raw.charity_name,
+          current: campaignAmount(raw.current_amount),
+          target: campaignAmount(raw.target_amount),
+        }),
+        timestamp,
+      ),
+    (raw) => raw.broadcaster_id,
   );
 }
 
@@ -125,10 +125,9 @@ export function start(): () => void {
           SHARED_CHAT_SESSION,
         ),
     ),
-    listenEventSub<RawAdBreak>("channel.ad_break.begin", (e) => {
-      const raw = e.payload.event;
-      appendItem(
-        raw.broadcaster_user_id,
+    listenFeed<RawAdBreak>(
+      "channel.ad_break.begin",
+      (raw, timestamp) =>
         feedEvent(
           AD_BREAK,
           {
@@ -143,18 +142,11 @@ export function start(): () => void {
               raw.requester_user_name,
             ),
           },
-          serverTime(e.payload),
+          timestamp,
         ),
-      );
-    }),
-    listenEventSub<RawCharityCampaign>(
-      "channel.charity_campaign.start",
-      (e) => appendCharity(e.payload, "CHARITY_START"),
     ),
-    listenEventSub<RawCharityCampaign>(
-      "channel.charity_campaign.stop",
-      (e) => appendCharity(e.payload, "CHARITY_STOP"),
-    ),
+    listenCharity("channel.charity_campaign.start", "CHARITY_START"),
+    listenCharity("channel.charity_campaign.stop", "CHARITY_STOP"),
     listenEventSub<RawStreamOnline>("stream.online", (e) => {
       const raw = e.payload.event;
       appendLocalNotice(

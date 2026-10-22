@@ -1,5 +1,10 @@
 import { t } from "../i18n/index.ts";
-import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
+import {
+  listenEventSub,
+  listenFeed,
+  serverTime,
+  unlistenAll,
+} from "./listen.ts";
 import type {
   FeedEvent,
   RawFollow,
@@ -103,27 +108,12 @@ export function start(): () => void {
         }).catch(() => {});
       }
     }),
-    listenEventSub<RawShoutout>("channel.shoutout.create", (e) => {
-      const raw = e.payload.event;
-      appendItem(
-        raw.broadcaster_user_id,
-        mapShoutout(raw, serverTime(e.payload)),
-      );
-    }),
-    listenEventSub<RawShoutoutReceive>("channel.shoutout.receive", (e) => {
-      const raw = e.payload.event;
-      appendItem(
-        raw.broadcaster_user_id,
-        mapShoutoutReceive(raw, serverTime(e.payload)),
-      );
-    }),
-    listenEventSub<RawFollow>("channel.follow", (e) => {
-      const raw = e.payload.event;
-      appendItem(
-        raw.broadcaster_user_id,
-        mapFollow(raw, serverTime(e.payload)),
-      );
-    }),
+    listenFeed<RawShoutout>("channel.shoutout.create", mapShoutout),
+    listenFeed<RawShoutoutReceive>(
+      "channel.shoutout.receive",
+      mapShoutoutReceive,
+    ),
+    listenFeed<RawFollow>("channel.follow", mapFollow),
     listenEventSub<RawChannelPointsRedemption>(
       "channel.channel_points_custom_reward_redemption.add",
       (e) => {
@@ -142,19 +132,11 @@ export function start(): () => void {
         );
       },
     ),
-    listenEventSub<RawAutomaticRedemption>(
+    listenFeed<RawAutomaticRedemption>(
       "channel.channel_points_automatic_reward_redemption.add",
-      (e) => {
-        const raw = e.payload.event;
-        const item = mapAutomaticRedemption(raw, serverTime(e.payload));
-        if (item) appendItem(raw.broadcaster_user_id, item);
-      },
+      mapAutomaticRedemption,
     ),
-    listenEventSub<RawBitsUse>("channel.bits.use", (e) => {
-      const raw = e.payload.event;
-      const item = mapBitsUse(raw, serverTime(e.payload));
-      if (item) appendItem(raw.broadcaster_user_id, item);
-    }),
+    listenFeed<RawBitsUse>("channel.bits.use", mapBitsUse),
   ]);
   return () => {
     stop();
