@@ -41,10 +41,12 @@ Deno.test("credits the top contributors at the end", () => {
         { user_name: "Bar", type: "subscription", total: 1000 },
       ],
     })),
-    "The Hype Train ended at level 2 with 1,500 points. Top contributors: Foo (500 bits) and Bar (1,000 sub points)",
+    {
+      text: "The Hype Train ended at level 2 with 1,500 points",
+      detail: "Top contributors: Foo (500 bits) and Bar (1,000 sub points)",
+    },
   );
-  assertEquals(
-    hypeTrainEnd(train()),
-    "The Hype Train ended at level 2 with 1,500 points",
-  );
+  assertEquals(hypeTrainEnd(train()), {
+    text: "The Hype Train ended at level 2 with 1,500 points",
+  });
 });

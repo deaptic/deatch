@@ -3,7 +3,8 @@
 
 import { t } from "../i18n/index.ts";
 import type { RawGoal } from "../types/twitch/eventsub.ts";
-import { withDetail } from "../utils/feedEvent.ts";
+import { noticeText } from "../utils/feedEvent.ts";
+import type { NoticeText } from "../types/feed.ts";
 
 function amounts(raw: RawGoal) {
   return {
@@ -13,12 +14,12 @@ function amounts(raw: RawGoal) {
   };
 }
 
-export function goalBegin(raw: RawGoal): string {
-  return withDetail(t("GOAL_BEGIN", amounts(raw)), raw.description);
+export function goalBegin(raw: RawGoal): NoticeText {
+  return noticeText(t("GOAL_BEGIN", amounts(raw)), raw.description);
 }
 
-export function goalEnd(raw: RawGoal): string {
-  return withDetail(
+export function goalEnd(raw: RawGoal): NoticeText {
+  return noticeText(
     t("GOAL_END", { ...amounts(raw), achieved: String(!!raw.is_achieved) }),
     raw.description,
   );

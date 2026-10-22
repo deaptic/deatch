@@ -19,8 +19,9 @@ Deno.test("names who shouted out whom, the reach and the cooldowns", () => {
   const item = mapShoutout(shoutout, 0);
   assertEquals(
     item.system_message,
-    "Mod gave Mira a shoutout in front of 120 viewers: next shoutout in 2m, Mira again in 1h",
+    "Mod gave Mira a shoutout in front of 120 viewers",
   );
+  assertEquals(item.detail, "Next shoutout in 2m, Mira again in 1h");
   assertEquals(item.chatter_user_id, "9");
   assertEquals(item.chatter_login, "mira");
 });

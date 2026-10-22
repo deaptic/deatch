@@ -3,7 +3,9 @@
 
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
+import type { NoticeText } from "../types/feed.ts";
 import type { RawHypeTrain } from "../types/twitch/eventsub.ts";
+import { noticeText } from "../utils/feedEvent.ts";
 
 function contributors(raw: RawHypeTrain): string {
   return formatList(
@@ -31,9 +33,11 @@ export function hypeTrainProgress(
     : null;
 }
 
-export function hypeTrainEnd(raw: RawHypeTrain): string {
-  const text = t("HYPE_TRAIN_END", { level: raw.level, total: raw.total });
-  return raw.top_contributions.length
-    ? t("HYPE_TRAIN_TOP", { text, contributors: contributors(raw) })
-    : text;
+export function hypeTrainEnd(raw: RawHypeTrain): NoticeText {
+  return noticeText(
+    t("HYPE_TRAIN_END", { level: raw.level, total: raw.total }),
+    raw.top_contributions.length
+      ? t("HYPE_TRAIN_TOP", { contributors: contributors(raw) })
+      : null,
+  );
 }

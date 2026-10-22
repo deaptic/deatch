@@ -3,8 +3,10 @@
 
 import type { RawModerate } from "../types/index.ts";
 import { formatApproxDuration } from "../format/duration.ts";
+import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
-import { withDetail } from "../utils/feedEvent.ts";
+import { noticeText } from "../utils/feedEvent.ts";
+import type { NoticeText } from "../types/feed.ts";
 
 /// A shared chat action reads like the same action taken here.
 function asLocal(p: RawModerate): RawModerate {
@@ -27,21 +29,28 @@ function asLocal(p: RawModerate): RawModerate {
 export function moderateMessage(
   p: RawModerate,
   serverNowMs: number,
-): string | null {
-  const text = localMessage(asLocal(p), serverNowMs);
+): NoticeText | null {
+  const local = localMessage(asLocal(p), serverNowMs);
+  const notice = typeof local === "string" ? noticeText(local) : local;
   const channel = p.source_broadcaster_user_name;
-  return text && channel && p.action.startsWith("shared_chat_")
-    ? t("MODERATION_SHARED", { channel, text })
-    : text;
+  return notice && channel && p.action.startsWith("shared_chat_")
+    ? {
+      ...notice,
+      text: t("MODERATION_SHARED", { channel, text: notice.text }),
+    }
+    : notice;
 }
 
-function localMessage(p: RawModerate, serverNowMs: number): string | null {
+function localMessage(
+  p: RawModerate,
+  serverNowMs: number,
+): string | NoticeText | null {
   const mod = p.moderator_user_name;
   switch (p.action) {
     case "clear":
       return t("MODERATION_CLEAR", { mod });
     case "ban":
-      return withDetail(
+      return noticeText(
         t("MODERATION_BAN", { mod, user: p.ban.user_name }),
         p.ban.reason,
       );
@@ -54,7 +63,7 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
           (new Date(p.timeout.expires_at).getTime() - serverNowMs) / 1000,
         ),
       );
-      return withDetail(
+      return noticeText(
         t("MODERATION_TIMEOUT", {
           mod,
           user: p.timeout.user_name,
@@ -66,11 +75,10 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
     case "untimeout":
       return t("MODERATION_UNTIMEOUT", { mod, user: p.untimeout.user_name });
     case "delete":
-      return t("MODERATION_DELETE", {
-        mod,
-        user: p.delete.user_name,
-        message: p.delete.message_body,
-      });
+      return noticeText(
+        t("MODERATION_DELETE", { mod, user: p.delete.user_name }),
+        p.delete.message_body,
+      );
     case "mod":
       return t("MODERATION_MOD", { mod, user: p.mod.user_name });
     case "unmod":
@@ -114,7 +122,7 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
     case "uniquechatoff":
       return t("MODERATION_UNIQUE_CHAT_OFF", { mod });
     case "warn":
-      return withDetail(
+      return noticeText(
         t("MODERATION_WARN", { mod, user: p.warn.user_name }),
         p.warn.reason,
       );
@@ -122,16 +130,18 @@ function localMessage(p: RawModerate, serverNowMs: number): string | null {
     case "add_permitted_term":
     case "remove_blocked_term":
     case "remove_permitted_term":
-      return t("MODERATION_AUTOMOD_TERMS", {
-        mod,
-        action: p.automod_terms.action,
-        list: p.automod_terms.list,
-        count: p.automod_terms.terms.length,
-        terms: p.automod_terms.terms.join(", "),
-      });
+      return noticeText(
+        t("MODERATION_AUTOMOD_TERMS", {
+          mod,
+          action: p.automod_terms.action,
+          list: p.automod_terms.list,
+          count: p.automod_terms.terms.length,
+        }),
+        formatList(p.automod_terms.terms),
+      );
     case "approve_unban_request":
     case "deny_unban_request":
-      return withDetail(
+      return noticeText(
         t("MODERATION_UNBAN_REQUEST", {
           mod,
           approved: String(p.unban_request.is_approved),
