@@ -142,8 +142,14 @@ Notes sit above the message, never beside the name: AutoMod reason, why a
 suspicious chatter is flagged (`caution`, shown to mods), "Cheered N bits", the
 Power-up or channel points perk, reward, "First message", then the reply line
 with a connector down to the message. Notes start where the message text starts.
-An event that carries the chatter's own words, like a resub message or a
-reward's input, shows them on the line below as chat does: name, then the words.
+
+Every event is one `Notice`, in up to three lines. The headline is one sentence
+saying what happened, in `ink`, with every person it names as a name link and
+nothing else emphasised; the event's colour stays on its bar and icon. Below it,
+the chatter's own words, if any, as chat writes them: name, then the words.
+Last, a quieter `ink-soft` line for everything else: a reason, a description,
+results, recipients. A new event fills these three parts and adds no look of its
+own.
 
 There are two layouts. Default (compact in code) is one line per message with an
 optional timestamp column. Spacious (comfortable in code) groups a chatter's
