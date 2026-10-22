@@ -57,6 +57,13 @@ export function mapFragment(f: RawFragment): Fragment {
   }
 }
 
+/// The chatter's own words on an event, or nothing when they wrote none.
+export function wordsOf(
+  message: { text: string; fragments: RawFragment[] } | null | undefined,
+): Fragment[] | undefined {
+  return message?.text.trim() ? message.fragments.map(mapFragment) : undefined;
+}
+
 export function mapChatMessage(
   raw: RawChatMessage,
   timestamp: number,

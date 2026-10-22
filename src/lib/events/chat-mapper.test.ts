@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 import { assertEquals } from "@std/assert";
 import type { RawChatMessage } from "../types/index.ts";
-import { mapChatMessage } from "./chat-mapper.ts";
+import { mapChatMessage, wordsOf } from "./chat-mapper.ts";
 
 const raw = (overrides: Partial<RawChatMessage> = {}): RawChatMessage => ({
   broadcaster_user_id: "111",
@@ -54,6 +54,15 @@ Deno.test("flattens every fragment kind", () => {
     { type: "mention", text: "@bar", user_login: "bar" },
     { type: "cheermote", text: "Cheer100", prefix: "Cheer", bits: 100 },
   ]);
+});
+
+Deno.test("keeps an event's words only when there are some", () => {
+  assertEquals(
+    wordsOf({ text: "hi", fragments: [{ type: "text", text: "hi" }] }),
+    [{ type: "text", text: "hi" }],
+  );
+  assertEquals(wordsOf({ text: "  ", fragments: [] }), undefined);
+  assertEquals(wordsOf(null), undefined);
 });
 
 Deno.test("carries the cheered amount", () => {
