@@ -90,6 +90,8 @@ pub struct ResubNotice {
 #[derive(Debug, PartialEq, Serialize, specta::Type)]
 pub struct SubGiftNotice {
     pub sub_tier: SubTier,
+    pub recipient_user_id: Option<UserId>,
+    pub recipient_user_login: String,
     pub recipient_user_name: String,
     pub cumulative_total: Option<u32>,
     pub community_gift_id: Option<String>,

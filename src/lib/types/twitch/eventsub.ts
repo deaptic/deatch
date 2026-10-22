@@ -88,6 +88,9 @@ export type RawNoticeDetails = {
   };
   sub_gift: {
     sub_tier: SubTier;
+    /// History can lack the id; EventSub always sends it.
+    recipient_user_id?: string | null;
+    recipient_user_login: string;
     recipient_user_name: string;
     cumulative_total: number | null;
     /// Set when the gift is one of a community gift's subs.

@@ -101,6 +101,8 @@ fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'
         "subgift" => {
             notice.sub_gift = tier(tags).map(|sub_tier| SubGiftNotice {
                 sub_tier,
+                recipient_user_id: nonempty(tags, "msg-param-recipient-id").map(Into::into),
+                recipient_user_login: tag(tags, "msg-param-recipient-user-name").into(),
                 recipient_user_name: tag(tags, "msg-param-recipient-display-name").into(),
                 cumulative_total: shown_count(tags, "msg-param-sender-count"),
                 community_gift_id: community_gift_id(tags),
@@ -221,6 +223,7 @@ mod tests {
     fn maps_an_anonymous_gift() {
         let n = notice(
             "@msg-id=subgift;msg-param-sub-plan=1000;msg-param-recipient-display-name=Bar;\
+             msg-param-recipient-user-name=bar;msg-param-recipient-id=7;\
              msg-param-sender-count=0;login=ananonymousgifter;id=n1 :tmi.twitch.tv USERNOTICE #chan",
         );
         assert_eq!(n["notice_type"], "sub_gift");
@@ -229,6 +232,8 @@ mod tests {
             n["sub_gift"],
             json!({
                 "sub_tier": "1000",
+                "recipient_user_id": "7",
+                "recipient_user_login": "bar",
                 "recipient_user_name": "Bar",
                 "cumulative_total": null,
                 "community_gift_id": null,

@@ -1,7 +1,12 @@
 import { produce } from "solid-js/store";
 import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
-import type { BadgeMap, Redemption, SuspiciousInfo } from "../../types/feed.ts";
+import type {
+  BadgeMap,
+  GiftRecipient,
+  Redemption,
+  SuspiciousInfo,
+} from "../../types/feed.ts";
 import type { AutomodHoldStatus } from "../../types/index.ts";
 
 /// Matches this channel's copy of a message or, in shared chat, the original
@@ -127,7 +132,7 @@ export function setSuspicious(
 export function addGiftRecipient(
   broadcasterId: string,
   eventId: string,
-  recipient: string,
+  recipient: GiftRecipient,
 ) {
   if (!feeds[broadcasterId]) return;
   setFeeds(

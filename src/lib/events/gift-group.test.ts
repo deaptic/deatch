@@ -15,6 +15,8 @@ const sub = (id: string, recipient: string, giftId: string | null) =>
     notice_type: "sub_gift",
     sub_gift: {
       sub_tier: "1000",
+      recipient_user_id: `id-${recipient}`,
+      recipient_user_login: recipient.toLowerCase(),
       recipient_user_name: recipient,
       cumulative_total: null,
       community_gift_id: giftId,
@@ -40,7 +42,10 @@ Deno.test("folds a batch's gifted subs into their community gift", () => {
     sub("s4", "Orphan", "g9"),
   ]);
   assertEquals(rows.map((r) => r.id), ["c1", "s3", "s4"]);
-  assertEquals(rows[0].recipients, ["Bar", "Baz"]);
+  assertEquals(rows[0].recipients, [
+    { id: "id-Bar", login: "bar", name: "Bar" },
+    { id: "id-Baz", login: "baz", name: "Baz" },
+  ]);
   assertEquals(community.item.recipients, undefined);
 });
 
@@ -70,12 +75,18 @@ Deno.test("ties a community gift and its subs together", () => {
       notice_type: "shared_chat_sub_gift",
       shared_chat_sub_gift: {
         sub_tier: "1000",
+        recipient_user_id: null,
+        recipient_user_login: "bar",
         recipient_user_name: "Bar",
         cumulative_total: null,
         community_gift_id: "g1",
       },
     })),
-    { role: "member", giftId: "g1", recipient: "Bar" },
+    {
+      role: "member",
+      giftId: "g1",
+      recipient: { id: undefined, login: "bar", name: "Bar" },
+    },
   );
 });
 
@@ -85,6 +96,7 @@ Deno.test("leaves a direct gift on its own", () => {
       notice_type: "sub_gift",
       sub_gift: {
         sub_tier: "1000",
+        recipient_user_login: "bar",
         recipient_user_name: "Bar",
         cumulative_total: null,
         community_gift_id: null,

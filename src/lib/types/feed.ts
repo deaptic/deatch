@@ -87,6 +87,9 @@ export type FeedMessage = {
   };
 };
 
+/// Someone who received one sub of a community gift.
+export type GiftRecipient = { id?: string; login: string; name: string };
+
 export type FeedEvent = {
   kind: "event";
   id: string;
@@ -100,7 +103,7 @@ export type FeedEvent = {
   silent?: boolean;
   message?: Fragment[];
   /// Who received a community gift's subs, as they arrive.
-  recipients?: string[];
+  recipients?: GiftRecipient[];
   announcement_color?: AnnouncementColor;
   clip?: { id: string };
   redemption?: Redemption;
