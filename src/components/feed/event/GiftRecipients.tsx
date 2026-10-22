@@ -1,5 +1,5 @@
 import { createSignal, For, Match, Switch } from "solid-js";
-import type { GiftRecipient } from "../../../lib/types/index.ts";
+import type { Person } from "../../../lib/types/index.ts";
 import { formatLocale, t } from "../../../lib/i18n/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
@@ -8,7 +8,7 @@ import type { UserActions } from "../../ui/userLink.ts";
 /// A big gift stays a line until someone asks for the rest.
 const SHOWN = 8;
 
-type Props = UserActions & { recipients: GiftRecipient[] };
+type Props = UserActions & { recipients: Person[] };
 
 export default function GiftRecipients(props: Props) {
   const [expanded, setExpanded] = createSignal(false);

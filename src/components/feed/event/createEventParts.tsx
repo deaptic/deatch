@@ -26,25 +26,20 @@ import {
   VideoOff,
   Vote,
 } from "lucide-solid";
-import { type Component, For, Show } from "solid-js";
+import { type Component, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
-import type { FeedEvent, Fragment } from "../../../lib/types/index.ts";
-import { knownChatterColor } from "../../../lib/stores/users.ts";
-import DisplayName from "../../ui/DisplayName.tsx";
+import type { FeedEvent, Person } from "../../../lib/types/index.ts";
 import type { UserActions } from "../../ui/userLink.ts";
 import Timestamp from "../../ui/Timestamp.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import FeedTile from "../FeedTile.tsx";
-import RedemptionReward from "../RedemptionReward.tsx";
-import MessageFragment from "../message/MessageFragment.tsx";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
-import { splitName } from "./splitName.ts";
 import { t } from "../../../lib/i18n/index.ts";
-import GiftRecipients from "./GiftRecipients.tsx";
+import Notice from "./Notice.tsx";
 import type { ItemLayout, ItemParts } from "../itemParts.ts";
 
 export type EventOptions = UserActions & {
@@ -121,25 +116,15 @@ export function createEventParts(
     </Show>
   );
 
-  // Only a known chatter becomes a name link; mod and local notices stay text.
-  const named = () =>
-    item.chatter_user_id
-      ? splitName(item.system_message, item.chatter_name)
-      : null;
-
-  const chatterName = (shown: string) => (
-    <DisplayName
-      login={item.chatter_login ?? item.chatter_name.toLowerCase()}
-      displayName={shown}
-      color={item.color ||
-        (item.chatter_user_id
-          ? knownChatterColor(item.chatter_user_id)
-          : undefined)}
-      userId={item.chatter_user_id}
-      onShowUserCard={props.onShowUserCard}
-      onUserContextMenu={props.onUserContextMenu}
-    />
-  );
+  // Only a known chatter becomes a name link; local notices stay text.
+  const chatter: Person | undefined = item.chatter_user_id
+    ? {
+      id: item.chatter_user_id,
+      login: item.chatter_login ?? item.chatter_name.toLowerCase(),
+      name: item.chatter_name,
+      color: item.color,
+    }
+    : undefined;
 
   const time = () => (
     <Show when={props.density === "comfortable"}>
@@ -155,84 +140,21 @@ export function createEventParts(
     </Show>
   );
 
-  // What happened, in the app's words or Twitch's.
-  const headline = () => (
-    <Show
-      when={item.redemption}
-      fallback={
-        <Show when={named()} fallback={item.system_message}>
-          {(n) => (
-            <>
-              {n().before}
-              {chatterName(n().name)}
-              {n().after}
-            </>
-          )}
-        </Show>
-      }
-    >
-      {(redemption) => (
-        <>
-          {chatterName(item.chatter_name)}
-          {` ${t("EVENT_REDEEMED")} `}
-          <RedemptionReward redemption={redemption()} />
-          {` ${t("EVENT_REDEMPTION_COST", { cost: redemption().reward.cost })}`}
-        </>
-      )}
-    </Show>
-  );
-
-  // What the chatter wrote with it, shown like their chat message.
-  const words = (): Fragment[] | undefined => {
-    const input = item.redemption?.input;
-    return item.message ??
-      (input ? [{ type: "text", text: input }] : undefined);
-  };
-
-  const recipients = () => (
-    <Show when={item.recipients?.length ? item.recipients : undefined}>
-      {(list) => (
-        <GiftRecipients
-          recipients={list()}
-          onShowUserCard={props.onShowUserCard}
-          onUserContextMenu={props.onUserContextMenu}
-        />
-      )}
-    </Show>
-  );
-
-  const body = (fragments: Fragment[]) => (
-    <span class="text-ink">
-      <For each={fragments}>
-        {(frag) => (
-          <MessageFragment
-            frag={frag}
-            emotes={props.emotes}
-            cheermotes={props.cheermotes}
-            onShowUserCard={props.onShowUserCard}
-            onUserContextMenu={props.onUserContextMenu}
-          />
-        )}
-      </For>
-    </span>
-  );
-
-  // Written the way chat writes a message, so it reads as the chatter's.
-  const saidLine = (fragments: Fragment[]) => (
-    <span class="block">
-      {chatterName(item.chatter_name)}
-      <span class="text-ink-soft">:</span> {body(fragments)}
-    </span>
-  );
-
   const content = (
-    <span class="text-ink">
-      {compactIcon()}
-      {headline()}
-      {time()}
-      <Show when={words()}>{(said) => saidLine(said())}</Show>
-      {recipients()}
-    </span>
+    <Notice
+      text={item.system_message}
+      people={[...(chatter ? [chatter] : []), ...(item.people ?? [])]}
+      speaker={chatter}
+      words={item.message}
+      detail={item.detail}
+      recipients={item.recipients}
+      lead={compactIcon()}
+      trail={time()}
+      emotes={props.emotes}
+      cheermotes={props.cheermotes}
+      onShowUserCard={props.onShowUserCard}
+      onUserContextMenu={props.onUserContextMenu}
+    />
   );
 
   return {

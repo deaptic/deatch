@@ -87,8 +87,13 @@ export type FeedMessage = {
   };
 };
 
-/// Someone who received one sub of a community gift.
-export type GiftRecipient = { id?: string; login: string; name: string };
+/// Someone a notice names; shown as a name link.
+export type Person = {
+  id?: string;
+  login: string;
+  name: string;
+  color?: string;
+};
 
 export type FeedEvent = {
   kind: "event";
@@ -101,12 +106,16 @@ export type FeedEvent = {
   color: string;
   timestamp: number;
   silent?: boolean;
+  /// Everyone besides the chatter whose name the text links.
+  people?: Person[];
+  /// The chatter's own words, shown like their chat message.
   message?: Fragment[];
+  /// Everything else worth knowing, on a quieter line of its own.
+  detail?: string;
   /// Who received a community gift's subs, as they arrive.
-  recipients?: GiftRecipient[];
+  recipients?: Person[];
   announcement_color?: AnnouncementColor;
   clip?: { id: string };
-  redemption?: Redemption;
 };
 
 export type FeedEntry = FeedMessage | FeedEvent;
