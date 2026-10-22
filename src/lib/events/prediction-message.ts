@@ -4,6 +4,7 @@
 import { formatSpan } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
+import type { NoticeText } from "../types/feed.ts";
 import type { RawPrediction } from "../types/twitch/eventsub.ts";
 
 type Outcome = RawPrediction["outcomes"][number];
@@ -16,31 +17,33 @@ function stake(o: Outcome): string {
   });
 }
 
-export function predictionBegin(raw: RawPrediction): string {
-  return t("PREDICTION_BEGIN", {
-    title: raw.title,
-    outcomes: formatList(raw.outcomes.map((o) => o.title)),
-    duration: formatSpan(raw.started_at, raw.locks_at ?? raw.started_at),
-  });
+export function predictionBegin(raw: RawPrediction): NoticeText {
+  return {
+    text: t("PREDICTION_BEGIN", {
+      title: raw.title,
+      duration: formatSpan(raw.started_at, raw.locks_at ?? raw.started_at),
+    }),
+    detail: t("PREDICTION_OUTCOMES", {
+      outcomes: formatList(raw.outcomes.map((o) => o.title)),
+    }),
+  };
 }
 
-export function predictionLock(raw: RawPrediction): string {
-  return t("PREDICTION_LOCK", {
-    title: raw.title,
-    stakes: formatList(raw.outcomes.map(stake)),
-  });
+export function predictionLock(raw: RawPrediction): NoticeText {
+  return {
+    text: t("PREDICTION_LOCK", { title: raw.title }),
+    detail: formatList(raw.outcomes.map(stake)),
+  };
 }
 
-export function predictionEnd(raw: RawPrediction): string {
+export function predictionEnd(raw: RawPrediction): NoticeText {
   const winner = raw.outcomes.find((o) => o.id === raw.winning_outcome_id);
   if (raw.status === "canceled" || !winner) {
-    return t("PREDICTION_CANCELED", { title: raw.title });
+    return { text: t("PREDICTION_CANCELED", { title: raw.title }) };
   }
   const pot = raw.outcomes.reduce((sum, o) => sum + (o.channel_points ?? 0), 0);
-  return t("PREDICTION_RESOLVED", {
-    title: raw.title,
-    outcome: winner.title,
-    points: pot,
-    users: winner.users ?? 0,
-  });
+  return {
+    text: t("PREDICTION_RESOLVED", { title: raw.title, outcome: winner.title }),
+    detail: t("PREDICTION_PAYOUT", { points: pot, users: winner.users ?? 0 }),
+  };
 }

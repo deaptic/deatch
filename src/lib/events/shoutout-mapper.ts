@@ -8,14 +8,14 @@ import type {
   RawShoutout,
   RawShoutoutReceive,
 } from "../types/twitch/eventsub.ts";
-import { feedEvent, withDetail } from "../utils/feedEvent.ts";
+import { feedEvent, noticeText } from "../utils/feedEvent.ts";
 
 const SHOUTOUT = "shoutout";
 
 export function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
     SHOUTOUT,
-    withDetail(
+    noticeText(
       t("EVENT_SHOUTOUT", {
         mod: raw.moderator_user_name,
         channel: raw.to_broadcaster_user_name,

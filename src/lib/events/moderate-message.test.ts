@@ -19,7 +19,10 @@ Deno.test("describes an action taken here", () => {
     action: "ban",
     ban: { ...user, reason: "spam" },
   };
-  assertEquals(moderateMessage(p, 0), "Mod banned Foo: spam");
+  assertEquals(moderateMessage(p, 0), {
+    text: "Mod banned Foo",
+    detail: "spam",
+  });
 });
 
 Deno.test("counts the viewers sent on a raid", () => {
@@ -30,7 +33,7 @@ Deno.test("counts the viewers sent on a raid", () => {
   };
   assertEquals(
     moderateMessage(p, 0),
-    "Mod initiated a raid on Foo with 1,200 viewers",
+    { text: "Mod initiated a raid on Foo with 1,200 viewers" },
   );
 });
 
@@ -45,7 +48,10 @@ Deno.test("lists the AutoMod terms a mod changed", () => {
       from_automod: false,
     },
   };
-  assertEquals(moderateMessage(p, 0), "Mod added blocked terms: foo, bar");
+  assertEquals(moderateMessage(p, 0), {
+    text: "Mod added blocked terms",
+    detail: "foo and bar",
+  });
 });
 
 Deno.test("describes a resolved unban request with its note", () => {
@@ -54,7 +60,10 @@ Deno.test("describes a resolved unban request with its note", () => {
     action: "deny_unban_request",
     unban_request: { ...user, is_approved: false, moderator_message: "no" },
   };
-  assertEquals(moderateMessage(p, 0), "Mod denied Foo's unban request: no");
+  assertEquals(moderateMessage(p, 0), {
+    text: "Mod denied Foo's unban request",
+    detail: "no",
+  });
 });
 
 Deno.test("names the partner channel for a shared chat action", () => {
@@ -67,7 +76,7 @@ Deno.test("names the partner channel for a shared chat action", () => {
   };
   assertEquals(
     moderateMessage(p, 0),
-    "In Mira's chat, Mod deleted message from Foo saying: hi",
+    { text: "In Mira's chat, Mod deleted a message from Foo", detail: "hi" },
   );
 });
 
@@ -84,6 +93,6 @@ Deno.test("times shared chat timeouts like local ones", () => {
   };
   assertEquals(
     moderateMessage(p, 0),
-    "In Mira's chat, Mod timed out Foo for 10m",
+    { text: "In Mira's chat, Mod timed out Foo for 10m" },
   );
 });

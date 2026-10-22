@@ -23,7 +23,7 @@ import {
   setAutomodHoldStatus,
   setSuspicious,
 } from "../stores/feeds.ts";
-import { feedEvent, withDetail } from "../utils/feedEvent.ts";
+import { feedEvent, noticeText } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
 import { events } from "../bindings.ts";
 import { mapFragment } from "./chat-mapper.ts";
@@ -125,7 +125,7 @@ export function start(): () => void {
           raw.broadcaster_user_id,
           feedEvent(
             UNBAN_REQUEST,
-            withDetail(
+            noticeText(
               t("EVENT_UNBAN_REQUEST", { user: raw.user_name }),
               raw.text,
             ),

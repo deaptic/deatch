@@ -14,17 +14,22 @@ const goal = (g: Partial<RawGoal> = {}): RawGoal => ({
 });
 
 Deno.test("describes a new goal with its progress", () => {
-  assertEquals(goalBegin(goal()), "New sub goal (40/100): Road to 100");
-  assertEquals(goalBegin(goal({ description: "" })), "New sub goal (40/100)");
+  assertEquals(goalBegin(goal()), {
+    text: "New sub goal (40/100)",
+    detail: "Road to 100",
+  });
+  assertEquals(goalBegin(goal({ description: "" })), {
+    text: "New sub goal (40/100)",
+  });
 });
 
 Deno.test("says whether a goal was achieved", () => {
   assertEquals(
     goalEnd(goal({ is_achieved: true, current_amount: 100 })),
-    "Sub goal achieved (100/100): Road to 100",
+    { text: "Sub goal achieved (100/100)", detail: "Road to 100" },
   );
   assertEquals(
     goalEnd(goal({ is_achieved: false })),
-    "Sub goal ended (40/100): Road to 100",
+    { text: "Sub goal ended (40/100)", detail: "Road to 100" },
   );
 });
