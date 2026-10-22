@@ -654,6 +654,8 @@ export type StreamId = string;
 
 export type SubGiftNotice = {
 	sub_tier: SubTier,
+	recipient_user_id: UserId | null,
+	recipient_user_login: string,
 	recipient_user_name: string,
 	cumulative_total: number | null,
 	community_gift_id: string | null,
