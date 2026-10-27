@@ -30,6 +30,21 @@ export const selectedChannel: () => User | null = createRoot(() =>
 
 export const isSettingsOpen = () => activeView() === "settings";
 
+export type SettingsSection =
+  | "notifications"
+  | "moderation"
+  | "triggers"
+  | "appearance"
+  | "link"
+  | "keyboard"
+  | "advanced";
+
+// Kept here so the page opens where it was left, or where a shortcut points.
+const [settingsSection, setSettingsSection] = createSignal<SettingsSection>(
+  "notifications",
+);
+export { setSettingsSection, settingsSection };
+
 let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
 
 // The channel a page returns to, kept joined while a page is shown.
@@ -60,6 +75,12 @@ export function toggleSettings() {
   }
   beforeSettings = v;
   setActiveView("settings");
+}
+
+/// Shows Settings on `section`, opening the page if it is closed.
+export function openSettings(section: SettingsSection) {
+  setSettingsSection(section);
+  if (!isSettingsOpen()) toggleSettings();
 }
 
 export function leavePage(): boolean {

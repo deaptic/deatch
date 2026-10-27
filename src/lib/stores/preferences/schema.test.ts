@@ -45,6 +45,16 @@ Deno.test("hiding all badges keeps each category's own setting", () => {
   assertEquals(sanitize({}).feed.showBadges, true);
 });
 
+Deno.test("hiding all events keeps each kind's own setting", () => {
+  const prefs = sanitize({
+    feed: { showEvents: false, events: { raid: { show: false } } },
+  });
+  assertEquals(prefs.feed.showEvents, false);
+  assertEquals(prefs.feed.events.raid?.show, false);
+  assertEquals(prefs.feed.events.sub?.show, true);
+  assertEquals(sanitize({}).feed.showEvents, true);
+});
+
 Deno.test("triggers without an id or phrase are dropped, the rest repaired", () => {
   const prefs = sanitize({
     triggers: [

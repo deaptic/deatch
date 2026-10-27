@@ -17,6 +17,11 @@ import {
   Show,
 } from "solid-js";
 import NavItem from "../ui/NavItem.tsx";
+import {
+  setSettingsSection,
+  type SettingsSection,
+  settingsSection,
+} from "../../lib/stores/view.ts";
 import NotificationsSection from "./sections/NotificationsSection.tsx";
 import ModerationSection from "./sections/ModerationSection.tsx";
 import AppearanceSection from "./sections/AppearanceSection.tsx";
@@ -25,17 +30,8 @@ import AdvancedSection from "./sections/AdvancedSection.tsx";
 import TriggersSection from "./sections/TriggersSection.tsx";
 import LinkSection from "./sections/LinkSection.tsx";
 
-type SectionKey =
-  | "notifications"
-  | "moderation"
-  | "triggers"
-  | "appearance"
-  | "link"
-  | "keyboard"
-  | "advanced";
-
 const SECTIONS: {
-  key: SectionKey;
+  key: SettingsSection;
   label: MessageKey;
   Icon: (p: { class?: string }) => JSX.Element;
   Section: () => JSX.Element;
@@ -84,7 +80,6 @@ const SECTIONS: {
 const COLLAPSE_BELOW_PX = 640;
 
 export default function Settings() {
-  const [section, setSection] = createSignal<SectionKey>("notifications");
   const [collapsed, setCollapsed] = createSignal(false);
   let root: HTMLDivElement | undefined;
 
@@ -114,9 +109,9 @@ export default function Settings() {
               <NavItem
                 label={t(s.label)}
                 icon={<s.Icon />}
-                active={section() === s.key}
+                active={settingsSection() === s.key}
                 collapsed={collapsed()}
-                onClick={() => setSection(s.key)}
+                onClick={() => setSettingsSection(s.key)}
               />
             )}
           </For>
@@ -124,7 +119,7 @@ export default function Settings() {
         <div class="flex-1 min-w-0 flex flex-col min-h-0">
           <For each={SECTIONS}>
             {(s) => (
-              <Show when={section() === s.key}>
+              <Show when={settingsSection() === s.key}>
                 <s.Section />
               </Show>
             )}
