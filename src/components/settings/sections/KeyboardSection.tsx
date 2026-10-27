@@ -8,6 +8,8 @@ import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
 const ACTION_LABELS: Record<string, MessageKey> = {
   "channel::cycleNext": "SETTINGS_KEYBOARD_CHANNEL_NEXT",
   "channel::cyclePrev": "SETTINGS_KEYBOARD_CHANNEL_PREVIOUS",
+  "channel::back": "SETTINGS_KEYBOARD_CHANNEL_BACK",
+  "channel::forward": "SETTINGS_KEYBOARD_CHANNEL_FORWARD",
   "explore::show": "SETTINGS_KEYBOARD_EXPLORE",
   "settings::toggle": "SETTINGS_KEYBOARD_SETTINGS",
   "rail::toggle": "SETTINGS_KEYBOARD_RAIL",

@@ -584,6 +584,8 @@
   "SETTINGS_APPEARANCE_ZOOM_DESCRIPTION": "Make everything bigger or smaller.",
   "SETTINGS_KEYBOARD": "Keyboard",
   "SETTINGS_KEYBOARD_ALWAYS_ON_TOP": "Always on top",
+  "SETTINGS_KEYBOARD_CHANNEL_BACK": "Back to the last channel you visited",
+  "SETTINGS_KEYBOARD_CHANNEL_FORWARD": "Forward to the channel you came back from",
   "SETTINGS_KEYBOARD_CHANNEL_NEXT": "Next channel",
   "SETTINGS_KEYBOARD_CHANNEL_PREVIOUS": "Previous channel",
   "SETTINGS_KEYBOARD_CHANNEL_SELECT": "Jump to channel {slot}",

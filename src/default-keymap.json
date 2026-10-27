@@ -5,6 +5,8 @@
   "ctrl-pageup": ["channel::cyclePrev"],
   "ctrl-down": ["channel::cycleNext"],
   "ctrl-up": ["channel::cyclePrev"],
+  "alt-left": ["channel::back"],
+  "alt-right": ["channel::forward"],
   "ctrl-m": ["link::toggleMute"],
   "ctrl-shift-m": ["link::muteOthers"],
   "ctrl-shift-d": ["link::toggleMuteAll"],

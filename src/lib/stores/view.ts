@@ -1,6 +1,7 @@
 import { createMemo, createRoot, createSignal } from "solid-js";
 import type { User } from "../types/index.ts";
 import { createDebounced } from "../primitives/createDebounced.ts";
+import { emptyHistory, step, visit } from "../utils/history.ts";
 
 // The single source of truth for what the app is showing: a page or a channel.
 export type ActiveView = "explore" | "settings" | User;
@@ -51,12 +52,27 @@ let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
 const [lastChannel, setLastChannel] = createSignal<User | null>(null);
 export { lastChannel };
 
+let history = emptyHistory<User>();
+
+export function recordVisit(channel: User) {
+  history = visit(history, channel);
+}
+
+/// Moves `delta` steps through visited channels, returning the one to show.
+export function historyStep(delta: 1 | -1): User | null {
+  const next = step(history, delta);
+  if (!next) return null;
+  history = next;
+  return next.entries[next.index];
+}
+
 export function showExplore() {
   setActiveView("explore");
   setLinkSynced(false);
 }
 
 export function resetView() {
+  history = emptyHistory();
   setLastChannel(null);
   beforeSettings = "explore";
   showExplore();
