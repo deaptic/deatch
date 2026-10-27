@@ -35,6 +35,16 @@ Deno.test("keeps valid values and replaces invalid ones field by field", () => {
   assertEquals(prefs.menu.channels.pinned, ["1", "3"]);
 });
 
+Deno.test("hiding all badges keeps each category's own setting", () => {
+  const prefs = sanitize({
+    feed: { showBadges: false, badges: { vanity: { show: false } } },
+  });
+  assertEquals(prefs.feed.showBadges, false);
+  assertEquals(prefs.feed.badges.vanity?.show, false);
+  assertEquals(prefs.feed.badges.subscriber?.show, true);
+  assertEquals(sanitize({}).feed.showBadges, true);
+});
+
 Deno.test("triggers without an id or phrase are dropped, the rest repaired", () => {
   const prefs = sanitize({
     triggers: [
