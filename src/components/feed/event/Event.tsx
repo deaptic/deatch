@@ -40,7 +40,7 @@ export default function Event(props: Props) {
       toneColor={look().color}
       tile={() => (
         <FeedItem.Tile color={look().color}>
-          <span class="feed-icon grid">{icon()}</span>
+          <span class="*:size-feed-icon grid">{icon()}</span>
         </FeedItem.Tile>
       )}
       overlay={() => (
@@ -59,7 +59,7 @@ export default function Event(props: Props) {
       </Show>
       <FeedItem.Content>
         <Show when={props.density === "compact"}>
-          <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
+          <span class="*:size-feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
             {icon()}
           </span>
         </Show>

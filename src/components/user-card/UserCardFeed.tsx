@@ -41,7 +41,7 @@ export default function UserCardFeed(props: Props) {
             onShowUserCard={props.onShowUserCard}
             onUserContextMenu={props.onUserContextMenu}
             onOpenChannel={props.onOpenChannel}
-            scrollClass="px-2 py-1 feed-meta"
+            scrollClass="px-2 py-1 text-feed-meta"
           />
         </Show>
       </div>

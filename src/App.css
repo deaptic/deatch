@@ -134,6 +134,22 @@
   --text-micro--line-height: 1rem;
   --text-micro--font-weight: 600;
 
+  /* Feed rows scale with the user's chat text size, so their parts are sized
+     in em. These are the only em-based sizes in the app. */
+  --text-feed-meta: 0.85em;
+  --text-feed-timestamp: 0.8em;
+  --spacing-feed-emote: 1.7em;
+  --spacing-feed-emote-max: 4.5em;
+  --spacing-feed-emote-bleed: 0.35em;
+  --spacing-feed-timestamp-nudge: 0.18em;
+  --spacing-feed-badge: 1.25em;
+  --spacing-feed-badge-gap: 0.2em;
+  --spacing-feed-badge-drop: -0.15em;
+  --spacing-feed-icon: 1.1em;
+  --spacing-feed-hook: 0.625em;
+  /* Lead (tile or timestamp) beside the text, which may shrink to wrap. */
+  --feed-columns: auto minmax(0, 1fr);
+
   --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -243,46 +259,6 @@
   --color-event-announce-green: oklch(0.54 0.15 150);
   --color-event-announce-orange: oklch(0.58 0.16 55);
   --color-event-announce-purple: oklch(0.52 0.18 305);
-}
-
-/* Feed rows scale with the user's chat text size, so their parts are sized
-   in em. These are the only em-based sizes in the app. */
-@utility feed-emote {
-  height: 1.7em;
-  max-width: 4.5em;
-  margin-block: -0.35em;
-}
-
-@utility feed-meta {
-  font-size: 0.85em;
-}
-
-@utility feed-timestamp {
-  font-size: 0.8em;
-  padding-top: 0.18em;
-}
-
-@utility feed-badge-box {
-  gap: 0.2em;
-  vertical-align: -0.15em;
-}
-
-@utility feed-badge {
-  width: 1.25em;
-  height: 1.25em;
-}
-
-/* Lead (tile or timestamp) beside the text, which may shrink to wrap. */
-@utility feed-item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-@utility feed-icon {
-  & > svg {
-    width: 1.1em;
-    height: 1.1em;
-  }
 }
 
 @utility scrollbar-none {

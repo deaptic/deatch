@@ -35,7 +35,7 @@ export default function Reply(
 
   return (
     <div
-      class={`flex items-center gap-1.5 min-w-0 text-ink-faint feed-meta transition-colors duration-snap ${
+      class={`flex items-center gap-1.5 min-w-0 text-ink-faint text-feed-meta transition-colors duration-snap ${
         props.onJump ? "cursor-pointer hover:text-ink-soft" : ""
       }`}
       onClick={() => props.onJump?.(props.reply.parent_message_id)}

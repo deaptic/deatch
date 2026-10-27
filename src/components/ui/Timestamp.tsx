@@ -4,10 +4,12 @@ type Variant = "plain" | "column" | "gutter" | "inline";
 
 const VARIANTS: Record<Variant, string> = {
   plain: "",
-  column: "feed-timestamp shrink-0 mr-2.5 text-ink-soft select-none",
+  column:
+    "text-feed-timestamp pt-feed-timestamp-nudge shrink-0 mr-2.5 text-ink-soft select-none",
   gutter:
-    "feed-timestamp whitespace-nowrap text-ink-faint select-none invisible group-hover:visible",
-  inline: "feed-timestamp ml-2 text-ink-faint select-none",
+    "text-feed-timestamp pt-feed-timestamp-nudge whitespace-nowrap text-ink-faint select-none invisible group-hover:visible",
+  inline:
+    "text-feed-timestamp pt-feed-timestamp-nudge ml-2 text-ink-faint select-none",
 };
 
 type Props = {

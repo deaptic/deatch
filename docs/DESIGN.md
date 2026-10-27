@@ -143,9 +143,9 @@ on the bottom-right corner of the chatter tile when spacious.
 A message's context sits above it, never beside the name: AutoMod reason, why a
 suspicious chatter is flagged (`caution`, shown to mods), "Cheered N bits", the
 Power-up or channel points perk, reward, "First message", then the reply line
-with a connector down to the message. Context starts where the message text
-starts. Its title is the name, badges, and time; its content is the words; it
-has no detail.
+with a hook pointing down at the message, clear of the avatar and the text.
+Context starts where the message text starts. Its title is the name, badges, and
+time; its content is the words; it has no detail.
 
 An event's title is its type in the event's colour, then the time. Its content
 is one sentence saying what happened, in `ink`, with every person it names as a

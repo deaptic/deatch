@@ -21,7 +21,7 @@ export default function Note(props: Props) {
   return (
     <>
       <div
-        class={`feed-meta leading-tight font-semibold mb-0.5 ${props.class}`}
+        class={`text-feed-meta leading-tight font-semibold mb-0.5 ${props.class}`}
       >
         {props.label}
         <Show when={props.suffix}>
