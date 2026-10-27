@@ -171,6 +171,7 @@ fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'
                 });
             "announcement"
         }
+        "viewermilestone" if tag(tags, "msg-param-category") == "watch-streak" => "watch_streak",
         other => other,
     }
 }
@@ -286,6 +287,17 @@ mod tests {
              :tmi.twitch.tv USERNOTICE #chan :hello",
         );
         assert_eq!(n["announcement"], json!({ "color": "PURPLE" }));
+    }
+
+    #[test]
+    fn maps_watch_streaks() {
+        let n = notice(
+            "@msg-id=viewermilestone;msg-param-category=watch-streak;msg-param-value=80;\
+             system-msg=Foo\\swatched\\s80\\sconsecutive\\sstreams;login=foo;id=n1 \
+             :tmi.twitch.tv USERNOTICE #chan",
+        );
+        assert_eq!(n["notice_type"], "watch_streak");
+        assert_eq!(n["system_message"], "Foo watched 80 consecutive streams");
     }
 
     #[test]

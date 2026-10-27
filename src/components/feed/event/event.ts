@@ -1,6 +1,7 @@
 import {
   Clapperboard,
   Eraser,
+  Flame,
   Gem,
   Gift,
   Heart,
@@ -166,11 +167,27 @@ const LOOKS: Record<string, Look> = {
     Icon: VideoOff,
     title: "EVENT_TITLE_STREAM_OFFLINE",
   },
+  watch_streak: {
+    color: "var(--color-event-channel-points)",
+    Icon: Flame,
+    title: "EVENT_TITLE_WATCH_STREAK",
+  },
   local: {
     color: "var(--color-ink-faint)",
     Icon: Info,
     title: "EVENT_TITLE_LOCAL",
   },
+};
+
+/// Types that share their family's look but say what they are.
+const TITLES: Record<string, MessageKey> = {
+  resub: "EVENT_TITLE_RESUB",
+  sub_gift: "EVENT_TITLE_SUB_GIFT",
+  community_sub_gift: "EVENT_TITLE_COMMUNITY_SUB_GIFT",
+  gift_paid_upgrade: "EVENT_TITLE_GIFT_PAID_UPGRADE",
+  prime_paid_upgrade: "EVENT_TITLE_PRIME_PAID_UPGRADE",
+  pay_it_forward: "EVENT_TITLE_PAY_IT_FORWARD",
+  unraid: "EVENT_TITLE_UNRAID",
 };
 
 // Spelled out in full: Tailwind only keeps theme colours whose names it finds
@@ -188,12 +205,16 @@ const ANNOUNCEMENT_COLORS: Record<
 /// How an event shows: its colour, icon, and title. A picked announcement
 /// colour replaces the type's own.
 export function look(item: Event): Look {
-  const base = LOOKS[item.notice_type] ??
-    LOOKS[NOTICE_TO_EVENT[item.notice_type]] ?? LOOKS.local;
+  const type = item.notice_type.replace(/^shared_chat_/, "");
+  const base = LOOKS[type] ?? LOOKS[NOTICE_TO_EVENT[type]] ?? LOOKS.local;
   const picked = item.announcement_color;
-  return picked && picked !== "primary"
-    ? { ...base, color: ANNOUNCEMENT_COLORS[picked] }
-    : base;
+  return {
+    ...base,
+    title: TITLES[type] ?? base.title,
+    color: picked && picked !== "primary"
+      ? ANNOUNCEMENT_COLORS[picked]
+      : base.color,
+  };
 }
 
 /// The chatter behind an event as a person to link. Local notices have none.
