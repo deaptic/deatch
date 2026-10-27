@@ -58,13 +58,6 @@ export default function AppearancePanel(props: Props) {
       size="menu"
     >
       <MenuItem
-        label={t("CHAT_APPEARANCE_SPACIOUS")}
-        icon={<Rows2 />}
-        active={feedDensity() === "comfortable"}
-        shortcut={shortcuts.keyFor("feed::toggleDensity")}
-        onClick={toggleFeedDensity}
-      />
-      <MenuItem
         label={t("CHAT_APPEARANCE_AVATARS")}
         icon={<CircleUserRound />}
         active={feedShowAvatars()}
@@ -102,6 +95,13 @@ export default function AppearancePanel(props: Props) {
         onClick={() => setFeedShowDeletedContent(!feedShowDeletedContent())}
       />
       <MenuDivider />
+      <MenuItem
+        label={t("CHAT_APPEARANCE_SPACIOUS")}
+        icon={<Rows2 />}
+        active={feedDensity() === "comfortable"}
+        shortcut={shortcuts.keyFor("feed::toggleDensity")}
+        onClick={toggleFeedDensity}
+      />
       <MenuStepper
         label={t("CHAT_APPEARANCE_TEXT_SIZE")}
         icon={<Type />}
