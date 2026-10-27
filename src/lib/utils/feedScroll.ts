@@ -4,7 +4,9 @@ export type ScrollMetrics = {
   clientHeight: number;
 };
 
-const BOTTOM_SLACK_PX = 80;
+// Absorbs sub-pixel scroll offsets; growth while following is caught by the
+// feed's resize observer, so no more is needed.
+const BOTTOM_SLACK_PX = 2;
 
 export function isAtBottom(m: ScrollMetrics): boolean {
   return m.scrollHeight - m.scrollTop - m.clientHeight < BOTTOM_SLACK_PX;

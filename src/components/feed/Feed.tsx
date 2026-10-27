@@ -87,6 +87,7 @@ export default function Feed(props: Props) {
 
   let rootRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
+  let listRef: HTMLDivElement | undefined;
   const scroll = createFeedScroll(() => scrollRef);
 
   const entries = createMemo<FeedEntry[]>(() => {
@@ -215,13 +216,10 @@ export default function Feed(props: Props) {
 
   // The last entry, not the count: at the cap every append evicts one, so
   // the length never changes.
-  createEffect(on(() => entries().at(-1), scroll.follow));
+  createEffect(on(() => entries().at(-1), scroll.keep));
 
   onMount(() => {
-    if (!scrollRef) return;
-    const observer = new ResizeObserver(scroll.follow);
-    observer.observe(scrollRef);
-    onCleanup(() => observer.disconnect());
+    if (listRef) onCleanup(scroll.watch(listRef));
   });
 
   onMount(() => {
@@ -286,22 +284,24 @@ export default function Feed(props: Props) {
           props.scrollClass ?? ""
         }`}
       >
-        <For each={entries()}>
-          {(entry) => (
-            <>
-              <Show when={startsDay(getEntryId(entry))}>
-                <Divider
-                  variant="pill"
-                  label={dayLabel(entry.timestamp, Date.now())}
-                />
-              </Show>
-              <Show when={hasDividerBefore(getEntryId(entry))}>
-                <Divider variant="accent" label={t("FEED_NEW_MESSAGES")} />
-              </Show>
-              <Show when={isFeedEntryVisible(entry)}>{row(entry)}</Show>
-            </>
-          )}
-        </For>
+        <div ref={listRef} class="shrink-0 flex flex-col">
+          <For each={entries()}>
+            {(entry) => (
+              <>
+                <Show when={startsDay(getEntryId(entry))}>
+                  <Divider
+                    variant="pill"
+                    label={dayLabel(entry.timestamp, Date.now())}
+                  />
+                </Show>
+                <Show when={hasDividerBefore(getEntryId(entry))}>
+                  <Divider variant="accent" label={t("FEED_NEW_MESSAGES")} />
+                </Show>
+                <Show when={isFeedEntryVisible(entry)}>{row(entry)}</Show>
+              </>
+            )}
+          </For>
+        </div>
       </div>
       {props.footer}
     </div>

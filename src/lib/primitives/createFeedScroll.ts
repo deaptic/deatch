@@ -16,9 +16,39 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
   // A programmatic scroll echoes one scroll event that must not count as
   // the user scrolling.
   let echo = false;
+  // The message at the top of the view while paused, and how far below the
+  // view's top it sat, so a resize can put it back.
+  let anchor: { item: Element; offset: number } | null = null;
+  // The content height last seen; a scroll that comes with a new height was
+  // made by layout (the browser clamping after a shrink), not by the user.
+  let height = 0;
 
-  const settle = (el: HTMLElement) =>
+  function remember(el: HTMLElement) {
+    const box = el.getBoundingClientRect();
+    const item = document
+      .elementFromPoint(box.left + box.width / 2, box.top + 1)
+      ?.closest("[data-item-id]");
+    anchor = item
+      ? { item, offset: item.getBoundingClientRect().top - box.top }
+      : null;
+  }
+
+  function settle(el: HTMLElement) {
     setMode(isAtBottom(el) ? "follow" : "paused");
+    remember(el);
+    height = el.scrollHeight;
+  }
+
+  function restore() {
+    const el = scroller();
+    if (!el || !anchor?.item.isConnected) return;
+    const shift = anchor.item.getBoundingClientRect().top -
+      el.getBoundingClientRect().top - anchor.offset;
+    if (Math.abs(shift) < 1) return;
+    const before = el.scrollTop;
+    el.scrollTop += shift;
+    echo = el.scrollTop !== before;
+  }
 
   function onScroll(e: Event) {
     if (echo) {
@@ -26,7 +56,9 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
       return;
     }
     if (mode() === "jumping") return;
-    settle(e.currentTarget as HTMLElement);
+    const el = e.currentTarget as HTMLElement;
+    if (el.scrollHeight !== height) keep();
+    else settle(el);
   }
 
   function toBottom() {
@@ -40,8 +72,26 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
     setMode("follow");
   }
 
-  function follow() {
+  /// Holds the view on the newest message while following, or on the one
+  /// being read while paused.
+  function keep() {
     if (mode() === "follow") toBottom();
+    else if (mode() === "paused") restore();
+    height = scroller()?.scrollHeight ?? 0;
+  }
+
+  /// Keeps the view in place while the box or `list` change size (spacing,
+  /// text size, late images). Returns the cleanup.
+  function watch(list: HTMLElement): () => void {
+    const el = scroller();
+    if (!el) return () => {};
+    // The browser's own anchoring would move the view first, and its scroll
+    // event would overwrite the remembered message.
+    el.style.overflowAnchor = "none";
+    const observer = new ResizeObserver(keep);
+    observer.observe(el);
+    observer.observe(list);
+    return () => observer.disconnect();
   }
 
   function jumpTo(
@@ -77,7 +127,8 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
     isPaused: () => mode() !== "follow",
     onScroll,
     toBottom,
-    follow,
+    keep,
+    watch,
     jumpTo,
   };
 }
