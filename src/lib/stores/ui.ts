@@ -1,6 +1,11 @@
 import { createSignal } from "solid-js";
 
-export type Overlay = "inbox" | "diagnostics" | "emotePicker" | "quickSwitch";
+export type Overlay =
+  | "inbox"
+  | "diagnostics"
+  | "emotePicker"
+  | "appearance"
+  | "quickSwitch";
 
 const [openOverlay, setOpenOverlay] = createSignal<Overlay | null>(null);
 export { openOverlay };

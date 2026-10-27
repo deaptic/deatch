@@ -8,7 +8,6 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { Portal } from "solid-js/web";
 import {
   computeChannelSections,
   computeGlobalSections,
@@ -23,9 +22,8 @@ import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
 import Field from "../ui/Field.tsx";
 import NavItem from "../ui/NavItem.tsx";
-import { captureFocusForRestore } from "../../lib/utils/focus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import ComposerPanel from "../ui/ComposerPanel.tsx";
 import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import type { EmoteGridItem } from "./types.ts";
 import {
@@ -54,10 +52,8 @@ type Props = {
 };
 
 export default function EmotePicker(props: Props) {
-  captureFocusForRestore();
   const [search, setSearch] = createSignal("");
   const [tab, setTab] = createSignal<Tab>("channel");
-  const [bottomOffset, setBottomOffset] = createSignal(64);
   let panelRef: HTMLDivElement | undefined;
   let searchRef: HTMLInputElement | undefined;
 
@@ -184,10 +180,6 @@ export default function EmotePicker(props: Props) {
     }
   };
 
-  dismissOnOutside({
-    ref: () => panelRef,
-    onDismiss: props.onClose,
-  });
   onMount(() => {
     queueMicrotask(() => searchRef?.focus());
     const unbind = shortcuts.bindScope("emotePickerOpen", {
@@ -206,21 +198,6 @@ export default function EmotePicker(props: Props) {
     });
     onCleanup(() => {
       unbind();
-    });
-
-    const anchor = props.anchorEl;
-    if (!anchor) return;
-    const update = () => {
-      const rect = anchor.getBoundingClientRect();
-      setBottomOffset(window.innerHeight - rect.top + 8);
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(anchor);
-    window.addEventListener("resize", update);
-    onCleanup(() => {
-      observer.disconnect();
-      window.removeEventListener("resize", update);
     });
   });
 
@@ -254,88 +231,84 @@ export default function EmotePicker(props: Props) {
   );
 
   return (
-    <Portal>
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-label={t("EMOTES_LABEL")}
-        class="fixed right-4 bottom-(--bottom) z-40 w-100 h-110 max-w-full bg-overlay border border-line rounded-lg flex flex-col overflow-hidden transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
-        style={{ "--bottom": `${bottomOffset()}px` }}
-      >
-        <div class="px-2.5 pt-2.5 pb-1.5 shrink-0">
-          <Field
-            size="sm"
-            class="w-full"
-            icon={<Search />}
-            ref={(el) => (searchRef = el)}
-            placeholder={t("EMOTES_SEARCH")}
-            value={search()}
-            onInput={(e) => setSearch(e.currentTarget.value)}
-          />
-        </div>
-        <div class="flex px-2.5 border-b border-line-soft shrink-0">
-          <For each={TABS}>
-            {(entry) => (
-              <NavItem
-                orientation="horizontal"
-                label={t(entry.label)}
-                active={tab() === entry.id}
-                onClick={() => {
-                  setTab(entry.id);
-                  setSearch("");
-                  searchRef?.focus();
-                }}
-              />
-            )}
-          </For>
-        </div>
-
-        <div class="overflow-y-auto flex-1 px-2.5 py-1.5 flex flex-col gap-1 scrollbar-gutter-stable">
-          <For each={sections()}>
-            {(section) => (
-              <Show when={section.label} fallback={renderGrid(section)}>
-                <EmotePickerSection label={section.label!}>
-                  <Show
-                    when={section.items.length > 0}
-                    fallback={
-                      <Show when={section.emptyHint}>
-                        <p class="text-small text-ink-faint px-1 py-2">
-                          {section.emptyHint}
-                        </p>
-                      </Show>
-                    }
-                  >
-                    {renderGrid(section)}
-                  </Show>
-                </EmotePickerSection>
-              </Show>
-            )}
-          </For>
-        </div>
-
-        <div class="shrink-0 h-11 flex items-center gap-2.5 px-3.5 border-t border-line-soft text-small">
-          <Show
-            when={activeItem()}
-            fallback={
-              <span class="text-ink-faint">{t("EMOTES_KEEP_OPEN")}</span>
-            }
-          >
-            {(item) => (
-              <>
-                <img src={item().url} alt="" class="size-6 object-contain" />
-                <span class="font-semibold text-ink truncate">
-                  {item().label}
-                </span>
-                <span class="ml-auto text-ink-faint whitespace-nowrap">
-                  {item().disabled
-                    ? t("EMOTES_HINT_UNAVAILABLE")
-                    : t("EMOTES_HINT_AVAILABLE")}
-                </span>
-              </>
-            )}
-          </Show>
-        </div>
+    <ComposerPanel
+      label={t("EMOTES_LABEL")}
+      anchorEl={props.anchorEl}
+      onClose={props.onClose}
+      size="picker"
+      ref={(el) => (panelRef = el)}
+    >
+      <div class="px-2.5 pt-2.5 pb-1.5 shrink-0">
+        <Field
+          size="sm"
+          class="w-full"
+          icon={<Search />}
+          ref={(el) => (searchRef = el)}
+          placeholder={t("EMOTES_SEARCH")}
+          value={search()}
+          onInput={(e) => setSearch(e.currentTarget.value)}
+        />
       </div>
-    </Portal>
+      <div class="flex px-2.5 border-b border-line-soft shrink-0">
+        <For each={TABS}>
+          {(entry) => (
+            <NavItem
+              orientation="horizontal"
+              label={t(entry.label)}
+              active={tab() === entry.id}
+              onClick={() => {
+                setTab(entry.id);
+                setSearch("");
+                searchRef?.focus();
+              }}
+            />
+          )}
+        </For>
+      </div>
+
+      <div class="overflow-y-auto flex-1 px-2.5 py-1.5 flex flex-col gap-1 scrollbar-gutter-stable">
+        <For each={sections()}>
+          {(section) => (
+            <Show when={section.label} fallback={renderGrid(section)}>
+              <EmotePickerSection label={section.label!}>
+                <Show
+                  when={section.items.length > 0}
+                  fallback={
+                    <Show when={section.emptyHint}>
+                      <p class="text-small text-ink-faint px-1 py-2">
+                        {section.emptyHint}
+                      </p>
+                    </Show>
+                  }
+                >
+                  {renderGrid(section)}
+                </Show>
+              </EmotePickerSection>
+            </Show>
+          )}
+        </For>
+      </div>
+
+      <div class="shrink-0 h-11 flex items-center gap-2.5 px-3.5 border-t border-line-soft text-small">
+        <Show
+          when={activeItem()}
+          fallback={<span class="text-ink-faint">{t("EMOTES_KEEP_OPEN")}</span>}
+        >
+          {(item) => (
+            <>
+              <img src={item().url} alt="" class="size-6 object-contain" />
+              <span class="font-semibold text-ink truncate">
+                {item().label}
+              </span>
+              <span class="ml-auto text-ink-faint whitespace-nowrap">
+                {item().disabled
+                  ? t("EMOTES_HINT_UNAVAILABLE")
+                  : t("EMOTES_HINT_AVAILABLE")}
+              </span>
+            </>
+          )}
+        </Show>
+      </div>
+    </ComposerPanel>
   );
 }
