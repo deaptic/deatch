@@ -124,8 +124,10 @@ size.
 
 ## The feed
 
-Every entry is one `FeedItem`, which owns all row layout. Each kind (message,
-event) only supplies its parts: tone, tile, notes, overlay, content.
+Every entry is one `FeedItem`, which owns all row layout: the tone stripe, the
+tile or timestamp on the left, and four parts on the right. Context sits above,
+the title names who or what, the content says it, and the detail adds anything
+quieter. Messages and events fill the same parts and add no layout of their own.
 
 Each row has one tone, in precedence: held by AutoMod (`caution`), mentions you
 (`accent`), cheer or Power-up (`event-bits`), reward or channel points perk
@@ -138,27 +140,29 @@ In shared chat, a message sent in a partner channel shows that channel's avatar
 at badge size, named in its tooltip: square before the badges by default, round
 on the bottom-right corner of the chatter tile when spacious.
 
-Notes sit above the message, never beside the name: AutoMod reason, why a
+A message's context sits above it, never beside the name: AutoMod reason, why a
 suspicious chatter is flagged (`caution`, shown to mods), "Cheered N bits", the
 Power-up or channel points perk, reward, "First message", then the reply line
-with a connector down to the message. Notes start where the message text starts.
+with a connector down to the message. Context starts where the message text
+starts. Its title is the name, badges, and time; its content is the words; it
+has no detail.
 
-Every event is one `Notice`, in up to three lines. The headline is one sentence
-saying what happened, in `ink`, with every person it names as a name link and
-nothing else emphasised; the event's colour stays on its bar and icon. Below it,
-the chatter's own words, if any, as chat writes them: name, then the words.
-Last, a quieter `ink-soft` line for everything else: a reason, a description,
-results, recipients. A new event fills these three parts and adds no look of its
-own.
+An event's title is its type in the event's colour, then the time. Its content
+is one sentence saying what happened, in `ink`, with every person it names as a
+name link and nothing else emphasised. Its detail, in `ink-soft`, holds the
+chatter's own words as chat writes them (name, then the words) and anything
+else: a reason, a description, results, recipients.
 
 There are two layouts. Default (compact in code) is one line per message with an
-optional timestamp column. Spacious (comfortable in code) groups a chatter's
-messages (same chatter, within seven minutes of the group's first message, same
-day, same shared chat channel, nothing between) under one header with a tile in
-a gutter; the tile sits centred on the first two lines of every row. Replies,
-holds, cheers, Power-ups, rewards, perks, and first messages always start a
-group. The gap before each group is the user's group spacing. Every feed and the
-settings preview follow the user's text size, group spacing, zoom, and density.
+optional timestamp column and no title: a message's badges and name lead its
+words, an event's icon leads its sentence. Spacious (comfortable in code) groups
+a chatter's messages (same chatter, within seven minutes of the group's first
+message, same day, same shared chat channel, nothing between) under one header
+with a tile in a gutter; the tile sits centred on the first two lines of every
+row. Replies, holds, cheers, Power-ups, rewards, perks, and first messages
+always start a group. The gap before each group is the user's group spacing.
+Every feed and the settings preview follow the user's text size, group spacing,
+zoom, and density.
 
 The chatter tile shows the chatter's Twitch avatar, fading in once it has loaded
 (at once when the browser already has it). While the chatter is being looked up
