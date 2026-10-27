@@ -45,7 +45,7 @@ import type {
 import type { EmoteMap } from "../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../lib/utils/cheermote.ts";
 import { splitNames } from "../../lib/utils/splitNames.ts";
-import { formatLocale, t } from "../../lib/i18n/index.ts";
+import { formatLocale, type MessageKey, t } from "../../lib/i18n/index.ts";
 import DisplayName from "../ui/DisplayName.tsx";
 import Fragments from "../ui/Fragments.tsx";
 import Timestamp from "../ui/Timestamp.tsx";
@@ -62,38 +62,143 @@ export type EventOptions = UserActions & {
 
 type Props = ItemLayout & EventOptions & { item: Event };
 
-type Look = { color: string; Icon: Component<{ class?: string }> };
+type Look = {
+  color: string;
+  Icon: Component<{ class?: string }>;
+  title: MessageKey;
+};
 
 const LOOKS: Record<string, Look> = {
-  sub: { color: "var(--color-event-sub)", Icon: Gift },
-  raid: { color: "var(--color-event-raid)", Icon: Swords },
-  announcement: { color: "var(--color-event-announce)", Icon: Megaphone },
-  charity_donation: { color: "var(--color-event-charity)", Icon: Heart },
-  shoutout: { color: "var(--color-event-shoutout)", Icon: Radio },
-  follow: { color: "var(--color-event-follow)", Icon: UserPlus },
-  bits_badge_tier: { color: "var(--color-event-bits)", Icon: Gem },
+  sub: {
+    color: "var(--color-event-sub)",
+    Icon: Gift,
+    title: "EVENT_TITLE_SUB",
+  },
+  raid: {
+    color: "var(--color-event-raid)",
+    Icon: Swords,
+    title: "EVENT_TITLE_RAID",
+  },
+  announcement: {
+    color: "var(--color-event-announce)",
+    Icon: Megaphone,
+    title: "EVENT_TITLE_ANNOUNCEMENT",
+  },
+  charity_donation: {
+    color: "var(--color-event-charity)",
+    Icon: Heart,
+    title: "EVENT_TITLE_CHARITY_DONATION",
+  },
+  shoutout: {
+    color: "var(--color-event-shoutout)",
+    Icon: Radio,
+    title: "EVENT_TITLE_SHOUTOUT",
+  },
+  follow: {
+    color: "var(--color-event-follow)",
+    Icon: UserPlus,
+    title: "EVENT_TITLE_FOLLOW",
+  },
+  bits_badge_tier: {
+    color: "var(--color-event-bits)",
+    Icon: Gem,
+    title: "EVENT_TITLE_BITS_BADGE_TIER",
+  },
   channel_points_redemption: {
     color: "var(--color-event-channel-points)",
     Icon: Star,
+    title: "EVENT_TITLE_CHANNEL_POINTS_REDEMPTION",
   },
-  clip_created: { color: "var(--color-accent-ink)", Icon: Clapperboard },
-  chat_connected: { color: "var(--color-positive)", Icon: Plug },
-  chat_disconnected: { color: "var(--color-ink-faint)", Icon: Unplug },
-  chat_connect_failed: { color: "var(--color-negative)", Icon: TriangleAlert },
-  chat_cleared: { color: "var(--color-caution)", Icon: Eraser },
-  moderation: { color: "var(--color-caution)", Icon: Shield },
-  seventv_update: { color: "var(--color-info)", Icon: Sparkles },
-  channel_update: { color: "var(--color-info)", Icon: PenLine },
-  poll: { color: "var(--color-event-poll)", Icon: Vote },
-  prediction: { color: "var(--color-event-channel-points)", Icon: Trophy },
-  bits_use: { color: "var(--color-event-bits)", Icon: Gem },
-  ad_break: { color: "var(--color-caution)", Icon: Tv },
-  goal: { color: "var(--color-event-goal)", Icon: Target },
-  hype_train: { color: "var(--color-event-hype-train)", Icon: TrainFront },
-  shared_chat_session: { color: "var(--color-info)", Icon: Users },
-  stream_online: { color: "var(--color-positive)", Icon: Video },
-  stream_offline: { color: "var(--color-ink-faint)", Icon: VideoOff },
-  local: { color: "var(--color-ink-faint)", Icon: Info },
+  clip_created: {
+    color: "var(--color-accent-ink)",
+    Icon: Clapperboard,
+    title: "EVENT_TITLE_CLIP_CREATED",
+  },
+  chat_connected: {
+    color: "var(--color-positive)",
+    Icon: Plug,
+    title: "EVENT_TITLE_CHAT_CONNECTED",
+  },
+  chat_disconnected: {
+    color: "var(--color-ink-faint)",
+    Icon: Unplug,
+    title: "EVENT_TITLE_CHAT_DISCONNECTED",
+  },
+  chat_connect_failed: {
+    color: "var(--color-negative)",
+    Icon: TriangleAlert,
+    title: "EVENT_TITLE_CHAT_CONNECT_FAILED",
+  },
+  chat_cleared: {
+    color: "var(--color-caution)",
+    Icon: Eraser,
+    title: "EVENT_TITLE_CHAT_CLEARED",
+  },
+  moderation: {
+    color: "var(--color-caution)",
+    Icon: Shield,
+    title: "EVENT_TITLE_MODERATION",
+  },
+  seventv_update: {
+    color: "var(--color-info)",
+    Icon: Sparkles,
+    title: "EVENT_TITLE_SEVENTV_UPDATE",
+  },
+  channel_update: {
+    color: "var(--color-info)",
+    Icon: PenLine,
+    title: "EVENT_TITLE_CHANNEL_UPDATE",
+  },
+  poll: {
+    color: "var(--color-event-poll)",
+    Icon: Vote,
+    title: "EVENT_TITLE_POLL",
+  },
+  prediction: {
+    color: "var(--color-event-channel-points)",
+    Icon: Trophy,
+    title: "EVENT_TITLE_PREDICTION",
+  },
+  bits_use: {
+    color: "var(--color-event-bits)",
+    Icon: Gem,
+    title: "EVENT_TITLE_BITS_USE",
+  },
+  ad_break: {
+    color: "var(--color-caution)",
+    Icon: Tv,
+    title: "EVENT_TITLE_AD_BREAK",
+  },
+  goal: {
+    color: "var(--color-event-goal)",
+    Icon: Target,
+    title: "EVENT_TITLE_GOAL",
+  },
+  hype_train: {
+    color: "var(--color-event-hype-train)",
+    Icon: TrainFront,
+    title: "EVENT_TITLE_HYPE_TRAIN",
+  },
+  shared_chat_session: {
+    color: "var(--color-info)",
+    Icon: Users,
+    title: "EVENT_TITLE_SHARED_CHAT_SESSION",
+  },
+  stream_online: {
+    color: "var(--color-positive)",
+    Icon: Video,
+    title: "EVENT_TITLE_STREAM_ONLINE",
+  },
+  stream_offline: {
+    color: "var(--color-ink-faint)",
+    Icon: VideoOff,
+    title: "EVENT_TITLE_STREAM_OFFLINE",
+  },
+  local: {
+    color: "var(--color-ink-faint)",
+    Icon: Info,
+    title: "EVENT_TITLE_LOCAL",
+  },
 };
 
 // Spelled out in full: Tailwind only keeps theme colours whose names it finds
@@ -187,6 +292,12 @@ export default function FeedEvent(props: Props) {
       onContextMenu={props.onEventContextMenu &&
         ((x, y) => props.onEventContextMenu!(x, y, item))}
     >
+      <Show when={props.density === "comfortable"}>
+        <FeedItem.Title>
+          <span class="font-semibold text-(--tone)">{t(look().title)}</span>
+          <Timestamp ts={item.timestamp} format="c" variant="inline" />
+        </FeedItem.Title>
+      </Show>
       <FeedItem.Content>
         <Show when={props.density === "compact"}>
           <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
@@ -201,9 +312,6 @@ export default function FeedEvent(props: Props) {
               ? name(people[segment.person], segment.text)
               : segment.text}
         </For>
-        <Show when={props.density === "comfortable"}>
-          <Timestamp ts={item.timestamp} format="c" variant="inline" />
-        </Show>
       </FeedItem.Content>
       <FeedItem.Detail>
         <Show when={item.message}>
