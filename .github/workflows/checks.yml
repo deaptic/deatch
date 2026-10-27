@@ -22,12 +22,8 @@ jobs:
         with:
           rust-components: rustfmt, clippy
 
-      - name: deno fmt
-        run: deno fmt --check
-      - name: deno lint
-        run: deno lint
-      - name: ui lint
-        run: pnpm lint:ui
+      - name: vp check
+        run: vp check
       - name: deno check
         run: deno check src/
       - name: deno test
