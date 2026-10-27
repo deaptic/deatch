@@ -8,6 +8,7 @@
     "showCopypasta": false,
     "showAvatars": true,
     "showBadges": true,
+    "showEvents": true,
     "keywords": [],
     "events": {
       "message": { "show": true },

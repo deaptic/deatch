@@ -22,6 +22,7 @@ export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
 export const feedShowAvatars = () => prefs.feed.showAvatars;
 export const feedShowBadges = () => prefs.feed.showBadges;
+export const feedShowEvents = () => prefs.feed.showEvents;
 export const feedBadges = () =>
   prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () =>
@@ -40,6 +41,12 @@ export function stepFeedFontSize(direction: 1 | -1) {
 export function setFeedGroupSpacing(value: number) {
   setPrefs("feed", "groupSpacing", clampToStops(value, GROUP_SPACING_STOPS));
   persist();
+}
+
+export function stepFeedGroupSpacing(direction: 1 | -1) {
+  setFeedGroupSpacing(
+    stepStop(feedGroupSpacing(), GROUP_SPACING_STOPS, direction),
+  );
 }
 
 export function setFeedDensity(value: Density) {
@@ -68,6 +75,11 @@ export function setFeedShowAvatars(value: boolean) {
 
 export function setFeedShowBadges(value: boolean) {
   setPrefs("feed", "showBadges", value);
+  persist();
+}
+
+export function setFeedShowEvents(value: boolean) {
+  setPrefs("feed", "showEvents", value);
   persist();
 }
 

@@ -1,31 +1,46 @@
 import {
+  AtSign,
   BadgeCheck,
   CircleUserRound,
   Clock,
-  Minus,
-  Plus,
+  Megaphone,
   Rows2,
+  SeparatorHorizontal,
+  Settings,
+  Trash2,
   Type,
 } from "lucide-solid";
 import { t } from "../../lib/i18n/index.ts";
-import { FONT_SIZE_STOPS } from "../../lib/constants/accessibility.ts";
+import {
+  FONT_SIZE_STOPS,
+  GROUP_SPACING_STOPS,
+} from "../../lib/constants/accessibility.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import {
   feedDensity,
   feedFontSize,
+  feedGroupSpacing,
   feedShowAvatars,
   feedShowBadges,
+  feedShowDeletedContent,
+  feedShowEvents,
   feedShowTimestamp,
+  feedUserShowDisplayName,
   setFeedShowAvatars,
   setFeedShowBadges,
+  setFeedShowDeletedContent,
+  setFeedShowEvents,
   setFeedShowTimestamp,
+  setFeedUserShowDisplayName,
   stepFeedFontSize,
+  stepFeedGroupSpacing,
   toggleFeedDensity,
 } from "../../lib/stores/preferences.ts";
+import { openSettings } from "../../lib/stores/view.ts";
 import ComposerPanel from "../ui/ComposerPanel.tsx";
-import IconButton from "../ui/IconButton.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
+import MenuStepper from "../ui/MenuStepper.tsx";
 
 type Props = {
   onClose: () => void;
@@ -67,34 +82,56 @@ export default function AppearancePanel(props: Props) {
         active={feedShowBadges()}
         onClick={() => setFeedShowBadges(!feedShowBadges())}
       />
+      <MenuItem
+        label={t("CHAT_APPEARANCE_DISPLAY_NAMES")}
+        icon={<AtSign />}
+        active={feedUserShowDisplayName()}
+        onClick={() => setFeedUserShowDisplayName(!feedUserShowDisplayName())}
+      />
       <MenuDivider />
-      <div class="h-control-md flex items-center gap-2.5 pl-2.5 text-body text-ink">
-        <span class="shrink-0 w-4 grid place-items-center text-ink-soft [&>svg]:size-4">
-          <Type />
-        </span>
-        <span class="truncate">{t("CHAT_APPEARANCE_TEXT_SIZE")}</span>
-        <span class="ml-auto flex items-center gap-1">
-          <IconButton
-            label={t("CHAT_APPEARANCE_TEXT_SMALLER")}
-            size="sm"
-            disabled={feedFontSize() <= FONT_SIZE_STOPS[0]}
-            onClick={() => stepFeedFontSize(-1)}
-          >
-            <Minus class="size-4" />
-          </IconButton>
-          <span class="w-10 text-center text-small text-ink-soft tabular-nums">
-            {`${feedFontSize()}px`}
-          </span>
-          <IconButton
-            label={t("CHAT_APPEARANCE_TEXT_LARGER")}
-            size="sm"
-            disabled={feedFontSize() >= FONT_SIZE_STOPS.at(-1)!}
-            onClick={() => stepFeedFontSize(1)}
-          >
-            <Plus class="size-4" />
-          </IconButton>
-        </span>
-      </div>
+      <MenuItem
+        label={t("CHAT_APPEARANCE_EVENTS")}
+        icon={<Megaphone />}
+        active={feedShowEvents()}
+        onClick={() => setFeedShowEvents(!feedShowEvents())}
+      />
+      <MenuItem
+        label={t("CHAT_APPEARANCE_DELETED")}
+        icon={<Trash2 />}
+        active={feedShowDeletedContent()}
+        onClick={() => setFeedShowDeletedContent(!feedShowDeletedContent())}
+      />
+      <MenuDivider />
+      <MenuStepper
+        label={t("CHAT_APPEARANCE_TEXT_SIZE")}
+        icon={<Type />}
+        value={`${feedFontSize()}px`}
+        lessLabel={t("CHAT_APPEARANCE_TEXT_SMALLER")}
+        moreLabel={t("CHAT_APPEARANCE_TEXT_LARGER")}
+        canLess={feedFontSize() > FONT_SIZE_STOPS[0]}
+        canMore={feedFontSize() < FONT_SIZE_STOPS.at(-1)!}
+        onStep={stepFeedFontSize}
+      />
+      <MenuStepper
+        label={t("CHAT_APPEARANCE_GROUP_SPACING")}
+        icon={<SeparatorHorizontal />}
+        value={`${feedGroupSpacing()}px`}
+        lessLabel={t("CHAT_APPEARANCE_GROUP_SPACING_LESS")}
+        moreLabel={t("CHAT_APPEARANCE_GROUP_SPACING_MORE")}
+        canLess={feedGroupSpacing() > GROUP_SPACING_STOPS[0]}
+        canMore={feedGroupSpacing() < GROUP_SPACING_STOPS.at(-1)!}
+        onStep={stepFeedGroupSpacing}
+        disabled={feedDensity() !== "comfortable"}
+      />
+      <MenuDivider />
+      <MenuItem
+        label={t("CHAT_APPEARANCE_MORE_SETTINGS")}
+        icon={<Settings />}
+        onClick={() => {
+          props.onClose();
+          openSettings("appearance");
+        }}
+      />
     </ComposerPanel>
   );
 }
