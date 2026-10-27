@@ -570,7 +570,7 @@
   "SETTINGS_APPEARANCE_THEME_LIGHT": "Light",
   "SETTINGS_APPEARANCE_THEME_SYSTEM": "System",
   "SETTINGS_APPEARANCE_TIMESTAMPS": "Show timestamps",
-  "SETTINGS_APPEARANCE_TIMESTAMPS_DESCRIPTION": "The spacious layout always shows them.",
+  "SETTINGS_APPEARANCE_TIMESTAMPS_DESCRIPTION": "The time each message and event was sent.",
   "SETTINGS_APPEARANCE_ZOOM": "Zoom",
   "SETTINGS_APPEARANCE_ZOOM_DESCRIPTION": "Make everything bigger or smaller.",
   "SETTINGS_KEYBOARD": "Keyboard",

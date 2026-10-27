@@ -54,7 +54,9 @@ export default function Event(props: Props) {
       <Show when={props.density === "comfortable"}>
         <FeedItem.Title>
           <span class="font-semibold text-(--tone)">{t(look().title)}</span>
-          <Timestamp ts={item.timestamp} format="c" variant="inline" />
+          <Show when={props.showTimestamp}>
+            <Timestamp ts={item.timestamp} format="c" variant="inline" />
+          </Show>
         </FeedItem.Title>
       </Show>
       <FeedItem.Content>
