@@ -4,10 +4,10 @@ import { centeredScrollTop, isAtBottom, maxScrollTop } from "./feedScroll.ts";
 
 const viewport = { scrollTop: 0, scrollHeight: 2000, clientHeight: 500 };
 
-Deno.test("isAtBottom allows a little slack", () => {
+Deno.test("isAtBottom only forgives sub-pixel offsets", () => {
   assertEquals(isAtBottom({ ...viewport, scrollTop: 1500 }), true);
-  assertEquals(isAtBottom({ ...viewport, scrollTop: 1430 }), true);
-  assertEquals(isAtBottom({ ...viewport, scrollTop: 1400 }), false);
+  assertEquals(isAtBottom({ ...viewport, scrollTop: 1499.5 }), true);
+  assertEquals(isAtBottom({ ...viewport, scrollTop: 1490 }), false);
 });
 
 Deno.test("centeredScrollTop centres the item and clamps to the range", () => {
