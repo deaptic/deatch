@@ -20,6 +20,9 @@ import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import type { LinkControls } from "./createLinkControls.ts";
 
+// The mouse's side buttons.
+const MOUSE_HISTORY_STEPS: Record<number, 1 | -1> = { 3: -1, 4: 1 };
+
 function zoom(change: () => void): void {
   change();
   readout.show(`${appearanceZoom()}%`);
@@ -39,6 +42,8 @@ export function createAppShortcuts(
         "channel::cyclePrev",
         () => link.cycleChannel(-1),
       ),
+      shortcuts.register("channel::back", () => nav.stepHistory(-1)),
+      shortcuts.register("channel::forward", () => nav.stepHistory(1)),
       shortcuts.register("link::toggle", link.toggleLink),
       shortcuts.register(
         "link::toggleAudioLink",
@@ -94,6 +99,14 @@ export function createAppShortcuts(
         }),
       );
     }
+    const onMouseUp = (e: MouseEvent) => {
+      const delta = MOUSE_HISTORY_STEPS[e.button];
+      if (!delta) return;
+      e.preventDefault();
+      nav.stepHistory(delta);
+    };
+    window.addEventListener("mouseup", onMouseUp);
+    unbind.push(() => window.removeEventListener("mouseup", onMouseUp));
     onCleanup(() => {
       for (const u of unbind) u();
     });

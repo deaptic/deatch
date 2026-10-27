@@ -3,7 +3,9 @@ import type { User } from "../types/index.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "../services/users.ts";
 import {
+  historyStep,
   linkSynced,
+  recordVisit,
   selectedChannel,
   setJumpTarget,
   setLinkSynced,
@@ -19,6 +21,7 @@ export type ChannelNavigation = {
   selectChannel(ch: User): void;
   openChannel(channelId: string): void;
   jumpToMessage(channelId: string, messageId: string): void;
+  stepHistory(delta: 1 | -1): void;
 };
 
 export function createChannelNavigation(): ChannelNavigation {
@@ -50,11 +53,17 @@ export function createChannelNavigation(): ChannelNavigation {
     openChannel(channelId, () => setJumpTarget({ channelId, messageId }));
   }
 
+  function stepHistory(delta: 1 | -1) {
+    const ch = historyStep(delta);
+    if (ch) selectChannel(ch);
+  }
+
   // Whatever channel is shown — picked manually or mirrored from the browser
   // tab in Link mode — gets its feed prepared and marked seen.
   createEffect(
     on(selectedChannel, (ch) => {
       if (!ch) return;
+      recordVisit(ch);
       users.set([ch]);
       ensureFeed(ch.id);
       markSeen(ch.id);
@@ -66,5 +75,6 @@ export function createChannelNavigation(): ChannelNavigation {
     selectChannel,
     openChannel: (channelId) => openChannel(channelId),
     jumpToMessage,
+    stepHistory,
   };
 }
