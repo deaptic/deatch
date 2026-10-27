@@ -1,14 +1,37 @@
 import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import { Blobatar } from "@blobatar/solid";
 import "blobatar/motion.css";
-import * as users from "../../../lib/services/users.ts";
-import { knownUser } from "../../../lib/stores/users.ts";
-import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
-import { avatarZoom, sizedAvatarUrl } from "../../../lib/utils/avatar.ts";
-import { chatterLook } from "./chatterLook.ts";
+import * as users from "../../lib/services/users.ts";
+import { knownUser } from "../../lib/stores/users.ts";
+import { feedShowAvatars } from "../../lib/stores/preferences.ts";
+import { avatarZoom, sizedAvatarUrl } from "../../lib/utils/avatar.ts";
+import type { Palette } from "blobatar";
+import * as appearance from "../../lib/services/appearance.ts";
+import { hueOf } from "../../lib/utils/color.ts";
 
 const IMAGE_PX = 70;
 const INSTANT_MS = 50;
+const VIVID_TONE = 0.7;
+
+export type ChatterLook = {
+  tint?: string;
+  hue?: number;
+  tone?: number;
+  palette?: Palette;
+};
+
+export function chatterLook(color: string): ChatterLook {
+  const hue = hueOf(color);
+  if (hue === undefined) {
+    return {
+      palette: {
+        head: appearance.token("color-ink-soft"),
+        eye: appearance.token("color-canvas"),
+      },
+    };
+  }
+  return { tint: color, hue, tone: VIVID_TONE };
+}
 
 type Props = {
   userId: string;

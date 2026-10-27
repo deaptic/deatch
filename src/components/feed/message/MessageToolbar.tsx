@@ -6,7 +6,7 @@ import { OVERLAY_GAP } from "../../ui/Popover.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 import { feedShowCopypasta } from "../../../lib/stores/preferences.ts";
-import type { Reaction } from "./reaction.ts";
+import type { Reaction } from "../../../lib/types/index.ts";
 
 type Props = {
   item: FeedMessage;

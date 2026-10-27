@@ -6,8 +6,7 @@ import {
   userLinkHover,
 } from "../../ui/userLink.ts";
 import FeedTile from "../FeedTile.tsx";
-import { chatterLook } from "./chatterLook.ts";
-import ChatterPicture from "./ChatterPicture.tsx";
+import ChatterPicture, { chatterLook } from "../../ui/ChatterPicture.tsx";
 import SourceChannel from "./SourceChannel.tsx";
 
 type Props = UserActions & {

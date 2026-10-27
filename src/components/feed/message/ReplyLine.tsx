@@ -8,8 +8,7 @@ import {
   userLink,
   userLinkHover,
 } from "../../ui/userLink.ts";
-import { chatterLook } from "./chatterLook.ts";
-import ChatterPicture from "./ChatterPicture.tsx";
+import ChatterPicture, { chatterLook } from "../../ui/ChatterPicture.tsx";
 
 type Props = UserActions & {
   reply: NonNullable<FeedMessage["reply"]>;

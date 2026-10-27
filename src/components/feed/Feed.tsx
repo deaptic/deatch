@@ -27,7 +27,7 @@ import {
 import { knownUser } from "../../lib/stores/users.ts";
 import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
 import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
-import { createFeedScroll } from "./createFeedScroll.ts";
+import { createFeedScroll } from "../../lib/primitives/createFeedScroll.ts";
 import {
   feedKeywords,
   feedShowDeletedContent,
@@ -35,10 +35,10 @@ import {
 } from "../../lib/stores/preferences.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import FeedItem from "./FeedItem.tsx";
-import FeedDivider from "./FeedDivider.tsx";
-import FeedDayDivider from "./FeedDayDivider.tsx";
+import Divider from "../ui/Divider.tsx";
+import { t } from "../../lib/i18n/index.ts";
 import type { Density } from "../../lib/constants/density.ts";
-import { layoutFeed } from "../../lib/utils/feedLayout.ts";
+import { dayLabel, layoutFeed } from "../../lib/utils/feedLayout.ts";
 import type { UserActions } from "../ui/userLink.ts";
 
 export type FeedApi = {
@@ -290,10 +290,13 @@ export default function Feed(props: Props) {
           {(entry) => (
             <>
               <Show when={startsDay(getEntryId(entry))}>
-                <FeedDayDivider ts={entry.timestamp} />
+                <Divider
+                  variant="pill"
+                  label={dayLabel(entry.timestamp, Date.now())}
+                />
               </Show>
               <Show when={hasDividerBefore(getEntryId(entry))}>
-                <FeedDivider />
+                <Divider variant="accent" label={t("FEED_NEW_MESSAGES")} />
               </Show>
               <Show when={isFeedEntryVisible(entry)}>{row(entry)}</Show>
             </>
