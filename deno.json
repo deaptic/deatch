@@ -1,21 +1,5 @@
 {
   "imports": {
     "@std/assert": "jsr:@std/assert@^1"
-  },
-  "fmt": {
-    "include": ["src/"],
-    "exclude": ["src/lib/bindings.ts"]
-  },
-  "lint": {
-    "include": ["src/"],
-    "exclude": ["src/lib/bindings.ts"],
-    "rules": {
-      "exclude": [
-        "no-window",
-        "no-window-prefix",
-        "require-await",
-        "jsx-button-has-type"
-      ]
-    }
   }
 }

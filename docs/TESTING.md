@@ -3,7 +3,7 @@
 Run this before every commit; CI runs the same on every push.
 
 ```powershell
-deno fmt && deno lint && pnpm lint:ui && deno check src/ && pnpm test
+vp check --fix && deno check src/ && pnpm test
 cd src-tauri
 cargo fmt && cargo clippy --all-targets -- -D warnings
 cargo test --lib
@@ -22,5 +22,5 @@ parsers, mappings, and params, asserting wire shapes with
 `pnpm bindings` and commit. `build.rs` embeds the app manifest so test
 binaries can start on Windows; keep it that way.
 
-`pnpm lint:ui` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
+`vp check` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
 hex, shadows, gradients, or arbitrary Tailwind values.

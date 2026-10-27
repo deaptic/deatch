@@ -2,22 +2,17 @@
   "name": "deatch",
   "version": "0.3.28",
   "description": "",
+  "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@12.15.0",
-  "engines": {
-    "node": ">=24.22.1"
-  },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint:ui": "oxlint src",
+    "dev": "vp dev",
+    "build": "vp build",
     "test": "deno test src/",
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml -- --export-bindings",
     "tauri": "tauri",
     "release": "deno run -A scripts/release.ts",
     "pack:extension": "deno run -A scripts/pack-extension.ts"
   },
-  "license": "MIT",
   "dependencies": {
     "@blobatar/solid": "^2.7.0",
     "@tailwindcss/vite": "^4.3.3",
@@ -37,9 +32,13 @@
   "devDependencies": {
     "@shadcn/lint": "^0.2.0",
     "@tauri-apps/cli": "^2.12.0",
-    "oxlint": "^1.86.0",
     "typescript": "^6.0.3",
-    "vite": "^8.3.1",
-    "vite-plugin-solid": "^2.11.14"
-  }
+    "vite": "catalog:",
+    "vite-plugin-solid": "^2.11.14",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.22.1"
+  },
+  "packageManager": "pnpm@12.15.0"
 }
