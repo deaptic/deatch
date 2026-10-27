@@ -115,7 +115,7 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
               {segment.url}
             </a>
           )
-          : <span class="text-ink">{segment.text}</span>}
+          : segment.text}
     </For>
   );
 }
