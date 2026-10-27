@@ -1,6 +1,6 @@
 // Usage:
-//   deno task pack:extension                 (no version change)
-//   deno task pack:extension patch | minor | major | 1.2.3
+//   pnpm pack:extension                 (no version change)
+//   pnpm pack:extension patch | minor | major | 1.2.3
 //
 // Bumps the version in extension/manifest.json when asked, then builds
 // extension/dist/deatch-link-{firefox,chrome}-<v>.zip, each with a manifest

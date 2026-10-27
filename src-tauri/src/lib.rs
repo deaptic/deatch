@@ -189,7 +189,7 @@ mod tests {
         super::export_to(&super::bindings(), &fresh);
         assert!(
             normalized(&fresh) == normalized(std::path::Path::new(super::BINDINGS_PATH)),
-            "src/lib/bindings.ts is stale; run `deno task bindings` and commit the result"
+            "src/lib/bindings.ts is stale; run `pnpm bindings` and commit the result"
         );
     }
 }
