@@ -4,6 +4,7 @@ import {
   clampToStops,
   FONT_SIZE_STOPS,
   GROUP_SPACING_STOPS,
+  stepStop,
 } from "../../constants/accessibility.ts";
 import {
   type BadgePref,
@@ -29,6 +30,11 @@ export const feedEvents = () =>
 export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STOPS));
   persist();
+}
+
+/// One stop smaller or larger, staying on the scale's ends.
+export function stepFeedFontSize(direction: 1 | -1) {
+  setFeedFontSize(stepStop(feedFontSize(), FONT_SIZE_STOPS, direction));
 }
 
 export function setFeedGroupSpacing(value: number) {
