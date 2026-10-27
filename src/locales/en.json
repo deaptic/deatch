@@ -528,6 +528,8 @@
   "SETTINGS_APPEARANCE_AVATARS": "Profile pictures",
   "SETTINGS_APPEARANCE_AVATARS_DESCRIPTION": "Show chatters' Twitch pictures in the spacious layout.",
   "SETTINGS_APPEARANCE_BADGES": "Badges",
+  "SETTINGS_APPEARANCE_BADGES_SHOW": "Show badges",
+  "SETTINGS_APPEARANCE_BADGES_SHOW_DESCRIPTION": "Turn every badge off at once. Each kind below keeps its own setting for when they come back.",
   "SETTINGS_APPEARANCE_CHANNEL_SPACING": "Channel list spacing",
   "SETTINGS_APPEARANCE_CHANNEL_SPACING_DESCRIPTION": "How much room each channel takes in the list on the left.",
   "SETTINGS_APPEARANCE_COMPACT": "Compact",

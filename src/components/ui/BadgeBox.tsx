@@ -1,6 +1,6 @@
 import { children, For, type JSX, Show } from "solid-js";
 import { badgeCategoryFor } from "../../lib/constants.ts";
-import { feedBadges } from "../../lib/stores/preferences.ts";
+import { feedBadges, feedShowBadges } from "../../lib/stores/preferences.ts";
 import type { BadgeMap } from "../../lib/types/index.ts";
 
 type Badge = { set_id: string; id: string; info?: string };
@@ -23,7 +23,7 @@ type Props = {
 export default function BadgeBox(props: Props) {
   const lead = children(() => props.children);
   const items = () =>
-    props.badges.flatMap((b) => {
+    !feedShowBadges() ? [] : props.badges.flatMap((b) => {
       if (feedBadges()[badgeCategoryFor(b.set_id)]?.show === false) return [];
       const badge = props.channelBadges[`${b.set_id}/${b.id}`];
       return badge ? [{ ...badge, info: b.info }] : [];

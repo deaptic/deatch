@@ -55,6 +55,7 @@ export type UserPreferences = {
     showDeletedContent: boolean;
     showCopypasta: boolean;
     showAvatars: boolean;
+    showBadges: boolean;
     keywords: string[];
     events: Partial<Record<EventKey, EventPref>>;
     badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
@@ -238,6 +239,10 @@ export function sanitize(raw: unknown): UserPreferences {
       showAvatars: bool(
         stored.feed?.showAvatars,
         DEFAULT_PREFERENCES.feed.showAvatars,
+      ),
+      showBadges: bool(
+        stored.feed?.showBadges,
+        DEFAULT_PREFERENCES.feed.showBadges,
       ),
       keywords: Array.isArray(stored.feed?.keywords)
         ? stored.feed!.keywords.filter((k): k is string =>

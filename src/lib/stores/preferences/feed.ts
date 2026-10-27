@@ -20,6 +20,7 @@ export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
 export const feedShowAvatars = () => prefs.feed.showAvatars;
+export const feedShowBadges = () => prefs.feed.showBadges;
 export const feedBadges = () =>
   prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
 export const feedEvents = () =>
@@ -56,6 +57,11 @@ export function setFeedShowDeletedContent(value: boolean) {
 
 export function setFeedShowAvatars(value: boolean) {
   setPrefs("feed", "showAvatars", value);
+  persist();
+}
+
+export function setFeedShowBadges(value: boolean) {
+  setPrefs("feed", "showBadges", value);
   persist();
 }
 
