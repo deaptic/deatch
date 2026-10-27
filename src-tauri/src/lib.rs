@@ -168,13 +168,6 @@ pub fn run() {
             app.manage(hosts);
             app.manage(emotes::seventv_events::spawn(app.handle().clone()));
 
-            if let Some(window) = app.get_webview_window("main") {
-                let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/taskbar.png"))?;
-                if let Err(e) = window.set_icon(icon) {
-                    log::warn!("taskbar icon failed: {e}");
-                }
-            }
-
             Ok(())
         })
         .manage(discord::DiscordState::default())
