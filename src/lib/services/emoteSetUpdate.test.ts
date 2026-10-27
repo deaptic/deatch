@@ -23,7 +23,10 @@ Deno.test("removes, renames, then appends added emotes", () => {
       renamed: [{ from: "Old", to: "Fresh" }],
     }),
   );
-  assertEquals(next.map((e) => e.name), ["Fresh", "Pog", "New1"]);
+  assertEquals(
+    next.map((e) => e.name),
+    ["Fresh", "Pog", "New1"],
+  );
   assertEquals(next[0].url, "https://cdn/Old");
 });
 

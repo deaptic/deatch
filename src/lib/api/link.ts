@@ -15,11 +15,9 @@ export async function linkSetAudio(
   compressor: Compressor,
   gains: Record<string, number>,
 ): Promise<void> {
-  await invokeCommand(
-    commands.linkSetAudio,
-    [{ enabled, compressor, gains }],
-    { silent: true },
-  );
+  await invokeCommand(commands.linkSetAudio, [{ enabled, compressor, gains }], {
+    silent: true,
+  });
 }
 
 export async function linkRequestState(): Promise<void> {

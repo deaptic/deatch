@@ -6,9 +6,7 @@ export type ChannelRef = Pick<User, "id" | "login">;
 /// One fetched value per channel. A failed fetch is forgotten so the next
 /// visit retries, and a value is only shown while its channel is still the
 /// one on screen, so a slow fetch never lands on the next channel.
-export function channelResource<T>(
-  fetch: (channel: ChannelRef) => Promise<T>,
-) {
+export function channelResource<T>(fetch: (channel: ChannelRef) => Promise<T>) {
   const cache = new Map<string, Promise<T>>();
 
   function get(channel: ChannelRef): Promise<T> {

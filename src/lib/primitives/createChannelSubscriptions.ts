@@ -31,7 +31,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
       focus,
     }));
     void setEventsubChannels({ channels }, { silent: true }).catch((e) =>
-      console.warn("eventsub channel update failed", e)
+      console.warn("eventsub channel update failed", e),
     );
   }
 

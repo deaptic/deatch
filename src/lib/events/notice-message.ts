@@ -32,9 +32,10 @@ function gifter(g: RawNoticeDetails["pay_it_forward"]) {
 }
 
 export function noticeMessage(raw: RawNotification): string | null {
-  const name = raw.chatter_is_anonymous || !raw.chatter_user_name
-    ? t("NOTICE_ANONYMOUS")
-    : raw.chatter_user_name;
+  const name =
+    raw.chatter_is_anonymous || !raw.chatter_user_name
+      ? t("NOTICE_ANONYMOUS")
+      : raw.chatter_user_name;
   switch (raw.notice_type.replace(/^shared_chat_/, "")) {
     case "sub": {
       const d = detail(raw, "sub");
@@ -44,33 +45,33 @@ export function noticeMessage(raw: RawNotification): string | null {
       const d = detail(raw, "resub");
       return d
         ? t("NOTICE_RESUB", {
-          name,
-          plan: plan(d),
-          months: d.cumulative_months,
-          streak: d.streak_months ?? 0,
-        })
+            name,
+            plan: plan(d),
+            months: d.cumulative_months,
+            streak: d.streak_months ?? 0,
+          })
         : null;
     }
     case "sub_gift": {
       const d = detail(raw, "sub_gift");
       return d
         ? t("NOTICE_SUB_GIFT", {
-          name,
-          tier: tier(d.sub_tier),
-          recipient: d.recipient_user_name,
-          total: d.cumulative_total ?? 0,
-        })
+            name,
+            tier: tier(d.sub_tier),
+            recipient: d.recipient_user_name,
+            total: d.cumulative_total ?? 0,
+          })
         : null;
     }
     case "community_sub_gift": {
       const d = detail(raw, "community_sub_gift");
       return d
         ? t("NOTICE_COMMUNITY_SUB_GIFT", {
-          name,
-          tier: tier(d.sub_tier),
-          count: d.total,
-          total: d.cumulative_total ?? 0,
-        })
+            name,
+            tier: tier(d.sub_tier),
+            count: d.total,
+            total: d.cumulative_total ?? 0,
+          })
         : null;
     }
     case "gift_paid_upgrade": {
@@ -101,10 +102,10 @@ export function noticeMessage(raw: RawNotification): string | null {
       const d = detail(raw, "charity_donation");
       return d
         ? t("NOTICE_CHARITY_DONATION", {
-          name,
-          amount: formatAmount(d.amount),
-          charity: d.charity_name,
-        })
+            name,
+            amount: formatAmount(d.amount),
+            charity: d.charity_name,
+          })
         : null;
     }
     case "modiversary": {

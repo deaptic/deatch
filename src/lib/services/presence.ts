@@ -69,13 +69,13 @@ export function buildPresence(
   const gameName = stream?.game.name;
   const stateText = gameName
     ? t("PRESENCE_PLAYING", {
-      game: gameName,
-      count: stream!.viewerCount,
-      viewers: viewerFormatter.format(stream!.viewerCount),
-    })
+        game: gameName,
+        count: stream!.viewerCount,
+        viewers: viewerFormatter.format(stream!.viewerCount),
+      })
     : isOwnChannel
-    ? t(session.lurkPhrase)
-    : t("COMMON_OFFLINE");
+      ? t(session.lurkPhrase)
+      : t("COMMON_OFFLINE");
   const streamStartedAt = stream
     ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
     : null;

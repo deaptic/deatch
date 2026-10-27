@@ -26,7 +26,7 @@ function listenStages<T>(noticeType: string, stages: Stage<T>[]) {
     listenFeed<T>(kind, (raw, timestamp) => {
       const notice = text(raw);
       return notice && feedEvent(noticeType, notice, timestamp);
-    })
+    }),
   );
 }
 

@@ -25,7 +25,7 @@ export function pollEnd(raw: RawPoll): NoticeText | null {
   const results = [...raw.choices]
     .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0))
     .map((c) =>
-      t("POLL_CHOICE_VOTES", { choice: c.title, votes: c.votes ?? 0 })
+      t("POLL_CHOICE_VOTES", { choice: c.title, votes: c.votes ?? 0 }),
     );
   return {
     text: t("POLL_END", {

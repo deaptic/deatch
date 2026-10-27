@@ -71,7 +71,10 @@ Deno.test("triggers without an id or phrase are dropped, the rest repaired", () 
       null,
     ],
   });
-  assertEquals(prefs.triggers.map((t) => t.id), ["a", "b"]);
+  assertEquals(
+    prefs.triggers.map((t) => t.id),
+    ["a", "b"],
+  );
   const [a, b] = prefs.triggers;
   assertEquals(a.location, "anywhere");
   assertEquals(a.cooldown, MAX_TRIGGER_COOLDOWN);

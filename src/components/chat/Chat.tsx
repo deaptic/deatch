@@ -75,8 +75,8 @@ async function resolveIdentity(
     const [u] = id
       ? await users.get([id])
       : login
-      ? await users.fetch({ logins: [login] })
-      : [];
+        ? await users.fetch({ logins: [login] })
+        : [];
     if (!u) return null;
     return { id: u.id, login: u.login, displayName: u.displayName };
   } catch {
@@ -86,22 +86,26 @@ async function resolveIdentity(
 
 export default function Chat(props: Props) {
   const messageMenu = createPopover<{ msg: Message }>();
-  const userMenu = createPopover<
-    { userId: string; userLogin: string; userDisplayName: string }
-  >();
+  const userMenu = createPopover<{
+    userId: string;
+    userLogin: string;
+    userDisplayName: string;
+  }>();
   const eventMenu = createPopover<{ item: EventItem }>();
   const userCards = createUserCards();
   const fontSize = createFontSizeWheel();
 
   const [replyTo, setReplyTo] = createSignal<ReplyTo | null>(null);
-  const [modAction, setModAction] = createSignal<
-    { action: ModAction; userId: string; userName: string } | null
-  >(null);
+  const [modAction, setModAction] = createSignal<{
+    action: ModAction;
+    userId: string;
+    userName: string;
+  } | null>(null);
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
   let inputApi: ChatInputApi | undefined;
 
-  const isMod = createMemo(() =>
-    !moderationActionsDisabled() && isModOfChannel(props.broadcasterId)
+  const isMod = createMemo(
+    () => !moderationActionsDisabled() && isModOfChannel(props.broadcasterId),
   );
 
   onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
@@ -165,8 +169,8 @@ export default function Chat(props: Props) {
 
   // This feed is mounted with its backlog, so a message it lacks never arrives.
   function jumpToMessage(messageId: string): boolean {
-    const held = feeds[props.broadcasterId]?.messages.some((m) =>
-      m.kind === "message" && m.message_id === messageId
+    const held = feeds[props.broadcasterId]?.messages.some(
+      (m) => m.kind === "message" && m.message_id === messageId,
     );
     if (!held) {
       addToast(t("CHAT_MESSAGE_GONE"));
@@ -226,26 +230,34 @@ export default function Chat(props: Props) {
       shortcuts.registerLocal("shift-down", () => {
         feedApi()?.moveSelection(1);
       }),
-      shortcuts.registerLocal("up", () => {
-        feedApi()?.moveSelection(-1);
-      }, "feedSelected"),
-      shortcuts.registerLocal("down", () => {
-        feedApi()?.moveSelection(1);
-      }, "feedSelected"),
-      shortcuts.registerLocal("escape", () => {
-        feedApi()?.clearSelection();
-        inputApi?.focus();
-      }, "feedSelected"),
+      shortcuts.registerLocal(
+        "up",
+        () => {
+          feedApi()?.moveSelection(-1);
+        },
+        "feedSelected",
+      ),
+      shortcuts.registerLocal(
+        "down",
+        () => {
+          feedApi()?.moveSelection(1);
+        },
+        "feedSelected",
+      ),
+      shortcuts.registerLocal(
+        "escape",
+        () => {
+          feedApi()?.clearSelection();
+          inputApi?.focus();
+        },
+        "feedSelected",
+      ),
       shortcuts.registerLocal(
         "enter",
         withSelected(startReply),
         "feedSelected",
       ),
-      shortcuts.registerLocal(
-        "r",
-        withSelected(startReply),
-        "feedSelected",
-      ),
+      shortcuts.registerLocal("r", withSelected(startReply), "feedSelected"),
       shortcuts.registerLocal(
         "c",
         withSelected((m) => copyField(textOf(m))),
@@ -379,13 +391,13 @@ export default function Chat(props: Props) {
             getBoundsElement={() => feedApi()?.getElement() ?? null}
             onClose={() => userCards.close(card.key)}
             onTogglePin={() =>
-              userCards.update(card.key, { pinned: !card.pinned })}
+              userCards.update(card.key, { pinned: !card.pinned })
+            }
             onJumpToMessage={jumpToMessage}
             onOpenChannel={props.onOpenChannel}
             onUserContextMenu={openUserContextMenu}
             onSwitchUser={async (identity) => {
-              const id = identity.id ??
-                (await resolveIdentity(identity))?.id;
+              const id = identity.id ?? (await resolveIdentity(identity))?.id;
               if (id) userCards.update(card.key, { chatterId: id });
             }}
           />

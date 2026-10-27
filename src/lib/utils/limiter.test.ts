@@ -4,7 +4,7 @@ import { createLimiter } from "./limiter.ts";
 
 function deferred() {
   let resolve!: () => void;
-  const promise = new Promise<void>((r) => resolve = r);
+  const promise = new Promise<void>((r) => (resolve = r));
   return { promise, resolve };
 }
 
@@ -18,7 +18,7 @@ Deno.test("never runs more than the limit at once", async () => {
     run(() => {
       started.push(i);
       return gate.promise;
-    })
+    }),
   );
   assertEquals(started, [0, 1]);
   gates[0].resolve();

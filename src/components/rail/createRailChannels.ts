@@ -44,9 +44,9 @@ export function createRailChannels(
     () => new Set(linkWarmedChannels().map((ch) => ch?.id)),
   );
   const onlineList = createMemo(() =>
-    live.filter((ch) =>
-      !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id)
-    )
+    live.filter(
+      (ch) => !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id),
+    ),
   );
   const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];
@@ -101,9 +101,10 @@ export function createRailChannels(
         extraIds.add(sel.id);
       }
       const extraIdList = [...extraIds];
-      const extraStreams = extraIdList.length > 0
-        ? await getStreamsFromIds({ userIds: extraIdList })
-        : [];
+      const extraStreams =
+        extraIdList.length > 0
+          ? await getStreamsFromIds({ userIds: extraIdList })
+          : [];
       const streams = [...followed, ...extraStreams];
 
       users.set(streams.map((s) => userFromRef(s.user)));
@@ -141,7 +142,8 @@ export function createRailChannels(
       (id) => !pinnedMeta[id] && !liveById().get(id),
     );
     if (missing.length === 0) return;
-    users.get(missing)
+    users
+      .get(missing)
       .then((users) => {
         const updates: Record<string, User> = {};
         for (const u of users) {

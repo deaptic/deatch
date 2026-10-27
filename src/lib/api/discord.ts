@@ -2,9 +2,7 @@ import { commands } from "../bindings.ts";
 import type { ActivityInput } from "../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
-export async function discordConnect(
-  options?: InvokeOptions,
-): Promise<void> {
+export async function discordConnect(options?: InvokeOptions): Promise<void> {
   await invokeCommand(commands.discordConnect, [], options);
 }
 

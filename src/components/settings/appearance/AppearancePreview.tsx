@@ -75,10 +75,10 @@ export default function AppearancePreview() {
   // FeedRow reads its entry once, so wait for the colour rather than rebuild
   // every row when it lands.
   const entries = createMemo(() =>
-    color.loading ? [] : sampleFeed(me(), Date.now())
+    color.loading ? [] : sampleFeed(me(), Date.now()),
   );
   const rows = createMemo(() =>
-    layoutFeed(entries(), feedDensity() === "comfortable")
+    layoutFeed(entries(), feedDensity() === "comfortable"),
   );
   const [badgeMap] = createResource(badges.loadGlobal, { initialValue: {} });
 

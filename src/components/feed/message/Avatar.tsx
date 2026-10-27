@@ -37,11 +37,7 @@ export default function Avatar(props: Props) {
       <Show when={props.source}>
         {(source) => (
           <span class="absolute -bottom-1 -right-1 flex rounded-full ring-3 ring-canvas">
-            <Source
-              source={source()}
-              round
-              onOpen={props.onOpenSource}
-            />
+            <Source source={source()} round onOpen={props.onOpenSource} />
           </span>
         )}
       </Show>

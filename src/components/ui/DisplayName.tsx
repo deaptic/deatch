@@ -36,11 +36,14 @@ export default function DisplayName(props: Props) {
         props.truncate ? "truncate min-w-0" : ""
       }`}
       style={{ "--name": color() }}
-      {...userLink(() => ({
-        id: props.userId,
-        login: props.login,
-        displayName: props.displayName,
-      }), props)}
+      {...userLink(
+        () => ({
+          id: props.userId,
+          login: props.login,
+          displayName: props.displayName,
+        }),
+        props,
+      )}
     >
       {props.prefix}
       {text()}

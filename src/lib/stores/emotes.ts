@@ -19,9 +19,8 @@ const initialFavorites: FavoriteEmote[] = (() => {
   }
 })();
 
-const [favorites, setFavorites] = createSignal<FavoriteEmote[]>(
-  initialFavorites,
-);
+const [favorites, setFavorites] =
+  createSignal<FavoriteEmote[]>(initialFavorites);
 export { favorites };
 
 export const [globalEmotes, setGlobalEmotes] = createSignal<Emote[]>([]);
@@ -48,7 +47,7 @@ function computeThirdPartyEmoteMap(): EmoteMap {
 }
 
 export const thirdPartyEmoteMap = createRoot(() =>
-  createMemo(computeThirdPartyEmoteMap)
+  createMemo(computeThirdPartyEmoteMap),
 );
 
 function persistFavorites(list: FavoriteEmote[]) {
@@ -163,7 +162,9 @@ export function computeGlobalSections(
   for (const e of userEmotes()) {
     if (e.ownerId === broadcaster?.id) continue;
     if (
-      e.emoteType === "subscriptions" && e.ownerId && /^\d+$/.test(e.ownerId)
+      e.emoteType === "subscriptions" &&
+      e.ownerId &&
+      /^\d+$/.test(e.ownerId)
     ) {
       const list = subGroupMap.get(e.ownerId) ?? [];
       list.push({ name: e.name, url: e.url });

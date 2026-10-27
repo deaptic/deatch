@@ -12,7 +12,7 @@ function blockedTerms(
 ) {
   const chars = Array.from(p.message.text);
   const terms = p.blocked_term.terms_found.map(({ boundary }) =>
-    chars.slice(boundary.start_pos, boundary.end_pos + 1).join("")
+    chars.slice(boundary.start_pos, boundary.end_pos + 1).join(""),
   );
   return [...new Set(terms)].join(", ");
 }

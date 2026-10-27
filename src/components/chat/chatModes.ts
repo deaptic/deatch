@@ -89,14 +89,14 @@ export const CHAT_MODES: ChatMode[] = [
     chip: (s) =>
       s.followerModeMinutes
         ? t("CHAT_MODE_FOLLOWERS_CHIP_AGE", {
-          age: followAge(s.followerModeMinutes),
-        })
+            age: followAge(s.followerModeMinutes),
+          })
         : t("CHAT_MODE_FOLLOWERS_CHIP"),
     description: (s) =>
       s.followerModeMinutes
         ? t("CHAT_MODE_FOLLOWERS_DESCRIPTION_AGE", {
-          age: followAge(s.followerModeMinutes),
-        })
+            age: followAge(s.followerModeMinutes),
+          })
         : t("CHAT_MODE_FOLLOWERS_DESCRIPTION"),
   },
   {

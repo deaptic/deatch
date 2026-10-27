@@ -18,9 +18,9 @@ export function emojiUrl(emoji: string): string {
     if (cp === undefined || (cp === 0xfe0f && !keepSelector)) continue;
     points.push(cp.toString(16));
   }
-  return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/${
-    points.join("-")
-  }.png`;
+  return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/${points.join(
+    "-",
+  )}.png`;
 }
 
 export const toItem = (e: { name: string; url: string }): EmoteGridItem => ({
@@ -59,9 +59,8 @@ export function nextVerticalIndex(
   ) {
     const target = sections[i];
     if (!target.items.length) continue;
-    const row = direction === 1
-      ? 0
-      : Math.floor((target.items.length - 1) / COLUMNS);
+    const row =
+      direction === 1 ? 0 : Math.floor((target.items.length - 1) / COLUMNS);
     const newPos = Math.min(row * COLUMNS + col, target.items.length - 1);
     return target.startIndex + newPos;
   }

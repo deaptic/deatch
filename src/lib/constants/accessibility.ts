@@ -12,7 +12,7 @@ export function clampToStops(value: number, stops: readonly number[]): number {
 
 export function nearestStop(value: number, stops: readonly number[]): number {
   return stops.reduce((best, s) =>
-    Math.abs(s - value) < Math.abs(best - value) ? s : best
+    Math.abs(s - value) < Math.abs(best - value) ? s : best,
   );
 }
 
@@ -21,8 +21,9 @@ export function stepStop(
   stops: readonly number[],
   direction: 1 | -1,
 ): number {
-  const next = direction === 1
-    ? stops.find((s) => s > value)
-    : stops.findLast((s) => s < value);
+  const next =
+    direction === 1
+      ? stops.find((s) => s > value)
+      : stops.findLast((s) => s < value);
   return next ?? value;
 }

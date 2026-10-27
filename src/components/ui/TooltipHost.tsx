@@ -65,8 +65,6 @@ export default function TooltipHost() {
   });
 
   return (
-    <Show when={tip()}>
-      {(t) => <Tooltip {...t()}>{t().text}</Tooltip>}
-    </Show>
+    <Show when={tip()}>{(t) => <Tooltip {...t()}>{t().text}</Tooltip>}</Show>
   );
 }

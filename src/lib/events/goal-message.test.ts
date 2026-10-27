@@ -24,12 +24,12 @@ Deno.test("describes a new goal with its progress", () => {
 });
 
 Deno.test("says whether a goal was achieved", () => {
-  assertEquals(
-    goalEnd(goal({ is_achieved: true, current_amount: 100 })),
-    { text: "Sub goal achieved (100/100)", detail: "Road to 100" },
-  );
-  assertEquals(
-    goalEnd(goal({ is_achieved: false })),
-    { text: "Sub goal ended (40/100)", detail: "Road to 100" },
-  );
+  assertEquals(goalEnd(goal({ is_achieved: true, current_amount: 100 })), {
+    text: "Sub goal achieved (100/100)",
+    detail: "Road to 100",
+  });
+  assertEquals(goalEnd(goal({ is_achieved: false })), {
+    text: "Sub goal ended (40/100)",
+    detail: "Road to 100",
+  });
 });

@@ -15,9 +15,7 @@ export default function Login() {
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
         <h1 class="text-hero text-ink">{t("LOGIN_WELCOME")}</h1>
-        <p class="text-body text-ink-soft">
-          {t("LOGIN_TAGLINE")}
-        </p>
+        <p class="text-body text-ink-soft">{t("LOGIN_TAGLINE")}</p>
 
         <Show
           when={waiting()}
@@ -58,15 +56,17 @@ export default function Login() {
                       twitch.tv/activate
                     </a>
                   </p>
-                  <p class="font-mono text-hero text-ink">
-                    {code().user_code}
-                  </p>
+                  <p class="font-mono text-hero text-ink">{code().user_code}</p>
                   <Button
                     variant="neutral"
                     size="sm"
-                    icon={codeCopy.copied()
-                      ? <Check class="size-4 text-positive" />
-                      : <Copy class="size-4" />}
+                    icon={
+                      codeCopy.copied() ? (
+                        <Check class="size-4 text-positive" />
+                      ) : (
+                        <Copy class="size-4" />
+                      )
+                    }
                     onClick={() => codeCopy.copy(code().user_code)}
                   >
                     {codeCopy.copied()

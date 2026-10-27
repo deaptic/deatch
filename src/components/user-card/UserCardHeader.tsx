@@ -48,23 +48,28 @@ export default function UserCardHeader(props: Props) {
   const canSeeFollow = (chatterId: string) =>
     currentUser()?.id === chatterId || isModOfChannel(props.broadcasterId);
 
-  createEffect(on(() => props.chatterId, (id) => {
-    setFollow({ kind: "unknown" });
-    users.fetch({ ids: [id] }, { silent: true }).catch(() => {});
-    if (!canSeeFollow(id)) {
-      setFollow({ kind: "hidden" });
-      return;
-    }
-    getFollowedAt(
-      { broadcasterId: props.broadcasterId, userId: id },
-      { silent: true },
-    )
-      .then((at) => {
-        if (props.chatterId !== id) return;
-        setFollow(at ? { kind: "since", at } : { kind: "none" });
-      })
-      .catch(() => {});
-  }));
+  createEffect(
+    on(
+      () => props.chatterId,
+      (id) => {
+        setFollow({ kind: "unknown" });
+        users.fetch({ ids: [id] }, { silent: true }).catch(() => {});
+        if (!canSeeFollow(id)) {
+          setFollow({ kind: "hidden" });
+          return;
+        }
+        getFollowedAt(
+          { broadcasterId: props.broadcasterId, userId: id },
+          { silent: true },
+        )
+          .then((at) => {
+            if (props.chatterId !== id) return;
+            setFollow(at ? { kind: "since", at } : { kind: "none" });
+          })
+          .catch(() => {});
+      },
+    ),
+  );
 
   const [chatColor] = createResource(
     () => props.chatterId,
@@ -75,9 +80,10 @@ export default function UserCardHeader(props: Props) {
       }),
   );
   // A switched card keeps the last chatter's colour until the new one lands.
-  const color = createMemo(() =>
-    (!chatColor.loading && chatColor()) ||
-    props.messages.find((m) => m.color)?.color
+  const color = createMemo(
+    () =>
+      (!chatColor.loading && chatColor()) ||
+      props.messages.find((m) => m.color)?.color,
   );
   const openInBrowser = () => {
     const login = user()?.login;
@@ -151,10 +157,7 @@ export default function UserCardHeader(props: Props) {
             />
           </button>
           <div class="ml-auto flex items-center pt-(--card-gap) text-(length:--card-name) [&>span]:mr-0">
-            <BadgeBox
-              badges={latestBadges()}
-              channelBadges={channelBadges()}
-            />
+            <BadgeBox badges={latestBadges()} channelBadges={channelBadges()} />
           </div>
         </div>
         <UserCardIdentity

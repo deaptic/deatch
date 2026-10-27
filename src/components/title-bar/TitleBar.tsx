@@ -45,7 +45,9 @@ export default function TitleBar(props: Props) {
   let diagnosticsBtn: HTMLButtonElement | undefined;
 
   onMount(() => {
-    getVersion().then(setVersion).catch(() => {});
+    getVersion()
+      .then(setVersion)
+      .catch(() => {});
   });
 
   onMount(() => {
@@ -128,9 +130,9 @@ export default function TitleBar(props: Props) {
           <button
             class={CONTROL}
             onClick={() => win.toggleMaximize()}
-            aria-label={maximized()
-              ? t("TITLE_BAR_RESTORE")
-              : t("TITLE_BAR_MAXIMIZE")}
+            aria-label={
+              maximized() ? t("TITLE_BAR_RESTORE") : t("TITLE_BAR_MAXIMIZE")
+            }
           >
             {maximized() ? <Copy class="size-3" /> : <Square class="size-3" />}
           </button>

@@ -10,7 +10,10 @@ Deno.test("fresh keeps mentions younger than a week", () => {
     { id: "edge", timestamp: now - MAX_AGE_MS },
     { id: "old", timestamp: now - MAX_AGE_MS - 1 },
   ];
-  assertEquals(fresh(list, now).map((m) => m.id), ["new"]);
+  assertEquals(
+    fresh(list, now).map((m) => m.id),
+    ["new"],
+  );
 });
 
 Deno.test("msUntilNextExpiry follows the oldest mention", () => {

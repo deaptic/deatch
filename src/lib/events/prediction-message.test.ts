@@ -21,13 +21,10 @@ const prediction = (p: Partial<RawPrediction> = {}): RawPrediction => ({
 });
 
 Deno.test("describes the start and the locked stakes", () => {
-  assertEquals(
-    predictionBegin(prediction()),
-    {
-      text: "Prediction “Win?” started for 5m",
-      detail: "Outcomes: Yes and No",
-    },
-  );
+  assertEquals(predictionBegin(prediction()), {
+    text: "Prediction “Win?” started for 5m",
+    detail: "Outcomes: Yes and No",
+  });
   assertEquals(predictionLock(prediction()), {
     text: "Prediction “Win?” locked",
     detail: "Yes 1,000 points from 4 viewers and No 500 points from 1 viewer",

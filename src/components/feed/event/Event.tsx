@@ -44,12 +44,12 @@ export default function Event(props: Props) {
         </FeedItem.Tile>
       )}
       overlay={() => (
-        <Show when={item.clip}>
-          {(clip) => <Actions clipId={clip().id} />}
-        </Show>
+        <Show when={item.clip}>{(clip) => <Actions clipId={clip().id} />}</Show>
       )}
-      onContextMenu={props.onEventContextMenu &&
-        ((x, y) => props.onEventContextMenu!(x, y, item))}
+      onContextMenu={
+        props.onEventContextMenu &&
+        ((x, y) => props.onEventContextMenu!(x, y, item))
+      }
     >
       <Show when={props.density === "comfortable"}>
         <FeedItem.Title>

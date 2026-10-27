@@ -8,7 +8,7 @@ export function start(): () => void {
 
   const forward = (write: Write, args: unknown[]) =>
     write(formatLog(args)).catch((e) =>
-      original.error("log forwarding failed", e)
+      original.error("log forwarding failed", e),
     );
 
   const onError = (event: ErrorEvent) =>

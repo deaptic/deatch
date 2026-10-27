@@ -18,9 +18,11 @@ export default function ScrollChevron(props: Props) {
         props.direction === "up" ? "top-0" : "bottom-0"
       }`}
     >
-      {props.direction === "up"
-        ? <ChevronUp class="size-4" />
-        : <ChevronDown class="size-4" />}
+      {props.direction === "up" ? (
+        <ChevronUp class="size-4" />
+      ) : (
+        <ChevronDown class="size-4" />
+      )}
     </button>
   );
 }

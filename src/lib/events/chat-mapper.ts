@@ -82,8 +82,8 @@ export function mapChatMessage(
     channel_points: raw.channel_points_custom_reward_id
       ? { kind: "custom_reward" }
       : PERKS[raw.message_type]
-      ? { kind: PERKS[raw.message_type] }
-      : undefined,
+        ? { kind: PERKS[raw.message_type] }
+        : undefined,
     first_message: raw.message_type === "user_intro",
     cheer: raw.cheer ?? undefined,
     power_up: POWER_UPS[raw.message_type],

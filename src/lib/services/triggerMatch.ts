@@ -12,8 +12,9 @@ export function isCoolingDown(
   now: number,
   cooldownSeconds: number,
 ): boolean {
-  return lastFiredAt !== undefined &&
-    now - lastFiredAt < cooldownSeconds * 1000;
+  return (
+    lastFiredAt !== undefined && now - lastFiredAt < cooldownSeconds * 1000
+  );
 }
 
 function matches(text: string, trigger: Trigger): boolean {

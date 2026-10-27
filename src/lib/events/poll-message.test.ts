@@ -24,12 +24,9 @@ Deno.test("lists the choices and how long a poll runs", () => {
 });
 
 Deno.test("ranks the results, noting an early end", () => {
-  assertEquals(
-    pollEnd(poll({ status: "terminated" })),
-    {
-      text: "Poll “Pizza?” ended early",
-      detail: "Results: No 7 votes and Yes 3 votes",
-    },
-  );
+  assertEquals(pollEnd(poll({ status: "terminated" })), {
+    text: "Poll “Pizza?” ended early",
+    detail: "Results: No 7 votes and Yes 3 votes",
+  });
   assertEquals(pollEnd(poll({ status: "archived" })), null);
 });

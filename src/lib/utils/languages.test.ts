@@ -14,10 +14,12 @@ Deno.test("names language codes in English", () => {
 });
 
 Deno.test("keeps pinned codes first, then the rest by name", () => {
-  assertEquals(
-    orderLanguages(["en", "de", "fi", "ja", "fi"], ["fi"]),
-    ["fi", "en", "de", "ja"],
-  );
+  assertEquals(orderLanguages(["en", "de", "fi", "ja", "fi"], ["fi"]), [
+    "fi",
+    "en",
+    "de",
+    "ja",
+  ]);
 });
 
 Deno.test("drops blanks and duplicates across pinned and seen", () => {

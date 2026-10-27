@@ -32,9 +32,6 @@ function cacheStats(): CacheStats {
   return {
     users: Object.keys(unwrap(knownUsers)).length,
     channels: channelFeeds.length,
-    messages: channelFeeds.reduce(
-      (sum, feed) => sum + feed.messages.length,
-      0,
-    ),
+    messages: channelFeeds.reduce((sum, feed) => sum + feed.messages.length, 0),
   };
 }

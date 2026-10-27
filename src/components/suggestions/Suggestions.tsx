@@ -34,7 +34,8 @@ export default function Suggestions<T>(props: Props<T>) {
           return true;
         }
         if (
-          e.key === "Tab" || (e.key === "Enter" && !e.shiftKey) ||
+          e.key === "Tab" ||
+          (e.key === "Enter" && !e.shiftKey) ||
           (props.selectOnSpace && e.key === " ")
         ) {
           e.preventDefault();

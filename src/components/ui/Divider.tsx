@@ -18,9 +18,10 @@ const LOOKS: Record<
 };
 
 /// A labelled rule across a list.
-export default function Divider(
-  props: { label: string; variant: DividerVariant },
-) {
+export default function Divider(props: {
+  label: string;
+  variant: DividerVariant;
+}) {
   const look = () => LOOKS[props.variant];
   return (
     <div

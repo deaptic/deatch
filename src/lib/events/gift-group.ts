@@ -44,9 +44,8 @@ export function groupGifts(notices: MappedNotice[]): FeedEvent[] {
   return notices.flatMap(({ item }, i) => {
     const group = groups[i];
     if (group?.role === "member" && recipients.has(group.giftId)) return [];
-    const names = group?.role === "community"
-      ? recipients.get(group.giftId)
-      : undefined;
+    const names =
+      group?.role === "community" ? recipients.get(group.giftId) : undefined;
     return [names?.length ? { ...item, recipients: names } : item];
   });
 }

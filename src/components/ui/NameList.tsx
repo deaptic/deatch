@@ -28,7 +28,7 @@ export default function NameList(props: Props) {
       .map((part) =>
         part.type === "element"
           ? { kind: "element" as const, index: element++, text: part.value }
-          : { kind: "literal" as const, text: part.value }
+          : { kind: "literal" as const, text: part.value },
       );
   };
 

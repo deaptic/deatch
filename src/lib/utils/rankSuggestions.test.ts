@@ -49,5 +49,8 @@ Deno.test("matches any of an item's keys and respects the limit", () => {
     compare: (a, b) => a.login.localeCompare(b.login),
     limit: 1,
   });
-  assertEquals(ranked.map((u) => u.login), ["foo"]);
+  assertEquals(
+    ranked.map((u) => u.login),
+    ["foo"],
+  );
 });

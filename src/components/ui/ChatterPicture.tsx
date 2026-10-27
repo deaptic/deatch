@@ -48,27 +48,42 @@ export default function ChatterPicture(props: Props) {
   const [instant, setInstant] = createSignal(false);
   const [failed, setFailed] = createSignal(false);
   // Twitch serves the same picture at 70px; the chat tile never needs 300.
-  const url = createMemo(() =>
-    (feedShowAvatars() &&
-      knownUser(props.userId)?.profileImageUrl?.replace("300x300", "70x70")) ||
-    null
+  const url = createMemo(
+    () =>
+      (feedShowAvatars() &&
+        knownUser(props.userId)?.profileImageUrl?.replace(
+          "300x300",
+          "70x70",
+        )) ||
+      null,
   );
   const showingImage = () => !!url() && loaded() && !failed();
   const noImage = () =>
     !feedShowAvatars() || failed() || (lookedUp() && !url());
   let shownAt = 0;
 
-  createEffect(on([() => props.userId, feedShowAvatars], ([id, show]) => {
-    setLookedUp(false);
-    if (!show) return;
-    users.get([id]).catch(() => {}).finally(() => setLookedUp(true));
-  }));
+  createEffect(
+    on([() => props.userId, feedShowAvatars], ([id, show]) => {
+      setLookedUp(false);
+      if (!show) return;
+      users
+        .get([id])
+        .catch(() => {})
+        .finally(() => setLookedUp(true));
+    }),
+  );
 
-  createEffect(on(url, () => {
-    setLoaded(false);
-    setInstant(false);
-    setFailed(false);
-  }, { defer: true }));
+  createEffect(
+    on(
+      url,
+      () => {
+        setLoaded(false);
+        setInstant(false);
+        setFailed(false);
+      },
+      { defer: true },
+    ),
+  );
 
   function onLoad() {
     setInstant(performance.now() - shownAt < INSTANT_MS);

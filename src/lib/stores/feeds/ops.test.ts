@@ -17,22 +17,22 @@ Deno.test("append drops duplicates", () => {
 
 Deno.test("insert merges by timestamp and skips known ids", () => {
   const feed = [message("a", 1), message("d", 4)];
-  const added = insert(feed, [
-    message("c", 3),
-    message("a", 1),
-    message("b", 2),
-  ], false);
+  const added = insert(
+    feed,
+    [message("c", 3), message("a", 1), message("b", 2)],
+    false,
+  );
   assertEquals(ids(added), ["b", "c"]);
   assertEquals(ids(feed), ["a", "b", "c", "d"]);
 });
 
 Deno.test("prepend puts older entries first, oldest to newest", () => {
   const feed = [message("c", 3)];
-  const added = prepend(feed, [
-    message("b", 2),
-    message("a", 1),
-    message("c", 3),
-  ], false);
+  const added = prepend(
+    feed,
+    [message("b", 2), message("a", 1), message("c", 3)],
+    false,
+  );
   assertEquals(ids(added), ["a", "b"]);
   assertEquals(ids(feed), ["a", "b", "c"]);
 });

@@ -14,7 +14,7 @@ function contributors(raw: RawHypeTrain): string {
         name: c.user_name,
         type: c.type,
         total: c.total,
-      })
+      }),
     ),
   );
 }

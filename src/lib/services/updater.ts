@@ -26,11 +26,9 @@ export function start(): () => void {
 
   void maybeCheck();
   const interval = window.setInterval(maybeCheck, CHECK_INTERVAL_MS);
-  const unlisten = getCurrentWindow().onFocusChanged(
-    ({ payload }) => {
-      if (payload) void maybeCheck();
-    },
-  );
+  const unlisten = getCurrentWindow().onFocusChanged(({ payload }) => {
+    if (payload) void maybeCheck();
+  });
 
   return () => {
     window.clearInterval(interval);

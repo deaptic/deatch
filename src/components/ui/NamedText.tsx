@@ -9,7 +9,12 @@ type Props = UserActions & { text: string; people: Person[] };
 /// A sentence with every person it names shown as a name link.
 export default function NamedText(props: Props) {
   return (
-    <For each={splitNames(props.text, props.people.map((p) => p.name))}>
+    <For
+      each={splitNames(
+        props.text,
+        props.people.map((p) => p.name),
+      )}
+    >
       {(segment) => {
         if (!("person" in segment)) return segment.text;
         const person = props.people[segment.person];

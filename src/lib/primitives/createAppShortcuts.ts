@@ -34,20 +34,13 @@ export function createAppShortcuts(
 ): void {
   onMount(() => {
     const unbind = [
-      shortcuts.register(
-        "channel::cycleNext",
-        () => link.cycleChannel(1),
-      ),
-      shortcuts.register(
-        "channel::cyclePrev",
-        () => link.cycleChannel(-1),
-      ),
+      shortcuts.register("channel::cycleNext", () => link.cycleChannel(1)),
+      shortcuts.register("channel::cyclePrev", () => link.cycleChannel(-1)),
       shortcuts.register("channel::back", () => nav.stepHistory(-1)),
       shortcuts.register("channel::forward", () => nav.stepHistory(1)),
       shortcuts.register("link::toggle", link.toggleLink),
-      shortcuts.register(
-        "link::toggleAudioLink",
-        () => setLinkAudioLink(!linkAudioLink()),
+      shortcuts.register("link::toggleAudioLink", () =>
+        setLinkAudioLink(!linkAudioLink()),
       ),
       shortcuts.register("link::toggleMute", linkAudio.toggleMute),
       shortcuts.register("link::muteOthers", linkAudio.muteOthers),
@@ -56,18 +49,15 @@ export function createAppShortcuts(
       shortcuts.register("link::openTab", linkAudio.openTab),
       shortcuts.register("settings::toggle", toggleSettings),
       shortcuts.register("explore::show", showExplore),
-      shortcuts.register(
-        "rail::toggle",
-        () => setAppearanceRailExpanded(!appearanceRailExpanded()),
+      shortcuts.register("rail::toggle", () =>
+        setAppearanceRailExpanded(!appearanceRailExpanded()),
       ),
       shortcuts.register("inbox::toggle", () => toggleOverlay("inbox")),
-      shortcuts.register(
-        "quickSwitch::toggle",
-        () => toggleOverlay("quickSwitch"),
+      shortcuts.register("quickSwitch::toggle", () =>
+        toggleOverlay("quickSwitch"),
       ),
-      shortcuts.register(
-        "emotePicker::toggle",
-        () => toggleOverlay("emotePicker"),
+      shortcuts.register("emotePicker::toggle", () =>
+        toggleOverlay("emotePicker"),
       ),
       shortcuts.register("panel::close", () => {
         if (openOverlay()) {
@@ -80,13 +70,11 @@ export function createAppShortcuts(
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());
       }),
       shortcuts.register("feed::toggleDensity", toggleFeedDensity),
-      shortcuts.register(
-        "view::zoomIn",
-        () => zoom(() => stepAppearanceZoom(1)),
+      shortcuts.register("view::zoomIn", () =>
+        zoom(() => stepAppearanceZoom(1)),
       ),
-      shortcuts.register(
-        "view::zoomOut",
-        () => zoom(() => stepAppearanceZoom(-1)),
+      shortcuts.register("view::zoomOut", () =>
+        zoom(() => stepAppearanceZoom(-1)),
       ),
       shortcuts.register("view::zoomReset", () => zoom(resetAppearanceZoom)),
     ];

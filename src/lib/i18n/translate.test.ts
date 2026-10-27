@@ -2,10 +2,13 @@
 import { assertEquals } from "@std/assert";
 import { createTranslator } from "./translate.ts";
 
-const t = createTranslator({
-  GREETING: "Hello",
-  RAID: "{name} raided with {count, plural, one {# viewer} other {# viewers}}",
-}, "en-GB");
+const t = createTranslator(
+  {
+    GREETING: "Hello",
+    RAID: "{name} raided with {count, plural, one {# viewer} other {# viewers}}",
+  },
+  "en-GB",
+);
 
 Deno.test("returns plain messages as written", () => {
   assertEquals(t("GREETING"), "Hello");

@@ -23,22 +23,30 @@ export type LinkControls = {
 
 export function createLinkControls(nav: ChannelNavigation): LinkControls {
   createEffect(
-    on(linkedChannel, (wc) => {
-      if (linkSynced() && wc) nav.selectChannel(wc);
-    }, { defer: true }),
+    on(
+      linkedChannel,
+      (wc) => {
+        if (linkSynced() && wc) nav.selectChannel(wc);
+      },
+      { defer: true },
+    ),
   );
 
   createEffect(() =>
-    link.sendAudio(linkCompressor(), compressorSettings(), linkChannelGains())
+    link.sendAudio(linkCompressor(), compressorSettings(), linkChannelGains()),
   );
 
   // With audio linked while synced, only the shown tab plays.
   createEffect(
-    on([selectedChannel, linkSynced, linkAudioLink], () => {
-      if (linkSynced() && linkAudioLink() && link.selectedLinked()) {
-        link.muteOthers();
-      }
-    }, { defer: true }),
+    on(
+      [selectedChannel, linkSynced, linkAudioLink],
+      () => {
+        if (linkSynced() && linkAudioLink() && link.selectedLinked()) {
+          link.muteOthers();
+        }
+      },
+      { defer: true },
+    ),
   );
 
   function cycleChannel(direction: 1 | -1) {
@@ -48,9 +56,12 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
       : [...linkWarmedChannels(), ...channelsInOrder()];
     if (list.length === 0) return;
     const i = list.findIndex((c) => c?.id === pendingChannel()?.id);
-    const nextIdx = i === -1
-      ? direction === 1 ? 0 : list.length - 1
-      : (i + direction + list.length) % list.length;
+    const nextIdx =
+      i === -1
+        ? direction === 1
+          ? 0
+          : list.length - 1
+        : (i + direction + list.length) % list.length;
     nav.selectChannel(list[nextIdx]);
   }
 
@@ -61,8 +72,8 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
       setLinkSynced(false);
       return;
     }
-    const target = link.selectedLinked() ?? linkedChannel() ??
-      linkWarmedChannels()[0];
+    const target =
+      link.selectedLinked() ?? linkedChannel() ?? linkWarmedChannels()[0];
     if (!target) return;
     setLinkSynced(true);
     nav.selectChannel(target);

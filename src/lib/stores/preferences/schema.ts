@@ -164,13 +164,15 @@ function sanitizeTriggers(raw: unknown): Trigger[] {
       enabled: t.enabled !== false,
       name: typeof t.name === "string" ? t.name : "",
       phrase: t.phrase,
-      location: t.location === "start" || t.location === "exact"
-        ? t.location
-        : "anywhere",
+      location:
+        t.location === "start" || t.location === "exact"
+          ? t.location
+          : "anywhere",
       caseSensitive: t.caseSensitive === true,
-      cooldown: typeof t.cooldown === "number"
-        ? clampCooldown(t.cooldown)
-        : MIN_TRIGGER_COOLDOWN,
+      cooldown:
+        typeof t.cooldown === "number"
+          ? clampCooldown(t.cooldown)
+          : MIN_TRIGGER_COOLDOWN,
       action: t.action === "send" ? "send" : "reply",
       response: typeof t.response === "string" ? t.response : "",
     });
@@ -205,9 +207,9 @@ function sanitizeChannelGains(raw: unknown): Record<string, number> {
 }
 
 export function sanitize(raw: unknown): UserPreferences {
-  const stored = (raw && typeof raw === "object" ? raw : {}) as Partial<
-    UserPreferences
-  >;
+  const stored = (
+    raw && typeof raw === "object" ? raw : {}
+  ) as Partial<UserPreferences>;
   const rawPinned = stored.menu?.channels?.pinned;
   const pinned = Array.isArray(rawPinned)
     ? rawPinned.filter((s): s is string => typeof s === "string")
@@ -250,9 +252,9 @@ export function sanitize(raw: unknown): UserPreferences {
         DEFAULT_PREFERENCES.feed.showEvents,
       ),
       keywords: Array.isArray(stored.feed?.keywords)
-        ? stored.feed!.keywords.filter((k): k is string =>
-          typeof k === "string" && k.trim().length > 0
-        )
+        ? stored.feed!.keywords.filter(
+            (k): k is string => typeof k === "string" && k.trim().length > 0,
+          )
         : DEFAULT_PREFERENCES.feed.keywords,
       events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
       badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
@@ -261,10 +263,10 @@ export function sanitize(raw: unknown): UserPreferences {
           stored.feed?.users?.showDisplayName,
           DEFAULT_PREFERENCES.feed.users.showDisplayName,
         ),
-        overrideNameColor: typeof stored.feed?.users?.overrideNameColor ===
-            "string"
-          ? stored.feed.users.overrideNameColor
-          : DEFAULT_PREFERENCES.feed.users.overrideNameColor,
+        overrideNameColor:
+          typeof stored.feed?.users?.overrideNameColor === "string"
+            ? stored.feed.users.overrideNameColor
+            : DEFAULT_PREFERENCES.feed.users.overrideNameColor,
       },
     },
     notifications: {
@@ -339,9 +341,10 @@ export function sanitize(raw: unknown): UserPreferences {
       channels: { pinned },
     },
     explore: {
-      language: typeof stored.explore?.language === "string"
-        ? stored.explore.language
-        : DEFAULT_PREFERENCES.explore.language,
+      language:
+        typeof stored.explore?.language === "string"
+          ? stored.explore.language
+          : DEFAULT_PREFERENCES.explore.language,
     },
     triggers: sanitizeTriggers(stored.triggers),
   });
