@@ -17,7 +17,7 @@ import Artwork from "./Artwork.tsx";
 import { type UserActions, userLink, userLinkHover } from "./userLink.ts";
 
 const INLINE_EMOTE =
-  "inline-block feed-emote w-auto object-contain align-middle mx-px";
+  "inline-block h-feed-emote max-w-feed-emote-max -my-feed-emote-bleed w-auto object-contain align-middle mx-px";
 
 type Props = UserActions & {
   fragments: Fragment[];

@@ -86,7 +86,6 @@ export default function Item(props: Props) {
               props.bare ? "h-(--chat-tile)" : "h-(--chat-two-lines)"
             } mr-3`}
           >
-            <span class="hidden group-has-data-thread/item:block absolute left-1/2 -ml-px top-0 bottom-1/2 border-l-2 border-ink-faint" />
             <span class="absolute inset-x-0 top-1/2 -translate-y-1/2">
               {tile()(active)}
             </span>
@@ -101,7 +100,7 @@ export default function Item(props: Props) {
       <div
         data-item-id={props.id}
         tabIndex={-1}
-        class={`relative group group/item feed-item leading-normal wrap-break-word ${
+        class={`relative group grid grid-cols-(--feed-columns) leading-normal wrap-break-word ${
           props.bare ? "p-2" : `pl-3 pr-2 border-l-3 ${spacing()}`
         } outline-accent transition-colors duration-snap ${
           props.flush ? "rounded-r-sm" : "rounded-sm"

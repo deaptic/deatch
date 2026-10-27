@@ -40,7 +40,7 @@ export default function InboxItem(props: Props) {
   return (
     <Card tone={m().unread ? "accent" : "plain"}>
       <header class="flex items-center gap-2 p-2 border-b border-line-soft text-(length:--chat-size)">
-        {/* Shrunk like the feed-meta text beside it (0.85em). */}
+        {/* Shrunk like the meta text beside it (0.85em). */}
         <span
           class={`shrink-0 size-(--tile) ${link.cursor}`}
           style={{ "--tile": "calc(var(--chat-tile) * 0.85)" }}
@@ -53,14 +53,14 @@ export default function InboxItem(props: Props) {
             square
           />
         </span>
-        <span class="feed-meta min-w-0 flex flex-col leading-tight">
+        <span class="text-feed-meta min-w-0 flex flex-col leading-tight">
           <span
             class={`font-semibold text-ink truncate hover:underline ${link.cursor}`}
             {...link.handlers}
           >
             {m().channelName}
           </span>
-          <span class="feed-meta text-ink-faint truncate">
+          <span class="text-feed-meta text-ink-faint truncate">
             {reasonLabel(m().message.chatter_name, m().reason)}
           </span>
         </span>

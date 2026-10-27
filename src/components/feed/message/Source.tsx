@@ -36,7 +36,7 @@ export default function Source(
         ? t("FEED_SENT_IN_CHAT", { channel: name() })
         : t("FEED_SENT_IN_SHARED_CHAT")}
       {...link.handlers}
-      class={`feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
+      class={`size-feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
         props.round ? "rounded-full" : "rounded-xs"
       }`}
     >
