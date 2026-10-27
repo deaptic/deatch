@@ -49,7 +49,7 @@ export default function UserContextMenu(props: Props) {
       props.onModerate(action, {
         userId: props.userId,
         userName: props.userDisplayName,
-      })
+      }),
     );
 
   return (
@@ -78,7 +78,7 @@ export default function UserContextMenu(props: Props) {
             sendShoutout({
               fromBroadcasterId: props.broadcasterId,
               toBroadcasterId: props.userId,
-            }).catch(() => {})
+            }).catch(() => {}),
           )}
         />
         <MenuItem

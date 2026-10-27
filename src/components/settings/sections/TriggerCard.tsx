@@ -69,9 +69,11 @@ export default function TriggerCard(props: {
           <Button
             variant="accent"
             icon={<Check class="size-4" />}
-            data-tip={valid()
-              ? t("SETTINGS_TRIGGERS_SAVE")
-              : t("SETTINGS_TRIGGERS_REQUIRED")}
+            data-tip={
+              valid()
+                ? t("SETTINGS_TRIGGERS_SAVE")
+                : t("SETTINGS_TRIGGERS_REQUIRED")
+            }
             disabled={!valid()}
             onClick={() => props.onSave({ ...unwrap(draft) })}
           />
@@ -173,7 +175,8 @@ export default function TriggerCard(props: {
                     setDraft("cooldown", Number.isFinite(n) ? n : 0);
                   }}
                   onBlur={() =>
-                    setDraft("cooldown", clampCooldown(draft.cooldown))}
+                    setDraft("cooldown", clampCooldown(draft.cooldown))
+                  }
                   class="w-20"
                 />
                 <span class="text-small text-ink-soft">

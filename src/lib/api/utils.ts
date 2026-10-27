@@ -41,9 +41,9 @@ function summarize(result: unknown, ms: number): string {
     typeof result === "object" &&
     Array.isArray((result as { data?: unknown }).data)
   ) {
-    const data =
-      (result as { data: unknown[]; pagination?: { cursor: string | null } })
-        .data;
+    const data = (
+      result as { data: unknown[]; pagination?: { cursor: string | null } }
+    ).data;
     const more = (result as { pagination?: { cursor: string | null } })
       .pagination?.cursor;
     return `${ms}ms · ${data.length} items${more ? " · more…" : ""}`;

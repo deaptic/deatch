@@ -10,9 +10,7 @@ export type ResizeDir =
   | "SouthEast"
   | "SouthWest";
 
-export default function ResizeHandle(
-  props: { dir: ResizeDir; class: string },
-) {
+export default function ResizeHandle(props: { dir: ResizeDir; class: string }) {
   return (
     <div
       class={`absolute z-50 ${props.class}`}

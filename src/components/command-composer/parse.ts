@@ -34,9 +34,9 @@ export function durationError(
   return max === Infinity
     ? t("COMMAND_DURATION_MIN", { min: formatDuration(min) })
     : t("COMMAND_DURATION_RANGE", {
-      min: formatDuration(min),
-      max: formatDuration(max),
-    });
+        min: formatDuration(min),
+        max: formatDuration(max),
+      });
 }
 
 export function slotSatisfied(opt: CommandOption, slot: Slot): boolean {

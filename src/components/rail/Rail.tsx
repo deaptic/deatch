@@ -133,9 +133,11 @@ export default function Rail(props: Props) {
     };
   };
 
-  const [chMenu, setChMenu] = createSignal<
-    { ch: User; x: number; y: number } | null
-  >(null);
+  const [chMenu, setChMenu] = createSignal<{
+    ch: User;
+    x: number;
+    y: number;
+  } | null>(null);
   const [addPop, setAddPop] = createSignal<{ x: number; y: number } | null>(
     null,
   );
@@ -144,9 +146,9 @@ export default function Rail(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
-  const [linkMenu, setLinkMenu] = createSignal<
-    { x: number; y: number } | null
-  >(null);
+  const [linkMenu, setLinkMenu] = createSignal<{ x: number; y: number } | null>(
+    null,
+  );
   let linkBtn: HTMLButtonElement | undefined;
 
   function openLinkMenu() {
@@ -339,7 +341,8 @@ export default function Rail(props: Props) {
                             onSelect={() => props.onSelect(c())}
                             onMiddleClick={() => openInBrowser(c())}
                             onContextMenu={(x, y) =>
-                              setChMenu({ ch: c(), x, y })}
+                              setChMenu({ ch: c(), x, y })
+                            }
                           />
                         </div>
                       )}
@@ -513,16 +516,15 @@ export default function Rail(props: Props) {
               label={u().displayName}
               sub={t("RAIL_YOUR_CHANNEL")}
               tooltip={
-                <p class="font-semibold whitespace-nowrap">
-                  {u().displayName}
-                </p>
+                <p class="font-semibold whitespace-nowrap">{u().displayName}</p>
               }
               selected={selectedId() === u().id}
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() =>
-                ownTab() ? void linkClose(u().login) : openInBrowser(u())}
+                ownTab() ? void linkClose(u().login) : openInBrowser(u())
+              }
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
             >
               <Avatar
@@ -567,9 +569,9 @@ export default function Rail(props: Props) {
             place="rail"
             onClose={() => setChMenu(null)}
             onPin={pin}
-            onLogout={m().ch?.id === user()?.id
-              ? () => session.logout()
-              : undefined}
+            onLogout={
+              m().ch?.id === user()?.id ? () => session.logout() : undefined
+            }
           />
         )}
       </Show>

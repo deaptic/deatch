@@ -72,9 +72,7 @@ export default function Button(props: Props) {
           <Loading size={16} />
         </span>
       </Show>
-      <span
-        class={`contents ${local.loading ? "invisible" : ""}`}
-      >
+      <span class={`contents ${local.loading ? "invisible" : ""}`}>
         {local.icon}
         {local.children}
       </span>

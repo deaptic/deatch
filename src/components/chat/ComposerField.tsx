@@ -8,19 +8,17 @@ export type ComposerFieldApi = {
   textareaEl: () => HTMLTextAreaElement | undefined;
 };
 
-type Props =
-  & Omit<
-    JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    "value" | "onInput" | "ref" | "rows" | "class" | "children"
-  >
-  & {
-    value: string;
-    onInput: (value: string) => void;
-    maxHeight?: number;
-    addons?: JSX.Element;
-    children?: JSX.Element;
-    ref?: (api: ComposerFieldApi) => void;
-  };
+type Props = Omit<
+  JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "value" | "onInput" | "ref" | "rows" | "class" | "children"
+> & {
+  value: string;
+  onInput: (value: string) => void;
+  maxHeight?: number;
+  addons?: JSX.Element;
+  children?: JSX.Element;
+  ref?: (api: ComposerFieldApi) => void;
+};
 
 export default function ComposerField(props: Props) {
   const [local, textareaProps] = splitProps(props, [
@@ -49,8 +47,8 @@ export default function ComposerField(props: Props) {
 
   function insert(text: string) {
     const cur = local.value;
-    const next = (cur === "" || cur.endsWith(" ") ? cur : cur + " ") + text +
-      " ";
+    const next =
+      (cur === "" || cur.endsWith(" ") ? cur : cur + " ") + text + " ";
     local.onInput(next);
     textareaRef?.focus();
   }

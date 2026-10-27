@@ -54,10 +54,9 @@ Deno.test("counts the viewers sent on a raid", () => {
     action: "raid",
     raid: { ...user, viewer_count: 1200 },
   };
-  assertEquals(
-    said(p),
-    { text: "Mod initiated a raid on Foo with 1,200 viewers" },
-  );
+  assertEquals(said(p), {
+    text: "Mod initiated a raid on Foo with 1,200 viewers",
+  });
 });
 
 Deno.test("lists the AutoMod terms a mod changed", () => {
@@ -101,10 +100,10 @@ Deno.test("names the partner channel for a shared chat action", () => {
     action: "shared_chat_delete",
     shared_chat_delete: { ...user, message_id: "m1", message_body: "hi" },
   };
-  assertEquals(
-    said(p),
-    { text: "In Mira's chat, Mod deleted a message from Foo", detail: "hi" },
-  );
+  assertEquals(said(p), {
+    text: "In Mira's chat, Mod deleted a message from Foo",
+    detail: "hi",
+  });
 });
 
 Deno.test("times shared chat timeouts like local ones", () => {
@@ -118,8 +117,5 @@ Deno.test("times shared chat timeouts like local ones", () => {
       expires_at: new Date(600_000).toISOString(),
     },
   };
-  assertEquals(
-    said(p),
-    { text: "In Mira's chat, Mod timed out Foo for 10m" },
-  );
+  assertEquals(said(p), { text: "In Mira's chat, Mod timed out Foo for 10m" });
 });

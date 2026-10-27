@@ -81,10 +81,7 @@ export const deatchCommands: Command[] = [
           }),
         );
       } catch {
-        appendLocalNotice(
-          ctx.broadcasterId,
-          t("COMMAND_CLIP_FAILED"),
-        );
+        appendLocalNotice(ctx.broadcasterId, t("COMMAND_CLIP_FAILED"));
       }
     },
   },

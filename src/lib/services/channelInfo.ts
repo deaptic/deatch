@@ -7,8 +7,8 @@ const fetchedAt = new Map<string, number>();
 
 export async function load(broadcasterIds: string[]): Promise<void> {
   const now = Date.now();
-  const stale = [...new Set(broadcasterIds)].filter((id) =>
-    now - (fetchedAt.get(id) ?? 0) >= FRESH_MS
+  const stale = [...new Set(broadcasterIds)].filter(
+    (id) => now - (fetchedAt.get(id) ?? 0) >= FRESH_MS,
   );
   if (stale.length === 0) return;
   for (const id of stale) fetchedAt.set(id, now);

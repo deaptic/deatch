@@ -22,10 +22,12 @@ const message = (
 });
 
 Deno.test("explains why a chatter is flagged", () => {
-  const info = suspiciousInfo(message({
-    ban_evasion_evaluation: "likely",
-    types: ["banned_in_shared_channel"],
-  }));
+  const info = suspiciousInfo(
+    message({
+      ban_evasion_evaluation: "likely",
+      types: ["banned_in_shared_channel"],
+    }),
+  );
   assertEquals(
     info && formatSuspicious(info),
     "Restricted chatter, only mods see this, likely ban evader, banned in a shared channel",

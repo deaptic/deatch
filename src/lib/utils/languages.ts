@@ -32,7 +32,7 @@ export function allLanguages(): string[] {
       }
     }
   }
-  return everyLanguage = codes;
+  return (everyLanguage = codes);
 }
 
 function matchRank(code: string, query: string): number {
@@ -49,9 +49,13 @@ export function searchLanguages(query: string): string[] {
   return allLanguages()
     .map((code) => ({ code, rank: matchRank(code, q) }))
     .filter((m) => m.rank >= 0)
-    .sort((a, b) =>
-      a.rank - b.rank ||
-      languageName(a.code).localeCompare(languageName(b.code), formatLocale())
+    .sort(
+      (a, b) =>
+        a.rank - b.rank ||
+        languageName(a.code).localeCompare(
+          languageName(b.code),
+          formatLocale(),
+        ),
     )
     .map((m) => m.code);
 }
@@ -64,7 +68,7 @@ export function orderLanguages(
   const rest = [...new Set(seen)]
     .filter((code) => code && !first.includes(code))
     .sort((a, b) =>
-      languageName(a).localeCompare(languageName(b), formatLocale())
+      languageName(a).localeCompare(languageName(b), formatLocale()),
     );
   return [...first, ...rest];
 }

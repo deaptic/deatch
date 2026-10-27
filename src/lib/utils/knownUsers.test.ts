@@ -32,10 +32,13 @@ Deno.test("mergeUser lets a partial user only rename and fill gaps", () => {
   };
   assertEquals(mergeUser(full, partial), { ...full, displayName: "MAYA" });
   assertEquals(
-    mergeUser({ ...partial, profileImageUrl: "" }, {
-      ...partial,
-      profileImageUrl: "https://cdn/new.png",
-    }).profileImageUrl,
+    mergeUser(
+      { ...partial, profileImageUrl: "" },
+      {
+        ...partial,
+        profileImageUrl: "https://cdn/new.png",
+      },
+    ).profileImageUrl,
     "https://cdn/new.png",
   );
 });

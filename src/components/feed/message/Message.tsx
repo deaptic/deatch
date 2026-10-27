@@ -53,7 +53,7 @@ export default function Message(props: Props) {
 
   const comfortable = () =>
     props.density === "comfortable" && props.showName !== false;
-  const density = (): Density => comfortable() ? "comfortable" : "compact";
+  const density = (): Density => (comfortable() ? "comfortable" : "compact");
 
   function handleHold(action: automod.HoldAction) {
     const h = hold();
@@ -61,7 +61,7 @@ export default function Message(props: Props) {
   }
 
   const mentioned = createMemo(() =>
-    isMention(item, props.userLogin, props.keywords ?? [])
+    isMention(item, props.userLogin, props.keywords ?? []),
   );
 
   // Spacious rows pin the source channel to the avatar instead.
@@ -131,13 +131,15 @@ export default function Message(props: Props) {
 
   const toolbar = (hovered: () => boolean) => (
     <Show
-      when={hovered() &&
+      when={
+        hovered() &&
         !hold() &&
         props.showToolbar !== false &&
         props.onReply &&
         props.onReact &&
         props.onCopypasta &&
-        props.onContextMenu}
+        props.onContextMenu
+      }
     >
       <Actions
         item={item}
@@ -167,44 +169,51 @@ export default function Message(props: Props) {
       dimmed={message.isHoldResolved(item)}
       tile={comfortable() ? avatar : undefined}
       overlay={toolbar}
-      onContextMenu={props.onContextMenu &&
-        ((x, y) => props.onContextMenu!(x, y, item))}
+      onContextMenu={
+        props.onContextMenu && ((x, y) => props.onContextMenu!(x, y, item))
+      }
     >
       <FeedItem.Context
-        thread={item.reply && (
-          <Reply
-            reply={item.reply}
-            showAvatar={comfortable()}
-            onJump={props.onJumpToMessage}
-            onShowUserCard={props.onShowUserCard}
-            onUserContextMenu={props.onUserContextMenu}
-          />
-        )}
+        thread={
+          item.reply && (
+            <Reply
+              reply={item.reply}
+              showAvatar={comfortable()}
+              onJump={props.onJumpToMessage}
+              onShowUserCard={props.onShowUserCard}
+              onUserContextMenu={props.onUserContextMenu}
+            />
+          )
+        }
       >
         <Show when={hold()}>
           {(h) => (
             <FeedItem.Note
               class="text-caution"
               label={t("FEED_AUTOMOD_HELD", { reason: h().reason })}
-              suffix={message.isHoldResolved(item)
-                ? message.holdOutcome(h())
-                : undefined}
-              actions={message.isHoldPending(item)
-                ? [
-                  {
-                    title: t("FEED_AUTOMOD_APPROVE"),
-                    icon: () => <Check class="size-4" />,
-                    tone: "success",
-                    onClick: () => handleHold("approve"),
-                  },
-                  {
-                    title: t("FEED_AUTOMOD_DENY"),
-                    icon: () => <X class="size-4" />,
-                    tone: "danger",
-                    onClick: () => handleHold("deny"),
-                  },
-                ]
-                : undefined}
+              suffix={
+                message.isHoldResolved(item)
+                  ? message.holdOutcome(h())
+                  : undefined
+              }
+              actions={
+                message.isHoldPending(item)
+                  ? [
+                      {
+                        title: t("FEED_AUTOMOD_APPROVE"),
+                        icon: () => <Check class="size-4" />,
+                        tone: "success",
+                        onClick: () => handleHold("approve"),
+                      },
+                      {
+                        title: t("FEED_AUTOMOD_DENY"),
+                        icon: () => <X class="size-4" />,
+                        tone: "danger",
+                        onClick: () => handleHold("deny"),
+                      },
+                    ]
+                  : undefined
+              }
             />
           )}
         </Show>
@@ -258,8 +267,7 @@ export default function Message(props: Props) {
           {badges("before")}
           <Show when={props.showName !== false}>
             {name()}
-            <span class="text-ink-soft">:</span>
-            {" "}
+            <span class="text-ink-soft">:</span>{" "}
           </Show>
         </Show>
         {body()}

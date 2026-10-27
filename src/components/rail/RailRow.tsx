@@ -53,11 +53,13 @@ export default function RailRow(props: Props) {
         onContextMenu={(e) =>
           openMenuAt(
             e,
-            props.onContextMenu && ((x, y) => {
-              setTip(null);
-              props.onContextMenu!(x, y);
-            }),
-          )}
+            props.onContextMenu &&
+              ((x, y) => {
+                setTip(null);
+                props.onContextMenu!(x, y);
+              }),
+          )
+        }
         onMouseEnter={(e) => {
           if (expanded()) return;
           const r = e.currentTarget.getBoundingClientRect();
@@ -74,8 +76,8 @@ export default function RailRow(props: Props) {
             props.selected
               ? "h-14 bg-accent"
               : props.unread
-              ? "h-2 bg-ink-soft"
-              : "h-0"
+                ? "h-2 bg-ink-soft"
+                : "h-0"
           }`}
         />
         <span

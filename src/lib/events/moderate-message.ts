@@ -46,9 +46,10 @@ export function moderateMessage(
   const channel = p.source_broadcaster_user_name;
   return {
     ...notice,
-    text: channel && p.action.startsWith("shared_chat_")
-      ? t("MODERATION_SHARED", { channel, text: notice.text })
-      : notice.text,
+    text:
+      channel && p.action.startsWith("shared_chat_")
+        ? t("MODERATION_SHARED", { channel, text: notice.text })
+        : notice.text,
     people: [
       ...person(
         p.moderator_user_id,

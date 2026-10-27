@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function CommandComposerSlot(props: Props) {
-  const text = () => props.isFilled ? props.displayLabel : props.raw;
+  const text = () => (props.isFilled ? props.displayLabel : props.raw);
   return (
     <Show
       when={props.isActive}

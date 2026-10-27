@@ -16,8 +16,8 @@ export function splitNames(text: string, names: string[]): Segment[] {
   const segments: Segment[] = [];
   let cursor = 0;
   for (const match of text.matchAll(matcher)) {
-    const found = wanted.find(({ name }) =>
-      name.toLowerCase() === match[0].toLowerCase()
+    const found = wanted.find(
+      ({ name }) => name.toLowerCase() === match[0].toLowerCase(),
     )!;
     if (match.index > cursor) {
       segments.push({ text: text.slice(cursor, match.index) });

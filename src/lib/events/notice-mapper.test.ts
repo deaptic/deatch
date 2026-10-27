@@ -22,10 +22,8 @@ Deno.test("drops a notice with nothing to show", () => {
 
 Deno.test("takes the announcement colour the broadcaster picked", () => {
   const colored = (color: string) =>
-    mapNotice(
-      raw({ notice_type: "announcement", announcement: { color } }),
-      0,
-    )?.announcement_color;
+    mapNotice(raw({ notice_type: "announcement", announcement: { color } }), 0)
+      ?.announcement_color;
   assertEquals(colored("PURPLE"), "purple");
   assertEquals(colored("green"), "green");
   assertEquals(colored("PRIMARY"), "primary");

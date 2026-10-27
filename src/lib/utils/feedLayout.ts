@@ -7,8 +7,14 @@ export const GROUP_WINDOW_MS = 7 * 60 * 1000;
 export type RowLayout = { dayStart: boolean; continued: boolean };
 
 function standsAlone(msg: FeedMessage): boolean {
-  return !!(msg.reply || msg.automod_hold || msg.channel_points ||
-    msg.cheer || msg.power_up || msg.first_message);
+  return !!(
+    msg.reply ||
+    msg.automod_hold ||
+    msg.channel_points ||
+    msg.cheer ||
+    msg.power_up ||
+    msg.first_message
+  );
 }
 
 function continues(
@@ -16,11 +22,15 @@ function continues(
   item: FeedEntry,
   groupStart: number,
 ): boolean {
-  return prev.kind === "message" && item.kind === "message" &&
+  return (
+    prev.kind === "message" &&
+    item.kind === "message" &&
     prev.chatter_user_id === item.chatter_user_id &&
     prev.source?.id === item.source?.id &&
-    !prev.automod_hold && !standsAlone(item) &&
-    item.timestamp - groupStart < GROUP_WINDOW_MS;
+    !prev.automod_hold &&
+    !standsAlone(item) &&
+    item.timestamp - groupStart < GROUP_WINDOW_MS
+  );
 }
 
 export function layoutFeed(
@@ -30,10 +40,10 @@ export function layoutFeed(
   let groupStart = 0;
   return items.map((item, i) => {
     const prev = items[i - 1];
-    const dayStart = !!prev &&
-      daysBetween(prev.timestamp, item.timestamp) !== 0;
-    const continued = group && !!prev && !dayStart &&
-      continues(prev, item, groupStart);
+    const dayStart =
+      !!prev && daysBetween(prev.timestamp, item.timestamp) !== 0;
+    const continued =
+      group && !!prev && !dayStart && continues(prev, item, groupStart);
     if (!continued) groupStart = item.timestamp;
     return { dayStart, continued };
   });

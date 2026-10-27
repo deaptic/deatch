@@ -23,11 +23,13 @@ export default function ThemeCard() {
       >
         <Segmented
           value={appearanceTheme()}
-          options={[
-            { value: "system", label: t("SETTINGS_APPEARANCE_THEME_SYSTEM") },
-            { value: "dark", label: t("SETTINGS_APPEARANCE_THEME_DARK") },
-            { value: "light", label: t("SETTINGS_APPEARANCE_THEME_LIGHT") },
-          ] satisfies { value: Theme; label: string }[]}
+          options={
+            [
+              { value: "system", label: t("SETTINGS_APPEARANCE_THEME_SYSTEM") },
+              { value: "dark", label: t("SETTINGS_APPEARANCE_THEME_DARK") },
+              { value: "light", label: t("SETTINGS_APPEARANCE_THEME_LIGHT") },
+            ] satisfies { value: Theme; label: string }[]
+          }
           onChange={setAppearanceTheme}
         />
       </SettingsRow>

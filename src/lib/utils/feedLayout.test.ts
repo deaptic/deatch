@@ -41,12 +41,15 @@ const continued = (rows: { continued: boolean }[]) =>
   rows.map((r) => r.continued);
 
 Deno.test("groups consecutive messages from one chatter", () => {
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    msg("2", "maya", T0 + 1000),
-    msg("3", "leo", T0 + 2000),
-    msg("4", "maya", T0 + 3000),
-  ], true);
+  const rows = layoutFeed(
+    [
+      msg("1", "maya", T0),
+      msg("2", "maya", T0 + 1000),
+      msg("3", "leo", T0 + 2000),
+      msg("4", "maya", T0 + 3000),
+    ],
+    true,
+  );
   assertEquals(continued(rows), [false, true, false, false]);
 });
 
@@ -56,37 +59,40 @@ Deno.test("never groups when grouping is off", () => {
 });
 
 Deno.test("starts a new group after the time window", () => {
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    msg("2", "maya", T0 + GROUP_WINDOW_MS),
-  ], true);
+  const rows = layoutFeed(
+    [msg("1", "maya", T0), msg("2", "maya", T0 + GROUP_WINDOW_MS)],
+    true,
+  );
   assertEquals(continued(rows), [false, false]);
 });
 
 Deno.test("replies, holds, rewards and first messages stand alone", () => {
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    msg("2", "maya", T0, {
-      reply: {
-        parent_message_id: "x",
-        parent_message_body: "",
-        parent_user_name: "",
-        parent_user_login: "",
-        parent_user_id: "",
-      },
-    }),
-    msg("3", "maya", T0, { channel_points: { kind: "highlight" } }),
-    msg("4", "maya", T0, {
-      automod_hold: {
-        reason: "",
-        status: "pending",
-        broadcaster_user_id: "b",
-      },
-    }),
-    msg("5", "maya", T0),
-    msg("6", "maya", T0),
-    msg("7", "maya", T0, { first_message: true }),
-  ], true);
+  const rows = layoutFeed(
+    [
+      msg("1", "maya", T0),
+      msg("2", "maya", T0, {
+        reply: {
+          parent_message_id: "x",
+          parent_message_body: "",
+          parent_user_name: "",
+          parent_user_login: "",
+          parent_user_id: "",
+        },
+      }),
+      msg("3", "maya", T0, { channel_points: { kind: "highlight" } }),
+      msg("4", "maya", T0, {
+        automod_hold: {
+          reason: "",
+          status: "pending",
+          broadcaster_user_id: "b",
+        },
+      }),
+      msg("5", "maya", T0),
+      msg("6", "maya", T0),
+      msg("7", "maya", T0, { first_message: true }),
+    ],
+    true,
+  );
   assertEquals(continued(rows), [
     false,
     false,
@@ -100,21 +106,27 @@ Deno.test("replies, holds, rewards and first messages stand alone", () => {
 
 Deno.test("measures the window from the group's first message", () => {
   const step = GROUP_WINDOW_MS / 2;
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    msg("2", "maya", T0 + step),
-    msg("3", "maya", T0 + step * 2),
-    msg("4", "maya", T0 + step * 3),
-  ], true);
+  const rows = layoutFeed(
+    [
+      msg("1", "maya", T0),
+      msg("2", "maya", T0 + step),
+      msg("3", "maya", T0 + step * 2),
+      msg("4", "maya", T0 + step * 3),
+    ],
+    true,
+  );
   assertEquals(continued(rows), [false, true, false, true]);
 });
 
 Deno.test("cheers stand alone", () => {
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    msg("2", "maya", T0, { cheer: { bits: 100 } }),
-    msg("3", "maya", T0),
-  ], true);
+  const rows = layoutFeed(
+    [
+      msg("1", "maya", T0),
+      msg("2", "maya", T0, { cheer: { bits: 100 } }),
+      msg("3", "maya", T0),
+    ],
+    true,
+  );
   assertEquals(continued(rows), [false, false, true]);
 });
 
@@ -126,32 +138,33 @@ Deno.test("a change of shared chat channel breaks a group", () => {
     messageId: "x",
     badges: [],
   };
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    msg("2", "maya", T0, { source: mira }),
-    msg("3", "maya", T0, { source: mira }),
-    msg("4", "maya", T0),
-  ], true);
+  const rows = layoutFeed(
+    [
+      msg("1", "maya", T0),
+      msg("2", "maya", T0, { source: mira }),
+      msg("3", "maya", T0, { source: mira }),
+      msg("4", "maya", T0),
+    ],
+    true,
+  );
   assertEquals(continued(rows), [false, false, true, false]);
 });
 
 Deno.test("events break a group", () => {
-  const rows = layoutFeed([
-    msg("1", "maya", T0),
-    event("e", T0),
-    msg("2", "maya", T0),
-  ], true);
+  const rows = layoutFeed(
+    [msg("1", "maya", T0), event("e", T0), msg("2", "maya", T0)],
+    true,
+  );
   assertEquals(continued(rows), [false, false, false]);
 });
 
 Deno.test("marks the first row of each new day and breaks groups there", () => {
   const late = new Date(2026, 8, 30, 23, 59).getTime();
   const early = new Date(2026, 9, 1, 0, 1).getTime();
-  const rows = layoutFeed([
-    msg("1", "maya", late),
-    msg("2", "maya", early),
-    msg("3", "maya", early),
-  ], true);
+  const rows = layoutFeed(
+    [msg("1", "maya", late), msg("2", "maya", early), msg("3", "maya", early)],
+    true,
+  );
   assertEquals(rows, [
     { dayStart: false, continued: false },
     { dayStart: true, continued: false },

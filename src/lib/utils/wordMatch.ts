@@ -39,8 +39,9 @@ export function matchesTerms(
 ): boolean {
   const usable = terms.map((t) => t.trim()).filter(hasLiteral);
   if (usable.length === 0) return false;
-  return regExp(wordPattern(usable, anchor), caseSensitive ? "" : "i")
-    .test(text);
+  return regExp(wordPattern(usable, anchor), caseSensitive ? "" : "i").test(
+    text,
+  );
 }
 
 export function matchedKeyword(

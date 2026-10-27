@@ -34,10 +34,7 @@ export default function NotificationsSection() {
             <div class="flex flex-wrap gap-1.5">
               <For each={feedKeywords()}>
                 {(kw) => (
-                  <Chip
-                    label={kw}
-                    onRemove={() => removeFeedKeyword(kw)}
-                  />
+                  <Chip label={kw} onRemove={() => removeFeedKeyword(kw)} />
                 )}
               </For>
             </div>

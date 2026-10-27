@@ -9,9 +9,10 @@ function mentionName(c: Pick<Chatter, "login" | "displayName">) {
 export function completions(chatters: Iterable<Chatter>, query: string) {
   const q = query.toLowerCase();
   return [...chatters]
-    .filter((c) =>
-      c.login.toLowerCase().startsWith(q) ||
-      c.displayName.toLowerCase().startsWith(q)
+    .filter(
+      (c) =>
+        c.login.toLowerCase().startsWith(q) ||
+        c.displayName.toLowerCase().startsWith(q),
     )
     .sort((a, b) => b.lastSeen - a.lastSeen)
     .map(mentionName);

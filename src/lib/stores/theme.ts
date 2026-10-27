@@ -11,5 +11,5 @@ export const resolvedTheme: () => ResolvedTheme = createRoot(() =>
     const t = appearanceTheme();
     if (t !== "system") return t;
     return systemPrefersDark() ? "dark" : "light";
-  })
+  }),
 );

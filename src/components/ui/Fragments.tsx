@@ -98,36 +98,35 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
   return (
     <For each={textSegments(props.text, props.emotes)}>
       {(segment) =>
-        segment.kind === "emote"
-          ? <InlineEmote url={segment.url} name={segment.name} />
-          : segment.kind === "link"
-          ? (
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                openUrl(segment.url);
-              }}
-              onAuxClick={onMiddleClick(() => openUrl(segment.url))}
-              onMouseDown={preventAutoscroll}
-              class="text-accent-ink hover:underline break-all"
-            >
-              {segment.url}
-            </a>
-          )
-          : segment.text}
+        segment.kind === "emote" ? (
+          <InlineEmote url={segment.url} name={segment.name} />
+        ) : segment.kind === "link" ? (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              openUrl(segment.url);
+            }}
+            onAuxClick={onMiddleClick(() => openUrl(segment.url))}
+            onMouseDown={preventAutoscroll}
+            class="text-accent-ink hover:underline break-all"
+          >
+            {segment.url}
+          </a>
+        ) : (
+          segment.text
+        )
+      }
     </For>
   );
 }
 
-function Cheermote(
-  props: {
-    text: string;
-    prefix: string;
-    bits: number;
-    cheermotes: CheermoteMap;
-  },
-) {
+function Cheermote(props: {
+  text: string;
+  prefix: string;
+  bits: number;
+  cheermotes: CheermoteMap;
+}) {
   const tier = () => cheermoteTier(props.cheermotes, props.prefix, props.bits);
   return (
     <Show when={tier()} fallback={props.text}>

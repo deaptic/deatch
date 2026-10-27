@@ -60,7 +60,7 @@ const channelBadges = channelResource((c) =>
   Promise.all([
     loadGlobalBadges(),
     getChannelChatBadges({ broadcasterId: c.id }),
-  ]).then(([global, channel]) => toBadgeMap([...global, ...channel]))
+  ]).then(([global, channel]) => toBadgeMap([...global, ...channel])),
 );
 
 export async function loadGlobal(): Promise<BadgeMap> {
@@ -82,7 +82,8 @@ export function loadChannel(channel: ChannelRef) {
 /// A shared chat partner's badges, fetched once and kept while signed in.
 export function loadSource(channel: ChannelRef) {
   if (sourceBadges[channel.id]) return;
-  channelBadges.get(channel)
+  channelBadges
+    .get(channel)
     .then((map) => setSourceBadges(channel.id, map))
     .catch((e) => console.warn("shared chat badges not loaded", e));
 }

@@ -33,9 +33,7 @@ type Props = {
   onClose: () => void;
 };
 
-type Row =
-  | { kind: "channel"; user: User }
-  | { kind: "search"; query: string };
+type Row = { kind: "channel"; user: User } | { kind: "search"; query: string };
 
 const KBD =
   "min-w-5.5 h-5 px-1.5 inline-grid place-items-center rounded-xs bg-raised text-micro text-ink-faint font-sans";
@@ -162,7 +160,7 @@ export default function QuickSwitch(props: Props) {
               <For each={rows()}>
                 {(row, i) => {
                   const link = createChannelLink(() =>
-                    row.kind === "channel" ? row.user : undefined
+                    row.kind === "channel" ? row.user : undefined,
                   );
                   return (
                     <button
@@ -225,8 +223,7 @@ export default function QuickSwitch(props: Props) {
                                     when={stream()}
                                     fallback={t("COMMON_OFFLINE")}
                                   >
-                                    {t("COMMON_LIVE")} · {stream()!.game.name} ·
-                                    {" "}
+                                    {t("COMMON_LIVE")} · {stream()!.game.name} ·{" "}
                                     {formatViewers(stream()!.viewerCount)}
                                   </Show>
                                   <Show

@@ -66,7 +66,7 @@ export default function LiveNow(props: Props) {
           : undefined,
         language: exploreLanguage() || undefined,
         first: PAGE_SIZE,
-        after: reset ? undefined : cursor() ?? undefined,
+        after: reset ? undefined : (cursor() ?? undefined),
       });
       if (mine !== generation) return;
       if (data.length) {
@@ -102,8 +102,10 @@ export default function LiveNow(props: Props) {
     if (!exploreFilters.followingOnly) return remote();
     const lang = exploreLanguage();
     const category = exploreFilters.category;
-    return liveStreams().filter((s) =>
-      (!lang || s.language === lang) && (!category || s.game.id === category.id)
+    return liveStreams().filter(
+      (s) =>
+        (!lang || s.language === lang) &&
+        (!category || s.game.id === category.id),
     );
   };
 
@@ -214,8 +216,9 @@ export default function LiveNow(props: Props) {
 
         <div ref={(el) => observer.observe(el)} class="h-px" />
         <Show
-          when={!exploreFilters.followingOnly && fetching() &&
-            remote().length > 0}
+          when={
+            !exploreFilters.followingOnly && fetching() && remote().length > 0
+          }
         >
           <p class="py-4 text-center text-small text-ink-soft">
             {t("EXPLORE_LOADING_MORE")}

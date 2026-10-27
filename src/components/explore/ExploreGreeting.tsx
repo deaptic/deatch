@@ -22,14 +22,12 @@ export default function ExploreGreeting() {
             t("EXPLORE_GREETING_NAMED", {
               greeting: t(timeGreeting()),
               name: u().displayName,
-            })}
+            })
+          }
         </Show>
       </h1>
       <p class="mt-2 text-body text-ink-soft max-w-prose">
-        <Show
-          when={liveCount() > 0}
-          fallback={t("EXPLORE_NONE_LIVE")}
-        >
+        <Show when={liveCount() > 0} fallback={t("EXPLORE_NONE_LIVE")}>
           {t("EXPLORE_LIVE_COUNT", { count: liveCount() })}
         </Show>
       </p>

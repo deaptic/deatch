@@ -9,9 +9,9 @@ export const [linkedChannel, setLinkedChannel] = createSignal<User | null>(
 );
 
 // Open Twitch tabs in the browser, pre-joined so Link-tab swaps are instant.
-export const [linkWarmedChannels, setLinkWarmedChannels] = createSignal<
-  User[]
->([]);
+export const [linkWarmedChannels, setLinkWarmedChannels] = createSignal<User[]>(
+  [],
+);
 
 export const [linkMutedByLogin, setLinkMutedByLogin] = createSignal<
   Record<string, boolean>

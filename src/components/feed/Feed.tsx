@@ -100,7 +100,7 @@ export default function Feed(props: Props) {
       ? null
       : (feeds[props.broadcasterId]?.dividerAtEntryId ?? null);
   const reactions = createMemo(() =>
-    usableFavorites(knownUser(props.broadcasterId) ?? null).slice(0, 3)
+    usableFavorites(knownUser(props.broadcasterId) ?? null).slice(0, 3),
   );
 
   const dividerBeforeId = createMemo(() => {
@@ -135,7 +135,7 @@ export default function Feed(props: Props) {
   );
 
   const messageList = createMemo<Message[]>(() =>
-    entries().filter((i): i is Message => i.kind === "message")
+    entries().filter((i): i is Message => i.kind === "message"),
   );
   const selectedMessage = createMemo<Message | null>(() => {
     const id = selectedId();

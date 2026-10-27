@@ -26,8 +26,8 @@ export function applyChannelInfo(info: ChannelInfo) {
     streams.map((s) =>
       s.user.id === info.broadcaster.id
         ? { ...s, title: info.title, game: info.game }
-        : s
-    )
+        : s,
+    ),
   );
 }
 

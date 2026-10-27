@@ -65,10 +65,7 @@ Deno.test("a live channel shows its game, viewers and stream start", () => {
   assertEquals(presenceMode(ctx()), "ch:1");
   assertEquals(activity.stateText, "Chess · 1.2K viewers");
   assertEquals(activity.largeText, "Chess with chat");
-  assertEquals(
-    activity.startedAt,
-    Date.parse("2026-10-01T10:00:00Z") / 1000,
-  );
+  assertEquals(activity.startedAt, Date.parse("2026-10-01T10:00:00Z") / 1000);
 });
 
 Deno.test("an offline channel is Offline, your own shows the lurk phrase", () => {

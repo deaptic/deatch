@@ -32,10 +32,12 @@ const deepPages = new Map<
 function entriesOf(history: RecentHistory): FeedEntry[] {
   return [
     ...history.messages.map((m) => mapChatMessage(m, m.timestamp_ms)),
-    ...groupGifts(history.notices.flatMap((raw) => {
-      const item = mapNotice(raw, raw.timestamp_ms);
-      return item ? [{ raw, item }] : [];
-    })),
+    ...groupGifts(
+      history.notices.flatMap((raw) => {
+        const item = mapNotice(raw, raw.timestamp_ms);
+        return item ? [{ raw, item }] : [];
+      }),
+    ),
   ].sort((a, b) => a.timestamp - b.timestamp);
 }
 
@@ -66,12 +68,9 @@ export function fillGap(
       const lines = history.messages.length + history.notices.length;
       if (lines >= GAP_LIMIT && items.length > 0) {
         insertEntries(broadcasterId, [
-          feedEvent(
-            "local",
-            t("BACKLOG_GAP"),
-            items[0].timestamp - 1,
-            { silent: true },
-          ),
+          feedEvent("local", t("BACKLOG_GAP"), items[0].timestamp - 1, {
+            silent: true,
+          }),
         ]);
       }
     })
@@ -111,7 +110,7 @@ export function forChatter(
   return deepPage(channelLogin).then((history) =>
     history.messages
       .filter((m) => m.chatter_user_id === chatterId)
-      .map((m) => mapChatMessage(m, m.timestamp_ms))
+      .map((m) => mapChatMessage(m, m.timestamp_ms)),
   );
 }
 

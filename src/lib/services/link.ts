@@ -49,10 +49,7 @@ export async function closeOffline() {
     return;
   }
   closeTabs(offline);
-  addToast(
-    t("LINK_CLOSED_OFFLINE", { count: offline.length }),
-    "success",
-  );
+  addToast(t("LINK_CLOSED_OFFLINE", { count: offline.length }), "success");
 }
 
 function isMuted(login: string): boolean {
@@ -93,7 +90,7 @@ export function openTab() {
   const ch = selectedChannel();
   if (!ch) return;
   keepingFocus(() => openUrl(channelUrl(ch.login))).catch((e) =>
-    console.warn("browser tab not opened", e)
+    console.warn("browser tab not opened", e),
   );
 }
 
@@ -103,7 +100,7 @@ export function closeTab(): boolean {
   const tab = selectedLinked();
   if (!tab) return false;
   keepingFocus(() => linkClose(tab.login)).catch((e) =>
-    console.warn("browser tab not closed", e)
+    console.warn("browser tab not closed", e),
   );
   return true;
 }
@@ -127,7 +124,7 @@ export function sendAudio(
   audioTimer ??= window.setTimeout(() => {
     audioTimer = undefined;
     linkSetAudio(...audioPending!).catch((e) =>
-      console.warn("audio settings not sent", e)
+      console.warn("audio settings not sent", e),
     );
   }, AUDIO_SEND_MS);
 }
@@ -166,10 +163,7 @@ export function currentMuted(): boolean | null {
 
 export function toggleMuted(login: string) {
   linkSetMuted(login, !isMuted(login)).catch(() =>
-    addToast(
-      t("LINK_TAB_UNREACHABLE"),
-      "error",
-    )
+    addToast(t("LINK_TAB_UNREACHABLE"), "error"),
   );
 }
 

@@ -14,9 +14,7 @@ export default function HoverZoom() {
   };
   const onOver = (e: MouseEvent) => {
     setCtrl(e.ctrlKey);
-    setTarget(
-      (e.target as Element).closest<HTMLElement>("[data-zoom-src]"),
-    );
+    setTarget((e.target as Element).closest<HTMLElement>("[data-zoom-src]"));
   };
   const release = () => setCtrl(false);
   const clear = () => setTarget(null);

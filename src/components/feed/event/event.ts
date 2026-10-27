@@ -211,9 +211,8 @@ export function look(item: Event): Look {
   return {
     ...base,
     title: TITLES[type] ?? base.title,
-    color: picked && picked !== "primary"
-      ? ANNOUNCEMENT_COLORS[picked]
-      : base.color,
+    color:
+      picked && picked !== "primary" ? ANNOUNCEMENT_COLORS[picked] : base.color,
   };
 }
 
@@ -221,11 +220,11 @@ export function look(item: Event): Look {
 function chatter(item: Event): Person | undefined {
   return item.chatter_user_id
     ? {
-      id: item.chatter_user_id,
-      login: item.chatter_login ?? item.chatter_name.toLowerCase(),
-      name: item.chatter_name,
-      color: item.color,
-    }
+        id: item.chatter_user_id,
+        login: item.chatter_login ?? item.chatter_name.toLowerCase(),
+        name: item.chatter_name,
+        color: item.color,
+      }
     : undefined;
 }
 

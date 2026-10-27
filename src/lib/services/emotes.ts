@@ -28,10 +28,10 @@ const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
 
 const bttv = channelResource((c) =>
-  bttvGetChannelEmotes({ channelId: c.id }, { silent: true })
+  bttvGetChannelEmotes({ channelId: c.id }, { silent: true }),
 );
 const ffz = channelResource((c) =>
-  ffzGetChannelEmotes({ channelLogin: c.login }, { silent: true })
+  ffzGetChannelEmotes({ channelLogin: c.login }, { silent: true }),
 );
 
 let userEmotesLoadStarted = false;
@@ -83,11 +83,15 @@ export async function loadGlobal(): Promise<Emote[]> {
 export function loadThirdPartyGlobal() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
-  seventvGetGlobalEmotes({ silent: true }).then(setSevenTvGlobal).catch(
-    () => {},
-  );
-  bttvGetGlobalEmotes({ silent: true }).then(setBttvGlobal).catch(() => {});
-  ffzGetGlobalEmotes({ silent: true }).then(setFfzGlobal).catch(() => {});
+  seventvGetGlobalEmotes({ silent: true })
+    .then(setSevenTvGlobal)
+    .catch(() => {});
+  bttvGetGlobalEmotes({ silent: true })
+    .then(setBttvGlobal)
+    .catch(() => {});
+  ffzGetGlobalEmotes({ silent: true })
+    .then(setFfzGlobal)
+    .catch(() => {});
 }
 
 export function loadChannelThirdParty(channel: ChannelRef) {

@@ -11,22 +11,20 @@ import { feedEvent, person } from "../utils/feedEvent.ts";
 import { wordsOf } from "./chat-mapper.ts";
 import { detail, noticeMessage } from "./notice-message.ts";
 
-const ANNOUNCEMENT_COLORS = new Set<string>(
-  [
-    "primary",
-    "blue",
-    "green",
-    "orange",
-    "purple",
-  ] satisfies AnnouncementColor[],
-);
+const ANNOUNCEMENT_COLORS = new Set<string>([
+  "primary",
+  "blue",
+  "green",
+  "orange",
+  "purple",
+] satisfies AnnouncementColor[]);
 
 function announcementColor(
   raw: RawNotification,
 ): AnnouncementColor | undefined {
   const color = detail(raw, "announcement")?.color.toLowerCase() ?? "";
   return ANNOUNCEMENT_COLORS.has(color)
-    ? color as AnnouncementColor
+    ? (color as AnnouncementColor)
     : undefined;
 }
 
@@ -40,14 +38,14 @@ function namedIn(raw: RawNotification): Person[] {
       gift.recipient_user_name,
     );
   }
-  const gifter = detail(raw, "pay_it_forward") ??
-    detail(raw, "gift_paid_upgrade");
+  const gifter =
+    detail(raw, "pay_it_forward") ?? detail(raw, "gift_paid_upgrade");
   return gifter && !gifter.gifter_is_anonymous
     ? person(
-      gifter.gifter_user_id,
-      gifter.gifter_user_login,
-      gifter.gifter_user_name,
-    )
+        gifter.gifter_user_id,
+        gifter.gifter_user_login,
+        gifter.gifter_user_name,
+      )
     : [];
 }
 

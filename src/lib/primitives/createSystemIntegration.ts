@@ -47,7 +47,7 @@ export function createSystemIntegration(): void {
     getCurrentWindow()
       .setAlwaysOnTop(advancedAlwaysOnTop())
       .catch((e) =>
-        addToast(t("SYSTEM_ALWAYS_ON_TOP_FAILED"), "error", errorMessage(e))
+        addToast(t("SYSTEM_ALWAYS_ON_TOP_FAILED"), "error", errorMessage(e)),
       );
   });
 
@@ -58,7 +58,7 @@ export function createSystemIntegration(): void {
       if (have === want) return;
       await (want ? enableAutostart() : disableAutostart());
     })().catch((e) =>
-      addToast(t("SYSTEM_AUTOSTART_FAILED"), "error", errorMessage(e))
+      addToast(t("SYSTEM_AUTOSTART_FAILED"), "error", errorMessage(e)),
     );
   });
 

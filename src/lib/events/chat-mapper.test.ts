@@ -78,11 +78,13 @@ Deno.test("keeps a GIF's URL exactly as Twitch sent it", () => {
     raw({
       message: {
         text: "[Hello GIF]",
-        fragments: [{
-          type: "gif",
-          text: "[Hello GIF]",
-          gif: { id: "x", url },
-        }],
+        fragments: [
+          {
+            type: "gif",
+            text: "[Hello GIF]",
+            gif: { id: "x", url },
+          },
+        ],
       },
     }),
     0,
@@ -137,10 +139,7 @@ Deno.test("marks only shared chat messages with their source channel", () => {
     }),
     0,
   );
-  const unshared = mapChatMessage(
-    raw({ source_broadcaster_user_id: null }),
-    0,
-  );
+  const unshared = mapChatMessage(raw({ source_broadcaster_user_id: null }), 0);
   assertEquals(shared.source, {
     id: "333",
     login: "mira",

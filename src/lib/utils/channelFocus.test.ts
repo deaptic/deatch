@@ -11,16 +11,13 @@ const sources = {
 };
 
 Deno.test("focuses own, pinned, warmed and selected; the rest is background", () => {
-  assertEquals(
-    Object.fromEntries(channelFocus(sources)),
-    {
-      me: "focused",
-      pinned: "focused",
-      warmed: "focused",
-      live1: "focused",
-      live2: "background",
-    },
-  );
+  assertEquals(Object.fromEntries(channelFocus(sources)), {
+    me: "focused",
+    pinned: "focused",
+    warmed: "focused",
+    live1: "focused",
+    live2: "background",
+  });
 });
 
 Deno.test("reports joins, leaves and promotions", () => {

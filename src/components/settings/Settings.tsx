@@ -86,7 +86,7 @@ export default function Settings() {
   onMount(() => {
     if (!root) return;
     const observer = new ResizeObserver(([entry]) =>
-      setCollapsed(entry.contentRect.width < COLLAPSE_BELOW_PX)
+      setCollapsed(entry.contentRect.width < COLLAPSE_BELOW_PX),
     );
     observer.observe(root);
     onCleanup(() => observer.disconnect());

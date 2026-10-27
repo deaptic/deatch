@@ -97,7 +97,7 @@ export default function CommandComposer(props: Props) {
 
   function patchSlot(idx: number, patch: Partial<Slot>) {
     setSlots((prev) =>
-      prev.map((s, i) => (i === idx ? { ...s, ...patch } : s))
+      prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)),
     );
   }
 
@@ -176,23 +176,29 @@ export default function CommandComposer(props: Props) {
   const activePopup = createMemo<Popup | null>(() => {
     switch (activeOption()?.type) {
       case "user":
-        return userSuggestions().length === 0 ? null : {
-          items: userSuggestions,
-          select: (i) => selectUser(i as UserSuggestion),
-          render: (i) => renderUserItem(i as UserSuggestion),
-        };
+        return userSuggestions().length === 0
+          ? null
+          : {
+              items: userSuggestions,
+              select: (i) => selectUser(i as UserSuggestion),
+              render: (i) => renderUserItem(i as UserSuggestion),
+            };
       case "enum":
-        return enumSuggestions().length === 0 ? null : {
-          items: enumSuggestions,
-          select: (i) => selectEnum(i as string),
-          render: (i) => <span class="text-ink">{i as string}</span>,
-        };
+        return enumSuggestions().length === 0
+          ? null
+          : {
+              items: enumSuggestions,
+              select: (i) => selectEnum(i as string),
+              render: (i) => <span class="text-ink">{i as string}</span>,
+            };
       case "search":
-        return searchSuggestions().length === 0 ? null : {
-          items: searchSuggestions,
-          select: (i) => selectSearch(i as OptionSuggestion),
-          render: (i) => renderSearchItem(i as OptionSuggestion),
-        };
+        return searchSuggestions().length === 0
+          ? null
+          : {
+              items: searchSuggestions,
+              select: (i) => selectSearch(i as OptionSuggestion),
+              render: (i) => renderSearchItem(i as OptionSuggestion),
+            };
       default:
         return null;
     }
@@ -299,19 +305,18 @@ export default function CommandComposer(props: Props) {
       prev.map((slot, i) =>
         options[i]?.required && slot.resolved === null && !slot.error
           ? { ...slot, error: t("COMMAND_REQUIRED") }
-          : slot
-      )
+          : slot,
+      ),
     );
     clearTimeout(requiredFlashTimer);
     requiredFlashTimer = window.setTimeout(() => {
       requiredFlashTimer = undefined;
       setSlots((prev) =>
-        prev.map((
-          slot,
-        ) => (slot.error === t("COMMAND_REQUIRED")
-          ? { ...slot, error: null }
-          : slot)
-        )
+        prev.map((slot) =>
+          slot.error === t("COMMAND_REQUIRED")
+            ? { ...slot, error: null }
+            : slot,
+        ),
       );
     }, 1500);
   }
@@ -344,9 +349,10 @@ export default function CommandComposer(props: Props) {
         raw: value,
         resolved: exact ? value : null,
         displayLabel: value,
-        error: value !== "" && !exact
-          ? `Must be one of: ${allowed.join(", ")}`
-          : null,
+        error:
+          value !== "" && !exact
+            ? `Must be one of: ${allowed.join(", ")}`
+            : null,
       });
     } else {
       patchSlot(idx, {

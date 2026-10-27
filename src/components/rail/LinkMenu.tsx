@@ -79,18 +79,14 @@ export default function LinkMenu(props: Props) {
           icon={<AudioLines />}
           active={linkAudioLink()}
           shortcut={shortcuts.keyFor("link::toggleAudioLink")}
-          onClick={run(() =>
-            setLinkAudioLink(!linkAudioLink())
-          )}
+          onClick={run(() => setLinkAudioLink(!linkAudioLink()))}
         />
         <Show when={linkHasAudio()}>
           <MenuItem
             label={t("SETTINGS_LINK_COMPRESSOR")}
             icon={<AudioWaveform />}
             active={linkCompressor()}
-            onClick={run(() =>
-              setLinkCompressor(!linkCompressor())
-            )}
+            onClick={run(() => setLinkCompressor(!linkCompressor()))}
           />
         </Show>
         <MenuDivider />

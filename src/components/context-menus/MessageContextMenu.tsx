@@ -49,7 +49,7 @@ export default function MessageContextMenu(props: Props) {
             label={t("MENU_JUMP_TO_PARENT")}
             icon={<CornerUpLeft />}
             onClick={run(() =>
-              props.onJumpToMessage(reply().parent_message_id)
+              props.onJumpToMessage(reply().parent_message_id),
             )}
           />
         )}
@@ -76,7 +76,7 @@ export default function MessageContextMenu(props: Props) {
             deleteChatMessages({
               broadcasterId: props.broadcasterId,
               messageId: props.msg.message_id,
-            }).catch(() => {})
+            }).catch(() => {}),
           )}
         />
       </Show>

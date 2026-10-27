@@ -9,7 +9,10 @@ const reply = (fragments: FeedMessage["fragments"]): FeedMessage =>
 Deno.test("textOf joins fragments without separators", () => {
   assertEquals(
     textOf({
-      fragments: [{ type: "text", text: "a " }, { type: "text", text: "b" }],
+      fragments: [
+        { type: "text", text: "a " },
+        { type: "text", text: "b" },
+      ],
     }),
     "a b",
   );

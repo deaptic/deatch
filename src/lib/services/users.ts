@@ -42,9 +42,11 @@ let dirty = false;
 
 export function start(): () => void {
   const saved = freshEntries(load(), Date.now(), TTL_MS, MAX_KNOWN);
-  setKnownUsers(produce((table) => {
-    for (const [id, entry] of Object.entries(saved)) table[id] ??= entry;
-  }));
+  setKnownUsers(
+    produce((table) => {
+      for (const [id, entry] of Object.entries(saved)) table[id] ??= entry;
+    }),
+  );
   globalThis.addEventListener("pagehide", save);
   return () => {
     globalThis.removeEventListener("pagehide", save);
@@ -61,20 +63,22 @@ export function set(users: User[]): void {
   if (users.length === 0) return;
   const now = Date.now();
   let changed = false;
-  setKnownUsers(produce((table) => {
-    for (const next of users) {
-      const prev = table[next.id];
-      const merged = mergeUser(prev?.user, next);
-      const at = isComplete(next) ? now : prev?.at ?? 0;
-      if (prev && sameUser(prev.user, merged)) {
-        if (prev.at === at) continue;
-        prev.at = at;
-      } else {
-        table[next.id] = { user: merged, at };
+  setKnownUsers(
+    produce((table) => {
+      for (const next of users) {
+        const prev = table[next.id];
+        const merged = mergeUser(prev?.user, next);
+        const at = isComplete(next) ? now : (prev?.at ?? 0);
+        if (prev && sameUser(prev.user, merged)) {
+          if (prev.at === at) continue;
+          prev.at = at;
+        } else {
+          table[next.id] = { user: merged, at };
+        }
+        changed = true;
       }
-      changed = true;
-    }
-  }));
+    }),
+  );
   if (!changed) return;
   if (Object.keys(unwrap(knownUsers)).length > MAX_KNOWN) evict(now);
   scheduleSave();
@@ -96,7 +100,7 @@ export function get(ids: string[]): Promise<User[]> {
       .filter((id) => !isKnown(id) && !recentlyMissing(id))
       .map(enqueue);
     return Promise.all(pending).then(() =>
-      wanted.map(knownUser).filter((u): u is User => !!u)
+      wanted.map(knownUser).filter((u): u is User => !!u),
     );
   });
 }
@@ -178,10 +182,10 @@ function scheduleSave() {
 function load(): Record<string, KnownUser> {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
-    const parsed = raw ? JSON.parse(raw) as Record<string, unknown> : {};
+    const parsed = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
     return Object.fromEntries(
       Object.entries(parsed).filter((e): e is [string, KnownUser] =>
-        isKnownUser(e[1])
+        isKnownUser(e[1]),
       ),
     );
   } catch {

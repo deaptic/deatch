@@ -29,9 +29,8 @@ export function feedEvent(
   timestamp: number,
   extras: Extras = {},
 ): FeedEvent {
-  const { text, detail, people } = typeof notice === "string"
-    ? { text: notice }
-    : notice;
+  const { text, detail, people } =
+    typeof notice === "string" ? { text: notice } : notice;
   return {
     kind: "event",
     id: crypto.randomUUID(),

@@ -36,7 +36,8 @@ export function createChannelNavigation(): ChannelNavigation {
   }
 
   function openChannel(channelId: string, then?: () => void) {
-    users.get([channelId])
+    users
+      .get([channelId])
       .then(([ch]) => {
         if (!ch) {
           return addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");

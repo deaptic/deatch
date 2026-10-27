@@ -31,7 +31,7 @@ export function addToast(
   const id = nextId++;
   const duration = TYPE_DURATION[type];
   setToasts((prev) =>
-    [...prev, { id, title, description, type, duration }].slice(-3)
+    [...prev, { id, title, description, type, duration }].slice(-3),
   );
 }
 

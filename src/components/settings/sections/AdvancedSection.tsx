@@ -44,10 +44,7 @@ export default function AdvancedSection() {
   }
 
   return (
-    <PageBody
-      title={t("SETTINGS_ADVANCED")}
-      lede={t("SETTINGS_ADVANCED_LEDE")}
-    >
+    <PageBody title={t("SETTINGS_ADVANCED")} lede={t("SETTINGS_ADVANCED_LEDE")}>
       <Show when={restartFor() !== null}>
         <Dialog
           title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
@@ -57,10 +54,7 @@ export default function AdvancedSection() {
           onClose={() => setRestartFor(null)}
           actions={
             <>
-              <Button
-                variant="neutral"
-                onClick={() => setRestartFor(null)}
-              >
+              <Button variant="neutral" onClick={() => setRestartFor(null)}>
                 {t("COMMON_CANCEL")}
               </Button>
               <Button
