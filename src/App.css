@@ -272,6 +272,12 @@
   height: 1.25em;
 }
 
+/* Lead (tile or timestamp) beside the text, which may shrink to wrap. */
+@utility feed-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 @utility feed-icon {
   & > svg {
     width: 1.1em;

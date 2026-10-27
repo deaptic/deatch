@@ -11,7 +11,7 @@ import { getUserChatColor } from "../../../lib/api/twitch/chat.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { feedEvent } from "../../../lib/utils/feedEvent.ts";
 import { layoutFeed } from "../../../lib/utils/feedLayout.ts";
-import FeedItem from "../../feed/FeedItem.tsx";
+import { FeedRow } from "../../feed/Feed.tsx";
 
 type Me = { id: string; login: string; name: string; color: string };
 
@@ -72,7 +72,7 @@ export default function AppearancePreview() {
       color: color() ?? "",
     };
   };
-  // FeedItem reads its entry once, so wait for the colour rather than rebuild
+  // FeedRow reads its entry once, so wait for the colour rather than rebuild
   // every row when it lands.
   const entries = createMemo(() =>
     color.loading ? [] : sampleFeed(me(), Date.now())
@@ -86,7 +86,7 @@ export default function AppearancePreview() {
     <div class="px-2 pb-3 pr-4 text-(length:--chat-size)">
       <For each={entries()}>
         {(entry, i) => (
-          <FeedItem
+          <FeedRow
             entry={entry}
             density={feedDensity()}
             continued={rows()[i()]?.continued}

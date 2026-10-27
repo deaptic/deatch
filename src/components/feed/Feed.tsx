@@ -12,7 +12,7 @@ import {
 } from "solid-js";
 import type {
   FeedEntry,
-  FeedEvent,
+  FeedEvent as Event,
   FeedMessage as Message,
 } from "../../lib/types/index.ts";
 import {
@@ -34,7 +34,9 @@ import {
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import FeedItem from "./FeedItem.tsx";
+import type { ItemLayout } from "./FeedItem.tsx";
+import FeedMessage, { type MessageOptions } from "./FeedMessage.tsx";
+import FeedEvent, { type EventOptions } from "./FeedEvent.tsx";
 import Divider from "../ui/Divider.tsx";
 import { t } from "../../lib/i18n/index.ts";
 import type { Density } from "../../lib/constants/density.ts";
@@ -70,7 +72,7 @@ type Props = UserActions & {
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
   onOpenChannel?: (channelId: string) => void;
-  onEventContextMenu?: (x: number, y: number, item: FeedEvent) => void;
+  onEventContextMenu?: (x: number, y: number, item: Event) => void;
   header?: JSX.Element;
   footer?: JSX.Element;
   class?: string;
@@ -237,7 +239,7 @@ export default function Feed(props: Props) {
   });
 
   const row = (entry: FeedEntry) => (
-    <FeedItem
+    <FeedRow
       entry={entry}
       density={props.density ?? "compact"}
       continued={isContinued(getEntryId(entry))}
@@ -306,4 +308,16 @@ export default function Feed(props: Props) {
       {props.footer}
     </div>
   );
+}
+
+type RowProps = ItemLayout & MessageOptions & EventOptions & {
+  entry: FeedEntry;
+};
+
+/// One entry, drawn by the item that fits its kind.
+export function FeedRow(props: RowProps) {
+  const entry = props.entry;
+  return entry.kind === "message"
+    ? <FeedMessage {...props} item={entry} />
+    : <FeedEvent {...props} item={entry} />;
 }
