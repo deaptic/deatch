@@ -13,7 +13,7 @@ import type { MentionReason } from "../../lib/utils/mention.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Card from "../ui/Card.tsx";
 import IconButton from "../ui/IconButton.tsx";
-import FeedMessage from "../feed/FeedMessage.tsx";
+import Message from "../feed/message/Message.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
@@ -84,7 +84,7 @@ export default function InboxItem(props: Props) {
         </span>
       </header>
       <div class="p-2 text-(length:--chat-size)">
-        <FeedMessage
+        <Message
           item={m().message}
           density={feedDensity()}
           bare

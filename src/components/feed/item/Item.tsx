@@ -1,13 +1,7 @@
-import {
-  createContext,
-  createSignal,
-  type JSX,
-  Show,
-  useContext,
-} from "solid-js";
-import type { Density } from "../../lib/constants/density.ts";
-import { openMenuAt } from "../../lib/utils/contextMenu.ts";
-import Timestamp from "../ui/Timestamp.tsx";
+import { createContext, createSignal, type JSX, Show } from "solid-js";
+import type { Density } from "../../../lib/constants/density.ts";
+import { openMenuAt } from "../../../lib/utils/contextMenu.ts";
+import Timestamp from "../../ui/Timestamp.tsx";
 
 export type RowTone =
   | "held"
@@ -51,14 +45,13 @@ const TONES: Record<RowTone, string> = {
   plain: "border-transparent hover:bg-raised",
 };
 
-const SPINE =
-  "absolute top-1/2 bottom-0 border-l-2 border-t-2 border-ink-faint rounded-tl-sm";
+export const DensityContext = createContext<() => Density>(
+  (): Density => "compact",
+);
 
-const DensityContext = createContext<() => Density>((): Density => "compact");
-
-/// One row of the feed. The parts below sit in a two-column grid: the
-/// lead (tile or timestamp) on the left, the text on the right.
-function FeedItem(props: Props) {
+/// One row of the feed. Its parts sit in a two-column grid: the lead (tile
+/// or timestamp) on the left, the text on the right.
+export default function Item(props: Props) {
   const [hovered, setHovered] = createSignal(false);
   const active = () => hovered() || !!props.selected;
   const comfortable = () => props.density === "comfortable";
@@ -131,72 +124,3 @@ function FeedItem(props: Props) {
     </DensityContext.Provider>
   );
 }
-
-/// Lines above the item; `thread` is the one the item answers, joined to
-/// it by a connector.
-function Context(props: { children?: JSX.Element; thread?: JSX.Element }) {
-  const density = useContext(DensityContext);
-  return (
-    <div class="col-span-2 row-start-1 grid grid-cols-subgrid">
-      <div class="col-start-2">{props.children}</div>
-      <Show when={props.thread}>
-        {(thread) => (
-          <Show
-            when={density() === "comfortable"}
-            fallback={
-              <div data-thread class="col-start-2 flex items-center">
-                <span class="h-lh aspect-square mr-1 shrink-0 relative">
-                  <span class={`${SPINE} left-0 -right-0.5`} />
-                </span>
-                <div class="flex-1 min-w-0">{thread()}</div>
-              </div>
-            }
-          >
-            <span class="col-start-1 relative">
-              <span class={`${SPINE} left-1/2 -ml-px right-1`} />
-            </span>
-            <div data-thread class="col-start-2">{thread()}</div>
-          </Show>
-        )}
-      </Show>
-    </div>
-  );
-}
-
-function Title(props: { children: JSX.Element }) {
-  return <div class="col-start-2 row-start-2">{props.children}</div>;
-}
-
-function Content(props: { children: JSX.Element }) {
-  return <div class="col-start-2 row-start-3 text-ink">{props.children}</div>;
-}
-
-function Detail(props: { children: JSX.Element }) {
-  return (
-    <div class="col-start-2 row-start-4 text-ink-soft">{props.children}</div>
-  );
-}
-
-function Tile(
-  props: { color?: string; round?: boolean; children: JSX.Element },
-) {
-  return (
-    <span
-      aria-hidden="true"
-      class={`size-(--chat-tile) shrink-0 grid place-items-center overflow-hidden select-none ${
-        props.round ? "rounded-full" : "rounded-sm"
-      } ${props.color ? "bg-(--tile)/16 text-(--tile)" : "bg-raised"}`}
-      style={props.color ? { "--tile": props.color } : undefined}
-    >
-      {props.children}
-    </span>
-  );
-}
-
-export default Object.assign(FeedItem, {
-  Context,
-  Title,
-  Content,
-  Detail,
-  Tile,
-});

@@ -1,0 +1,105 @@
+import { Show } from "solid-js";
+import { Dynamic } from "solid-js/web";
+import type { FeedEvent } from "../../../lib/types/index.ts";
+import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
+import { t } from "../../../lib/i18n/index.ts";
+import Fragments from "../../ui/Fragments.tsx";
+import NamedText from "../../ui/NamedText.tsx";
+import NameList from "../../ui/NameList.tsx";
+import Timestamp from "../../ui/Timestamp.tsx";
+import type { UserActions } from "../../ui/userLink.ts";
+import FeedItem, { type ItemLayout } from "../item/index.ts";
+import Actions from "./Actions.tsx";
+import * as event from "./event.ts";
+
+export type EventOptions = UserActions & {
+  emotes: EmoteMap;
+  cheermotes: CheermoteMap;
+  onEventContextMenu?: (x: number, y: number, item: FeedEvent) => void;
+};
+
+type Props = ItemLayout & EventOptions & { item: FeedEvent };
+
+export default function Event(props: Props) {
+  const item = props.item;
+  const look = () => event.look(item);
+  const icon = () => <Dynamic component={look().Icon} />;
+
+  return (
+    <FeedItem
+      id={item.id}
+      timestamp={item.timestamp}
+      density={props.density}
+      continued={props.continued}
+      selected={props.selected}
+      flush={props.flush}
+      bare={props.bare}
+      showTimestamp={props.showTimestamp}
+      tone="event"
+      toneColor={look().color}
+      tile={() => (
+        <FeedItem.Tile color={look().color}>
+          <span class="feed-icon grid">{icon()}</span>
+        </FeedItem.Tile>
+      )}
+      overlay={() => (
+        <Show when={item.clip}>
+          {(clip) => <Actions clipId={clip().id} />}
+        </Show>
+      )}
+      onContextMenu={props.onEventContextMenu &&
+        ((x, y) => props.onEventContextMenu!(x, y, item))}
+    >
+      <Show when={props.density === "comfortable"}>
+        <FeedItem.Title>
+          <span class="font-semibold text-(--tone)">{t(look().title)}</span>
+          <Timestamp ts={item.timestamp} format="c" variant="inline" />
+        </FeedItem.Title>
+      </Show>
+      <FeedItem.Content>
+        <Show when={props.density === "compact"}>
+          <span class="feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
+            {icon()}
+          </span>
+        </Show>
+        <NamedText
+          text={item.system_message}
+          people={event.people(item)}
+          onShowUserCard={props.onShowUserCard}
+          onUserContextMenu={props.onUserContextMenu}
+        />
+      </FeedItem.Content>
+      <FeedItem.Detail>
+        <Show when={item.message}>
+          {(words) => (
+            <div>
+              <Fragments
+                fragments={words()}
+                emotes={props.emotes}
+                cheermotes={props.cheermotes}
+                onShowUserCard={props.onShowUserCard}
+                onUserContextMenu={props.onUserContextMenu}
+              />
+            </div>
+          )}
+        </Show>
+        <Show when={item.detail}>{(detail) => <div>{detail()}</div>}</Show>
+        <Show when={item.recipients?.length ? item.recipients : undefined}>
+          {(recipients) => (
+            <div>
+              {`${t("EVENT_GIFTED_TO")} `}
+              <NameList
+                people={recipients()}
+                limit={event.RECIPIENTS_SHOWN}
+                more={(count) => t("EVENT_GIFT_MORE", { count })}
+                onShowUserCard={props.onShowUserCard}
+                onUserContextMenu={props.onUserContextMenu}
+              />
+            </div>
+          )}
+        </Show>
+      </FeedItem.Detail>
+    </FeedItem>
+  );
+}

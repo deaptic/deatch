@@ -34,9 +34,7 @@ import {
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import type { ItemLayout } from "./FeedItem.tsx";
-import FeedMessage, { type MessageOptions } from "./FeedMessage.tsx";
-import FeedEvent, { type EventOptions } from "./FeedEvent.tsx";
+import FeedRow from "./FeedRow.tsx";
 import Divider from "../ui/Divider.tsx";
 import { t } from "../../lib/i18n/index.ts";
 import type { Density } from "../../lib/constants/density.ts";
@@ -308,16 +306,4 @@ export default function Feed(props: Props) {
       {props.footer}
     </div>
   );
-}
-
-type RowProps = ItemLayout & MessageOptions & EventOptions & {
-  entry: FeedEntry;
-};
-
-/// One entry, drawn by the item that fits its kind.
-export function FeedRow(props: RowProps) {
-  const entry = props.entry;
-  return entry.kind === "message"
-    ? <FeedMessage {...props} item={entry} />
-    : <FeedEvent {...props} item={entry} />;
 }
