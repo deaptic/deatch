@@ -17,7 +17,7 @@ exits.
 
 The two sides meet only through tauri-specta. `lib.rs::bindings()` lists every
 command, event, and shared type, and `bindings.ts` is generated from it
-(`deno task bindings`, or automatically on every debug launch). A test fails
+(`pnpm bindings`, or automatically on every debug launch). A test fails
 when the committed file is stale.
 
 Commands go frontend to backend: one `#[tauri::command]` per operation, taking a

@@ -6,8 +6,8 @@ together.
 ## App
 
 ```powershell
-deno task release           # patch
-deno task release minor | major | 1.2.3
+pnpm release           # patch
+pnpm release minor | major | 1.2.3
 ```
 
 This bumps the version in `package.json`, `tauri.conf.json`, `Cargo.toml`, and
@@ -24,7 +24,7 @@ out there.
 ## Extension
 
 ```powershell
-deno task pack:extension minor   # patch | major | 1.2.3; omit to keep version
+pnpm pack:extension minor   # patch | major | 1.2.3; omit to keep version
 ```
 
 This writes one zip per browser into `extension/dist/`, each with a manifest

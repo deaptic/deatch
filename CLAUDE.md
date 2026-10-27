@@ -9,16 +9,16 @@ fix the code.
 ## Commands
 
 ```powershell
-deno install              # frontend deps
-deno task tauri dev       # run app in dev
-deno task bindings        # regenerate src/lib/bindings.ts
-deno task test            # frontend unit tests
-deno fmt && deno lint && deno task lint:ui
+pnpm install              # frontend deps
+pnpm tauri dev       # run app in dev
+pnpm bindings        # regenerate src/lib/bindings.ts
+pnpm test            # frontend unit tests
+deno fmt && deno lint && pnpm lint:ui
 cd src-tauri && cargo fmt && cargo clippy --all-targets && cargo test --lib
 ```
 
 Run the full check set before every commit; CI runs the same with clippy at
-`-D warnings` (`docs/TESTING.md`). Release with `deno task release`
+`-D warnings` (`docs/TESTING.md`). Release with `pnpm release`
 (`docs/RELEASING.md`).
 
 ## Principles

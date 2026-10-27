@@ -59,7 +59,7 @@ themselves (Firefox would hold `target\debug\deatch.exe` open and block
 relinking):
 
 ```powershell
-deno task build
+pnpm build
 cd src-tauri && cargo build --release && .\target\release\deatch.exe
 ```
 

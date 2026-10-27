@@ -1,8 +1,8 @@
 // Usage:
-//   deno task release patch          (default)
-//   deno task release minor
-//   deno task release major
-//   deno task release 1.2.3
+//   pnpm release patch          (default)
+//   pnpm release minor
+//   pnpm release major
+//   pnpm release 1.2.3
 //
 // Bumps version in package.json, src-tauri/tauri.conf.json, src-tauri/Cargo.toml,
 // commits with message "chore: release vX.Y.Z", tags vX.Y.Z, and pushes the

@@ -3,7 +3,7 @@
 Run this before every commit; CI runs the same on every push.
 
 ```powershell
-deno fmt && deno lint && deno task lint:ui && deno check src/ && deno task test
+deno fmt && deno lint && pnpm lint:ui && deno check src/ && pnpm test
 cd src-tauri
 cargo fmt && cargo clippy --all-targets -- -D warnings
 cargo test --lib
@@ -19,8 +19,8 @@ Rust tests are a `#[cfg(test)] mod tests` at the bottom of the file. They cover
 parsers, mappings, and params, asserting wire shapes with
 `serde_json::to_value`, and never do IO. One of them,
 `committed_bindings_are_current`, fails when `bindings.ts` is stale; run
-`deno task bindings` and commit. `build.rs` embeds the app manifest so test
+`pnpm bindings` and commit. `build.rs` embeds the app manifest so test
 binaries can start on Windows; keep it that way.
 
-`deno task lint:ui` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
+`pnpm lint:ui` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
 hex, shadows, gradients, or arbitrary Tailwind values.

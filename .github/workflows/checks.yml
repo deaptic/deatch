@@ -27,13 +27,13 @@ jobs:
       - name: deno lint
         run: deno lint
       - name: ui lint
-        run: deno task lint:ui
+        run: pnpm lint:ui
       - name: deno check
         run: deno check src/
       - name: deno test
-        run: deno task test
+        run: pnpm test
       - name: vite build
-        run: deno task build
+        run: pnpm build
 
       - name: cargo fmt
         working-directory: src-tauri
