@@ -76,7 +76,9 @@ export default function Item(props: Props) {
         when={!props.continued && props.tile}
         fallback={
           <span class="w-(--chat-tile) h-lh mr-3 flex items-center justify-center">
-            <Timestamp ts={props.timestamp} variant="gutter" />
+            <Show when={props.showTimestamp}>
+              <Timestamp ts={props.timestamp} variant="gutter" />
+            </Show>
           </span>
         }
       >

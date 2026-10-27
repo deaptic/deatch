@@ -248,7 +248,9 @@ export default function Message(props: Props) {
         <FeedItem.Title>
           {name()}
           {badges("after")}
-          <Timestamp ts={item.timestamp} format="c" variant="inline" />
+          <Show when={props.showTimestamp}>
+            <Timestamp ts={item.timestamp} format="c" variant="inline" />
+          </Show>
         </FeedItem.Title>
       </Show>
       <FeedItem.Content>
