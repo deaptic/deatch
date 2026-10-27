@@ -150,8 +150,8 @@ has no detail.
 An event's title is its type in the event's colour, then the time. Its content
 is one sentence saying what happened, in `ink`, with every person it names as a
 name link and nothing else emphasised. Its detail, in `ink-soft`, holds the
-chatter's own words as chat writes them (name, then the words) and anything
-else: a reason, a description, results, recipients.
+chatter's own words as chat writes them, without the name the sentence already
+gives, and anything else: a reason, a description, results, recipients.
 
 There are two layouts. Default (compact in code) is one line per message with an
 optional timestamp column and no title: a message's badges and name lead its

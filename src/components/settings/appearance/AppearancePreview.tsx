@@ -11,7 +11,7 @@ import { getUserChatColor } from "../../../lib/api/twitch/chat.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { feedEvent } from "../../../lib/utils/feedEvent.ts";
 import { layoutFeed } from "../../../lib/utils/feedLayout.ts";
-import { FeedRow } from "../../feed/Feed.tsx";
+import FeedRow from "../../feed/FeedRow.tsx";
 
 type Me = { id: string; login: string; name: string; color: string };
 
