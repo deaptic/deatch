@@ -4,9 +4,9 @@ import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import DisplayName from "../../ui/DisplayName.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
-import MessageFragment from "../message/MessageFragment.tsx";
+import Fragments from "../../ui/Fragments.tsx";
+import { splitNames } from "../../../lib/utils/splitNames.ts";
 import GiftRecipients from "./GiftRecipients.tsx";
-import { splitNames } from "./splitNames.ts";
 
 type Props = UserActions & {
   /// One sentence: what happened.
@@ -63,17 +63,13 @@ export default function Notice(props: Props) {
                 </>
               )}
             </Show>
-            <For each={words()}>
-              {(frag) => (
-                <MessageFragment
-                  frag={frag}
-                  emotes={props.emotes}
-                  cheermotes={props.cheermotes}
-                  onShowUserCard={props.onShowUserCard}
-                  onUserContextMenu={props.onUserContextMenu}
-                />
-              )}
-            </For>
+            <Fragments
+              fragments={words()}
+              emotes={props.emotes}
+              cheermotes={props.cheermotes}
+              onShowUserCard={props.onShowUserCard}
+              onUserContextMenu={props.onUserContextMenu}
+            />
           </span>
         )}
       </Show>

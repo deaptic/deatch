@@ -1,5 +1,5 @@
 import { Check, X } from "lucide-solid";
-import { createMemo, For, Show } from "solid-js";
+import { createMemo, Show } from "solid-js";
 import { t } from "../../../lib/i18n/index.ts";
 import type { EmoteMap } from "../../../lib/stores/emotes.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
@@ -25,12 +25,12 @@ import type {
   RowTone,
 } from "../itemParts.ts";
 import ChatterAvatar from "./ChatterAvatar.tsx";
-import MessageFragment from "./MessageFragment.tsx";
+import Fragments from "../../ui/Fragments.tsx";
 import MessageToolbar from "./MessageToolbar.tsx";
 import ReplyLine from "./ReplyLine.tsx";
 import RichNotice from "./RichNotice.tsx";
 import SourceChannel from "./SourceChannel.tsx";
-import type { Reaction } from "./reaction.ts";
+import type { Reaction } from "../../../lib/types/index.ts";
 
 export type MessageOptions = UserActions & {
   emotes: EmoteMap;
@@ -244,18 +244,14 @@ export function createMessageParts(
       }
     >
       <span class={item.deleted ? "*:text-ink-faint" : ""}>
-        <For each={visibleFragments()}>
-          {(frag) => (
-            <MessageFragment
-              frag={frag}
-              emotes={props.emotes}
-              cheermotes={props.cheermotes}
-              mentionsYou={mentioned()}
-              onShowUserCard={props.onShowUserCard}
-              onUserContextMenu={props.onUserContextMenu}
-            />
-          )}
-        </For>
+        <Fragments
+          fragments={visibleFragments()}
+          emotes={props.emotes}
+          cheermotes={props.cheermotes}
+          mentionsYou={mentioned()}
+          onShowUserCard={props.onShowUserCard}
+          onUserContextMenu={props.onUserContextMenu}
+        />
       </span>
       <Show when={item.deleted}>
         <span class="ml-1.5 feed-meta text-ink-faint select-none">

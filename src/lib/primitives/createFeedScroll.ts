@@ -1,5 +1,9 @@
 import { createSignal } from "solid-js";
-import { centeredScrollTop, isAtBottom, maxScrollTop } from "./feedScroll.ts";
+import {
+  centeredScrollTop,
+  isAtBottom,
+  maxScrollTop,
+} from "../utils/feedScroll.ts";
 
 // follow: pinned to the newest message. paused: the user scrolled up.
 // jumping: travelling to a message; nothing else may move the view.
