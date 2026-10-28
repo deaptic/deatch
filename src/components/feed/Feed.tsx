@@ -1,4 +1,5 @@
 import {
+  batch,
   createEffect,
   createMemo,
   createSelector,
@@ -28,6 +29,7 @@ import { knownUser } from "../../lib/stores/users.ts";
 import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
 import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
 import { createFeedScroll } from "./createFeedScroll.ts";
+import { createFeedWindow } from "./createFeedWindow.ts";
 import {
   feedKeywords,
   feedShowDeletedContent,
@@ -94,6 +96,27 @@ export default function Feed(props: Props) {
     const all = props.entries ?? feeds[props.broadcasterId]?.messages ?? [];
     return props.filter ? all.filter(props.filter) : all;
   });
+  const ids = createMemo(() => entries().map(getEntryId));
+  const win = createFeedWindow({
+    ids,
+    scroller: () => scrollRef,
+    list: () => listRef,
+    following: () => !scroll.isPaused(),
+  });
+  const shown = createMemo(() => {
+    const { start, end } = win.range();
+    return entries().slice(start, end);
+  });
+
+  /// Brings row `id` into the rendered window, leaving follow mode if the
+  /// view has to move for it.
+  function show(id: string) {
+    if (win.isRendered(id)) return;
+    batch(() => {
+      scroll.pause();
+      win.reveal(id);
+    });
+  }
   const badges = createMemo(() => feeds[props.broadcasterId]?.badges ?? {});
   const dividerAt = () =>
     props.showDivider === false
@@ -171,6 +194,7 @@ export default function Feed(props: Props) {
     const id = selectedId();
     if (!id) return;
     queueMicrotask(() => {
+      show(id);
       const el = rootRef?.querySelector<HTMLElement>(
         `[data-item-id="${CSS.escape(id)}"]`,
       );
@@ -188,16 +212,17 @@ export default function Feed(props: Props) {
     const target = jumpTarget();
     if (!target || target.broadcasterId !== props.broadcasterId) return;
     if (!messageList().some((m) => m.message_id === target.messageId)) return;
-    setJumpTarget(null);
     const smooth = settled && !matchMedia(REDUCED_MOTION).matches;
     const behavior = smooth ? "smooth" : "instant";
     queueMicrotask(() => {
+      show(target.messageId);
       const el = rootRef?.querySelector<HTMLElement>(
         `[data-item-id="${CSS.escape(target.messageId)}"]`,
       );
       if (el) {
         scroll.jumpTo(el, behavior, () => setSelectedId(target.messageId));
       }
+      setJumpTarget(null);
     });
   });
 
@@ -217,6 +242,7 @@ export default function Feed(props: Props) {
 
   onMount(() => {
     if (listRef) onCleanup(scroll.watch(listRef));
+    onCleanup(win.watch());
   });
 
   onMount(() => {
@@ -275,16 +301,29 @@ export default function Feed(props: Props) {
       {props.header}
       <div
         ref={scrollRef}
-        onScroll={scroll.onScroll}
+        onScroll={(e) =>
+          batch(() => {
+            win.sync();
+            scroll.onScroll(e);
+          })
+        }
         onWheel={props.onWheel}
         class={`h-full overflow-y-auto overflow-x-hidden flex flex-col scrollbar-gutter-stable ${
           props.scrollClass ?? ""
         }`}
       >
         <div ref={listRef} class="shrink-0 flex flex-col">
-          <For each={entries()}>
+          <div
+            class="h-(--space)"
+            style={{ "--space": `${win.range().before}px` }}
+          />
+          <For each={shown()}>
             {(entry) => (
-              <>
+              <div
+                class="flow-root"
+                data-row-id={getEntryId(entry)}
+                ref={win.measure}
+              >
                 <Show when={startsDay(getEntryId(entry))}>
                   <Divider
                     variant="pill"
@@ -295,9 +334,13 @@ export default function Feed(props: Props) {
                   <Divider variant="accent" label={t("FEED_NEW_MESSAGES")} />
                 </Show>
                 <Show when={isFeedEntryVisible(entry)}>{row(entry)}</Show>
-              </>
+              </div>
             )}
           </For>
+          <div
+            class="h-(--space)"
+            style={{ "--space": `${win.range().after}px` }}
+          />
         </div>
       </div>
       {props.footer}
