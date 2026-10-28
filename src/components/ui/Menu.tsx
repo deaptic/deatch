@@ -1,5 +1,8 @@
-import type { JSX } from "solid-js";
+import { createContext, type JSX } from "solid-js";
 import Popover from "./Popover.tsx";
+
+/// Closes the enclosing menu; items call it once they have acted.
+export const MenuClose = createContext<() => void>();
 
 type Props = {
   x: number;
@@ -20,9 +23,11 @@ export default function Menu(props: Props) {
       onClose={props.onClose}
       events={["mousedown", "contextmenu"]}
     >
-      <div class="min-w-55 max-w-full p-1.5 flex flex-col">
-        {props.children}
-      </div>
+      <MenuClose.Provider value={() => props.onClose()}>
+        <div class="min-w-55 max-w-full p-1.5 flex flex-col">
+          {props.children}
+        </div>
+      </MenuClose.Provider>
     </Popover>
   );
 }

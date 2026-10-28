@@ -11,7 +11,7 @@ type Props = {
   title?: string;
   variant?: Extract<ButtonVariant, "neutral" | "ghost">;
   pressed?: boolean;
-  children: (close: () => void) => JSX.Element;
+  children: JSX.Element;
 };
 
 export default function MenuButton(props: Props) {
@@ -48,7 +48,7 @@ export default function MenuButton(props: Props) {
       <Show when={anchor()}>
         {(a) => (
           <Menu x={a().x} y={a().y} opener={() => button} onClose={close}>
-            {props.children(close)}
+            {props.children}
           </Menu>
         )}
       </Show>

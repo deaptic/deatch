@@ -8,7 +8,6 @@ import { copyField } from "../../lib/utils/clipboard.ts";
 type Props = {
   show: boolean;
   data: unknown;
-  onClose: () => void;
 };
 
 export default function CopyPayloadItem(props: Props) {
@@ -18,10 +17,7 @@ export default function CopyPayloadItem(props: Props) {
       <MenuItem
         label={t("MENU_COPY_PAYLOAD")}
         icon={<Copy />}
-        onClick={() => {
-          copyField(JSON.stringify(props.data, null, 2));
-          props.onClose();
-        }}
+        onClick={() => copyField(JSON.stringify(props.data, null, 2))}
       />
     </Show>
   );

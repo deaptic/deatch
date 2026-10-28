@@ -39,46 +39,40 @@ type Props = UserContextTarget & {
 };
 
 export default function UserContextMenu(props: Props) {
-  const run = (action: () => unknown) => () => {
-    action();
-    props.onClose();
-  };
-  const moderate = (action: ModAction) =>
-    run(() =>
-      props.onModerate(action, {
-        userId: props.userId,
-        userName: props.userDisplayName,
-      }),
-    );
+  const moderate = (action: ModAction) => () =>
+    props.onModerate(action, {
+      userId: props.userId,
+      userName: props.userDisplayName,
+    });
 
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
         label={t("MENU_PROFILE")}
         icon={<User />}
-        onClick={run(() => props.onShowProfile(props.x, props.y, props.userId))}
+        onClick={() => props.onShowProfile(props.x, props.y, props.userId)}
       />
       <MenuItem
         label={t("MENU_MENTION")}
         icon={<AtSign />}
-        onClick={run(() => props.onMention(props.userLogin))}
+        onClick={() => props.onMention(props.userLogin)}
       />
       <MenuItem
         label={t("MENU_OPEN_IN_BROWSER")}
         icon={<ExternalLink />}
-        onClick={run(() => browser.openChannel(props.userLogin))}
+        onClick={() => browser.openChannel(props.userLogin)}
       />
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
           label={t("MENU_SHOUTOUT")}
           icon={<Megaphone />}
-          onClick={run(() =>
+          onClick={() =>
             sendShoutout({
               fromBroadcasterId: props.broadcasterId,
               toBroadcasterId: props.userId,
-            }).catch(() => {}),
-          )}
+            }).catch(() => {})
+          }
         />
         <MenuItem
           label={t("MENU_WARN")}
@@ -100,7 +94,6 @@ export default function UserContextMenu(props: Props) {
           userLogin: props.userLogin,
           userDisplayName: props.userDisplayName,
         }}
-        onClose={props.onClose}
       />
     </Menu>
   );

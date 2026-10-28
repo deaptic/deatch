@@ -20,16 +20,9 @@ export default function EventContextMenu(props: Props) {
       <MenuItem
         label={t("MENU_COPY_TEXT")}
         icon={<Copy />}
-        onClick={() => {
-          copyField(props.item.system_message);
-          props.onClose();
-        }}
+        onClick={() => copyField(props.item.system_message)}
       />
-      <CopyPayloadItem
-        show={props.developerMode}
-        data={props.item}
-        onClose={props.onClose}
-      />
+      <CopyPayloadItem show={props.developerMode} data={props.item} />
     </Menu>
   );
 }
