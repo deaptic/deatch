@@ -3,6 +3,7 @@ import { listenApp, unlistenAll } from "./listen.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
 import * as recovery from "../services/recovery.ts";
+import { connectFailure } from "../mappers/connect-failure.ts";
 
 export function start(): () => void {
   return unlistenAll([
@@ -22,10 +23,12 @@ export function start(): () => void {
             "chat_disconnected",
           );
           break;
+        case "rejected":
         case "failed":
+        case "capped":
           appendLocalNotice(
             broadcasterId,
-            t("CHAT_CONNECT_FAILED", { error: state.error }),
+            connectFailure(state),
             "chat_connect_failed",
           );
           break;

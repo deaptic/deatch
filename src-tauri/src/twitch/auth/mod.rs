@@ -99,9 +99,9 @@ pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
     .await?;
     if let Some(missing) = SCOPES.iter().find(|s| !token.scopes().contains(s)) {
         credentials::delete()?;
-        return Err(Error::Auth(format!(
-            "token missing scope {missing}, please re-authenticate"
-        )));
+        return Err(Error::MissingScope {
+            scope: missing.to_string(),
+        });
     }
     start_session(twitch, token).await.map(Some)
 }

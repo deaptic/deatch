@@ -1,3 +1,4 @@
+use crate::error::Error;
 use crate::twitch::ids::UserId;
 use serde::Serialize;
 
@@ -18,7 +19,20 @@ pub struct EventSubRecovered {
 pub enum ChatState {
     Connected,
     Disconnected,
-    Failed { error: String },
+    /// Twitch refused the subscription; `message` is its own explanation.
+    Rejected {
+        message: String,
+    },
+    /// A request failed; it is retried.
+    Failed {
+        error: Error,
+    },
+    /// Every connection Twitch allows is full.
+    Capped {
+        connections: usize,
+        #[serde(rename = "perConnection")]
+        per_connection: usize,
+    },
 }
 
 #[derive(Clone, Serialize, specta::Type, tauri_specta::Event)]

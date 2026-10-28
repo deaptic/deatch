@@ -18,6 +18,9 @@ pub enum Error {
     Http(String),
     #[error("{0}")]
     Auth(String),
+    /// The stored token predates a scope the app now needs.
+    #[error("token missing scope {scope}")]
+    MissingScope { scope: String },
     #[error("{0}")]
     Discord(String),
     #[error("{0}")]
