@@ -1,7 +1,7 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import type { ResizeDir } from "../types/index.ts";
-import { invokeCommand, type InvokeOptions } from "./utils.ts";
+import { invokeCommand, type InvokeOptions, wrapUnlisten } from "./utils.ts";
 
 type Unlisten = () => void;
 
@@ -17,10 +17,14 @@ const commands = {
   startResizeDragging: (dir: ResizeDir) =>
     getCurrentWindow().startResizeDragging(dir),
   setZoom: (factor: number) => getCurrentWebview().setZoom(factor),
-  onWindowResized: (handler: () => void) =>
-    getCurrentWindow().onResized(() => handler()),
-  onWindowFocusChanged: (handler: (focused: boolean) => void) =>
-    getCurrentWindow().onFocusChanged(({ payload }) => handler(payload)),
+  onWindowResized: async (handler: () => void) =>
+    wrapUnlisten(await getCurrentWindow().onResized(() => handler())),
+  onWindowFocusChanged: async (handler: (focused: boolean) => void) =>
+    wrapUnlisten(
+      await getCurrentWindow().onFocusChanged(({ payload }) =>
+        handler(payload),
+      ),
+    ),
 };
 
 export function minimizeWindow(options?: InvokeOptions): Promise<void> {

@@ -1,5 +1,4 @@
-import { events } from "../bindings.ts";
-import { unlistenAll } from "./listen.ts";
+import { listenApp, unlistenAll } from "./listen.ts";
 import { addToast } from "../stores/toasts.ts";
 import { setUser } from "../stores/users.ts";
 import { setDeviceCode, setWaiting } from "../stores/auth.ts";
@@ -9,19 +8,19 @@ import { t } from "../i18n/index.ts";
 
 export function start(): () => void {
   return unlistenAll([
-    events.authSucceeded.listen((e) => {
+    listenApp("authSucceeded", (user) => {
       setWaiting(false);
       setDeviceCode(null);
-      setUser(e.payload);
-      users.set([e.payload]);
+      setUser(user);
+      users.set([user]);
       addToast(t("AUTH_CONNECTED"), "success");
     }),
-    events.authFailed.listen((e) => {
+    listenApp("authFailed", (error) => {
       setWaiting(false);
       setDeviceCode(null);
-      addToast(errorMessage(e.payload), "error");
+      addToast(errorMessage(error), "error");
     }),
-    events.sessionEnded.listen(() => {
+    listenApp("sessionEnded", () => {
       setUser(null);
       addToast(t("AUTH_SIGNED_OUT"), "error");
     }),

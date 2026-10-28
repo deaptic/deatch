@@ -71,9 +71,9 @@ export function start(): () => void {
   const communityRows = new Map<string, string>();
   const stop = unlistenAll([
     listenEventSub<RawNotification>("channel.chat.notification", (e) => {
-      const raw = e.payload.event;
+      const raw = e.event;
       const id = raw.broadcaster_user_id;
-      const item = mapNotice(raw, serverTime(e.payload));
+      const item = mapNotice(raw, serverTime(e));
       if (!item) return;
       const group = giftGroup(raw);
       if (group?.role === "community") {
@@ -111,8 +111,8 @@ export function start(): () => void {
     listenEventSub<RawChannelPointsRedemption>(
       "channel.channel_points_custom_reward_redemption.add",
       (e) => {
-        const raw = e.payload.event;
-        const ts = serverTime(e.payload);
+        const raw = e.event;
+        const ts = serverTime(e);
         const redemption = mapRedemption(raw);
         correlateRedemption(
           raw.broadcaster_user_id,

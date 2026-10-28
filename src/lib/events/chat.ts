@@ -34,8 +34,8 @@ function noteRename(raw: RawChatMessage) {
 export function start(): () => void {
   return unlistenAll([
     listenEventSub<RawChatMessage>("channel.chat.message", (e) => {
-      const raw = e.payload.event;
-      const ts = serverTime(e.payload);
+      const raw = e.event;
+      const ts = serverTime(e);
       const msg = mapChatMessage(raw, ts);
       if (msg.source) badges.loadSource(msg.source);
       recordChatter(raw.broadcaster_user_id, chatterOf(msg));

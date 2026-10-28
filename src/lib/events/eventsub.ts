@@ -1,14 +1,12 @@
 import { t } from "../i18n/index.ts";
-import { events } from "../bindings.ts";
-import { unlistenAll } from "./listen.ts";
+import { listenApp, unlistenAll } from "./listen.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
 import * as recovery from "../services/recovery.ts";
 
 export function start(): () => void {
   return unlistenAll([
-    events.chatStatus.listen(({ payload }) => {
-      const { broadcasterId, state } = payload;
+    listenApp("chatStatus", ({ broadcasterId, state }) => {
       switch (state.type) {
         case "connected":
           appendLocalNotice(
@@ -33,11 +31,11 @@ export function start(): () => void {
           break;
       }
     }),
-    events.eventSubConnection.listen((e) => {
-      setChatConnected(e.payload.connected);
+    listenApp("eventSubConnection", ({ connected }) => {
+      setChatConnected(connected);
     }),
-    events.eventSubRecovered.listen((e) => {
-      recovery.recover(e.payload.broadcasterId, e.payload.since);
+    listenApp("eventSubRecovered", ({ broadcasterId, since }) => {
+      recovery.recover(broadcasterId, since);
     }),
   ]);
 }
