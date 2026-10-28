@@ -32,7 +32,7 @@ export default function AdvancedSection() {
   async function restart(enabled: boolean) {
     setRestarting(true);
     try {
-      await setHardwareAcceleration(enabled);
+      await setHardwareAcceleration({ enabled });
       setAdvancedHardwareAcceleration(enabled);
       await relaunchApp({ silent: true });
     } catch (e) {

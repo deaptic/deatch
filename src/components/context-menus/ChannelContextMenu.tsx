@@ -131,7 +131,9 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label={t("MENU_SHOW_BROWSER_TAB")}
             icon={<ExternalLink />}
-            onClick={() => linkFocus(props.ch.login).catch(() => {})}
+            onClick={() =>
+              linkFocus({ channel: props.ch.login }).catch(() => {})
+            }
           />
           <MenuItem
             label={muted() ? t("MENU_UNMUTE_TAB") : t("MENU_MUTE_TAB")}
@@ -147,7 +149,9 @@ export default function ChannelContextMenu(props: Props) {
             shortcut={
               selected() ? shortcuts.keyFor("link::closeTab") : undefined
             }
-            onClick={() => linkClose(props.ch.login).catch(() => {})}
+            onClick={() =>
+              linkClose({ channel: props.ch.login }).catch(() => {})
+            }
           />
           <Show when={linkHasAudio()}>
             <MenuDivider />
