@@ -25,7 +25,7 @@ test("names the reward, its cost and the unlocked emote", () => {
     raw({ emote: { id: "e1", name: "Kappa" } }),
     0,
   );
-  expect(item?.system_message).toStrictEqual(
+  expect(item?.system_message).toBe(
     "Foo redeemed Choose an Emote to Unlock for 300 points",
   );
   expect(item?.message).toStrictEqual([
@@ -36,14 +36,14 @@ test("names the reward, its cost and the unlocked emote", () => {
 test("leaves message rewards to their chat message", () => {
   expect(
     mapAutomaticRedemption(raw({ type: "send_highlighted_message" }), 0),
-  ).toStrictEqual(null);
+  ).toBeNull();
   expect(
     mapAutomaticRedemption(raw({ type: "gigantify_an_emote" }), 0),
-  ).toStrictEqual(null);
+  ).toBeNull();
 });
 
 test("names an On-Screen Celebration", () => {
   expect(
     mapAutomaticRedemption(raw({ type: "celebration" }), 0)?.system_message,
-  ).toStrictEqual("Foo redeemed an On-Screen Celebration for 300 points");
+  ).toBe("Foo redeemed an On-Screen Celebration for 300 points");
 });

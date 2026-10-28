@@ -14,11 +14,11 @@ const MAP = buildCheermoteMap([
 ]);
 
 test("cheermoteTier picks the highest tier the amount reaches", () => {
-  expect(cheermoteTier(MAP, "cheer", 1)?.minBits).toStrictEqual(1);
-  expect(cheermoteTier(MAP, "Cheer", 999)?.minBits).toStrictEqual(100);
-  expect(cheermoteTier(MAP, "CHEER", 5000)?.minBits).toStrictEqual(1000);
+  expect(cheermoteTier(MAP, "cheer", 1)?.minBits).toBe(1);
+  expect(cheermoteTier(MAP, "Cheer", 999)?.minBits).toBe(100);
+  expect(cheermoteTier(MAP, "CHEER", 5000)?.minBits).toBe(1000);
 });
 
 test("cheermoteTier misses unknown prefixes", () => {
-  expect(cheermoteTier(MAP, "Kappa", 100)).toStrictEqual(undefined);
+  expect(cheermoteTier(MAP, "Kappa", 100)).toBeUndefined();
 });

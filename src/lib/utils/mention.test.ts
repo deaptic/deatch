@@ -13,19 +13,19 @@ test("mentions, replies and keywords count; own messages never do", () => {
   const mention = message({
     fragments: [{ type: "mention", text: "@Me", user_login: "me" }],
   });
-  expect(isMention(mention, "Me", [])).toStrictEqual(true);
-  expect(
-    isMention(message({ chatter_login: "me" }), "me", ["hello"]),
-  ).toStrictEqual(false);
+  expect(isMention(mention, "Me", [])).toBe(true);
+  expect(isMention(message({ chatter_login: "me" }), "me", ["hello"])).toBe(
+    false,
+  );
   expect(
     isMention(
       message({ reply: { parent_user_login: "me" } as FeedMessage["reply"] }),
       "me",
       [],
     ),
-  ).toStrictEqual(true);
-  expect(isMention(message({}), "me", ["there"])).toStrictEqual(true);
-  expect(isMention(message({}), "me", [])).toStrictEqual(false);
+  ).toBe(true);
+  expect(isMention(message({}), "me", ["there"])).toBe(true);
+  expect(isMention(message({}), "me", [])).toBe(false);
 });
 
 test("mentionReason names the matched keyword", () => {
@@ -33,5 +33,5 @@ test("mentionReason names the matched keyword", () => {
     kind: "keyword",
     term: "the*",
   });
-  expect(mentionReason(message({}), "me", [])).toStrictEqual(null);
+  expect(mentionReason(message({}), "me", [])).toBeNull();
 });

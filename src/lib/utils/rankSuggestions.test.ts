@@ -25,7 +25,7 @@ test("an exact match wins over a better-sorted prefix match", () => {
 });
 
 test("matches the query case-insensitively", () => {
-  expect(rankSuggestions(names, "BAR", byName)[0]).toStrictEqual("bar");
+  expect(rankSuggestions(names, "BAR", byName)[0]).toBe("bar");
 });
 
 test("returns everything sorted for an empty query", () => {

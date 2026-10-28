@@ -9,8 +9,8 @@ const ids = (items: FeedEntry[]) => items.map(getEntryId);
 
 test("append drops duplicates", () => {
   const feed = [message("a", 1)];
-  expect(append(feed, message("a", 2), false)).toStrictEqual(false);
-  expect(append(feed, message("b", 2), false)).toStrictEqual(true);
+  expect(append(feed, message("a", 2), false)).toBe(false);
+  expect(append(feed, message("b", 2), false)).toBe(true);
   expect(ids(feed)).toStrictEqual(["a", "b"]);
 });
 

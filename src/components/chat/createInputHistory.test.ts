@@ -8,15 +8,15 @@ test("steps through history and restores the draft", () => {
     value: () => value,
     setValue: (v) => (value = v),
   });
-  expect(h.step(-1)).toStrictEqual(false);
-  expect(h.step(1)).toStrictEqual(true);
-  expect(value).toStrictEqual("newest");
-  expect(h.step(1)).toStrictEqual(true);
-  expect(value).toStrictEqual("older");
-  expect(h.step(1)).toStrictEqual(false);
+  expect(h.step(-1)).toBe(false);
+  expect(h.step(1)).toBe(true);
+  expect(value).toBe("newest");
+  expect(h.step(1)).toBe(true);
+  expect(value).toBe("older");
+  expect(h.step(1)).toBe(false);
   h.step(-1);
   h.step(-1);
-  expect(value).toStrictEqual("draft");
+  expect(value).toBe("draft");
 });
 
 test("does nothing with an empty history", () => {
@@ -27,5 +27,5 @@ test("does nothing with an empty history", () => {
       throw new Error("must not write");
     },
   });
-  expect(h.step(1)).toStrictEqual(false);
+  expect(h.step(1)).toBe(false);
 });

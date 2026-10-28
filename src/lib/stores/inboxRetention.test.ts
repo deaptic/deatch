@@ -13,10 +13,8 @@ test("fresh keeps mentions younger than a week", () => {
 });
 
 test("msUntilNextExpiry follows the oldest mention", () => {
-  expect(msUntilNextExpiry([], now)).toStrictEqual(null);
+  expect(msUntilNextExpiry([], now)).toBeNull();
   const list = [{ timestamp: now - 1000 }, { timestamp: now - 5000 }];
   expect(msUntilNextExpiry(list, now)).toStrictEqual(MAX_AGE_MS - 5000);
-  expect(
-    msUntilNextExpiry([{ timestamp: now - MAX_AGE_MS * 2 }], now),
-  ).toStrictEqual(0);
+  expect(msUntilNextExpiry([{ timestamp: now - MAX_AGE_MS * 2 }], now)).toBe(0);
 });

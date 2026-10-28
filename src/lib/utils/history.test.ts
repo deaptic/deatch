@@ -21,8 +21,8 @@ test("step moves within bounds and stops at the ends", () => {
     entries: ["a", "b", "c"],
     index: 1,
   });
-  expect(step(abc, 1)).toStrictEqual(null);
-  expect(step(emptyHistory(), -1)).toStrictEqual(null);
+  expect(step(abc, 1)).toBeNull();
+  expect(step(emptyHistory(), -1)).toBeNull();
 });
 
 test("visiting after stepping back drops the forward entries", () => {

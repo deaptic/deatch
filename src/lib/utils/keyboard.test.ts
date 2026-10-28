@@ -13,14 +13,12 @@ const key = (init: Partial<KeyboardEvent>) =>
 test("orders modifiers ctrl, alt, shift, meta before the key", () => {
   expect(
     comboFor(key({ key: "K", metaKey: true, shiftKey: true, ctrlKey: true })),
-  ).toStrictEqual("ctrl-shift-meta-k");
+  ).toBe("ctrl-shift-meta-k");
 });
 
 test("drops the arrow prefix and lowercases keys", () => {
-  expect(comboFor(key({ key: "ArrowUp", altKey: true }))).toStrictEqual(
-    "alt-up",
-  );
-  expect(comboFor(key({ key: "Enter" }))).toStrictEqual("enter");
+  expect(comboFor(key({ key: "ArrowUp", altKey: true }))).toBe("alt-up");
+  expect(comboFor(key({ key: "Enter" }))).toBe("enter");
 });
 
 test("labels each key of a combo for display", () => {
@@ -34,10 +32,10 @@ test("labels each key of a combo for display", () => {
 });
 
 test("names page and tab combos the way the keymap writes them", () => {
-  expect(comboFor(key({ key: "PageDown", ctrlKey: true }))).toStrictEqual(
+  expect(comboFor(key({ key: "PageDown", ctrlKey: true }))).toBe(
     "ctrl-pagedown",
   );
-  expect(
-    comboFor(key({ key: "Tab", ctrlKey: true, shiftKey: true })),
-  ).toStrictEqual("ctrl-shift-tab");
+  expect(comboFor(key({ key: "Tab", ctrlKey: true, shiftKey: true }))).toBe(
+    "ctrl-shift-tab",
+  );
 });

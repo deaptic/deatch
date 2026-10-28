@@ -27,10 +27,6 @@ test("keeps the reward and its trimmed prompt", () => {
 });
 
 test("typed input is trimmed and omitted when blank", () => {
-  expect(mapRedemption(raw({ user_input: "  pls  " })).input).toStrictEqual(
-    "pls",
-  );
-  expect(mapRedemption(raw({ user_input: "   " })).input).toStrictEqual(
-    undefined,
-  );
+  expect(mapRedemption(raw({ user_input: "  pls  " })).input).toBe("pls");
+  expect(mapRedemption(raw({ user_input: "   " })).input).toBeUndefined();
 });

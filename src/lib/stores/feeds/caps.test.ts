@@ -20,14 +20,14 @@ test("keeps the newest entries per category", () => {
     ...Array.from({ length: 401 }, (_, i) => message(i)),
   ];
   enforceCaps(items);
-  expect(items.length).toStrictEqual(401);
-  expect(ids(items)[0]).toStrictEqual("e0");
-  expect(ids(items)[1]).toStrictEqual("m1");
+  expect(items.length).toBe(401);
+  expect(ids(items)[0]).toBe("e0");
+  expect(ids(items)[1]).toBe("m1");
 });
 
 test("paused feeds keep more but still have a ceiling", () => {
   const items = Array.from({ length: 2500 }, (_, i) => message(i));
   enforceCaps(items, true);
-  expect(items.length).toStrictEqual(2000);
-  expect(ids(items)[0]).toStrictEqual("m500");
+  expect(items.length).toBe(2000);
+  expect(ids(items)[0]).toBe("m500");
 });

@@ -18,16 +18,14 @@ const train = (t: Partial<RawHypeTrain> = {}): RawHypeTrain => ({
 });
 
 test("names the kind of train that started", () => {
-  expect(
-    hypeTrainBegin(train({ type: "golden_kappa", level: 1 })),
-  ).toStrictEqual("A Golden Kappa Train has started at level 1!");
+  expect(hypeTrainBegin(train({ type: "golden_kappa", level: 1 }))).toBe(
+    "A Golden Kappa Train has started at level 1!",
+  );
 });
 
 test("speaks up only on a new level", () => {
-  expect(hypeTrainProgress(train(), 2)).toStrictEqual(null);
-  expect(hypeTrainProgress(train(), 1)).toStrictEqual(
-    "The Hype Train reached level 2!",
-  );
+  expect(hypeTrainProgress(train(), 2)).toBeNull();
+  expect(hypeTrainProgress(train(), 1)).toBe("The Hype Train reached level 2!");
 });
 
 test("credits the top contributors at the end", () => {

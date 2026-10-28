@@ -30,7 +30,7 @@ test("reports joins, leaves and promotions", () => {
   expect(diff.added).toStrictEqual(["live3"]);
   expect(diff.removed).toStrictEqual(["live1"]);
   expect(diff.promoted).toStrictEqual(["live2"]);
-  expect(diff.changed).toStrictEqual(true);
+  expect(diff.changed).toBe(true);
 });
 
 test("demotion alone still counts as a change", () => {
@@ -39,10 +39,10 @@ test("demotion alone still counts as a change", () => {
   const diff = diffFocus(prev, next);
   expect(diff.added).toStrictEqual([]);
   expect(diff.removed).toStrictEqual([]);
-  expect(diff.changed).toStrictEqual(true);
+  expect(diff.changed).toBe(true);
 });
 
 test("identical inputs are not a change", () => {
   const diff = diffFocus(channelFocus(sources), channelFocus(sources));
-  expect(diff.changed).toStrictEqual(false);
+  expect(diff.changed).toBe(false);
 });

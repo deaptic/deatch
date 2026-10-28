@@ -7,9 +7,9 @@ import {
 } from "./languages.ts";
 
 test("names language codes in English", () => {
-  expect(languageName("fi")).toStrictEqual("Finnish");
-  expect(languageName("pt")).toStrictEqual("Portuguese");
-  expect(languageName("other")).toStrictEqual("Other");
+  expect(languageName("fi")).toBe("Finnish");
+  expect(languageName("pt")).toBe("Portuguese");
+  expect(languageName("other")).toBe("Other");
 });
 
 test("keeps pinned codes first, then the rest by name", () => {
@@ -30,14 +30,14 @@ test("drops blanks and duplicates across pinned and seen", () => {
 
 test("knows every two-letter language the platform can name", () => {
   const all = allLanguages();
-  expect(all.includes("fi")).toStrictEqual(true);
-  expect(all.includes("en")).toStrictEqual(true);
-  expect(all.includes("zz")).toStrictEqual(false);
-  expect(all.includes("iw")).toStrictEqual(false);
+  expect(all.includes("fi")).toBe(true);
+  expect(all.includes("en")).toBe(true);
+  expect(all.includes("zz")).toBe(false);
+  expect(all.includes("iw")).toBe(false);
 });
 
 test("finds languages by name or code, exact code first", () => {
-  expect(searchLanguages("fi")[0]).toStrictEqual("fi");
+  expect(searchLanguages("fi")[0]).toBe("fi");
   expect(searchLanguages("finn")).toStrictEqual(["fi"]);
   expect(searchLanguages("  GERM ")).toStrictEqual(["de"]);
   expect(searchLanguages("")).toStrictEqual([]);

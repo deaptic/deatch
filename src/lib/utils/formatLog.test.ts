@@ -20,9 +20,9 @@ test("keeps nested errors readable", () => {
 test("survives circular values", () => {
   const value: Record<string, unknown> = {};
   value.self = value;
-  expect(formatLog([value])).toStrictEqual("[object Object]");
+  expect(formatLog([value])).toBe("[object Object]");
 });
 
 test("prints undefined", () => {
-  expect(formatLog(["value", undefined])).toStrictEqual("value undefined");
+  expect(formatLog(["value", undefined])).toBe("value undefined");
 });

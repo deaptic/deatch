@@ -13,7 +13,7 @@ test("textOf joins fragments without separators", () => {
         { type: "text", text: "b" },
       ],
     }),
-  ).toStrictEqual("a b");
+  ).toBe("a b");
 });
 
 test("withoutReplyMention drops the leading @parent and its space", () => {
