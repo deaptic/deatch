@@ -5,7 +5,7 @@ import { createStore, unwrap } from "solid-js/store";
 import Toggle from "../../ui/Toggle.tsx";
 import Textarea from "../../ui/Textarea.tsx";
 import Field from "../../ui/Field.tsx";
-import Button from "../../ui/Button.tsx";
+import IconButton from "../../ui/IconButton.tsx";
 import Segmented from "../../ui/Segmented.tsx";
 import TriggerField from "./TriggerField.tsx";
 import TriggerSectionLabel from "./TriggerSectionLabel.tsx";
@@ -66,24 +66,26 @@ export default function TriggerCard(props: {
           />
         </button>
         <Show when={canSave()}>
-          <Button
+          <IconButton
             variant="accent"
-            icon={<Check class="size-4" />}
-            data-tip={
+            label={
               valid()
                 ? t("SETTINGS_TRIGGERS_SAVE")
                 : t("SETTINGS_TRIGGERS_REQUIRED")
             }
             disabled={!valid()}
             onClick={() => props.onSave({ ...unwrap(draft) })}
-          />
+          >
+            <Check class="size-4" />
+          </IconButton>
         </Show>
-        <Button
+        <IconButton
           variant="danger"
-          icon={<Trash2 class="size-4" />}
-          data-tip={t("SETTINGS_TRIGGERS_DELETE")}
+          label={t("SETTINGS_TRIGGERS_DELETE")}
           onClick={props.onDelete}
-        />
+        >
+          <Trash2 class="size-4" />
+        </IconButton>
       </div>
 
       <Show when={expanded()}>

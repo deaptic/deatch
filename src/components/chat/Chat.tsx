@@ -55,6 +55,7 @@ import {
   moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "../ui/createPopover.ts";
+import Button from "../ui/Button.tsx";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 
 type Props = {
@@ -297,13 +298,15 @@ export default function Chat(props: Props) {
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
         footer={
           <Show when={feedApi()?.isPaused()}>
-            <button
+            <Button
+              size="sm"
+              shape="pill"
+              icon={<ChevronDown class="size-4" />}
               onClick={jumpToLatest}
-              class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 h-8 pl-2.5 pr-3.5 bg-accent hover:bg-accent-hover text-on-accent text-small font-semibold rounded-full transition-colors duration-snap cursor-pointer"
+              class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
             >
-              <ChevronDown class="size-4" />
               {t("CHAT_NEW_MESSAGES")}
-            </button>
+            </Button>
           </Show>
         }
         ref={setFeedApi}

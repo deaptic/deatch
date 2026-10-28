@@ -3,7 +3,7 @@ import Button, { type ButtonSize, type ButtonVariant } from "./Button.tsx";
 
 type Props = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
-  variant?: Extract<ButtonVariant, "ghost" | "neutral">;
+  variant?: ButtonVariant;
   size?: ButtonSize;
   pressed?: boolean;
   loading?: boolean;

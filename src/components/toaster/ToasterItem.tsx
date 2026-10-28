@@ -10,6 +10,7 @@ import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import type { Component } from "solid-js";
 import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
 import { t } from "../../lib/i18n/index.ts";
+import IconButton from "../ui/IconButton.tsx";
 
 const TONE: Record<ToastType, string> = {
   error: "text-negative",
@@ -72,14 +73,9 @@ export default function ToasterItem(props: Props) {
           </p>
         </Show>
       </div>
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label={t("TOAST_DISMISS")}
-        class="shrink-0 size-7 grid place-items-center rounded-sm text-ink-faint hover:text-ink hover:bg-raised transition-colors duration-snap cursor-pointer"
-      >
+      <IconButton label={t("TOAST_DISMISS")} size="sm" onClick={dismiss}>
         <X class="size-4" />
-      </button>
+      </IconButton>
     </div>
   );
 }

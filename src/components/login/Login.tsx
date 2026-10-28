@@ -3,6 +3,7 @@ import { Show } from "solid-js";
 import TwitchIcon from "./TwitchIcon.tsx";
 import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
+import { CARD_FRAME } from "../ui/Card.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
 import * as browser from "../../lib/services/browser.ts";
@@ -33,7 +34,9 @@ export default function Login() {
             </>
           }
         >
-          <div class="mt-4 w-full bg-surface rounded-lg border border-transparent [[data-theme=light]_&]:border-line-soft p-5 flex flex-col items-center gap-3">
+          <div
+            class={`mt-4 w-full bg-surface p-5 flex flex-col items-center gap-3 ${CARD_FRAME}`}
+          >
             <Show
               when={deviceCode()}
               fallback={
