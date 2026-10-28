@@ -1,4 +1,5 @@
 import { expect, test } from "vite-plus/test";
+import { formatViewers } from "../format/stream.ts";
 import type { Stream, User } from "../types/index.ts";
 import {
   buildPresence,
@@ -62,7 +63,7 @@ test("Explore or no channel counts as browsing", () => {
 test("a live channel shows its game, viewers and stream start", () => {
   const activity = buildPresence(ctx({ liveStreams: [stream()] }), session);
   expect(presenceMode(ctx())).toBe("ch:1");
-  expect(activity.stateText).toBe("Chess · 1.2k viewers");
+  expect(activity.stateText).toBe(`Chess · ${formatViewers(1234)} viewers`);
   expect(activity.largeText).toBe("Chess with chat");
   expect(activity.startedAt).toStrictEqual(
     Date.parse("2026-10-01T10:00:00Z") / 1000,

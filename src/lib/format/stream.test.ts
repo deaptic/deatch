@@ -1,11 +1,11 @@
 import { expect, test } from "vite-plus/test";
 import { formatClock, formatUptime, formatViewers } from "./stream.ts";
 
-test("abbreviates viewer counts", () => {
-  expect(formatViewers(999)).toBe("999");
-  expect(formatViewers(1_000)).toBe("1.0K");
-  expect(formatViewers(12_345)).toBe("12.3K");
-  expect(formatViewers(2_500_000)).toBe("2.5M");
+test("abbreviates viewer counts in the given locale", () => {
+  expect(formatViewers(999, "en-US")).toBe("999");
+  expect(formatViewers(1_000, "en-US")).toBe("1K");
+  expect(formatViewers(12_345, "en-US")).toBe("12.3K");
+  expect(formatViewers(2_500_000, "en-US")).toBe("2.5M");
 });
 
 test("formats durations as h:mm:ss", () => {
