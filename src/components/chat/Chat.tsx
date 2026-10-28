@@ -55,7 +55,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { User, UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   broadcasterId: string;
@@ -71,17 +71,17 @@ async function resolveIdentity(
 ): Promise<UserRef | null> {
   const { id, login, displayName } = identity;
   if (id && login && displayName) return { id, login, displayName };
-  try {
-    const [u] = id
-      ? await users.get([id])
-      : login
-        ? await users.fetch({ logins: [login] })
-        : [];
-    if (!u) return null;
-    return { id: u.id, login: u.login, displayName: u.displayName };
-  } catch {
-    return null;
+  if (id) {
+    const [user] = await users.get([id]).catch(() => []);
+    return user ? toUserRef(user) : null;
   }
+  if (!login) return null;
+  const lookup = await users.findByLogin(login);
+  return lookup.status === "found" ? toUserRef(lookup.user) : null;
+}
+
+function toUserRef({ id, login, displayName }: User): UserRef {
+  return { id, login, displayName };
 }
 
 export default function Chat(props: Props) {

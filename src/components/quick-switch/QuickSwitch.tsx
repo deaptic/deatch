@@ -19,7 +19,6 @@ import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";
 import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
@@ -93,19 +92,14 @@ export default function QuickSwitch(props: Props) {
       return;
     }
     setSearching(true);
-    try {
-      const found = (await users.fetch({ logins: [row.query] }))[0];
-      if (!found) {
-        addToast(t("QUICK_SWITCH_NOT_FOUND"), "error");
-        return;
-      }
-      if (pin) pinChannel(found.id);
-      props.onSelect(found);
+    const lookup = await users.findByLogin(row.query);
+    setSearching(false);
+    if (lookup.status === "missing") {
+      addToast(t("QUICK_SWITCH_NOT_FOUND"), "error");
+    } else if (lookup.status === "found") {
+      if (pin) pinChannel(lookup.user.id);
+      props.onSelect(lookup.user);
       props.onClose();
-    } catch (e) {
-      addToast(errorMessage(e), "error");
-    } finally {
-      setSearching(false);
     }
   }
 
