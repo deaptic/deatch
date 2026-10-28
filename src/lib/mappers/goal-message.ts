@@ -2,9 +2,8 @@
 // be tested without Tauri.
 
 import { t } from "../i18n/index.ts";
-import type { RawGoal } from "../types/twitch/eventsub.ts";
+import type { NoticeText, RawGoal } from "../types/index.ts";
 import { noticeText } from "../utils/feedEvent.ts";
-import type { NoticeText } from "../types/feed.ts";
 
 function amounts(raw: RawGoal) {
   return {

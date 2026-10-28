@@ -27,7 +27,7 @@ import {
   Vote,
 } from "lucide-solid";
 import type { Component } from "solid-js";
-import { NOTICE_TO_EVENT } from "../../../lib/constants.ts";
+import { NOTICE_TO_EVENT } from "../../../lib/constants/events.ts";
 import type { MessageKey } from "../../../lib/i18n/index.ts";
 import type {
   AnnouncementColor,

@@ -4,8 +4,7 @@
 import { formatSpan } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
-import type { NoticeText } from "../types/feed.ts";
-import type { RawPrediction } from "../types/twitch/eventsub.ts";
+import type { NoticeText, RawPrediction } from "../types/index.ts";
 
 type Outcome = RawPrediction["outcomes"][number];
 

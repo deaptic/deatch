@@ -4,8 +4,7 @@
 import { formatSpan } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
-import type { NoticeText } from "../types/feed.ts";
-import type { RawPoll } from "../types/twitch/eventsub.ts";
+import type { NoticeText, RawPoll } from "../types/index.ts";
 
 export function pollBegin(raw: RawPoll): NoticeText {
   return {

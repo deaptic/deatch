@@ -1,4 +1,4 @@
-import type { FeedEntry } from "../../types/feed.ts";
+import type { FeedEntry } from "../../types/index.ts";
 import { at } from "../../utils/at.ts";
 
 export const MESSAGE_CAP = 400;

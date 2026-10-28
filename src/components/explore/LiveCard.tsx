@@ -1,7 +1,6 @@
 import { Show } from "solid-js";
 import { MessageSquare } from "lucide-solid";
-import type { Stream } from "../../lib/types/index.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { Stream, User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
 import * as chatActivity from "../../lib/services/chatActivity.ts";
 import { formatUptime } from "../../lib/format/stream.ts";

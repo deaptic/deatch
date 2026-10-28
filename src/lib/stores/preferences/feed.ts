@@ -1,4 +1,5 @@
-import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
+import type { BadgeCategoryKey } from "../../constants/badges.ts";
+import type { EventKey } from "../../constants/events.ts";
 import type { Density } from "../../constants/density.ts";
 import {
   clampToStops,

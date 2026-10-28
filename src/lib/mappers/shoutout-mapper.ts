@@ -3,11 +3,11 @@
 
 import { formatSpan } from "../format/duration.ts";
 import { t } from "../i18n/index.ts";
-import type { FeedEvent } from "../types/feed.ts";
 import type {
+  FeedEvent,
   RawShoutout,
   RawShoutoutReceive,
-} from "../types/twitch/eventsub.ts";
+} from "../types/index.ts";
 import {
   chatterFields,
   feedEvent,

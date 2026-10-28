@@ -1,5 +1,5 @@
 import { Check, CornerDownRight } from "lucide-solid";
-import type { Mention } from "../../lib/types/index.ts";
+import type { Mention, MentionReason } from "../../lib/types/index.ts";
 import { knownUser, user } from "../../lib/stores/users.ts";
 import { thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
 import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
@@ -9,7 +9,6 @@ import {
   feedKeywords,
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
-import type { MentionReason } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Card from "../ui/Card.tsx";
 import IconButton from "../ui/IconButton.tsx";

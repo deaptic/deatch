@@ -5,7 +5,6 @@ import { errorMessage } from "../utils/error.ts";
 import { textOf } from "../utils/message.ts";
 import {
   appendItem,
-  type FeedEntry,
   feeds,
   insertEntries,
   MESSAGE_CAP,
@@ -14,7 +13,7 @@ import {
 import { feedEvent } from "../utils/feedEvent.ts";
 import { mapNotice } from "../mappers/notice-mapper.ts";
 import { groupGifts } from "../mappers/gift-group.ts";
-import type { FeedMessage, RecentHistory } from "../types/index.ts";
+import type { FeedEntry, FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
 import * as badges from "./badges.ts";

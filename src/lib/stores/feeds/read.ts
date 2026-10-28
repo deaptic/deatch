@@ -1,8 +1,9 @@
-import { feeds, getEntryId, lastVisible, setFeeds } from "./core.ts";
+import { feeds, lastVisible, setFeeds } from "./core.ts";
+import { getEntryId } from "./ops.ts";
 import { selectedChannel } from "../view.ts";
 import { feedEvents, feedShowEvents } from "../preferences.ts";
-import { NOTICE_TO_EVENT } from "../../constants.ts";
-import type { FeedEntry } from "../../types/feed.ts";
+import { NOTICE_TO_EVENT } from "../../constants/events.ts";
+import type { FeedEntry } from "../../types/index.ts";
 
 export function hasUnread(id: string): boolean {
   const feed = feeds[id];

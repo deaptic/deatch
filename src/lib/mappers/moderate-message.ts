@@ -1,12 +1,16 @@
 // Pure text for channel.moderate notices, kept apart from the listener so it
 // can be tested without Tauri.
 
-import type { RawModerate, RawModUser } from "../types/index.ts";
+import type {
+  NoticeText,
+  Person,
+  RawModerate,
+  RawModUser,
+} from "../types/index.ts";
 import { formatApproxDuration } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
 import { noticeText, person } from "../utils/feedEvent.ts";
-import type { NoticeText, Person } from "../types/feed.ts";
 
 /// A shared chat action reads like the same action taken here.
 function asLocal(p: RawModerate): RawModerate {

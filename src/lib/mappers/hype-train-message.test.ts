@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawHypeTrain } from "../types/twitch/eventsub.ts";
+import type { RawHypeTrain } from "../types/index.ts";
 import {
   hypeTrainBegin,
   hypeTrainEnd,

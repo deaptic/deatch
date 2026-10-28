@@ -7,17 +7,15 @@ import {
 } from "./listen.ts";
 import type {
   FeedEvent,
-  RawFollow,
-  RawNotification,
-  RawShoutout,
-  Redemption,
-} from "../types/index.ts";
-import type {
   RawAutomaticRedemption,
   RawBitsUse,
   RawChannelPointsRedemption,
+  RawFollow,
+  RawNotification,
+  RawShoutout,
   RawShoutoutReceive,
-} from "../types/twitch/eventsub.ts";
+  Redemption,
+} from "../types/index.ts";
 import { addGiftRecipient, appendItem } from "../stores/feeds.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";

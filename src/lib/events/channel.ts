@@ -21,7 +21,7 @@ import type {
   RawSharedChatSession,
   RawStreamOffline,
   RawStreamOnline,
-} from "../types/twitch/eventsub.ts";
+} from "../types/index.ts";
 import {
   applyChannelInfo,
   channelInfoFor,

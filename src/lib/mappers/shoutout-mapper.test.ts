@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawShoutout } from "../types/twitch/eventsub.ts";
+import type { RawShoutout } from "../types/index.ts";
 import { mapShoutout } from "./shoutout-mapper.ts";
 
 const shoutout: RawShoutout = {

@@ -1,4 +1,4 @@
-import type { FeedEvent, NoticeText, Person } from "../types/feed.ts";
+import type { FeedEvent, NoticeText, Person } from "../types/index.ts";
 
 /// A headline, with the detail line only when there is something to say.
 export function noticeText(text: string, detail?: string | null): NoticeText {

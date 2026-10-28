@@ -1,6 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { EVENTSUB_EVENT_NAMES, events } from "../bindings.ts";
-import type { EventEnvelope, EventKind } from "../types/twitch/eventsub.ts";
+import type { EventEnvelope, EventKind } from "../types/index.ts";
 import { invokeCommand, type InvokeOptions, wrapUnlisten } from "./utils.ts";
 
 type Unlisten = () => void;

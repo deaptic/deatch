@@ -36,6 +36,7 @@ import { isModOfChannel } from "../../lib/stores/users.ts";
 import type {
   FeedEvent as EventItem,
   FeedMessage as Message,
+  UserRef,
 } from "../../lib/types/index.ts";
 import {
   clearDivider,
@@ -55,7 +56,6 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "../ui/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   broadcasterId: string;
