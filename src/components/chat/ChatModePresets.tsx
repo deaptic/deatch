@@ -4,7 +4,7 @@ import { t } from "../../lib/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
-import { applyChatMode, presetLabel, type TimedMode } from "./chatModes.ts";
+import { applyChatMode, presetLabel, type TimedMode } from "./modes.ts";
 
 type Props = {
   mode: TimedMode;

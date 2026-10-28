@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
 import { mapRedemption } from "./redemption-mapper.ts";
 
@@ -18,8 +17,8 @@ const raw = (
   ...overrides,
 });
 
-Deno.test("keeps the reward and its trimmed prompt", () => {
-  assertEquals(mapRedemption(raw()).reward, {
+test("keeps the reward and its trimmed prompt", () => {
+  expect(mapRedemption(raw()).reward).toStrictEqual({
     id: "w1",
     title: "Hydrate",
     prompt: "Drink!",
@@ -27,7 +26,11 @@ Deno.test("keeps the reward and its trimmed prompt", () => {
   });
 });
 
-Deno.test("typed input is trimmed and omitted when blank", () => {
-  assertEquals(mapRedemption(raw({ user_input: "  pls  " })).input, "pls");
-  assertEquals(mapRedemption(raw({ user_input: "   " })).input, undefined);
+test("typed input is trimmed and omitted when blank", () => {
+  expect(mapRedemption(raw({ user_input: "  pls  " })).input).toStrictEqual(
+    "pls",
+  );
+  expect(mapRedemption(raw({ user_input: "   " })).input).toStrictEqual(
+    undefined,
+  );
 });

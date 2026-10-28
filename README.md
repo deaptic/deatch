@@ -13,8 +13,8 @@ install themselves.
 
 ## Building
 
-Requires [Rust](https://rustup.rs/), [Node](https://nodejs.org/) 24.22.1+,
-[pnpm](https://pnpm.io/), [Deno](https://deno.com/) 2.x, and the
+Requires [Rust](https://rustup.rs/), [Node](https://nodejs.org/) 26+,
+[pnpm](https://pnpm.io/), and the
 [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
 ```powershell

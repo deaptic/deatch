@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import {
   clampToStops,
   nearestStop,
@@ -7,21 +6,21 @@ import {
   ZOOM_STOPS,
 } from "./accessibility.ts";
 
-Deno.test("clampToStops keeps values inside the first and last stop", () => {
-  assertEquals(clampToStops(10, [12, 16, 24]), 12);
-  assertEquals(clampToStops(30, [12, 16, 24]), 24);
-  assertEquals(clampToStops(13, [12, 16, 24]), 13);
+test("clampToStops keeps values inside the first and last stop", () => {
+  expect(clampToStops(10, [12, 16, 24])).toStrictEqual(12);
+  expect(clampToStops(30, [12, 16, 24])).toStrictEqual(24);
+  expect(clampToStops(13, [12, 16, 24])).toStrictEqual(13);
 });
 
-Deno.test("nearestStop snaps to the closest stop", () => {
-  assertEquals(nearestStop(13, [12, 16, 24]), 12);
-  assertEquals(nearestStop(15, [12, 16, 24]), 16);
+test("nearestStop snaps to the closest stop", () => {
+  expect(nearestStop(13, [12, 16, 24])).toStrictEqual(12);
+  expect(nearestStop(15, [12, 16, 24])).toStrictEqual(16);
 });
 
-Deno.test("stepStop moves to the neighbouring stop and stops at the ends", () => {
-  assertEquals(stepStop(100, ZOOM_STOPS, 1), 110);
-  assertEquals(stepStop(100, ZOOM_STOPS, -1), 90);
-  assertEquals(stepStop(95, ZOOM_STOPS, 1), 100);
-  assertEquals(stepStop(200, ZOOM_STOPS, 1), 200);
-  assertEquals(stepStop(50, ZOOM_STOPS, -1), 50);
+test("stepStop moves to the neighbouring stop and stops at the ends", () => {
+  expect(stepStop(100, ZOOM_STOPS, 1)).toStrictEqual(110);
+  expect(stepStop(100, ZOOM_STOPS, -1)).toStrictEqual(90);
+  expect(stepStop(95, ZOOM_STOPS, 1)).toStrictEqual(100);
+  expect(stepStop(200, ZOOM_STOPS, 1)).toStrictEqual(200);
+  expect(stepStop(50, ZOOM_STOPS, -1)).toStrictEqual(50);
 });

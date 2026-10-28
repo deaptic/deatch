@@ -1,5 +1,5 @@
 name: setup
-description: Install Node, pnpm, Deno, Rust, caches, and frontend deps
+description: Install Node, pnpm, Rust, caches, and frontend deps
 
 inputs:
   rust-components:
@@ -15,21 +15,6 @@ runs:
       with:
         node-version-file: .node-version
         cache: true
-
-    - name: setup deno
-      uses: denoland/setup-deno@v2
-      with:
-        deno-version: v2.x
-
-    - name: cache deno
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/deno
-          ~/.deno
-          ~/AppData/Local/deno
-        key: ${{ runner.os }}-deno-${{ hashFiles('deno.lock') }}
-        restore-keys: ${{ runner.os }}-deno-
 
     - name: setup rust
       uses: dtolnay/rust-toolchain@stable

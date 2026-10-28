@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { rankSuggestions } from "./rankSuggestions.ts";
 
 const names = ["zbar", "barz", "abar", "bar", "qux"];
@@ -8,8 +7,8 @@ const byName = {
   compare: (a: string, b: string) => a.localeCompare(b),
 };
 
-Deno.test("ranks prefix matches before substring matches, each sorted", () => {
-  assertEquals(rankSuggestions(names, "bar", byName), [
+test("ranks prefix matches before substring matches, each sorted", () => {
+  expect(rankSuggestions(names, "bar", byName)).toStrictEqual([
     "bar",
     "barz",
     "abar",
@@ -17,20 +16,20 @@ Deno.test("ranks prefix matches before substring matches, each sorted", () => {
   ]);
 });
 
-Deno.test("an exact match wins over a better-sorted prefix match", () => {
+test("an exact match wins over a better-sorted prefix match", () => {
   const ranked = rankSuggestions(["bobby", "bob"], "bob", {
     keys: (name) => [name],
     compare: (a, b) => b.length - a.length,
   });
-  assertEquals(ranked, ["bob", "bobby"]);
+  expect(ranked).toStrictEqual(["bob", "bobby"]);
 });
 
-Deno.test("matches the query case-insensitively", () => {
-  assertEquals(rankSuggestions(names, "BAR", byName)[0], "bar");
+test("matches the query case-insensitively", () => {
+  expect(rankSuggestions(names, "BAR", byName)[0]).toStrictEqual("bar");
 });
 
-Deno.test("returns everything sorted for an empty query", () => {
-  assertEquals(rankSuggestions(names, "", byName), [
+test("returns everything sorted for an empty query", () => {
+  expect(rankSuggestions(names, "", byName)).toStrictEqual([
     "abar",
     "bar",
     "barz",
@@ -39,7 +38,7 @@ Deno.test("returns everything sorted for an empty query", () => {
   ]);
 });
 
-Deno.test("matches any of an item's keys and respects the limit", () => {
+test("matches any of an item's keys and respects the limit", () => {
   const users = [
     { login: "foo", display: "zzz" },
     { login: "qqq", display: "foobar" },
@@ -49,8 +48,5 @@ Deno.test("matches any of an item's keys and respects the limit", () => {
     compare: (a, b) => a.login.localeCompare(b.login),
     limit: 1,
   });
-  assertEquals(
-    ranked.map((u) => u.login),
-    ["foo"],
-  );
+  expect(ranked.map((u) => u.login)).toStrictEqual(["foo"]);
 });

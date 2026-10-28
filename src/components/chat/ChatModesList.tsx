@@ -11,7 +11,7 @@ import {
   isOn,
   presetLabel,
   type TimedMode,
-} from "./chatModes.ts";
+} from "./modes.ts";
 import ChatModePresets from "./ChatModePresets.tsx";
 
 type Props = {

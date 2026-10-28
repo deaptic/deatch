@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { FeedEvent, FeedMessage } from "../types/feed.ts";
 import { dayLabel, GROUP_WINDOW_MS, layoutFeed } from "./feedLayout.ts";
 
@@ -40,7 +39,7 @@ function event(id: string, timestamp: number): FeedEvent {
 const continued = (rows: { continued: boolean }[]) =>
   rows.map((r) => r.continued);
 
-Deno.test("groups consecutive messages from one chatter", () => {
+test("groups consecutive messages from one chatter", () => {
   const rows = layoutFeed(
     [
       msg("1", "maya", T0),
@@ -50,23 +49,23 @@ Deno.test("groups consecutive messages from one chatter", () => {
     ],
     true,
   );
-  assertEquals(continued(rows), [false, true, false, false]);
+  expect(continued(rows)).toStrictEqual([false, true, false, false]);
 });
 
-Deno.test("never groups when grouping is off", () => {
+test("never groups when grouping is off", () => {
   const rows = layoutFeed([msg("1", "maya", T0), msg("2", "maya", T0)], false);
-  assertEquals(continued(rows), [false, false]);
+  expect(continued(rows)).toStrictEqual([false, false]);
 });
 
-Deno.test("starts a new group after the time window", () => {
+test("starts a new group after the time window", () => {
   const rows = layoutFeed(
     [msg("1", "maya", T0), msg("2", "maya", T0 + GROUP_WINDOW_MS)],
     true,
   );
-  assertEquals(continued(rows), [false, false]);
+  expect(continued(rows)).toStrictEqual([false, false]);
 });
 
-Deno.test("replies, holds, rewards and first messages stand alone", () => {
+test("replies, holds, rewards and first messages stand alone", () => {
   const rows = layoutFeed(
     [
       msg("1", "maya", T0),
@@ -93,7 +92,7 @@ Deno.test("replies, holds, rewards and first messages stand alone", () => {
     ],
     true,
   );
-  assertEquals(continued(rows), [
+  expect(continued(rows)).toStrictEqual([
     false,
     false,
     false,
@@ -104,7 +103,7 @@ Deno.test("replies, holds, rewards and first messages stand alone", () => {
   ]);
 });
 
-Deno.test("measures the window from the group's first message", () => {
+test("measures the window from the group's first message", () => {
   const step = GROUP_WINDOW_MS / 2;
   const rows = layoutFeed(
     [
@@ -115,10 +114,10 @@ Deno.test("measures the window from the group's first message", () => {
     ],
     true,
   );
-  assertEquals(continued(rows), [false, true, false, true]);
+  expect(continued(rows)).toStrictEqual([false, true, false, true]);
 });
 
-Deno.test("cheers stand alone", () => {
+test("cheers stand alone", () => {
   const rows = layoutFeed(
     [
       msg("1", "maya", T0),
@@ -127,10 +126,10 @@ Deno.test("cheers stand alone", () => {
     ],
     true,
   );
-  assertEquals(continued(rows), [false, false, true]);
+  expect(continued(rows)).toStrictEqual([false, false, true]);
 });
 
-Deno.test("a change of shared chat channel breaks a group", () => {
+test("a change of shared chat channel breaks a group", () => {
   const mira = {
     id: "m",
     login: "mira",
@@ -147,44 +146,43 @@ Deno.test("a change of shared chat channel breaks a group", () => {
     ],
     true,
   );
-  assertEquals(continued(rows), [false, false, true, false]);
+  expect(continued(rows)).toStrictEqual([false, false, true, false]);
 });
 
-Deno.test("events break a group", () => {
+test("events break a group", () => {
   const rows = layoutFeed(
     [msg("1", "maya", T0), event("e", T0), msg("2", "maya", T0)],
     true,
   );
-  assertEquals(continued(rows), [false, false, false]);
+  expect(continued(rows)).toStrictEqual([false, false, false]);
 });
 
-Deno.test("marks the first row of each new day and breaks groups there", () => {
+test("marks the first row of each new day and breaks groups there", () => {
   const late = new Date(2026, 8, 30, 23, 59).getTime();
   const early = new Date(2026, 9, 1, 0, 1).getTime();
   const rows = layoutFeed(
     [msg("1", "maya", late), msg("2", "maya", early), msg("3", "maya", early)],
     true,
   );
-  assertEquals(rows, [
+  expect(rows).toStrictEqual([
     { dayStart: false, continued: false },
     { dayStart: true, continued: false },
     { dayStart: false, continued: true },
   ]);
 });
 
-Deno.test("labels days relative to now", () => {
+test("labels days relative to now", () => {
   const now = new Date(2026, 9, 1, 12, 0).getTime();
-  assertEquals(dayLabel(new Date(2026, 9, 1, 0, 5).getTime(), now), "Today");
-  assertEquals(
-    dayLabel(new Date(2026, 8, 30, 23, 0).getTime(), now),
+  expect(dayLabel(new Date(2026, 9, 1, 0, 5).getTime(), now)).toStrictEqual(
+    "Today",
+  );
+  expect(dayLabel(new Date(2026, 8, 30, 23, 0).getTime(), now)).toStrictEqual(
     "Yesterday",
   );
-  assertEquals(
-    dayLabel(new Date(2026, 8, 28, 9, 0).getTime(), now),
+  expect(dayLabel(new Date(2026, 8, 28, 9, 0).getTime(), now)).toStrictEqual(
     "Monday 28 September",
   );
-  assertEquals(
-    dayLabel(new Date(2025, 11, 31, 9, 0).getTime(), now),
+  expect(dayLabel(new Date(2025, 11, 31, 9, 0).getTime(), now)).toStrictEqual(
     "31 December 2025",
   );
 });

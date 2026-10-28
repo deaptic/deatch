@@ -17,7 +17,7 @@ export function nextVersion(current: string, arg = "patch"): string {
     : arg;
   if (!/^\d+\.\d+\.\d+$/.test(next)) {
     console.error(`invalid version: ${next}`);
-    Deno.exit(1);
+    process.exit(1);
   }
   return next;
 }

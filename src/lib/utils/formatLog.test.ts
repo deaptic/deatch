@@ -1,31 +1,28 @@
-/// <reference lib="deno.ns" />
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { formatLog } from "./formatLog.ts";
 
-Deno.test("joins strings and serializes objects", () => {
-  assertEquals(
+test("joins strings and serializes objects", () => {
+  expect(
     formatLog(["[cmd] getUsers failed", { kind: "http", message: "timeout" }]),
-    '[cmd] getUsers failed {"kind":"http","message":"timeout"}',
-  );
+  ).toStrictEqual('[cmd] getUsers failed {"kind":"http","message":"timeout"}');
 });
 
-Deno.test("prints errors with their stack", () => {
-  assertStringIncludes(formatLog([new Error("boom")]), "Error: boom");
+test("prints errors with their stack", () => {
+  expect(formatLog([new Error("boom")])).toContain("Error: boom");
 });
 
-Deno.test("keeps nested errors readable", () => {
-  assertEquals(
-    formatLog([{ error: new TypeError("bad") }]),
+test("keeps nested errors readable", () => {
+  expect(formatLog([{ error: new TypeError("bad") }])).toStrictEqual(
     '{"error":{"name":"TypeError","message":"bad"}}',
   );
 });
 
-Deno.test("survives circular values", () => {
+test("survives circular values", () => {
   const value: Record<string, unknown> = {};
   value.self = value;
-  assertEquals(formatLog([value]), "[object Object]");
+  expect(formatLog([value])).toStrictEqual("[object Object]");
 });
 
-Deno.test("prints undefined", () => {
-  assertEquals(formatLog(["value", undefined]), "value undefined");
+test("prints undefined", () => {
+  expect(formatLog(["value", undefined])).toStrictEqual("value undefined");
 });

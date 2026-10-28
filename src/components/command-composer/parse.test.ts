@@ -1,25 +1,24 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { durationError, parseDuration } from "./parse.ts";
 import type { CommandOption } from "./types.ts";
 
-Deno.test("parses single, compound, unitless and padded durations", () => {
-  assertEquals(parseDuration("30s"), 30);
-  assertEquals(parseDuration("1h30m"), 5400);
-  assertEquals(parseDuration("5M"), 300);
-  assertEquals(parseDuration(" 5m "), 300);
-  assertEquals(parseDuration("90"), 90);
-  assertEquals(parseDuration("0"), 0);
+test("parses single, compound, unitless and padded durations", () => {
+  expect(parseDuration("30s")).toStrictEqual(30);
+  expect(parseDuration("1h30m")).toStrictEqual(5400);
+  expect(parseDuration("5M")).toStrictEqual(300);
+  expect(parseDuration(" 5m ")).toStrictEqual(300);
+  expect(parseDuration("90")).toStrictEqual(90);
+  expect(parseDuration("0")).toStrictEqual(0);
 });
 
-Deno.test("rejects anything that is not a duration", () => {
-  assertEquals(parseDuration(""), null);
-  assertEquals(parseDuration("abc"), null);
-  assertEquals(parseDuration("5x"), null);
-  assertEquals(parseDuration("-5m"), null);
+test("rejects anything that is not a duration", () => {
+  expect(parseDuration("")).toStrictEqual(null);
+  expect(parseDuration("abc")).toStrictEqual(null);
+  expect(parseDuration("5x")).toStrictEqual(null);
+  expect(parseDuration("-5m")).toStrictEqual(null);
 });
 
-Deno.test("reports a value outside the option's range", () => {
+test("reports a value outside the option's range", () => {
   const opt: CommandOption = {
     name: "d",
     description: "COMMAND_SLOW_DURATION",
@@ -27,15 +26,13 @@ Deno.test("reports a value outside the option's range", () => {
     min: 3,
     max: 120,
   };
-  assertEquals(durationError(opt, 30), null);
-  assertEquals(durationError(opt, 0), "Must be 3s–2m");
-  assertEquals(durationError(opt, 300), "Must be 3s–2m");
-  assertEquals(
-    durationError({ ...opt, max: undefined }, 1),
+  expect(durationError(opt, 30)).toStrictEqual(null);
+  expect(durationError(opt, 0)).toStrictEqual("Must be 3s–2m");
+  expect(durationError(opt, 300)).toStrictEqual("Must be 3s–2m");
+  expect(durationError({ ...opt, max: undefined }, 1)).toStrictEqual(
     "Must be at least 3s",
   );
-  assertEquals(
+  expect(
     durationError({ ...opt, hint: "COMMAND_SLOW_DURATION_HINT" }, null),
-    "Try 3s–120s, default 30s",
-  );
+  ).toStrictEqual("Try 3s–120s, default 30s");
 });

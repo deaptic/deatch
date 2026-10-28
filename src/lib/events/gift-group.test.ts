@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
 import { giftGroup, groupGifts } from "./gift-group.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
@@ -25,7 +24,7 @@ const sub = (id: string, recipient: string, giftId: string | null) =>
     }),
   );
 
-Deno.test("folds a batch's gifted subs into their community gift", () => {
+test("folds a batch's gifted subs into their community gift", () => {
   const community = mapped(
     notice({
       message_id: "c1",
@@ -45,15 +44,12 @@ Deno.test("folds a batch's gifted subs into their community gift", () => {
     sub("s3", "Solo", null),
     sub("s4", "Orphan", "g9"),
   ]);
-  assertEquals(
-    rows.map((r) => r.id),
-    ["c1", "s3", "s4"],
-  );
-  assertEquals(rows[0].recipients, [
+  expect(rows.map((r) => r.id)).toStrictEqual(["c1", "s3", "s4"]);
+  expect(rows[0].recipients).toStrictEqual([
     { id: "id-Bar", login: "bar", name: "Bar" },
     { id: "id-Baz", login: "baz", name: "Baz" },
   ]);
-  assertEquals(community.item.recipients, undefined);
+  expect(community.item.recipients).toStrictEqual(undefined);
 });
 
 const notice = (n: Partial<RawNotification>): RawNotification => ({
@@ -64,8 +60,8 @@ const notice = (n: Partial<RawNotification>): RawNotification => ({
   ...n,
 });
 
-Deno.test("ties a community gift and its subs together", () => {
-  assertEquals(
+test("ties a community gift and its subs together", () => {
+  expect(
     giftGroup(
       notice({
         notice_type: "community_sub_gift",
@@ -77,9 +73,8 @@ Deno.test("ties a community gift and its subs together", () => {
         },
       }),
     ),
-    { role: "community", giftId: "g1" },
-  );
-  assertEquals(
+  ).toStrictEqual({ role: "community", giftId: "g1" });
+  expect(
     giftGroup(
       notice({
         notice_type: "shared_chat_sub_gift",
@@ -93,16 +88,15 @@ Deno.test("ties a community gift and its subs together", () => {
         },
       }),
     ),
-    {
-      role: "member",
-      giftId: "g1",
-      recipient: { id: undefined, login: "bar", name: "Bar" },
-    },
-  );
+  ).toStrictEqual({
+    role: "member",
+    giftId: "g1",
+    recipient: { id: undefined, login: "bar", name: "Bar" },
+  });
 });
 
-Deno.test("leaves a direct gift on its own", () => {
-  assertEquals(
+test("leaves a direct gift on its own", () => {
+  expect(
     giftGroup(
       notice({
         notice_type: "sub_gift",
@@ -115,6 +109,5 @@ Deno.test("leaves a direct gift on its own", () => {
         },
       }),
     ),
-    null,
-  );
+  ).toStrictEqual(null);
 });

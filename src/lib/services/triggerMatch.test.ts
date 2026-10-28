@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { Trigger } from "../stores/preferences.ts";
 import { firstMatch, isCoolingDown } from "./triggerMatch.ts";
 
@@ -19,71 +18,79 @@ const trigger = (overrides: Partial<Trigger>): Trigger => ({
 const fires = (text: string, overrides: Partial<Trigger>) =>
   firstMatch(text, [trigger(overrides)]) !== null;
 
-Deno.test("anywhere matches whole words only", () => {
-  assertEquals(fires("well hello there", {}), true);
-  assertEquals(fires("othello", {}), false);
-  assertEquals(fires("hellos", {}), false);
+test("anywhere matches whole words only", () => {
+  expect(fires("well hello there", {})).toStrictEqual(true);
+  expect(fires("othello", {})).toStrictEqual(false);
+  expect(fires("hellos", {})).toStrictEqual(false);
 });
 
-Deno.test("start requires the phrase at the beginning", () => {
-  assertEquals(fires("hello there", { location: "start" }), true);
-  assertEquals(fires("oh hello", { location: "start" }), false);
+test("start requires the phrase at the beginning", () => {
+  expect(fires("hello there", { location: "start" })).toStrictEqual(true);
+  expect(fires("oh hello", { location: "start" })).toStrictEqual(false);
 });
 
-Deno.test("exact compares the trimmed message", () => {
-  assertEquals(fires("  Hello  ", { location: "exact" }), true);
-  assertEquals(fires("hello there", { location: "exact" }), false);
+test("exact compares the trimmed message", () => {
+  expect(fires("  Hello  ", { location: "exact" })).toStrictEqual(true);
+  expect(fires("hello there", { location: "exact" })).toStrictEqual(false);
 });
 
-Deno.test("respects case sensitivity", () => {
-  assertEquals(fires("HELLO", {}), true);
-  assertEquals(fires("HELLO", { caseSensitive: true }), false);
-  assertEquals(
+test("respects case sensitivity", () => {
+  expect(fires("HELLO", {})).toStrictEqual(true);
+  expect(fires("HELLO", { caseSensitive: true })).toStrictEqual(false);
+  expect(
     fires("HELLO", { location: "exact", caseSensitive: true }),
-    false,
-  );
+  ).toStrictEqual(false);
 });
 
-Deno.test("matches command phrases that start with punctuation", () => {
-  assertEquals(fires("!socials", { phrase: "!socials" }), true);
-  assertEquals(fires("check !socials please", { phrase: "!socials" }), true);
-  assertEquals(
-    fires("!socials", { phrase: "!socials", location: "start" }),
+test("matches command phrases that start with punctuation", () => {
+  expect(fires("!socials", { phrase: "!socials" })).toStrictEqual(true);
+  expect(fires("check !socials please", { phrase: "!socials" })).toStrictEqual(
     true,
   );
-  assertEquals(fires("!socialsx", { phrase: "!socials" }), false);
+  expect(
+    fires("!socials", { phrase: "!socials", location: "start" }),
+  ).toStrictEqual(true);
+  expect(fires("!socialsx", { phrase: "!socials" })).toStrictEqual(false);
 });
 
-Deno.test("treats regex characters in phrases literally", () => {
-  assertEquals(fires("is this (a) test?", { phrase: "(a) test?" }), true);
-  assertEquals(fires("is this a test", { phrase: "(a) test?" }), false);
-  assertEquals(fires("axb", { phrase: "a.b" }), false);
+test("treats regex characters in phrases literally", () => {
+  expect(fires("is this (a) test?", { phrase: "(a) test?" })).toStrictEqual(
+    true,
+  );
+  expect(fires("is this a test", { phrase: "(a) test?" })).toStrictEqual(false);
+  expect(fires("axb", { phrase: "a.b" })).toStrictEqual(false);
 });
 
-Deno.test("accepts any of several phrases, one per line", () => {
+test("accepts any of several phrases, one per line", () => {
   const multi = { phrase: "discord\n\n  socials  " };
-  assertEquals(fires("where are your socials", multi), true);
-  assertEquals(fires("join the discord", multi), true);
-  assertEquals(fires("twitter", multi), false);
+  expect(fires("where are your socials", multi)).toStrictEqual(true);
+  expect(fires("join the discord", multi)).toStrictEqual(true);
+  expect(fires("twitter", multi)).toStrictEqual(false);
 });
 
-Deno.test("phrases accept * wildcards in every location", () => {
-  assertEquals(fires("hiya all", { phrase: "hi*" }), true);
-  assertEquals(fires("hiya", { phrase: "hi*", location: "exact" }), true);
-  assertEquals(fires("oh hiya", { phrase: "hi*", location: "start" }), false);
-  assertEquals(fires("anything", { phrase: "*" }), false);
+test("phrases accept * wildcards in every location", () => {
+  expect(fires("hiya all", { phrase: "hi*" })).toStrictEqual(true);
+  expect(fires("hiya", { phrase: "hi*", location: "exact" })).toStrictEqual(
+    true,
+  );
+  expect(fires("oh hiya", { phrase: "hi*", location: "start" })).toStrictEqual(
+    false,
+  );
+  expect(fires("anything", { phrase: "*" })).toStrictEqual(false);
 });
 
-Deno.test("skips disabled and blank triggers and returns the first match", () => {
+test("skips disabled and blank triggers and returns the first match", () => {
   const disabled = trigger({ id: "off", enabled: false });
   const blank = trigger({ id: "blank", phrase: "   " });
   const second = trigger({ id: "second" });
-  assertEquals(firstMatch("hello", [disabled, blank, second])?.id, "second");
-  assertEquals(firstMatch("   ", [second]), null);
+  expect(firstMatch("hello", [disabled, blank, second])?.id).toStrictEqual(
+    "second",
+  );
+  expect(firstMatch("   ", [second])).toStrictEqual(null);
 });
 
-Deno.test("cools down for the configured seconds", () => {
-  assertEquals(isCoolingDown(undefined, 10_000, 5), false);
-  assertEquals(isCoolingDown(10_000, 14_999, 5), true);
-  assertEquals(isCoolingDown(10_000, 15_000, 5), false);
+test("cools down for the configured seconds", () => {
+  expect(isCoolingDown(undefined, 10_000, 5)).toStrictEqual(false);
+  expect(isCoolingDown(10_000, 14_999, 5)).toStrictEqual(true);
+  expect(isCoolingDown(10_000, 15_000, 5)).toStrictEqual(false);
 });

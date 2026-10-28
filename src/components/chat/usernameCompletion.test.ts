@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { completions } from "./usernameCompletion.ts";
 
 const chatters = [
@@ -8,8 +7,8 @@ const chatters = [
   { login: "bob", displayName: "Bob", lastSeen: 1 },
 ];
 
-Deno.test("completes by login or display name, newest first", () => {
-  assertEquals(completions(chatters, "KA"), ["Kazoo", "kaz_jp"]);
-  assertEquals(completions(chatters, "カ"), ["kaz_jp"]);
-  assertEquals(completions(chatters, "zzz"), []);
+test("completes by login or display name, newest first", () => {
+  expect(completions(chatters, "KA")).toStrictEqual(["Kazoo", "kaz_jp"]);
+  expect(completions(chatters, "カ")).toStrictEqual(["kaz_jp"]);
+  expect(completions(chatters, "zzz")).toStrictEqual([]);
 });

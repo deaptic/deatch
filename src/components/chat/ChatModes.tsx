@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import Chip from "../ui/Chip.tsx";
-import { CHAT_MODES, isOn } from "./chatModes.ts";
+import { CHAT_MODES, isOn } from "./modes.ts";
 
 type Props = {
   broadcasterId: string;

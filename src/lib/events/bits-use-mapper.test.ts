@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawBitsUse } from "../types/twitch/eventsub.ts";
 import { mapBitsUse } from "./bits-use-mapper.ts";
 
@@ -15,37 +14,36 @@ const use = (u: Partial<RawBitsUse>): RawBitsUse => ({
   ...u,
 });
 
-Deno.test("shows a celebration with its emote", () => {
+test("shows a celebration with its emote", () => {
   const item = mapBitsUse(
     use({
       power_up: { type: "celebration", emote: { id: "e1", name: "Kappa" } },
     }),
     0,
   );
-  assertEquals(
-    item?.system_message,
+  expect(item?.system_message).toStrictEqual(
     "Foo used 500 bits on an On-Screen Celebration",
   );
-  assertEquals(item?.message, [{ type: "emote", text: "Kappa", id: "e1" }]);
+  expect(item?.message).toStrictEqual([
+    { type: "emote", text: "Kappa", id: "e1" },
+  ]);
 });
 
-Deno.test("names a custom Power-up", () => {
-  assertEquals(
+test("names a custom Power-up", () => {
+  expect(
     mapBitsUse(
       use({ type: "custom_power_up", custom_power_up: { title: "Hydrate" } }),
       0,
     )?.system_message,
-    "Foo used 500 bits on Hydrate",
-  );
+  ).toStrictEqual("Foo used 500 bits on Hydrate");
 });
 
-Deno.test("leaves cheers and message Power-ups to their chat message", () => {
-  assertEquals(mapBitsUse(use({ type: "cheer" }), 0), null);
-  assertEquals(
+test("leaves cheers and message Power-ups to their chat message", () => {
+  expect(mapBitsUse(use({ type: "cheer" }), 0)).toStrictEqual(null);
+  expect(
     mapBitsUse(
       use({ power_up: { type: "gigantify_an_emote", emote: null } }),
       0,
     ),
-    null,
-  );
+  ).toStrictEqual(null);
 });

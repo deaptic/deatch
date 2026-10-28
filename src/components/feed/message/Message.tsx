@@ -19,7 +19,7 @@ import Fragments from "../../ui/Fragments.tsx";
 import Timestamp from "../../ui/Timestamp.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
-import * as message from "./message.ts";
+import * as message from "./details.ts";
 import Avatar from "./Avatar.tsx";
 import Actions from "./Actions.tsx";
 import Reply from "./Reply.tsx";

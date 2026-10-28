@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { FeedEntry } from "../../types/feed.ts";
 import { enforceCaps } from "./caps.ts";
 
@@ -15,20 +14,20 @@ const notice = (n: number): FeedEntry =>
 const ids = (items: FeedEntry[]) =>
   items.map((m) => (m.kind === "message" ? m.message_id : m.id));
 
-Deno.test("keeps the newest entries per category", () => {
+test("keeps the newest entries per category", () => {
   const items = [
     notice(0),
     ...Array.from({ length: 401 }, (_, i) => message(i)),
   ];
   enforceCaps(items);
-  assertEquals(items.length, 401);
-  assertEquals(ids(items)[0], "e0");
-  assertEquals(ids(items)[1], "m1");
+  expect(items.length).toStrictEqual(401);
+  expect(ids(items)[0]).toStrictEqual("e0");
+  expect(ids(items)[1]).toStrictEqual("m1");
 });
 
-Deno.test("paused feeds keep more but still have a ceiling", () => {
+test("paused feeds keep more but still have a ceiling", () => {
   const items = Array.from({ length: 2500 }, (_, i) => message(i));
   enforceCaps(items, true);
-  assertEquals(items.length, 2000);
-  assertEquals(ids(items)[0], "m500");
+  expect(items.length).toStrictEqual(2000);
+  expect(ids(items)[0]).toStrictEqual("m500");
 });

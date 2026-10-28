@@ -7,11 +7,11 @@
   "scripts": {
     "dev": "vp dev",
     "build": "vp build",
-    "test": "deno test src/",
+    "test": "vp test",
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml -- --export-bindings",
     "tauri": "tauri",
-    "release": "deno run -A scripts/release.ts",
-    "pack:extension": "deno run -A scripts/pack-extension.ts"
+    "release": "node scripts/release.ts",
+    "pack:extension": "node scripts/pack-extension.ts"
   },
   "dependencies": {
     "@blobatar/solid": "^2.7.0",
@@ -32,13 +32,14 @@
   "devDependencies": {
     "@shadcn/lint": "^0.2.0",
     "@tauri-apps/cli": "^2.12.0",
+    "@types/node": "^26.6.5",
     "typescript": "^6.0.3",
     "vite": "catalog:",
     "vite-plugin-solid": "^2.11.14",
     "vite-plus": "catalog:"
   },
   "engines": {
-    "node": ">=24.22.1"
+    "node": ">=26"
   },
   "packageManager": "pnpm@12.15.0"
 }

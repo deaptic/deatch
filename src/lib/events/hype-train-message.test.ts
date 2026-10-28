@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawHypeTrain } from "../types/twitch/eventsub.ts";
 import {
   hypeTrainBegin,
@@ -18,23 +17,21 @@ const train = (t: Partial<RawHypeTrain> = {}): RawHypeTrain => ({
   ...t,
 });
 
-Deno.test("names the kind of train that started", () => {
-  assertEquals(
+test("names the kind of train that started", () => {
+  expect(
     hypeTrainBegin(train({ type: "golden_kappa", level: 1 })),
-    "A Golden Kappa Train has started at level 1!",
-  );
+  ).toStrictEqual("A Golden Kappa Train has started at level 1!");
 });
 
-Deno.test("speaks up only on a new level", () => {
-  assertEquals(hypeTrainProgress(train(), 2), null);
-  assertEquals(
-    hypeTrainProgress(train(), 1),
+test("speaks up only on a new level", () => {
+  expect(hypeTrainProgress(train(), 2)).toStrictEqual(null);
+  expect(hypeTrainProgress(train(), 1)).toStrictEqual(
     "The Hype Train reached level 2!",
   );
 });
 
-Deno.test("credits the top contributors at the end", () => {
-  assertEquals(
+test("credits the top contributors at the end", () => {
+  expect(
     hypeTrainEnd(
       train({
         top_contributions: [
@@ -43,12 +40,11 @@ Deno.test("credits the top contributors at the end", () => {
         ],
       }),
     ),
-    {
-      text: "The Hype Train ended at level 2 with 1,500 points",
-      detail: "Top contributors: Foo (500 bits) and Bar (1,000 sub points)",
-    },
-  );
-  assertEquals(hypeTrainEnd(train()), {
+  ).toStrictEqual({
+    text: "The Hype Train ended at level 2 with 1,500 points",
+    detail: "Top contributors: Foo (500 bits) and Bar (1,000 sub points)",
+  });
+  expect(hypeTrainEnd(train())).toStrictEqual({
     text: "The Hype Train ended at level 2 with 1,500 points",
   });
 });

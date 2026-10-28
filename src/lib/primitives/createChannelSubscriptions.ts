@@ -36,7 +36,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
   }
 
   function leaveChannel(broadcasterId: string) {
-    void sevenTv.unsubscribe(broadcasterId);
+    sevenTv.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
     clearChatters(broadcasterId);
     clearChatSettings(broadcasterId);

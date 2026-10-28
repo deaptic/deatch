@@ -11,7 +11,7 @@ import Timestamp from "../../ui/Timestamp.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
 import Actions from "./Actions.tsx";
-import * as event from "./event.ts";
+import * as event from "./look.ts";
 
 export type EventOptions = UserActions & {
   emotes: EmoteMap;
