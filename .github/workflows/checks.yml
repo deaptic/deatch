@@ -26,7 +26,7 @@ jobs:
         run: vp check --deny-warnings
       - name: vp test
         run: pnpm test
-      - name: vite build
+      - name: vp build
         run: pnpm build
 
       - name: cargo fmt
