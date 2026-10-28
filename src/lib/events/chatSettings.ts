@@ -8,7 +8,7 @@ export function start(): () => void {
     listenEventSub<RawChatSettingsUpdate>(
       "channel.chat_settings.update",
       (e) => {
-        const raw = e.payload.event;
+        const raw = e.event;
         setChatSettings(raw.broadcaster_user_id, mapChatSettingsUpdate(raw));
       },
     ),

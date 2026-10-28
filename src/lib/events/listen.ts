@@ -1,18 +1,29 @@
 import {
-  type EventCallback,
-  listen,
-  type UnlistenFn,
-} from "@tauri-apps/api/event";
-import { EVENTSUB_EVENT_NAMES } from "../bindings.ts";
+  type AppEventName,
+  type AppEventPayload,
+  onAppEvent,
+  onEventSub,
+} from "../api/events.ts";
 import type { EventEnvelope, EventKind } from "../types/twitch/eventsub.ts";
 import type { FeedEntry } from "../types/feed.ts";
 import { appendItem } from "../stores/feeds.ts";
 
+type Unlisten = () => void;
+
+/// Listeners run in the background, so a failed registration is logged
+/// rather than toasted.
+export function listenApp<K extends AppEventName>(
+  name: K,
+  handler: (payload: AppEventPayload<K>) => void,
+): Promise<Unlisten> {
+  return onAppEvent(name, handler, { silent: true });
+}
+
 export function listenEventSub<T>(
   kind: EventKind,
-  handler: EventCallback<EventEnvelope<T>>,
-): Promise<UnlistenFn> {
-  return listen<EventEnvelope<T>>(EVENTSUB_EVENT_NAMES[kind], handler);
+  handler: (envelope: EventEnvelope<T>) => void,
+): Promise<Unlisten> {
+  return onEventSub(kind, handler, { silent: true });
 }
 
 /// One Twitch event, one row in its channel's feed, or none when `toEntry`
@@ -22,20 +33,18 @@ export function listenFeed<T>(
   toEntry: (raw: T, timestamp: number) => FeedEntry | null | undefined,
   channelOf: (raw: T) => string = (raw) =>
     (raw as { broadcaster_user_id: string }).broadcaster_user_id,
-): Promise<UnlistenFn> {
+): Promise<Unlisten> {
   return listenEventSub<T>(kind, (e) => {
-    const raw = e.payload.event;
-    const entry = toEntry(raw, serverTime(e.payload));
-    if (entry) appendItem(channelOf(raw), entry);
+    const entry = toEntry(e.event, serverTime(e));
+    if (entry) appendItem(channelOf(e.event), entry);
   });
 }
 
-export function unlistenAll(listeners: Promise<UnlistenFn>[]): () => void {
+export function unlistenAll(listeners: Promise<Unlisten>[]): () => void {
+  // A listener that failed to register was logged by invokeCommand.
+  const registered = listeners.map((listener) => listener.catch(() => null));
   return () => {
-    // A listener that never registered was reported when it failed.
-    for (const listener of listeners) {
-      listener.then((stop) => stop()).catch(() => {});
-    }
+    for (const stop of registered) void stop.then((unlisten) => unlisten?.());
   };
 }
 

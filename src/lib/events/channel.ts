@@ -79,7 +79,7 @@ function listenCharity(
 export function start(): () => void {
   return unlistenAll([
     listenEventSub<RawChannelUpdate>("channel.update", (e) => {
-      const raw = e.payload.event;
+      const raw = e.event;
       const id = raw.broadcaster_user_id;
       const before = streamForUserId(id) ?? channelInfoFor(id);
       applyChannelInfo({
@@ -109,14 +109,14 @@ export function start(): () => void {
       }
     }),
     listenEventSub<RawSharedChatSession>("channel.shared_chat.begin", (e) =>
-      appendSharedChat(e.payload.event, "SHARED_CHAT_BEGIN"),
+      appendSharedChat(e.event, "SHARED_CHAT_BEGIN"),
     ),
     listenEventSub<RawSharedChatSession>("channel.shared_chat.update", (e) =>
-      appendSharedChat(e.payload.event, "SHARED_CHAT_UPDATE"),
+      appendSharedChat(e.event, "SHARED_CHAT_UPDATE"),
     ),
     listenEventSub<RawSharedChatEnd>("channel.shared_chat.end", (e) =>
       appendLocalNotice(
-        e.payload.event.broadcaster_user_id,
+        e.event.broadcaster_user_id,
         t("SHARED_CHAT_END"),
         SHARED_CHAT_SESSION,
       ),
@@ -144,7 +144,7 @@ export function start(): () => void {
     listenCharity("channel.charity_campaign.start", "CHARITY_START"),
     listenCharity("channel.charity_campaign.stop", "CHARITY_STOP"),
     listenEventSub<RawStreamOnline>("stream.online", (e) => {
-      const raw = e.payload.event;
+      const raw = e.event;
       appendLocalNotice(
         raw.broadcaster_user_id,
         t("STREAM_ONLINE", {
@@ -155,7 +155,7 @@ export function start(): () => void {
       );
     }),
     listenEventSub<RawStreamOffline>("stream.offline", (e) => {
-      const raw = e.payload.event;
+      const raw = e.event;
       appendLocalNotice(
         raw.broadcaster_user_id,
         t("STREAM_OFFLINE", { channel: raw.broadcaster_user_name }),

@@ -1,5 +1,6 @@
 import { t } from "../i18n/index.ts";
 import {
+  listenApp,
   listenEventSub,
   listenFeed,
   serverTime,
@@ -30,7 +31,6 @@ import {
 } from "../stores/feeds.ts";
 import { chatterFields, feedEvent, noticeText } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
-import { events } from "../bindings.ts";
 import { mapFragment } from "./chat-mapper.ts";
 import { moderateMessage } from "./moderate-message.ts";
 import { automodReason } from "./automod-reason.ts";
@@ -75,25 +75,23 @@ const HOLD_OUTCOMES: Record<string, AutomodHoldStatus> = {
 
 export function start(): () => void {
   return unlistenAll([
-    events.moderatedChannelsChanged.listen((e) =>
-      setModeratedChannels(e.payload),
-    ),
+    listenApp("moderatedChannelsChanged", setModeratedChannels),
     listenEventSub<RawChatMessageDelete>("channel.chat.message_delete", (e) => {
-      const raw = e.payload.event;
+      const raw = e.event;
       markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
     }),
     listenEventSub<RawChatClearUserMessages>(
       "channel.chat.clear_user_messages",
       (e) => {
-        const raw = e.payload.event;
+        const raw = e.event;
         markUserMessagesDeleted(raw.broadcaster_user_id, raw.target_user_id);
       },
     ),
     listenEventSub<RawChatClear>("channel.chat.clear", (e) => {
-      const broadcasterId = e.payload.event.broadcaster_user_id;
+      const broadcasterId = e.event.broadcaster_user_id;
       markAllMessagesDeleted(broadcasterId);
       if (isModOfChannel(broadcasterId)) return;
-      const now = serverTime(e.payload);
+      const now = serverTime(e);
       appendItem(
         broadcasterId,
         feedEvent("chat_cleared", t("EVENT_CHAT_CLEARED"), now, {
@@ -102,9 +100,9 @@ export function start(): () => void {
       );
     }),
     listenEventSub<RawModerate>("channel.moderate", (e) => {
-      const payload = e.payload.event;
+      const payload = e.event;
       applySharedChatAction(payload);
-      const now = serverTime(e.payload);
+      const now = serverTime(e);
       const msg = moderateMessage(payload, now);
       if (!msg) return;
       appendItem(
@@ -160,11 +158,11 @@ export function start(): () => void {
     listenEventSub<RawSuspiciousUserMessage>(
       "channel.suspicious_user.message",
       (e) => {
-        const raw = e.payload.event;
+        const raw = e.event;
         const info = suspiciousInfo(raw);
         if (!info) return;
         const id = raw.broadcaster_user_id;
-        const item = suspiciousMessage(raw, info, serverTime(e.payload));
+        const item = suspiciousMessage(raw, info, serverTime(e));
         // The chat copy, when Twitch sends one, may come first or just after;
         // flag it so it keeps its badges, else show this event's copy.
         setTimeout(() => {
@@ -197,7 +195,7 @@ export function start(): () => void {
       }),
     ),
     listenEventSub<RawAutomodMessageUpdate>("automod.message.update", (e) => {
-      const p = e.payload.event;
+      const p = e.event;
       const status = HOLD_OUTCOMES[p.status.toLowerCase()] ?? "expired";
       setAutomodHoldStatus(
         p.broadcaster_user_id,
