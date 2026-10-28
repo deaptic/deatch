@@ -1,5 +1,9 @@
 import type { FeedMessage } from "./feed.ts";
-import type { MentionReason } from "../utils/mention.ts";
+
+export type MentionReason =
+  | { kind: "mention" }
+  | { kind: "reply" }
+  | { kind: "keyword"; term: string };
 
 export type Mention = {
   id: string;
