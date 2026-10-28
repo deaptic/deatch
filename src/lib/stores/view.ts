@@ -12,13 +12,15 @@ export { activeView };
 const sameId = (a: User | null, b: User | null) =>
   (a?.id ?? null) === (b?.id ?? null);
 
-export const pendingChannel = createMemo<User | null>(
-  () => {
-    const v = activeView();
-    return typeof v === "string" ? null : v;
-  },
-  null,
-  { equals: sameId },
+export const pendingChannel: () => User | null = createRoot(() =>
+  createMemo<User | null>(
+    () => {
+      const v = activeView();
+      return typeof v === "string" ? null : v;
+    },
+    null,
+    { equals: sameId },
+  ),
 );
 
 const CHANNEL_COMMIT_MS = 300;
