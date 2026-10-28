@@ -91,33 +91,32 @@ fn write_to_browser(line: &str) -> io::Result<()> {
 /// Each GUI connection gets an id so a stale reader's close notice, arriving
 /// after we already reconnected, can't tear down the new connection.
 fn forward_to_gui(rx: mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) {
-    let mut pending: Option<String> = None;
     for id in 0.. {
-        let mut writer = connect_to_gui(id, tx.clone());
+        let mut writer = connect_to_gui(id, &rx, tx.clone());
         loop {
-            let message = match pending.take() {
-                Some(message) => message,
-                None => match rx.recv() {
-                    Ok(Event::FromBrowser(message)) => message,
-                    Ok(Event::GuiClosed(closed)) if closed == id => break,
-                    Ok(Event::GuiClosed(_)) => continue,
-                    Err(_) => return,
-                },
+            let message = match rx.recv() {
+                Ok(Event::FromBrowser(message)) => message,
+                Ok(Event::GuiClosed(closed)) if closed == id => break,
+                Ok(Event::GuiClosed(_)) => continue,
+                Err(_) => return,
             };
             if writeln!(writer, "{message}")
                 .and_then(|()| writer.flush())
                 .is_err()
             {
-                pending = Some(message);
                 break;
             }
         }
     }
 }
 
-fn connect_to_gui(id: u64, tx: mpsc::Sender<Event>) -> Stream {
+/// Every browser message is a full state snapshot, and the browser answers
+/// the `get_state` nudge sent on connect with a fresh one, so whatever queues
+/// while the app is away is stale and dropped.
+fn connect_to_gui(id: u64, rx: &mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) -> Stream {
     let mut reported = false;
     let stream = loop {
+        while rx.try_recv().is_ok() {}
         match super::ipc::connect_to_gui() {
             Ok(stream) => break stream,
             Err(e) => {
