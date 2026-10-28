@@ -2,7 +2,7 @@
 // one row instead of one row each.
 
 import type { FeedEvent, Person, RawNotification } from "../types/index.ts";
-import { detail } from "./notice-message.ts";
+import { detail } from "./noticeMessage.ts";
 
 type GiftGroup =
   | { role: "community"; giftId: string }

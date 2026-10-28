@@ -20,8 +20,8 @@ import { t } from "../i18n/index.ts";
 
 export type ChannelNavigation = {
   selectChannel: (ch: User) => void;
-  openChannel: (channelId: string) => void;
-  jumpToMessage: (channelId: string, messageId: string) => void;
+  openChannel: (broadcasterId: string) => void;
+  jumpToMessage: (broadcasterId: string, messageId: string) => void;
   stepHistory: (delta: 1 | -1) => void;
 };
 
@@ -39,14 +39,14 @@ export function createChannelNavigation(): ChannelNavigation {
     setSelectedChannel(ch);
   }
 
-  function openChannel(channelId: string, then?: () => void) {
-    users.get([channelId]).then(
+  function openChannel(broadcasterId: string, then?: () => void) {
+    users.get([broadcasterId]).then(
       ([ch]) => {
         if (!ch) {
           return addToast(t("CHANNEL_NOT_FOUND"), "error");
         }
         then?.();
-        if (selectedChannel()?.id !== channelId) selectChannel(ch);
+        if (selectedChannel()?.id !== broadcasterId) selectChannel(ch);
       },
       (e: unknown) => {
         reportFailure(e);
@@ -56,8 +56,10 @@ export function createChannelNavigation(): ChannelNavigation {
 
   // The feed scrolls once it holds the message, so this works whether the
   // channel is already open or still has to mount and load its backlog.
-  function jumpToMessage(channelId: string, messageId: string) {
-    openChannel(channelId, () => setJumpTarget({ channelId, messageId }));
+  function jumpToMessage(broadcasterId: string, messageId: string) {
+    openChannel(broadcasterId, () =>
+      setJumpTarget({ broadcasterId, messageId }),
+    );
   }
 
   function stepHistory(delta: 1 | -1) {
@@ -80,7 +82,7 @@ export function createChannelNavigation(): ChannelNavigation {
 
   return {
     selectChannel,
-    openChannel: (channelId) => openChannel(channelId),
+    openChannel: (broadcasterId) => openChannel(broadcasterId),
     jumpToMessage,
     stepHistory,
   };

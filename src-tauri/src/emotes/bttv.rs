@@ -11,11 +11,11 @@ pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>
 
 pub async fn get_channel_emotes(
     http: &reqwest::Client,
-    channel_id: UserId,
+    broadcaster_id: UserId,
 ) -> Result<Vec<EmoteEntry>> {
     let response: BttvChannelResponse = get_json(
         http,
-        &format!("https://api.betterttv.net/3/cached/users/twitch/{channel_id}"),
+        &format!("https://api.betterttv.net/3/cached/users/twitch/{broadcaster_id}"),
     )
     .await?;
     Ok(response

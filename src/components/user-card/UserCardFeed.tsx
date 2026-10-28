@@ -9,7 +9,7 @@ type Props = UserActions & {
   messages: FeedMessage[];
   loading: boolean;
   onJumpToMessage?: (messageId: string) => void;
-  onOpenChannel?: (channelId: string) => void;
+  onOpenChannel?: (broadcasterId: string) => void;
 };
 
 export default function UserCardFeed(props: Props) {

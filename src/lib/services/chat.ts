@@ -1,4 +1,4 @@
-import { postChatMessage } from "../api/twitch/chat.ts";
+import { sendChatMessage } from "../api/twitch/chat.ts";
 import type { InvokeOptions } from "../api/utils.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
 import { addToast } from "../stores/toasts.ts";
@@ -12,7 +12,7 @@ export async function send(
   options?: InvokeOptions,
 ): Promise<SendOutcome> {
   try {
-    const result = await postChatMessage(params, options);
+    const result = await sendChatMessage(params, options);
     if (result.isSent) return "sent";
     if (result.dropReason?.code === "held") {
       appendLocalNotice(params.broadcasterId, dropMessage(result.dropReason));

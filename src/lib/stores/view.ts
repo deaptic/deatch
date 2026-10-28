@@ -109,7 +109,7 @@ export function leavePage(): boolean {
 }
 
 // A message to bring into view once its channel's feed holds it.
-type JumpTarget = { channelId: string; messageId: string };
+type JumpTarget = { broadcasterId: string; messageId: string };
 export const [jumpTarget, setJumpTarget] = createSignal<JumpTarget | null>(
   null,
 );

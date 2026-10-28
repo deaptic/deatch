@@ -5,10 +5,10 @@ import { feedEvents, feedShowEvents } from "../preferences.ts";
 import { NOTICE_TO_EVENT } from "../../constants/events.ts";
 import type { FeedEntry } from "../../types/index.ts";
 
-export function hasUnread(id: string): boolean {
-  const feed = feeds[id];
+export function hasUnread(broadcasterId: string): boolean {
+  const feed = feeds[broadcasterId];
   if (!feed) return false;
-  if (selectedChannel()?.id === id) return false;
+  if (selectedChannel()?.id === broadcasterId) return false;
   const last = lastVisible(feed);
   if (!last) return false;
   const marker = feed.dividerAtEntryId ?? feed.lastSeenEntryId;
@@ -16,26 +16,26 @@ export function hasUnread(id: string): boolean {
   return getEntryId(last) !== marker;
 }
 
-export function markSeen(id: string) {
-  const feed = feeds[id];
+export function markSeen(broadcasterId: string) {
+  const feed = feeds[broadcasterId];
   if (!feed) return;
   const last = lastVisible(feed);
   if (!last) return;
   const lastId = getEntryId(last);
-  setFeeds(id, "lastSeenEntryId", lastId);
+  setFeeds(broadcasterId, "lastSeenEntryId", lastId);
   if (feed.dividerAtEntryId === lastId) {
-    setFeeds(id, "dividerAtEntryId", null);
+    setFeeds(broadcasterId, "dividerAtEntryId", null);
   }
 }
 
-export function clearDivider(id: string) {
-  if (feeds[id]) setFeeds(id, "dividerAtEntryId", null);
+export function clearDivider(broadcasterId: string) {
+  if (feeds[broadcasterId]) setFeeds(broadcasterId, "dividerAtEntryId", null);
 }
 
-export function snapshotDivider(id: string) {
-  const feed = feeds[id];
+export function snapshotDivider(broadcasterId: string) {
+  const feed = feeds[broadcasterId];
   if (feed?.lastSeenEntryId) {
-    setFeeds(id, "dividerAtEntryId", feed.lastSeenEntryId);
+    setFeeds(broadcasterId, "dividerAtEntryId", feed.lastSeenEntryId);
   }
 }
 

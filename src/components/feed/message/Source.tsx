@@ -11,7 +11,7 @@ export default function Source(props: {
   source: NonNullable<Message["source"]>;
   /// Round on a chatter tile; square among the badges.
   round?: boolean;
-  onOpen?: (channelId: string) => void;
+  onOpen?: (broadcasterId: string) => void;
 }) {
   createEffect(() => {
     users.get([props.source.id]).catch(() => {});

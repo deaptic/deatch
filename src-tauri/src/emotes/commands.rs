@@ -1,8 +1,9 @@
 use super::dto::{ChannelResult, EmoteEntry};
 use super::seventv_events::{SevenTvEvents, SevenTvOp};
 use super::{bttv, ffz, seventv};
-use super::{ChannelIdParams, ChannelLoginParams, EmoteSetParams};
+use super::{BroadcasterLoginParams, EmoteSetParams};
 use crate::error::Result;
+use crate::twitch::params::BroadcasterParams;
 use tauri::State;
 
 #[tauri::command]
@@ -15,9 +16,9 @@ pub async fn bttv_get_global_emotes(http: State<'_, reqwest::Client>) -> Result<
 #[specta::specta]
 pub async fn bttv_get_channel_emotes(
     http: State<'_, reqwest::Client>,
-    params: ChannelIdParams,
+    params: BroadcasterParams,
 ) -> Result<Vec<EmoteEntry>> {
-    bttv::get_channel_emotes(&http, params.channel_id).await
+    bttv::get_channel_emotes(&http, params.broadcaster_id).await
 }
 
 #[tauri::command]
@@ -30,9 +31,9 @@ pub async fn ffz_get_global_emotes(http: State<'_, reqwest::Client>) -> Result<V
 #[specta::specta]
 pub async fn ffz_get_channel_emotes(
     http: State<'_, reqwest::Client>,
-    params: ChannelLoginParams,
+    params: BroadcasterLoginParams,
 ) -> Result<Vec<EmoteEntry>> {
-    ffz::get_channel_emotes(&http, params.channel_login).await
+    ffz::get_channel_emotes(&http, params.broadcaster_login).await
 }
 
 #[tauri::command]
@@ -47,9 +48,9 @@ pub async fn seventv_get_global_emotes(
 #[specta::specta]
 pub async fn seventv_get_channel_emotes(
     http: State<'_, reqwest::Client>,
-    params: ChannelIdParams,
+    params: BroadcasterParams,
 ) -> Result<ChannelResult> {
-    seventv::get_channel_emotes(&http, params.channel_id).await
+    seventv::get_channel_emotes(&http, params.broadcaster_id).await
 }
 
 #[tauri::command]

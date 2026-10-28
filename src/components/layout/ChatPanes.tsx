@@ -10,8 +10,8 @@ import { t } from "../../lib/i18n/index.ts";
 
 type ChatPanesProps = {
   userLogin: string;
-  onOpenChannel: (channelId: string) => void;
-  onJumpToMessage: (channelId: string, messageId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
+  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
 };
 
 export default function ChatPanes(props: ChatPanesProps) {

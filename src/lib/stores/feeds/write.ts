@@ -5,10 +5,10 @@ import type { FeedEntry, NoticeText } from "../../types/index.ts";
 import { feedEvent } from "../../utils/feedEvent.ts";
 import { selectedChannel } from "../view.ts";
 
-export function appendItem(id: string, item: FeedEntry): boolean {
-  const isActive = selectedChannel()?.id === id;
+export function appendItem(broadcasterId: string, item: FeedEntry): boolean {
+  const isActive = selectedChannel()?.id === broadcasterId;
   let added = false;
-  updateFeed(id, (f) => {
+  updateFeed(broadcasterId, (f) => {
     added = append(f.messages, item, f.paused);
     if (added && isActive && !f.paused && !isSilent(item)) {
       f.lastSeenEntryId = getEntryId(item);
@@ -18,26 +18,35 @@ export function appendItem(id: string, item: FeedEntry): boolean {
 }
 
 export function appendLocalNotice(
-  id: string,
+  broadcasterId: string,
   notice: string | NoticeText,
   noticeType = "local",
 ) {
-  appendItem(id, feedEvent(noticeType, notice, Date.now(), { silent: true }));
+  appendItem(
+    broadcasterId,
+    feedEvent(noticeType, notice, Date.now(), { silent: true }),
+  );
 }
 
 /// Fills a gap after a dropped connection; returns the entries that were new.
-export function insertEntries(id: string, items: FeedEntry[]): FeedEntry[] {
+export function insertEntries(
+  broadcasterId: string,
+  items: FeedEntry[],
+): FeedEntry[] {
   let added: FeedEntry[] = [];
-  updateFeed(id, (f) => {
+  updateFeed(broadcasterId, (f) => {
     added = insert(f.messages, items, f.paused);
   });
   return added;
 }
 
 /// Hydrates a feed with history; returns the entries that were new.
-export function prependEntries(id: string, items: FeedEntry[]): FeedEntry[] {
+export function prependEntries(
+  broadcasterId: string,
+  items: FeedEntry[],
+): FeedEntry[] {
   let added: FeedEntry[] = [];
-  updateFeed(id, (f) => {
+  updateFeed(broadcasterId, (f) => {
     f.backfilled = true;
     added = prepend(f.messages, items, f.paused);
     // Backlog is already-seen; it must not count as unread.

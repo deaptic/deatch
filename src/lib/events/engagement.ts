@@ -10,13 +10,13 @@ import type {
 } from "../types/index.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 import { GOAL, POLL, PREDICTION } from "../constants/events.ts";
-import { pollBegin, pollEnd } from "../mappers/poll-message.ts";
+import { pollBegin, pollEnd } from "../mappers/pollMessage.ts";
 import {
   predictionBegin,
   predictionEnd,
   predictionLock,
-} from "../mappers/prediction-message.ts";
-import { goalBegin, goalEnd } from "../mappers/goal-message.ts";
+} from "../mappers/predictionMessage.ts";
+import { goalBegin, goalEnd } from "../mappers/goalMessage.ts";
 
 /// A stage's text, or null when the stage earns no row.
 type Stage<T> = [EventKind, (raw: T) => NoticeText | null];

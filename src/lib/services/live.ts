@@ -52,8 +52,8 @@ export function start(): () => void {
     createEffect(() => {
       const viewerId = user()?.id;
       if (!viewerId || followedLive() === null) return;
-      const fresh = idsNotIn(trackedIds, wantedIds());
-      if (fresh.length > 0) void track(viewerId, fresh);
+      const untracked = idsNotIn(trackedIds, wantedIds());
+      if (untracked.length > 0) void track(viewerId, untracked);
     });
     return () => {
       dispose();

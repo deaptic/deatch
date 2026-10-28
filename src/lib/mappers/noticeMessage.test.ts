@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
-import { noticeMessage } from "./notice-message.ts";
+import { noticeMessage } from "./noticeMessage.ts";
 
 const base = {
   broadcaster_user_id: "1",

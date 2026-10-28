@@ -4,7 +4,7 @@ import {
   predictionBegin,
   predictionEnd,
   predictionLock,
-} from "./prediction-message.ts";
+} from "./predictionMessage.ts";
 
 const prediction = (p: Partial<RawPrediction> = {}): RawPrediction => ({
   broadcaster_user_id: "1",

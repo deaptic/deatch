@@ -3,7 +3,7 @@ import { listenApp, unlistenAll } from "./listen.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
 import { setChatConnected } from "../stores/eventsub.ts";
 import * as recovery from "../services/recovery.ts";
-import { connectFailure } from "../mappers/connect-failure.ts";
+import { connectFailure } from "../mappers/connectFailure.ts";
 
 export function start(): () => void {
   return unlistenAll([

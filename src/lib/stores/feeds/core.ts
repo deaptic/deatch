@@ -26,12 +26,12 @@ const emptyFeed = (): ChannelFeed => ({
 
 /// Changes the channel's feed in place; false when it has none.
 export function updateFeed(
-  id: string,
+  broadcasterId: string,
   change: (feed: ChannelFeed) => void,
 ): boolean {
-  if (!feeds[id]) return false;
+  if (!feeds[broadcasterId]) return false;
   setFeeds(
-    id,
+    broadcasterId,
     produce((feed) => {
       if (feed) change(feed);
     }),
@@ -47,6 +47,6 @@ export function lastVisible(feed: ChannelFeed): FeedEntry | undefined {
   return feed.messages.findLast((item) => !isSilent(item));
 }
 
-export function ensureFeed(id: string) {
-  if (!feeds[id]) setFeeds(id, emptyFeed());
+export function ensureFeed(broadcasterId: string) {
+  if (!feeds[broadcasterId]) setFeeds(broadcasterId, emptyFeed());
 }

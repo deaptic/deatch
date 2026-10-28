@@ -26,15 +26,15 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
   if (cached) {
     // Stale-while-revalidate: serve cache, refresh in background.
     getGlobalChatBadges({ silent: true })
-      .then((fresh) => saveCache(GLOBAL_BADGES_CACHE_KEY, fresh))
+      .then((fetched) => saveCache(GLOBAL_BADGES_CACHE_KEY, fetched))
       .catch(() => {});
     globalBadgesPromise = Promise.resolve(cached);
     return globalBadgesPromise;
   }
   globalBadgesPromise = getGlobalChatBadges({ silent: true })
-    .then((fresh) => {
-      saveCache(GLOBAL_BADGES_CACHE_KEY, fresh);
-      return fresh;
+    .then((fetched) => {
+      saveCache(GLOBAL_BADGES_CACHE_KEY, fetched);
+      return fetched;
     })
     .catch((e) => {
       // Rejecting keeps a failure out of every cached channel map, so both

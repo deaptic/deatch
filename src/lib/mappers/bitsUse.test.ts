@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawBitsUse } from "../types/index.ts";
-import { mapBitsUse } from "./bits-use-mapper.ts";
+import { mapBitsUse } from "./bitsUse.ts";
 
 const use = (u: Partial<RawBitsUse>): RawBitsUse => ({
   broadcaster_user_id: "1",

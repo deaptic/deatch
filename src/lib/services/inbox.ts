@@ -58,7 +58,7 @@ function save(list: Mention[]) {
 export function record(m: Omit<Mention, "unread">) {
   const prev = mentions();
   if (prev.some((x) => x.id === m.id)) return;
-  const isActive = selectedChannel()?.id === m.channelId;
+  const isActive = selectedChannel()?.id === m.broadcasterId;
   const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
   setMentions(save(next.length > MAX ? next.slice(0, MAX) : next));
   if (notificationsMentionSound() && sound?.paused) {
@@ -81,8 +81,8 @@ function markReadWhere(match: (m: Mention) => boolean) {
 }
 
 export const markRead = (id: string) => markReadWhere((m) => m.id === id);
-export const markChannelRead = (channelId: string) =>
-  markReadWhere((m) => m.channelId === channelId);
+export const markChannelRead = (broadcasterId: string) =>
+  markReadWhere((m) => m.broadcasterId === broadcasterId);
 
 export function dismiss(id: string) {
   setMentions((prev) => {

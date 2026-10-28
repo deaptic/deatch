@@ -15,7 +15,7 @@ use serde::Deserialize;
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRecentMessagesParams {
-    pub channel_login: String,
+    pub broadcaster_login: String,
     pub limit: usize,
     #[serde(default)]
     pub after: Option<u64>,
@@ -31,12 +31,12 @@ pub async fn fetch_recent_messages(
     params: GetRecentMessagesParams,
 ) -> Result<RecentHistory> {
     let GetRecentMessagesParams {
-        channel_login,
+        broadcaster_login,
         limit,
         after,
     } = params;
     let mut url = format!(
-        "https://recent-messages.robotty.de/api/v2/recent-messages/{channel_login}?limit={limit}"
+        "https://recent-messages.robotty.de/api/v2/recent-messages/{broadcaster_login}?limit={limit}"
     );
     if let Some(after) = after {
         url.push_str(&format!("&after={after}"));

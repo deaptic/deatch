@@ -1,6 +1,6 @@
 import { commands } from "../../bindings.ts";
 import type {
-  ChannelIdParams,
+  BroadcasterParams,
   ChannelResult,
   EmoteEntry,
 } from "../../types/index.ts";
@@ -13,7 +13,7 @@ export function seventvGetGlobalEmotes(
 }
 
 export function seventvGetChannelEmotes(
-  params: ChannelIdParams,
+  params: BroadcasterParams,
   options?: InvokeOptions,
 ): Promise<ChannelResult> {
   return invokeCommand(commands.seventvGetChannelEmotes, [params], options);

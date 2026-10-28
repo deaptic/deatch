@@ -23,12 +23,12 @@ import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import { createTimeouts } from "../utils/timeouts.ts";
-import { mapRedemption } from "../mappers/redemption-mapper.ts";
-import { mapNotice } from "../mappers/notice-mapper.ts";
-import { mapAutomaticRedemption } from "../mappers/automatic-redemption-mapper.ts";
-import { mapBitsUse } from "../mappers/bits-use-mapper.ts";
-import { giftGroup } from "../mappers/gift-group.ts";
-import { mapShoutout, mapShoutoutReceive } from "../mappers/shoutout-mapper.ts";
+import { mapRedemption } from "../mappers/redemption.ts";
+import { mapNotice } from "../mappers/notice.ts";
+import { mapAutomaticRedemption } from "../mappers/automaticRedemption.ts";
+import { mapBitsUse } from "../mappers/bitsUse.ts";
+import { giftGroup } from "../mappers/giftGroup.ts";
+import { mapShoutout, mapShoutoutReceive } from "../mappers/shoutout.ts";
 import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
 
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {

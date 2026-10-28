@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawGoal } from "../types/index.ts";
-import { goalBegin, goalEnd } from "./goal-message.ts";
+import { goalBegin, goalEnd } from "./goalMessage.ts";
 
 const goal = (g: Partial<RawGoal> = {}): RawGoal => ({
   broadcaster_user_id: "1",

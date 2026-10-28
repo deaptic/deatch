@@ -42,7 +42,7 @@ export type MessageOptions = UserActions & {
   onReact?: (msg: FeedMessage, value: string) => void;
   onCopypasta?: (msg: FeedMessage) => void;
   onJumpToMessage?: (messageId: string) => void;
-  onOpenChannel?: (channelId: string) => void;
+  onOpenChannel?: (broadcasterId: string) => void;
 };
 
 type Props = ItemLayout & MessageOptions & { item: FeedMessage };

@@ -17,7 +17,7 @@ type Props = UserActions & {
   color: string;
   active: boolean;
   source?: Message["source"];
-  onOpenSource?: (channelId: string) => void;
+  onOpenSource?: (broadcasterId: string) => void;
 };
 
 /// The chatter's tile, with the shared chat channel pinned to its corner.

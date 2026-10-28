@@ -14,15 +14,15 @@ type Props = {
   x: number;
   y: number;
   onClose: () => void;
-  onJump: (channelId: string, messageId: string) => void;
-  onOpenChannel: (channelId: string) => void;
+  onJump: (broadcasterId: string, messageId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
 };
 
 export default function Inbox(props: Props) {
   createEffect(() => {
     const ids = [
       ...new Set(
-        mentions().flatMap((m) => [m.message.chatter_user_id, m.channelId]),
+        mentions().flatMap((m) => [m.message.chatter_user_id, m.broadcasterId]),
       ),
     ];
     if (ids.length) users.get(ids).catch(() => {});
@@ -32,12 +32,12 @@ export default function Inbox(props: Props) {
   const seen = () => mentions().filter((m) => !m.unread);
 
   function jump(m: Mention) {
-    props.onJump(m.channelId, m.message.message_id);
+    props.onJump(m.broadcasterId, m.message.message_id);
     props.onClose();
   }
 
   function openChannel(m: Mention) {
-    props.onOpenChannel(m.channelId);
+    props.onOpenChannel(m.broadcasterId);
     props.onClose();
   }
 

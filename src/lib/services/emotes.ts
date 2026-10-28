@@ -46,10 +46,10 @@ const GLOBALS_RETRY_MAX_MS = 300_000;
 const FAVORITES_KEY = "emote_favorites";
 
 const bttv = channelResource((c) =>
-  bttvGetChannelEmotes({ channelId: c.id }, { silent: true }),
+  bttvGetChannelEmotes({ broadcasterId: c.id }, { silent: true }),
 );
 const ffz = channelResource((c) =>
-  ffzGetChannelEmotes({ channelLogin: c.login }, { silent: true }),
+  ffzGetChannelEmotes({ broadcasterLogin: c.login }, { silent: true }),
 );
 
 let userEmotesLoadStarted = false;
@@ -111,9 +111,9 @@ async function loadGlobal(): Promise<void> {
 }
 
 async function fetchGlobal(): Promise<void> {
-  const fresh = await getGlobalEmotes({ silent: true });
-  saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
-  setGlobalEmotes(fresh);
+  const fetched = await getGlobalEmotes({ silent: true });
+  saveCache(GLOBAL_EMOTES_CACHE_KEY, fetched);
+  setGlobalEmotes(fetched);
 }
 
 /// Loads each provider's global emotes, retrying each until it succeeds,

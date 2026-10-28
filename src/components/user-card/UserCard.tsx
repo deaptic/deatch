@@ -33,7 +33,7 @@ type Props = {
   onTogglePin: () => void;
   /** Returns whether the jump happened. */
   onJumpToMessage: (messageId: string) => boolean;
-  onOpenChannel: (channelId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
   onUserContextMenu: UserAction;
   onSwitchUser?: (identity: Partial<UserRef>) => void;
 };

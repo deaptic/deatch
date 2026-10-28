@@ -1,7 +1,7 @@
 import { onCleanup, onMount } from "solid-js";
 import * as shortcuts from "../services/shortcuts.ts";
 import * as readout from "../services/readout.ts";
-import * as linkAudio from "../services/link.ts";
+import * as link from "../services/link.ts";
 import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
 import { leavePage, showExplore, toggleSettings } from "../stores/view.ts";
 import {
@@ -30,23 +30,23 @@ function zoom(change: () => void): void {
 
 export function createAppShortcuts(
   nav: ChannelNavigation,
-  link: LinkControls,
+  controls: LinkControls,
 ): void {
   onMount(() => {
     const unbind = [
-      shortcuts.register("channel::cycleNext", () => link.cycleChannel(1)),
-      shortcuts.register("channel::cyclePrev", () => link.cycleChannel(-1)),
+      shortcuts.register("channel::cycleNext", () => controls.cycleChannel(1)),
+      shortcuts.register("channel::cyclePrev", () => controls.cycleChannel(-1)),
       shortcuts.register("channel::back", () => nav.stepHistory(-1)),
       shortcuts.register("channel::forward", () => nav.stepHistory(1)),
-      shortcuts.register("link::toggle", link.toggleLink),
+      shortcuts.register("link::toggle", controls.toggleLink),
       shortcuts.register("link::toggleAudioLink", () =>
         setLinkAudioLink(!linkAudioLink()),
       ),
-      shortcuts.register("link::toggleMute", linkAudio.toggleMute),
-      shortcuts.register("link::muteOthers", linkAudio.muteOthers),
-      shortcuts.register("link::toggleMuteAll", linkAudio.toggleMuteAll),
-      shortcuts.register("link::closeTab", linkAudio.closeTab),
-      shortcuts.register("link::openTab", linkAudio.openTab),
+      shortcuts.register("link::toggleMute", link.toggleMute),
+      shortcuts.register("link::muteOthers", link.muteOthers),
+      shortcuts.register("link::toggleMuteAll", link.toggleMuteAll),
+      shortcuts.register("link::closeTab", link.closeTab),
+      shortcuts.register("link::openTab", link.openTab),
       shortcuts.register("settings::toggle", toggleSettings),
       shortcuts.register("explore::show", showExplore),
       shortcuts.register("rail::toggle", () =>

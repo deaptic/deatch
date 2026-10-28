@@ -49,7 +49,7 @@ export async function sendShoutout(
   });
 }
 
-export function postChatMessage(
+export function sendChatMessage(
   params: SendChatMessageParams,
   options?: InvokeOptions,
 ): Promise<SendMessageResult> {

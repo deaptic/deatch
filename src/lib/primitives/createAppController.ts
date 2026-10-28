@@ -12,8 +12,8 @@ import { createServices } from "./createServices.ts";
 export type AppController = {
   selectChannel: (ch: User) => void;
   toggleLink: () => void;
-  openChannel: (channelId: string) => void;
-  jumpToMessage: (channelId: string, messageId: string) => void;
+  openChannel: (broadcasterId: string) => void;
+  jumpToMessage: (broadcasterId: string, messageId: string) => void;
 };
 
 export function createAppController(): AppController {

@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
-import { mapNotice } from "./notice-mapper.ts";
+import { mapNotice } from "./notice.ts";
 
 const raw = (n: Partial<RawNotification>): RawNotification => ({
   broadcaster_user_id: "1",

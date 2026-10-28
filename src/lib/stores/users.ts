@@ -29,8 +29,8 @@ export function knownUser(id: string): User | undefined {
 const chattersByChannel = new Map<string, Map<string, Chatter>>();
 
 /// Who has chatted in the channel lately, as far as this session saw.
-export function chattersIn(channelId: string): Iterable<Chatter> {
-  return chattersByChannel.get(channelId)?.values() ?? [];
+export function chattersIn(broadcasterId: string): Iterable<Chatter> {
+  return chattersByChannel.get(broadcasterId)?.values() ?? [];
 }
 
 export function knownChatterColor(userId: string): string | undefined {
@@ -41,15 +41,15 @@ export function knownChatterColor(userId: string): string | undefined {
   return undefined;
 }
 
-export function recordChatter(channelId: string, c: Chatter) {
-  let bucket = chattersByChannel.get(channelId);
+export function recordChatter(broadcasterId: string, c: Chatter) {
+  let bucket = chattersByChannel.get(broadcasterId);
   if (!bucket) {
     bucket = new Map();
-    chattersByChannel.set(channelId, bucket);
+    chattersByChannel.set(broadcasterId, bucket);
   }
   recordIn(bucket, c);
 }
 
-export function clearChatters(channelId: string) {
-  chattersByChannel.delete(channelId);
+export function clearChatters(broadcasterId: string) {
+  chattersByChannel.delete(broadcasterId);
 }

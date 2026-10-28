@@ -1,6 +1,6 @@
 import { t } from "../i18n/index.ts";
 import { getRecentMessages } from "../api/twitch/chat.ts";
-import { chatterOf, mapChatMessage } from "../mappers/chat-mapper.ts";
+import { chatterOf, mapChatMessage } from "../mappers/chat.ts";
 import { errorMessage } from "../utils/error.ts";
 import { textOf } from "../utils/message.ts";
 import {
@@ -11,8 +11,8 @@ import {
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
-import { mapNotice } from "../mappers/notice-mapper.ts";
-import { groupGifts } from "../mappers/gift-group.ts";
+import { mapNotice } from "../mappers/notice.ts";
+import { groupGifts } from "../mappers/giftGroup.ts";
 import type { FeedEntry, FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
@@ -52,11 +52,11 @@ function noteChatters(broadcasterId: string, added: FeedEntry[]) {
 /// Pulls from `since` minus a margin; duplicates are dropped on insert.
 export function fillGap(
   broadcasterId: string,
-  channelLogin: string,
+  broadcasterLogin: string,
   sinceMs: number,
 ): Promise<void> {
   return getRecentMessages(
-    { channelLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
+    { broadcasterLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
     { silent: true },
   ).then(
     (history) => {
@@ -81,9 +81,9 @@ export function fillGap(
 /// One-time hydration of a channel feed with recent history from robotty.
 /// The `backfilled` flag in `ChannelFeed` prevents repeats across remounts;
 /// a failed fetch leaves it unset so the next visit tries again.
-export function load(broadcasterId: string, channelLogin: string) {
+export function load(broadcasterId: string, broadcasterLogin: string) {
   if (feeds[broadcasterId]?.backfilled) return;
-  getRecentMessages({ channelLogin, limit: MESSAGE_CAP }, { silent: true })
+  getRecentMessages({ broadcasterLogin, limit: MESSAGE_CAP }, { silent: true })
     .then((history) => {
       const added = prependEntries(broadcasterId, entriesOf(history));
       noteChatters(broadcasterId, added);
@@ -106,10 +106,10 @@ export function load(broadcasterId: string, channelLogin: string) {
 /// deepest page, narrowed to that chatter, held by the card and not the feed.
 /// Empty when the page is unavailable.
 export function forChatter(
-  channelLogin: string,
+  broadcasterLogin: string,
   chatterId: string,
 ): Promise<FeedMessage[]> {
-  return deepPage(channelLogin).then(
+  return deepPage(broadcasterLogin).then(
     (history) =>
       history.messages
         .filter((m) => m.chatter_user_id === chatterId)
@@ -120,21 +120,21 @@ export function forChatter(
 
 /// Shared by every card opened on the channel within PAGE_TTL_MS. A failed
 /// fetch is forgotten so the next card retries.
-function deepPage(channelLogin: string): Promise<RecentHistory> {
+function deepPage(broadcasterLogin: string): Promise<RecentHistory> {
   const now = Date.now();
   for (const [login, entry] of deepPages) {
     if (now - entry.at >= PAGE_TTL_MS) deepPages.delete(login);
   }
-  const cached = deepPages.get(channelLogin);
+  const cached = deepPages.get(broadcasterLogin);
   if (cached) return cached.page;
   const page = getRecentMessages(
-    { channelLogin, limit: CHATTER_LIMIT },
+    { broadcasterLogin, limit: CHATTER_LIMIT },
     { silent: true },
   ).catch((e) => {
-    deepPages.delete(channelLogin);
+    deepPages.delete(broadcasterLogin);
     throw e;
   });
-  deepPages.set(channelLogin, { at: now, page });
+  deepPages.set(broadcasterLogin, { at: now, page });
   return page;
 }
 

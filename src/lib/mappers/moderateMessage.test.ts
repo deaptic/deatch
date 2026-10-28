@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawModerate } from "../types/index.ts";
-import { moderateMessage } from "./moderate-message.ts";
+import { moderateMessage } from "./moderateMessage.ts";
 import { noticeText } from "../utils/feedEvent.ts";
 
 /// The words alone; who they name is checked on its own.

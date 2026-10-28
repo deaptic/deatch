@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { mapChatSettingsUpdate } from "./chat-settings-mapper.ts";
+import { mapChatSettingsUpdate } from "./chatSettings.ts";
 import type { RawChatSettingsUpdate } from "../types/index.ts";
 
 const OFF: RawChatSettingsUpdate = {

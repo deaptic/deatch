@@ -9,8 +9,8 @@ const [tick, setTick] = createSignal(0);
 
 function prune(arr: number[], now: number) {
   const cutoff = now - WINDOW_MS;
-  const fresh = arr.findIndex((t) => t >= cutoff);
-  arr.splice(0, fresh === -1 ? arr.length : fresh);
+  const firstFresh = arr.findIndex((t) => t >= cutoff);
+  arr.splice(0, firstFresh === -1 ? arr.length : firstFresh);
 }
 
 export function start(): () => void {
@@ -18,23 +18,23 @@ export function start(): () => void {
   return () => clearInterval(id);
 }
 
-export function record(channelId: string, timestamp: number) {
-  let arr = samples.get(channelId);
+export function record(broadcasterId: string, timestamp: number) {
+  let arr = samples.get(broadcasterId);
   if (!arr) {
     arr = [];
-    samples.set(channelId, arr);
+    samples.set(broadcasterId, arr);
   }
   arr.push(timestamp);
   if (arr.length > MAX_SAMPLES) prune(arr, timestamp);
 }
 
-export function clear(channelId: string) {
-  samples.delete(channelId);
+export function clear(broadcasterId: string) {
+  samples.delete(broadcasterId);
 }
 
-export function rate(channelId: string): number {
+export function rate(broadcasterId: string): number {
   tick();
-  const arr = samples.get(channelId);
+  const arr = samples.get(broadcasterId);
   if (!arr) return 0;
   prune(arr, Date.now());
   return arr.length;

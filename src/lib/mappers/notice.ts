@@ -9,8 +9,8 @@ import type {
 } from "../types/index.ts";
 import { feedEvent, person } from "../utils/feedEvent.ts";
 import { isAnnouncementColor } from "../constants/twitch.ts";
-import { wordsOf } from "./chat-mapper.ts";
-import { detail, noticeMessage } from "./notice-message.ts";
+import { wordsOf } from "./chat.ts";
+import { detail, noticeMessage } from "./noticeMessage.ts";
 
 function announcementColor(
   raw: RawNotification,

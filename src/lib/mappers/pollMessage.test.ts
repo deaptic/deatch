@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawPoll } from "../types/index.ts";
-import { pollBegin, pollEnd } from "./poll-message.ts";
+import { pollBegin, pollEnd } from "./pollMessage.ts";
 
 const poll = (p: Partial<RawPoll> = {}): RawPoll => ({
   broadcaster_user_id: "1",
