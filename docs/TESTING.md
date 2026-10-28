@@ -3,7 +3,7 @@
 Run this before every commit; CI runs the same on every push.
 
 ```powershell
-vp check --fix --deny-warnings && pnpm test
+vp check --fix --deny-warnings && pnpm check:tauri && pnpm test
 cd src-tauri
 cargo fmt && cargo clippy --all-targets -- -D warnings
 cargo test --lib
