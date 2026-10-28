@@ -176,7 +176,10 @@ function settle(id: string, error?: unknown) {
   waiting.delete(id);
   const list = waiters.get(id) ?? [];
   waiters.delete(id);
-  for (const w of list) error === undefined ? w.resolve() : w.reject(error);
+  for (const w of list) {
+    if (error === undefined) w.resolve();
+    else w.reject(error);
+  }
 }
 
 function evict(now: number) {
