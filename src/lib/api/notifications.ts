@@ -6,8 +6,5 @@ export async function setMentionsBadge(
   params: SetMentionsBadgeParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  await invokeCommand(commands.setMentionsBadge, [params], {
-    silent: true,
-    ...options,
-  });
+  await invokeCommand(commands.setMentionsBadge, [params], options);
 }

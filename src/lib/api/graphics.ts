@@ -6,8 +6,5 @@ export async function setHardwareAcceleration(
   params: SetHardwareAccelerationParams,
   options?: InvokeOptions,
 ): Promise<void> {
-  await invokeCommand(commands.setHardwareAcceleration, [params], {
-    silent: true,
-    ...options,
-  });
+  await invokeCommand(commands.setHardwareAcceleration, [params], options);
 }

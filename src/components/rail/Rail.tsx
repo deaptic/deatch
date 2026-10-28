@@ -26,7 +26,6 @@ import {
   linkWarmedChannels,
 } from "../../lib/stores/link.ts";
 import LinkMenu from "./LinkMenu.tsx";
-import { linkClose } from "../../lib/api/link.ts";
 import * as link from "../../lib/services/link.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import {
@@ -428,9 +427,7 @@ export default function Rail(props: Props) {
                       muted={linkMutedByLogin()[ch.login] === true}
                       onToggleMute={() => link.toggleMuted(ch.login)}
                       onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() =>
-                        linkClose({ channel: ch.login }).catch(() => {})
-                      }
+                      onMiddleClick={() => link.close(ch.login)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -523,7 +520,7 @@ export default function Rail(props: Props) {
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() => {
-                if (ownTab()) linkClose({ channel: u().login }).catch(() => {});
+                if (ownTab()) link.close(u().login);
                 else openInBrowser(u());
               }}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}

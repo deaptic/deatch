@@ -12,7 +12,7 @@ export async function load(broadcasterIds: string[]): Promise<void> {
   );
   if (stale.length === 0) return;
   for (const id of stale) fetchedAt.set(id, now);
-  await getChannelInformation({ broadcasterIds: stale }).then(
+  await getChannelInformation({ broadcasterIds: stale }, { silent: true }).then(
     rememberChannelInfo,
     () => {
       for (const id of stale) fetchedAt.delete(id);

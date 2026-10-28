@@ -43,7 +43,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
       [selectedChannel, linkSynced, linkAudioLink],
       () => {
         if (linkSynced() && linkAudioLink() && link.selectedLinked()) {
-          link.muteOthers();
+          link.muteOthersSilently();
         }
       },
       { defer: true },

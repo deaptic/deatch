@@ -9,7 +9,7 @@ export function start(): () => void {
     events.linkDisconnected.listen(link.disconnect),
   ]);
   // No host connected yet is the normal case at startup.
-  linkRequestState().catch(() => {});
+  linkRequestState({ silent: true }).catch(() => {});
   return () => {
     stop();
     link.disconnect();

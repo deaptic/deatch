@@ -34,7 +34,6 @@ import {
   linkMutedByLogin,
   linkWarmedChannels,
 } from "../../lib/stores/link.ts";
-import { linkClose, linkFocus } from "../../lib/api/link.ts";
 import * as link from "../../lib/services/link.ts";
 import { hasUnread, markSeen } from "../../lib/stores/feeds.ts";
 import {
@@ -131,9 +130,7 @@ export default function ChannelContextMenu(props: Props) {
           <MenuItem
             label={t("MENU_SHOW_BROWSER_TAB")}
             icon={<ExternalLink />}
-            onClick={() =>
-              linkFocus({ channel: props.ch.login }).catch(() => {})
-            }
+            onClick={() => link.focus(props.ch.login)}
           />
           <MenuItem
             label={muted() ? t("MENU_UNMUTE_TAB") : t("MENU_MUTE_TAB")}
@@ -149,9 +146,7 @@ export default function ChannelContextMenu(props: Props) {
             shortcut={
               selected() ? shortcuts.keyFor("link::closeTab") : undefined
             }
-            onClick={() =>
-              linkClose({ channel: props.ch.login }).catch(() => {})
-            }
+            onClick={() => link.close(props.ch.login)}
           />
           <Show when={linkHasAudio()}>
             <MenuDivider />
