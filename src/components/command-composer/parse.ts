@@ -5,9 +5,7 @@ import { at } from "../../lib/utils/at.ts";
 
 /// A missing required value flashes and clears itself; an invalid one stays
 /// until it is edited.
-export type SlotError =
-  | { kind: "required" }
-  | { kind: "invalid"; message: string };
+type SlotError = { kind: "required" } | { kind: "invalid"; message: string };
 
 export type Slot = {
   raw: string;

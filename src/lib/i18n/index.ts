@@ -14,7 +14,7 @@ const LOCALES = {
   en: load(en, "en-GB"),
 };
 
-export type Locale = keyof typeof LOCALES;
+type Locale = keyof typeof LOCALES;
 
 export const [locale] = createSignal<Locale>("en");
 

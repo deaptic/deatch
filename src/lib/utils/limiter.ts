@@ -1,4 +1,4 @@
-export type Task = () => Promise<unknown>;
+type Task = () => Promise<unknown>;
 
 export function createLimiter(limit: number) {
   const queue: Task[] = [];

@@ -7,7 +7,6 @@ import type { Command } from "../../command-composer/types.ts";
 
 export type ChatAutocompleteHandle = {
   update: (value: string, cursor: number) => void;
-  reset: () => void;
   handleKey: (e: KeyboardEvent) => boolean;
   isActive: () => boolean;
 };
@@ -33,7 +32,6 @@ export default function ChatAutocomplete(props: Props) {
   onMount(() => {
     props.ref?.({
       update: controller.update,
-      reset: controller.reset,
       handleKey: controller.handleKey,
       isActive: controller.isActive,
     });

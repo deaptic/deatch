@@ -3,8 +3,8 @@ import { avatarZoom } from "../../lib/utils/avatar.ts";
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
 /** Pixel sizes are fixed; "fill" takes its parent's box. */
-export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
-export type Presence = "live" | "online" | "offline";
+type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
+type Presence = "live" | "online" | "offline";
 
 type Props = {
   src?: string;

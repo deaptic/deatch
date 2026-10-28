@@ -8,7 +8,7 @@
 // Pipeline: tokenize → parse → evaluate. The AST is plain data so it
 // can be inspected, logged, or transformed without re-parsing.
 
-export type FlagMap = Map<string, boolean>;
+type FlagMap = Map<string, boolean>;
 export type Predicate = (flags: FlagMap) => boolean;
 
 type Expr =

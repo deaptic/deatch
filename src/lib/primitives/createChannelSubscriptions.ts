@@ -15,7 +15,7 @@ import { clearCheermotes } from "../stores/cheermotes.ts";
 import { followedLive } from "../stores/channels.ts";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
-export type ChannelSubscriptions = {
+type ChannelSubscriptions = {
   leaveAll: () => void;
 };
 

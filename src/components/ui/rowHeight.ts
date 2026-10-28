@@ -18,7 +18,7 @@ const RAIL_GAPS: Record<UiDensity, string> = {
   spacious: "gap-2",
 };
 
-export const rowHeight = () => "h-14";
+export const RAIL_ROW_HEIGHT = "h-14";
 export const railGap = () => RAIL_GAPS[appearanceUiDensity()];
 export const minRowHeight = () => HEIGHTS[appearanceUiDensity()].minH;
 export const composerInnerHeight = () => HEIGHTS[appearanceUiDensity()].inner;

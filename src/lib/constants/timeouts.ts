@@ -7,7 +7,7 @@ export const TIMEOUT_PRESETS = [
   { label: "1w", seconds: 604800 },
 ] as const;
 
-export type TimeoutLabel = (typeof TIMEOUT_PRESETS)[number]["label"];
+type TimeoutLabel = (typeof TIMEOUT_PRESETS)[number]["label"];
 
 /// A preset label picks a timeout; "ban" and "unban" are the two ends.
 export type BanChoice = "unban" | "ban" | TimeoutLabel;

@@ -1,6 +1,6 @@
 import type { Focus } from "../types/index.ts";
 
-export type FocusSources = {
+type FocusSources = {
   ownId: string;
   pinnedIds: string[];
   warmedIds: string[];
@@ -8,7 +8,7 @@ export type FocusSources = {
   liveIds: string[];
 };
 
-export type FocusDiff = {
+type FocusDiff = {
   added: string[];
   removed: string[];
   promoted: string[];

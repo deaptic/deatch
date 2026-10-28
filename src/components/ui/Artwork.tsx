@@ -1,8 +1,8 @@
 import type { JSX } from "solid-js";
 
 /// `native` keeps the picture's own proportions, for kinds that have none.
-export type ArtworkShape = "boxart" | "video" | "native";
-export type ArtworkFit = "inline" | "fill" | "bleed" | "feed";
+type ArtworkShape = "boxart" | "video" | "native";
+type ArtworkFit = "inline" | "fill" | "bleed" | "feed";
 
 const SHAPES: Record<ArtworkShape, string> = {
   boxart: "aspect-3/4",

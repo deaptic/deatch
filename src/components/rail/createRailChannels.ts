@@ -5,7 +5,7 @@ import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import type { User } from "../../lib/types/index.ts";
 
-export type RailChannels = {
+type RailChannels = {
   loadingPinned: () => boolean;
   loadingLive: () => boolean;
   onlineList: () => User[];

@@ -2,7 +2,7 @@ import { type JSX, Show, splitProps } from "solid-js";
 import Loading from "./Loading.tsx";
 
 export type ButtonVariant = "accent" | "neutral" | "ghost" | "danger" | "media";
-export type ButtonShape = "rect" | "pill";
+type ButtonShape = "rect" | "pill";
 export type ButtonSize = "sm" | "md" | "lg";
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {

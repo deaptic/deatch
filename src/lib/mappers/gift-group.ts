@@ -4,7 +4,7 @@
 import type { FeedEvent, Person, RawNotification } from "../types/index.ts";
 import { detail } from "./notice-message.ts";
 
-export type GiftGroup =
+type GiftGroup =
   | { role: "community"; giftId: string }
   | { role: "member"; giftId: string; recipient: Person };
 
@@ -26,7 +26,7 @@ export function giftGroup(raw: RawNotification): GiftGroup | null {
   return null;
 }
 
-export type MappedNotice = { raw: RawNotification; item: FeedEvent };
+type MappedNotice = { raw: RawNotification; item: FeedEvent };
 
 /// For a batch already in hand, like history: each sub of a community gift
 /// in the batch joins that gift's row as a recipient instead of its own row.

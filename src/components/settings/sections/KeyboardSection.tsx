@@ -41,14 +41,7 @@ const GROUPS: { title: MessageKey; prefix: string[] }[] = [
   },
   {
     title: "SETTINGS_KEYBOARD_GROUP_PANELS",
-    prefix: [
-      "rail::",
-      "inbox::",
-      "account::",
-      "emotePicker::",
-      "quickSwitch::",
-      "panel::",
-    ],
+    prefix: ["rail::", "inbox::", "emotePicker::", "quickSwitch::", "panel::"],
   },
   { title: "SETTINGS_KEYBOARD_GROUP_LINK", prefix: ["link::"] },
   { title: "SETTINGS_KEYBOARD_GROUP_VIEW", prefix: ["view::"] },

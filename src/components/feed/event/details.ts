@@ -35,7 +35,7 @@ import type {
   Person,
 } from "../../../lib/types/index.ts";
 
-export type Look = {
+type Look = {
   color: string;
   Icon: Component<{ class?: string }>;
   title: MessageKey;

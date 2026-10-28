@@ -9,7 +9,7 @@ import {
 // jumping: travelling to a message; nothing else may move the view.
 type Mode = "follow" | "paused" | "jumping";
 
-export type JumpBehavior = "smooth" | "instant";
+type JumpBehavior = "smooth" | "instant";
 
 export function createFeedScroll(scroller: () => HTMLElement | undefined) {
   const [mode, setMode] = createSignal<Mode>("follow");

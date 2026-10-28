@@ -5,7 +5,7 @@ import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 
 const GAP = 8;
 
-export type PanelSize = "picker" | "menu";
+type PanelSize = "picker" | "menu";
 
 const SIZES: Record<PanelSize, string> = {
   picker: "w-100 h-110",

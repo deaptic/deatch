@@ -13,7 +13,7 @@ const IMAGE_PX = 70;
 const INSTANT_MS = 50;
 const VIVID_TONE = 0.7;
 
-export type ChatterLook = {
+type ChatterLook = {
   tint?: string;
   hue?: number;
   tone?: number;
@@ -47,12 +47,9 @@ export default function ChatterPicture(props: Props) {
   const [loaded, setLoaded] = createSignal(false);
   const [instant, setInstant] = createSignal(false);
   const [failed, setFailed] = createSignal(false);
-  // Twitch serves the same picture at 70px; the chat tile never needs 300.
   const url = createMemo(
     () =>
-      (feedShowAvatars() &&
-        knownUser(props.userId)?.profileImageUrl.replace("300x300", "70x70")) ||
-      null,
+      (feedShowAvatars() && knownUser(props.userId)?.profileImageUrl) || null,
   );
   const showingImage = () => !!url() && loaded() && !failed();
   const noImage = () =>
