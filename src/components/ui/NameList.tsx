@@ -6,7 +6,7 @@ import type { UserActions } from "./userLink.ts";
 
 type Props = UserActions & {
   people: Person[];
-  /** How many names show before the rest fold into `more`. */
+  /// How many names show before the rest fold into `more`.
   limit: number;
   more: (count: number) => string;
 };

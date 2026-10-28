@@ -8,7 +8,7 @@ import BanChoiceStrip from "../ban-modal/BanChoiceStrip.tsx";
 type Props = {
   chatterId: string;
   broadcasterId: string;
-  /** After a ban or timeout lands, which clears the chatter's messages. */
+  /// After a ban or timeout lands, which clears the chatter's messages.
   onRemoved: () => void;
 };
 

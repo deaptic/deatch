@@ -7,7 +7,7 @@ const SIZES: [RegExp, string, string][] = [
   [/\/1$/, "/4", "/2"], // FrankerFaceZ
 ];
 
-/** Ctrl+hover zoom attributes for an emote image; none for unknown URLs. */
+/// Ctrl+hover zoom attributes for an emote image; none for unknown URLs.
 export function emoteZoom(url: string) {
   const size = SIZES.find(([small]) => small.test(url));
   if (!size) return {};

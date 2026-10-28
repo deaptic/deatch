@@ -3,7 +3,7 @@ export type Size = { width: number; height: number };
 
 const GAP = 8;
 
-/** Beside the anchor, right if it fits, else left; centred on it vertically. */
+/// Beside the anchor, right if it fits, else left; centred on it vertically.
 export function zoomPlacement(
   anchor: Anchor,
   size: Size,

@@ -1,8 +1,7 @@
 // The envelope wrapping every event the backend forwards from Twitch's
 // WebSocket. The `Raw*` types below describe the helix-shaped payloads that
-// arrive as the inner `T` of the envelope — they live here (rather than in
-// `dto/twitch/eventsub.rs`) because the backend re-emits helix types as-is,
-// so the frontend owns the wire spec.
+// arrive as the inner `T` of the envelope; the backend forwards them as-is,
+// so the frontend owns their shape.
 
 import type { EventKind } from "../../bindings.ts";
 
@@ -37,7 +36,7 @@ export type RawReply = {
 };
 
 /// A chat-message badge tag (`{set_id, id, info}`). Distinct from the
-/// resource-shape `Badge` in `./chat` (which has image URLs).
+/// resource-shape `Badge` (which has image URLs).
 export type MessageBadge = {
   set_id: string;
   id: string;

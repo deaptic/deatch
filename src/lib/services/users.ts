@@ -115,12 +115,12 @@ export async function fetch(
   return users;
 }
 
+/// A failed request is already reported by invokeCommand; callers only branch.
 type Lookup =
   | { status: "found"; user: User }
   | { status: "missing" }
   | { status: "failed" };
 
-/// A failed request is already reported by invokeCommand; callers only branch.
 /// The user with that login, or null once the user has been told why not:
 /// a missing login toasts `notFound`, a failed request was already reported.
 export async function lookUp(

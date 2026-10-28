@@ -31,7 +31,7 @@ type Props = {
   getBoundsElement?: () => HTMLElement | null;
   onClose: () => void;
   onTogglePin: () => void;
-  /** Returns whether the jump happened. */
+  /// Returns whether the jump happened.
   onJumpToMessage: (messageId: string) => boolean;
   onOpenChannel: (broadcasterId: string) => void;
   onUserContextMenu: UserAction;

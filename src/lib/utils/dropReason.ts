@@ -23,7 +23,7 @@ const MESSAGES: Record<KnownCode, MessageKey> = {
   emailRequired: "CHAT_DROP_EMAIL_REQUIRED",
 };
 
-/** Unknown codes keep Twitch's own explanation. */
+/// Unknown codes keep Twitch's own explanation.
 export function dropMessage(reason: DropReason | null): string {
   if (!reason) return t("CHAT_MESSAGE_DROPPED");
   return reason.code === "unknown" ? reason.message : t(MESSAGES[reason.code]);
