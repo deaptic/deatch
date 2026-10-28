@@ -7,8 +7,7 @@ import {
   Show,
 } from "solid-js";
 import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import * as browser from "../../lib/services/browser.ts";
 import {
   appearanceRailExpanded,
   linkAudioLink,
@@ -186,7 +185,7 @@ export default function Rail(props: Props) {
   });
 
   function openInBrowser(ch: User) {
-    void openUrl(channelUrl(ch.login));
+    browser.openChannel(ch.login);
   }
 
   function startDrag(e: MouseEvent, idx: number) {

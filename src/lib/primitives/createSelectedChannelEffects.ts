@@ -1,5 +1,5 @@
 import { createEffect } from "solid-js";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { setWindowTitle } from "../api/window.ts";
 import { selectedChannel } from "../stores/view.ts";
 import * as sevenTv from "../services/sevenTv.ts";
 import { clearChannelThirdPartyEmotes } from "../stores/emotes.ts";
@@ -13,9 +13,7 @@ export function createSelectedChannelEffects(): void {
     const title = ch?.displayName ? `${ch.displayName} - Deatch` : "Deatch";
     if (title === lastTitle) return;
     lastTitle = title;
-    getCurrentWindow()
-      .setTitle(title)
-      .catch(() => {});
+    setWindowTitle(title, { silent: true }).catch(() => {});
   });
 
   createEffect(() => {

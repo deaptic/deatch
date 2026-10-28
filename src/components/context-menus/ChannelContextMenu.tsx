@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import { t } from "../../lib/i18n/index.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -130,7 +130,7 @@ export default function ChannelContextMenu(props: Props) {
               shortcut={
                 selected() ? shortcuts.keyFor("link::openTab") : undefined
               }
-              onClick={run(() => openUrl(url()))}
+              onClick={run(() => browser.open(url()))}
             />
           }
         >

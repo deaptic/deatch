@@ -1,11 +1,6 @@
 import { createEffect } from "solid-js";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
-import {
-  disable as disableAutostart,
-  enable as enableAutostart,
-  isEnabled as isAutostartEnabled,
-} from "@tauri-apps/plugin-autostart";
+import { isAutostartEnabled, setAutostart } from "../api/autostart.ts";
+import { setAlwaysOnTop, setZoom } from "../api/window.ts";
 import {
   advancedAlwaysOnTop,
   advancedAutostart,
@@ -21,8 +16,6 @@ import * as discord from "../services/discord.ts";
 import { user } from "../stores/users.ts";
 import { liveStreams } from "../stores/channels.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
-import { addToast } from "../stores/toasts.ts";
-import { errorMessage } from "../utils/error.ts";
 import { t } from "../i18n/index.ts";
 
 export function createSystemIntegration(): void {
@@ -38,28 +31,21 @@ export function createSystemIntegration(): void {
   });
 
   createEffect(() => {
-    getCurrentWebview()
-      .setZoom(appearanceZoom() / 100)
-      .catch((e) => console.warn("zoom failed", e));
+    setZoom(appearanceZoom() / 100, { silent: true }).catch(() => {});
   });
 
   createEffect(() => {
-    getCurrentWindow()
-      .setAlwaysOnTop(advancedAlwaysOnTop())
-      .catch((e) =>
-        addToast(t("SYSTEM_ALWAYS_ON_TOP_FAILED"), "error", errorMessage(e)),
-      );
+    setAlwaysOnTop(advancedAlwaysOnTop(), {
+      failureMessage: t("SYSTEM_ALWAYS_ON_TOP_FAILED"),
+    }).catch(() => {});
   });
 
   createEffect(() => {
     const want = advancedAutostart();
-    (async () => {
-      const have = await isAutostartEnabled();
-      if (have === want) return;
-      await (want ? enableAutostart() : disableAutostart());
-    })().catch((e) =>
-      addToast(t("SYSTEM_AUTOSTART_FAILED"), "error", errorMessage(e)),
-    );
+    const options = { failureMessage: t("SYSTEM_AUTOSTART_FAILED") };
+    isAutostartEnabled(options)
+      .then((have) => (have === want ? undefined : setAutostart(want, options)))
+      .catch(() => {});
   });
 
   createEffect(() => {
