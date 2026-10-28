@@ -24,7 +24,6 @@ import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import TabVolume from "./TabVolume.tsx";
 import {
   advancedDeveloperMode,
-  pinChannel,
   pinnedChannels,
   reorderPinnedChannels,
   unpinChannel,
@@ -35,6 +34,7 @@ import {
   linkWarmedChannels,
 } from "../../lib/stores/link.ts";
 import * as link from "../../lib/services/link.ts";
+import * as pins from "../../lib/services/pins.ts";
 import { hasUnread, markSeen } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
 import * as inbox from "../../lib/services/inbox.ts";
@@ -56,7 +56,7 @@ type Props = {
   ch: User;
   onClose: () => void;
 } & (
-  | { place: "rail"; onPin?: (ch: User) => void; onLogout?: () => void }
+  | { place: "rail"; onLogout?: () => void }
   | { place: "link"; onOpen?: () => void }
 );
 
@@ -160,11 +160,7 @@ export default function ChannelContextMenu(props: Props) {
               <MenuItem
                 label={t("MENU_PIN")}
                 icon={<Pin />}
-                onClick={() =>
-                  props.place === "rail" && props.onPin
-                    ? props.onPin(props.ch)
-                    : pinChannel(props.ch.id)
-                }
+                onClick={() => pins.add(props.ch)}
               />
             }
           >

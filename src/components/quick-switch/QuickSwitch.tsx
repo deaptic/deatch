@@ -15,7 +15,8 @@ import { createListNavigation } from "../../lib/reactive/createListNavigation.ts
 import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
-import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";
+import { pinnedChannels } from "../../lib/stores/preferences.ts";
+import * as pins from "../../lib/services/pins.ts";
 import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
@@ -81,7 +82,7 @@ export default function QuickSwitch(props: Props) {
 
   async function open(row: Row, pin: boolean) {
     if (row.kind === "channel") {
-      if (pin && pinChannel(row.user.id)) {
+      if (pin && pins.add(row.user)) {
         addToast(
           t("QUICK_SWITCH_PINNED", { name: row.user.displayName }),
           "success",
@@ -92,15 +93,12 @@ export default function QuickSwitch(props: Props) {
       return;
     }
     setSearching(true);
-    const lookup = await users.findByLogin(row.query);
+    const found = await users.lookUp(row.query, t("QUICK_SWITCH_NOT_FOUND"));
     setSearching(false);
-    if (lookup.status === "missing") {
-      addToast(t("QUICK_SWITCH_NOT_FOUND"), "error");
-    } else if (lookup.status === "found") {
-      if (pin) pinChannel(lookup.user.id);
-      props.onSelect(lookup.user);
-      props.onClose();
-    }
+    if (!found) return;
+    if (pin) pins.add(found);
+    props.onSelect(found);
+    props.onClose();
   }
 
   onMount(() => {
