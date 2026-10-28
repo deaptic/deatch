@@ -5,11 +5,13 @@ import type { BadgeMap } from "../../lib/types/index.ts";
 
 type Badge = { set_id: string; id: string; info?: string };
 
-export type BadgePlacement = "before" | "after";
+/// Beside a name, or on their own with nothing to space from.
+export type BadgePlacement = "before" | "after" | "alone";
 
 const PLACEMENTS: Record<BadgePlacement, string> = {
   before: "mr-1.5",
   after: "ml-1.5",
+  alone: "",
 };
 
 type Props = {

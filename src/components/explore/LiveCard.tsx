@@ -9,6 +9,7 @@ import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
+import { CARD_FRAME } from "../ui/Card.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -32,7 +33,7 @@ export default function LiveCard(props: Props) {
     <button
       type="button"
       {...link.handlers}
-      class={`group flex flex-col text-left bg-surface rounded-lg overflow-hidden border border-transparent [[data-theme=light]_&]:border-line-soft transition-colors duration-snap hover:bg-raised ${link.cursor}`}
+      class={`group flex flex-col text-left bg-surface overflow-hidden transition-colors duration-snap hover:bg-raised ${CARD_FRAME} ${link.cursor}`}
     >
       <Artwork src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">

@@ -15,6 +15,7 @@ export default function CopyButton(props: Props) {
   return (
     <IconButton
       label={props.label}
+      variant="media"
       size="sm"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={() => copy(props.copy)}

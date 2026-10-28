@@ -1,7 +1,8 @@
 import { type JSX, Show, splitProps } from "solid-js";
 import Loading from "./Loading.tsx";
 
-export type ButtonVariant = "accent" | "neutral" | "ghost" | "danger";
+export type ButtonVariant = "accent" | "neutral" | "ghost" | "danger" | "media";
+export type ButtonShape = "rect" | "pill";
 export type ButtonSize = "sm" | "md" | "lg";
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -10,6 +11,7 @@ type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: JSX.Element;
   loading?: boolean;
   pressed?: boolean;
+  shape?: ButtonShape;
 };
 
 const VARIANTS: Record<ButtonVariant, string> = {
@@ -18,10 +20,19 @@ const VARIANTS: Record<ButtonVariant, string> = {
     "bg-raised text-ink border border-line hover:bg-overlay active:bg-surface",
   ghost: "text-ink-soft hover:bg-raised hover:text-ink active:bg-overlay",
   danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
+  /// Over a picture or banner, on its scrim.
+  media: "text-on-accent hover:bg-raised active:bg-overlay",
+};
+
+const SHAPES: Record<ButtonShape, string> = {
+  rect: "rounded-sm",
+  /// Floats over content, like the jump to new messages.
+  pill: "rounded-full",
 };
 
 const PRESSED: Partial<Record<ButtonVariant, string>> = {
   ghost: "bg-raised text-ink",
+  media: "bg-raised text-on-accent",
   neutral:
     "bg-accent-soft text-accent-ink border border-accent/40 hover:bg-accent/18",
 };
@@ -46,6 +57,7 @@ export default function Button(props: Props) {
     "icon",
     "loading",
     "pressed",
+    "shape",
     "children",
     "disabled",
   ]);
@@ -61,7 +73,7 @@ export default function Button(props: Props) {
       aria-pressed={local.pressed}
       {...others}
       disabled={local.disabled || local.loading}
-      class={`relative shrink-0 inline-flex items-center justify-center gap-1.5 rounded-sm cursor-pointer select-none transition-colors duration-snap disabled:opacity-40 disabled:cursor-not-allowed ${
+      class={`relative shrink-0 inline-flex items-center justify-center gap-1.5 ${SHAPES[local.shape ?? "rect"]} cursor-pointer select-none transition-colors duration-snap disabled:opacity-40 disabled:cursor-not-allowed ${
         SIZES[size()].box
       } ${SIZES[size()].text} ${
         iconOnly() ? SQUARE[size()] : SIZES[size()].pad

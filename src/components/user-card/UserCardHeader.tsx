@@ -108,7 +108,7 @@ export default function UserCardHeader(props: Props) {
           )}
         </Show>
       </div>
-      <div class="absolute top-(--card-gap) right-(--card-gap) flex gap-(--card-gap) [&_button]:text-on-accent">
+      <div class="absolute top-(--card-gap) right-(--card-gap) flex gap-(--card-gap)">
         <div class="flex rounded-sm bg-media-scrim">
           <Show when={user()}>
             {(u) => (
@@ -124,6 +124,7 @@ export default function UserCardHeader(props: Props) {
         <div class="rounded-sm bg-media-scrim">
           <IconButton
             label={t(props.pinned ? "USER_CARD_UNPIN" : "USER_CARD_PIN")}
+            variant="media"
             size="sm"
             pressed={props.pinned}
             onMouseDown={(e) => e.stopPropagation()}
@@ -152,8 +153,12 @@ export default function UserCardHeader(props: Props) {
               size={80}
             />
           </button>
-          <div class="ml-auto flex items-center pt-(--card-gap) text-(length:--card-name) [&>span]:mr-0">
-            <BadgeBox badges={latestBadges()} channelBadges={channelBadges()} />
+          <div class="ml-auto flex items-center pt-(--card-gap) text-(length:--card-name)">
+            <BadgeBox
+              badges={latestBadges()}
+              channelBadges={channelBadges()}
+              placement="alone"
+            />
           </div>
         </div>
         <UserCardIdentity
