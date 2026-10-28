@@ -25,17 +25,21 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
 
   function remember(el: HTMLElement) {
     const box = el.getBoundingClientRect();
+    // Every element at the point, so a popover over the feed doesn't hide it.
     const item = document
-      .elementFromPoint(box.left + box.width / 2, box.top + 1)
+      .elementsFromPoint(box.left + box.width / 2, box.top + 1)
+      .find((hit) => el.contains(hit))
       ?.closest("[data-item-id]");
     anchor = item
       ? { item, offset: item.getBoundingClientRect().top - box.top }
       : null;
   }
 
+  // The anchor is taken before the mode changes: a feed may render more or
+  // fewer rows per mode, and `restore` puts the view back on it.
   function settle(el: HTMLElement) {
-    setMode(isAtBottom(el) ? "follow" : "paused");
     remember(el);
+    setMode(isAtBottom(el) ? "follow" : "paused");
     height = el.scrollHeight;
   }
 
@@ -127,8 +131,14 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
     el.scrollTo({ top, behavior });
   }
 
+  /// Stops following without moving, before the view is moved by code.
+  function pause() {
+    if (mode() === "follow") setMode("paused");
+  }
+
   return {
     isPaused: () => mode() !== "follow",
+    pause,
     onScroll,
     toBottom,
     keep,
