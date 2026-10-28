@@ -55,7 +55,7 @@ export type FeedApi = {
 
 type Props = UserActions & {
   broadcasterId: string;
-  /** Rendered instead of the channel's feed; badges still come from it. */
+  /// Rendered instead of the channel's feed; badges still come from it.
   entries?: FeedEntry[];
   userLogin?: string;
   filter?: (item: FeedEntry) => boolean;

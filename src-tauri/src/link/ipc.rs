@@ -8,7 +8,7 @@ use std::time::Duration;
 
 const PIPE_NAME: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
-/// `Hosts::send` holds the hosts lock while writing, so a browser that stops
+/// Broadcasting holds the hosts lock while writing, so a browser that stops
 /// reading its pipe must not block every other browser forever.
 const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 

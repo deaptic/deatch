@@ -5,8 +5,8 @@ import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 
 const MARGIN = 8;
-/** Distance between an overlay and the control that opened it: below it, or
- * beside/above it (tooltips, rail popovers). */
+/// Distance between an overlay and the control that opened it: below it, or
+/// beside/above it (tooltips, rail popovers).
 export const OVERLAY_GAP = 4;
 export const SIDE_GAP = 8;
 

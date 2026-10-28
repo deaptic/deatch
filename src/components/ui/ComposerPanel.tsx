@@ -14,7 +14,7 @@ const SIZES: Record<PanelSize, string> = {
 
 type Props = {
   label: string;
-  /** The composer box the panel floats above; it follows its height. */
+  /// The composer box the panel floats above; it follows its height.
   anchorEl?: HTMLElement | null;
   onClose: () => void;
   size: PanelSize;

@@ -17,8 +17,8 @@ function isAppError(e: unknown): e is AppError {
   return typeof e === "object" && e !== null && "kind" in e;
 }
 
-/** Twitch's own Helix explanation is shown as-is; other kinds carry
- * technical detail that belongs in the log, not the UI. */
+/// Twitch's own Helix explanation is shown as-is; other kinds carry
+/// technical detail that belongs in the log, not the UI.
 export function errorMessage(e: unknown): string {
   if (!isAppError(e)) return e instanceof Error ? e.message : String(e);
   return e.kind === "helix" ? e.message : t(MESSAGES[e.kind]);
