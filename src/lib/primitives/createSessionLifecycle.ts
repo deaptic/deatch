@@ -5,13 +5,14 @@ import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
 import * as session from "../services/session.ts";
 import { resetView } from "../stores/view.ts";
+import { createBackoff } from "../utils/backoff.ts";
 
 const RETRY_MIN_MS = 30_000;
 const RETRY_MAX_MS = 300_000;
 
+const retry = createBackoff(RETRY_MIN_MS, RETRY_MAX_MS);
+
 let userScopedFetched = false;
-let retryTimer: number | undefined;
-let retryDelay = RETRY_MIN_MS;
 
 function fetchUserScopedData() {
   if (userScopedFetched) return;
@@ -19,21 +20,18 @@ function fetchUserScopedData() {
   emotes
     .loadGlobal()
     .then((list) => {
-      retryDelay = RETRY_MIN_MS;
+      retry.succeeded();
       setGlobalEmotes(list);
     })
     .catch(() => {
       userScopedFetched = false;
       if (user() === null) return;
-      retryTimer = window.setTimeout(fetchUserScopedData, retryDelay);
-      retryDelay = Math.min(retryDelay * 2, RETRY_MAX_MS);
+      retry.schedule(fetchUserScopedData);
     });
 }
 
 function resetUserScopedCaches() {
-  window.clearTimeout(retryTimer);
-  retryTimer = undefined;
-  retryDelay = RETRY_MIN_MS;
+  retry.reset();
   userScopedFetched = false;
   setModeratedChannels([]);
   badges.resetChannelCache();
@@ -49,7 +47,6 @@ export type SessionDeps = {
 export function createSessionLifecycle(deps: SessionDeps): void {
   onMount(() => {
     void session.restore();
-    emotes.loadThirdPartyGlobal();
   });
 
   createEffect(() => {

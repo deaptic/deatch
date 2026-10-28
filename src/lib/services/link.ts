@@ -25,6 +25,7 @@ import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
 import type { LinkState, SetAudioParams, User } from "../types/index.ts";
 import { t } from "../i18n/index.ts";
+import { createBackoff } from "../utils/backoff.ts";
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
@@ -177,17 +178,7 @@ export function toggleMute() {
 
 let pendingFetch = new Set<string>();
 let pendingCurrent: string | null = null;
-let retryTimer: number | undefined;
-let retryDelay = RETRY_MIN_MS;
-
-function scheduleRetry() {
-  if (retryTimer !== undefined || !linkConnected()) return;
-  retryTimer = window.setTimeout(() => {
-    retryTimer = undefined;
-    void drainPending();
-  }, retryDelay);
-  retryDelay = Math.min(retryDelay * 2, RETRY_MAX_MS);
-}
+const retry = createBackoff(RETRY_MIN_MS, RETRY_MAX_MS);
 
 // The tab list lands before `current` so a new tab counts as linked by the
 // time the app follows it.
@@ -198,9 +189,9 @@ async function drainPending() {
   if (pendingCurrent) await drainCurrent(pendingCurrent);
 
   if (pendingFetch.size > 0 || pendingCurrent) {
-    scheduleRetry();
+    if (linkConnected()) retry.schedule(() => void drainPending());
   } else {
-    retryDelay = RETRY_MIN_MS;
+    retry.succeeded();
   }
 }
 
@@ -259,7 +250,5 @@ export function disconnect() {
   setLinkHasAudio(false);
   pendingFetch.clear();
   pendingCurrent = null;
-  window.clearTimeout(retryTimer);
-  retryTimer = undefined;
-  retryDelay = RETRY_MIN_MS;
+  retry.reset();
 }

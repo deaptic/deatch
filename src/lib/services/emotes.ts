@@ -8,6 +8,7 @@ import {
 } from "../api/external/ffz.ts";
 import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
 import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat.ts";
+import type { InvokeOptions } from "../api/utils.ts";
 import {
   dedupeById,
   setBttvChannel,
@@ -20,12 +21,15 @@ import {
 } from "../stores/emotes.ts";
 import { user } from "../stores/users.ts";
 import { type ChannelRef, channelResource } from "./channelResource.ts";
-import type { Emote, UserEmote } from "../types/index.ts";
+import type { Emote, EmoteEntry, UserEmote } from "../types/index.ts";
+import { createBackoff } from "../utils/backoff.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
+const GLOBALS_RETRY_MIN_MS = 30_000;
+const GLOBALS_RETRY_MAX_MS = 300_000;
 
 const bttv = channelResource((c) =>
   bttvGetChannelEmotes({ channelId: c.id }, { silent: true }),
@@ -35,7 +39,6 @@ const ffz = channelResource((c) =>
 );
 
 let userEmotesLoadStarted = false;
-let thirdPartyGlobalsLoaded = false;
 
 export async function ensureUserLoaded(): Promise<void> {
   if (userEmotesLoadStarted) return;
@@ -80,18 +83,34 @@ export async function loadGlobal(): Promise<Emote[]> {
   return fresh;
 }
 
-export function loadThirdPartyGlobal() {
-  if (thirdPartyGlobalsLoaded) return;
-  thirdPartyGlobalsLoaded = true;
-  seventvGetGlobalEmotes({ silent: true })
-    .then(setSevenTvGlobal)
-    .catch(() => {});
-  bttvGetGlobalEmotes({ silent: true })
-    .then(setBttvGlobal)
-    .catch(() => {});
-  ffzGetGlobalEmotes({ silent: true })
-    .then(setFfzGlobal)
-    .catch(() => {});
+/// Loads each provider's global emotes, retrying each until it succeeds.
+export function start(): () => void {
+  const stops = [
+    keepLoading(seventvGetGlobalEmotes, setSevenTvGlobal),
+    keepLoading(bttvGetGlobalEmotes, setBttvGlobal),
+    keepLoading(ffzGetGlobalEmotes, setFfzGlobal),
+  ];
+  return () => {
+    for (const stop of stops) stop();
+  };
+}
+
+function keepLoading(
+  load: (options: InvokeOptions) => Promise<EmoteEntry[]>,
+  set: (emotes: EmoteEntry[]) => void,
+): () => void {
+  const retry = createBackoff(GLOBALS_RETRY_MIN_MS, GLOBALS_RETRY_MAX_MS);
+  let stopped = false;
+  function attempt() {
+    load({ silent: true }).then(set, () => {
+      if (!stopped) retry.schedule(attempt);
+    });
+  }
+  attempt();
+  return () => {
+    stopped = true;
+    retry.reset();
+  };
 }
 
 export function loadChannelThirdParty(channel: ChannelRef) {
