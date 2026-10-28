@@ -278,20 +278,22 @@ export default function EmotePicker(props: Props) {
         <For each={sections()}>
           {(section) => (
             <Show when={section.label} fallback={renderGrid(section)}>
-              <EmotePickerSection label={section.label!}>
-                <Show
-                  when={section.items.length > 0}
-                  fallback={
-                    <Show when={section.emptyHint}>
-                      <p class="text-small text-ink-faint px-1 py-2">
-                        {section.emptyHint}
-                      </p>
-                    </Show>
-                  }
-                >
-                  {renderGrid(section)}
-                </Show>
-              </EmotePickerSection>
+              {(label) => (
+                <EmotePickerSection label={label()}>
+                  <Show
+                    when={section.items.length > 0}
+                    fallback={
+                      <Show when={section.emptyHint}>
+                        <p class="text-small text-ink-faint px-1 py-2">
+                          {section.emptyHint}
+                        </p>
+                      </Show>
+                    }
+                  >
+                    {renderGrid(section)}
+                  </Show>
+                </EmotePickerSection>
+              )}
             </Show>
           )}
         </For>

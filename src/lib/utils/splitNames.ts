@@ -18,7 +18,9 @@ export function splitNames(text: string, names: string[]): Segment[] {
   for (const match of text.matchAll(matcher)) {
     const found = wanted.find(
       ({ name }) => name.toLowerCase() === match[0].toLowerCase(),
-    )!;
+    );
+    // A case mapping can change a name's length; such a match stays text.
+    if (!found) continue;
     if (match.index > cursor) {
       segments.push({ text: text.slice(cursor, match.index) });
     }

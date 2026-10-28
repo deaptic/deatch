@@ -11,18 +11,17 @@ export default function ChatModes(props: Props) {
   const settings = () => chatSettingsFor(props.broadcasterId);
   const active = () => {
     const s = settings();
-    return s ? CHAT_MODES.filter((mode) => isOn(mode, s)) : [];
+    return s
+      ? CHAT_MODES.filter((mode) => isOn(mode, s)).map((mode) => ({ mode, s }))
+      : [];
   };
 
   return (
     <Show when={active().length > 0}>
       <div class="flex flex-wrap items-center gap-1.5 px-1 pb-2">
         <For each={active()}>
-          {(mode) => (
-            <Chip
-              label={mode.chip(settings()!)}
-              title={mode.description(settings()!)}
-            />
+          {({ mode, s }) => (
+            <Chip label={mode.chip(s)} title={mode.description(s)} />
           )}
         </For>
       </div>

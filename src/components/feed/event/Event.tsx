@@ -48,7 +48,7 @@ export default function Event(props: Props) {
       )}
       onContextMenu={
         props.onEventContextMenu &&
-        ((x, y) => props.onEventContextMenu!(x, y, item))
+        ((x, y) => props.onEventContextMenu?.(x, y, item))
       }
     >
       <Show when={props.density === "comfortable"}>

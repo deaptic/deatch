@@ -38,7 +38,7 @@ function renderSearchItem(s: OptionSuggestion): JSX.Element {
   return (
     <>
       <Show when={s.image}>
-        <Artwork src={s.image!} shape="boxart" fit="inline" />
+        {(image) => <Artwork src={image()} shape="boxart" fit="inline" />}
       </Show>
       <span class="text-ink truncate">{s.label}</span>
     </>
@@ -417,14 +417,18 @@ export default function CommandComposer(props: Props) {
         <span class="truncate">
           /{props.command.name}
           <Show when={activeOption()?.name}>
-            {" · "}
-            <span
-              class={`font-semibold ${
-                errorActive() ? "text-negative" : "text-accent-ink"
-              }`}
-            >
-              {activeOption()!.name}
-            </span>
+            {(name) => (
+              <>
+                {" · "}
+                <span
+                  class={`font-semibold ${
+                    errorActive() ? "text-negative" : "text-accent-ink"
+                  }`}
+                >
+                  {name()}
+                </span>
+              </>
+            )}
           </Show>
           <Show when={hintBody()}>
             <span class={errorActive() ? "text-negative" : ""}>

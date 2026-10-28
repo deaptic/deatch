@@ -33,7 +33,7 @@ export function userLink(
       openMenuAt(
         e,
         actions.onUserContextMenu &&
-          ((x, y) => actions.onUserContextMenu!(x, y, identity())),
+          ((x, y) => actions.onUserContextMenu?.(x, y, identity())),
       ),
     onAuxClick: onMiddleClick(() => browser.openChannel(identity().login)),
     onMouseDown: preventAutoscroll,

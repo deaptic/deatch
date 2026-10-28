@@ -23,7 +23,7 @@ export default function Source(props: {
     props.source.name || channel()?.displayName || props.source.login;
   const link = createChannelLink(
     channel,
-    props.onOpen && (() => props.onOpen!(props.source.id)),
+    props.onOpen && (() => props.onOpen?.(props.source.id)),
   );
 
   return (

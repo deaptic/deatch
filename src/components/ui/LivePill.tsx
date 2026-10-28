@@ -1,4 +1,3 @@
-import { Show } from "solid-js";
 import { formatViewers } from "../../lib/format/stream.ts";
 import { t } from "../../lib/i18n/index.ts";
 
@@ -16,9 +15,9 @@ export default function LivePill(props: Props) {
     >
       <span class="size-1.5 rounded-full bg-current" />
       {t("UI_LIVE")}
-      <Show when={props.viewers !== undefined}>
-        <span class="opacity-80">· {formatViewers(props.viewers!)}</span>
-      </Show>
+      {props.viewers !== undefined && (
+        <span class="opacity-80">· {formatViewers(props.viewers)}</span>
+      )}
     </span>
   );
 }
