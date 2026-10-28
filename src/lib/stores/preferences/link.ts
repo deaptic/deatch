@@ -5,20 +5,18 @@ import {
   DEFAULT_CHANNEL_GAIN,
   DEFAULT_COMPRESSOR,
 } from "../../constants/audio.ts";
-import { persist, prefs, setPrefs } from "./core.ts";
+import { prefs, setPrefs } from "./core.ts";
 
 export const linkAudioLink = () => prefs.link.audioLink;
 
 export function setLinkAudioLink(value: boolean) {
   setPrefs("link", "audioLink", value);
-  persist();
 }
 
 export const linkCompressor = () => prefs.link.compressor;
 
 export function setLinkCompressor(value: boolean) {
   setPrefs("link", "compressor", value);
-  persist();
 }
 
 export const compressorSettings = () => prefs.link.compressorSettings;
@@ -28,12 +26,10 @@ export function setCompressorControl(
   value: number,
 ) {
   setPrefs("link", "compressorSettings", control, clampControl(control, value));
-  persist();
 }
 
 export function resetCompressorSettings() {
   setPrefs("link", "compressorSettings", { ...DEFAULT_COMPRESSOR });
-  persist();
 }
 
 export const linkChannelGains = () => prefs.link.channelGains;
@@ -51,5 +47,4 @@ export function setChannelGain(login: string, percent: number) {
       else gains[login] = percent;
     }),
   );
-  persist();
 }

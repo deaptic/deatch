@@ -12,12 +12,12 @@ import {
   computeChannelSections,
   computeGlobalSections,
   favorites,
-  toggleFavorite,
   usableIn,
   userEmotes,
 } from "../../lib/stores/emotes.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
+import * as emotes from "../../lib/services/emotes.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
 import Field from "../ui/Field.tsx";
@@ -174,7 +174,11 @@ export default function EmotePicker(props: Props) {
   // they grew or shrank to stay on the same emote.
   const onToggleFavorite = (item: EmoteGridItem) => {
     const before = favorites().length;
-    toggleFavorite({ value: item.value, url: item.url, label: item.label });
+    emotes.toggleFavorite({
+      value: item.value,
+      url: item.url,
+      label: item.label,
+    });
     if (!search() && activeIndex() >= before) {
       setActiveIndex((i) => i + favorites().length - before);
     }

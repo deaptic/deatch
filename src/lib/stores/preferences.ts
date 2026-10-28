@@ -2,6 +2,8 @@ export {
   clampCooldown,
   MAX_TRIGGER_COOLDOWN,
   MIN_TRIGGER_COOLDOWN,
+  prefs,
+  restorePreferences,
 } from "./preferences/core.ts";
 export type {
   BadgePref,

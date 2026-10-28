@@ -1,10 +1,4 @@
-import {
-  MIN_TRIGGER_COOLDOWN,
-  persist,
-  prefs,
-  setPrefs,
-  type Trigger,
-} from "./core.ts";
+import { MIN_TRIGGER_COOLDOWN, prefs, setPrefs, type Trigger } from "./core.ts";
 
 export const triggers = () => prefs.triggers;
 
@@ -29,10 +23,8 @@ export function saveTrigger(trigger: Trigger) {
   } else {
     setPrefs("triggers", (t) => [...t, value]);
   }
-  persist();
 }
 
 export function removeTrigger(id: string) {
   setPrefs("triggers", (t) => t.filter((x) => x.id !== id));
-  persist();
 }

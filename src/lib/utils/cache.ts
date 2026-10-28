@@ -1,21 +1,25 @@
+import * as storage from "./storage.ts";
+
 type Cached<T> = { ts: number; data: T };
 
+function isCached(value: unknown): value is Cached<unknown> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "ts" in value &&
+    typeof value.ts === "number" &&
+    "data" in value
+  );
+}
+
+/// The cached data when younger than `maxAgeMs`. The data's own shape is the
+/// caller's to trust: it wrote it.
 export function loadCache<T>(key: string, maxAgeMs: number): T | null {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Cached<T>;
-    if (Date.now() - parsed.ts > maxAgeMs) return null;
-    return parsed.data;
-  } catch {
-    return null;
-  }
+  const cached = storage.read(key);
+  if (!isCached(cached) || Date.now() - cached.ts > maxAgeMs) return null;
+  return cached.data as T;
 }
 
 export function saveCache<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
-  } catch {
-    // Quota exceeded or storage unavailable — silently skip.
-  }
+  storage.write(key, { ts: Date.now(), data } satisfies Cached<T>);
 }

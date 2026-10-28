@@ -6,7 +6,7 @@ import {
   GROUP_SPACING_STOPS,
   stepStop,
 } from "../../constants/accessibility.ts";
-import { persist, prefs, setPrefs } from "./core.ts";
+import { prefs, setPrefs } from "./core.ts";
 
 export const feedFontSize = () => prefs.feed.fontSize;
 export const feedDensity = () => prefs.feed.density;
@@ -22,7 +22,6 @@ export const feedEvents = () => prefs.feed.events;
 
 export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STOPS));
-  persist();
 }
 
 /// One stop smaller or larger, staying on the scale's ends.
@@ -32,7 +31,6 @@ export function stepFeedFontSize(direction: 1 | -1) {
 
 export function setFeedGroupSpacing(value: number) {
   setPrefs("feed", "groupSpacing", clampToStops(value, GROUP_SPACING_STOPS));
-  persist();
 }
 
 export function stepFeedGroupSpacing(direction: 1 | -1) {
@@ -43,7 +41,6 @@ export function stepFeedGroupSpacing(direction: 1 | -1) {
 
 export function setFeedDensity(value: Density) {
   setPrefs("feed", "density", value);
-  persist();
 }
 
 export function toggleFeedDensity() {
@@ -52,40 +49,32 @@ export function toggleFeedDensity() {
 
 export function setFeedShowTimestamp(value: boolean) {
   setPrefs("feed", "showTimestamp", value);
-  persist();
 }
 
 export function setFeedShowDeletedContent(value: boolean) {
   setPrefs("feed", "showDeletedContent", value);
-  persist();
 }
 
 export function setFeedShowAvatars(value: boolean) {
   setPrefs("feed", "showAvatars", value);
-  persist();
 }
 
 export function setFeedShowBadges(value: boolean) {
   setPrefs("feed", "showBadges", value);
-  persist();
 }
 
 export function setFeedShowEvents(value: boolean) {
   setPrefs("feed", "showEvents", value);
-  persist();
 }
 
 export function setFeedShowCopypasta(value: boolean) {
   setPrefs("feed", "showCopypasta", value);
-  persist();
 }
 
 export function setFeedBadge(key: BadgeCategoryKey, show: boolean) {
   setPrefs("feed", "badges", key, { show });
-  persist();
 }
 
 export function setFeedEvent(key: EventKey, show: boolean) {
   setPrefs("feed", "events", key, { show });
-  persist();
 }

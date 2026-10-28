@@ -12,11 +12,13 @@ import * as emotes from "../services/emotes.ts";
 import * as view from "../services/view.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import * as live from "../services/live.ts";
+import * as preferences from "../services/preferences.ts";
 
 export function createServices(): void {
   onMount(() => {
     const stops = [
       log.start(),
+      preferences.start(),
       view.start(),
       theme.start(),
       inbox.start(),
