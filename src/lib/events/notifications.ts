@@ -99,10 +99,10 @@ export function start(): () => void {
         raw.chatter_user_id &&
         isModOfChannel(id)
       ) {
-        sendShoutout({
-          fromBroadcasterId: id,
-          toBroadcasterId: raw.chatter_user_id,
-        }).catch(() => {});
+        sendShoutout(
+          { fromBroadcasterId: id, toBroadcasterId: raw.chatter_user_id },
+          { silent: true },
+        ).catch(() => {});
       }
     }),
     listenFeed<RawShoutout>("channel.shoutout.create", mapShoutout),

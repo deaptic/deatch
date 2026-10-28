@@ -18,7 +18,9 @@ export async function send(
       appendLocalNotice(params.broadcasterId, dropMessage(result.dropReason));
       return "held";
     }
-    addToast(dropMessage(result.dropReason), "error");
+    const reason = dropMessage(result.dropReason);
+    if (options?.silent) console.warn(`message dropped: ${reason}`);
+    else addToast(reason, "error");
     return "failed";
   } catch {
     return "failed";

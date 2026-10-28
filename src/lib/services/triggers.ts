@@ -30,9 +30,13 @@ export function handle(message: IncomingMessage): void {
   if (triggerMatch.isCoolingDown(lastFiredAt.get(key), now, cooldown)) return;
   lastFiredAt.set(key, now);
 
-  void chat.send({
-    broadcasterId: message.broadcasterId,
-    message: trigger.response,
-    replyParentMessageId: trigger.action === "reply" ? message.messageId : null,
-  });
+  void chat.send(
+    {
+      broadcasterId: message.broadcasterId,
+      message: trigger.response,
+      replyParentMessageId:
+        trigger.action === "reply" ? message.messageId : null,
+    },
+    { silent: true },
+  );
 }
