@@ -1,11 +1,8 @@
 import { AtSign } from "lucide-solid";
 import { createEffect, Show } from "solid-js";
 import InboxGroup from "./InboxGroup.tsx";
-import {
-  dismissAllMentions,
-  dismissMention,
-  mentions,
-} from "../../lib/stores/inbox.ts";
+import { mentions } from "../../lib/stores/inbox.ts";
+import * as inbox from "../../lib/services/inbox.ts";
 import type { Mention } from "../../lib/types/index.ts";
 import * as users from "../../lib/services/users.ts";
 import Button from "../ui/Button.tsx";
@@ -44,7 +41,7 @@ export default function Inbox(props: Props) {
     props.onClose();
   }
 
-  const clear = (m: Mention) => dismissMention(m.id);
+  const clear = (m: Mention) => inbox.dismiss(m.id);
 
   return (
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
@@ -52,7 +49,7 @@ export default function Inbox(props: Props) {
         <header class="h-header shrink-0 flex items-center gap-2 pl-5 pr-3 border-b border-line-soft">
           <h2 class="text-title text-ink flex-1">{t("INBOX_TITLE")}</h2>
           <Show when={mentions().length > 0}>
-            <Button variant="ghost" size="sm" onClick={dismissAllMentions}>
+            <Button variant="ghost" size="sm" onClick={inbox.dismissAll}>
               {t("INBOX_CLEAR_ALL")}
             </Button>
           </Show>

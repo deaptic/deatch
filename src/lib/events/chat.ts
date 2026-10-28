@@ -2,7 +2,7 @@ import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { knownUser, recordChatter, user } from "../stores/users.ts";
-import { recordMention } from "../stores/inbox.ts";
+import * as inbox from "../services/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { mentionReason } from "../utils/mention.ts";
 import { chatterOf, mapChatMessage } from "./chat-mapper.ts";
@@ -65,7 +65,7 @@ export function start(): () => void {
       if (!reason) return;
 
       const ch = knownUser(raw.broadcaster_user_id);
-      recordMention({
+      inbox.record({
         id: raw.message_id,
         channelId: raw.broadcaster_user_id,
         channelLogin: ch?.login ?? raw.broadcaster_user_id,
