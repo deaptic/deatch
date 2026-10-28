@@ -11,7 +11,6 @@ import type { User, UserRef } from "../../lib/types/index.ts";
 type Props = {
   target: User;
   onBack: () => void;
-  onDone: () => void;
 };
 
 // Channels that may post the shoutout: the viewer's own plus any they mod.
@@ -44,24 +43,17 @@ export default function ShoutoutSources(props: Props) {
       <MenuItem
         label={t("MENU_SHOUTOUT_TO")}
         icon={<ChevronLeft />}
+        keepOpen
         onClick={props.onBack}
       />
       <MenuDivider />
       <Show
         when={!sources.loading}
-        fallback={
-          <MenuItem label={t("MENU_CHECKING")} disabled onClick={() => {}} />
-        }
+        fallback={<MenuItem label={t("MENU_CHECKING")} disabled />}
       >
         <For
           each={sources() ?? []}
-          fallback={
-            <MenuItem
-              label={t("MENU_NO_LIVE_CHANNELS")}
-              disabled
-              onClick={() => {}}
-            />
-          }
+          fallback={<MenuItem label={t("MENU_NO_LIVE_CHANNELS")} disabled />}
         >
           {(from) => (
             <MenuItem
@@ -71,7 +63,6 @@ export default function ShoutoutSources(props: Props) {
                   fromBroadcasterId: from.id,
                   toBroadcasterId: props.target.id,
                 }).catch(() => {});
-                props.onDone();
               }}
             />
           )}

@@ -17,8 +17,6 @@ type Props = {
 };
 
 export default function ModBar(props: Props) {
-  const run = (action: Promise<void>) => void action.catch(() => {});
-
   return (
     <div class="shrink-0 flex flex-wrap items-center gap-1.5 px-4 py-2 border-b border-line-soft">
       <Show when={props.isBroadcaster}>
@@ -27,7 +25,7 @@ export default function ModBar(props: Props) {
           size="sm"
           icon={<Bookmark class="size-4" />}
           onMouseDown={(e) => e.preventDefault()}
-          onClick={() => run(createStreamMarker())}
+          onClick={() => createStreamMarker().catch(() => {})}
         >
           {t("CHAT_MOD_BAR_ADD_MARKER")}
         </Button>
@@ -36,24 +34,19 @@ export default function ModBar(props: Props) {
           label={t("CHAT_MOD_BAR_RUN_AD")}
           icon={<Tv class="size-4" />}
         >
-          {(close) => (
-            <For each={AD_LENGTHS}>
-              {(length) => (
-                <MenuItem
-                  label={t("CHAT_MODE_SECONDS", { count: length })}
-                  onClick={() => {
-                    close();
-                    run(
-                      startCommercial({
-                        broadcasterId: props.broadcasterId,
-                        length,
-                      }),
-                    );
-                  }}
-                />
-              )}
-            </For>
-          )}
+          <For each={AD_LENGTHS}>
+            {(length) => (
+              <MenuItem
+                label={t("CHAT_MODE_SECONDS", { count: length })}
+                onClick={() =>
+                  startCommercial({
+                    broadcasterId: props.broadcasterId,
+                    length,
+                  }).catch(() => {})
+                }
+              />
+            )}
+          </For>
         </MenuButton>
       </Show>
       <MenuButton
@@ -61,30 +54,23 @@ export default function ModBar(props: Props) {
         label={t("CHAT_MOD_BAR_CHAT_MODES")}
         icon={<SlidersHorizontal class="size-4" />}
       >
-        {(close) => (
-          <ChatModesList broadcasterId={props.broadcasterId} onDone={close} />
-        )}
+        <ChatModesList broadcasterId={props.broadcasterId} />
       </MenuButton>
       <MenuButton
         variant="ghost"
         label={t("CHAT_MOD_BAR_CLEAR_CHAT")}
         icon={<Eraser class="size-4" />}
       >
-        {(close) => (
-          <MenuItem
-            label={t("CHAT_MOD_BAR_CLEAR_EVERY_MESSAGE")}
-            tone="negative"
-            onClick={() => {
-              close();
-              run(
-                deleteChatMessages({
-                  broadcasterId: props.broadcasterId,
-                  messageId: null,
-                }),
-              );
-            }}
-          />
-        )}
+        <MenuItem
+          label={t("CHAT_MOD_BAR_CLEAR_EVERY_MESSAGE")}
+          tone="negative"
+          onClick={() =>
+            deleteChatMessages({
+              broadcasterId: props.broadcasterId,
+              messageId: null,
+            }).catch(() => {})
+          }
+        />
       </MenuButton>
     </div>
   );

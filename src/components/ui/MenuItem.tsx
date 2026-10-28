@@ -1,27 +1,39 @@
 import { ChevronRight } from "lucide-solid";
-import { type JSX, Show } from "solid-js";
+import { type JSX, Show, useContext } from "solid-js";
 import Kbd from "./Kbd.tsx";
+import { MenuClose } from "./Menu.tsx";
 
 type Props = {
   label: string;
   icon?: JSX.Element;
   hint?: JSX.Element | string;
   shortcut?: string;
+  /// Opens a nested view in the same menu instead of closing it.
   submenu?: boolean;
+  /// Leaves the menu open, for toggles and stepping back.
+  keepOpen?: boolean;
   active?: boolean;
   tone?: "negative" | "caution";
-  disabled?: boolean;
-  onClick: () => void;
-};
+} & (
+  | { disabled: true; onClick?: undefined }
+  | { disabled?: boolean; onClick: () => void }
+);
 
 const TONES = { negative: "text-negative", caution: "text-caution" };
 
 export default function MenuItem(props: Props) {
+  const close = useContext(MenuClose);
+
+  function select() {
+    props.onClick?.();
+    if (!props.submenu && !props.keepOpen) close?.();
+  }
+
   return (
     <button
       type="button"
       disabled={props.disabled}
-      onClick={props.onClick}
+      onClick={select}
       class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-body text-left transition-colors duration-snap ${
         props.disabled
           ? "opacity-40 cursor-default"

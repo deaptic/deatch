@@ -9,7 +9,6 @@ import { applyChatMode, presetLabel, type TimedMode } from "./modes.ts";
 type Props = {
   mode: TimedMode;
   broadcasterId: string;
-  onDone: () => void;
 };
 
 export default function ChatModePresets(props: Props) {
@@ -19,7 +18,6 @@ export default function ChatModePresets(props: Props) {
   };
 
   function apply(change: TimedMode["off"]) {
-    props.onDone();
     applyChatMode(props.broadcasterId, change);
   }
 
