@@ -7,9 +7,9 @@ export type MentionReason =
 
 export type Mention = {
   id: string;
-  channelId: string;
-  channelLogin: string;
-  channelName: string;
+  broadcasterId: string;
+  broadcasterLogin: string;
+  broadcasterName: string;
   message: FeedMessage;
   reason: MentionReason;
   timestamp: number;

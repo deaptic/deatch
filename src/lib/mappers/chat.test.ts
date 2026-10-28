@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawChatMessage } from "../types/index.ts";
-import { mapChatMessage, wordsOf } from "./chat-mapper.ts";
+import { mapChatMessage, wordsOf } from "./chat.ts";
 
 const raw = (overrides: Partial<RawChatMessage> = {}): RawChatMessage => ({
   broadcaster_user_id: "111",

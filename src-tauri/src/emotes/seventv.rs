@@ -10,11 +10,11 @@ pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>
 
 pub async fn get_channel_emotes(
     http: &reqwest::Client,
-    channel_id: UserId,
+    broadcaster_id: UserId,
 ) -> Result<ChannelResult> {
     let response: StvChannelResponse = get_json(
         http,
-        &format!("https://7tv.io/v3/users/twitch/{channel_id}"),
+        &format!("https://7tv.io/v3/users/twitch/{broadcaster_id}"),
     )
     .await?;
     Ok(response.into())

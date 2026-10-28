@@ -7,5 +7,6 @@ export const [mentions, setMentions] = createSignal<Mention[]>([]);
 export const unreadMentionCount = () =>
   mentions().filter((m) => m.unread).length;
 
-export const channelMentionCount = (channelId: string) =>
-  mentions().filter((m) => m.unread && m.channelId === channelId).length;
+export const channelMentionCount = (broadcasterId: string) =>
+  mentions().filter((m) => m.unread && m.broadcasterId === broadcasterId)
+    .length;

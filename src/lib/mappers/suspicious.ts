@@ -10,7 +10,7 @@ import type {
   SuspiciousInfo,
 } from "../types/index.ts";
 import { chatterFields, person } from "../utils/feedEvent.ts";
-import { mapFragment } from "./chat-mapper.ts";
+import { mapFragment } from "./chat.ts";
 
 /// Null once Twitch no longer treats the chatter as suspicious.
 export function suspiciousInfo(

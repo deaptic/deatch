@@ -9,7 +9,7 @@ import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 
 type Props = {
   raid: PendingRaid;
-  onOpenChannel: (channelId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
 };
 
 export default function RaidBanner(props: Props) {

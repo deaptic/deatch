@@ -10,7 +10,14 @@ type Legacy = {
   fragments: Fragment[];
 };
 
-type Stored = Partial<Mention> & Partial<Legacy>;
+/// Mentions saved before the channel fields were named for the broadcaster.
+type ChannelNamed = {
+  channelId: string;
+  channelLogin: string;
+  channelName: string;
+};
+
+type Stored = Partial<Mention> & Partial<Legacy> & Partial<ChannelNamed>;
 
 /// Current entries pass through; legacy ones are rebuilt into a message;
 /// anything older than fragments and reason can't be rendered and is dropped.
@@ -18,16 +25,27 @@ function isCurrent(m: Stored): m is Mention {
   return (
     m.message !== undefined &&
     typeof m.id === "string" &&
-    typeof m.channelId === "string" &&
-    typeof m.channelLogin === "string" &&
-    typeof m.channelName === "string" &&
+    typeof m.broadcasterId === "string" &&
+    typeof m.broadcasterLogin === "string" &&
+    typeof m.broadcasterName === "string" &&
     m.reason !== undefined &&
     typeof m.timestamp === "number" &&
     typeof m.unread === "boolean"
   );
 }
 
-export function upgradeMention(m: Stored): Mention | null {
+function renameChannelFields(stored: Stored): Stored {
+  const { channelId, channelLogin, channelName, ...m } = stored;
+  return {
+    ...m,
+    broadcasterId: m.broadcasterId ?? channelId,
+    broadcasterLogin: m.broadcasterLogin ?? channelLogin,
+    broadcasterName: m.broadcasterName ?? channelName,
+  };
+}
+
+export function upgradeMention(stored: Stored): Mention | null {
+  const m = renameChannelFields(stored);
   if (m.message) return isCurrent(m) ? m : null;
   if (!Array.isArray(m.fragments) || !m.reason || m.timestamp === undefined) {
     return null;
@@ -45,9 +63,9 @@ export function upgradeMention(m: Stored): Mention | null {
   };
   return {
     id: m.id ?? message.message_id,
-    channelId: m.channelId ?? "",
-    channelLogin: m.channelLogin ?? "",
-    channelName: m.channelName ?? "",
+    broadcasterId: m.broadcasterId ?? "",
+    broadcasterLogin: m.broadcasterLogin ?? "",
+    broadcasterName: m.broadcasterName ?? "",
     message,
     reason: m.reason,
     timestamp: m.timestamp,

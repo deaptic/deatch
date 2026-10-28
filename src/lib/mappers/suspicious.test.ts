@@ -4,7 +4,7 @@ import type {
   RawSuspiciousUserUpdate,
 } from "../types/index.ts";
 import { formatSuspicious } from "../format/suspicious.ts";
-import { suspiciousInfo, suspiciousUpdate } from "./suspicious-mapper.ts";
+import { suspiciousInfo, suspiciousUpdate } from "./suspicious.ts";
 
 const user = { user_id: "2", user_login: "foo", user_name: "Foo" };
 

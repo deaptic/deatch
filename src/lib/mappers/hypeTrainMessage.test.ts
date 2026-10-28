@@ -4,7 +4,7 @@ import {
   hypeTrainBegin,
   hypeTrainEnd,
   hypeTrainProgress,
-} from "./hype-train-message.ts";
+} from "./hypeTrainMessage.ts";
 
 const train = (t: Partial<RawHypeTrain> = {}): RawHypeTrain => ({
   broadcaster_user_id: "1",

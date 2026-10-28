@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawAutomodMessageHold } from "../types/index.ts";
-import { automodReason } from "./automod-reason.ts";
+import { automodReason } from "./automodReason.ts";
 
 const base = {
   broadcaster_user_id: "1",

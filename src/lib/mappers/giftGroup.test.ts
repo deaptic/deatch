@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
-import { giftGroup, groupGifts } from "./gift-group.ts";
+import { giftGroup, groupGifts } from "./giftGroup.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 import { at } from "../utils/at.ts";
 

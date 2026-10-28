@@ -2,7 +2,7 @@ import { seventvGetChannelEmotes } from "../api/external/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
   seventvUnsubscribeEmoteSet,
-} from "../api/external/seventv_events.ts";
+} from "../api/external/seventvEvents.ts";
 import * as emoteSetUpdate from "./emoteSetUpdate.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";
@@ -16,14 +16,14 @@ type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 const requests = new Map<string, symbol>();
 const byBroadcaster = new Map<string, Entry>();
 const bySetId = new Map<string, Entry>();
-let activeChannelId: string | null = null;
+let activeBroadcasterId: string | null = null;
 
 export async function subscribe(broadcasterId: string): Promise<void> {
   if (requests.has(broadcasterId)) return;
   const request = Symbol(broadcasterId);
   requests.set(broadcasterId, request);
   const channel = await seventvGetChannelEmotes(
-    { channelId: broadcasterId },
+    { broadcasterId },
     {
       silent: true,
     },
@@ -48,7 +48,7 @@ export function unsubscribe(broadcasterId: string): void {
   if (!entry) return;
   byBroadcaster.delete(broadcasterId);
   bySetId.delete(entry.setId);
-  if (broadcasterId === activeChannelId) setSevenTvChannel([]);
+  if (broadcasterId === activeBroadcasterId) setSevenTvChannel([]);
   seventvUnsubscribeEmoteSet(
     { emoteSetId: entry.setId },
     {
@@ -58,7 +58,7 @@ export function unsubscribe(broadcasterId: string): void {
 }
 
 export function setActive(broadcasterId: string | null): void {
-  activeChannelId = broadcasterId;
+  activeBroadcasterId = broadcasterId;
   setSevenTvChannel(
     broadcasterId ? (byBroadcaster.get(broadcasterId)?.emotes ?? []) : [],
   );
@@ -73,15 +73,16 @@ export function applyUpdate(update: EmoteSetUpdated): void {
 }
 
 function pushIfActive(entry: Entry): void {
-  if (entry.broadcasterId === activeChannelId) setSevenTvChannel(entry.emotes);
+  if (entry.broadcasterId === activeBroadcasterId)
+    setSevenTvChannel(entry.emotes);
 }
 
-function announce(channelId: string, update: EmoteSetUpdated): void {
+function announce(broadcasterId: string, update: EmoteSetUpdated): void {
   const actor = emoteSetUpdate.actor(update);
   const timestamp = Date.now();
   for (const message of emoteSetUpdate.describe(update)) {
     appendItem(
-      channelId,
+      broadcasterId,
       feedEvent("seventv_update", message, timestamp, { chatter_name: actor }),
     );
   }

@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawShoutout } from "../types/index.ts";
-import { mapShoutout } from "./shoutout-mapper.ts";
+import { mapShoutout } from "./shoutout.ts";
 
 const shoutout: RawShoutout = {
   broadcaster_user_id: "1",

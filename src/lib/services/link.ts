@@ -227,16 +227,16 @@ async function drainPending() {
 
 async function drainWarmed() {
   const toFetch = Array.from(pendingFetch);
-  const fresh = await users
+  const fetched = await users
     .fetch({ logins: toFetch }, { silent: true })
     .catch(() => null);
-  if (!fresh) return;
+  if (!fetched) return;
   for (const login of toFetch) pendingFetch.delete(login);
   const current = linkWarmedChannels();
   const known = new Set(current.map((c) => c.login));
   setLinkWarmedChannels([
     ...current,
-    ...fresh.filter((u) => !known.has(u.login)),
+    ...fetched.filter((u) => !known.has(u.login)),
   ]);
 }
 

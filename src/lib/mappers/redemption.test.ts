@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawChannelPointsRedemption } from "../types/index.ts";
-import { mapRedemption } from "./redemption-mapper.ts";
+import { mapRedemption } from "./redemption.ts";
 
 const raw = (
   overrides: Partial<RawChannelPointsRedemption> = {},

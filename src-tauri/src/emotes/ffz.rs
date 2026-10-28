@@ -10,11 +10,11 @@ pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>
 
 pub async fn get_channel_emotes(
     http: &reqwest::Client,
-    channel_login: String,
+    broadcaster_login: String,
 ) -> Result<Vec<EmoteEntry>> {
     let response: FfzResponse = get_json(
         http,
-        &format!("https://api.frankerfacez.com/v1/room/{channel_login}"),
+        &format!("https://api.frankerfacez.com/v1/room/{broadcaster_login}"),
     )
     .await?;
     Ok(response.into())

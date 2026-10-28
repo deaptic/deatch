@@ -48,8 +48,8 @@ function below(button: HTMLElement | undefined) {
 }
 
 type Props = {
-  onJumpToMessage: (channelId: string, messageId: string) => void;
-  onOpenChannel: (channelId: string) => void;
+  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
 };
 
 export default function TitleBar(props: Props) {

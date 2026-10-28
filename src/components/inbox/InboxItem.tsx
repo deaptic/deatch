@@ -33,7 +33,7 @@ function reasonLabel(name: string, reason: MentionReason): string {
 
 export default function InboxItem(props: Props) {
   const m = () => props.mention;
-  const channel = () => knownUser(m().channelId);
+  const channel = () => knownUser(m().broadcasterId);
   const link = createChannelLink(channel, props.onOpenChannel);
 
   return (
@@ -47,7 +47,7 @@ export default function InboxItem(props: Props) {
         >
           <Avatar
             src={channel()?.profileImageUrl}
-            alt={m().channelName}
+            alt={m().broadcasterName}
             size="fill"
             square
           />
@@ -57,7 +57,7 @@ export default function InboxItem(props: Props) {
             class={`font-semibold text-ink truncate hover:underline ${link.cursor}`}
             {...link.handlers}
           >
-            {m().channelName}
+            {m().broadcasterName}
           </span>
           <span class="text-feed-meta text-ink-faint truncate">
             {reasonLabel(m().message.chatter_name, m().reason)}
@@ -89,8 +89,8 @@ export default function InboxItem(props: Props) {
           bare
           showTimestamp={feedShowTimestamp()}
           emotes={thirdPartyEmoteMap()}
-          cheermotes={cheermotesFor(m().channelId)}
-          badges={feeds[m().channelId]?.badges ?? {}}
+          cheermotes={cheermotesFor(m().broadcasterId)}
+          badges={feeds[m().broadcasterId]?.badges ?? {}}
           userLogin={user()?.login ?? ""}
           reactions={[]}
           keywords={feedKeywords()}

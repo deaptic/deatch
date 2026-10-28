@@ -13,12 +13,12 @@ import type {
 
 /// Changes the first entry `find` picks; false when there is none.
 function updateFirst<T extends FeedEntry>(
-  channel: string,
+  broadcasterId: string,
   find: (entry: FeedEntry) => entry is T,
   change: (entry: T) => void,
 ): boolean {
   let found = false;
-  updateFeed(channel, (f) => {
+  updateFeed(broadcasterId, (f) => {
     const entry = f.messages.find(find);
     if (entry) {
       change(entry);
@@ -30,11 +30,11 @@ function updateFirst<T extends FeedEntry>(
 
 /// Changes every entry `find` picks.
 function updateEach<T extends FeedEntry>(
-  channel: string,
+  broadcasterId: string,
   find: (entry: FeedEntry) => entry is T,
   change: (entry: T) => void,
 ) {
-  updateFeed(channel, (f) => {
+  updateFeed(broadcasterId, (f) => {
     for (const entry of f.messages) if (find(entry)) change(entry);
   });
 }
@@ -51,9 +51,9 @@ const eventWithId =
 
 /// Matches this channel's copy of a message or, in shared chat, the original
 /// it was copied from.
-export function markMessageDeleted(id: string, messageId: string) {
+export function markMessageDeleted(broadcasterId: string, messageId: string) {
   updateFirst(
-    id,
+    broadcasterId,
     (e): e is FeedMessage =>
       e.kind === "message" &&
       (e.message_id === messageId || e.source?.messageId === messageId),
@@ -65,12 +65,12 @@ export function markMessageDeleted(id: string, messageId: string) {
 
 /// With `sourceId`, only the user's messages sent in that shared chat channel.
 export function markUserMessagesDeleted(
-  id: string,
+  broadcasterId: string,
   userId: string,
   sourceId?: string,
 ) {
   updateEach(
-    id,
+    broadcasterId,
     (e): e is FeedMessage =>
       e.kind === "message" &&
       e.chatter_user_id === userId &&
@@ -81,9 +81,9 @@ export function markUserMessagesDeleted(
   );
 }
 
-export function markAllMessagesDeleted(id: string) {
+export function markAllMessagesDeleted(broadcasterId: string) {
   updateEach(
-    id,
+    broadcasterId,
     (e): e is FeedMessage => e.kind === "message",
     (m) => {
       m.deleted = true;
@@ -91,26 +91,26 @@ export function markAllMessagesDeleted(id: string) {
   );
 }
 
-export function setPaused(id: string, paused: boolean) {
-  ensureFeed(id);
-  setFeeds(id, "paused", paused);
+export function setPaused(broadcasterId: string, paused: boolean) {
+  ensureFeed(broadcasterId);
+  setFeeds(broadcasterId, "paused", paused);
 }
 
-export function setBadges(id: string, badges: BadgeMap) {
-  if (!feeds[id]) return;
-  setFeeds(id, "badges", badges);
+export function setBadges(broadcasterId: string, badges: BadgeMap) {
+  if (!feeds[broadcasterId]) return;
+  setFeeds(broadcasterId, "badges", badges);
 }
 
-export function trimToLatest(id: string) {
-  ensureFeed(id);
-  updateFeed(id, (f) => {
+export function trimToLatest(broadcasterId: string) {
+  ensureFeed(broadcasterId);
+  updateFeed(broadcasterId, (f) => {
     enforceCaps(f.messages);
     f.paused = false;
   });
 }
 
-export function dropFeed(id: string) {
-  setFeeds(id, undefined);
+export function dropFeed(broadcasterId: string) {
+  setFeeds(broadcasterId, undefined);
 }
 
 export function setChannelPointsRedemption(

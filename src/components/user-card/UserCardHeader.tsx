@@ -37,7 +37,7 @@ type Props = {
   pinned: boolean;
   onTogglePin: () => void;
   onStartDrag: (e: MouseEvent) => void;
-  onOpenChannel: (channelId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
 };
 
 export default function UserCardHeader(props: Props) {

@@ -1,6 +1,6 @@
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
-import { fetchUsers } from "../api/twitch/users.ts";
+import { getUsers } from "../api/twitch/users.ts";
 import type { InvokeOptions } from "../api/utils.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import {
@@ -110,7 +110,7 @@ export async function fetch(
   params: GetUsersParams,
   options?: InvokeOptions,
 ): Promise<User[]> {
-  const users = await fetchUsers(params, options);
+  const users = await getUsers(params, options);
   set(users);
   return users;
 }

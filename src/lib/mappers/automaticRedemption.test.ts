@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { RawAutomaticRedemption } from "../types/index.ts";
-import { mapAutomaticRedemption } from "./automatic-redemption-mapper.ts";
+import { mapAutomaticRedemption } from "./automaticRedemption.ts";
 
 const raw = (
   reward: Partial<RawAutomaticRedemption["reward"]>,

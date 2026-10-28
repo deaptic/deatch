@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { connectFailure } from "./connect-failure.ts";
+import { connectFailure } from "./connectFailure.ts";
 
 test("a rejection shows Twitch's own reason", () => {
   expect(

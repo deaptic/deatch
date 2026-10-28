@@ -5,7 +5,7 @@ import { knownUser, recordChatter, user } from "../stores/users.ts";
 import * as inbox from "../services/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { mentionReason } from "../utils/mention.ts";
-import { chatterOf, mapChatMessage } from "../mappers/chat-mapper.ts";
+import { chatterOf, mapChatMessage } from "../mappers/chat.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as users from "../services/users.ts";
@@ -66,9 +66,9 @@ export function start(): () => void {
       const ch = knownUser(raw.broadcaster_user_id);
       inbox.record({
         id: raw.message_id,
-        channelId: raw.broadcaster_user_id,
-        channelLogin: ch?.login ?? raw.broadcaster_user_id,
-        channelName: ch?.displayName ?? raw.broadcaster_user_id,
+        broadcasterId: raw.broadcaster_user_id,
+        broadcasterLogin: ch?.login ?? raw.broadcaster_user_id,
+        broadcasterName: ch?.displayName ?? raw.broadcaster_user_id,
         message: msg,
         reason,
         timestamp: ts,

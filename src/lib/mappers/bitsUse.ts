@@ -5,7 +5,7 @@ import { t } from "../i18n/index.ts";
 import type { FeedEvent, Fragment, RawBitsUse } from "../types/index.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { BITS_USE } from "../constants/events.ts";
-import { wordsOf } from "./chat-mapper.ts";
+import { wordsOf } from "./chat.ts";
 
 // These arrive as a chat message of their own, which already shows them.
 const MESSAGE_POWER_UPS = new Set(["message_effect", "gigantify_an_emote"]);

@@ -4,7 +4,7 @@ import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
 const commands = {
   appVersion: () => getVersion(),
-  relaunch: () => relaunch(),
+  relaunchApp: () => relaunch(),
 };
 
 export function appVersion(options?: InvokeOptions): Promise<string> {
@@ -12,5 +12,5 @@ export function appVersion(options?: InvokeOptions): Promise<string> {
 }
 
 export function relaunchApp(options?: InvokeOptions): Promise<void> {
-  return invokeCommand(commands.relaunch, [], options);
+  return invokeCommand(commands.relaunchApp, [], options);
 }

@@ -18,7 +18,7 @@ export function append(
   return true;
 }
 
-function fresh(messages: FeedEntry[], items: FeedEntry[]): FeedEntry[] {
+function missing(messages: FeedEntry[], items: FeedEntry[]): FeedEntry[] {
   const existing = new Set(messages.map(getEntryId));
   return items
     .filter((it) => !existing.has(getEntryId(it)))
@@ -31,7 +31,7 @@ export function insert(
   items: FeedEntry[],
   paused: boolean,
 ): FeedEntry[] {
-  const added = fresh(messages, items);
+  const added = missing(messages, items);
   for (const it of added) {
     const after = messages.findLastIndex((m) => m.timestamp <= it.timestamp);
     messages.splice(after + 1, 0, it);
@@ -45,7 +45,7 @@ export function prepend(
   items: FeedEntry[],
   paused: boolean,
 ): FeedEntry[] {
-  const added = fresh(messages, items);
+  const added = missing(messages, items);
   if (added.length > 0) {
     messages.unshift(...added);
     enforceCaps(messages, paused);

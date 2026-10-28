@@ -63,11 +63,11 @@ export const commands = {
 	modifyChannelInformation: (params: ModifyChannelInformationParams) => __TAURI_INVOKE<null>("modify_channel_information", { params }),
 	startCommercial: (params: StartCommercialParams) => __TAURI_INVOKE<null>("start_commercial", { params }),
 	bttvGetGlobalEmotes: () => __TAURI_INVOKE<EmoteEntry[]>("bttv_get_global_emotes"),
-	bttvGetChannelEmotes: (params: ChannelIdParams) => __TAURI_INVOKE<EmoteEntry[]>("bttv_get_channel_emotes", { params }),
+	bttvGetChannelEmotes: (params: BroadcasterParams) => __TAURI_INVOKE<EmoteEntry[]>("bttv_get_channel_emotes", { params }),
 	ffzGetGlobalEmotes: () => __TAURI_INVOKE<EmoteEntry[]>("ffz_get_global_emotes"),
-	ffzGetChannelEmotes: (params: ChannelLoginParams) => __TAURI_INVOKE<EmoteEntry[]>("ffz_get_channel_emotes", { params }),
+	ffzGetChannelEmotes: (params: BroadcasterLoginParams) => __TAURI_INVOKE<EmoteEntry[]>("ffz_get_channel_emotes", { params }),
 	seventvGetGlobalEmotes: () => __TAURI_INVOKE<EmoteEntry[]>("seventv_get_global_emotes"),
-	seventvGetChannelEmotes: (params: ChannelIdParams) => __TAURI_INVOKE<ChannelResult>("seventv_get_channel_emotes", { params }),
+	seventvGetChannelEmotes: (params: BroadcasterParams) => __TAURI_INVOKE<ChannelResult>("seventv_get_channel_emotes", { params }),
 	seventvSubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<null>("seventv_subscribe_emote_set", { params }),
 	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<null>("seventv_unsubscribe_emote_set", { params }),
 	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentHistory>("get_recent_messages", { params }),
@@ -150,6 +150,10 @@ export type BitsBadgeTierNotice = {
 	tier: number,
 };
 
+export type BroadcasterLoginParams = {
+	broadcasterLogin: string,
+};
+
 export type BroadcasterPairParams = {
 	fromBroadcasterId: UserId,
 	toBroadcasterId: UserId,
@@ -182,18 +186,10 @@ export type ChannelFocus = {
 	focus: Focus,
 };
 
-export type ChannelIdParams = {
-	channelId: UserId,
-};
-
 export type ChannelInfo = {
 	broadcaster: UserRef,
 	game: GameRef,
 	title: string,
-};
-
-export type ChannelLoginParams = {
-	channelLogin: string,
 };
 
 export type ChannelResult = {
@@ -386,7 +382,7 @@ export type GetChannelInformationParams = {
 };
 
 export type GetRecentMessagesParams = {
-	channelLogin: string,
+	broadcasterLogin: string,
 	limit: number,
 	after?: number | null,
 };

@@ -63,8 +63,8 @@ type Props = {
   broadcasterLogin: string;
   broadcasterName: string;
   userLogin: string;
-  onOpenChannel: (channelId: string) => void;
-  onJumpToMessage: (channelId: string, messageId: string) => void;
+  onOpenChannel: (broadcasterId: string) => void;
+  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
 };
 
 export default function Chat(props: Props) {

@@ -6,19 +6,12 @@ mod ffz;
 mod seventv;
 pub mod seventv_events;
 
-use crate::twitch::ids::UserId;
 use serde::Deserialize;
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
-pub struct ChannelIdParams {
-    pub channel_id: UserId,
-}
-
-#[derive(Deserialize, specta::Type)]
-#[serde(rename_all = "camelCase")]
-pub struct ChannelLoginParams {
-    pub channel_login: String,
+pub struct BroadcasterLoginParams {
+    pub broadcaster_login: String,
 }
 
 #[derive(Deserialize, specta::Type)]

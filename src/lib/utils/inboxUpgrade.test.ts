@@ -30,3 +30,20 @@ test("passes current mentions through and drops unrenderable ones", () => {
   expect(upgradeMention(current)).toStrictEqual(current);
   expect(upgradeMention({ id: "x", timestamp: 1 })).toBeNull();
 });
+
+test("renames channel fields saved before they were broadcaster fields", () => {
+  const { broadcasterId, broadcasterLogin, broadcasterName, ...rest } =
+    upgradeMention(legacy)!;
+  const saved = {
+    ...rest,
+    channelId: broadcasterId,
+    channelLogin: broadcasterLogin,
+    channelName: broadcasterName,
+  };
+  expect(upgradeMention(saved)).toStrictEqual(upgradeMention(legacy));
+  expect(upgradeMention(legacy)).toMatchObject({
+    broadcasterId: "c1",
+    broadcasterLogin: "chan",
+    broadcasterName: "Chan",
+  });
+});

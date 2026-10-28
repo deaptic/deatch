@@ -71,7 +71,7 @@ type Props = UserActions & {
   onReact?: (msg: Message, value: string) => void;
   onCopypasta?: (msg: Message) => void;
   onJumpToMessage?: (messageId: string) => void;
-  onOpenChannel?: (channelId: string) => void;
+  onOpenChannel?: (broadcasterId: string) => void;
   onEventContextMenu?: (x: number, y: number, item: Event) => void;
   header?: JSX.Element;
   footer?: JSX.Element;
@@ -186,7 +186,7 @@ export default function Feed(props: Props) {
 
   createEffect(() => {
     const target = jumpTarget();
-    if (!target || target.channelId !== props.broadcasterId) return;
+    if (!target || target.broadcasterId !== props.broadcasterId) return;
     if (!messageList().some((m) => m.message_id === target.messageId)) return;
     setJumpTarget(null);
     const smooth = settled && !matchMedia(REDUCED_MOTION).matches;
