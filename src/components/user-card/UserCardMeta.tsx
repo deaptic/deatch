@@ -21,7 +21,7 @@ export default function UserCardMeta(props: Props) {
     props.follow.kind === "since" ? props.follow.at : undefined;
 
   return (
-    <div class="flex gap-(--card-pad) text-(length:--card-meta) min-w-0">
+    <div class="flex gap-card-pad text-card-meta min-w-0">
       <Show when={props.user?.createdAt}>
         {(createdAt) => (
           <DateCell
@@ -74,7 +74,7 @@ function DateCell(props: {
       type="button"
       data-tip={props.copyable ? copyable.tip(props.title) : props.title}
       disabled={!props.copyable}
-      class={`flex-1 min-w-0 flex items-center gap-(--card-gap) text-left [&>svg]:size-(--meta-icon) [&>svg]:shrink-0 [&>svg]:text-ink-faint ${
+      class={`flex-1 min-w-0 flex items-center gap-card-gap text-left [&>svg]:size-card-meta-icon [&>svg]:shrink-0 [&>svg]:text-ink-faint ${
         props.copyable ? copyable.class() : "text-ink-soft"
       }`}
       onMouseDown={(e) => e.stopPropagation()}

@@ -11,7 +11,7 @@ type Props = {
 export default function UserCardIdentity(props: Props) {
   return (
     <div class="min-w-0 flex items-center leading-tight">
-      <span class="truncate min-w-0 text-(length:--card-name)">
+      <span class="truncate min-w-0 text-card-name">
         <Show
           when={props.user}
           fallback={

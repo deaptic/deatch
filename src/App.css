@@ -76,7 +76,8 @@
 
   /* Feed rows scale with the user's chat text size, so their parts are sized
      in em. These are the only em-based sizes in the app. */
-  --text-feed-meta: 0.85em;
+  --feed-meta-scale: 0.85;
+  --text-feed-meta: calc(var(--feed-meta-scale) * 1em);
   --text-feed-timestamp: 0.8em;
   --spacing-feed-emote: 1.7em;
   --spacing-feed-emote-max: 4.5em;
@@ -87,6 +88,8 @@
   --spacing-feed-badge-drop: -0.15em;
   --spacing-feed-icon: 1.1em;
   --spacing-feed-hook: 0.625em;
+  /* A tile beside meta text, shrunk with it. */
+  --spacing-feed-meta-tile: calc(var(--chat-tile) * var(--feed-meta-scale));
   /* Lead (tile or timestamp) beside the text, which may shrink to wrap. */
   --feed-columns: auto minmax(0, 1fr);
 
@@ -102,6 +105,19 @@
   --spacing-rail-expanded: 280px;
   --spacing-header: 56px;
   --spacing-titlebar: 40px;
+
+  /* User card: resizable between its default and max size. */
+  --spacing-card-width: 22.5rem;
+  --spacing-card-height: 35rem;
+  --spacing-card-max-width: 40rem;
+  --spacing-card-max-height: 50rem;
+  --spacing-card-pad: 1.25rem;
+  --spacing-card-gap: 0.625rem;
+  --spacing-card-avatar-lift: 2.5rem;
+  --spacing-card-feed-min: calc(3lh + 0.5rem);
+  --spacing-card-meta-icon: 1em;
+  --text-card-name: 1.45rem;
+  --text-card-meta: 0.95rem;
 
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
   --duration-snap: 90ms;
