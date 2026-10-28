@@ -23,7 +23,7 @@ pub struct Stream {
 impl From<helix_streams::Stream> for Stream {
     fn from(s: helix_streams::Stream) -> Self {
         Self {
-            id: StreamId(s.id.to_string()),
+            id: StreamId::from(s.id.to_string()),
             user: UserRef::new(s.user_id, s.user_login, s.user_name),
             game: GameRef::new(s.game_id, s.game_name),
             title: s.title,

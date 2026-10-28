@@ -1,4 +1,4 @@
-import { chattersByChannel } from "../../lib/stores/users.ts";
+import { chattersIn } from "../../lib/stores/users.ts";
 import { completions } from "./usernameCompletion.ts";
 
 type Options = {
@@ -38,8 +38,7 @@ export function createUsernameTabComplete(opts: Options) {
   }
 
   function findMatches(query: string): string[] {
-    const bucket = chattersByChannel.get(opts.broadcasterId());
-    return bucket ? completions(bucket.values(), query) : [];
+    return completions(chattersIn(opts.broadcasterId()), query);
   }
 
   function writeCycle(c: Cycle) {

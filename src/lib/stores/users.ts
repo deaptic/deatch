@@ -25,7 +25,12 @@ export function knownUser(id: string): User | undefined {
   return knownUsers[id]?.user;
 }
 
-export const chattersByChannel = new Map<string, Map<string, Chatter>>();
+const chattersByChannel = new Map<string, Map<string, Chatter>>();
+
+/// Who has chatted in the channel lately, as far as this session saw.
+export function chattersIn(channelId: string): Iterable<Chatter> {
+  return chattersByChannel.get(channelId)?.values() ?? [];
+}
 
 const MAX_CHATTERS_PER_CHANNEL = 1000;
 

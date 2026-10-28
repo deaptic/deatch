@@ -47,8 +47,9 @@ export const commands = {
 	getBan: (params: BroadcasterUserParams) => __TAURI_INVOKE<{
 	user: UserRef,
 	moderator: UserRef,
-	reason: string,
-	expiresAt: string,
+	reason: string | null,
+	/**  None for a permanent ban. */
+	expiresAt: string | null,
 } | null>("get_ban", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
@@ -158,8 +159,9 @@ export type BanUserParams = {
 export type BannedUser = {
 	user: UserRef,
 	moderator: UserRef,
-	reason: string,
-	expiresAt: string,
+	reason: string | null,
+	/**  None for a permanent ban. */
+	expiresAt: string | null,
 };
 
 export type BitsBadgeTierNotice = {
@@ -589,7 +591,6 @@ export type SearchChannel = {
 	title: string,
 	isLive: boolean,
 	profileImageUrl: string,
-	startedAt: string,
 };
 
 export type SearchParams = {

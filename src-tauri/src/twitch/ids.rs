@@ -6,7 +6,6 @@ macro_rules! id_type {
         #[derive(
             Debug,
             Clone,
-            Default,
             PartialEq,
             Eq,
             PartialOrd,
@@ -17,7 +16,7 @@ macro_rules! id_type {
             specta::Type,
         )]
         #[serde(transparent)]
-        pub struct $name(pub String);
+        pub struct $name(String);
 
         impl $name {
             pub fn as_str(&self) -> &str {
