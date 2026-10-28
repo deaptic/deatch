@@ -16,12 +16,11 @@ export function setLockedVersion(
   name: string,
   version: string,
 ): string {
-  let found = false;
-  const next = lock.replace(ENTRY, (entry, entryName: string) => {
-    if (found || entryName !== name) return entry;
-    found = true;
-    return entry.replace(/version = "[^"]+"$/, `version = "${version}"`);
-  });
-  if (!found) throw new Error(`${name} is not in Cargo.lock`);
-  return next;
+  const entry = [...lock.matchAll(ENTRY)].find((match) => match[1] === name);
+  if (!entry) throw new Error(`${name} is not in Cargo.lock`);
+  const [text] = entry;
+  const patched = text.replace(/version = "[^"]+"$/, `version = "${version}"`);
+  return (
+    lock.slice(0, entry.index) + patched + lock.slice(entry.index + text.length)
+  );
 }

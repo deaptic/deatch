@@ -41,7 +41,7 @@ export function snapshotDivider(id: string) {
 export function isFeedEntryVisible(item: FeedEntry): boolean {
   if (item.kind === "event") {
     const k = NOTICE_TO_EVENT[item.notice_type];
-    return !k || (feedShowEvents() && feedEvents()[k]?.show !== false);
+    return !k || (feedShowEvents() && feedEvents()[k].show !== false);
   }
-  return !!item.automod_hold || feedEvents().message?.show !== false;
+  return !!item.automod_hold || feedEvents().message.show !== false;
 }

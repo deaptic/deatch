@@ -83,11 +83,11 @@ export default function Rail(props: Props) {
   };
 
   const linkedOthers = () =>
-    linkWarmedChannels().filter((c) => c?.id !== user()?.id);
-  const ownTab = () => linkWarmedChannels().find((c) => c?.id === user()?.id);
+    linkWarmedChannels().filter((c) => c.id !== user()?.id);
+  const ownTab = () => linkWarmedChannels().find((c) => c.id === user()?.id);
 
   const warmedIds = createMemo(
-    () => new Set(linkWarmedChannels().map((c) => c?.id)),
+    () => new Set(linkWarmedChannels().map((c) => c.id)),
   );
 
   const isListed = (id: string) =>
@@ -378,12 +378,12 @@ export default function Rail(props: Props) {
             >
               <For each={channels.onlineList()}>
                 {(ch) => (
-                  <div data-channel-id={ch?.id}>
+                  <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      selected={selectedId() === ch?.id}
-                      unread={hasUnread(ch?.id)}
-                      mentions={channelMentionCount(ch?.id)}
+                      selected={selectedId() === ch.id}
+                      unread={hasUnread(ch.id)}
+                      mentions={channelMentionCount(ch.id)}
                       onSelect={() => props.onSelect(ch)}
                       onMiddleClick={() => openInBrowser(ch)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
@@ -419,16 +419,16 @@ export default function Rail(props: Props) {
             >
               <For each={linkedOthers()}>
                 {(ch) => (
-                  <div data-channel-id={ch?.id}>
+                  <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      selected={selectedId() === ch?.id}
-                      unread={hasUnread(ch?.id)}
-                      mentions={channelMentionCount(ch?.id)}
-                      muted={linkMutedByLogin()[ch?.login] === true}
-                      onToggleMute={() => link.toggleMuted(ch?.login)}
+                      selected={selectedId() === ch.id}
+                      unread={hasUnread(ch.id)}
+                      mentions={channelMentionCount(ch.id)}
+                      muted={linkMutedByLogin()[ch.login] === true}
+                      onToggleMute={() => link.toggleMuted(ch.login)}
                       onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() => linkClose(ch?.login).catch(() => {})}
+                      onMiddleClick={() => linkClose(ch.login).catch(() => {})}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -569,7 +569,7 @@ export default function Rail(props: Props) {
             onClose={() => setChMenu(null)}
             onPin={pin}
             onLogout={
-              m().ch?.id === user()?.id ? () => session.logout() : undefined
+              m().ch.id === user()?.id ? () => session.logout() : undefined
             }
           />
         )}

@@ -78,7 +78,7 @@ function DateCell(props: {
         props.copyable ? copyable.class() : "text-ink-soft"
       }`}
       onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => copyable.copy(e.currentTarget.textContent ?? "")}
+      onClick={(e) => copyable.copy(e.currentTarget.textContent)}
     >
       {props.icon}
       <span class="truncate">{props.children}</span>

@@ -51,10 +51,7 @@ export default function ChatterPicture(props: Props) {
   const url = createMemo(
     () =>
       (feedShowAvatars() &&
-        knownUser(props.userId)?.profileImageUrl?.replace(
-          "300x300",
-          "70x70",
-        )) ||
+        knownUser(props.userId)?.profileImageUrl.replace("300x300", "70x70")) ||
       null,
   );
   const showingImage = () => !!url() && loaded() && !failed();

@@ -39,15 +39,13 @@ export function createRailChannels(
   const [loadingPinned, setLoadingPinned] = createSignal(true);
   const [loadingLive, setLoadingLive] = createSignal(true);
 
-  const liveById = createMemo(() => new Map(live.map((ch) => [ch?.id, ch])));
+  const liveById = createMemo(() => new Map(live.map((ch) => [ch.id, ch])));
   const pinnedIdSet = createMemo(() => new Set(pinnedChannels()));
   const warmedIdSet = createMemo(
-    () => new Set(linkWarmedChannels().map((ch) => ch?.id)),
+    () => new Set(linkWarmedChannels().map((ch) => ch.id)),
   );
   const onlineList = createMemo(() =>
-    live.filter(
-      (ch) => !pinnedIdSet().has(ch?.id) && !warmedIdSet().has(ch?.id),
-    ),
+    live.filter((ch) => !pinnedIdSet().has(ch.id) && !warmedIdSet().has(ch.id)),
   );
   const resolveChannel = (id: string): User | undefined =>
     liveById().get(id) ?? pinnedMeta[id];

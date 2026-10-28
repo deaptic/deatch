@@ -30,7 +30,7 @@ const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
 
 function closeTabs(tabs: User[]) {
-  for (const ch of tabs) if (ch?.login) linkClose(ch.login).catch(() => {});
+  for (const ch of tabs) if (ch.login) linkClose(ch.login).catch(() => {});
 }
 
 export function closeAll() {
@@ -59,7 +59,7 @@ function isMuted(login: string): boolean {
 /// The open channel, when it has a browser tab.
 export function selectedLinked() {
   const sel = selectedChannel();
-  return sel && linkWarmedChannels().some((c) => c?.id === sel.id) ? sel : null;
+  return sel && linkWarmedChannels().some((c) => c.id === sel.id) ? sel : null;
 }
 
 /// Opening or closing a browser tab can bring the browser to the front; the
@@ -129,14 +129,14 @@ export function sendAudio(
 }
 
 export function anyUnmuted(): boolean {
-  return linkWarmedChannels().some((ch) => ch?.login && !isMuted(ch.login));
+  return linkWarmedChannels().some((ch) => ch.login && !isMuted(ch.login));
 }
 
 // Only the shown tab plays; every other tab goes quiet.
 export function muteOthers() {
   const focusedLogin = selectedLinked()?.login ?? null;
   for (const ch of linkWarmedChannels()) {
-    if (!ch?.login) continue;
+    if (!ch.login) continue;
     const shouldBeMuted = ch.login !== focusedLogin;
     if (isMuted(ch.login) !== shouldBeMuted) {
       linkSetMuted(ch.login, shouldBeMuted).catch(() => {});
@@ -149,7 +149,7 @@ export function toggleMuteAll() {
   if (linked.length === 0) return;
   const muteAll = anyUnmuted();
   for (const ch of linked) {
-    if (!ch?.login) continue;
+    if (!ch.login) continue;
     if (isMuted(ch.login) !== muteAll) {
       linkSetMuted(ch.login, muteAll).catch(() => {});
     }
@@ -239,7 +239,7 @@ export async function applyState({ channels, current, audio }: LinkState) {
 
   const incoming = new Set(channels.map((c) => c.login.toLowerCase()));
   const warmed = linkWarmedChannels();
-  const keep = warmed.filter((c) => incoming.has(c?.login));
+  const keep = warmed.filter((c) => incoming.has(c.login));
   if (keep.length !== warmed.length) setLinkWarmedChannels(keep);
 
   const known = new Set(keep.map((c) => c.login));

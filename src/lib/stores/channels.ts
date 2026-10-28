@@ -42,7 +42,7 @@ export function streamForUserId(userId: string): Stream | undefined {
 export function channelsInOrder(): User[] {
   const pinnedIds = pinnedChannels();
   const pinnedSet = new Set(pinnedIds);
-  const warmedSet = new Set(linkWarmedChannels().map((c) => c?.id));
+  const warmedSet = new Set(linkWarmedChannels().map((c) => c.id));
   const live = liveStreams();
   const ordered: User[] = [];
   const seen = new Set<string>();

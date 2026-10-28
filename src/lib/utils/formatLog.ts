@@ -33,7 +33,8 @@ function logReplacer() {
 }
 
 function typeName(value: unknown): string {
-  return value === null || typeof value !== "object"
-    ? typeof value
-    : (value.constructor?.name ?? "Object");
+  if (value === null || typeof value !== "object") return typeof value;
+  // Objects made with Object.create(null) have no constructor.
+  const constructor: unknown = value.constructor;
+  return typeof constructor === "function" ? constructor.name : "Object";
 }

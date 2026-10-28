@@ -31,7 +31,7 @@ export default function ShownInChatCard() {
           <SettingsRow label={t(e.label)} description={t(e.description)}>
             <Toggle
               label={t(e.label)}
-              checked={feedEvents()[e.key]?.show !== false}
+              checked={feedEvents()[e.key].show !== false}
               disabled={e.key !== "message" && !feedShowEvents()}
               onChange={(v) => setFeedEvent(e.key, v)}
             />

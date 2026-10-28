@@ -22,6 +22,7 @@ export default defineConfig({
     },
     rules: {
       "no-unused-vars": ["warn", { ignoreRestSiblings: true }],
+      "typescript/no-unnecessary-condition": "warn",
       "shadcn/no-raw-colors": "error",
       "shadcn/no-arbitrary-values": "error",
       "shadcn/no-restyle": ["error", { allow: ["layout"] }],

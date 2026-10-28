@@ -56,7 +56,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
       ? linkWarmedChannels()
       : [...linkWarmedChannels(), ...channelsInOrder()];
     if (list.length === 0) return;
-    const i = list.findIndex((c) => c?.id === pendingChannel()?.id);
+    const i = list.findIndex((c) => c.id === pendingChannel()?.id);
     const nextIdx =
       i === -1
         ? direction === 1

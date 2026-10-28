@@ -60,28 +60,35 @@ export function start(): () => void {
 /// `at` is when Twitch last returned the user; partial users from stream
 /// data refresh names but never count as a fetch.
 export function set(users: User[]): void {
-  if (users.length === 0) return;
   const now = Date.now();
-  let changed = false;
+  const pending = changedEntries(unwrap(knownUsers), users, now);
+  if (pending.size === 0) return;
   setKnownUsers(
     produce((table) => {
-      for (const next of users) {
-        const prev = table[next.id];
-        const merged = mergeUser(prev?.user, next);
-        const at = isComplete(next) ? now : (prev?.at ?? 0);
-        if (prev && sameUser(prev.user, merged)) {
-          if (prev.at === at) continue;
-          prev.at = at;
-        } else {
-          table[next.id] = { user: merged, at };
-        }
-        changed = true;
-      }
+      for (const [id, entry] of pending) table[id] = entry;
     }),
   );
-  if (!changed) return;
   if (Object.keys(unwrap(knownUsers)).length > MAX_KNOWN) evict(now);
   scheduleSave();
+}
+
+/// The entries `users` change, applied in order so a later duplicate builds
+/// on an earlier one. An unchanged user keeps its object, so only `at` moves.
+function changedEntries(
+  table: Record<string, KnownUser>,
+  users: User[],
+  now: number,
+): Map<string, KnownUser> {
+  const pending = new Map<string, KnownUser>();
+  for (const next of users) {
+    const prev = pending.get(next.id) ?? table[next.id];
+    const merged = mergeUser(prev?.user, next);
+    const at = isComplete(next) ? now : (prev?.at ?? 0);
+    const same = prev !== undefined && sameUser(prev.user, merged);
+    if (same && prev.at === at) continue;
+    pending.set(next.id, { user: same ? prev.user : merged, at });
+  }
+  return pending;
 }
 
 export async function fetch(

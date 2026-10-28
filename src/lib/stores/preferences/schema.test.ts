@@ -43,8 +43,8 @@ test("hiding all badges keeps each category's own setting", () => {
     feed: { showBadges: false, badges: { vanity: { show: false } } },
   });
   expect(prefs.feed.showBadges).toBe(false);
-  expect(prefs.feed.badges.vanity?.show).toBe(false);
-  expect(prefs.feed.badges.subscriber?.show).toBe(true);
+  expect(prefs.feed.badges.vanity.show).toBe(false);
+  expect(prefs.feed.badges.subscriber.show).toBe(true);
   expect(sanitize({}).feed.showBadges).toBe(true);
 });
 
@@ -53,9 +53,26 @@ test("hiding all events keeps each kind's own setting", () => {
     feed: { showEvents: false, events: { raid: { show: false } } },
   });
   expect(prefs.feed.showEvents).toBe(false);
-  expect(prefs.feed.events.raid?.show).toBe(false);
-  expect(prefs.feed.events.sub?.show).toBe(true);
+  expect(prefs.feed.events.raid.show).toBe(false);
+  expect(prefs.feed.events.sub.show).toBe(true);
   expect(sanitize({}).feed.showEvents).toBe(true);
+});
+test("event and badge settings keep only known keys with a boolean show", () => {
+  const prefs = sanitize({
+    feed: {
+      events: {
+        raid: { show: "no" },
+        follow: { show: false },
+        bogus: { show: false },
+      },
+      badges: { vanity: null, channel: { show: false } },
+    },
+  });
+  expect(prefs.feed.events.raid.show).toBe(true);
+  expect(prefs.feed.events.follow.show).toBe(false);
+  expect("bogus" in prefs.feed.events).toBe(false);
+  expect(prefs.feed.badges.vanity.show).toBe(true);
+  expect(prefs.feed.badges.channel.show).toBe(false);
 });
 
 test("triggers without an id or phrase are dropped, the rest repaired", () => {
@@ -96,5 +113,5 @@ test("each result is independent of the defaults", () => {
   const next = sanitize({});
   expect(next.feed.keywords.includes("edited")).toBe(false);
   expect(next.menu.channels.pinned.includes("edited")).toBe(false);
-  expect(next.feed.events.message?.show).toStrictEqual(shown);
+  expect(next.feed.events.message.show).toStrictEqual(shown);
 });

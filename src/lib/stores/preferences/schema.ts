@@ -1,4 +1,9 @@
-import type { BadgeCategoryKey, EventKey } from "../../constants.ts";
+import {
+  BADGE_CATEGORIES,
+  type BadgeCategoryKey,
+  EVENTS,
+  type EventKey,
+} from "../../constants.ts";
 import { DENSITIES, type Density } from "../../constants/density.ts";
 import { type Theme, THEMES } from "../../constants/theme.ts";
 import {
@@ -17,10 +22,12 @@ import {
   DEFAULT_COMPRESSOR,
   MAX_CHANNEL_GAIN,
 } from "../../constants/audio.ts";
+import { fromKeys } from "../../utils/fromKeys.ts";
 import defaults from "../default-preferences.json" with { type: "json" };
 
-export type EventPref = { show: boolean };
-export type BadgePref = { show: boolean };
+type ShowPref = { show: boolean };
+export type EventPref = ShowPref;
+export type BadgePref = ShowPref;
 
 export const MIN_TRIGGER_COOLDOWN = 5;
 export const MAX_TRIGGER_COOLDOWN = 600;
@@ -59,8 +66,8 @@ export type UserPreferences = {
     showBadges: boolean;
     showEvents: boolean;
     keywords: string[];
-    events: Partial<Record<EventKey, EventPref>>;
-    badges: Partial<Record<BadgeCategoryKey, BadgePref>>;
+    events: Record<EventKey, EventPref>;
+    badges: Record<BadgeCategoryKey, BadgePref>;
     users: {
       showDisplayName: boolean;
       overrideNameColor: string;
@@ -106,13 +113,50 @@ export type UserPreferences = {
   triggers: Trigger[];
 };
 
+const EVENT_KEYS = EVENTS.map((e) => e.key);
+const BADGE_KEYS = BADGE_CATEGORIES.map((c) => c.key);
+
+/// Every key, with its stored `show` when that is a boolean, else the
+/// fallback's, else shown.
+function showPrefs<K extends string>(
+  keys: readonly K[],
+  raw: unknown,
+  fallback: Partial<Record<K, ShowPref>> = {},
+): Record<K, ShowPref> {
+  const stored: Partial<Record<string, unknown>> =
+    raw && typeof raw === "object" ? raw : {};
+  return fromKeys(keys, (key) => {
+    const value = stored[key];
+    const show =
+      value && typeof value === "object" && "show" in value
+        ? value.show
+        : undefined;
+    return typeof show === "boolean"
+      ? { show }
+      : (fallback[key] ?? { show: true });
+  });
+}
+
 // The compressor's defaults live with its ranges in constants/audio.ts.
 export const DEFAULT_PREFERENCES: UserPreferences = {
   ...defaults,
+  feed: {
+    ...defaults.feed,
+    events: showPrefs(EVENT_KEYS, defaults.feed.events),
+    badges: showPrefs(BADGE_KEYS, defaults.feed.badges),
+  },
   link: { ...defaults.link, compressorSettings: DEFAULT_COMPRESSOR },
 } as UserPreferences;
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+
+function sanitizeKeywords(raw: unknown): string[] {
+  return Array.isArray(raw)
+    ? raw.filter(
+        (k): k is string => typeof k === "string" && k.trim().length > 0,
+      )
+    : DEFAULT_PREFERENCES.feed.keywords;
+}
 
 function sanitizeHex(raw: unknown): string | null {
   return typeof raw === "string" && HEX_COLOR.test(raw.trim())
@@ -203,10 +247,13 @@ function sanitizeChannelGains(raw: unknown): Record<string, number> {
   return out;
 }
 
+/// Stored preferences may lack any field at any depth; each is validated.
+type Stored<T> = T extends object ? { [K in keyof T]?: Stored<T[K]> } : T;
+
 export function sanitize(raw: unknown): UserPreferences {
   const stored = (
     raw && typeof raw === "object" ? raw : {}
-  ) as Partial<UserPreferences>;
+  ) as Stored<UserPreferences>;
   const rawPinned = stored.menu?.channels?.pinned;
   const pinned = Array.isArray(rawPinned)
     ? rawPinned.filter((s): s is string => typeof s === "string")
@@ -248,13 +295,17 @@ export function sanitize(raw: unknown): UserPreferences {
         stored.feed?.showEvents,
         DEFAULT_PREFERENCES.feed.showEvents,
       ),
-      keywords: Array.isArray(stored.feed?.keywords)
-        ? stored.feed!.keywords.filter(
-            (k): k is string => typeof k === "string" && k.trim().length > 0,
-          )
-        : DEFAULT_PREFERENCES.feed.keywords,
-      events: { ...DEFAULT_PREFERENCES.feed.events, ...stored.feed?.events },
-      badges: { ...DEFAULT_PREFERENCES.feed.badges, ...stored.feed?.badges },
+      keywords: sanitizeKeywords(stored.feed?.keywords),
+      events: showPrefs(
+        EVENT_KEYS,
+        stored.feed?.events,
+        DEFAULT_PREFERENCES.feed.events,
+      ),
+      badges: showPrefs(
+        BADGE_KEYS,
+        stored.feed?.badges,
+        DEFAULT_PREFERENCES.feed.badges,
+      ),
       users: {
         showDisplayName: bool(
           stored.feed?.users?.showDisplayName,
