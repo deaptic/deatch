@@ -105,7 +105,7 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              openUrl(segment.url);
+              void openUrl(segment.url);
             }}
             onAuxClick={onMiddleClick(() => openUrl(segment.url))}
             onMouseDown={preventAutoscroll}

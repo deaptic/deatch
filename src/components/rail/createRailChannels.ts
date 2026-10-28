@@ -155,8 +155,8 @@ export function createRailChannels(
   });
 
   onMount(() => {
-    fetchPinnedMeta();
-    fetchLive();
+    void fetchPinnedMeta();
+    void fetchLive();
     const id = setInterval(fetchLive, 60_000);
     onCleanup(() => clearInterval(id));
   });

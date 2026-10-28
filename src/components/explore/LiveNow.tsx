@@ -93,7 +93,7 @@ export default function LiveNow(props: Props) {
         setRemote([]);
         setCursor(null);
         setExhausted(false);
-        if (!exploreFilters.followingOnly) fetchPage(true);
+        if (!exploreFilters.followingOnly) void fetchPage(true);
       },
     ),
   );
@@ -127,7 +127,7 @@ export default function LiveNow(props: Props) {
 
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting) fetchPage(false);
+      if (entries[0].isIntersecting) void fetchPage(false);
     },
     { rootMargin: "400px" },
   );

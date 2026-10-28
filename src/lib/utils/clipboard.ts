@@ -12,7 +12,7 @@ export function copyText(text: string): Promise<boolean> {
 }
 
 export function copyField(text: string) {
-  copyText(text).then((ok) => {
+  void copyText(text).then((ok) => {
     if (ok) addToast(t("COMMON_COPIED"), "success");
   });
 }

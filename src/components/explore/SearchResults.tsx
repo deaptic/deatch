@@ -99,7 +99,7 @@ export default function SearchResults(props: Props) {
         e.preventDefault();
         const channel = ranked()[active()];
         if (channel) open(channel);
-        else forceOpenByLogin();
+        else void forceOpenByLogin();
       }
     };
     globalThis.addEventListener("keydown", onKey);
