@@ -1,10 +1,9 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 import {
   onMiddleClick,
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
 export type UserAction = (
@@ -36,7 +35,7 @@ export function userLink(
         actions.onUserContextMenu &&
           ((x, y) => actions.onUserContextMenu!(x, y, identity())),
       ),
-    onAuxClick: onMiddleClick(() => openUrl(channelUrl(identity().login))),
+    onAuxClick: onMiddleClick(() => browser.openChannel(identity().login)),
     onMouseDown: preventAutoscroll,
   };
 }

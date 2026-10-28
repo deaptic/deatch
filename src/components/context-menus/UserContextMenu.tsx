@@ -7,9 +7,8 @@ import {
   User,
 } from "lucide-solid";
 import { Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import { t } from "../../lib/i18n/index.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -67,7 +66,7 @@ export default function UserContextMenu(props: Props) {
       <MenuItem
         label={t("MENU_OPEN_IN_BROWSER")}
         icon={<ExternalLink />}
-        onClick={run(() => openUrl(channelUrl(props.userLogin)))}
+        onClick={run(() => browser.openChannel(props.userLogin))}
       />
       <Show when={props.isMod}>
         <MenuDivider />

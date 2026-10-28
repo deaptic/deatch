@@ -7,8 +7,14 @@ import {
   X,
 } from "lucide-solid";
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { getVersion } from "@tauri-apps/api/app";
+import { appVersion } from "../../lib/api/app.ts";
+import {
+  closeWindow,
+  isWindowMaximized,
+  minimizeWindow,
+  onWindowResized,
+  toggleMaximizeWindow,
+} from "../../lib/api/window.ts";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
@@ -19,8 +25,6 @@ import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
-
-const win = getCurrentWindow();
 
 const CONTROL =
   "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
@@ -45,7 +49,7 @@ export default function TitleBar(props: Props) {
   let diagnosticsBtn: HTMLButtonElement | undefined;
 
   onMount(() => {
-    getVersion()
+    appVersion({ silent: true })
       .then(setVersion)
       .catch(() => {});
   });
@@ -57,14 +61,17 @@ export default function TitleBar(props: Props) {
       cancelled = true;
       unlisten?.();
     });
-    void (async () => {
-      setMaximized(await win.isMaximized());
-      const off = await win.onResized(async () => {
-        setMaximized(await win.isMaximized());
-      });
-      if (cancelled) off();
-      else unlisten = off;
-    })();
+    const syncMaximized = () =>
+      isWindowMaximized({ silent: true })
+        .then(setMaximized)
+        .catch(() => {});
+    void syncMaximized();
+    onWindowResized(syncMaximized, { silent: true })
+      .then((off) => {
+        if (cancelled) off();
+        else unlisten = off;
+      })
+      .catch(() => {});
   });
 
   return (
@@ -122,14 +129,14 @@ export default function TitleBar(props: Props) {
           <div class="w-px h-5 self-center mx-1 bg-line-soft" />
           <button
             class={CONTROL}
-            onClick={() => win.minimize()}
+            onClick={() => minimizeWindow().catch(() => {})}
             aria-label={t("TITLE_BAR_MINIMIZE")}
           >
             <Minus class="size-3" />
           </button>
           <button
             class={CONTROL}
-            onClick={() => win.toggleMaximize()}
+            onClick={() => toggleMaximizeWindow().catch(() => {})}
             aria-label={
               maximized() ? t("TITLE_BAR_RESTORE") : t("TITLE_BAR_MAXIMIZE")
             }
@@ -138,7 +145,7 @@ export default function TitleBar(props: Props) {
           </button>
           <button
             class={`${CONTROL} hover:bg-negative! hover:text-on-accent!`}
-            onClick={() => win.close()}
+            onClick={() => closeWindow().catch(() => {})}
             aria-label={t("COMMON_CLOSE")}
           >
             <X class="size-3" />

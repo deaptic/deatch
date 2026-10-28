@@ -10,14 +10,14 @@ import {
   setLinkMutedByLogin,
   setLinkWarmedChannels,
 } from "../stores/link.ts";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   linkClose,
   linkFocus,
   linkSetAudio,
   linkSetMuted,
 } from "../api/link.ts";
+import { openUrl } from "../api/opener.ts";
+import { focusWindow, onWindowFocusChanged } from "../api/window.ts";
 import { channelUrl } from "../utils/twitchUrl.ts";
 import type { CompressorSettings } from "../constants/audio.ts";
 import { getStreamsFromIds } from "../api/twitch/streams.ts";
@@ -68,12 +68,14 @@ export function selectedLinked() {
 const REFOCUS_MS = 2000;
 
 async function keepingFocus(action: () => Promise<unknown>) {
-  const win = getCurrentWindow();
-  const unlisten = await win.onFocusChanged(({ payload: focused }) => {
-    if (focused) return;
-    stop();
-    void win.setFocus();
-  });
+  const unlisten = await onWindowFocusChanged(
+    (focused) => {
+      if (focused) return;
+      stop();
+      focusWindow({ silent: true }).catch(() => {});
+    },
+    { silent: true },
+  );
   const timer = setTimeout(stop, REFOCUS_MS);
   function stop() {
     clearTimeout(timer);
@@ -89,9 +91,7 @@ export function openTab() {
   if (tab) return void linkFocus(tab.login);
   const ch = selectedChannel();
   if (!ch) return;
-  keepingFocus(() => openUrl(channelUrl(ch.login))).catch((e) =>
-    console.warn("browser tab not opened", e),
-  );
+  keepingFocus(() => openUrl(channelUrl(ch.login))).catch(() => {});
 }
 
 /// Passes the key on (false) when the open channel has no tab, so one key can
@@ -99,9 +99,7 @@ export function openTab() {
 export function closeTab(): boolean {
   const tab = selectedLinked();
   if (!tab) return false;
-  keepingFocus(() => linkClose(tab.login)).catch((e) =>
-    console.warn("browser tab not closed", e),
-  );
+  keepingFocus(() => linkClose(tab.login)).catch(() => {});
   return true;
 }
 

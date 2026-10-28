@@ -1,12 +1,12 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { createSignal, Show } from "solid-js";
-import { relaunch } from "@tauri-apps/plugin-process";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import Dialog from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
+import { relaunchApp } from "../../../lib/api/app.ts";
 import { setHardwareAcceleration } from "../../../lib/api/graphics.ts";
 import { addToast } from "../../../lib/stores/toasts.ts";
 import { errorMessage } from "../../../lib/utils/error.ts";
@@ -34,7 +34,7 @@ export default function AdvancedSection() {
     try {
       await setHardwareAcceleration(enabled);
       setAdvancedHardwareAcceleration(enabled);
-      await relaunch();
+      await relaunchApp({ silent: true });
     } catch (e) {
       addToast(t("SETTINGS_ADVANCED_RESTART_FAILED"), "error", errorMessage(e));
     } finally {

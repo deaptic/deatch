@@ -1,5 +1,5 @@
 import { For, Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import type { EmoteMap } from "../../lib/stores/emotes.ts";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
 import type { Fragment } from "../../lib/types/index.ts";
@@ -105,9 +105,9 @@ function TextWithEmotes(props: { text: string; emotes: EmoteMap }) {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              void openUrl(segment.url);
+              browser.open(segment.url);
             }}
-            onAuxClick={onMiddleClick(() => openUrl(segment.url))}
+            onAuxClick={onMiddleClick(() => browser.open(segment.url))}
             onMouseDown={preventAutoscroll}
             class="text-accent-ink hover:underline break-all"
           >

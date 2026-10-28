@@ -9,7 +9,7 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import { linkSynced } from "../../lib/stores/view.ts";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
@@ -54,7 +54,7 @@ export default function LinkMenu(props: Props) {
               label={t("RAIL_LINK_FIREFOX")}
               icon={<Puzzle />}
               hint={t("RAIL_LINK_GET_IT")}
-              onClick={run(() => openUrl(FIREFOX_ADDON_URL))}
+              onClick={run(() => browser.open(FIREFOX_ADDON_URL))}
             />
             <MenuItem
               label={t("RAIL_LINK_CHROME")}

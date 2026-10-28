@@ -15,14 +15,13 @@ import {
   knownUser,
   user as currentUser,
 } from "../../lib/stores/users.ts";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import { AtSign, Hash, Pin } from "lucide-solid";
 import { feeds } from "../../lib/stores/feeds.ts";
 import {
   onMiddleClick,
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import Avatar from "../ui/Avatar.tsx";
 import BadgeBox from "../ui/BadgeBox.tsx";
 import IconButton from "../ui/IconButton.tsx";
@@ -87,7 +86,7 @@ export default function UserCardHeader(props: Props) {
   );
   const openInBrowser = () => {
     const login = user()?.login;
-    if (login) void openUrl(channelUrl(login));
+    if (login) browser.openChannel(login);
   };
   const channelBadges = () => feeds[props.broadcasterId]?.badges ?? {};
   const latestBadges = () => props.messages.at(-1)?.badges ?? [];
