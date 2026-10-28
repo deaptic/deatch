@@ -33,7 +33,7 @@ type Props = {
 
 const PAGE_SIZE = 40;
 const THUMBNAIL_REFRESH_MS = 5 * 60_000;
-const SYSTEM_LANGUAGE = navigator.language.split("-")[0];
+const systemLanguage = () => navigator.language.split("-")[0];
 
 export default function LiveNow(props: Props) {
   const [remote, setRemote] = createSignal<Stream[]>([]);
@@ -120,7 +120,7 @@ export default function LiveNow(props: Props) {
   }, new Set());
 
   const languageOptions = () =>
-    orderLanguages(seenLanguages(), [SYSTEM_LANGUAGE, exploreLanguage()]);
+    orderLanguages(seenLanguages(), [systemLanguage(), exploreLanguage()]);
 
   const initialLoading = () =>
     !exploreFilters.followingOnly && fetching() && remote().length === 0;
