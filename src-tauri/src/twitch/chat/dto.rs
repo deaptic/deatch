@@ -47,7 +47,7 @@ impl From<HelixUserEmote> for UserEmote {
             name: e.name,
             emote_type: e.emote_type,
             emote_set_id: e.emote_set_id.to_string(),
-            owner_id: UserId(e.owner_id.to_string()),
+            owner_id: UserId::from(e.owner_id.to_string()),
         }
     }
 }
@@ -157,7 +157,7 @@ impl From<ChatMessageDropReason> for DropReason {
 impl From<SendChatMessageResponse> for SendMessageResult {
     fn from(r: SendChatMessageResponse) -> Self {
         Self {
-            message_id: r.message_id.map(|m| MessageId(m.to_string())),
+            message_id: r.message_id.map(|m| MessageId::from(m.to_string())),
             is_sent: r.is_sent,
             drop_reason: r.drop_reason.map(DropReason::from),
         }

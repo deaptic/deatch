@@ -12,7 +12,6 @@ pub struct SearchChannel {
     pub title: String,
     pub is_live: bool,
     pub profile_image_url: String,
-    pub started_at: String,
 }
 
 impl From<HelixSearchChannel> for SearchChannel {
@@ -23,7 +22,6 @@ impl From<HelixSearchChannel> for SearchChannel {
             title: c.title,
             is_live: c.is_live,
             profile_image_url: crate::twitch::template::render_size(&c.thumbnail_url, 300, 300),
-            started_at: c.started_at.map(|t| t.to_string()).unwrap_or_default(),
         }
     }
 }
@@ -39,7 +37,7 @@ pub struct Category {
 impl From<TwitchCategory> for Category {
     fn from(c: TwitchCategory) -> Self {
         Self {
-            id: GameId(c.id.to_string()),
+            id: GameId::from(c.id.to_string()),
             name: c.name,
             box_art_url: crate::twitch::template::render_size(&c.box_art_url, 285, 380)
                 .replace("-52x72.", "-285x380."),

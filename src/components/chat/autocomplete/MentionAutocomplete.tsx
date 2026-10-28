@@ -1,7 +1,7 @@
 import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
 import ChatterRow from "../../suggestions/ChatterRow.tsx";
-import { chattersByChannel } from "../../../lib/stores/users.ts";
+import { chattersIn } from "../../../lib/stores/users.ts";
 import { rankChatters } from "../../../lib/utils/rankChatters.ts";
 import type { Chatter } from "../../../lib/types/index.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
@@ -16,8 +16,7 @@ export default function MentionAutocomplete(props: Props) {
   const suggestions = (): Chatter[] => {
     const q = props.controller.queryFor("mention");
     if (q === null) return [];
-    const bucket = chattersByChannel.get(props.broadcasterId);
-    return bucket ? rankChatters(bucket.values(), q) : [];
+    return rankChatters(chattersIn(props.broadcasterId), q);
   };
 
   function select(s: Chatter) {

@@ -21,6 +21,13 @@ type Props = {
 
 const DEFAULT_CHOICE: BanChoice = "10m";
 
+/// Whether Twitch says they are banned. Only the broadcaster may ask, so
+/// for a mod it is always clear.
+type BanStatus =
+  | { kind: "loading" }
+  | { kind: "clear" }
+  | { kind: "banned"; ban: BannedUser };
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString(formatLocale(), {
     day: "numeric",
@@ -35,10 +42,11 @@ export default function BanModal(props: Props) {
   const [choice, setChoice] = createSignal<BanChoice>(DEFAULT_CHOICE);
   const [reason, setReason] = createSignal("");
   const [pending, setPending] = createSignal(false);
-  // undefined = loading, null = not banned, object = banned with details.
-  const [banInfo, setBanInfo] = createSignal<BannedUser | null | undefined>(
-    undefined,
-  );
+  const [status, setStatus] = createSignal<BanStatus>({ kind: "loading" });
+  const ban = () => {
+    const s = status();
+    return s.kind === "banned" ? s.ban : null;
+  };
 
   const isBroadcaster = () => user()?.id === props.broadcasterId;
   const confirmLabel = () => {
@@ -51,7 +59,7 @@ export default function BanModal(props: Props) {
   };
 
   async function confirm() {
-    if (pending() || banInfo() === undefined) return;
+    if (pending() || status().kind === "loading") return;
     setPending(true);
     try {
       await bans.apply(
@@ -71,7 +79,7 @@ export default function BanModal(props: Props) {
     if (!isBroadcaster()) {
       // Twitch's banned-users endpoint is broadcaster-only. Mods can still
       // unban — they just do it without a status hint.
-      setBanInfo(null);
+      setStatus({ kind: "clear" });
       return;
     }
     getBan(
@@ -79,10 +87,10 @@ export default function BanModal(props: Props) {
       { silent: true },
     )
       .then((info) => {
-        setBanInfo(info);
+        setStatus(info ? { kind: "banned", ban: info } : { kind: "clear" });
         if (info) setChoice("unban");
       })
-      .catch(() => setBanInfo(null));
+      .catch(() => setStatus({ kind: "clear" }));
   });
 
   return (
@@ -97,14 +105,14 @@ export default function BanModal(props: Props) {
           <Button
             variant={choice() === "unban" ? "accent" : "danger"}
             onClick={confirm}
-            loading={pending() || banInfo() === undefined}
+            loading={pending() || status().kind === "loading"}
           >
             {confirmLabel()}
           </Button>
         </>
       }
     >
-      <Show when={banInfo()}>
+      <Show when={ban()}>
         {(info) => (
           <div class="bg-negative/10 border-l-3 border-negative rounded-sm px-3 py-2.5 flex flex-col gap-0.5 text-small">
             <span class="text-ink">
@@ -114,14 +122,18 @@ export default function BanModal(props: Props) {
               <span class="font-semibold">{info().moderator.displayName}</span>
             </span>
             <Show when={info().reason}>
-              <span class="text-ink-soft">
-                {t("BAN_REASON", { reason: info().reason })}
-              </span>
+              {(reason) => (
+                <span class="text-ink-soft">
+                  {t("BAN_REASON", { reason: reason() })}
+                </span>
+              )}
             </Show>
             <Show when={info().expiresAt}>
-              <span class="text-ink-soft">
-                {t("BAN_EXPIRES", { date: formatDate(info().expiresAt) })}
-              </span>
+              {(expiresAt) => (
+                <span class="text-ink-soft">
+                  {t("BAN_EXPIRES", { date: formatDate(expiresAt()) })}
+                </span>
+              )}
             </Show>
           </div>
         )}

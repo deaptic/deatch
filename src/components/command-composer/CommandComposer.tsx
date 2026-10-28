@@ -10,7 +10,7 @@ import {
   Show,
 } from "solid-js";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
-import { chattersByChannel } from "../../lib/stores/users.ts";
+import { chattersIn } from "../../lib/stores/users.ts";
 import * as users from "../../lib/services/users.ts";
 import { at } from "../../lib/utils/at.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
@@ -23,6 +23,8 @@ import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
 import {
   durationError,
+  invalid,
+  slotErrorText,
   parseDuration,
   type Slot,
   slotSatisfied,
@@ -108,8 +110,7 @@ export default function CommandComposer(props: Props) {
   const userSuggestions = createMemo<Chatter[]>(() => {
     const opt = activeOption();
     if (opt?.type !== "user" || activeSlot()?.resolved !== null) return [];
-    const bucket = chattersByChannel.get(props.ctx.broadcasterId);
-    return bucket ? rankChatters(bucket.values(), activeRaw()) : [];
+    return rankChatters(chattersIn(props.ctx.broadcasterId), activeRaw());
   });
 
   const enumSuggestions = createMemo<string[]>(() => {
@@ -187,7 +188,7 @@ export default function CommandComposer(props: Props) {
     const opt = activeOption();
     const slot = activeSlot();
     if (!opt || !slot) return hasSlots ? "" : t(props.command.description);
-    if (slot.error) return slot.error;
+    if (slot.error) return slotErrorText(slot.error);
     const base = t(opt.hint ?? opt.description);
     return opt.required && slot.resolved === null
       ? t("COMMAND_REQUIRED_HINT", { hint: base })
@@ -208,10 +209,11 @@ export default function CommandComposer(props: Props) {
       return true;
     }
     patchSlot(idx, {
-      error:
+      error: invalid(
         lookup.status === "missing"
           ? t("COMMAND_USER_NOT_FOUND", { login })
           : t("COMMAND_LOOKUP_FAILED"),
+      ),
     });
     return false;
   }
@@ -226,9 +228,11 @@ export default function CommandComposer(props: Props) {
     const match = matches?.[0];
     if (!match) {
       patchSlot(idx, {
-        error: matches
-          ? t("COMMAND_NO_MATCH", { query })
-          : t("COMMAND_LOOKUP_FAILED"),
+        error: invalid(
+          matches
+            ? t("COMMAND_NO_MATCH", { query })
+            : t("COMMAND_LOOKUP_FAILED"),
+        ),
       });
       return false;
     }
@@ -272,7 +276,7 @@ export default function CommandComposer(props: Props) {
     setSlots((prev) =>
       prev.map((slot, i) =>
         options[i]?.required && slot.resolved === null && !slot.error
-          ? { ...slot, error: t("COMMAND_REQUIRED") }
+          ? { ...slot, error: { kind: "required" as const } }
           : slot,
       ),
     );
@@ -281,9 +285,7 @@ export default function CommandComposer(props: Props) {
       requiredFlashTimer = undefined;
       setSlots((prev) =>
         prev.map((slot) =>
-          slot.error === t("COMMAND_REQUIRED")
-            ? { ...slot, error: null }
-            : slot,
+          slot.error?.kind === "required" ? { ...slot, error: null } : slot,
         ),
       );
     }, 1500);
@@ -296,12 +298,12 @@ export default function CommandComposer(props: Props) {
     if (!opt) return;
     if (opt.type === "duration") {
       const n = value === "" ? null : parseDuration(value);
-      const error = value === "" ? null : durationError(opt, n);
+      const message = value === "" ? null : durationError(opt, n);
       patchSlot(idx, {
         raw: value,
-        resolved: error ? null : n,
+        resolved: message ? null : n,
         displayLabel: value,
-        error,
+        error: message ? invalid(message) : null,
       });
     } else if (opt.type === "user" || opt.type === "search") {
       patchSlot(idx, {
@@ -319,7 +321,11 @@ export default function CommandComposer(props: Props) {
         displayLabel: value,
         error:
           value !== "" && !exact
-            ? t("COMMAND_ENUM_INVALID", { values: formatAlternatives(allowed) })
+            ? invalid(
+                t("COMMAND_ENUM_INVALID", {
+                  values: formatAlternatives(allowed),
+                }),
+              )
             : null,
       });
     } else {

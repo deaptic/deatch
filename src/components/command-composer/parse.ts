@@ -3,12 +3,26 @@ import type { CommandOption, DurationOption } from "./types.ts";
 import { formatDuration, secondsPer } from "../../lib/format/duration.ts";
 import { at } from "../../lib/utils/at.ts";
 
+/// A missing required value flashes and clears itself; an invalid one stays
+/// until it is edited.
+export type SlotError =
+  | { kind: "required" }
+  | { kind: "invalid"; message: string };
+
 export type Slot = {
   raw: string;
   resolved: unknown;
   displayLabel: string;
-  error: string | null;
+  error: SlotError | null;
 };
+
+export function invalid(message: string): SlotError {
+  return { kind: "invalid", message };
+}
+
+export function slotErrorText(error: SlotError): string {
+  return error.kind === "required" ? t("COMMAND_REQUIRED") : error.message;
+}
 
 export function parseDuration(raw: string): number | null {
   const text = raw.trim().toLowerCase();

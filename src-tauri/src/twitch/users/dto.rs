@@ -32,7 +32,7 @@ pub struct UserRef {
 impl UserRef {
     pub fn new(id: impl ToString, login: impl ToString, display_name: impl ToString) -> Self {
         Self {
-            id: UserId(id.to_string()),
+            id: UserId::from(id.to_string()),
             login: login.to_string(),
             display_name: display_name.to_string(),
         }
@@ -55,7 +55,7 @@ pub struct User {
 impl From<helix_users::User> for User {
     fn from(u: helix_users::User) -> Self {
         Self {
-            id: UserId(u.id.to_string()),
+            id: UserId::from(u.id.to_string()),
             login: u.login.to_string(),
             display_name: u.display_name.to_string(),
             description: u.description.unwrap_or_default(),

@@ -11,7 +11,7 @@ pub struct GameRef {
 impl GameRef {
     pub fn new(id: impl ToString, name: impl ToString) -> Self {
         Self {
-            id: GameId(id.to_string()),
+            id: GameId::from(id.to_string()),
             name: name.to_string(),
         }
     }

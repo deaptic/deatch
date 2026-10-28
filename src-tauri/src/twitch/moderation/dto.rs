@@ -9,8 +9,9 @@ use twitch_api::helix::moderation::{
 pub struct BannedUser {
     pub user: UserRef,
     pub moderator: UserRef,
-    pub reason: String,
-    pub expires_at: String,
+    pub reason: Option<String>,
+    /// None for a permanent ban.
+    pub expires_at: Option<String>,
 }
 
 impl From<HelixBannedUser> for BannedUser {
@@ -18,8 +19,8 @@ impl From<HelixBannedUser> for BannedUser {
         Self {
             user: UserRef::new(b.user_id, b.user_login, b.user_name),
             moderator: UserRef::new(b.moderator_id, b.moderator_login, b.moderator_name),
-            reason: b.reason.unwrap_or_default(),
-            expires_at: b.expires_at.map(|t| t.to_string()).unwrap_or_default(),
+            reason: b.reason.filter(|r| !r.is_empty()),
+            expires_at: b.expires_at.map(|t| t.to_string()),
         }
     }
 }
