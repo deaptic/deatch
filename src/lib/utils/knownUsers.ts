@@ -37,8 +37,11 @@ export function isComplete(user: User): boolean {
 
 export function isKnownUser(value: unknown): value is KnownUser {
   const e = value as Partial<KnownUser> | null;
-  return typeof e?.at === "number" && typeof e.user?.id === "string" &&
-    typeof e.user.login === "string";
+  return (
+    typeof e?.at === "number" &&
+    typeof e.user?.id === "string" &&
+    typeof e.user.login === "string"
+  );
 }
 
 export function freshEntries(
@@ -50,8 +53,9 @@ export function freshEntries(
 ): Record<string, KnownUser> {
   const fresh = Object.entries(entries)
     .filter(([id, e]) => keep.has(id) || now - e.at < ttlMs)
-    .sort(([a, x], [b, y]) =>
-      Number(keep.has(b)) - Number(keep.has(a)) || y.at - x.at
+    .sort(
+      ([a, x], [b, y]) =>
+        Number(keep.has(b)) - Number(keep.has(a)) || y.at - x.at,
     )
     .slice(0, max);
   return Object.fromEntries(fresh);

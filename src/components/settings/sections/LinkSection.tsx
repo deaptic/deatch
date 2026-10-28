@@ -61,16 +61,13 @@ const CONTROLS: Record<
 };
 
 const isDefault = () =>
-  COMPRESSOR_CONTROLS.every((c) =>
-    compressorSettings()[c] === DEFAULT_COMPRESSOR[c]
+  COMPRESSOR_CONTROLS.every(
+    (c) => compressorSettings()[c] === DEFAULT_COMPRESSOR[c],
   );
 
 export default function LinkSection() {
   return (
-    <PageBody
-      title={t("SETTINGS_LINK")}
-      lede={t("SETTINGS_LINK_LEDE")}
-    >
+    <PageBody title={t("SETTINGS_LINK")} lede={t("SETTINGS_LINK_LEDE")}>
       <Card>
         <SettingsRow
           label={t("SETTINGS_LINK_COMPRESSOR")}

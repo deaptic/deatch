@@ -60,8 +60,8 @@ export default function Item(props: Props) {
     !comfortable()
       ? "py-1"
       : props.continued
-      ? "py-0.5"
-      : "mt-(--feed-group-gap) py-0.5";
+        ? "py-0.5"
+        : "mt-(--feed-group-gap) py-0.5";
 
   const lead = () => (
     <Show

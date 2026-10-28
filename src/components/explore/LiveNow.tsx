@@ -26,6 +26,7 @@ import Chip from "../ui/Chip.tsx";
 import Button from "../ui/Button.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
 import { t } from "../../lib/i18n/index.ts";
+import { at } from "../../lib/utils/at.ts";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -33,7 +34,7 @@ type Props = {
 
 const PAGE_SIZE = 40;
 const THUMBNAIL_REFRESH_MS = 5 * 60_000;
-const SYSTEM_LANGUAGE = navigator.language.split("-")[0];
+const systemLanguage = () => at(navigator.language.split("-"), 0);
 
 export default function LiveNow(props: Props) {
   const [remote, setRemote] = createSignal<Stream[]>([]);
@@ -66,7 +67,7 @@ export default function LiveNow(props: Props) {
           : undefined,
         language: exploreLanguage() || undefined,
         first: PAGE_SIZE,
-        after: reset ? undefined : cursor() ?? undefined,
+        after: reset ? undefined : (cursor() ?? undefined),
       });
       if (mine !== generation) return;
       if (data.length) {
@@ -93,7 +94,7 @@ export default function LiveNow(props: Props) {
         setRemote([]);
         setCursor(null);
         setExhausted(false);
-        if (!exploreFilters.followingOnly) fetchPage(true);
+        if (!exploreFilters.followingOnly) void fetchPage(true);
       },
     ),
   );
@@ -102,8 +103,10 @@ export default function LiveNow(props: Props) {
     if (!exploreFilters.followingOnly) return remote();
     const lang = exploreLanguage();
     const category = exploreFilters.category;
-    return liveStreams().filter((s) =>
-      (!lang || s.language === lang) && (!category || s.game.id === category.id)
+    return liveStreams().filter(
+      (s) =>
+        (!lang || s.language === lang) &&
+        (!category || s.game.id === category.id),
     );
   };
 
@@ -118,14 +121,14 @@ export default function LiveNow(props: Props) {
   }, new Set());
 
   const languageOptions = () =>
-    orderLanguages(seenLanguages(), [SYSTEM_LANGUAGE, exploreLanguage()]);
+    orderLanguages(seenLanguages(), [systemLanguage(), exploreLanguage()]);
 
   const initialLoading = () =>
     !exploreFilters.followingOnly && fetching() && remote().length === 0;
 
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting) fetchPage(false);
+      if (entries.some((e) => e.isIntersecting)) void fetchPage(false);
     },
     { rootMargin: "400px" },
   );
@@ -214,8 +217,9 @@ export default function LiveNow(props: Props) {
 
         <div ref={(el) => observer.observe(el)} class="h-px" />
         <Show
-          when={!exploreFilters.followingOnly && fetching() &&
-            remote().length > 0}
+          when={
+            !exploreFilters.followingOnly && fetching() && remote().length > 0
+          }
         >
           <p class="py-4 text-center text-small text-ink-soft">
             {t("EXPLORE_LOADING_MORE")}

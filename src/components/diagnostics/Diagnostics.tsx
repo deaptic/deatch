@@ -23,9 +23,7 @@ export default function Diagnostics(props: Props) {
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div class="w-96 max-w-full max-h-160 flex flex-col">
         <header class="h-header shrink-0 flex items-center pl-5 pr-3 border-b border-line-soft">
-          <h2 class="text-title text-ink flex-1">
-            {t("DIAGNOSTICS_TITLE")}
-          </h2>
+          <h2 class="text-title text-ink flex-1">{t("DIAGNOSTICS_TITLE")}</h2>
         </header>
         <Show
           when={sample()}
@@ -63,8 +61,7 @@ export default function Diagnostics(props: Props) {
                 <For
                   each={Array.from(
                     { length: s().app.eventsub.maxConnections },
-                    (_, i) =>
-                      i,
+                    (_, i) => i,
                   )}
                 >
                   {(i) => (

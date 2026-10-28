@@ -19,9 +19,11 @@ export function createListNavigation(opts: {
     setActive((i) => Math.min(i, last));
   });
 
-  createEffect(on(active, (i) => {
-    queueMicrotask(() => opts.rowAt(i)?.scrollIntoView({ block: "nearest" }));
-  }));
+  createEffect(
+    on(active, (i) => {
+      queueMicrotask(() => opts.rowAt(i)?.scrollIntoView({ block: "nearest" }));
+    }),
+  );
 
   return {
     active,

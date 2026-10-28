@@ -1,36 +1,68 @@
-import { defineConfig } from "vite";
+import { defineConfig, lazyPlugins } from "vite-plus";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
-// @ts-expect-error process is a nodejs global
-const host = process.env.TAURI_DEV_HOST;
+const ignored = ["extension/**", "src-tauri/**", "src/lib/bindings.ts"];
 
-// https://vite.dev/config/
-export default defineConfig(async () => ({
-  plugins: [tailwindcss(), solid()],
+export default defineConfig({
+  plugins: lazyPlugins(() => [tailwindcss(), solid()]),
 
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent Vite from obscuring rust errors
+  lint: {
+    jsPlugins: ["@shadcn/lint"],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+    ignorePatterns: ignored,
+    settings: {
+      shadcn: {
+        ui: "src/components/ui",
+        theme: "src/App.css",
+      },
+    },
+    rules: {
+      "no-unused-vars": ["warn", { ignoreRestSiblings: true }],
+      "typescript/no-unnecessary-condition": "warn",
+      "shadcn/no-raw-colors": "error",
+      "shadcn/no-arbitrary-values": "error",
+      "shadcn/no-restyle": ["error", { allow: ["layout"] }],
+      "shadcn/no-inline-styles": "error",
+      "shadcn/require-static-classes": "error",
+    },
+    overrides: [
+      {
+        // Solid assigns `let` refs through JSX `ref={...}`, which the rule
+        // cannot see.
+        files: ["**/*.tsx"],
+        rules: { "no-unassigned-vars": "off" },
+      },
+    ],
+  },
+
+  test: {
+    // vite-plugin-solid defaults to jsdom; the tests cover pure logic.
+    environment: "node",
+  },
+
+  fmt: {
+    printWidth: 80,
+    ignorePatterns: ignored,
+  },
+
+  // Keep cargo's output visible in the terminal tauri dev shares.
   clearScreen: false,
   build: {
+    // WebView2 is evergreen Chromium, and the app already relies on Temporal.
+    target: "esnext",
     sourcemap: true,
   },
-  // 2. tauri expects a fixed port, fail if that port is not available
   server: {
+    // devUrl in tauri.conf.json points here.
     port: 1420,
     strictPort: true,
-    host: host || false,
-    hmr: host
-      ? {
-        protocol: "ws",
-        host,
-        port: 1421,
-      }
-      : undefined,
     watch: {
-      // 3. tell Vite to ignore watching `src-tauri`
+      // Rust changes rebuild through cargo; a page reload would only add noise.
       ignored: ["**/src-tauri/**"],
     },
   },
-}));
+});

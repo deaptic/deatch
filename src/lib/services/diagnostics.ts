@@ -12,12 +12,8 @@ export function watch(onSample: (sample: Diagnostics) => void): () => void {
   let stopped = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const tick = async () => {
-    try {
-      const app = await getAppStats();
-      if (!stopped) onSample({ app, cache: cacheStats() });
-    } catch (e) {
-      console.warn("diagnostics unavailable", e);
-    }
+    const app = await getAppStats().catch(() => null);
+    if (app && !stopped) onSample({ app, cache: cacheStats() });
     if (!stopped) timer = setTimeout(tick, POLL_MS);
   };
   void tick();
@@ -32,9 +28,6 @@ function cacheStats(): CacheStats {
   return {
     users: Object.keys(unwrap(knownUsers)).length,
     channels: channelFeeds.length,
-    messages: channelFeeds.reduce(
-      (sum, feed) => sum + feed.messages.length,
-      0,
-    ),
+    messages: channelFeeds.reduce((sum, feed) => sum + feed.messages.length, 0),
   };
 }

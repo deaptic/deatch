@@ -19,7 +19,6 @@ import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";
 import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
@@ -33,9 +32,7 @@ type Props = {
   onClose: () => void;
 };
 
-type Row =
-  | { kind: "channel"; user: User }
-  | { kind: "search"; query: string };
+type Row = { kind: "channel"; user: User } | { kind: "search"; query: string };
 
 const KBD =
   "min-w-5.5 h-5 px-1.5 inline-grid place-items-center rounded-xs bg-raised text-micro text-ink-faint font-sans";
@@ -95,19 +92,14 @@ export default function QuickSwitch(props: Props) {
       return;
     }
     setSearching(true);
-    try {
-      const found = (await users.fetch({ logins: [row.query] }))[0];
-      if (!found) {
-        addToast(t("QUICK_SWITCH_NOT_FOUND"), "error");
-        return;
-      }
-      if (pin) pinChannel(found.id);
-      props.onSelect(found);
+    const lookup = await users.findByLogin(row.query);
+    setSearching(false);
+    if (lookup.status === "missing") {
+      addToast(t("QUICK_SWITCH_NOT_FOUND"), "error");
+    } else if (lookup.status === "found") {
+      if (pin) pinChannel(lookup.user.id);
+      props.onSelect(lookup.user);
       props.onClose();
-    } catch (e) {
-      addToast(errorMessage(e), "error");
-    } finally {
-      setSearching(false);
     }
   }
 
@@ -162,7 +154,7 @@ export default function QuickSwitch(props: Props) {
               <For each={rows()}>
                 {(row, i) => {
                   const link = createChannelLink(() =>
-                    row.kind === "channel" ? row.user : undefined
+                    row.kind === "channel" ? row.user : undefined,
                   );
                   return (
                     <button
@@ -225,8 +217,7 @@ export default function QuickSwitch(props: Props) {
                                     when={stream()}
                                     fallback={t("COMMON_OFFLINE")}
                                   >
-                                    {t("COMMON_LIVE")} · {stream()!.game.name} ·
-                                    {" "}
+                                    {t("COMMON_LIVE")} · {stream()!.game.name} ·{" "}
                                     {formatViewers(stream()!.viewerCount)}
                                   </Show>
                                   <Show

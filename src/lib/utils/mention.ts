@@ -20,8 +20,8 @@ export function mentionReason(
     return { kind: "reply" };
   }
   if (
-    msg.fragments.some((f) =>
-      f.type === "mention" && f.user_login.toLowerCase() === me
+    msg.fragments.some(
+      (f) => f.type === "mention" && f.user_login.toLowerCase() === me,
     )
   ) {
     return { kind: "mention" };

@@ -9,9 +9,8 @@ const [tick, setTick] = createSignal(0);
 
 function prune(arr: number[], now: number) {
   const cutoff = now - WINDOW_MS;
-  let stale = 0;
-  while (stale < arr.length && arr[stale] < cutoff) stale++;
-  if (stale > 0) arr.splice(0, stale);
+  const fresh = arr.findIndex((t) => t >= cutoff);
+  arr.splice(0, fresh === -1 ? arr.length : fresh);
 }
 
 export function start(): () => void {

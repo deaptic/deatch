@@ -1,34 +1,33 @@
-/// <reference lib="deno.ns" />
-import { assertEquals, assertThrows } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { compile } from "./boolExpr.ts";
 
 const flags = (...on: string[]) => new Map(on.map((name) => [name, true]));
 
-Deno.test("evaluates a single flag, treating unknown flags as false", () => {
-  assertEquals(compile("mod")(flags("mod")), true);
-  assertEquals(compile("mod")(flags()), false);
+test("evaluates a single flag, treating unknown flags as false", () => {
+  expect(compile("mod")(flags("mod"))).toBe(true);
+  expect(compile("mod")(flags())).toBe(false);
 });
 
-Deno.test("binds && tighter than ||", () => {
+test("binds && tighter than ||", () => {
   const pred = compile("a || b && c");
-  assertEquals(pred(flags("a")), true);
-  assertEquals(pred(flags("b")), false);
-  assertEquals(pred(flags("b", "c")), true);
+  expect(pred(flags("a"))).toBe(true);
+  expect(pred(flags("b"))).toBe(false);
+  expect(pred(flags("b", "c"))).toBe(true);
 });
 
-Deno.test("honours parentheses and negation", () => {
+test("honours parentheses and negation", () => {
   const pred = compile("!(a || b) && c");
-  assertEquals(pred(flags("c")), true);
-  assertEquals(pred(flags("a", "c")), false);
-  assertEquals(compile("!!a")(flags("a")), true);
+  expect(pred(flags("c"))).toBe(true);
+  expect(pred(flags("a", "c"))).toBe(false);
+  expect(compile("!!a")(flags("a"))).toBe(true);
 });
 
-Deno.test("accepts namespaced identifiers", () => {
-  assertEquals(compile("badge:vip.1-x")(flags("badge:vip.1-x")), true);
+test("accepts namespaced identifiers", () => {
+  expect(compile("badge:vip.1-x")(flags("badge:vip.1-x"))).toBe(true);
 });
 
-Deno.test("rejects malformed expressions", () => {
+test("rejects malformed expressions", () => {
   for (const src of ["", "a &&", "(a", "a b", "a & b", "a )"]) {
-    assertThrows(() => compile(src), Error, undefined, src);
+    expect(() => compile(src), src).toThrow(Error);
   }
 });

@@ -5,10 +5,10 @@ export function mapChatSettingsUpdate(
 ): ChatSettings {
   return {
     slowModeSeconds: raw.slow_mode
-      ? raw.slow_mode_wait_time_seconds ?? 0
+      ? (raw.slow_mode_wait_time_seconds ?? 0)
       : null,
     followerModeMinutes: raw.follower_mode
-      ? raw.follower_mode_duration_minutes ?? 0
+      ? (raw.follower_mode_duration_minutes ?? 0)
       : null,
     subscriberMode: raw.subscriber_mode,
     emoteMode: raw.emote_mode,

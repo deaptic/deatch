@@ -1,7 +1,10 @@
-export function formatViewers(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return String(n);
+import { formatLocale } from "../i18n/index.ts";
+
+export function formatViewers(n: number, locale = formatLocale()): string {
+  return new Intl.NumberFormat(locale, {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");

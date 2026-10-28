@@ -1,31 +1,48 @@
-/// <reference lib="deno.ns" />
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { formatLog } from "./formatLog.ts";
 
-Deno.test("joins strings and serializes objects", () => {
-  assertEquals(
+test("joins strings and serializes objects", () => {
+  expect(
     formatLog(["[cmd] getUsers failed", { kind: "http", message: "timeout" }]),
-    '[cmd] getUsers failed {"kind":"http","message":"timeout"}',
-  );
+  ).toBe('[cmd] getUsers failed {"kind":"http","message":"timeout"}');
 });
 
-Deno.test("prints errors with their stack", () => {
-  assertStringIncludes(formatLog([new Error("boom")]), "Error: boom");
+test("prints errors with their stack", () => {
+  expect(formatLog([new Error("boom")])).toContain("Error: boom");
 });
 
-Deno.test("keeps nested errors readable", () => {
-  assertEquals(
-    formatLog([{ error: new TypeError("bad") }]),
+test("keeps nested errors readable", () => {
+  expect(formatLog([{ error: new TypeError("bad") }])).toBe(
     '{"error":{"name":"TypeError","message":"bad"}}',
   );
 });
 
-Deno.test("survives circular values", () => {
-  const value: Record<string, unknown> = {};
+test("marks circular references", () => {
+  const value: Record<string, unknown> = { name: "loop" };
   value.self = value;
-  assertEquals(formatLog([value]), "[object Object]");
+  expect(formatLog([value])).toBe('{"name":"loop","self":"[Circular]"}');
 });
 
-Deno.test("prints undefined", () => {
-  assertEquals(formatLog(["value", undefined]), "value undefined");
+test("prints a shared object each time it appears", () => {
+  const shared = { id: 1 };
+  expect(formatLog([{ a: shared, b: shared }])).toBe(
+    '{"a":{"id":1},"b":{"id":1}}',
+  );
+});
+
+test("prints bigints", () => {
+  expect(formatLog([{ total: 12n }])).toBe('{"total":"12n"}');
+});
+
+test("names values that cannot be serialized", () => {
+  class Broken {
+    toJSON(): never {
+      throw new Error("no");
+    }
+  }
+  expect(formatLog([new Broken()])).toBe("[unserializable Broken]");
+});
+
+test("prints undefined", () => {
+  expect(formatLog(["value", undefined])).toBe("value undefined");
 });

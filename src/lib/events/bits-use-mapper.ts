@@ -12,9 +12,10 @@ import { wordsOf } from "./chat-mapper.ts";
 const MESSAGE_POWER_UPS = new Set(["message_effect", "gigantify_an_emote"]);
 
 function shownElsewhere(raw: RawBitsUse): boolean {
-  return raw.type === "cheer" ||
-    (raw.type === "power_up" &&
-      MESSAGE_POWER_UPS.has(raw.power_up?.type ?? ""));
+  return (
+    raw.type === "cheer" ||
+    (raw.type === "power_up" && MESSAGE_POWER_UPS.has(raw.power_up?.type ?? ""))
+  );
 }
 
 function fragments(raw: RawBitsUse): Fragment[] | undefined {
@@ -34,7 +35,7 @@ export function mapBitsUse(
     t("EVENT_BITS_USE", {
       user: raw.user_name,
       bits: raw.bits,
-      kind: raw.type === "power_up" ? raw.power_up?.type ?? "" : raw.type,
+      kind: raw.type === "power_up" ? (raw.power_up?.type ?? "") : raw.type,
       title: raw.custom_power_up?.title ?? "",
     }),
     timestamp,

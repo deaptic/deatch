@@ -13,12 +13,13 @@ install themselves.
 
 ## Building
 
-Requires [Rust](https://rustup.rs/), [Deno](https://deno.com/) 2.x, and the
+Requires [Rust](https://rustup.rs/), [Node](https://nodejs.org/) 26+,
+[pnpm](https://pnpm.io/), and the
 [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
 ```powershell
-deno install
-deno task tauri dev
+pnpm install
+pnpm tauri dev
 ```
 
 Docs in [docs/](docs/): [architecture](docs/ARCHITECTURE.md),

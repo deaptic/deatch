@@ -1,15 +1,21 @@
 // Usage:
-//   deno task release patch          (default)
-//   deno task release minor
-//   deno task release major
-//   deno task release 1.2.3
+//   pnpm release patch          (default)
+//   pnpm release minor
+//   pnpm release major
+//   pnpm release 1.2.3
 //
 // Bumps version in package.json, src-tauri/tauri.conf.json, src-tauri/Cargo.toml,
 // commits with message "chore: release vX.Y.Z", tags vX.Y.Z, and pushes the
 // current branch + tag. The release GitHub Action takes over from the tag.
 
-import { run } from "./run.ts";
+import { execFile } from "node:child_process";
+import { readFile, writeFile } from "node:fs/promises";
+import { promisify } from "node:util";
+import { setLockedVersion } from "./cargo-lock.ts";
+import { type Command, run } from "./run.ts";
 import { nextVersion } from "./version.ts";
+
+const execFileAsync = promisify(execFile);
 
 const FILES = {
   pkg: "package.json",
@@ -19,21 +25,21 @@ const FILES = {
 };
 
 async function readJson(path: string): Promise<Record<string, unknown>> {
-  return JSON.parse(await Deno.readTextFile(path));
+  return JSON.parse(await readFile(path, "utf8"));
 }
 
 async function writeJson(path: string, data: unknown): Promise<void> {
-  await Deno.writeTextFile(path, JSON.stringify(data, null, 2) + "\n");
+  await writeFile(path, JSON.stringify(data, null, 2) + "\n");
 }
 
 async function patchCargo(path: string, newVersion: string): Promise<void> {
-  const text = await Deno.readTextFile(path);
+  const text = await readFile(path, "utf8");
   const patched = text.replace(
     /^version\s*=\s*"[^"]+"/m,
     `version = "${newVersion}"`,
   );
   if (patched === text) throw new Error(`failed to bump version in ${path}`);
-  await Deno.writeTextFile(path, patched);
+  await writeFile(path, patched);
 }
 
 async function patchCargoLock(
@@ -41,24 +47,18 @@ async function patchCargoLock(
   name: string,
   newVersion: string,
 ): Promise<void> {
-  const text = await Deno.readTextFile(path);
-  const re = new RegExp(
-    `(\\[\\[package\\]\\]\\r?\\nname = "${name}"\\r?\\nversion = ")[^"]+(")`,
-  );
-  const patched = text.replace(re, `$1${newVersion}$2`);
-  if (patched === text) throw new Error(`failed to bump ${name} in ${path}`);
-  await Deno.writeTextFile(path, patched);
+  const text = await readFile(path, "utf8");
+  await writeFile(path, setLockedVersion(text, name, newVersion));
 }
 
-async function captureStdout(cmd: string[]): Promise<string> {
-  const p = new Deno.Command(cmd[0], { args: cmd.slice(1) });
-  const { stdout } = await p.output();
-  return new TextDecoder().decode(stdout).trim();
+async function captureStdout([command, ...args]: Command): Promise<string> {
+  const { stdout } = await execFileAsync(command, args);
+  return stdout.trimEnd();
 }
 
 const pkg = await readJson(FILES.pkg);
 const current = pkg.version as string;
-const next = nextVersion(current, Deno.args[0]);
+const next = nextVersion(current, process.argv[2]);
 
 const status = await captureStdout(["git", "status", "--porcelain"]);
 if (status) {
@@ -66,13 +66,13 @@ if (status) {
     "working tree has uncommitted changes — commit or stash first:",
   );
   console.error(status);
-  Deno.exit(1);
+  process.exit(1);
 }
 
 const tag = `v${next}`;
 if (await captureStdout(["git", "tag", "--list", tag])) {
   console.error(`tag ${tag} already exists`);
-  Deno.exit(1);
+  process.exit(1);
 }
 const branch = await captureStdout([
   "git",

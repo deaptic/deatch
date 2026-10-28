@@ -26,13 +26,13 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
   );
   if (cached) {
     // Stale-while-revalidate: serve cache, refresh in background.
-    getGlobalChatBadges()
+    getGlobalChatBadges({ silent: true })
       .then((fresh) => saveCache(GLOBAL_BADGES_CACHE_KEY, fresh))
       .catch(() => {});
     globalBadgesPromise = Promise.resolve(cached);
     return globalBadgesPromise;
   }
-  globalBadgesPromise = getGlobalChatBadges()
+  globalBadgesPromise = getGlobalChatBadges({ silent: true })
     .then((fresh) => {
       saveCache(GLOBAL_BADGES_CACHE_KEY, fresh);
       return fresh;
@@ -59,8 +59,8 @@ function toBadgeMap(sets: BadgeSet[]): BadgeMap {
 const channelBadges = channelResource((c) =>
   Promise.all([
     loadGlobalBadges(),
-    getChannelChatBadges({ broadcasterId: c.id }),
-  ]).then(([global, channel]) => toBadgeMap([...global, ...channel]))
+    getChannelChatBadges({ broadcasterId: c.id }, { silent: true }),
+  ]).then(([global, channel]) => toBadgeMap([...global, ...channel])),
 );
 
 export async function loadGlobal(): Promise<BadgeMap> {
@@ -70,7 +70,7 @@ export async function loadGlobal(): Promise<BadgeMap> {
 /// Global badges show at once; channel badges replace them when they land.
 export function loadChannel(channel: ChannelRef) {
   let channelLanded = false;
-  loadGlobal().then((map) => {
+  void loadGlobal().then((map) => {
     if (!channelLanded) setBadges(channel.id, map);
   });
   channelBadges.show(channel, (map) => {
@@ -82,9 +82,10 @@ export function loadChannel(channel: ChannelRef) {
 /// A shared chat partner's badges, fetched once and kept while signed in.
 export function loadSource(channel: ChannelRef) {
   if (sourceBadges[channel.id]) return;
-  channelBadges.get(channel)
-    .then((map) => setSourceBadges(channel.id, map))
-    .catch((e) => console.warn("shared chat badges not loaded", e));
+  channelBadges.get(channel).then(
+    (map) => setSourceBadges(channel.id, map),
+    () => {},
+  );
 }
 
 export function resetChannelCache() {

@@ -1,23 +1,23 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
+import { at } from "../../lib/utils/at.ts";
 import { createUserCards } from "./createUserCards.ts";
 
 const ids = (cards: { chatterId: string }[]) => cards.map((c) => c.chatterId);
 
-Deno.test("opening a card replaces the unpinned one and keeps pinned ones", () => {
+test("opening a card replaces the unpinned one and keeps pinned ones", () => {
   const userCards = createUserCards();
   userCards.open(0, 0, "a");
-  userCards.update(userCards.cards[0].key, { pinned: true });
+  userCards.update(at(userCards.cards, 0).key, { pinned: true });
   userCards.open(0, 0, "b");
   userCards.open(0, 0, "c");
-  assertEquals(ids(userCards.cards), ["a", "c"]);
+  expect(ids(userCards.cards)).toStrictEqual(["a", "c"]);
 });
 
-Deno.test("close removes only the given card", () => {
+test("close removes only the given card", () => {
   const userCards = createUserCards();
   userCards.open(0, 0, "a");
-  userCards.update(userCards.cards[0].key, { pinned: true });
+  userCards.update(at(userCards.cards, 0).key, { pinned: true });
   userCards.open(0, 0, "b");
-  userCards.close(userCards.cards[0].key);
-  assertEquals(ids(userCards.cards), ["b"]);
+  userCards.close(at(userCards.cards, 0).key);
+  expect(ids(userCards.cards)).toStrictEqual(["b"]);
 });

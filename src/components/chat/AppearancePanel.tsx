@@ -12,6 +12,7 @@ import {
 } from "lucide-solid";
 import { t } from "../../lib/i18n/index.ts";
 import {
+  canStep,
   FONT_SIZE_STOPS,
   GROUP_SPACING_STOPS,
 } from "../../lib/constants/accessibility.ts";
@@ -108,8 +109,8 @@ export default function AppearancePanel(props: Props) {
         value={`${feedFontSize()}px`}
         lessLabel={t("CHAT_APPEARANCE_TEXT_SMALLER")}
         moreLabel={t("CHAT_APPEARANCE_TEXT_LARGER")}
-        canLess={feedFontSize() > FONT_SIZE_STOPS[0]}
-        canMore={feedFontSize() < FONT_SIZE_STOPS.at(-1)!}
+        canLess={canStep(feedFontSize(), FONT_SIZE_STOPS, -1)}
+        canMore={canStep(feedFontSize(), FONT_SIZE_STOPS, 1)}
         onStep={stepFeedFontSize}
       />
       <MenuStepper
@@ -118,8 +119,8 @@ export default function AppearancePanel(props: Props) {
         value={`${feedGroupSpacing()}px`}
         lessLabel={t("CHAT_APPEARANCE_GROUP_SPACING_LESS")}
         moreLabel={t("CHAT_APPEARANCE_GROUP_SPACING_MORE")}
-        canLess={feedGroupSpacing() > GROUP_SPACING_STOPS[0]}
-        canMore={feedGroupSpacing() < GROUP_SPACING_STOPS.at(-1)!}
+        canLess={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, -1)}
+        canMore={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, 1)}
         onStep={stepFeedGroupSpacing}
         disabled={feedDensity() !== "comfortable"}
       />

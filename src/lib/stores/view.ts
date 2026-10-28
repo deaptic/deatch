@@ -2,6 +2,7 @@ import { createMemo, createRoot, createSignal } from "solid-js";
 import type { User } from "../types/index.ts";
 import { createDebounced } from "../primitives/createDebounced.ts";
 import { emptyHistory, step, visit } from "../utils/history.ts";
+import { at } from "../utils/at.ts";
 
 // The single source of truth for what the app is showing: a page or a channel.
 export type ActiveView = "explore" | "settings" | User;
@@ -12,13 +13,15 @@ export { activeView };
 const sameId = (a: User | null, b: User | null) =>
   (a?.id ?? null) === (b?.id ?? null);
 
-export const pendingChannel = createMemo<User | null>(
-  () => {
-    const v = activeView();
-    return typeof v === "string" ? null : v;
-  },
-  null,
-  { equals: sameId },
+export const pendingChannel: () => User | null = createRoot(() =>
+  createMemo<User | null>(
+    () => {
+      const v = activeView();
+      return typeof v === "string" ? null : v;
+    },
+    null,
+    { equals: sameId },
+  ),
 );
 
 const CHANNEL_COMMIT_MS = 300;
@@ -26,7 +29,7 @@ export const selectedChannel: () => User | null = createRoot(() =>
   createDebounced(pendingChannel, CHANNEL_COMMIT_MS, {
     equals: sameId,
     immediate: (next, current) => next === null || current === null,
-  })
+  }),
 );
 
 export const isSettingsOpen = () => activeView() === "settings";
@@ -41,9 +44,8 @@ export type SettingsSection =
   | "advanced";
 
 // Kept here so the page opens where it was left, or where a shortcut points.
-const [settingsSection, setSettingsSection] = createSignal<SettingsSection>(
-  "notifications",
-);
+const [settingsSection, setSettingsSection] =
+  createSignal<SettingsSection>("notifications");
 export { setSettingsSection, settingsSection };
 
 let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
@@ -63,7 +65,7 @@ export function historyStep(delta: 1 | -1): User | null {
   const next = step(history, delta);
   if (!next) return null;
   history = next;
-  return next.entries[next.index];
+  return at(next.entries, next.index);
 }
 
 export function showExplore() {

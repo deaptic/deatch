@@ -30,7 +30,7 @@ async function renderBadgeBytes(
   ctx.textBaseline = "middle";
   ctx.fillText(count > 9 ? "9+" : String(count), 16, 17);
   const blob = await new Promise<Blob | null>((r) =>
-    canvas.toBlob((b) => r(b), "image/png")
+    canvas.toBlob((b) => r(b), "image/png"),
   );
   if (!blob) return null;
   return Array.from(new Uint8Array(await blob.arrayBuffer()));
@@ -48,15 +48,13 @@ export function createMentionsBadge(): void {
     const key = `${count}/${look.fill}`;
     if (key === last) return;
     last = key;
-    void (async () => {
-      try {
-        const bytes = await renderBadgeBytes(count, look);
+    renderBadgeBytes(count, look).then(
+      (bytes) => {
         // A newer count may have finished drawing first.
         if (key !== last) return;
-        await setMentionsBadge(count, bytes);
-      } catch (e) {
-        console.error("failed to update mentions badge", e);
-      }
-    })();
+        setMentionsBadge({ count, iconBytes: bytes }).catch(() => {});
+      },
+      (e) => console.error("mentions badge not drawn", e),
+    );
   });
 }

@@ -11,7 +11,6 @@ import type { User, UserRef } from "../../lib/types/index.ts";
 type Props = {
   target: User;
   onBack: () => void;
-  onDone: () => void;
 };
 
 // Channels that may post the shoutout: the viewer's own plus any they mod.
@@ -29,7 +28,7 @@ async function liveSources(target: User): Promise<UserRef[]> {
   const streams = await getStreamsFromIds(
     { userIds: sources.map((c) => c.id) },
     { silent: true },
-  );
+  ).catch(() => []);
   const live = new Set(streams.map((s) => s.user.id));
   return sources.filter((c) => live.has(c.id));
 }
@@ -37,35 +36,24 @@ async function liveSources(target: User): Promise<UserRef[]> {
 export default function ShoutoutSources(props: Props) {
   const [sources] = createResource(
     () => props.target,
-    (target) =>
-      liveSources(target).catch((e) => {
-        console.warn("shoutout sources unavailable", e);
-        return [];
-      }),
+    (target) => liveSources(target),
   );
   return (
     <>
       <MenuItem
         label={t("MENU_SHOUTOUT_TO")}
         icon={<ChevronLeft />}
+        keepOpen
         onClick={props.onBack}
       />
       <MenuDivider />
       <Show
         when={!sources.loading}
-        fallback={
-          <MenuItem label={t("MENU_CHECKING")} disabled onClick={() => {}} />
-        }
+        fallback={<MenuItem label={t("MENU_CHECKING")} disabled />}
       >
         <For
           each={sources() ?? []}
-          fallback={
-            <MenuItem
-              label={t("MENU_NO_LIVE_CHANNELS")}
-              disabled
-              onClick={() => {}}
-            />
-          }
+          fallback={<MenuItem label={t("MENU_NO_LIVE_CHANNELS")} disabled />}
         >
           {(from) => (
             <MenuItem
@@ -75,7 +63,6 @@ export default function ShoutoutSources(props: Props) {
                   fromBroadcasterId: from.id,
                   toBroadcasterId: props.target.id,
                 }).catch(() => {});
-                props.onDone();
               }}
             />
           )}

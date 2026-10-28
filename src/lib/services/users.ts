@@ -42,9 +42,11 @@ let dirty = false;
 
 export function start(): () => void {
   const saved = freshEntries(load(), Date.now(), TTL_MS, MAX_KNOWN);
-  setKnownUsers(produce((table) => {
-    for (const [id, entry] of Object.entries(saved)) table[id] ??= entry;
-  }));
+  setKnownUsers(
+    produce((table) => {
+      for (const [id, entry] of Object.entries(saved)) table[id] ??= entry;
+    }),
+  );
   globalThis.addEventListener("pagehide", save);
   return () => {
     globalThis.removeEventListener("pagehide", save);
@@ -58,26 +60,35 @@ export function start(): () => void {
 /// `at` is when Twitch last returned the user; partial users from stream
 /// data refresh names but never count as a fetch.
 export function set(users: User[]): void {
-  if (users.length === 0) return;
   const now = Date.now();
-  let changed = false;
-  setKnownUsers(produce((table) => {
-    for (const next of users) {
-      const prev = table[next.id];
-      const merged = mergeUser(prev?.user, next);
-      const at = isComplete(next) ? now : prev?.at ?? 0;
-      if (prev && sameUser(prev.user, merged)) {
-        if (prev.at === at) continue;
-        prev.at = at;
-      } else {
-        table[next.id] = { user: merged, at };
-      }
-      changed = true;
-    }
-  }));
-  if (!changed) return;
+  const pending = changedEntries(unwrap(knownUsers), users, now);
+  if (pending.size === 0) return;
+  setKnownUsers(
+    produce((table) => {
+      for (const [id, entry] of pending) table[id] = entry;
+    }),
+  );
   if (Object.keys(unwrap(knownUsers)).length > MAX_KNOWN) evict(now);
   scheduleSave();
+}
+
+/// The entries `users` change, applied in order so a later duplicate builds
+/// on an earlier one. An unchanged user keeps its object, so only `at` moves.
+function changedEntries(
+  table: Record<string, KnownUser>,
+  users: User[],
+  now: number,
+): Map<string, KnownUser> {
+  const pending = new Map<string, KnownUser>();
+  for (const next of users) {
+    const prev = pending.get(next.id) ?? table[next.id];
+    const merged = mergeUser(prev?.user, next);
+    const at = isComplete(next) ? now : (prev?.at ?? 0);
+    const same = prev !== undefined && sameUser(prev.user, merged);
+    if (same && prev.at === at) continue;
+    pending.set(next.id, { user: same ? prev.user : merged, at });
+  }
+  return pending;
 }
 
 export async function fetch(
@@ -89,6 +100,24 @@ export async function fetch(
   return users;
 }
 
+export type Lookup =
+  | { status: "found"; user: User }
+  | { status: "missing" }
+  | { status: "failed" };
+
+/// A failed request is already reported by invokeCommand; callers only branch.
+export async function findByLogin(
+  login: string,
+  options?: InvokeOptions,
+): Promise<Lookup> {
+  try {
+    const [user] = await fetch({ logins: [login] }, options);
+    return user ? { status: "found", user } : { status: "missing" };
+  } catch {
+    return { status: "failed" };
+  }
+}
+
 export function get(ids: string[]): Promise<User[]> {
   return untrack(() => {
     const wanted = ids.filter(isUserId);
@@ -96,7 +125,7 @@ export function get(ids: string[]): Promise<User[]> {
       .filter((id) => !isKnown(id) && !recentlyMissing(id))
       .map(enqueue);
     return Promise.all(pending).then(() =>
-      wanted.map(knownUser).filter((u): u is User => !!u)
+      wanted.map(knownUser).filter((u): u is User => !!u),
     );
   });
 }
@@ -154,7 +183,10 @@ function settle(id: string, error?: unknown) {
   waiting.delete(id);
   const list = waiters.get(id) ?? [];
   waiters.delete(id);
-  for (const w of list) error === undefined ? w.resolve() : w.reject(error);
+  for (const w of list) {
+    if (error === undefined) w.resolve();
+    else w.reject(error);
+  }
 }
 
 function evict(now: number) {
@@ -178,10 +210,10 @@ function scheduleSave() {
 function load(): Record<string, KnownUser> {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
-    const parsed = raw ? JSON.parse(raw) as Record<string, unknown> : {};
+    const parsed = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
     return Object.fromEntries(
       Object.entries(parsed).filter((e): e is [string, KnownUser] =>
-        isKnownUser(e[1])
+        isKnownUser(e[1]),
       ),
     );
   } catch {

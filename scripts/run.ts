@@ -1,9 +1,17 @@
-export async function run(cmd: string[]): Promise<void> {
-  const p = new Deno.Command(cmd[0], {
-    args: cmd.slice(1),
-    stdout: "inherit",
-    stderr: "inherit",
+import { spawn } from "node:child_process";
+
+export type Command = readonly [string, ...string[]];
+
+export function run([command, ...args]: Command): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(command, args, { stdio: "inherit" })
+      .on("error", reject)
+      .on("exit", (code) => {
+        if (code === 0) resolve();
+        else
+          reject(
+            new Error(`${[command, ...args].join(" ")} exited with ${code}`),
+          );
+      });
   });
-  const { code } = await p.output();
-  if (code !== 0) throw new Error(`${cmd.join(" ")} exited with ${code}`);
 }

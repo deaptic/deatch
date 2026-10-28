@@ -44,7 +44,7 @@ export function bindScope(
 ): () => void {
   setContext(context, true);
   const unregisters = Object.entries(bindings).map(([combo, handler]) =>
-    registerLocal(combo, handler, context)
+    registerLocal(combo, handler, context),
   );
   return () => {
     for (const u of unregisters) u();

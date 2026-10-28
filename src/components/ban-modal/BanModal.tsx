@@ -44,8 +44,8 @@ export default function BanModal(props: Props) {
     choice() === "unban"
       ? t("BAN_UNBAN")
       : choice() === "ban"
-      ? t("BAN_BAN")
-      : t("BAN_TIME_OUT", { duration: choice() });
+        ? t("BAN_BAN")
+        : t("BAN_TIME_OUT", { duration: choice() });
 
   async function confirm() {
     if (pending() || banInfo() === undefined) return;
@@ -56,11 +56,13 @@ export default function BanModal(props: Props) {
         userId: props.userId,
       };
       const picked = choice();
-      await (picked === "unban" ? unbanUser(target) : banUser({
-        ...target,
-        duration: secondsFor(picked),
-        reason: reason(),
-      }));
+      await (picked === "unban"
+        ? unbanUser(target)
+        : banUser({
+            ...target,
+            duration: secondsFor(picked),
+            reason: reason(),
+          }));
       props.onClose();
     } catch {
       // invokeCommand already toasted; the modal stays open to retry.

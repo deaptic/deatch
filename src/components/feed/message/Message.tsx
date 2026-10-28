@@ -19,7 +19,7 @@ import Fragments from "../../ui/Fragments.tsx";
 import Timestamp from "../../ui/Timestamp.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
-import * as message from "./message.ts";
+import * as details from "./details.ts";
 import Avatar from "./Avatar.tsx";
 import Actions from "./Actions.tsx";
 import Reply from "./Reply.tsx";
@@ -53,7 +53,7 @@ export default function Message(props: Props) {
 
   const comfortable = () =>
     props.density === "comfortable" && props.showName !== false;
-  const density = (): Density => comfortable() ? "comfortable" : "compact";
+  const density = (): Density => (comfortable() ? "comfortable" : "compact");
 
   function handleHold(action: automod.HoldAction) {
     const h = hold();
@@ -61,14 +61,14 @@ export default function Message(props: Props) {
   }
 
   const mentioned = createMemo(() =>
-    isMention(item, props.userLogin, props.keywords ?? [])
+    isMention(item, props.userLogin, props.keywords ?? []),
   );
 
   // Spacious rows pin the source channel to the avatar instead.
   const badges = (placement: BadgePlacement) => (
     <BadgeBox
-      badges={props.showBadges !== false ? message.chatterBadges(item) : []}
-      channelBadges={message.badgeMap(item, props.badges)}
+      badges={props.showBadges !== false ? details.chatterBadges(item) : []}
+      channelBadges={details.badgeMap(item, props.badges)}
       placement={placement}
     >
       <Show when={!comfortable() && item.source}>
@@ -131,13 +131,15 @@ export default function Message(props: Props) {
 
   const toolbar = (hovered: () => boolean) => (
     <Show
-      when={hovered() &&
+      when={
+        hovered() &&
         !hold() &&
         props.showToolbar !== false &&
         props.onReply &&
         props.onReact &&
         props.onCopypasta &&
-        props.onContextMenu}
+        props.onContextMenu
+      }
     >
       <Actions
         item={item}
@@ -160,51 +162,58 @@ export default function Message(props: Props) {
       flush={props.flush}
       bare={props.bare}
       showTimestamp={props.showTimestamp}
-      tone={message.tone(
+      tone={details.tone(
         item,
         props.highlightMentions !== false && mentioned(),
       )}
-      dimmed={message.isHoldResolved(item)}
+      dimmed={details.isHoldResolved(item)}
       tile={comfortable() ? avatar : undefined}
       overlay={toolbar}
-      onContextMenu={props.onContextMenu &&
-        ((x, y) => props.onContextMenu!(x, y, item))}
+      onContextMenu={
+        props.onContextMenu && ((x, y) => props.onContextMenu!(x, y, item))
+      }
     >
       <FeedItem.Context
-        thread={item.reply && (
-          <Reply
-            reply={item.reply}
-            showAvatar={comfortable()}
-            onJump={props.onJumpToMessage}
-            onShowUserCard={props.onShowUserCard}
-            onUserContextMenu={props.onUserContextMenu}
-          />
-        )}
+        thread={
+          item.reply && (
+            <Reply
+              reply={item.reply}
+              showAvatar={comfortable()}
+              onJump={props.onJumpToMessage}
+              onShowUserCard={props.onShowUserCard}
+              onUserContextMenu={props.onUserContextMenu}
+            />
+          )
+        }
       >
         <Show when={hold()}>
           {(h) => (
             <FeedItem.Note
               class="text-caution"
               label={t("FEED_AUTOMOD_HELD", { reason: h().reason })}
-              suffix={message.isHoldResolved(item)
-                ? message.holdOutcome(h())
-                : undefined}
-              actions={message.isHoldPending(item)
-                ? [
-                  {
-                    title: t("FEED_AUTOMOD_APPROVE"),
-                    icon: () => <Check class="size-4" />,
-                    tone: "success",
-                    onClick: () => handleHold("approve"),
-                  },
-                  {
-                    title: t("FEED_AUTOMOD_DENY"),
-                    icon: () => <X class="size-4" />,
-                    tone: "danger",
-                    onClick: () => handleHold("deny"),
-                  },
-                ]
-                : undefined}
+              suffix={
+                details.isHoldResolved(item)
+                  ? details.holdOutcome(h())
+                  : undefined
+              }
+              actions={
+                details.isHoldPending(item)
+                  ? [
+                      {
+                        title: t("FEED_AUTOMOD_APPROVE"),
+                        icon: () => <Check class="size-4" />,
+                        tone: "success",
+                        onClick: () => handleHold("approve"),
+                      },
+                      {
+                        title: t("FEED_AUTOMOD_DENY"),
+                        icon: () => <X class="size-4" />,
+                        tone: "danger",
+                        onClick: () => handleHold("deny"),
+                      },
+                    ]
+                  : undefined
+              }
             />
           )}
         </Show>
@@ -232,7 +241,7 @@ export default function Message(props: Props) {
             />
           )}
         </Show>
-        <Show when={message.pointsLabel(item)}>
+        <Show when={details.pointsLabel(item)}>
           {(label) => (
             <FeedItem.Note class="text-event-channel-points" label={label()} />
           )}
@@ -258,8 +267,7 @@ export default function Message(props: Props) {
           {badges("before")}
           <Show when={props.showName !== false}>
             {name()}
-            <span class="text-ink-soft">:</span>
-            {" "}
+            <span class="text-ink-soft">:</span>{" "}
           </Show>
         </Show>
         {body()}

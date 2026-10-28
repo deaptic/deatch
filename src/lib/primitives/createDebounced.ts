@@ -27,17 +27,21 @@ export function createDebounced<T>(
   };
 
   createEffect(
-    on(source, (next) => {
-      clear();
-      if (!options.immediate || options.immediate(next, value())) {
-        setValue(() => next);
-        return;
-      }
-      timer = setTimeout(() => {
-        timer = undefined;
-        setValue(() => next);
-      }, ms);
-    }, { defer: true }),
+    on(
+      source,
+      (next) => {
+        clear();
+        if (!options.immediate || options.immediate(next, value())) {
+          setValue(() => next);
+          return;
+        }
+        timer = setTimeout(() => {
+          timer = undefined;
+          setValue(() => next);
+        }, ms);
+      },
+      { defer: true },
+    ),
   );
 
   onCleanup(clear);

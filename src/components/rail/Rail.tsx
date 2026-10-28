@@ -3,12 +3,12 @@ import {
   createMemo,
   createSignal,
   For,
+  on,
   onCleanup,
   Show,
 } from "solid-js";
 import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import * as browser from "../../lib/services/browser.ts";
 import {
   appearanceRailExpanded,
   linkAudioLink,
@@ -29,7 +29,6 @@ import LinkMenu from "./LinkMenu.tsx";
 import { linkClose } from "../../lib/api/link.ts";
 import * as link from "../../lib/services/link.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
 import {
   activeView,
   isSettingsOpen,
@@ -84,11 +83,11 @@ export default function Rail(props: Props) {
   };
 
   const linkedOthers = () =>
-    linkWarmedChannels().filter((c) => c?.id !== user()?.id);
-  const ownTab = () => linkWarmedChannels().find((c) => c?.id === user()?.id);
+    linkWarmedChannels().filter((c) => c.id !== user()?.id);
+  const ownTab = () => linkWarmedChannels().find((c) => c.id === user()?.id);
 
   const warmedIds = createMemo(
-    () => new Set(linkWarmedChannels().map((c) => c?.id)),
+    () => new Set(linkWarmedChannels().map((c) => c.id)),
   );
 
   const isListed = (id: string) =>
@@ -133,9 +132,11 @@ export default function Rail(props: Props) {
     };
   };
 
-  const [chMenu, setChMenu] = createSignal<
-    { ch: User; x: number; y: number } | null
-  >(null);
+  const [chMenu, setChMenu] = createSignal<{
+    ch: User;
+    x: number;
+    y: number;
+  } | null>(null);
   const [addPop, setAddPop] = createSignal<{ x: number; y: number } | null>(
     null,
   );
@@ -144,9 +145,9 @@ export default function Rail(props: Props) {
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
-  const [linkMenu, setLinkMenu] = createSignal<
-    { x: number; y: number } | null
-  >(null);
+  const [linkMenu, setLinkMenu] = createSignal<{ x: number; y: number } | null>(
+    null,
+  );
   let linkBtn: HTMLButtonElement | undefined;
 
   function openLinkMenu() {
@@ -155,17 +156,18 @@ export default function Rail(props: Props) {
     setLinkMenu({ x: rect.right + SIDE_GAP, y: rect.top });
   }
 
-  createEffect(() => {
-    pinnedChannels();
-    channels.onlineList().length;
-    expanded();
-    queueMicrotask(main.update);
-  });
+  createEffect(
+    on([pinnedChannels, () => channels.onlineList().length, expanded], () =>
+      queueMicrotask(main.update),
+    ),
+  );
 
-  createEffect(() => {
-    linkWarmedChannels().length;
-    queueMicrotask(linkScroll.update);
-  });
+  createEffect(
+    on(
+      () => linkWarmedChannels().length,
+      () => queueMicrotask(linkScroll.update),
+    ),
+  );
 
   createEffect(() => {
     const sel = pendingChannel();
@@ -184,7 +186,7 @@ export default function Rail(props: Props) {
   });
 
   function openInBrowser(ch: User) {
-    openUrl(channelUrl(ch.login));
+    browser.openChannel(ch.login);
   }
 
   function startDrag(e: MouseEvent, idx: number) {
@@ -239,22 +241,20 @@ export default function Rail(props: Props) {
     const login = addInput().trim().toLowerCase();
     if (!login) return;
     setAddLoading(true);
-    try {
-      const [u] = await users.fetch({ logins: [login] });
-      if (!u) throw new Error(t("RAIL_USER_NOT_FOUND"));
-      if (pinnedChannels().includes(u.id)) {
-        addToast(t("RAIL_ALREADY_PINNED"), "error");
-        closeAdd();
-        return;
-      }
-      channels.cachePinned(u);
-      pinChannel(u.id);
-      closeAdd();
-    } catch (e) {
-      addToast(errorMessage(e), "error");
-    } finally {
-      setAddLoading(false);
+    const lookup = await users.findByLogin(login);
+    setAddLoading(false);
+    if (lookup.status === "missing") {
+      addToast(t("RAIL_USER_NOT_FOUND"), "error");
+      return;
     }
+    if (lookup.status === "failed") return;
+    if (pinnedChannels().includes(lookup.user.id)) {
+      addToast(t("RAIL_ALREADY_PINNED"), "error");
+    } else {
+      channels.cachePinned(lookup.user);
+      pinChannel(lookup.user.id);
+    }
+    closeAdd();
   }
 
   function pin(ch: User) {
@@ -339,7 +339,8 @@ export default function Rail(props: Props) {
                             onSelect={() => props.onSelect(c())}
                             onMiddleClick={() => openInBrowser(c())}
                             onContextMenu={(x, y) =>
-                              setChMenu({ ch: c(), x, y })}
+                              setChMenu({ ch: c(), x, y })
+                            }
                           />
                         </div>
                       )}
@@ -377,12 +378,12 @@ export default function Rail(props: Props) {
             >
               <For each={channels.onlineList()}>
                 {(ch) => (
-                  <div data-channel-id={ch?.id}>
+                  <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      selected={selectedId() === ch?.id}
-                      unread={hasUnread(ch?.id)}
-                      mentions={channelMentionCount(ch?.id)}
+                      selected={selectedId() === ch.id}
+                      unread={hasUnread(ch.id)}
+                      mentions={channelMentionCount(ch.id)}
                       onSelect={() => props.onSelect(ch)}
                       onMiddleClick={() => openInBrowser(ch)}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
@@ -418,16 +419,18 @@ export default function Rail(props: Props) {
             >
               <For each={linkedOthers()}>
                 {(ch) => (
-                  <div data-channel-id={ch?.id}>
+                  <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      selected={selectedId() === ch?.id}
-                      unread={hasUnread(ch?.id)}
-                      mentions={channelMentionCount(ch?.id)}
-                      muted={linkMutedByLogin()[ch?.login] === true}
-                      onToggleMute={() => link.toggleMuted(ch?.login)}
+                      selected={selectedId() === ch.id}
+                      unread={hasUnread(ch.id)}
+                      mentions={channelMentionCount(ch.id)}
+                      muted={linkMutedByLogin()[ch.login] === true}
+                      onToggleMute={() => link.toggleMuted(ch.login)}
                       onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() => void linkClose(ch?.login)}
+                      onMiddleClick={() =>
+                        linkClose({ channel: ch.login }).catch(() => {})
+                      }
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -513,16 +516,16 @@ export default function Rail(props: Props) {
               label={u().displayName}
               sub={t("RAIL_YOUR_CHANNEL")}
               tooltip={
-                <p class="font-semibold whitespace-nowrap">
-                  {u().displayName}
-                </p>
+                <p class="font-semibold whitespace-nowrap">{u().displayName}</p>
               }
               selected={selectedId() === u().id}
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
-              onMiddleClick={() =>
-                ownTab() ? void linkClose(u().login) : openInBrowser(u())}
+              onMiddleClick={() => {
+                if (ownTab()) linkClose({ channel: u().login }).catch(() => {});
+                else openInBrowser(u());
+              }}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
             >
               <Avatar
@@ -567,9 +570,9 @@ export default function Rail(props: Props) {
             place="rail"
             onClose={() => setChMenu(null)}
             onPin={pin}
-            onLogout={m().ch?.id === user()?.id
-              ? () => session.logout()
-              : undefined}
+            onLogout={
+              m().ch.id === user()?.id ? () => session.logout() : undefined
+            }
           />
         )}
       </Show>

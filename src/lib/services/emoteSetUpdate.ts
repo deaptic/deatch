@@ -19,13 +19,13 @@ export function describe(update: EmoteSetUpdated): string[] {
   const who = actor(update);
   return [
     ...update.added.map((e) =>
-      t("SEVENTV_ADDED", { actor: who, emote: e.name })
+      t("SEVENTV_ADDED", { actor: who, emote: e.name }),
     ),
     ...update.removed.map((n) =>
-      t("SEVENTV_REMOVED", { actor: who, emote: n })
+      t("SEVENTV_REMOVED", { actor: who, emote: n }),
     ),
     ...update.renamed.map((r) =>
-      t("SEVENTV_RENAMED", { actor: who, from: r.from, to: r.to })
+      t("SEVENTV_RENAMED", { actor: who, from: r.from, to: r.to }),
     ),
   ];
 }

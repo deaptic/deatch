@@ -10,6 +10,7 @@ import {
   presenceMode,
   SELF_LURK_PHRASES,
 } from "./presence.ts";
+import { at } from "../utils/at.ts";
 
 let activityMode: string | null = null;
 let activityStartedAt = Math.floor(Date.now() / 1000);
@@ -90,8 +91,10 @@ export function applyPresence(ctx: PresenceContext): void {
   if (mode !== activityMode) {
     activityMode = mode;
     activityStartedAt = Math.floor(Date.now() / 1000);
-    selfLurkPhrase =
-      SELF_LURK_PHRASES[Math.floor(Math.random() * SELF_LURK_PHRASES.length)];
+    selfLurkPhrase = at(
+      SELF_LURK_PHRASES,
+      Math.floor(Math.random() * SELF_LURK_PHRASES.length),
+    );
   }
   scheduleActivity(
     buildPresence(ctx, {

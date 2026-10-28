@@ -41,7 +41,7 @@ export type Look = {
   title: MessageKey;
 };
 
-const LOOKS: Record<string, Look> = {
+const LOOKS: Record<string, Look> & { local: Look } = {
   sub: {
     color: "var(--color-event-sub)",
     Icon: Gift,
@@ -206,14 +206,14 @@ const ANNOUNCEMENT_COLORS: Record<
 /// colour replaces the type's own.
 export function look(item: Event): Look {
   const type = item.notice_type.replace(/^shared_chat_/, "");
-  const base = LOOKS[type] ?? LOOKS[NOTICE_TO_EVENT[type]] ?? LOOKS.local;
+  const event = NOTICE_TO_EVENT[type];
+  const base = LOOKS[type] ?? (event && LOOKS[event]) ?? LOOKS.local;
   const picked = item.announcement_color;
   return {
     ...base,
     title: TITLES[type] ?? base.title,
-    color: picked && picked !== "primary"
-      ? ANNOUNCEMENT_COLORS[picked]
-      : base.color,
+    color:
+      picked && picked !== "primary" ? ANNOUNCEMENT_COLORS[picked] : base.color,
   };
 }
 
@@ -221,11 +221,11 @@ export function look(item: Event): Look {
 function chatter(item: Event): Person | undefined {
   return item.chatter_user_id
     ? {
-      id: item.chatter_user_id,
-      login: item.chatter_login ?? item.chatter_name.toLowerCase(),
-      name: item.chatter_name,
-      color: item.color,
-    }
+        id: item.chatter_user_id,
+        login: item.chatter_login ?? item.chatter_name.toLowerCase(),
+        name: item.chatter_name,
+        color: item.color,
+      }
     : undefined;
 }
 

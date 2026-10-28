@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-solid";
 import { createSignal, Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import { t } from "../../lib/i18n/index.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -52,22 +52,20 @@ import type { User } from "../../lib/types/index.ts";
 
 /// The rail menu also manages the row itself (unread, Link tab, pin order,
 /// logout); anywhere else the menu only acts on the channel.
-type Props =
-  & {
-    x: number;
-    y: number;
-    align?: "start" | "center" | "end";
-    ch: User;
-    onClose: () => void;
-  }
-  & (
-    | { place: "rail"; onPin?: (ch: User) => void; onLogout?: () => void }
-    | { place: "link"; onOpen?: () => void }
-  );
+type Props = {
+  x: number;
+  y: number;
+  align?: "start" | "center" | "end";
+  ch: User;
+  onClose: () => void;
+} & (
+  | { place: "rail"; onPin?: (ch: User) => void; onLogout?: () => void }
+  | { place: "link"; onOpen?: () => void }
+);
 
 export default function ChannelContextMenu(props: Props) {
   const url = () => channelUrl(props.ch.login);
-  const hasTab = () => linkWarmedChannels().some((c) => c?.id === props.ch.id);
+  const hasTab = () => linkWarmedChannels().some((c) => c.id === props.ch.id);
   const muted = () => linkMutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);
   // Shortcuts act on the open channel, so only its menu shows them.
@@ -82,11 +80,6 @@ export default function ChannelContextMenu(props: Props) {
   const canShoutout = () => shoutoutSources(props.ch).length > 0;
   const [pickingShoutout, setPickingShoutout] = createSignal(false);
 
-  const run = (action: () => unknown) => () => {
-    action();
-    props.onClose();
-  };
-
   return (
     <Menu x={props.x} y={props.y} align={props.align} onClose={props.onClose}>
       <Show
@@ -95,7 +88,6 @@ export default function ChannelContextMenu(props: Props) {
           <ShoutoutSources
             target={props.ch}
             onBack={() => setPickingShoutout(false)}
-            onDone={props.onClose}
           />
         }
       >
@@ -105,7 +97,7 @@ export default function ChannelContextMenu(props: Props) {
               <MenuItem
                 label={t("MENU_OPEN_CHAT")}
                 icon={<MessageSquare />}
-                onClick={run(open())}
+                onClick={open()}
               />
               <MenuDivider />
             </>
@@ -116,10 +108,10 @@ export default function ChannelContextMenu(props: Props) {
             label={t("MENU_MARK_AS_READ")}
             icon={<CheckCheck />}
             disabled={!unread()}
-            onClick={run(() => {
+            onClick={() => {
               markSeen(props.ch.id);
               markChannelMentionsRead(props.ch.id);
-            })}
+            }}
           />
           <MenuDivider />
         </Show>
@@ -129,37 +121,37 @@ export default function ChannelContextMenu(props: Props) {
             <MenuItem
               label={t("MENU_OPEN_IN_BROWSER")}
               icon={<ExternalLink />}
-              shortcut={selected()
-                ? shortcuts.keyFor("link::openTab")
-                : undefined}
-              onClick={run(() => openUrl(url()))}
+              shortcut={
+                selected() ? shortcuts.keyFor("link::openTab") : undefined
+              }
+              onClick={() => browser.open(url())}
             />
           }
         >
           <MenuItem
             label={t("MENU_SHOW_BROWSER_TAB")}
             icon={<ExternalLink />}
-            onClick={run(() =>
-              linkFocus(props.ch.login)
-            )}
+            onClick={() =>
+              linkFocus({ channel: props.ch.login }).catch(() => {})
+            }
           />
           <MenuItem
             label={muted() ? t("MENU_UNMUTE_TAB") : t("MENU_MUTE_TAB")}
             icon={muted() ? <Volume2 /> : <VolumeX />}
-            shortcut={selected()
-              ? shortcuts.keyFor("link::toggleMute")
-              : undefined}
-            onClick={run(() =>
-              link.toggleMuted(props.ch.login)
-            )}
+            shortcut={
+              selected() ? shortcuts.keyFor("link::toggleMute") : undefined
+            }
+            onClick={() => link.toggleMuted(props.ch.login)}
           />
           <MenuItem
             label={t("MENU_CLOSE_BROWSER_TAB")}
             icon={<X />}
-            shortcut={selected()
-              ? shortcuts.keyFor("link::closeTab")
-              : undefined}
-            onClick={run(() => linkClose(props.ch.login))}
+            shortcut={
+              selected() ? shortcuts.keyFor("link::closeTab") : undefined
+            }
+            onClick={() =>
+              linkClose({ channel: props.ch.login }).catch(() => {})
+            }
           />
           <Show when={linkHasAudio()}>
             <MenuDivider />
@@ -175,34 +167,36 @@ export default function ChannelContextMenu(props: Props) {
               <MenuItem
                 label={t("MENU_PIN")}
                 icon={<Pin />}
-                onClick={run(() =>
+                onClick={() =>
                   props.place === "rail" && props.onPin
                     ? props.onPin(props.ch)
                     : pinChannel(props.ch.id)
-                )}
+                }
               />
             }
           >
             <MenuItem
               label={t("MENU_UNPIN")}
               icon={<PinOff />}
-              onClick={run(() => unpinChannel(props.ch.id))}
+              onClick={() => unpinChannel(props.ch.id)}
             />
             <Show when={props.place === "rail" && pinIndex() > 0}>
               <MenuItem
                 label={t("MENU_MOVE_UP")}
                 icon={<ArrowUp />}
-                onClick={run(movePin(-1))}
+                onClick={movePin(-1)}
               />
             </Show>
             <Show
-              when={props.place === "rail" &&
-                pinIndex() < pinnedChannels().length - 1}
+              when={
+                props.place === "rail" &&
+                pinIndex() < pinnedChannels().length - 1
+              }
             >
               <MenuItem
                 label={t("MENU_MOVE_DOWN")}
                 icon={<ArrowDown />}
-                onClick={run(movePin(1))}
+                onClick={movePin(1)}
               />
             </Show>
           </Show>
@@ -210,7 +204,7 @@ export default function ChannelContextMenu(props: Props) {
         <MenuItem
           label={t("MENU_COPY_LINK")}
           icon={<Link2 />}
-          onClick={run(() => copyField(url()))}
+          onClick={() => copyField(url())}
         />
 
         <Show when={other() || canShoutout()}>
@@ -219,9 +213,7 @@ export default function ChannelContextMenu(props: Props) {
             <MenuItem
               label={t("MENU_RAID")}
               icon={<Radio />}
-              onClick={run(() =>
-                raid.begin(self()!.id, props.ch).catch(() => {})
-              )}
+              onClick={() => raid.begin(self()!.id, props.ch).catch(() => {})}
             />
           </Show>
           <Show when={canShoutout()}>
@@ -234,11 +226,7 @@ export default function ChannelContextMenu(props: Props) {
           </Show>
         </Show>
 
-        <CopyPayloadItem
-          show={advancedDeveloperMode()}
-          data={props.ch}
-          onClose={props.onClose}
-        />
+        <CopyPayloadItem show={advancedDeveloperMode()} data={props.ch} />
         <Show when={props.place === "rail" && props.onLogout}>
           {(logout) => (
             <>
@@ -247,7 +235,7 @@ export default function ChannelContextMenu(props: Props) {
                 label={t("MENU_LOG_OUT")}
                 icon={<LogOut />}
                 tone="negative"
-                onClick={run(logout())}
+                onClick={logout()}
               />
             </>
           )}

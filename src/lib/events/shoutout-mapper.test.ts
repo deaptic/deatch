@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawShoutout } from "../types/twitch/eventsub.ts";
 import { mapShoutout } from "./shoutout-mapper.ts";
 
@@ -17,14 +16,13 @@ const shoutout: RawShoutout = {
   target_cooldown_ends_at: "2026-10-01T01:00:00Z",
 };
 
-Deno.test("names who shouted out whom, the reach and the cooldowns", () => {
+test("names who shouted out whom, the reach and the cooldowns", () => {
   const item = mapShoutout(shoutout, 0);
-  assertEquals(
-    item.system_message,
+  expect(item.system_message).toBe(
     "Mod gave Mira a shoutout in front of 120 viewers",
   );
-  assertEquals(item.detail, "Next shoutout in 2m, Mira again in 1h");
-  assertEquals(item.chatter_user_id, "9");
-  assertEquals(item.chatter_login, "mira");
-  assertEquals(item.people, [{ id: "2", login: "mod", name: "Mod" }]);
+  expect(item.detail).toBe("Next shoutout in 2m, Mira again in 1h");
+  expect(item.chatter_user_id).toBe("9");
+  expect(item.chatter_login).toBe("mira");
+  expect(item.people).toStrictEqual([{ id: "2", login: "mod", name: "Mod" }]);
 });

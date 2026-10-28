@@ -22,10 +22,7 @@ export default function ReadabilityCard() {
   return (
     <Card>
       <CardLabel>{t("SETTINGS_APPEARANCE_TEXT")}</CardLabel>
-      <SettingsRow
-        label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
-        stacked
-      >
+      <SettingsRow label={t("SETTINGS_APPEARANCE_FONT_SIZE")} stacked>
         <StopSlider
           label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
           value={feedFontSize()}

@@ -19,7 +19,6 @@ export default function UpdateBanner() {
     try {
       await updater.install(update);
     } catch (e) {
-      console.error("update install failed", e);
       setError(errorMessage(e));
       setInstalling(false);
     }

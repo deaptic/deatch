@@ -12,6 +12,7 @@ import {
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import * as users from "../../lib/services/users.ts";
+import { at } from "../../lib/utils/at.ts";
 import { rankSuggestions } from "../../lib/utils/rankSuggestions.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Artwork from "../ui/Artwork.tsx";
@@ -92,12 +93,14 @@ export default function CommandComposer(props: Props) {
   onCleanup(() => clearTimeout(requiredFlashTimer));
 
   const activeOption = () => options[activeIdx()] ?? null;
+  /// Slots and options are parallel arrays of the same length.
+  const slotAt = (i: number) => at(slots(), i);
   const activeSlot = () => slots()[activeIdx()];
   const activeRaw = () => activeSlot()?.raw ?? "";
 
   function patchSlot(idx: number, patch: Partial<Slot>) {
     setSlots((prev) =>
-      prev.map((s, i) => (i === idx ? { ...s, ...patch } : s))
+      prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)),
     );
   }
 
@@ -176,23 +179,29 @@ export default function CommandComposer(props: Props) {
   const activePopup = createMemo<Popup | null>(() => {
     switch (activeOption()?.type) {
       case "user":
-        return userSuggestions().length === 0 ? null : {
-          items: userSuggestions,
-          select: (i) => selectUser(i as UserSuggestion),
-          render: (i) => renderUserItem(i as UserSuggestion),
-        };
+        return userSuggestions().length === 0
+          ? null
+          : {
+              items: userSuggestions,
+              select: (i) => selectUser(i as UserSuggestion),
+              render: (i) => renderUserItem(i as UserSuggestion),
+            };
       case "enum":
-        return enumSuggestions().length === 0 ? null : {
-          items: enumSuggestions,
-          select: (i) => selectEnum(i as string),
-          render: (i) => <span class="text-ink">{i as string}</span>,
-        };
+        return enumSuggestions().length === 0
+          ? null
+          : {
+              items: enumSuggestions,
+              select: (i) => selectEnum(i as string),
+              render: (i) => <span class="text-ink">{i as string}</span>,
+            };
       case "search":
-        return searchSuggestions().length === 0 ? null : {
-          items: searchSuggestions,
-          select: (i) => selectSearch(i as OptionSuggestion),
-          render: (i) => renderSearchItem(i as OptionSuggestion),
-        };
+        return searchSuggestions().length === 0
+          ? null
+          : {
+              items: searchSuggestions,
+              select: (i) => selectSearch(i as OptionSuggestion),
+              render: (i) => renderSearchItem(i as OptionSuggestion),
+            };
       default:
         return null;
     }
@@ -217,58 +226,54 @@ export default function CommandComposer(props: Props) {
   });
 
   const canSubmit = () =>
-    options.every((opt, i) => slotSatisfied(opt, slots()[i]));
+    options.every((opt, i) => slotSatisfied(opt, slotAt(i)));
 
   async function resolveUserSlot(idx: number): Promise<boolean> {
-    const login = slots()[idx].raw.replace(/^@/, "").trim().toLowerCase();
+    const login = slotAt(idx).raw.replace(/^@/, "").trim().toLowerCase();
     if (!login) return false;
     setResolving(true);
-    try {
-      const u = (await users.fetch({ logins: [login] }))[0];
-      if (!u) {
-        patchSlot(idx, { error: t("COMMAND_USER_NOT_FOUND", { login }) });
-        return false;
-      }
-      fillUserSlot(idx, u.displayName, u.id);
+    const lookup = await users.findByLogin(login, { silent: true });
+    setResolving(false);
+    if (lookup.status === "found") {
+      fillUserSlot(idx, lookup.user.displayName, lookup.user.id);
       return true;
-    } catch (e) {
-      console.error("user lookup failed", e);
-      patchSlot(idx, { error: t("COMMAND_LOOKUP_FAILED") });
-      return false;
-    } finally {
-      setResolving(false);
     }
+    patchSlot(idx, {
+      error:
+        lookup.status === "missing"
+          ? t("COMMAND_USER_NOT_FOUND", { login })
+          : t("COMMAND_LOOKUP_FAILED"),
+    });
+    return false;
   }
 
   async function resolveSearchSlot(idx: number): Promise<boolean> {
     const opt = options[idx];
-    const query = slots()[idx].raw.trim();
+    const query = slotAt(idx).raw.trim();
     if (opt?.type !== "search" || !query) return false;
     setResolving(true);
-    try {
-      const match = (await opt.search(query))[0];
-      if (!match) {
-        patchSlot(idx, { error: t("COMMAND_NO_MATCH", { query }) });
-        return false;
-      }
+    const matches = await opt.search(query).catch(() => null);
+    setResolving(false);
+    const match = matches?.[0];
+    if (!match) {
       patchSlot(idx, {
-        raw: match.label,
-        resolved: match,
-        displayLabel: match.label,
-        error: null,
+        error: matches
+          ? t("COMMAND_NO_MATCH", { query })
+          : t("COMMAND_LOOKUP_FAILED"),
       });
-      return true;
-    } catch (e) {
-      console.error("search lookup failed", e);
-      patchSlot(idx, { error: t("COMMAND_LOOKUP_FAILED") });
       return false;
-    } finally {
-      setResolving(false);
     }
+    patchSlot(idx, {
+      raw: match.label,
+      resolved: match,
+      displayLabel: match.label,
+      error: null,
+    });
+    return true;
   }
 
   async function resolvePending(idx: number): Promise<boolean> {
-    const slot = slots()[idx];
+    const slot = slotAt(idx);
     if (!slot.raw || slot.resolved !== null || slot.error) return true;
     const type = options[idx]?.type;
     if (type === "user") return await resolveUserSlot(idx);
@@ -280,7 +285,7 @@ export default function CommandComposer(props: Props) {
     const idx = activeIdx();
     const opt = options[idx];
     if (!opt || !(await resolvePending(idx))) return false;
-    if (!slotSatisfied(opt, slots()[idx])) return false;
+    if (!slotSatisfied(opt, slotAt(idx))) return false;
     if (idx + 1 >= options.length) return false;
     setActiveIdx(idx + 1);
     return true;
@@ -289,7 +294,7 @@ export default function CommandComposer(props: Props) {
   function submit() {
     const values: Record<string, unknown> = {};
     options.forEach((opt, i) => {
-      values[opt.name] = slots()[i].resolved ?? null;
+      values[opt.name] = slotAt(i).resolved ?? null;
     });
     props.onSubmit(values);
   }
@@ -299,19 +304,18 @@ export default function CommandComposer(props: Props) {
       prev.map((slot, i) =>
         options[i]?.required && slot.resolved === null && !slot.error
           ? { ...slot, error: t("COMMAND_REQUIRED") }
-          : slot
-      )
+          : slot,
+      ),
     );
     clearTimeout(requiredFlashTimer);
     requiredFlashTimer = window.setTimeout(() => {
       requiredFlashTimer = undefined;
       setSlots((prev) =>
-        prev.map((
-          slot,
-        ) => (slot.error === t("COMMAND_REQUIRED")
-          ? { ...slot, error: null }
-          : slot)
-        )
+        prev.map((slot) =>
+          slot.error === t("COMMAND_REQUIRED")
+            ? { ...slot, error: null }
+            : slot,
+        ),
       );
     }, 1500);
   }
@@ -344,9 +348,10 @@ export default function CommandComposer(props: Props) {
         raw: value,
         resolved: exact ? value : null,
         displayLabel: value,
-        error: value !== "" && !exact
-          ? `Must be one of: ${allowed.join(", ")}`
-          : null,
+        error:
+          value !== "" && !exact
+            ? `Must be one of: ${allowed.join(", ")}`
+            : null,
       });
     } else {
       patchSlot(idx, {
@@ -467,7 +472,7 @@ export default function CommandComposer(props: Props) {
           </span>
           <For each={options}>
             {(opt, i) => {
-              const slot = () => slots()[i()];
+              const slot = () => slotAt(i());
               const active = () => i() === activeIdx();
               return (
                 <CommandComposerSlot

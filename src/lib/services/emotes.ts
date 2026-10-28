@@ -28,10 +28,10 @@ const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
 
 const bttv = channelResource((c) =>
-  bttvGetChannelEmotes({ channelId: c.id }, { silent: true })
+  bttvGetChannelEmotes({ channelId: c.id }, { silent: true }),
 );
 const ffz = channelResource((c) =>
-  ffzGetChannelEmotes({ channelLogin: c.login }, { silent: true })
+  ffzGetChannelEmotes({ channelLogin: c.login }, { silent: true }),
 );
 
 let userEmotesLoadStarted = false;
@@ -51,7 +51,7 @@ export async function ensureUserLoaded(): Promise<void> {
   }
 
   try {
-    const all = await getUserEmotes();
+    const all = await getUserEmotes({ silent: true });
     setUserEmotes(dedupeById(all));
     saveCache(key, all);
   } catch {
@@ -67,7 +67,7 @@ export function resetUser() {
 export async function loadGlobal(): Promise<Emote[]> {
   const cached = loadCache<Emote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
   if (cached) {
-    getGlobalEmotes()
+    getGlobalEmotes({ silent: true })
       .then((fresh) => {
         saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
         setGlobalEmotes(fresh);
@@ -75,7 +75,7 @@ export async function loadGlobal(): Promise<Emote[]> {
       .catch(() => {});
     return cached;
   }
-  const fresh = await getGlobalEmotes();
+  const fresh = await getGlobalEmotes({ silent: true });
   saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
   return fresh;
 }
@@ -83,11 +83,15 @@ export async function loadGlobal(): Promise<Emote[]> {
 export function loadThirdPartyGlobal() {
   if (thirdPartyGlobalsLoaded) return;
   thirdPartyGlobalsLoaded = true;
-  seventvGetGlobalEmotes({ silent: true }).then(setSevenTvGlobal).catch(
-    () => {},
-  );
-  bttvGetGlobalEmotes({ silent: true }).then(setBttvGlobal).catch(() => {});
-  ffzGetGlobalEmotes({ silent: true }).then(setFfzGlobal).catch(() => {});
+  seventvGetGlobalEmotes({ silent: true })
+    .then(setSevenTvGlobal)
+    .catch(() => {});
+  bttvGetGlobalEmotes({ silent: true })
+    .then(setBttvGlobal)
+    .catch(() => {});
+  ffzGetGlobalEmotes({ silent: true })
+    .then(setFfzGlobal)
+    .catch(() => {});
 }
 
 export function loadChannelThirdParty(channel: ChannelRef) {
