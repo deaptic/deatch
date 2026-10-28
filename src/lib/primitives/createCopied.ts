@@ -1,5 +1,5 @@
 import { createSignal, onCleanup } from "solid-js";
-import { copyText } from "../utils/clipboard.ts";
+import * as clipboard from "../services/clipboard.ts";
 
 const SHOW_MS = 1200;
 
@@ -9,7 +9,7 @@ export function createCopied() {
   onCleanup(() => clearTimeout(timer));
 
   async function copy(text: string) {
-    if (!(await copyText(text))) return;
+    if (!(await clipboard.write(text))) return;
     setCopied(true);
     clearTimeout(timer);
     timer = window.setTimeout(() => setCopied(false), SHOW_MS);

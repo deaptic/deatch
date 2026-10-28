@@ -43,7 +43,7 @@ import { selectedChannel } from "../../lib/stores/view.ts";
 import * as raid from "../../lib/services/raid.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import * as clipboard from "../../lib/services/clipboard.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import type { User } from "../../lib/types/index.ts";
 
@@ -197,7 +197,7 @@ export default function ChannelContextMenu(props: Props) {
         <MenuItem
           label={t("MENU_COPY_LINK")}
           icon={<Link2 />}
-          onClick={() => copyField(url())}
+          onClick={() => clipboard.copy(url())}
         />
 
         <Show when={other() || canShoutout()}>

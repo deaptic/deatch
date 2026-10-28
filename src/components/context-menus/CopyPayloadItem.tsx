@@ -3,7 +3,7 @@ import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import * as clipboard from "../../lib/services/clipboard.ts";
 
 type Props = {
   show: boolean;
@@ -17,7 +17,7 @@ export default function CopyPayloadItem(props: Props) {
       <MenuItem
         label={t("MENU_COPY_PAYLOAD")}
         icon={<Copy />}
-        onClick={() => copyField(JSON.stringify(props.data, null, 2))}
+        onClick={() => clipboard.copy(JSON.stringify(props.data, null, 2))}
       />
     </Show>
   );
