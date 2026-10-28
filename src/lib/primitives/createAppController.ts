@@ -14,8 +14,6 @@ export type AppController = {
   toggleLink: () => void;
   openChannel: (channelId: string) => void;
   jumpToMessage: (channelId: string, messageId: string) => void;
-  setLiveStreams: (streams: User[]) => void;
-  setLiveLoaded: (loaded: boolean) => void;
 };
 
 export function createAppController(): AppController {
@@ -27,10 +25,7 @@ export function createAppController(): AppController {
   createSelectedChannelEffects();
   createMentionsBadge();
   createSystemIntegration();
-  createSessionLifecycle({
-    setLiveLoaded: subs.setLiveLoaded,
-    leaveAll: subs.leaveAll,
-  });
+  createSessionLifecycle({ leaveAll: subs.leaveAll });
   createAppShortcuts(nav, link);
 
   return {
@@ -38,7 +33,5 @@ export function createAppController(): AppController {
     toggleLink: link.toggleLink,
     openChannel: nav.openChannel,
     jumpToMessage: nav.jumpToMessage,
-    setLiveStreams: subs.setLiveStreams,
-    setLiveLoaded: subs.setLiveLoaded,
   };
 }

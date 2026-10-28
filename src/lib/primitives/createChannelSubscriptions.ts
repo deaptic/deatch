@@ -1,5 +1,5 @@
-import { createEffect, createSignal, on } from "solid-js";
-import type { Focus, User } from "../types/index.ts";
+import { createEffect, on } from "solid-js";
+import type { Focus } from "../types/index.ts";
 import { channelFocus, diffFocus } from "../utils/channelFocus.ts";
 import { lastChannel, selectedChannel } from "../stores/view.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
@@ -12,17 +12,14 @@ import * as chatSettings from "../services/chatSettings.ts";
 import * as cheermotes from "../services/cheermotes.ts";
 import { clearChatSettings } from "../stores/chatSettings.ts";
 import { clearCheermotes } from "../stores/cheermotes.ts";
+import { followedLive } from "../stores/channels.ts";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
 export type ChannelSubscriptions = {
-  setLiveStreams: (streams: User[]) => void;
-  setLiveLoaded: (loaded: boolean) => void;
   leaveAll: () => void;
 };
 
 export function createChannelSubscriptions(): ChannelSubscriptions {
-  const [liveStreams, setLiveStreams] = createSignal<User[]>([]);
-  const [liveLoaded, setLiveLoaded] = createSignal(false);
   let joined = new Map<string, Focus>();
 
   function syncEventsub() {
@@ -55,13 +52,14 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
   createEffect(() => {
     const u = user();
     if (!u) return;
-    if (!liveLoaded()) return;
+    const live = followedLive();
+    if (live === null) return;
     const next = channelFocus({
       ownId: u.id,
       pinnedIds: pinnedChannels(),
       warmedIds: linkWarmedChannels().map((ch) => ch.id),
       selectedId: (selectedChannel() ?? lastChannel())?.id,
-      liveIds: liveStreams().map((ch) => ch.id),
+      liveIds: live.map((ch) => ch.id),
     });
     const diff = diffFocus(joined, next);
     joined = next;
@@ -83,5 +81,5 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     syncEventsub();
   }
 
-  return { setLiveStreams, setLiveLoaded, leaveAll };
+  return { leaveAll };
 }

@@ -13,7 +13,6 @@ function resetUserScopedCaches() {
 }
 
 export type SessionDeps = {
-  setLiveLoaded: (loaded: boolean) => void;
   leaveAll(): void;
 };
 
@@ -30,6 +29,5 @@ export function createSessionLifecycle(deps: SessionDeps): void {
     deps.leaveAll();
     resetUserScopedCaches();
     resetView();
-    deps.setLiveLoaded(false);
   });
 }
