@@ -1,11 +1,9 @@
 use super::SetHardwareAccelerationParams;
 use crate::error::Result;
+use crate::local_dir::local_dir;
 
 #[tauri::command]
 #[specta::specta]
 pub fn set_hardware_acceleration(params: SetHardwareAccelerationParams) -> Result<()> {
-    Ok(super::set_hardware_acceleration(
-        &crate::local_dir::local_dir()?,
-        params.enabled,
-    )?)
+    super::set_hardware_acceleration(&local_dir()?, params)
 }

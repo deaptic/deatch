@@ -6,7 +6,7 @@ use super::dto::{
     CommunitySubGiftNotice, GifterNotice, MessageBody, PrimePaidUpgradeNotice, RaidNotice,
     RecentNotice, ResubNotice, SubGiftNotice, SubNotice, SubTier,
 };
-use super::{build_fragments, nonempty, tag, Tags};
+use super::irc::{build_fragments, nonempty, tag, Tags};
 use std::str::FromStr;
 
 const ANONYMOUS_LOGIN: &str = "ananonymousgifter";
@@ -178,7 +178,7 @@ fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'
 
 #[cfg(test)]
 mod tests {
-    use super::super::split_irc;
+    use super::super::irc::split_irc;
     use super::*;
     use serde_json::{json, Value};
 

@@ -7,9 +7,9 @@ import * as __TAURI_EVENT from "@tauri-apps/api/event";
 export const commands = {
 	discordConnect: () => __TAURI_INVOKE<null>("discord_connect"),
 	discordDisconnect: () => __TAURI_INVOKE<null>("discord_disconnect"),
-	discordSetActivity: (params: ActivityInput) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
+	discordSetActivity: (params: SetActivityParams) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
 	getDeviceCode: () => __TAURI_INVOKE<DcfAuthResponse>("get_device_code"),
-	cancelLogin: () => __TAURI_INVOKE<void>("cancel_login"),
+	cancelLogin: () => __TAURI_INVOKE<null>("cancel_login"),
 	restoreSession: () => __TAURI_INVOKE<{
 	id: UserId,
 	login: string,
@@ -68,17 +68,13 @@ export const commands = {
 	ffzGetChannelEmotes: (params: ChannelLoginParams) => __TAURI_INVOKE<EmoteEntry[]>("ffz_get_channel_emotes", { params }),
 	seventvGetGlobalEmotes: () => __TAURI_INVOKE<EmoteEntry[]>("seventv_get_global_emotes"),
 	seventvGetChannelEmotes: (params: ChannelIdParams) => __TAURI_INVOKE<ChannelResult>("seventv_get_channel_emotes", { params }),
-	seventvSubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_subscribe_emote_set", { params }),
-	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<void>("seventv_unsubscribe_emote_set", { params }),
+	seventvSubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<null>("seventv_subscribe_emote_set", { params }),
+	seventvUnsubscribeEmoteSet: (params: EmoteSetParams) => __TAURI_INVOKE<null>("seventv_unsubscribe_emote_set", { params }),
 	getRecentMessages: (params: GetRecentMessagesParams) => __TAURI_INVOKE<RecentHistory>("get_recent_messages", { params }),
 	linkSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("link_set_muted", { params }),
 	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
 	linkSetAudio: (params: SetAudioParams) => __TAURI_INVOKE<null>("link_set_audio", { params }),
-	/**
-	 *  Asks connected browsers to report; one that connects later reports on its
-	 *  own, so none being connected is not a failure.
-	 */
 	linkRequestState: () => __TAURI_INVOKE<null>("link_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
 	setHardwareAcceleration: (params: SetHardwareAccelerationParams) => __TAURI_INVOKE<null>("set_hardware_acceleration", { params }),
@@ -103,20 +99,6 @@ export const events = {
 export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.ad_break.begin":"channel-ad-break-begin","channel.bits.use":"channel-bits-use","channel.channel_points_automatic_reward_redemption.add":"channel-points-automatic-redemption-add","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.charity_campaign.start":"channel-charity-campaign-start","channel.charity_campaign.stop":"channel-charity-campaign-stop","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.goal.begin":"channel-goal-begin","channel.goal.end":"channel-goal-end","channel.hype_train.begin":"channel-hype-train-begin","channel.hype_train.end":"channel-hype-train-end","channel.hype_train.progress":"channel-hype-train-progress","channel.moderate":"channel-moderate","channel.poll.begin":"channel-poll-begin","channel.poll.end":"channel-poll-end","channel.prediction.begin":"channel-prediction-begin","channel.prediction.end":"channel-prediction-end","channel.prediction.lock":"channel-prediction-lock","channel.shared_chat.begin":"channel-shared-chat-begin","channel.shared_chat.end":"channel-shared-chat-end","channel.shared_chat.update":"channel-shared-chat-update","channel.shoutout.create":"channel-shoutout-create","channel.shoutout.receive":"channel-shoutout-receive","channel.suspicious_user.message":"channel-suspicious-user-message","channel.suspicious_user.update":"channel-suspicious-user-update","channel.unban_request.create":"channel-unban-request-create","channel.unban_request.resolve":"channel-unban-request-resolve","channel.update":"channel-update","channel.warning.acknowledge":"channel-warning-acknowledge","stream.offline":"stream-offline","stream.online":"stream-online"} as const;
 
 /* Types */
-export type ActivityInput = {
-	details?: string | null,
-	detailsUrl?: string | null,
-	stateText?: string | null,
-	stateUrl?: string | null,
-	largeImage?: string | null,
-	largeText?: string | null,
-	largeUrl?: string | null,
-	smallImage?: string | null,
-	smallText?: string | null,
-	startedAt?: number | null,
-	buttons?: Button[],
-};
-
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
 
 export type AnnouncementNotice = {
@@ -453,7 +435,7 @@ export type LinkState = {
 };
 
 export type ManageHeldAutomodMessageParams = {
-	msgId: MessageId,
+	messageId: MessageId,
 	action: AutomodAction,
 };
 
@@ -618,6 +600,20 @@ export type SendMessageResult = {
 
 /**  Twitch rejected the stored token for good (revoked, password changed). */
 export type SessionEnded = null;
+
+export type SetActivityParams = {
+	details?: string | null,
+	detailsUrl?: string | null,
+	stateText?: string | null,
+	stateUrl?: string | null,
+	largeImage?: string | null,
+	largeText?: string | null,
+	largeUrl?: string | null,
+	smallImage?: string | null,
+	smallText?: string | null,
+	startedAt?: number | null,
+	buttons?: Button[],
+};
 
 /**
  *  Audio processing for the Twitch tabs: the compressor, on or off with its

@@ -1,42 +1,11 @@
-use crate::emotes::dto::ChannelResult;
-use crate::emotes::dto::EmoteEntry;
+use super::dto::{ChannelResult, EmoteEntry, StvChannelResponse, StvGlobalResponse};
 use crate::error::Result;
 use crate::http::get_json;
 use crate::twitch::ids::UserId;
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-pub(super) struct StvEmote {
-    id: String,
-    pub(super) name: String,
-}
-
-#[derive(Deserialize)]
-struct StvGlobalResponse {
-    emotes: Vec<StvEmote>,
-}
-
-#[derive(Deserialize)]
-struct StvEmoteSet {
-    id: String,
-    emotes: Vec<StvEmote>,
-}
-
-#[derive(Deserialize)]
-struct StvChannelResponse {
-    emote_set: Option<StvEmoteSet>,
-}
-
-pub(super) fn to_entry(e: StvEmote) -> EmoteEntry {
-    EmoteEntry {
-        url: format!("https://cdn.7tv.app/emote/{}/1x.webp", e.id),
-        name: e.name,
-    }
-}
 
 pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
     let response: StvGlobalResponse = get_json(http, "https://7tv.io/v3/emote-sets/global").await?;
-    Ok(response.emotes.into_iter().map(to_entry).collect())
+    Ok(response.emotes.into_iter().map(EmoteEntry::from).collect())
 }
 
 pub async fn get_channel_emotes(
@@ -48,12 +17,5 @@ pub async fn get_channel_emotes(
         &format!("https://7tv.io/v3/users/twitch/{channel_id}"),
     )
     .await?;
-    let (emotes, emote_set_id) = match response.emote_set {
-        Some(s) => (s.emotes.into_iter().map(to_entry).collect(), Some(s.id)),
-        None => (Vec::new(), None),
-    };
-    Ok(ChannelResult {
-        emotes,
-        emote_set_id,
-    })
+    Ok(response.into())
 }

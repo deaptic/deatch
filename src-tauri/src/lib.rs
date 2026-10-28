@@ -1,3 +1,4 @@
+mod blocking;
 mod clock;
 mod diagnostics;
 mod discord;

@@ -23,7 +23,7 @@ pub struct Button {
 
 #[derive(Default, Deserialize, specta::Type)]
 #[serde(default, rename_all = "camelCase")]
-pub struct ActivityInput {
+pub struct SetActivityParams {
     pub details: Option<String>,
     pub details_url: Option<String>,
     pub state_text: Option<String>,
@@ -58,19 +58,19 @@ pub fn disconnect(state: &DiscordState) -> Result<()> {
     Ok(client.close()?)
 }
 
-pub fn set_activity(state: &DiscordState, input: ActivityInput) -> Result<()> {
+pub fn set_activity(state: &DiscordState, params: SetActivityParams) -> Result<()> {
     let mut guard = state.0.lock().unwrap();
     let client = guard
         .as_mut()
         .ok_or_else(|| Error::Discord("not connected".into()))?;
-    Ok(client.set_activity(build_activity(&input))?)
+    Ok(client.set_activity(build_activity(&params))?)
 }
 
 fn text(value: &Option<String>) -> Option<&str> {
     value.as_deref().filter(|s| !s.is_empty())
 }
 
-fn build_activity(input: &ActivityInput) -> Activity<'_> {
+fn build_activity(input: &SetActivityParams) -> Activity<'_> {
     let mut activity = Activity::new()
         .activity_type(ActivityType::Watching)
         .status_display_type(StatusDisplayType::Details);
@@ -132,7 +132,7 @@ fn build_activity(input: &ActivityInput) -> Activity<'_> {
 
 #[cfg(test)]
 mod tests {
-    use super::{build_activity, ActivityInput, Button};
+    use super::{build_activity, Button, SetActivityParams};
 
     fn button(label: &str, url: &str) -> Button {
         Button {
@@ -143,11 +143,11 @@ mod tests {
 
     #[test]
     fn empty_fields_are_left_out() {
-        let input = ActivityInput {
+        let input = SetActivityParams {
             details: Some("Watching xqc".into()),
             state_text: Some(String::new()),
             large_text: Some(String::new()),
-            ..ActivityInput::default()
+            ..SetActivityParams::default()
         };
         let value = serde_json::to_value(build_activity(&input)).unwrap();
         assert_eq!(value["details"], "Watching xqc");
@@ -157,7 +157,7 @@ mod tests {
 
     #[test]
     fn keeps_at_most_two_buttons_discord_accepts() {
-        let input = ActivityInput {
+        let input = SetActivityParams {
             buttons: vec![
                 button("", "https://twitch.tv/a"),
                 button(&"x".repeat(33), "https://twitch.tv/b"),
@@ -165,7 +165,7 @@ mod tests {
                 button("Chat", "https://twitch.tv/d"),
                 button("Third", "https://twitch.tv/e"),
             ],
-            ..ActivityInput::default()
+            ..SetActivityParams::default()
         };
         let value = serde_json::to_value(build_activity(&input)).unwrap();
         let labels: Vec<_> = value["buttons"]

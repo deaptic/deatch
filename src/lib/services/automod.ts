@@ -16,7 +16,7 @@ export async function resolve(
   );
   try {
     await manageHeldAutomodMessage({
-      msgId: messageId,
+      messageId,
       action: approve ? "allow" : "deny",
     });
     setAutomodHoldStatus(

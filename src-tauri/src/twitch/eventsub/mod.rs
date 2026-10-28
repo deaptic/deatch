@@ -12,7 +12,7 @@ pub use kind::{EventKind, Focus};
 
 use super::ids::UserId;
 use super::Twitch;
-use crate::error::{Error, Result};
+use crate::error::Result;
 use dto::EventSubStats;
 use serde::Deserialize;
 use std::sync::Mutex;
@@ -59,9 +59,7 @@ impl Handle {
     }
 
     fn send(&self, channels: Channels) -> Result<()> {
-        self.tx
-            .send(channels)
-            .map_err(|_| Error::Io("eventsub task stopped".into()))
+        Ok(self.tx.send(channels)?)
     }
 }
 
@@ -73,9 +71,16 @@ pub fn spawn(app: tauri::AppHandle, twitch: Twitch) {
     tauri::async_runtime::spawn(async move { runner::run(&app, &twitch, rx).await });
 }
 
-pub fn set_channels(twitch: &Twitch, channels: Vec<ChannelFocus>) -> Result<()> {
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct SetChannelsParams {
+    pub channels: Vec<ChannelFocus>,
+}
+
+pub fn set_channels(twitch: &Twitch, params: SetChannelsParams) -> Result<()> {
     twitch.eventsub.send(
-        channels
+        params
+            .channels
             .into_iter()
             .map(|c| (c.broadcaster_id, c.focus))
             .collect(),

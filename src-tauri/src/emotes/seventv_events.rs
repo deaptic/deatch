@@ -5,12 +5,11 @@ use futures_util::stream::SplitSink;
 use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_tungstenite::tungstenite::{Error as WsError, Message};
 
+use super::dto::{EmoteEntry, StvEmote};
 use super::events::{EmoteSetUpdated, Rename};
-use super::seventv::{to_entry, StvEmote};
 use crate::emit::emit;
 use crate::ws::{self, Socket};
 
@@ -35,10 +34,8 @@ pub enum SevenTvOp {
 pub struct SevenTvEvents(UnboundedSender<SevenTvOp>);
 
 impl SevenTvEvents {
-    pub fn request(&self, op: SevenTvOp) {
-        if let Err(SendError(op)) = self.0.send(op) {
-            log::error!("7tv events task stopped, dropped {op:?}");
-        }
+    pub fn request(&self, op: SevenTvOp) -> crate::error::Result<()> {
+        Ok(self.0.send(op)?)
     }
 }
 
@@ -199,7 +196,14 @@ struct Change {
 }
 
 fn emote(value: Value) -> Option<StvEmote> {
-    serde_json::from_value(value).ok()
+    logged(serde_json::from_value(value))
+}
+
+/// 7TV frames are best effort: one that doesn't parse is logged and skipped.
+fn logged<T>(parsed: serde_json::Result<T>) -> Option<T> {
+    parsed
+        .inspect_err(|e| log::warn!("7tv frame unreadable: {e}"))
+        .ok()
 }
 
 fn emote_changes(changes: Vec<Change>) -> impl Iterator<Item = Change> {
@@ -207,18 +211,18 @@ fn emote_changes(changes: Vec<Change>) -> impl Iterator<Item = Change> {
 }
 
 fn parse_update(text: &str) -> Option<EmoteSetUpdated> {
-    let frame: Frame = serde_json::from_str(text).ok()?;
+    let frame: Frame = logged(serde_json::from_str(text))?;
     if frame.op != OP_DISPATCH {
         return None;
     }
-    let Dispatch { kind, body } = serde_json::from_value(frame.d).ok()?;
+    let Dispatch { kind, body } = logged(serde_json::from_value(frame.d))?;
     if kind != EMOTE_SET_UPDATE {
         return None;
     }
 
     let added: Vec<_> = emote_changes(body.pushed)
         .filter_map(|c| emote(c.value))
-        .map(to_entry)
+        .map(EmoteEntry::from)
         .collect();
     let removed: Vec<_> = emote_changes(body.pulled)
         .filter_map(|c| emote(c.old_value))

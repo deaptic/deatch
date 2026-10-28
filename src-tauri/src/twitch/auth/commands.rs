@@ -15,7 +15,7 @@ pub async fn get_device_code(
 
 #[tauri::command]
 #[specta::specta]
-pub fn cancel_login(twitch: State<'_, Twitch>) {
+pub fn cancel_login(twitch: State<'_, Twitch>) -> Result<()> {
     super::cancel_login(&twitch)
 }
 

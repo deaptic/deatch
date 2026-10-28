@@ -72,8 +72,9 @@ pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<Dc
     Ok(response)
 }
 
-pub fn cancel_login(twitch: &Twitch) {
+pub fn cancel_login(twitch: &Twitch) -> Result<()> {
     twitch.begin_login();
+    Ok(())
 }
 
 async fn login(twitch: &Twitch, mut builder: DeviceUserTokenBuilder) -> Result<User> {
