@@ -93,6 +93,24 @@ export async function fetch(
   return users;
 }
 
+export type Lookup =
+  | { status: "found"; user: User }
+  | { status: "missing" }
+  | { status: "failed" };
+
+/// A failed request is already reported by invokeCommand; callers only branch.
+export async function findByLogin(
+  login: string,
+  options?: InvokeOptions,
+): Promise<Lookup> {
+  try {
+    const [user] = await fetch({ logins: [login] }, options);
+    return user ? { status: "found", user } : { status: "missing" };
+  } catch {
+    return { status: "failed" };
+  }
+}
+
 export function get(ids: string[]): Promise<User[]> {
   return untrack(() => {
     const wanted = ids.filter(isUserId);

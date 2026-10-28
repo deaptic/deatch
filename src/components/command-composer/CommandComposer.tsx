@@ -229,21 +229,19 @@ export default function CommandComposer(props: Props) {
     const login = slots()[idx].raw.replace(/^@/, "").trim().toLowerCase();
     if (!login) return false;
     setResolving(true);
-    try {
-      const u = (await users.fetch({ logins: [login] }))[0];
-      if (!u) {
-        patchSlot(idx, { error: t("COMMAND_USER_NOT_FOUND", { login }) });
-        return false;
-      }
-      fillUserSlot(idx, u.displayName, u.id);
+    const lookup = await users.findByLogin(login, { silent: true });
+    setResolving(false);
+    if (lookup.status === "found") {
+      fillUserSlot(idx, lookup.user.displayName, lookup.user.id);
       return true;
-    } catch (e) {
-      console.error("user lookup failed", e);
-      patchSlot(idx, { error: t("COMMAND_LOOKUP_FAILED") });
-      return false;
-    } finally {
-      setResolving(false);
     }
+    patchSlot(idx, {
+      error:
+        lookup.status === "missing"
+          ? t("COMMAND_USER_NOT_FOUND", { login })
+          : t("COMMAND_LOOKUP_FAILED"),
+    });
+    return false;
   }
 
   async function resolveSearchSlot(idx: number): Promise<boolean> {

@@ -28,7 +28,6 @@ import LinkMenu from "./LinkMenu.tsx";
 import { linkClose } from "../../lib/api/link.ts";
 import * as link from "../../lib/services/link.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
 import {
   activeView,
   isSettingsOpen,
@@ -240,22 +239,20 @@ export default function Rail(props: Props) {
     const login = addInput().trim().toLowerCase();
     if (!login) return;
     setAddLoading(true);
-    try {
-      const [u] = await users.fetch({ logins: [login] });
-      if (!u) throw new Error(t("RAIL_USER_NOT_FOUND"));
-      if (pinnedChannels().includes(u.id)) {
-        addToast(t("RAIL_ALREADY_PINNED"), "error");
-        closeAdd();
-        return;
-      }
-      channels.cachePinned(u);
-      pinChannel(u.id);
-      closeAdd();
-    } catch (e) {
-      addToast(errorMessage(e), "error");
-    } finally {
-      setAddLoading(false);
+    const lookup = await users.findByLogin(login);
+    setAddLoading(false);
+    if (lookup.status === "missing") {
+      addToast(t("RAIL_USER_NOT_FOUND"), "error");
+      return;
     }
+    if (lookup.status === "failed") return;
+    if (pinnedChannels().includes(lookup.user.id)) {
+      addToast(t("RAIL_ALREADY_PINNED"), "error");
+    } else {
+      channels.cachePinned(lookup.user);
+      pinChannel(lookup.user.id);
+    }
+    closeAdd();
   }
 
   function pin(ch: User) {

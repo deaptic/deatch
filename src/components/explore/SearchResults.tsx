@@ -15,7 +15,6 @@ import {
 import * as users from "../../lib/services/users.ts";
 import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
@@ -67,15 +66,11 @@ export default function SearchResults(props: Props) {
   async function forceOpenByLogin() {
     const login = props.query.trim().toLowerCase();
     if (!login) return;
-    try {
-      const [channel] = await users.fetch({ logins: [login] });
-      if (!channel) {
-        addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");
-        return;
-      }
-      props.onSelect(channel);
-    } catch (e) {
-      addToast(errorMessage(e), "error");
+    const lookup = await users.findByLogin(login);
+    if (lookup.status === "missing") {
+      addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");
+    } else if (lookup.status === "found") {
+      props.onSelect(lookup.user);
     }
   }
 
