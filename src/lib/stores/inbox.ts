@@ -55,15 +55,12 @@ export const channelMentionCount = (channelId: string) =>
   mentions().filter((m) => m.unread && m.channelId === channelId).length;
 
 export function recordMention(m: Omit<Mention, "unread">) {
+  const prev = mentions();
+  if (prev.some((x) => x.id === m.id)) return;
   const isActive = selectedChannel()?.id === m.channelId;
-  let added = false;
-  setMentions((prev) => {
-    if (prev.some((x) => x.id === m.id)) return prev;
-    added = true;
-    const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
-    return save(next.length > MAX ? next.slice(0, MAX) : next);
-  });
-  if (added && notificationsMentionSound() && audio.paused) {
+  const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
+  setMentions(save(next.length > MAX ? next.slice(0, MAX) : next));
+  if (notificationsMentionSound() && audio.paused) {
     audio.play().catch(() => {});
   }
 }
@@ -76,17 +73,10 @@ export function pruneExpired() {
 }
 
 function markRead(match: (m: Mention) => boolean) {
-  setMentions((prev) => {
-    let changed = false;
-    const next = prev.map((m) => {
-      if (m.unread && match(m)) {
-        changed = true;
-        return { ...m, unread: false };
-      }
-      return m;
-    });
-    return changed ? save(next) : prev;
-  });
+  const prev = mentions();
+  const unread = (m: Mention) => m.unread && match(m);
+  if (!prev.some(unread)) return;
+  setMentions(save(prev.map((m) => (unread(m) ? { ...m, unread: false } : m))));
 }
 
 export const markMentionRead = (id: string) => markRead((m) => m.id === id);

@@ -5,7 +5,7 @@ export function createPopover<T extends object = Record<string, never>>() {
   const [state, setState] = createSignal<State>(null);
 
   function open(x: number, y: number, extra: T) {
-    setState(() => ({ x, y, ...extra } as State));
+    setState(() => ({ x, y, ...extra }) as State);
   }
 
   function close() {

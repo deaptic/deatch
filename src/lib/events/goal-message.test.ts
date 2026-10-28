@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawGoal } from "../types/twitch/eventsub.ts";
 import { goalBegin, goalEnd } from "./goal-message.ts";
 
@@ -13,23 +12,25 @@ const goal = (g: Partial<RawGoal> = {}): RawGoal => ({
   ...g,
 });
 
-Deno.test("describes a new goal with its progress", () => {
-  assertEquals(goalBegin(goal()), {
+test("describes a new goal with its progress", () => {
+  expect(goalBegin(goal())).toStrictEqual({
     text: "New sub goal (40/100)",
     detail: "Road to 100",
   });
-  assertEquals(goalBegin(goal({ description: "" })), {
+  expect(goalBegin(goal({ description: "" }))).toStrictEqual({
     text: "New sub goal (40/100)",
   });
 });
 
-Deno.test("says whether a goal was achieved", () => {
-  assertEquals(
+test("says whether a goal was achieved", () => {
+  expect(
     goalEnd(goal({ is_achieved: true, current_amount: 100 })),
-    { text: "Sub goal achieved (100/100)", detail: "Road to 100" },
-  );
-  assertEquals(
-    goalEnd(goal({ is_achieved: false })),
-    { text: "Sub goal ended (40/100)", detail: "Road to 100" },
-  );
+  ).toStrictEqual({
+    text: "Sub goal achieved (100/100)",
+    detail: "Road to 100",
+  });
+  expect(goalEnd(goal({ is_achieved: false }))).toStrictEqual({
+    text: "Sub goal ended (40/100)",
+    detail: "Road to 100",
+  });
 });

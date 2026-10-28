@@ -125,26 +125,23 @@ export type RawAmount = {
   currency: string;
 };
 
-export type RawNotification =
-  & {
-    broadcaster_user_id: string;
-    message_id: string;
-    notice_type: string;
-    system_message: string;
-    /// The chatter's own text, e.g. a resub message or an announcement.
-    message?: { text: string; fragments: RawFragment[] };
-    chatter_is_anonymous?: boolean;
-    chatter_user_id?: string;
-    chatter_user_login?: string;
-    chatter_user_name?: string;
-    color?: string;
-  }
-  & { [K in keyof RawNoticeDetails]?: RawNoticeDetails[K] | null }
-  & {
-    [K in keyof RawNoticeDetails as `shared_chat_${K}`]?:
-      | RawNoticeDetails[K]
-      | null;
-  };
+export type RawNotification = {
+  broadcaster_user_id: string;
+  message_id: string;
+  notice_type: string;
+  system_message: string;
+  /// The chatter's own text, e.g. a resub message or an announcement.
+  message?: { text: string; fragments: RawFragment[] };
+  chatter_is_anonymous?: boolean;
+  chatter_user_id?: string;
+  chatter_user_login?: string;
+  chatter_user_name?: string;
+  color?: string;
+} & { [K in keyof RawNoticeDetails]?: RawNoticeDetails[K] | null } & {
+  [K in keyof RawNoticeDetails as `shared_chat_${K}`]?:
+    | RawNoticeDetails[K]
+    | null;
+};
 
 export type RawShoutout = {
   broadcaster_user_id: string;
@@ -275,9 +272,8 @@ type RawUnbanRequest = RawModUser & {
   moderator_message: string;
 };
 
-export type RawModerate =
-  & RawModerateBase
-  & (
+export type RawModerate = RawModerateBase &
+  (
     | { action: "clear" }
     | { action: "ban"; ban: RawBan }
     | { action: "unban"; unban: RawModUser }
@@ -307,17 +303,17 @@ export type RawModerate =
     | { action: "uniquechatoff" }
     | { action: "warn"; warn: RawModUser & { reason: string | null } }
     | {
-      action:
-        | "add_blocked_term"
-        | "add_permitted_term"
-        | "remove_blocked_term"
-        | "remove_permitted_term";
-      automod_terms: RawAutomodTerms;
-    }
+        action:
+          | "add_blocked_term"
+          | "add_permitted_term"
+          | "remove_blocked_term"
+          | "remove_permitted_term";
+        automod_terms: RawAutomodTerms;
+      }
     | {
-      action: "approve_unban_request" | "deny_unban_request";
-      unban_request: RawUnbanRequest;
-    }
+        action: "approve_unban_request" | "deny_unban_request";
+        unban_request: RawUnbanRequest;
+      }
   );
 
 // channel.unban_request.create / resolve
@@ -360,19 +356,19 @@ export type RawSuspiciousUserUpdate = RawModUser & {
 // automod.message.hold
 export type AutomodHeldReason =
   | {
-    reason: "automod";
-    automod: { category: string; level: number };
-  }
+      reason: "automod";
+      automod: { category: string; level: number };
+    }
   | {
-    /// A blocked link also arrives in `blocked_term`.
-    reason: "blocked_term" | "blocked_link";
-    blocked_term: {
-      terms_found: {
-        term_id: string;
-        boundary: { start_pos: number; end_pos: number };
-      }[];
+      /// A blocked link also arrives in `blocked_term`.
+      reason: "blocked_term" | "blocked_link";
+      blocked_term: {
+        terms_found: {
+          term_id: string;
+          boundary: { start_pos: number; end_pos: number };
+        }[];
+      };
     };
-  };
 
 type RawAutomodFragment =
   | { type: "text"; text: string }
@@ -427,7 +423,8 @@ export type RawHypeTrain = {
   progress?: number;
   goal?: number;
   top_contributions: RawHypeTrainContribution[];
-  type: "regular" | "golden_kappa" | "treasure" | string;
+  /// "regular", "golden_kappa", "treasure", or a kind Twitch adds later.
+  type: string;
   is_shared_train: boolean;
 };
 
@@ -490,7 +487,8 @@ export type RawBitsUse = {
   user_login: string;
   user_name: string;
   bits: number;
-  type: "cheer" | "power_up" | "custom_power_up" | string;
+  /// "cheer", "power_up", "custom_power_up", or a kind Twitch adds later.
+  type: string;
   power_up: {
     type: string;
     emote: { id: string; name: string } | null;

@@ -40,6 +40,7 @@ import { t } from "../../lib/i18n/index.ts";
 import type { Density } from "../../lib/constants/density.ts";
 import { dayLabel, layoutFeed } from "../../lib/utils/feedLayout.ts";
 import type { UserActions } from "../ui/userLink.ts";
+import { at } from "../../lib/utils/at.ts";
 
 export type FeedApi = {
   scrollToBottom: () => void;
@@ -100,15 +101,16 @@ export default function Feed(props: Props) {
       ? null
       : (feeds[props.broadcasterId]?.dividerAtEntryId ?? null);
   const reactions = createMemo(() =>
-    usableFavorites(knownUser(props.broadcasterId) ?? null).slice(0, 3)
+    usableFavorites(knownUser(props.broadcasterId) ?? null).slice(0, 3),
   );
 
   const dividerBeforeId = createMemo(() => {
-    const at = dividerAt();
-    if (at === null) return null;
+    const dividerId = dividerAt();
+    if (dividerId === null) return null;
     const all = entries();
-    const i = all.findIndex((item) => getEntryId(item) === at);
-    return i >= 0 && i + 1 < all.length ? getEntryId(all[i + 1]) : null;
+    const i = all.findIndex((item) => getEntryId(item) === dividerId);
+    const next = i >= 0 ? all[i + 1] : undefined;
+    return next ? getEntryId(next) : null;
   });
 
   const layout = createMemo(() => {
@@ -118,8 +120,9 @@ export default function Feed(props: Props) {
     const continued = new Set<string>();
     visible.forEach((item, i) => {
       const id = getEntryId(item);
-      if (rows[i].dayStart) dayStarts.add(id);
-      if (rows[i].continued && id !== dividerBeforeId()) continued.add(id);
+      const row = at(rows, i);
+      if (row.dayStart) dayStarts.add(id);
+      if (row.continued && id !== dividerBeforeId()) continued.add(id);
     });
     return { dayStarts, continued };
   });
@@ -135,7 +138,7 @@ export default function Feed(props: Props) {
   );
 
   const messageList = createMemo<Message[]>(() =>
-    entries().filter((i): i is Message => i.kind === "message")
+    entries().filter((i): i is Message => i.kind === "message"),
   );
   const selectedMessage = createMemo<Message | null>(() => {
     const id = selectedId();
@@ -143,21 +146,15 @@ export default function Feed(props: Props) {
     return messageList().find((m) => m.message_id === id) ?? null;
   });
 
+  /// Steps from the selection, or enters at the end being moved towards.
   function moveSelection(direction: 1 | -1) {
     const list = messageList();
-    if (list.length === 0) return;
-    const id = selectedId();
-    if (!id) {
-      setSelectedId(list[direction === -1 ? list.length - 1 : 0].message_id);
-      return;
-    }
-    const idx = list.findIndex((m) => m.message_id === id);
-    if (idx < 0) {
-      setSelectedId(list[direction === -1 ? list.length - 1 : 0].message_id);
-      return;
-    }
-    const next = Math.min(Math.max(idx + direction, 0), list.length - 1);
-    setSelectedId(list[next].message_id);
+    const idx = list.findIndex((m) => m.message_id === selectedId());
+    const target =
+      idx < 0
+        ? list.at(direction === -1 ? -1 : 0)
+        : list[Math.min(Math.max(idx + direction, 0), list.length - 1)];
+    if (target) setSelectedId(target.message_id);
   }
 
   function clearSelection() {

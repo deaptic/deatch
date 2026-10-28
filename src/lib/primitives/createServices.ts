@@ -7,11 +7,13 @@ import * as shortcuts from "../services/shortcuts.ts";
 import * as updater from "../services/updater.ts";
 import * as inbox from "../services/inbox.ts";
 import * as clock from "../services/clock.ts";
+import * as theme from "../services/theme.ts";
 
 export function createServices(): void {
   onMount(() => {
     const stops = [
       log.start(),
+      theme.start(),
       backendEvents.start(),
       users.start(),
       chatActivity.start(),

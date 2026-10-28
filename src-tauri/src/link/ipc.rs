@@ -119,17 +119,27 @@ pub struct Hosts(Arc<tokio::sync::Mutex<Connected>>);
 
 impl Hosts {
     /// Every browser gets every command; the extension ignores channels it has
-    /// no tab for.
+    /// no tab for. Fails when no browser is connected.
     pub async fn send(&self, command: &HostCommand) -> std::io::Result<()> {
-        let mut connected = self.0.lock().await;
-        if connected.hosts.is_empty() {
-            return Err(std::io::Error::new(
+        if self.send_if_connected(command).await? {
+            Ok(())
+        } else {
+            Err(std::io::Error::new(
                 std::io::ErrorKind::NotConnected,
                 "host not connected",
-            ));
+            ))
+        }
+    }
+
+    /// Like `send`, for commands that need no browser to be there; reports
+    /// whether any was.
+    pub async fn send_if_connected(&self, command: &HostCommand) -> std::io::Result<bool> {
+        let mut connected = self.0.lock().await;
+        if connected.hosts.is_empty() {
+            return Ok(false);
         }
         connected.broadcast(&encode(command)?).await;
-        Ok(())
+        Ok(true)
     }
 
     /// Audio settings outlive connections: they are kept and replayed to each
@@ -319,7 +329,7 @@ async fn handle_connection(
 #[cfg(test)]
 mod tests {
     use super::{
-        merge, read_line, Compressor, HostCommand, LinkChannel, LinkState, MAX_MESSAGE_SIZE,
+        merge, read_line, Compressor, HostCommand, Hosts, LinkChannel, LinkState, MAX_MESSAGE_SIZE,
     };
     use serde_json::json;
 
@@ -336,6 +346,19 @@ mod tests {
                 }
             }
         })
+    }
+
+    #[test]
+    fn without_a_browser_only_send_fails() {
+        let hosts = Hosts::default();
+        tauri::async_runtime::block_on(async {
+            let err = hosts.send(&HostCommand::GetState).await.unwrap_err();
+            assert_eq!(err.kind(), std::io::ErrorKind::NotConnected);
+            assert!(!hosts
+                .send_if_connected(&HostCommand::GetState)
+                .await
+                .unwrap());
+        });
     }
 
     #[test]

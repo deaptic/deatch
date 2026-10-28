@@ -154,18 +154,14 @@ export default function UserCard(props: Props) {
     (feeds[props.broadcasterId]?.messages ?? []).filter(
       (m): m is FeedMessage =>
         m.kind === "message" && m.chatter_user_id === props.chatterId,
-    )
+    ),
   );
   const [history, { mutate: setHistory }] = createResource(
     () => untrack(live).length === 0 && props.chatterId,
-    (chatterId) =>
-      backlog.forChatter(props.broadcasterLogin, chatterId).catch((e) => {
-        console.warn("[user-card] history not loaded", e);
-        return [];
-      }),
+    (chatterId) => backlog.forChatter(props.broadcasterLogin, chatterId),
   );
   const messages = createMemo(() =>
-    mergeMessages(history.latest ?? [], live(), props.chatterId)
+    mergeMessages(history.latest ?? [], live(), props.chatterId),
   );
 
   return (
@@ -202,7 +198,8 @@ export default function UserCard(props: Props) {
           // Live messages strike through via the moderation event; fetched
           // history is a copy outside the feed store.
           onRemoved={() =>
-            setHistory((h) => h?.map((m) => ({ ...m, deleted: true })))}
+            setHistory((h) => h?.map((m) => ({ ...m, deleted: true })))
+          }
         />
         <UserCardFeed
           broadcasterId={props.broadcasterId}

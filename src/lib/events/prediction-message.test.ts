@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawPrediction } from "../types/twitch/eventsub.ts";
 import {
   predictionBegin,
@@ -20,29 +19,25 @@ const prediction = (p: Partial<RawPrediction> = {}): RawPrediction => ({
   ...p,
 });
 
-Deno.test("describes the start and the locked stakes", () => {
-  assertEquals(
-    predictionBegin(prediction()),
-    {
-      text: "Prediction “Win?” started for 5m",
-      detail: "Outcomes: Yes and No",
-    },
-  );
-  assertEquals(predictionLock(prediction()), {
+test("describes the start and the locked stakes", () => {
+  expect(predictionBegin(prediction())).toStrictEqual({
+    text: "Prediction “Win?” started for 5m",
+    detail: "Outcomes: Yes and No",
+  });
+  expect(predictionLock(prediction())).toStrictEqual({
     text: "Prediction “Win?” locked",
     detail: "Yes 1,000 points from 4 viewers and No 500 points from 1 viewer",
   });
 });
 
-Deno.test("names the winner and the pot, or the refund", () => {
-  assertEquals(
+test("names the winner and the pot, or the refund", () => {
+  expect(
     predictionEnd(prediction({ status: "resolved", winning_outcome_id: "a" })),
-    {
-      text: "Prediction “Win?” resolved: Yes won",
-      detail: "1,500 points split between 4 viewers",
-    },
-  );
-  assertEquals(predictionEnd(prediction({ status: "canceled" })), {
+  ).toStrictEqual({
+    text: "Prediction “Win?” resolved: Yes won",
+    detail: "1,500 points split between 4 viewers",
+  });
+  expect(predictionEnd(prediction({ status: "canceled" }))).toStrictEqual({
     text: "Prediction “Win?” was canceled and points were refunded",
   });
 });

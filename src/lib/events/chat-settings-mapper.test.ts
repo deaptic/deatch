@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { mapChatSettingsUpdate } from "./chat-settings-mapper.ts";
 import type { RawChatSettingsUpdate } from "../types/index.ts";
 
@@ -14,8 +13,8 @@ const OFF: RawChatSettingsUpdate = {
   unique_chat_mode: false,
 };
 
-Deno.test("mapChatSettingsUpdate keeps durations of enabled modes", () => {
-  assertEquals(
+test("mapChatSettingsUpdate keeps durations of enabled modes", () => {
+  expect(
     mapChatSettingsUpdate({
       ...OFF,
       slow_mode: true,
@@ -24,22 +23,21 @@ Deno.test("mapChatSettingsUpdate keeps durations of enabled modes", () => {
       follower_mode_duration_minutes: 0,
       emote_mode: true,
     }),
-    {
-      slowModeSeconds: 30,
-      followerModeMinutes: 0,
-      subscriberMode: false,
-      emoteMode: true,
-      uniqueChatMode: false,
-    },
-  );
+  ).toStrictEqual({
+    slowModeSeconds: 30,
+    followerModeMinutes: 0,
+    subscriberMode: false,
+    emoteMode: true,
+    uniqueChatMode: false,
+  });
 });
 
-Deno.test("mapChatSettingsUpdate drops durations of disabled modes", () => {
+test("mapChatSettingsUpdate drops durations of disabled modes", () => {
   const settings = mapChatSettingsUpdate({
     ...OFF,
     slow_mode_wait_time_seconds: 30,
     follower_mode_duration_minutes: 10,
   });
-  assertEquals(settings.slowModeSeconds, null);
-  assertEquals(settings.followerModeMinutes, null);
+  expect(settings.slowModeSeconds).toBeNull();
+  expect(settings.followerModeMinutes).toBeNull();
 });

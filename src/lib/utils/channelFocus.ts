@@ -34,17 +34,19 @@ export function diffFocus(
 ): FocusDiff {
   const added = [...next.keys()].filter((id) => !prev.has(id));
   const removed = [...prev.keys()].filter((id) => !next.has(id));
-  const promoted = [...next].filter(([id, focus]) =>
-    focus === "focused" && prev.get(id) === "background"
-  ).map(([id]) => id);
-  const demoted = [...next].some(([id, focus]) =>
-    focus === "background" && prev.get(id) === "focused"
+  const promoted = [...next]
+    .filter(
+      ([id, focus]) => focus === "focused" && prev.get(id) === "background",
+    )
+    .map(([id]) => id);
+  const demoted = [...next].some(
+    ([id, focus]) => focus === "background" && prev.get(id) === "focused",
   );
   return {
     added,
     removed,
     promoted,
-    changed: added.length > 0 || removed.length > 0 || promoted.length > 0 ||
-      demoted,
+    changed:
+      added.length > 0 || removed.length > 0 || promoted.length > 0 || demoted,
   };
 }

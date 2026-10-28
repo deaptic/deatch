@@ -1,28 +1,28 @@
 {
   "name": "deatch",
   "version": "0.3.28",
-  "description": "",
+  "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint:ui": "oxlint src",
-    "test": "deno test src/",
+    "dev": "vp dev",
+    "build": "vp build",
+    "test": "vp test",
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml -- --export-bindings",
     "tauri": "tauri",
-    "release": "deno run -A scripts/release.ts",
-    "pack:extension": "deno run -A scripts/pack-extension.ts"
+    "release": "node scripts/release.ts",
+    "pack:extension": "node scripts/pack-extension.ts",
+    "check:tauri": "node scripts/check-tauri.ts"
   },
-  "license": "MIT",
   "dependencies": {
     "@blobatar/solid": "^2.7.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@tauri-apps/api": "^2.12.0",
-    "@tauri-apps/plugin-autostart": "^2.6.0",
-    "@tauri-apps/plugin-log": "^2.10.0",
-    "@tauri-apps/plugin-opener": "^2.6.0",
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-autostart": "^2.7.0",
+    "@tauri-apps/plugin-log": "^2.10.1",
+    "@tauri-apps/plugin-opener": "^2.7.2",
     "@tauri-apps/plugin-process": "^2.4.0",
-    "@tauri-apps/plugin-updater": "^2.13.0",
+    "@tauri-apps/plugin-updater": "^2.14.0",
     "blobatar": "^2.7.0",
     "intl-messageformat": "^12.1.4",
     "lucide-solid": "^1.48.0",
@@ -32,10 +32,15 @@
   },
   "devDependencies": {
     "@shadcn/lint": "^0.2.0",
-    "@tauri-apps/cli": "^2.12.0",
-    "oxlint": "^1.86.0",
+    "@tauri-apps/cli": "^2.12.4",
+    "@types/node": "^26.6.5",
     "typescript": "^6.0.3",
-    "vite": "^8.3.1",
-    "vite-plugin-solid": "^2.11.14"
-  }
+    "vite": "catalog:",
+    "vite-plugin-solid": "^2.11.14",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "pnpm@12.15.0"
 }

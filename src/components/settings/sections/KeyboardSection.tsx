@@ -65,19 +65,17 @@ function actionLabel(action: string): string {
 }
 
 function rowsFor(prefixes: string[]): Row[] {
-  return Object.entries(defaultKeymap as Record<string, string[]>)
-    .flatMap(([combo, actions]) => {
+  return Object.entries(defaultKeymap as Record<string, string[]>).flatMap(
+    ([combo, actions]) => {
       const action = actions.find((a) => prefixes.some((p) => a.startsWith(p)));
       return action ? [{ combo, label: actionLabel(action) }] : [];
-    });
+    },
+  );
 }
 
 export default function KeyboardSection() {
   return (
-    <PageBody
-      title={t("SETTINGS_KEYBOARD")}
-      lede={t("SETTINGS_KEYBOARD_LEDE")}
-    >
+    <PageBody title={t("SETTINGS_KEYBOARD")} lede={t("SETTINGS_KEYBOARD_LEDE")}>
       <For each={GROUPS}>
         {(g) => (
           <Card>

@@ -20,6 +20,12 @@ A component may call an `api/` wrapper directly for a plain one-shot call; once
 caching, state, or outcome logic is involved, it belongs in a service. Types
 come from `types/`, never re-exported through `api/`.
 
+Every Tauri call, commands and plugins alike, goes through `invokeCommand`,
+which logs each failure and toasts it unless `silent`; callers never report it
+again. Toasts are for what the user did: background work (polling, preloading,
+startup sync) calls silently. Await the call when the outcome matters, otherwise end it with
+`.catch(() => {})`. `void` marks only promises that cannot reject.
+
 ## Services
 
 A service is a plain ES module, never a class; the module is the singleton.

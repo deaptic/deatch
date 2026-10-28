@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
 import { noticeMessage } from "./notice-message.ts";
 
@@ -13,36 +12,32 @@ const base = {
 const notice = (n: Partial<RawNotification>) =>
   noticeMessage({ ...base, notice_type: "", ...n });
 
-Deno.test("describes subs by plan", () => {
-  assertEquals(
+test("describes subs by plan", () => {
+  expect(
     notice({ notice_type: "sub", sub: { sub_tier: "2000", is_prime: false } }),
-    "Viewer subscribed at Tier 2.",
-  );
-  assertEquals(
+  ).toBe("Viewer subscribed at Tier 2.");
+  expect(
     notice({ notice_type: "sub", sub: { sub_tier: "1000", is_prime: true } }),
-    "Viewer subscribed with Prime.",
-  );
+  ).toBe("Viewer subscribed with Prime.");
 });
 
-Deno.test("adds the streak to a resub only when there is one", () => {
+test("adds the streak to a resub only when there is one", () => {
   const resub = {
     sub_tier: "1000" as const,
     is_prime: false,
     cumulative_months: 14,
     streak_months: 3,
   };
-  assertEquals(
-    notice({ notice_type: "resub", resub }),
+  expect(notice({ notice_type: "resub", resub })).toBe(
     "Viewer subscribed at Tier 1. They've subscribed for 14 months, currently on a 3 month streak!",
   );
-  assertEquals(
+  expect(
     notice({ notice_type: "resub", resub: { ...resub, streak_months: null } }),
-    "Viewer subscribed at Tier 1. They've subscribed for 14 months!",
-  );
+  ).toBe("Viewer subscribed at Tier 1. They've subscribed for 14 months!");
 });
 
-Deno.test("credits an anonymous gifter", () => {
-  assertEquals(
+test("credits an anonymous gifter", () => {
+  expect(
     notice({
       notice_type: "community_sub_gift",
       chatter_is_anonymous: true,
@@ -52,29 +47,26 @@ Deno.test("credits an anonymous gifter", () => {
         cumulative_total: null,
       },
     }),
-    "An anonymous gifter is gifting 5 Tier 1 Subs to the community!",
-  );
-  assertEquals(
+  ).toBe("An anonymous gifter is gifting 5 Tier 1 Subs to the community!");
+  expect(
     notice({
       notice_type: "gift_paid_upgrade",
       gift_paid_upgrade: { gifter_is_anonymous: true, gifter_user_name: null },
     }),
-    "Viewer is continuing the Gift Sub they got from an anonymous user!",
-  );
+  ).toBe("Viewer is continuing the Gift Sub they got from an anonymous user!");
 });
 
-Deno.test("reads the shared chat variant", () => {
-  assertEquals(
+test("reads the shared chat variant", () => {
+  expect(
     notice({
       notice_type: "shared_chat_raid",
       shared_chat_raid: { user_name: "Raider", viewer_count: 1 },
     }),
-    "1 raider from Raider has joined!",
-  );
+  ).toBe("1 raider from Raider has joined!");
 });
 
-Deno.test("formats a charity amount in its currency", () => {
-  assertEquals(
+test("formats a charity amount in its currency", () => {
+  expect(
     notice({
       notice_type: "charity_donation",
       charity_donation: {
@@ -82,25 +74,22 @@ Deno.test("formats a charity amount in its currency", () => {
         amount: { value: 1050, decimal_place: 2, currency: "USD" },
       },
     }),
-    "Viewer donated US$10.50 to support Kind Org.",
-  );
+  ).toBe("Viewer donated US$10.50 to support Kind Org.");
 });
 
-Deno.test("names who made an announcement", () => {
-  assertEquals(
-    notice({ notice_type: "announcement", system_message: "" }),
+test("names who made an announcement", () => {
+  expect(notice({ notice_type: "announcement", system_message: "" })).toBe(
     "Announcement from Viewer",
   );
 });
 
-Deno.test("counts a moderator's months", () => {
-  assertEquals(
+test("counts a moderator's months", () => {
+  expect(
     notice({ notice_type: "modiversary", modiversary: { months: 84 } }),
-    "Viewer has been a moderator for 84 months!",
-  );
+  ).toBe("Viewer has been a moderator for 84 months!");
 });
 
-Deno.test("leaves unknown notices to Twitch's text", () => {
-  assertEquals(notice({ notice_type: "watch_streak" }), null);
-  assertEquals(notice({ notice_type: "sub" }), null);
+test("leaves unknown notices to Twitch's text", () => {
+  expect(notice({ notice_type: "watch_streak" })).toBeNull();
+  expect(notice({ notice_type: "sub" })).toBeNull();
 });

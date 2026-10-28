@@ -1,7 +1,7 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { EmoteSetUpdated } from "../types/index.ts";
 import * as emoteSetUpdate from "./emoteSetUpdate.ts";
+import { at } from "../utils/at.ts";
 
 const emote = (name: string) => ({ name, url: `https://cdn/${name}` });
 
@@ -14,7 +14,7 @@ const update = (overrides: Partial<EmoteSetUpdated>): EmoteSetUpdated => ({
   ...overrides,
 });
 
-Deno.test("removes, renames, then appends added emotes", () => {
+test("removes, renames, then appends added emotes", () => {
   const next = emoteSetUpdate.apply(
     [emote("Kek"), emote("Old"), emote("Pog")],
     update({
@@ -23,12 +23,12 @@ Deno.test("removes, renames, then appends added emotes", () => {
       renamed: [{ from: "Old", to: "Fresh" }],
     }),
   );
-  assertEquals(next.map((e) => e.name), ["Fresh", "Pog", "New1"]);
-  assertEquals(next[0].url, "https://cdn/Old");
+  expect(next.map((e) => e.name)).toStrictEqual(["Fresh", "Pog", "New1"]);
+  expect(at(next, 0).url).toBe("https://cdn/Old");
 });
 
-Deno.test("describes each change, crediting Someone without an actor", () => {
-  assertEquals(
+test("describes each change, crediting Someone without an actor", () => {
+  expect(
     emoteSetUpdate.describe(
       update({
         actor: null,
@@ -37,10 +37,9 @@ Deno.test("describes each change, crediting Someone without an actor", () => {
         renamed: [{ from: "C", to: "D" }],
       }),
     ),
-    [
-      "Someone added 7TV emote A",
-      "Someone removed 7TV emote B",
-      "Someone renamed 7TV emote C to D",
-    ],
-  );
+  ).toStrictEqual([
+    "Someone added 7TV emote A",
+    "Someone removed 7TV emote B",
+    "Someone renamed 7TV emote C to D",
+  ]);
 });

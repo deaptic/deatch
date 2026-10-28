@@ -59,8 +59,11 @@ pub async fn link_set_audio(hosts: State<'_, Hosts>, params: SetAudioParams) -> 
         .await?)
 }
 
+/// Asks connected browsers to report; one that connects later reports on its
+/// own, so none being connected is not a failure.
 #[tauri::command]
 #[specta::specta]
 pub async fn link_request_state(hosts: State<'_, Hosts>) -> Result<()> {
-    Ok(hosts.send(&HostCommand::GetState).await?)
+    hosts.send_if_connected(&HostCommand::GetState).await?;
+    Ok(())
 }

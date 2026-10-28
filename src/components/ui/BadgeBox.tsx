@@ -23,11 +23,14 @@ type Props = {
 export default function BadgeBox(props: Props) {
   const lead = children(() => props.children);
   const items = () =>
-    !feedShowBadges() ? [] : props.badges.flatMap((b) => {
-      if (feedBadges()[badgeCategoryFor(b.set_id)]?.show === false) return [];
-      const badge = props.channelBadges[`${b.set_id}/${b.id}`];
-      return badge ? [{ ...badge, info: b.info }] : [];
-    });
+    !feedShowBadges()
+      ? []
+      : props.badges.flatMap((b) => {
+          if (feedBadges()[badgeCategoryFor(b.set_id)].show === false)
+            return [];
+          const badge = props.channelBadges[`${b.set_id}/${b.id}`];
+          return badge ? [{ ...badge, info: b.info }] : [];
+        });
 
   return (
     <Show when={lead() || items().length > 0}>

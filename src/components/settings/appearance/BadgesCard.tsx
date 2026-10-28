@@ -31,7 +31,7 @@ export default function BadgesCard() {
           <SettingsRow label={t(c.label)} description={t(c.description)}>
             <Toggle
               label={t(c.label)}
-              checked={feedBadges()[c.key]?.show !== false}
+              checked={feedBadges()[c.key].show !== false}
               disabled={!feedShowBadges()}
               onChange={(v) => setFeedBadge(c.key, v)}
             />

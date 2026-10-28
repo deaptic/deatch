@@ -10,16 +10,14 @@ import { OVERLAY_GAP } from "../../ui/Popover.tsx";
 import Toolbar from "../../ui/Toolbar.tsx";
 import ToolbarItem from "../../ui/ToolbarItem.tsx";
 
-export default function Actions(
-  props: {
-    item: Message;
-    reactions: Reaction[];
-    onReact: (msg: Message, value: string) => void;
-    onReply: (msg: Message) => void;
-    onCopypasta: (msg: Message) => void;
-    onMore: (x: number, y: number, msg: Message) => void;
-  },
-) {
+export default function Actions(props: {
+  item: Message;
+  reactions: Reaction[];
+  onReact: (msg: Message, value: string) => void;
+  onReply: (msg: Message) => void;
+  onCopypasta: (msg: Message) => void;
+  onMore: (x: number, y: number, msg: Message) => void;
+}) {
   return (
     <Toolbar>
       <For each={props.reactions}>

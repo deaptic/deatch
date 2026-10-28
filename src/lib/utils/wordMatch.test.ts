@@ -1,97 +1,96 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { matchesTerms, wordPattern } from "./wordMatch.ts";
 
 const matchesAnyKeyword = (text: string, keywords: string[]) =>
   matchesTerms(text, keywords, "anywhere");
 
-Deno.test("matches keywords as whole words, case-insensitively", () => {
-  assertEquals(matchesAnyKeyword("GG everyone", ["gg"]), true);
-  assertEquals(matchesAnyKeyword("eggs", ["gg"]), false);
-  assertEquals(matchesAnyKeyword("nothing here", ["gg", "pog"]), false);
+test("matches keywords as whole words, case-insensitively", () => {
+  expect(matchesAnyKeyword("GG everyone", ["gg"])).toBe(true);
+  expect(matchesAnyKeyword("eggs", ["gg"])).toBe(false);
+  expect(matchesAnyKeyword("nothing here", ["gg", "pog"])).toBe(false);
 });
 
-Deno.test("matches keywords that start or end with punctuation", () => {
-  assertEquals(matchesAnyKeyword("!drop", ["!drop"]), true);
-  assertEquals(matchesAnyKeyword("type !drop now", ["!drop"]), true);
-  assertEquals(matchesAnyKeyword("gg! nice", ["gg!"]), true);
-  assertEquals(matchesAnyKeyword("!dropped", ["!drop"]), false);
+test("matches keywords that start or end with punctuation", () => {
+  expect(matchesAnyKeyword("!drop", ["!drop"])).toBe(true);
+  expect(matchesAnyKeyword("type !drop now", ["!drop"])).toBe(true);
+  expect(matchesAnyKeyword("gg! nice", ["gg!"])).toBe(true);
+  expect(matchesAnyKeyword("!dropped", ["!drop"])).toBe(false);
 });
 
-Deno.test("treats regex characters literally and skips blank keywords", () => {
-  assertEquals(matchesAnyKeyword("what (a) play", ["(a)"]), true);
-  assertEquals(matchesAnyKeyword("axb", ["a.b"]), false);
-  assertEquals(matchesAnyKeyword("anything", ["", "   "]), false);
+test("treats regex characters literally and skips blank keywords", () => {
+  expect(matchesAnyKeyword("what (a) play", ["(a)"])).toBe(true);
+  expect(matchesAnyKeyword("axb", ["a.b"])).toBe(false);
+  expect(matchesAnyKeyword("anything", ["", "   "])).toBe(false);
 });
 
-Deno.test("start anchor requires the term at the beginning", () => {
+test("start anchor requires the term at the beginning", () => {
   const start = new RegExp(wordPattern(["!socials"], "start"));
-  assertEquals(start.test("!socials please"), true);
-  assertEquals(start.test("please !socials"), false);
+  expect(start.test("!socials please")).toBe(true);
+  expect(start.test("please !socials")).toBe(false);
 });
 
-Deno.test("a trailing * matches word endings", () => {
+test("a trailing * matches word endings", () => {
   for (const word of ["drop", "drops", "dropped"]) {
-    assertEquals(matchesAnyKeyword(`big ${word} today`, ["drop*"]), true, word);
+    expect(matchesAnyKeyword(`big ${word} today`, ["drop*"]), word).toBe(true);
   }
-  assertEquals(matchesAnyKeyword("airdrop", ["drop*"]), false);
+  expect(matchesAnyKeyword("airdrop", ["drop*"])).toBe(false);
 });
 
-Deno.test("a leading * matches word beginnings", () => {
-  assertEquals(matchesAnyKeyword("airdrop", ["*drop"]), true);
-  assertEquals(matchesAnyKeyword("drop", ["*drop"]), true);
-  assertEquals(matchesAnyKeyword("drops", ["*drop"]), false);
+test("a leading * matches word beginnings", () => {
+  expect(matchesAnyKeyword("airdrop", ["*drop"])).toBe(true);
+  expect(matchesAnyKeyword("drop", ["*drop"])).toBe(true);
+  expect(matchesAnyKeyword("drops", ["*drop"])).toBe(false);
 });
 
-Deno.test("* in the middle or on both sides stays inside one word", () => {
-  assertEquals(matchesAnyKeyword("airdrops", ["*drop*"]), true);
-  assertEquals(matchesAnyKeyword("colour", ["col*r"]), true);
-  assertEquals(matchesAnyKeyword("col or", ["col*r"]), false);
-  assertEquals(matchesAnyKeyword("d-rop", ["*drop*"]), false);
-  assertEquals(matchesAnyKeyword("x-drop-y", ["*drop*"]), true);
+test("* in the middle or on both sides stays inside one word", () => {
+  expect(matchesAnyKeyword("airdrops", ["*drop*"])).toBe(true);
+  expect(matchesAnyKeyword("colour", ["col*r"])).toBe(true);
+  expect(matchesAnyKeyword("col or", ["col*r"])).toBe(false);
+  expect(matchesAnyKeyword("d-rop", ["*drop*"])).toBe(false);
+  expect(matchesAnyKeyword("x-drop-y", ["*drop*"])).toBe(true);
 });
 
-Deno.test("wildcards work with punctuation terms", () => {
-  assertEquals(matchesAnyKeyword("!drops now", ["!drop*"]), true);
-  assertEquals(matchesAnyKeyword("drops now", ["!drop*"]), false);
+test("wildcards work with punctuation terms", () => {
+  expect(matchesAnyKeyword("!drops now", ["!drop*"])).toBe(true);
+  expect(matchesAnyKeyword("drops now", ["!drop*"])).toBe(false);
 });
 
-Deno.test("a keyword of only wildcards is ignored", () => {
-  assertEquals(matchesAnyKeyword("any message", ["*"]), false);
-  assertEquals(matchesAnyKeyword("any message", ["**", " * "]), false);
-  assertEquals(matchesAnyKeyword("gg", ["*", "gg"]), true);
+test("a keyword of only wildcards is ignored", () => {
+  expect(matchesAnyKeyword("any message", ["*"])).toBe(false);
+  expect(matchesAnyKeyword("any message", ["**", " * "])).toBe(false);
+  expect(matchesAnyKeyword("gg", ["*", "gg"])).toBe(true);
 });
 
-Deno.test("exact anchor matches the whole text, wildcards included", () => {
-  assertEquals(matchesTerms("hiya", ["hi*"], "exact"), true);
-  assertEquals(matchesTerms("hiya there", ["hi*"], "exact"), false);
-  assertEquals(matchesTerms("HELLO", ["hello"], "exact", true), false);
-  assertEquals(matchesTerms("HELLO", ["hello"], "exact"), true);
+test("exact anchor matches the whole text, wildcards included", () => {
+  expect(matchesTerms("hiya", ["hi*"], "exact")).toBe(true);
+  expect(matchesTerms("hiya there", ["hi*"], "exact")).toBe(false);
+  expect(matchesTerms("HELLO", ["hello"], "exact", true)).toBe(false);
+  expect(matchesTerms("HELLO", ["hello"], "exact")).toBe(true);
 });
 
-Deno.test("a symbol glued to the front means a different word", () => {
-  assertEquals(matchesAnyKeyword("@dead hi", ["dea*"]), false);
-  assertEquals(matchesAnyKeyword("#dead", ["dead"]), false);
-  assertEquals(matchesAnyKeyword(".dead", ["dead"]), false);
-  assertEquals(matchesAnyKeyword("hi @deaptic", ["deaptic"]), false);
+test("a symbol glued to the front means a different word", () => {
+  expect(matchesAnyKeyword("@dead hi", ["dea*"])).toBe(false);
+  expect(matchesAnyKeyword("#dead", ["dead"])).toBe(false);
+  expect(matchesAnyKeyword(".dead", ["dead"])).toBe(false);
+  expect(matchesAnyKeyword("hi @deaptic", ["deaptic"])).toBe(false);
 });
 
-Deno.test("only whitespace may surround a term, on both sides", () => {
-  assertEquals(matchesAnyKeyword("so (dead) rn", ["dead"]), false);
-  assertEquals(matchesAnyKeyword('he said "dead"', ["dead"]), false);
-  assertEquals(matchesAnyKeyword("!dead", ["dea*"]), false);
-  assertEquals(matchesAnyKeyword("im dead.", ["dead"]), false);
-  assertEquals(matchesAnyKeyword("dead, honestly", ["dead"]), false);
-  assertEquals(matchesAnyKeyword("good idea!", ["*dea"]), false);
-  assertEquals(matchesAnyKeyword("good idea", ["*dea"]), true);
-  assertEquals(matchesAnyKeyword("im dead lol", ["dea*"]), true);
+test("only whitespace may surround a term, on both sides", () => {
+  expect(matchesAnyKeyword("so (dead) rn", ["dead"])).toBe(false);
+  expect(matchesAnyKeyword('he said "dead"', ["dead"])).toBe(false);
+  expect(matchesAnyKeyword("!dead", ["dea*"])).toBe(false);
+  expect(matchesAnyKeyword("im dead.", ["dead"])).toBe(false);
+  expect(matchesAnyKeyword("dead, honestly", ["dead"])).toBe(false);
+  expect(matchesAnyKeyword("good idea!", ["*dea"])).toBe(false);
+  expect(matchesAnyKeyword("good idea", ["*dea"])).toBe(true);
+  expect(matchesAnyKeyword("im dead lol", ["dea*"])).toBe(true);
 });
 
-Deno.test("* stands for anything but whitespace", () => {
-  assertEquals(matchesAnyKeyword("@idea", ["*dea"]), true);
-  assertEquals(matchesAnyKeyword("idea!", ["*dea"]), false);
-  assertEquals(matchesAnyKeyword("@ideas!", ["*dea*"]), true);
-  assertEquals(matchesAnyKeyword("dead!", ["dea*"]), true);
-  assertEquals(matchesAnyKeyword("de ad", ["de*"]), true);
-  assertEquals(matchesAnyKeyword("de ad", ["de*ad"]), false);
+test("* stands for anything but whitespace", () => {
+  expect(matchesAnyKeyword("@idea", ["*dea"])).toBe(true);
+  expect(matchesAnyKeyword("idea!", ["*dea"])).toBe(false);
+  expect(matchesAnyKeyword("@ideas!", ["*dea*"])).toBe(true);
+  expect(matchesAnyKeyword("dead!", ["dea*"])).toBe(true);
+  expect(matchesAnyKeyword("de ad", ["de*"])).toBe(true);
+  expect(matchesAnyKeyword("de ad", ["de*ad"])).toBe(false);
 });

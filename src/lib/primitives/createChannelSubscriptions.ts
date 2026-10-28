@@ -17,7 +17,7 @@ import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 export type ChannelSubscriptions = {
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
-  leaveAll(): void;
+  leaveAll: () => void;
 };
 
 export function createChannelSubscriptions(): ChannelSubscriptions {
@@ -30,13 +30,11 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
       broadcasterId,
       focus,
     }));
-    void setEventsubChannels({ channels }, { silent: true }).catch((e) =>
-      console.warn("eventsub channel update failed", e)
-    );
+    setEventsubChannels({ channels }, { silent: true }).catch(() => {});
   }
 
   function leaveChannel(broadcasterId: string) {
-    void sevenTv.unsubscribe(broadcasterId);
+    sevenTv.unsubscribe(broadcasterId);
     dropFeed(broadcasterId);
     clearChatters(broadcasterId);
     clearChatSettings(broadcasterId);

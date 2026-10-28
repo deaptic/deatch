@@ -31,39 +31,32 @@ type Props = {
 };
 
 export default function MessageContextMenu(props: Props) {
-  const run = (action: () => unknown) => () => {
-    action();
-    props.onClose();
-  };
-
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
         label={t("MESSAGE_REPLY")}
         icon={<Reply />}
-        onClick={run(() => props.onReply(props.msg))}
+        onClick={() => props.onReply(props.msg)}
       />
       <Show when={props.msg.reply}>
         {(reply) => (
           <MenuItem
             label={t("MENU_JUMP_TO_PARENT")}
             icon={<CornerUpLeft />}
-            onClick={run(() =>
-              props.onJumpToMessage(reply().parent_message_id)
-            )}
+            onClick={() => props.onJumpToMessage(reply().parent_message_id)}
           />
         )}
       </Show>
       <MenuItem
         label={t("MENU_COPY_TEXT")}
         icon={<Copy />}
-        onClick={run(() => copyField(textOf(props.msg)))}
+        onClick={() => copyField(textOf(props.msg))}
       />
       <Show when={props.showCopypasta}>
         <MenuItem
           label={t("MESSAGE_COPYPASTA")}
           icon={<ClipboardPaste />}
-          onClick={run(() => props.onCopypasta(props.msg))}
+          onClick={() => props.onCopypasta(props.msg)}
         />
       </Show>
       <Show when={props.isMod}>
@@ -72,19 +65,15 @@ export default function MessageContextMenu(props: Props) {
           label={t("MENU_DELETE_MESSAGE")}
           tone="negative"
           icon={<Trash2 />}
-          onClick={run(() =>
+          onClick={() =>
             deleteChatMessages({
               broadcasterId: props.broadcasterId,
               messageId: props.msg.message_id,
             }).catch(() => {})
-          )}
+          }
         />
       </Show>
-      <CopyPayloadItem
-        show={props.developerMode}
-        data={props.msg}
-        onClose={props.onClose}
-      />
+      <CopyPayloadItem show={props.developerMode} data={props.msg} />
     </Menu>
   );
 }

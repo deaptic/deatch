@@ -1,11 +1,10 @@
 import { Show } from "solid-js";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import type { User } from "../../lib/types/index.ts";
 import {
   onMiddleClick,
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 import { createPopover } from "../chat/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";
@@ -31,7 +30,7 @@ export function createChannelLink(
     },
     onAuxClick: onMiddleClick(() => {
       const ch = channel();
-      if (ch) void openUrl(channelUrl(ch.login));
+      if (ch) browser.openChannel(ch.login);
     }),
     onMouseDown: preventAutoscroll,
   };

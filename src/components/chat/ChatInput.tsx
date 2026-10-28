@@ -67,9 +67,8 @@ export default function ChatInput(props: Props) {
   onCleanup(() => setDraft(props.broadcasterId, input()));
   const [sending, setSending] = createSignal(false);
   const [commandMode, setCommandMode] = createSignal<Command | null>(null);
-  const [autocomplete, setAutocomplete] = createSignal<
-    ChatAutocompleteHandle | null
-  >(null);
+  const [autocomplete, setAutocomplete] =
+    createSignal<ChatAutocompleteHandle | null>(null);
   const [mentionIdx, setMentionIdx] = createSignal(0);
   let textAreaApi: ComposerFieldApi | undefined;
 
@@ -95,7 +94,10 @@ export default function ChatInput(props: Props) {
     broadcasterId: () => props.broadcasterId,
   });
 
-  const outgoing = () => input().replace(/\s*\n\s*/g, " ").trim();
+  const outgoing = () =>
+    input()
+      .replace(/\s*\n\s*/g, " ")
+      .trim();
   const tooLong = () => outgoing().length > MAX_LEN;
 
   async function sendMessage() {
@@ -162,42 +164,67 @@ export default function ChatInput(props: Props) {
 
   function hasNewlineBeforeCursor() {
     const el = textAreaApi?.textareaEl();
-    return input().slice(0, el?.selectionStart ?? 0).includes("\n");
+    return input()
+      .slice(0, el?.selectionStart ?? 0)
+      .includes("\n");
   }
 
   function hasNewlineAfterCursor() {
     const el = textAreaApi?.textareaEl();
-    return input().slice(el?.selectionEnd ?? 0).includes("\n");
+    return input()
+      .slice(el?.selectionEnd ?? 0)
+      .includes("\n");
   }
 
   function bindShortcuts() {
     const WHEN = "chat:focused && !chat:popupOpen";
     return [
-      shortcuts.register(SEND_ACTION, () => {
-        void sendMessage();
-      }, WHEN),
-      shortcuts.register("chat::tabComplete", () => {
-        if (input().trim() === "") {
-          const mentions = props.getMentions();
-          if (mentions.length === 0) return;
-          const idx = Math.min(mentionIdx(), mentions.length - 1);
-          props.onReplyMention(mentions[idx]);
-          setMentionIdx(idx + 1);
-          return;
-        }
-        tabComplete.complete();
-      }, WHEN),
-      shortcuts.register("chat::recallPrev", () => {
-        if (hasNewlineBeforeCursor()) return false;
-        return history.step(1);
-      }, WHEN),
-      shortcuts.register("chat::recallNext", () => {
-        if (hasNewlineAfterCursor()) return false;
-        return history.step(-1);
-      }, WHEN),
-      shortcuts.registerLocal("escape", () => {
-        props.onClearReply();
-      }, "chat:replyActive"),
+      shortcuts.register(
+        SEND_ACTION,
+        () => {
+          void sendMessage();
+        },
+        WHEN,
+      ),
+      shortcuts.register(
+        "chat::tabComplete",
+        () => {
+          if (input().trim() === "") {
+            const mentions = props.getMentions();
+            const idx = Math.min(mentionIdx(), mentions.length - 1);
+            const mention = mentions[idx];
+            if (!mention) return;
+            props.onReplyMention(mention);
+            setMentionIdx(idx + 1);
+            return;
+          }
+          tabComplete.complete();
+        },
+        WHEN,
+      ),
+      shortcuts.register(
+        "chat::recallPrev",
+        () => {
+          if (hasNewlineBeforeCursor()) return false;
+          return history.step(1);
+        },
+        WHEN,
+      ),
+      shortcuts.register(
+        "chat::recallNext",
+        () => {
+          if (hasNewlineAfterCursor()) return false;
+          return history.step(-1);
+        },
+        WHEN,
+      ),
+      shortcuts.registerLocal(
+        "escape",
+        () => {
+          props.onClearReply();
+        },
+        "chat:replyActive",
+      ),
     ];
   }
 
@@ -218,7 +245,7 @@ export default function ChatInput(props: Props) {
   });
 
   onMount(() => {
-    emotes.ensureUserLoaded();
+    void emotes.ensureUserLoaded();
   });
 
   createEffect(() => {
@@ -301,9 +328,11 @@ export default function ChatInput(props: Props) {
                   variant={outgoing() && !tooLong() ? "accent" : "ghost"}
                   icon={<SendHorizontal class="size-4" />}
                   aria-label={t("CHAT_INPUT_SEND")}
-                  data-tip={tooLong()
-                    ? t("CHAT_INPUT_TOO_LONG", { max: MAX_LEN })
-                    : t("CHAT_INPUT_SEND")}
+                  data-tip={
+                    tooLong()
+                      ? t("CHAT_INPUT_TOO_LONG", { max: MAX_LEN })
+                      : t("CHAT_INPUT_SEND")
+                  }
                   disabled={tooLong()}
                   loading={sending()}
                   onMouseDown={(e) => e.preventDefault()}

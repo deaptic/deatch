@@ -13,8 +13,7 @@ export function isHoldPending(item: Message): boolean {
 
 export function isHoldResolved(item: Message): boolean {
   const status = item.automod_hold?.status;
-  return status === "approved" || status === "denied" ||
-    status === "expired";
+  return status === "approved" || status === "denied" || status === "expired";
 }
 
 export function holdOutcome(hold: AutomodHoldInfo): string {
@@ -42,9 +41,9 @@ export function pointsLabel(item: Message): string | undefined {
   }
   return points.redemption
     ? t("FEED_REDEEMED_REWARD", {
-      reward: points.redemption.reward.title,
-      cost: points.redemption.reward.cost,
-    })
+        reward: points.redemption.reward.title,
+        cost: points.redemption.reward.cost,
+      })
     : t("FEED_REDEEMED_CHANNEL_POINTS");
 }
 

@@ -1,5 +1,5 @@
 name: setup
-description: Install Deno, Rust, caches, and frontend deps
+description: Install Node, pnpm, Rust, caches, and frontend deps
 
 inputs:
   rust-components:
@@ -10,20 +10,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: setup deno
-      uses: denoland/setup-deno@v2
+    - name: setup vp
+      uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
       with:
-        deno-version: v2.x
-
-    - name: cache deno
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/deno
-          ~/.deno
-          ~/AppData/Local/deno
-        key: ${{ runner.os }}-deno-${{ hashFiles('package.json', 'deno.lock') }}
-        restore-keys: ${{ runner.os }}-deno-
+        node-version-file: package.json
+        cache: true
 
     - name: setup rust
       uses: dtolnay/rust-toolchain@stable
@@ -36,7 +27,3 @@ runs:
         workspaces: src-tauri
         cache-on-failure: true
         cache-targets: false
-
-    - name: install frontend deps
-      shell: bash
-      run: deno install

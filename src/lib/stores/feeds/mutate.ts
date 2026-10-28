@@ -48,11 +48,15 @@ function updateEach<T extends FeedEntry>(
   );
 }
 
-const messageWithId = (id: string) => (e: FeedEntry): e is FeedMessage =>
-  e.kind === "message" && e.message_id === id;
+const messageWithId =
+  (id: string) =>
+  (e: FeedEntry): e is FeedMessage =>
+    e.kind === "message" && e.message_id === id;
 
-const eventWithId = (id: string) => (e: FeedEntry): e is FeedEvent =>
-  e.kind === "event" && e.id === id;
+const eventWithId =
+  (id: string) =>
+  (e: FeedEntry): e is FeedEvent =>
+    e.kind === "event" && e.id === id;
 
 /// Matches this channel's copy of a message or, in shared chat, the original
 /// it was copied from.
@@ -77,7 +81,8 @@ export function markUserMessagesDeleted(
   updateEach(
     id,
     (e): e is FeedMessage =>
-      e.kind === "message" && e.chatter_user_id === userId &&
+      e.kind === "message" &&
+      e.chatter_user_id === userId &&
       (!sourceId || e.source?.id === sourceId),
     (m) => {
       m.deleted = true;
@@ -86,9 +91,13 @@ export function markUserMessagesDeleted(
 }
 
 export function markAllMessagesDeleted(id: string) {
-  updateEach(id, (e): e is FeedMessage => e.kind === "message", (m) => {
-    m.deleted = true;
-  });
+  updateEach(
+    id,
+    (e): e is FeedMessage => e.kind === "message",
+    (m) => {
+      m.deleted = true;
+    },
+  );
 }
 
 export function setPaused(id: string, paused: boolean) {

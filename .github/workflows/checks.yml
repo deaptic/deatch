@@ -22,18 +22,14 @@ jobs:
         with:
           rust-components: rustfmt, clippy
 
-      - name: deno fmt
-        run: deno fmt --check
-      - name: deno lint
-        run: deno lint
-      - name: ui lint
-        run: deno task lint:ui
-      - name: deno check
-        run: deno check src/
-      - name: deno test
-        run: deno task test
-      - name: vite build
-        run: deno task build
+      - name: vp check
+        run: vp check --deny-warnings
+      - name: tauri versions
+        run: pnpm check:tauri
+      - name: vp test
+        run: pnpm test
+      - name: vp build
+        run: pnpm build
 
       - name: cargo fmt
         working-directory: src-tauri

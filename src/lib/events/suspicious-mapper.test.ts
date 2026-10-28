@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
@@ -21,19 +20,20 @@ const message = (
   ...m,
 });
 
-Deno.test("explains why a chatter is flagged", () => {
-  const info = suspiciousInfo(message({
-    ban_evasion_evaluation: "likely",
-    types: ["banned_in_shared_channel"],
-  }));
-  assertEquals(
-    info && formatSuspicious(info),
+test("explains why a chatter is flagged", () => {
+  const info = suspiciousInfo(
+    message({
+      ban_evasion_evaluation: "likely",
+      types: ["banned_in_shared_channel"],
+    }),
+  );
+  expect(info && formatSuspicious(info)).toBe(
     "Restricted chatter, only mods see this, likely ban evader, banned in a shared channel",
   );
-  assertEquals(suspiciousInfo(message({ low_trust_status: "none" })), null);
+  expect(suspiciousInfo(message({ low_trust_status: "none" }))).toBeNull();
 });
 
-Deno.test("describes a mod changing a chatter's status", () => {
+test("describes a mod changing a chatter's status", () => {
   const raw: RawSuspiciousUserUpdate = {
     ...user,
     broadcaster_user_id: "1",
@@ -42,7 +42,7 @@ Deno.test("describes a mod changing a chatter's status", () => {
     moderator_user_name: "Mod",
     low_trust_status: "active_monitoring",
   };
-  assertEquals(suspiciousUpdate(raw), {
+  expect(suspiciousUpdate(raw)).toStrictEqual({
     text: "Mod started monitoring Foo",
     people: [
       { id: "9", login: "mod", name: "Mod" },

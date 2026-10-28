@@ -40,7 +40,7 @@ function appendSharedChat(
         p.broadcaster_user_id,
         p.broadcaster_user_login,
         p.broadcaster_user_name,
-      )
+      ),
     );
   appendLocalNotice(
     raw.broadcaster_user_id,
@@ -108,42 +108,38 @@ export function start(): () => void {
         );
       }
     }),
-    listenEventSub<RawSharedChatSession>(
-      "channel.shared_chat.begin",
-      (e) => appendSharedChat(e.payload.event, "SHARED_CHAT_BEGIN"),
+    listenEventSub<RawSharedChatSession>("channel.shared_chat.begin", (e) =>
+      appendSharedChat(e.payload.event, "SHARED_CHAT_BEGIN"),
     ),
-    listenEventSub<RawSharedChatSession>(
-      "channel.shared_chat.update",
-      (e) => appendSharedChat(e.payload.event, "SHARED_CHAT_UPDATE"),
+    listenEventSub<RawSharedChatSession>("channel.shared_chat.update", (e) =>
+      appendSharedChat(e.payload.event, "SHARED_CHAT_UPDATE"),
     ),
-    listenEventSub<RawSharedChatEnd>(
-      "channel.shared_chat.end",
-      (e) =>
-        appendLocalNotice(
-          e.payload.event.broadcaster_user_id,
-          t("SHARED_CHAT_END"),
-          SHARED_CHAT_SESSION,
-        ),
+    listenEventSub<RawSharedChatEnd>("channel.shared_chat.end", (e) =>
+      appendLocalNotice(
+        e.payload.event.broadcaster_user_id,
+        t("SHARED_CHAT_END"),
+        SHARED_CHAT_SESSION,
+      ),
     ),
-    listenFeed<RawAdBreak>(
-      "channel.ad_break.begin",
-      (raw, timestamp) =>
-        feedEvent(
-          AD_BREAK,
-          {
-            text: t("AD_BREAK_BEGIN", {
-              duration: formatApproxDuration(raw.duration_seconds),
-              automatic: String(raw.is_automatic),
-              requester: raw.requester_user_name,
-            }),
-            people: raw.is_automatic ? [] : person(
-              raw.requester_user_id,
-              raw.requester_user_login,
-              raw.requester_user_name,
-            ),
-          },
-          timestamp,
-        ),
+    listenFeed<RawAdBreak>("channel.ad_break.begin", (raw, timestamp) =>
+      feedEvent(
+        AD_BREAK,
+        {
+          text: t("AD_BREAK_BEGIN", {
+            duration: formatApproxDuration(raw.duration_seconds),
+            automatic: String(raw.is_automatic),
+            requester: raw.requester_user_name,
+          }),
+          people: raw.is_automatic
+            ? []
+            : person(
+                raw.requester_user_id,
+                raw.requester_user_login,
+                raw.requester_user_name,
+              ),
+        },
+        timestamp,
+      ),
     ),
     listenCharity("channel.charity_campaign.start", "CHARITY_START"),
     listenCharity("channel.charity_campaign.stop", "CHARITY_STOP"),

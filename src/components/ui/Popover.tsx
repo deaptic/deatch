@@ -35,8 +35,8 @@ export default function Popover(props: Props) {
     const left = end
       ? props.x - width
       : props.align === "center"
-      ? props.x - width / 2
-      : props.x;
+        ? props.x - width / 2
+        : props.x;
     setMaxWidth(maxW);
     setPos({
       x: Math.max(MARGIN, Math.min(left, window.innerWidth - width - MARGIN)),

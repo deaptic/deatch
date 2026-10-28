@@ -16,7 +16,8 @@ let retryDelay = RETRY_MIN_MS;
 function fetchUserScopedData() {
   if (userScopedFetched) return;
   userScopedFetched = true;
-  emotes.loadGlobal()
+  emotes
+    .loadGlobal()
     .then((list) => {
       retryDelay = RETRY_MIN_MS;
       setGlobalEmotes(list);
@@ -47,7 +48,7 @@ export type SessionDeps = {
 
 export function createSessionLifecycle(deps: SessionDeps): void {
   onMount(() => {
-    session.restore();
+    void session.restore();
     emotes.loadThirdPartyGlobal();
   });
 

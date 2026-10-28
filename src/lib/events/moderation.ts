@@ -76,15 +76,12 @@ const HOLD_OUTCOMES: Record<string, AutomodHoldStatus> = {
 export function start(): () => void {
   return unlistenAll([
     events.moderatedChannelsChanged.listen((e) =>
-      setModeratedChannels(e.payload)
+      setModeratedChannels(e.payload),
     ),
-    listenEventSub<RawChatMessageDelete>(
-      "channel.chat.message_delete",
-      (e) => {
-        const raw = e.payload.event;
-        markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
-      },
-    ),
+    listenEventSub<RawChatMessageDelete>("channel.chat.message_delete", (e) => {
+      const raw = e.payload.event;
+      markMessageDeleted(raw.broadcaster_user_id, raw.message_id);
+    }),
     listenEventSub<RawChatClearUserMessages>(
       "channel.chat.clear_user_messages",
       (e) => {
@@ -99,14 +96,9 @@ export function start(): () => void {
       const now = serverTime(e.payload);
       appendItem(
         broadcasterId,
-        feedEvent(
-          "chat_cleared",
-          t("EVENT_CHAT_CLEARED"),
-          now,
-          {
-            id: `chat-cleared-${broadcasterId}-${now}`,
-          },
-        ),
+        feedEvent("chat_cleared", t("EVENT_CHAT_CLEARED"), now, {
+          id: `chat-cleared-${broadcasterId}-${now}`,
+        }),
       );
     }),
     listenEventSub<RawModerate>("channel.moderate", (e) => {
@@ -144,13 +136,13 @@ export function start(): () => void {
         // A mod's approve or deny already arrives through channel.moderate.
         raw.status === "canceled"
           ? feedEvent(
-            UNBAN_REQUEST,
-            t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
-            timestamp,
-            {
-              ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
-            },
-          )
+              UNBAN_REQUEST,
+              t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
+              timestamp,
+              {
+                ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
+              },
+            )
           : null,
     ),
     listenFeed<RawWarningAcknowledge>(
@@ -204,18 +196,15 @@ export function start(): () => void {
         },
       }),
     ),
-    listenEventSub<RawAutomodMessageUpdate>(
-      "automod.message.update",
-      (e) => {
-        const p = e.payload.event;
-        const status = HOLD_OUTCOMES[p.status.toLowerCase()] ?? "expired";
-        setAutomodHoldStatus(
-          p.broadcaster_user_id,
-          p.message_id,
-          status,
-          status === "expired" ? undefined : p.moderator_user_name,
-        );
-      },
-    ),
+    listenEventSub<RawAutomodMessageUpdate>("automod.message.update", (e) => {
+      const p = e.payload.event;
+      const status = HOLD_OUTCOMES[p.status.toLowerCase()] ?? "expired";
+      setAutomodHoldStatus(
+        p.broadcaster_user_id,
+        p.message_id,
+        status,
+        status === "expired" ? undefined : p.moderator_user_name,
+      );
+    }),
   ]);
 }

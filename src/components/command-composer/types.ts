@@ -26,9 +26,11 @@ export type CommandOption =
   | DurationOption
   | (OptionBase & { type: "enum"; values: string[] })
   | (OptionBase & {
-    type: "search";
-    search: (query: string) => Promise<OptionSuggestion[]>;
-  });
+      type: "search";
+      /// Rejects on failure, which the composer shows on the slot; call the
+      /// api silently.
+      search: (query: string) => Promise<OptionSuggestion[]>;
+    });
 
 export type CommandRole = "broadcaster" | "mod" | "regular";
 

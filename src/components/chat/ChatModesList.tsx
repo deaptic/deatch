@@ -11,12 +11,11 @@ import {
   isOn,
   presetLabel,
   type TimedMode,
-} from "./chatModes.ts";
+} from "./modes.ts";
 import ChatModePresets from "./ChatModePresets.tsx";
 
 type Props = {
   broadcasterId: string;
-  onDone: () => void;
 };
 
 export default function ChatModesList(props: Props) {
@@ -36,7 +35,6 @@ export default function ChatModesList(props: Props) {
 
   function pick(mode: ChatMode) {
     if (mode.kind === "timed") return setTimed(mode);
-    props.onDone();
     applyChatMode(props.broadcasterId, on(mode) ? mode.off : mode.on);
   }
 
@@ -62,14 +60,11 @@ export default function ChatModesList(props: Props) {
           <MenuItem
             label={t(mode().label)}
             icon={<ChevronLeft />}
+            keepOpen
             onClick={() => setTimed(null)}
           />
           <MenuDivider />
-          <ChatModePresets
-            mode={mode()}
-            broadcasterId={props.broadcasterId}
-            onDone={props.onDone}
-          />
+          <ChatModePresets mode={mode()} broadcasterId={props.broadcasterId} />
         </>
       )}
     </Show>

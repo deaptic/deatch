@@ -1,17 +1,16 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { textSegments } from "./textSegments.ts";
 
 const emotes = { Kappa: "https://cdn/kappa" };
 
-Deno.test("plain words stay one text segment", () => {
-  assertEquals(textSegments("hello there  friend", emotes), [
+test("plain words stay one text segment", () => {
+  expect(textSegments("hello there  friend", emotes)).toStrictEqual([
     { kind: "text", text: "hello there  friend" },
   ]);
 });
 
-Deno.test("emotes and links split the text around them", () => {
-  assertEquals(textSegments("hi Kappa see https://x.y/z ok", emotes), [
+test("emotes and links split the text around them", () => {
+  expect(textSegments("hi Kappa see https://x.y/z ok", emotes)).toStrictEqual([
     { kind: "text", text: "hi " },
     { kind: "emote", name: "Kappa", url: "https://cdn/kappa" },
     { kind: "text", text: " see " },
@@ -20,6 +19,6 @@ Deno.test("emotes and links split the text around them", () => {
   ]);
 });
 
-Deno.test("empty text has no segments", () => {
-  assertEquals(textSegments("", emotes), []);
+test("empty text has no segments", () => {
+  expect(textSegments("", emotes)).toStrictEqual([]);
 });

@@ -2,14 +2,12 @@ import { createMemo, createRoot, createSignal } from "solid-js";
 import type { ResolvedTheme } from "../constants/theme.ts";
 import { appearanceTheme } from "./preferences.ts";
 
-const query = window.matchMedia("(prefers-color-scheme: dark)");
-const [systemPrefersDark, setSystemPrefersDark] = createSignal(query.matches);
-query.addEventListener("change", (e) => setSystemPrefersDark(e.matches));
+export const [systemPrefersDark, setSystemPrefersDark] = createSignal(false);
 
 export const resolvedTheme: () => ResolvedTheme = createRoot(() =>
   createMemo(() => {
     const t = appearanceTheme();
     if (t !== "system") return t;
     return systemPrefersDark() ? "dark" : "light";
-  })
+  }),
 );

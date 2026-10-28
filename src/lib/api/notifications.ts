@@ -1,11 +1,13 @@
 import { commands } from "../bindings.ts";
-import { invokeCommand } from "./utils.ts";
+import type { SetMentionsBadgeParams } from "../types/index.ts";
+import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
 export async function setMentionsBadge(
-  count: number,
-  iconBytes: number[] | null,
+  params: SetMentionsBadgeParams,
+  options?: InvokeOptions,
 ): Promise<void> {
-  await invokeCommand(commands.setMentionsBadge, [{ count, iconBytes }], {
+  await invokeCommand(commands.setMentionsBadge, [params], {
     silent: true,
+    ...options,
   });
 }

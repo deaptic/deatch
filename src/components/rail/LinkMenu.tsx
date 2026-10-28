@@ -9,7 +9,7 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import { linkSynced } from "../../lib/stores/view.ts";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import * as browser from "../../lib/services/browser.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
@@ -38,10 +38,6 @@ type Props = {
 };
 
 export default function LinkMenu(props: Props) {
-  const run = (action: () => unknown) => () => {
-    action();
-    props.onClose();
-  };
   const hasTabs = () => linkWarmedChannels().length > 0;
 
   return (
@@ -54,14 +50,13 @@ export default function LinkMenu(props: Props) {
               label={t("RAIL_LINK_FIREFOX")}
               icon={<Puzzle />}
               hint={t("RAIL_LINK_GET_IT")}
-              onClick={run(() => openUrl(FIREFOX_ADDON_URL))}
+              onClick={() => browser.open(FIREFOX_ADDON_URL)}
             />
             <MenuItem
               label={t("RAIL_LINK_CHROME")}
               icon={<Puzzle />}
               hint={t("RAIL_LINK_COMING_SOON")}
               disabled
-              onClick={() => {}}
             />
           </>
         }
@@ -72,25 +67,21 @@ export default function LinkMenu(props: Props) {
           active={linkSynced()}
           shortcut={shortcuts.keyFor("link::toggle")}
           disabled={!hasTabs()}
-          onClick={run(props.onToggleSync)}
+          onClick={props.onToggleSync}
         />
         <MenuItem
           label={t("RAIL_LINK_AUDIO")}
           icon={<AudioLines />}
           active={linkAudioLink()}
           shortcut={shortcuts.keyFor("link::toggleAudioLink")}
-          onClick={run(() =>
-            setLinkAudioLink(!linkAudioLink())
-          )}
+          onClick={() => setLinkAudioLink(!linkAudioLink())}
         />
         <Show when={linkHasAudio()}>
           <MenuItem
             label={t("SETTINGS_LINK_COMPRESSOR")}
             icon={<AudioWaveform />}
             active={linkCompressor()}
-            onClick={run(() =>
-              setLinkCompressor(!linkCompressor())
-            )}
+            onClick={() => setLinkCompressor(!linkCompressor())}
           />
         </Show>
         <MenuDivider />
@@ -99,14 +90,14 @@ export default function LinkMenu(props: Props) {
           icon={link.currentMuted() ? <Volume2 /> : <VolumeX />}
           shortcut={shortcuts.keyFor("link::toggleMute")}
           disabled={link.currentMuted() === null}
-          onClick={run(link.toggleMute)}
+          onClick={link.toggleMute}
         />
         <MenuItem
           label={t("RAIL_LINK_MUTE_OTHERS")}
           icon={<VolumeX />}
           shortcut={shortcuts.keyFor("link::muteOthers")}
           disabled={!hasTabs()}
-          onClick={run(link.muteOthers)}
+          onClick={link.muteOthers}
         />
         <MenuItem
           label={t(
@@ -115,21 +106,21 @@ export default function LinkMenu(props: Props) {
           icon={link.anyUnmuted() ? <VolumeX /> : <Volume2 />}
           shortcut={shortcuts.keyFor("link::toggleMuteAll")}
           disabled={!hasTabs()}
-          onClick={run(link.toggleMuteAll)}
+          onClick={link.toggleMuteAll}
         />
         <MenuDivider />
         <MenuItem
           label={t("RAIL_LINK_CLOSE_OFFLINE")}
           icon={<X />}
           disabled={!hasTabs()}
-          onClick={run(() => link.closeOffline().catch(() => {}))}
+          onClick={() => link.closeOffline().catch(() => {})}
         />
         <MenuItem
           label={t("RAIL_LINK_CLOSE_ALL")}
           icon={<X />}
           tone="negative"
           disabled={!hasTabs()}
-          onClick={run(link.closeAll)}
+          onClick={link.closeAll}
         />
       </Show>
     </Menu>

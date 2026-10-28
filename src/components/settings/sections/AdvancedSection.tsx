@@ -1,12 +1,12 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { createSignal, Show } from "solid-js";
-import { relaunch } from "@tauri-apps/plugin-process";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import Dialog from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
+import { relaunchApp } from "../../../lib/api/app.ts";
 import { setHardwareAcceleration } from "../../../lib/api/graphics.ts";
 import { addToast } from "../../../lib/stores/toasts.ts";
 import { errorMessage } from "../../../lib/utils/error.ts";
@@ -32,9 +32,9 @@ export default function AdvancedSection() {
   async function restart(enabled: boolean) {
     setRestarting(true);
     try {
-      await setHardwareAcceleration(enabled);
+      await setHardwareAcceleration({ enabled });
       setAdvancedHardwareAcceleration(enabled);
-      await relaunch();
+      await relaunchApp({ silent: true });
     } catch (e) {
       addToast(t("SETTINGS_ADVANCED_RESTART_FAILED"), "error", errorMessage(e));
     } finally {
@@ -44,10 +44,7 @@ export default function AdvancedSection() {
   }
 
   return (
-    <PageBody
-      title={t("SETTINGS_ADVANCED")}
-      lede={t("SETTINGS_ADVANCED_LEDE")}
-    >
+    <PageBody title={t("SETTINGS_ADVANCED")} lede={t("SETTINGS_ADVANCED_LEDE")}>
       <Show when={restartFor() !== null}>
         <Dialog
           title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
@@ -57,10 +54,7 @@ export default function AdvancedSection() {
           onClose={() => setRestartFor(null)}
           actions={
             <>
-              <Button
-                variant="neutral"
-                onClick={() => setRestartFor(null)}
-              >
+              <Button variant="neutral" onClick={() => setRestartFor(null)}>
                 {t("COMMON_CANCEL")}
               </Button>
               <Button

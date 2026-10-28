@@ -7,18 +7,14 @@ import { avatarZoom } from "../../../lib/utils/avatar.ts";
 import { createChannelLink } from "../../context-menus/createChannelLink.tsx";
 
 /// The channel a shared chat message was sent in, as a badge tile.
-export default function Source(
-  props: {
-    source: NonNullable<Message["source"]>;
-    /// Round on a chatter tile; square among the badges.
-    round?: boolean;
-    onOpen?: (channelId: string) => void;
-  },
-) {
+export default function Source(props: {
+  source: NonNullable<Message["source"]>;
+  /// Round on a chatter tile; square among the badges.
+  round?: boolean;
+  onOpen?: (channelId: string) => void;
+}) {
   createEffect(() => {
-    users.get([props.source.id]).catch((e) =>
-      console.warn("shared chat channel lookup failed", e)
-    );
+    users.get([props.source.id]).catch(() => {});
   });
 
   const channel = () => knownUser(props.source.id);
@@ -32,9 +28,11 @@ export default function Source(
 
   return (
     <span
-      data-tip={name()
-        ? t("FEED_SENT_IN_CHAT", { channel: name() })
-        : t("FEED_SENT_IN_SHARED_CHAT")}
+      data-tip={
+        name()
+          ? t("FEED_SENT_IN_CHAT", { channel: name() })
+          : t("FEED_SENT_IN_SHARED_CHAT")
+      }
       {...link.handlers}
       class={`size-feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
         props.round ? "rounded-full" : "rounded-xs"

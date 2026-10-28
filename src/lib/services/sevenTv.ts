@@ -17,9 +17,12 @@ let activeChannelId: string | null = null;
 
 export async function subscribe(broadcasterId: string): Promise<void> {
   if (byBroadcaster.has(broadcasterId)) return;
-  const channel = await seventvGetChannelEmotes({ channelId: broadcasterId }, {
-    silent: true,
-  }).catch(() => null);
+  const channel = await seventvGetChannelEmotes(
+    { channelId: broadcasterId },
+    {
+      silent: true,
+    },
+  ).catch(() => null);
   if (!channel?.emote_set_id) return;
   const entry: Entry = {
     broadcasterId,
@@ -29,8 +32,9 @@ export async function subscribe(broadcasterId: string): Promise<void> {
   byBroadcaster.set(broadcasterId, entry);
   bySetId.set(entry.setId, entry);
   pushIfActive(entry);
-  void seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true })
-    .catch(() => {});
+  seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true }).catch(
+    () => {},
+  );
 }
 
 export function unsubscribe(broadcasterId: string): void {
@@ -39,15 +43,18 @@ export function unsubscribe(broadcasterId: string): void {
   byBroadcaster.delete(broadcasterId);
   bySetId.delete(entry.setId);
   if (broadcasterId === activeChannelId) setSevenTvChannel([]);
-  void seventvUnsubscribeEmoteSet({ emoteSetId: entry.setId }, {
-    silent: true,
-  }).catch(() => {});
+  seventvUnsubscribeEmoteSet(
+    { emoteSetId: entry.setId },
+    {
+      silent: true,
+    },
+  ).catch(() => {});
 }
 
 export function setActive(broadcasterId: string | null): void {
   activeChannelId = broadcasterId;
   setSevenTvChannel(
-    broadcasterId ? byBroadcaster.get(broadcasterId)?.emotes ?? [] : [],
+    broadcasterId ? (byBroadcaster.get(broadcasterId)?.emotes ?? []) : [],
   );
 }
 

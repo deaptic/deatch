@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { comboFor, keyLabels } from "./keyboard.ts";
 
 const key = (init: Partial<KeyboardEvent>) =>
@@ -11,35 +10,32 @@ const key = (init: Partial<KeyboardEvent>) =>
     ...init,
   }) as KeyboardEvent;
 
-Deno.test("orders modifiers ctrl, alt, shift, meta before the key", () => {
-  assertEquals(
+test("orders modifiers ctrl, alt, shift, meta before the key", () => {
+  expect(
     comboFor(key({ key: "K", metaKey: true, shiftKey: true, ctrlKey: true })),
-    "ctrl-shift-meta-k",
-  );
+  ).toBe("ctrl-shift-meta-k");
 });
 
-Deno.test("drops the arrow prefix and lowercases keys", () => {
-  assertEquals(comboFor(key({ key: "ArrowUp", altKey: true })), "alt-up");
-  assertEquals(comboFor(key({ key: "Enter" })), "enter");
+test("drops the arrow prefix and lowercases keys", () => {
+  expect(comboFor(key({ key: "ArrowUp", altKey: true }))).toBe("alt-up");
+  expect(comboFor(key({ key: "Enter" }))).toBe("enter");
 });
 
-Deno.test("labels each key of a combo for display", () => {
-  assertEquals(keyLabels("ctrl-shift-e"), ["Ctrl", "Shift", "E"]);
-  assertEquals(keyLabels("alt-up"), ["Alt", "↑"]);
-  assertEquals(keyLabels("enter"), ["Enter"]);
-  assertEquals(keyLabels("ctrl-,"), ["Ctrl", ","]);
-  assertEquals(keyLabels("ctrl--"), ["Ctrl", "-"]);
-  assertEquals(keyLabels("ctrl-shift-tab"), ["Ctrl", "Shift", "Tab"]);
-  assertEquals(keyLabels("ctrl-pagedown"), ["Ctrl", "PgDn"]);
+test("labels each key of a combo for display", () => {
+  expect(keyLabels("ctrl-shift-e")).toStrictEqual(["Ctrl", "Shift", "E"]);
+  expect(keyLabels("alt-up")).toStrictEqual(["Alt", "↑"]);
+  expect(keyLabels("enter")).toStrictEqual(["Enter"]);
+  expect(keyLabels("ctrl-,")).toStrictEqual(["Ctrl", ","]);
+  expect(keyLabels("ctrl--")).toStrictEqual(["Ctrl", "-"]);
+  expect(keyLabels("ctrl-shift-tab")).toStrictEqual(["Ctrl", "Shift", "Tab"]);
+  expect(keyLabels("ctrl-pagedown")).toStrictEqual(["Ctrl", "PgDn"]);
 });
 
-Deno.test("names page and tab combos the way the keymap writes them", () => {
-  assertEquals(
-    comboFor(key({ key: "PageDown", ctrlKey: true })),
+test("names page and tab combos the way the keymap writes them", () => {
+  expect(comboFor(key({ key: "PageDown", ctrlKey: true }))).toBe(
     "ctrl-pagedown",
   );
-  assertEquals(
-    comboFor(key({ key: "Tab", ctrlKey: true, shiftKey: true })),
+  expect(comboFor(key({ key: "Tab", ctrlKey: true, shiftKey: true }))).toBe(
     "ctrl-shift-tab",
   );
 });

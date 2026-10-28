@@ -1,15 +1,6 @@
 import { formatLocale, t } from "../i18n/index.ts";
 
-export type TimeFormat =
-  | "t"
-  | "T"
-  | "d"
-  | "D"
-  | "f"
-  | "F"
-  | "r"
-  | "R"
-  | "c";
+export type TimeFormat = "t" | "T" | "d" | "D" | "f" | "F" | "r" | "R" | "c";
 
 export class Time {
   private static readonly UNITS = [

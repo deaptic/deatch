@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { User } from "../types/index.ts";
 import {
   freshEntries,
@@ -21,7 +20,7 @@ const full: User = {
   createdAt: "2020-01-01T00:00:00Z",
 };
 
-Deno.test("mergeUser lets a partial user only rename and fill gaps", () => {
+test("mergeUser lets a partial user only rename and fill gaps", () => {
   const partial: User = {
     ...full,
     displayName: "MAYA",
@@ -30,63 +29,69 @@ Deno.test("mergeUser lets a partial user only rename and fill gaps", () => {
     broadcasterType: "normal",
     createdAt: "",
   };
-  assertEquals(mergeUser(full, partial), { ...full, displayName: "MAYA" });
-  assertEquals(
-    mergeUser({ ...partial, profileImageUrl: "" }, {
-      ...partial,
-      profileImageUrl: "https://cdn/new.png",
-    }).profileImageUrl,
-    "https://cdn/new.png",
-  );
+  expect(mergeUser(full, partial)).toStrictEqual({
+    ...full,
+    displayName: "MAYA",
+  });
+  expect(
+    mergeUser(
+      { ...partial, profileImageUrl: "" },
+      {
+        ...partial,
+        profileImageUrl: "https://cdn/new.png",
+      },
+    ).profileImageUrl,
+  ).toBe("https://cdn/new.png");
 });
 
-Deno.test("mergeUser takes a complete user from Twitch as is", () => {
+test("mergeUser takes a complete user from Twitch as is", () => {
   const renamed = { ...full, login: "maya2", description: "" };
-  assertEquals(mergeUser(full, renamed), renamed);
+  expect(mergeUser(full, renamed)).toStrictEqual(renamed);
 });
 
-Deno.test("sameUser compares every field", () => {
-  assertEquals(sameUser(full, { ...full }), true);
-  assertEquals(sameUser(full, { ...full, description: "" }), false);
+test("sameUser compares every field", () => {
+  expect(sameUser(full, { ...full })).toBe(true);
+  expect(sameUser(full, { ...full, description: "" })).toBe(false);
 });
 
-Deno.test("sameUser sees fields the cached user never had", () => {
+test("sameUser sees fields the cached user never had", () => {
   const { offlineImageUrl: _, ...older } = full;
-  assertEquals(
-    sameUser(older as User, { ...full, offlineImageUrl: "x" }),
+  expect(sameUser(older as User, { ...full, offlineImageUrl: "x" })).toBe(
     false,
   );
 });
 
-Deno.test("isComplete is true only for users Twitch has returned", () => {
-  assertEquals(isComplete(full), true);
-  assertEquals(isComplete({ ...full, createdAt: "" }), false);
+test("isComplete is true only for users Twitch has returned", () => {
+  expect(isComplete(full)).toBe(true);
+  expect(isComplete({ ...full, createdAt: "" })).toBe(false);
 });
 
-Deno.test("isUserId accepts Twitch numeric ids only", () => {
-  assertEquals(isUserId("52679773"), true);
-  assertEquals(isUserId("maya"), false);
-  assertEquals(isUserId(""), false);
+test("isUserId accepts Twitch numeric ids only", () => {
+  expect(isUserId("52679773")).toBe(true);
+  expect(isUserId("maya")).toBe(false);
+  expect(isUserId("")).toBe(false);
 });
 
-Deno.test("isKnownUser rejects malformed stored entries", () => {
-  assertEquals(isKnownUser({ user: full, at: 1 }), true);
-  assertEquals(isKnownUser(null), false);
-  assertEquals(isKnownUser({ user: null, at: 1 }), false);
-  assertEquals(isKnownUser({ user: full }), false);
+test("isKnownUser rejects malformed stored entries", () => {
+  expect(isKnownUser({ user: full, at: 1 })).toBe(true);
+  expect(isKnownUser(null)).toBe(false);
+  expect(isKnownUser({ user: null, at: 1 })).toBe(false);
+  expect(isKnownUser({ user: full })).toBe(false);
 });
 
-Deno.test("freshEntries drops expired entries and keeps the newest up to max", () => {
+test("freshEntries drops expired entries and keeps the newest up to max", () => {
   const at = (n: number) => ({ user: full, at: n });
   const entries = { old: at(0), a: at(900), b: at(950), c: at(990) };
-  assertEquals(Object.keys(freshEntries(entries, 1000, 500, 2)), ["c", "b"]);
+  expect(Object.keys(freshEntries(entries, 1000, 500, 2))).toStrictEqual([
+    "c",
+    "b",
+  ]);
 });
 
-Deno.test("freshEntries never drops kept ids", () => {
+test("freshEntries never drops kept ids", () => {
   const at = (n: number) => ({ user: full, at: n });
   const entries = { me: at(0), a: at(900), b: at(950), c: at(990) };
-  assertEquals(
+  expect(
     Object.keys(freshEntries(entries, 1000, 500, 2, new Set(["me"]))),
-    ["me", "c"],
-  );
+  ).toStrictEqual(["me", "c"]);
 });

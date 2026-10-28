@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import type { Update } from "@tauri-apps/plugin-updater";
+import type { Update } from "../types/index.ts";
 
 export const [pendingUpdate, setPendingUpdate] = createSignal<Update | null>(
   null,

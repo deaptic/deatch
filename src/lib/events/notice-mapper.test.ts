@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
 import { mapNotice } from "./notice-mapper.ts";
 
@@ -12,32 +11,30 @@ const raw = (n: Partial<RawNotification>): RawNotification => ({
   ...n,
 });
 
-Deno.test("keys a notice by Twitch's message id", () => {
-  assertEquals(mapNotice(raw({}), 0)?.id, "n1");
+test("keys a notice by Twitch's message id", () => {
+  expect(mapNotice(raw({}), 0)?.id).toBe("n1");
 });
 
-Deno.test("drops a notice with nothing to show", () => {
-  assertEquals(mapNotice(raw({ system_message: " " }), 0), null);
+test("drops a notice with nothing to show", () => {
+  expect(mapNotice(raw({ system_message: " " }), 0)).toBeNull();
 });
 
-Deno.test("takes the announcement colour the broadcaster picked", () => {
+test("takes the announcement colour the broadcaster picked", () => {
   const colored = (color: string) =>
-    mapNotice(
-      raw({ notice_type: "announcement", announcement: { color } }),
-      0,
-    )?.announcement_color;
-  assertEquals(colored("PURPLE"), "purple");
-  assertEquals(colored("green"), "green");
-  assertEquals(colored("PRIMARY"), "primary");
-  assertEquals(colored("teal"), undefined);
+    mapNotice(raw({ notice_type: "announcement", announcement: { color } }), 0)
+      ?.announcement_color;
+  expect(colored("PURPLE")).toBe("purple");
+  expect(colored("green")).toBe("green");
+  expect(colored("PRIMARY")).toBe("primary");
+  expect(colored("teal")).toBeUndefined();
 });
 
-Deno.test("keeps the chatter's own text", () => {
+test("keeps the chatter's own text", () => {
   const item = mapNotice(
     raw({
       message: { text: "hi", fragments: [{ type: "text", text: "hi" }] },
     }),
     0,
   );
-  assertEquals(item?.message, [{ type: "text", text: "hi" }]);
+  expect(item?.message).toStrictEqual([{ type: "text", text: "hi" }]);
 });

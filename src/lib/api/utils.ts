@@ -6,6 +6,7 @@ import { t } from "../i18n/index.ts";
 export type InvokeOptions = {
   silent?: boolean;
   successMessage?: string | false;
+  failureMessage?: string;
 };
 
 export async function invokeCommand<A extends unknown[], T>(
@@ -28,7 +29,11 @@ export async function invokeCommand<A extends unknown[], T>(
     const ms = Math.round(performance.now() - start);
     console.error(`[cmd] ${name} failed`, { args, error: e, ms });
     if (!options.silent) {
-      addToast(t("API_ACTION_FAILED"), "error", errorMessage(e));
+      addToast(
+        options.failureMessage ?? t("API_ACTION_FAILED"),
+        "error",
+        errorMessage(e),
+      );
     }
     throw e;
   }
@@ -41,9 +46,9 @@ function summarize(result: unknown, ms: number): string {
     typeof result === "object" &&
     Array.isArray((result as { data?: unknown }).data)
   ) {
-    const data =
-      (result as { data: unknown[]; pagination?: { cursor: string | null } })
-        .data;
+    const data = (
+      result as { data: unknown[]; pagination?: { cursor: string | null } }
+    ).data;
     const more = (result as { pagination?: { cursor: string | null } })
       .pagination?.cursor;
     return `${ms}ms · ${data.length} items${more ? " · more…" : ""}`;

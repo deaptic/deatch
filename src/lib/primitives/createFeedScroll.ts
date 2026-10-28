@@ -42,8 +42,10 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
   function restore() {
     const el = scroller();
     if (!el || !anchor?.item.isConnected) return;
-    const shift = anchor.item.getBoundingClientRect().top -
-      el.getBoundingClientRect().top - anchor.offset;
+    const shift =
+      anchor.item.getBoundingClientRect().top -
+      el.getBoundingClientRect().top -
+      anchor.offset;
     if (Math.abs(shift) < 1) return;
     const before = el.scrollTop;
     el.scrollTop += shift;
@@ -101,8 +103,10 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
   ) {
     const el = scroller();
     if (!el) return;
-    const itemTop = item.getBoundingClientRect().top -
-      el.getBoundingClientRect().top + el.scrollTop;
+    const itemTop =
+      item.getBoundingClientRect().top -
+      el.getBoundingClientRect().top +
+      el.scrollTop;
     const top = centeredScrollTop(el, itemTop, item.offsetHeight);
     const arrive = () => {
       settle(el);

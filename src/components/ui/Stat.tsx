@@ -19,7 +19,7 @@ export default function Stat(props: Props) {
         } ${props.copy ? copyable.class() : "text-ink-soft"}`}
         data-tip={props.copy ? copyable.tip() : undefined}
         onClick={() => {
-          if (props.copy) copyable.copy(props.copy);
+          if (props.copy) void copyable.copy(props.copy);
         }}
       >
         <span class="shrink-0 text-ink-faint [&>svg]:size-3.5">

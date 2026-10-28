@@ -1,4 +1,5 @@
 import type { EmoteGridItem } from "./types.ts";
+import { at } from "../../lib/utils/at.ts";
 
 export const COLUMNS = 8;
 
@@ -18,9 +19,9 @@ export function emojiUrl(emoji: string): string {
     if (cp === undefined || (cp === 0xfe0f && !keepSelector)) continue;
     points.push(cp.toString(16));
   }
-  return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/${
-    points.join("-")
-  }.png`;
+  return `https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/${points.join(
+    "-",
+  )}.png`;
 }
 
 export const toItem = (e: { name: string; url: string }): EmoteGridItem => ({
@@ -39,8 +40,8 @@ export function nextVerticalIndex(
       activeIndex >= s.startIndex &&
       activeIndex < s.startIndex + s.items.length,
   );
-  if (secIdx < 0) return activeIndex;
   const sec = sections[secIdx];
+  if (!sec) return activeIndex;
   const pos = activeIndex - sec.startIndex;
   const col = pos % COLUMNS;
   const targetRow = Math.floor(pos / COLUMNS) + direction;
@@ -57,11 +58,10 @@ export function nextVerticalIndex(
     i >= 0 && i < sections.length;
     i += direction
   ) {
-    const target = sections[i];
+    const target = at(sections, i);
     if (!target.items.length) continue;
-    const row = direction === 1
-      ? 0
-      : Math.floor((target.items.length - 1) / COLUMNS);
+    const row =
+      direction === 1 ? 0 : Math.floor((target.items.length - 1) / COLUMNS);
     const newPos = Math.min(row * COLUMNS + col, target.items.length - 1);
     return target.startIndex + newPos;
   }

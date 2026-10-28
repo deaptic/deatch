@@ -11,7 +11,7 @@ import Timestamp from "../../ui/Timestamp.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
 import Actions from "./Actions.tsx";
-import * as event from "./event.ts";
+import * as details from "./details.ts";
 
 export type EventOptions = UserActions & {
   emotes: EmoteMap;
@@ -23,7 +23,7 @@ type Props = ItemLayout & EventOptions & { item: FeedEvent };
 
 export default function Event(props: Props) {
   const item = props.item;
-  const look = () => event.look(item);
+  const look = () => details.look(item);
   const icon = () => <Dynamic component={look().Icon} />;
 
   return (
@@ -44,12 +44,12 @@ export default function Event(props: Props) {
         </FeedItem.Tile>
       )}
       overlay={() => (
-        <Show when={item.clip}>
-          {(clip) => <Actions clipId={clip().id} />}
-        </Show>
+        <Show when={item.clip}>{(clip) => <Actions clipId={clip().id} />}</Show>
       )}
-      onContextMenu={props.onEventContextMenu &&
-        ((x, y) => props.onEventContextMenu!(x, y, item))}
+      onContextMenu={
+        props.onEventContextMenu &&
+        ((x, y) => props.onEventContextMenu!(x, y, item))
+      }
     >
       <Show when={props.density === "comfortable"}>
         <FeedItem.Title>
@@ -67,7 +67,7 @@ export default function Event(props: Props) {
         </Show>
         <NamedText
           text={item.system_message}
-          people={event.people(item)}
+          people={details.people(item)}
           onShowUserCard={props.onShowUserCard}
           onUserContextMenu={props.onUserContextMenu}
         />
@@ -93,7 +93,7 @@ export default function Event(props: Props) {
               {`${t("EVENT_GIFTED_TO")} `}
               <NameList
                 people={recipients()}
-                limit={event.RECIPIENTS_SHOWN}
+                limit={details.RECIPIENTS_SHOWN}
                 more={(count) => t("EVENT_GIFT_MORE", { count })}
                 onShowUserCard={props.onShowUserCard}
                 onUserContextMenu={props.onUserContextMenu}

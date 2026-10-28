@@ -26,8 +26,8 @@ export function applyChannelInfo(info: ChannelInfo) {
     streams.map((s) =>
       s.user.id === info.broadcaster.id
         ? { ...s, title: info.title, game: info.game }
-        : s
-    )
+        : s,
+    ),
   );
 }
 
@@ -42,7 +42,7 @@ export function streamForUserId(userId: string): Stream | undefined {
 export function channelsInOrder(): User[] {
   const pinnedIds = pinnedChannels();
   const pinnedSet = new Set(pinnedIds);
-  const warmedSet = new Set(linkWarmedChannels().map((c) => c?.id));
+  const warmedSet = new Set(linkWarmedChannels().map((c) => c.id));
   const live = liveStreams();
   const ordered: User[] = [];
   const seen = new Set<string>();

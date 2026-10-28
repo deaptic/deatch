@@ -34,11 +34,13 @@ export default function DensityCard() {
       >
         <Segmented
           value={appearanceUiDensity()}
-          options={[
-            { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT") },
-            { value: "default", label: t("SETTINGS_APPEARANCE_DEFAULT") },
-            { value: "spacious", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
-          ] satisfies { value: UiDensity; label: string }[]}
+          options={
+            [
+              { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT") },
+              { value: "default", label: t("SETTINGS_APPEARANCE_DEFAULT") },
+              { value: "spacious", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
+            ] satisfies { value: UiDensity; label: string }[]
+          }
           onChange={setAppearanceUiDensity}
         />
       </SettingsRow>
@@ -48,10 +50,15 @@ export default function DensityCard() {
       >
         <Segmented
           value={feedDensity()}
-          options={[
-            { value: "compact", label: t("SETTINGS_APPEARANCE_DEFAULT") },
-            { value: "comfortable", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
-          ] satisfies { value: Density; label: string }[]}
+          options={
+            [
+              { value: "compact", label: t("SETTINGS_APPEARANCE_DEFAULT") },
+              {
+                value: "comfortable",
+                label: t("SETTINGS_APPEARANCE_SPACIOUS"),
+              },
+            ] satisfies { value: Density; label: string }[]
+          }
           onChange={setFeedDensity}
         />
       </SettingsRow>

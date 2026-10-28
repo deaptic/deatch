@@ -1,12 +1,14 @@
 import type {
   ActivityInput as DiscordActivity,
+  NonEmpty,
   Stream,
   User,
 } from "../types/index.ts";
-import { channelUrl } from "../utils/twitchUrl.ts";
-import { formatLocale, type MessageKey, t } from "../i18n/index.ts";
+import { formatViewers } from "../format/stream.ts";
+import { categoryUrl, channelUrl } from "../utils/twitchUrl.ts";
+import { type MessageKey, t } from "../i18n/index.ts";
 
-export const SELF_LURK_PHRASES: MessageKey[] = [
+export const SELF_LURK_PHRASES: NonEmpty<MessageKey> = [
   "PRESENCE_LURK_TALKING_TO_THEMSELVES",
   "PRESENCE_LURK_EMPTY_ROOM",
   "PRESENCE_LURK_PRACTICING_INTRO",
@@ -16,11 +18,6 @@ export const SELF_LURK_PHRASES: MessageKey[] = [
   "PRESENCE_LURK_PLOTTING",
   "PRESENCE_LURK_TUMBLEWEEDS",
 ];
-
-const viewerFormatter = new Intl.NumberFormat(formatLocale(), {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
 
 // Cutting between the halves of a surrogate pair leaves invalid UTF-16 that
 // the backend's JSON parser rejects, so a dangling high half is dropped.
@@ -67,27 +64,25 @@ export function buildPresence(
   const stream = ctx.liveStreams.find((s) => s.user.id === ch.id);
   const isOwnChannel = ch.id === ctx.userId;
   const gameName = stream?.game.name;
-  const stateText = gameName
-    ? t("PRESENCE_PLAYING", {
-      game: gameName,
-      count: stream!.viewerCount,
-      viewers: viewerFormatter.format(stream!.viewerCount),
-    })
-    : isOwnChannel
-    ? t(session.lurkPhrase)
-    : t("COMMON_OFFLINE");
+  const stateText =
+    stream && gameName
+      ? t("PRESENCE_PLAYING", {
+          game: gameName,
+          count: stream.viewerCount,
+          viewers: formatViewers(stream.viewerCount),
+        })
+      : isOwnChannel
+        ? t(session.lurkPhrase)
+        : t("COMMON_OFFLINE");
   const streamStartedAt = stream
     ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
     : null;
   const url = channelUrl(ch.login);
-  const categoryUrl = gameName
-    ? `https://www.twitch.tv/directory/game/${encodeURIComponent(gameName)}`
-    : undefined;
   return {
     details: ch.displayName || ch.login,
     detailsUrl: url,
     stateText,
-    stateUrl: categoryUrl,
+    stateUrl: gameName ? categoryUrl(gameName) : undefined,
     largeImage: ch.profileImageUrl || "app_logo",
     largeText: stream?.title
       ? clamp(stream.title, 128)

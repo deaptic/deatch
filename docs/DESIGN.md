@@ -100,7 +100,8 @@ Overlays are `overlay` with a 1px `line`, open 4px below what opened them (8px
 when beside it or above it, as tooltips and rail popovers are), stay inside an
 8px viewport margin, and close on Escape or outside click. The opener toggles.
 One menu, one popover, and one dialog at a time; Escape closes the topmost and
-focus returns where it came from.
+focus returns where it came from. Choosing a menu item closes the menu, except
+an item that opens a submenu or steps back out of one.
 
 Choosing from a long list is a `Combobox`. The field always shows the current
 value (or its placeholder when none, with × to clear); focus opens the list

@@ -32,10 +32,12 @@ const deepPages = new Map<
 function entriesOf(history: RecentHistory): FeedEntry[] {
   return [
     ...history.messages.map((m) => mapChatMessage(m, m.timestamp_ms)),
-    ...groupGifts(history.notices.flatMap((raw) => {
-      const item = mapNotice(raw, raw.timestamp_ms);
-      return item ? [{ raw, item }] : [];
-    })),
+    ...groupGifts(
+      history.notices.flatMap((raw) => {
+        const item = mapNotice(raw, raw.timestamp_ms);
+        return item ? [{ raw, item }] : [];
+      }),
+    ),
   ].sort((a, b) => a.timestamp - b.timestamp);
 }
 
@@ -57,25 +59,24 @@ export function fillGap(
   return getRecentMessages(
     { channelLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
     { silent: true },
-  )
-    .then((history) => {
+  ).then(
+    (history) => {
       const items = entriesOf(history);
       noteChatters(broadcasterId, insertEntries(broadcasterId, items));
       // A full page means robotty dropped the oldest messages of the gap;
       // it keeps the newest `limit`, so the hole sits before the first one.
       const lines = history.messages.length + history.notices.length;
-      if (lines >= GAP_LIMIT && items.length > 0) {
+      const first = items[0];
+      if (lines >= GAP_LIMIT && first) {
         insertEntries(broadcasterId, [
-          feedEvent(
-            "local",
-            t("BACKLOG_GAP"),
-            items[0].timestamp - 1,
-            { silent: true },
-          ),
+          feedEvent("local", t("BACKLOG_GAP"), first.timestamp - 1, {
+            silent: true,
+          }),
         ]);
       }
-    })
-    .catch((e) => console.error("[feeds] gap fill failed", channelLogin, e));
+    },
+    () => {},
+  );
 }
 
 /// One-time hydration of a channel feed with recent history from robotty.
@@ -104,14 +105,17 @@ export function load(broadcasterId: string, channelLogin: string) {
 
 /// For a user card whose chatter has nothing in the live feed: robotty's
 /// deepest page, narrowed to that chatter, held by the card and not the feed.
+/// Empty when the page is unavailable.
 export function forChatter(
   channelLogin: string,
   chatterId: string,
 ): Promise<FeedMessage[]> {
-  return deepPage(channelLogin).then((history) =>
-    history.messages
-      .filter((m) => m.chatter_user_id === chatterId)
-      .map((m) => mapChatMessage(m, m.timestamp_ms))
+  return deepPage(channelLogin).then(
+    (history) =>
+      history.messages
+        .filter((m) => m.chatter_user_id === chatterId)
+        .map((m) => mapChatMessage(m, m.timestamp_ms)),
+    () => [],
   );
 }
 
@@ -140,8 +144,7 @@ function deepPage(channelLogin: string): Promise<RecentHistory> {
 function rememberOwnMessages(broadcasterId: string, added: FeedEntry[]) {
   const me = user();
   if (!me) return;
-  for (let i = added.length - 1; i >= 0; i--) {
-    const it = added[i];
+  for (const it of added.toReversed()) {
     if (it.kind !== "message" || it.chatter_user_id !== me.id) continue;
     const text = textOf(it);
     if (text) appendSentHistoryOlder(broadcasterId, text);

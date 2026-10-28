@@ -1,12 +1,15 @@
 // Usage:
-//   deno task pack:extension                 (no version change)
-//   deno task pack:extension patch | minor | major | 1.2.3
+//   pnpm pack:extension                 (no version change)
+//   pnpm pack:extension patch | minor | major | 1.2.3
 //
 // Bumps the version in extension/manifest.json when asked, then builds
 // extension/dist/deatch-link-{firefox,chrome}-<v>.zip, each with a manifest
 // stripped to what that browser knows, so neither store warns about the
 // other's keys.
 
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
@@ -26,14 +29,14 @@ type Manifest = Record<string, unknown> & {
 };
 
 const MANIFEST = `${SRC}/manifest.json`;
-let text = await Deno.readTextFile(MANIFEST);
+let text = await readFile(MANIFEST, "utf8");
 
-if (Deno.args[0]) {
+if (process.argv[2]) {
   const current = (JSON.parse(text) as Manifest).version;
-  const next = nextVersion(current, Deno.args[0]);
+  const next = nextVersion(current, process.argv[2]);
   console.log(`bumping ${current} → ${next}`);
   text = text.replace(`"version": "${current}"`, `"version": "${next}"`);
-  await Deno.writeTextFile(MANIFEST, text);
+  await writeFile(MANIFEST, text);
 }
 
 const manifest: Manifest = JSON.parse(text);
@@ -51,18 +54,18 @@ const targets = {
 };
 
 async function pack(browser: string, manifest: Manifest): Promise<string> {
-  const stage = await Deno.makeTempDir();
-  await Deno.writeTextFile(
+  const stage = await mkdtemp(join(tmpdir(), "deatch-link-"));
+  await writeFile(
     `${stage}/manifest.json`,
     JSON.stringify(manifest, null, 2) + "\n",
   );
   for (const file of FILES) {
-    await copy(`${SRC}/${file}`, `${stage}/${file}`);
+    await cp(`${SRC}/${file}`, `${stage}/${file}`, { recursive: true });
   }
   const zip = `${OUT}/deatch-link-${browser}-${manifest.version}.zip`;
-  await Deno.mkdir(OUT, { recursive: true });
+  await mkdir(OUT, { recursive: true });
   await run([
-    `${Deno.env.get("SystemRoot")}\\System32\\tar.exe`,
+    `${process.env.SystemRoot}\\System32\\tar.exe`,
     "--format",
     "zip",
     "-cf",
@@ -72,19 +75,8 @@ async function pack(browser: string, manifest: Manifest): Promise<string> {
     "manifest.json",
     ...FILES,
   ]);
-  await Deno.remove(stage, { recursive: true });
+  await rm(stage, { recursive: true });
   return zip;
-}
-
-async function copy(from: string, to: string): Promise<void> {
-  if ((await Deno.stat(from)).isDirectory) {
-    await Deno.mkdir(to);
-    for await (const entry of Deno.readDir(from)) {
-      await copy(`${from}/${entry.name}`, `${to}/${entry.name}`);
-    }
-  } else {
-    await Deno.copyFile(from, to);
-  }
 }
 
 for (const [browser, manifest] of Object.entries(targets)) {

@@ -32,10 +32,9 @@ import {
   type RenderSection,
   toItem,
 } from "./helpers.ts";
-import emojiGroups from "unicode-emoji-json/data-by-group.json" with {
-  type: "json",
-};
+import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { at } from "../../lib/utils/at.ts";
 
 type Tab = "channel" | "global" | "emoji";
 
@@ -77,14 +76,14 @@ export default function EmotePicker(props: Props) {
   });
 
   const channelSections = createMemo(() =>
-    computeChannelSections(selectedChannel())
+    computeChannelSections(selectedChannel()),
   );
   const globalSections = createMemo(() =>
-    computeGlobalSections(selectedChannel())
+    computeGlobalSections(selectedChannel()),
   );
 
   const usable = createMemo(() =>
-    usableIn([...channelSections(), ...globalSections()])
+    usableIn([...channelSections(), ...globalSections()]),
   );
 
   const tabSections = createMemo<{ label: string; items: EmoteGridItem[] }[]>(
@@ -121,11 +120,12 @@ export default function EmotePicker(props: Props) {
     };
     const q = search().toLowerCase();
     if (q) {
-      const pool = tab() === "emoji"
-        ? tabSections().flatMap((s) => s.items)
-        : [...channelSections(), ...globalSections()].flatMap((s) =>
-          s.emotes.map(toItem)
-        );
+      const pool =
+        tab() === "emoji"
+          ? tabSections().flatMap((s) => s.items)
+          : [...channelSections(), ...globalSections()].flatMap((s) =>
+              s.emotes.map(toItem),
+            );
       add({ items: pool.filter((i) => i.label.toLowerCase().includes(q)) });
     } else {
       add({
@@ -144,7 +144,7 @@ export default function EmotePicker(props: Props) {
   });
 
   const totalItems = createMemo(() =>
-    sections().reduce((n, s) => n + s.items.length, 0)
+    sections().reduce((n, s) => n + s.items.length, 0),
   );
   const {
     active: activeIndex,
@@ -203,7 +203,7 @@ export default function EmotePicker(props: Props) {
 
   function cycleTab(direction: 1 | -1) {
     const idx = TABS.findIndex((entry) => entry.id === tab());
-    setTab(TABS[(idx + direction + TABS.length) % TABS.length].id);
+    setTab(at(TABS, (idx + direction + TABS.length) % TABS.length).id);
     setSearch("");
   }
 
