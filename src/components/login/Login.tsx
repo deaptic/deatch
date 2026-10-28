@@ -5,6 +5,7 @@ import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
+import * as browser from "../../lib/services/browser.ts";
 import { createCopied } from "../ui/createCopied.ts";
 import { t } from "../../lib/i18n/index.ts";
 
@@ -50,7 +51,10 @@ export default function Login() {
                     {t("LOGIN_ENTER_CODE")}{" "}
                     <a
                       href={code().verification_uri}
-                      target="_blank"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        browser.open(code().verification_uri);
+                      }}
                       class="text-accent-ink hover:underline"
                     >
                       twitch.tv/activate
