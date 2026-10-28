@@ -11,19 +11,24 @@ import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 
+/// Each wanted channel's latest request; a lookup that lands after its
+/// channel was left, or re-requested, is dropped.
+const requests = new Map<string, symbol>();
 const byBroadcaster = new Map<string, Entry>();
 const bySetId = new Map<string, Entry>();
 let activeChannelId: string | null = null;
 
 export async function subscribe(broadcasterId: string): Promise<void> {
-  if (byBroadcaster.has(broadcasterId)) return;
+  if (requests.has(broadcasterId)) return;
+  const request = Symbol(broadcasterId);
+  requests.set(broadcasterId, request);
   const channel = await seventvGetChannelEmotes(
     { channelId: broadcasterId },
     {
       silent: true,
     },
   ).catch(() => null);
-  if (!channel?.emote_set_id) return;
+  if (requests.get(broadcasterId) !== request || !channel?.emote_set_id) return;
   const entry: Entry = {
     broadcasterId,
     setId: channel.emote_set_id,
@@ -38,6 +43,7 @@ export async function subscribe(broadcasterId: string): Promise<void> {
 }
 
 export function unsubscribe(broadcasterId: string): void {
+  requests.delete(broadcasterId);
   const entry = byBroadcaster.get(broadcasterId);
   if (!entry) return;
   byBroadcaster.delete(broadcasterId);
