@@ -186,7 +186,7 @@ export default function Rail(props: Props) {
   });
 
   function openInBrowser(ch: User) {
-    openUrl(channelUrl(ch.login));
+    void openUrl(channelUrl(ch.login));
   }
 
   function startDrag(e: MouseEvent, idx: number) {

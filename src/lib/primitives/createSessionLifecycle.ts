@@ -48,7 +48,7 @@ export type SessionDeps = {
 
 export function createSessionLifecycle(deps: SessionDeps): void {
   onMount(() => {
-    session.restore();
+    void session.restore();
     emotes.loadThirdPartyGlobal();
   });
 

@@ -57,7 +57,7 @@ export default function TitleBar(props: Props) {
       cancelled = true;
       unlisten?.();
     });
-    (async () => {
+    void (async () => {
       setMaximized(await win.isMaximized());
       const off = await win.onResized(async () => {
         setMaximized(await win.isMaximized());

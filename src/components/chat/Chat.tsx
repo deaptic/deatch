@@ -155,7 +155,7 @@ export default function Chat(props: Props) {
   }
 
   function react(msg: Message, value: string) {
-    chat.send({
+    void chat.send({
       broadcasterId: props.broadcasterId,
       message: value,
       replyParentMessageId: msg.message_id,

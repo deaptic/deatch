@@ -244,7 +244,7 @@ export default function ChatInput(props: Props) {
   });
 
   onMount(() => {
-    emotes.ensureUserLoaded();
+    void emotes.ensureUserLoaded();
   });
 
   createEffect(() => {
