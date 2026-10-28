@@ -1,4 +1,5 @@
 import { X } from "lucide-solid";
+import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -16,23 +17,25 @@ export default function Chip(props: Props) {
   const base = () =>
     `inline-flex items-center gap-1 h-control-sm px-3 rounded-full text-small font-semibold ${tone()}`;
 
-  if (!props.onRemove) {
-    return (
-      <span class={base()} data-tip={props.title}>
-        {props.label}
-      </span>
-    );
-  }
   return (
-    <button
-      type="button"
-      onClick={props.onRemove}
-      data-tip={t("UI_REMOVE")}
-      aria-label={t("UI_CHIP_REMOVE", { label: props.label })}
-      class={`${base()} pr-2 cursor-pointer hover:text-ink hover:bg-overlay transition-colors duration-snap`}
+    <Show
+      when={props.onRemove}
+      fallback={
+        <span class={base()} data-tip={props.title}>
+          {props.label}
+        </span>
+      }
     >
-      {props.label}
-      <X class="size-3.5" />
-    </button>
+      <button
+        type="button"
+        onClick={() => props.onRemove?.()}
+        data-tip={t("UI_REMOVE")}
+        aria-label={t("UI_CHIP_REMOVE", { label: props.label })}
+        class={`${base()} pr-2 cursor-pointer hover:text-ink hover:bg-overlay transition-colors duration-snap`}
+      >
+        {props.label}
+        <X class="size-3.5" />
+      </button>
+    </Show>
   );
 }

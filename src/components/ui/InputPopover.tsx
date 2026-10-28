@@ -28,7 +28,6 @@ export default function InputPopover(props: Props) {
           onInput={(e) => props.onInput(e.currentTarget.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") props.onSubmit();
-            if (e.key === "Escape") props.onClose();
           }}
         />
         <IconButton

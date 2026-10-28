@@ -26,12 +26,12 @@ export default function TriggersSection() {
     });
 
   const addDraft = () => {
-    const t = blankTrigger();
-    setDrafts((d) => [...d, t]);
-    toggle(t.id);
+    const draft = blankTrigger();
+    setDrafts((d) => [...d, draft]);
+    toggle(draft.id);
   };
   const discardDraft = (id: string) =>
-    setDrafts((d) => d.filter((t) => t.id !== id));
+    setDrafts((d) => d.filter((draft) => draft.id !== id));
   const commitDraft = (trigger: Trigger) => {
     saveTrigger(trigger);
     discardDraft(trigger.id);
@@ -40,26 +40,26 @@ export default function TriggersSection() {
   return (
     <PageBody title={t("SETTINGS_TRIGGERS")} lede={t("SETTINGS_TRIGGERS_LEDE")}>
       <For each={triggers()}>
-        {(t) => (
+        {(trigger) => (
           <TriggerCard
-            source={t}
+            source={trigger}
             persisted
-            expanded={isOpen(t.id)}
-            onToggle={() => toggle(t.id)}
+            expanded={isOpen(trigger.id)}
+            onToggle={() => toggle(trigger.id)}
             onSave={saveTrigger}
-            onDelete={() => removeTrigger(t.id)}
+            onDelete={() => removeTrigger(trigger.id)}
           />
         )}
       </For>
       <For each={drafts()}>
-        {(t) => (
+        {(trigger) => (
           <TriggerCard
-            source={t}
+            source={trigger}
             persisted={false}
-            expanded={isOpen(t.id)}
-            onToggle={() => toggle(t.id)}
+            expanded={isOpen(trigger.id)}
+            onToggle={() => toggle(trigger.id)}
             onSave={commitDraft}
-            onDelete={() => discardDraft(t.id)}
+            onDelete={() => discardDraft(trigger.id)}
           />
         )}
       </For>
