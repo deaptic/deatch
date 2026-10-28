@@ -1,6 +1,5 @@
-import { createMemo, createRoot, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import type { User } from "../types/index.ts";
-import { createDebounced } from "../primitives/createDebounced.ts";
 import { emptyHistory, step, visit } from "../utils/history.ts";
 import { at } from "../utils/at.ts";
 
@@ -10,27 +9,21 @@ export type ActiveView = "explore" | "settings" | User;
 const [activeView, setActiveView] = createSignal<ActiveView>("explore");
 export { activeView };
 
-const sameId = (a: User | null, b: User | null) =>
+export const sameChannel = (a: User | null, b: User | null) =>
   (a?.id ?? null) === (b?.id ?? null);
 
-export const pendingChannel: () => User | null = createRoot(() =>
-  createMemo<User | null>(
-    () => {
-      const v = activeView();
-      return typeof v === "string" ? null : v;
-    },
-    null,
-    { equals: sameId },
-  ),
-);
+/// The channel being shown right now, ahead of `selectedChannel`.
+export function pendingChannel(): User | null {
+  const v = activeView();
+  return typeof v === "string" ? null : v;
+}
 
-const CHANNEL_COMMIT_MS = 300;
-export const selectedChannel: () => User | null = createRoot(() =>
-  createDebounced(pendingChannel, CHANNEL_COMMIT_MS, {
-    equals: sameId,
-    immediate: (next, current) => next === null || current === null,
-  }),
+/// `pendingChannel` once it settles; the view service commits it.
+const [selectedChannel, commitSelectedChannel] = createSignal<User | null>(
+  null,
+  { equals: sameChannel },
 );
+export { commitSelectedChannel, selectedChannel };
 
 export const isSettingsOpen = () => activeView() === "settings";
 

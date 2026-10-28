@@ -9,11 +9,13 @@ import * as inbox from "../services/inbox.ts";
 import * as clock from "../services/clock.ts";
 import * as theme from "../services/theme.ts";
 import * as emotes from "../services/emotes.ts";
+import * as view from "../services/view.ts";
 
 export function createServices(): void {
   onMount(() => {
     const stops = [
       log.start(),
+      view.start(),
       theme.start(),
       backendEvents.start(),
       users.start(),
