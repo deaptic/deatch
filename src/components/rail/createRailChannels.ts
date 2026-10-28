@@ -104,13 +104,18 @@ export function createRailChannels(
 
   /// Null when a request failed.
   async function loadLive(): Promise<User[] | null> {
-    const followed = await getFollowedStreams().catch(() => null);
+    const followed = await getFollowedStreams({ silent: true }).catch(
+      () => null,
+    );
     if (!followed) return null;
     const followedIds = new Set(followed.map((s) => s.user.id));
     const extraIds = idsNotIn(followedIds, wantedIds());
     const extraStreams =
       extraIds.length > 0
-        ? await getStreamsFromIds({ userIds: extraIds }).catch(() => null)
+        ? await getStreamsFromIds(
+            { userIds: extraIds },
+            { silent: true },
+          ).catch(() => null)
         : [];
     if (!extraStreams) return null;
     const streams = [...followed, ...extraStreams];
@@ -159,7 +164,10 @@ export function createRailChannels(
 
   async function track(ids: string[]) {
     for (const id of ids) trackedIds.add(id);
-    const streams = await getStreamsFromIds({ userIds: ids }).catch(() => null);
+    const streams = await getStreamsFromIds(
+      { userIds: ids },
+      { silent: true },
+    ).catch(() => null);
     if (!streams) {
       for (const id of ids) trackedIds.delete(id);
       return;

@@ -51,7 +51,7 @@ export async function ensureUserLoaded(): Promise<void> {
   }
 
   try {
-    const all = await getUserEmotes();
+    const all = await getUserEmotes({ silent: true });
     setUserEmotes(dedupeById(all));
     saveCache(key, all);
   } catch {
@@ -67,7 +67,7 @@ export function resetUser() {
 export async function loadGlobal(): Promise<Emote[]> {
   const cached = loadCache<Emote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
   if (cached) {
-    getGlobalEmotes()
+    getGlobalEmotes({ silent: true })
       .then((fresh) => {
         saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
         setGlobalEmotes(fresh);
@@ -75,7 +75,7 @@ export async function loadGlobal(): Promise<Emote[]> {
       .catch(() => {});
     return cached;
   }
-  const fresh = await getGlobalEmotes();
+  const fresh = await getGlobalEmotes({ silent: true });
   saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
   return fresh;
 }
