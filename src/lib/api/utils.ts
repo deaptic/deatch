@@ -28,15 +28,18 @@ export async function invokeCommand<A extends unknown[], T>(
   } catch (e) {
     const ms = Math.round(performance.now() - start);
     console.error(`[cmd] ${name} failed`, { args, error: e, ms });
-    if (!options.silent) {
-      addToast(
-        options.failureMessage ?? t("API_ACTION_FAILED"),
-        "error",
-        errorMessage(e),
-      );
-    }
+    if (!options.silent) reportFailure(e, options.failureMessage);
     throw e;
   }
+}
+
+/// Toasts a failure the way invokeCommand does, for callers that made the
+/// call silently on the user's behalf (a shared batch, say).
+export function reportFailure(
+  error: unknown,
+  failureMessage = t("API_ACTION_FAILED"),
+): void {
+  addToast(failureMessage, "error", errorMessage(error));
 }
 
 function summarize(result: unknown, ms: number): string {

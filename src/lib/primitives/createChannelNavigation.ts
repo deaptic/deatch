@@ -13,6 +13,7 @@ import {
 } from "../stores/view.ts";
 import { linkWarmedChannels } from "../stores/link.ts";
 import { linkFocus } from "../api/link.ts";
+import { reportFailure } from "../api/utils.ts";
 import { ensureFeed, markSeen } from "../stores/feeds.ts";
 import { markChannelMentionsRead } from "../stores/inbox.ts";
 import { t } from "../i18n/index.ts";
@@ -47,7 +48,9 @@ export function createChannelNavigation(): ChannelNavigation {
         then?.();
         if (selectedChannel()?.id !== channelId) selectChannel(ch);
       },
-      () => {},
+      (e: unknown) => {
+        reportFailure(e);
+      },
     );
   }
 
