@@ -1,10 +1,10 @@
 # Backend
 
 `src-tauri/src/` is one folder per feature. Crate-wide pieces (`error.rs`,
-`http.rs`, `emit.rs`, `keyring.rs`, `clock.rs`) sit at the root. `lib.rs` only
-wires the app: plugins, managed state, setup, and the tauri-specta command and
-event lists. Windows only: no `cfg` branches or dependencies for other
-platforms.
+`http.rs`, `ws.rs`, `emit.rs`, `keyring.rs`, `clock.rs`) sit at the root.
+`lib.rs` only wires the app: plugins, managed state, setup, and the tauri-specta
+command and event lists. Windows only: no `cfg` branches or dependencies for
+other platforms.
 
 Inside a feature folder:
 
@@ -34,6 +34,7 @@ the logic under test, and split parsing from fetching when a function mixes them
   optional.
 - One shared `reqwest::Client` from `http.rs`; never construct another.
   `http::get_json` covers plain JSON GETs.
+- WebSockets open through `ws::connect`, which bounds the handshake.
 - Every Twitch request, Helix and OAuth alike, goes through `twitch/transport/`,
   which owns retries and rate-limit pacing. Never add retries, sleeps, or pacing
   at call sites.

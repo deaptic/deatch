@@ -5,15 +5,14 @@ use futures_util::stream::SplitSink;
 use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use tokio::net::TcpStream;
 use tokio::sync::mpsc::error::SendError;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_tungstenite::tungstenite::{Error as WsError, Message};
-use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 
 use super::events::{EmoteSetUpdated, Rename};
 use super::seventv::{to_entry, StvEmote};
 use crate::emit::emit;
+use crate::ws::{self, Socket};
 
 const WS_URL: &str = "wss://events.7tv.io/v3";
 const EMOTE_SET_UPDATE: &str = "emote_set.update";
@@ -25,7 +24,7 @@ const RECONNECT_DELAY: Duration = Duration::from_secs(5);
 /// connection died without a close frame (sleep, network switch).
 const READ_TIMEOUT: Duration = Duration::from_secs(90);
 
-type Writer = SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>;
+type Writer = SplitSink<Socket, Message>;
 
 #[derive(Debug)]
 pub enum SevenTvOp {
@@ -57,8 +56,8 @@ enum End {
 async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
     let mut active = HashSet::new();
     loop {
-        match connect_async(WS_URL).await {
-            Ok((socket, _)) => {
+        match ws::connect(WS_URL).await {
+            Ok(socket) => {
                 if let End::Stopped = serve(&app, socket, &mut rx, &mut active).await {
                     return;
                 }
@@ -71,7 +70,7 @@ async fn run(app: tauri::AppHandle, mut rx: UnboundedReceiver<SevenTvOp>) {
 
 async fn serve(
     app: &tauri::AppHandle,
-    socket: WebSocketStream<MaybeTlsStream<TcpStream>>,
+    socket: Socket,
     rx: &mut UnboundedReceiver<SevenTvOp>,
     active: &mut HashSet<String>,
 ) -> End {

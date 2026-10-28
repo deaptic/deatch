@@ -3,15 +3,14 @@ use std::time::Duration;
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use tauri::async_runtime::JoinHandle;
-use tokio::net::TcpStream;
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message as WsMessage;
-use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 
 use super::runner::Signal;
 use super::subscriptions::ConnId;
 use super::EventKind;
 use crate::twitch::ids::UserId;
+use crate::ws::{self, Socket};
 
 const WS_URL: &str = "wss://eventsub.wss.twitch.tv/ws";
 /// Twitch sends a keepalive every 10s by default; silence beyond this means
@@ -20,8 +19,6 @@ const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(30);
 const MIGRATION_GRACE: Duration = Duration::from_secs(30);
 const RECONNECT_BASE: Duration = Duration::from_secs(1);
 const RECONNECT_MAX: Duration = Duration::from_secs(60);
-
-type Socket = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
 enum End {
     Migrate(String),
@@ -58,8 +55,8 @@ async fn run(conn: ConnId, signals: mpsc::UnboundedSender<Signal>) {
     let mut down_reported = false;
     let mut failed_connects = 0;
     loop {
-        let end = match connect_async(url.as_str()).await {
-            Ok((socket, _)) => {
+        let end = match ws::connect(&url).await {
+            Ok(socket) => {
                 serve(
                     conn,
                     socket,

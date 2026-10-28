@@ -32,7 +32,8 @@ hand-written TS types in `src/lib/types/twitch/eventsub.ts`.
 Each feature is a folder with `mod.rs` for the service, `commands.rs`, `dto.rs`
 for outgoing shapes, and `events.rs`. Upstream crate types never leave `dto.rs`.
 Crate-wide pieces sit at the root: `error.rs`, `http.rs` (the one
-`reqwest::Client`), `emit.rs`, `keyring.rs`, `clock.rs`.
+`reqwest::Client`), `ws.rs` (WebSocket connects), `emit.rs`, `keyring.rs`,
+`clock.rs`.
 
 `twitch/` is the bulk of it. `Twitch` is cloneable managed state holding the
 Helix client, the session, and the EventSub handle. Sign-in is OAuth device
