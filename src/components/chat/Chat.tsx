@@ -55,7 +55,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "./createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import type { User, UserRef } from "../../lib/types/index.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   broadcasterId: string;
@@ -65,24 +65,6 @@ type Props = {
   onOpenChannel: (channelId: string) => void;
   onJumpToMessage: (channelId: string, messageId: string) => void;
 };
-
-async function resolveIdentity(
-  identity: Partial<UserRef>,
-): Promise<UserRef | null> {
-  const { id, login, displayName } = identity;
-  if (id && login && displayName) return { id, login, displayName };
-  if (id) {
-    const [user] = await users.get([id]).catch(() => []);
-    return user ? toUserRef(user) : null;
-  }
-  if (!login) return null;
-  const lookup = await users.findByLogin(login);
-  return lookup.status === "found" ? toUserRef(lookup.user) : null;
-}
-
-function toUserRef({ id, login, displayName }: User): UserRef {
-  return { id, login, displayName };
-}
 
 export default function Chat(props: Props) {
   const messageMenu = createPopover<{ msg: Message }>();
@@ -188,7 +170,7 @@ export default function Chat(props: Props) {
     y: number,
     identity: Partial<UserRef>,
   ) {
-    const id = identity.id ?? (await resolveIdentity(identity))?.id;
+    const id = await users.resolveId(identity);
     if (id) userCards.open(x, y, id);
   }
 
@@ -197,7 +179,7 @@ export default function Chat(props: Props) {
     y: number,
     identity: Partial<UserRef>,
   ) {
-    const r = await resolveIdentity(identity);
+    const r = await users.resolve(identity);
     if (r) {
       userMenu.open(x, y, {
         userId: r.id,
@@ -395,7 +377,7 @@ export default function Chat(props: Props) {
             onOpenChannel={props.onOpenChannel}
             onUserContextMenu={openUserContextMenu}
             onSwitchUser={async (identity) => {
-              const id = identity.id ?? (await resolveIdentity(identity))?.id;
+              const id = await users.resolveId(identity);
               if (id) userCards.update(card.key, { chatterId: id });
             }}
           />
