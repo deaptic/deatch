@@ -1,4 +1,4 @@
-import { ensureFeed, feeds, setFeeds, updateFeed } from "./core.ts";
+import { ensureFeed, feeds, setFeeds, toLog, updateFeed } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
 import type {
   AutomodHoldStatus,
@@ -22,6 +22,7 @@ function updateFirst<T extends FeedEntry>(
     const entry = f.messages.find(find);
     if (entry) {
       change(entry);
+      toLog(broadcasterId, [entry]);
       found = true;
     }
   });
@@ -35,7 +36,9 @@ function updateEach<T extends FeedEntry>(
   change: (entry: T) => void,
 ) {
   updateFeed(broadcasterId, (f) => {
-    for (const entry of f.messages) if (find(entry)) change(entry);
+    const changed = f.messages.filter(find);
+    for (const entry of changed) change(entry);
+    toLog(broadcasterId, changed);
   });
 }
 

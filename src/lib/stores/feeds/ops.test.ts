@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import type { FeedEntry } from "../../types/index.ts";
-import { append, getEntryId, insert, prepend } from "./ops.ts";
+import { append, insert, prepend } from "./ops.ts";
+import { getEntryId } from "../../utils/entryId.ts";
 
 const message = (id: string, timestamp: number): FeedEntry =>
   ({ kind: "message", message_id: id, timestamp }) as unknown as FeedEntry;

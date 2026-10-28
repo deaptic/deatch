@@ -17,7 +17,8 @@ pub mod template;
 mod transport;
 pub mod users;
 
-use crate::error::Result;
+use crate::error::{Error, Result};
+use ids::UserId;
 use session::Session;
 use std::sync::{Arc, Mutex};
 use tauri::async_runtime::JoinHandle;
@@ -75,6 +76,11 @@ impl Twitch {
         } else {
             task.abort();
         }
+    }
+
+    /// The signed-in user, without touching the network.
+    pub async fn viewer(&self) -> Result<UserId> {
+        self.session.user_id().await.ok_or(Error::NotAuthenticated)
     }
 
     pub async fn authed(&self) -> Result<Authed<'_>> {

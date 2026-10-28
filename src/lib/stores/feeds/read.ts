@@ -1,5 +1,5 @@
 import { feeds, lastVisible, setFeeds } from "./core.ts";
-import { getEntryId } from "./ops.ts";
+import { getEntryId } from "../../utils/entryId.ts";
 import { selectedChannel } from "../view.ts";
 import { feedEvents, feedShowEvents } from "../preferences.ts";
 import { NOTICE_TO_EVENT } from "../../constants/events.ts";

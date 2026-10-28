@@ -1,5 +1,6 @@
 use super::auth::credentials;
 use super::auth::events::SessionEnded;
+use super::ids::UserId;
 use super::Helix;
 use crate::emit::emit;
 use crate::error::{Error, Result};
@@ -29,6 +30,12 @@ impl Session {
         let mut slot = self.token.lock().await;
         persist(&token);
         *slot = Some(token);
+    }
+
+    /// Who is signed in, read without refreshing anything.
+    pub async fn user_id(&self) -> Option<UserId> {
+        let slot = self.token.lock().await;
+        slot.as_ref().map(|t| UserId::from(t.user_id.as_str()))
     }
 
     pub async fn end(&self) -> Option<UserToken> {

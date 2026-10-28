@@ -1,5 +1,6 @@
 import { createStore, produce } from "solid-js/store";
 import type { BadgeMap, FeedEntry } from "../../types/index.ts";
+import { getEntryId } from "../../utils/entryId.ts";
 
 export type ChannelFeed = {
   messages: FeedEntry[];
@@ -14,6 +15,29 @@ export type ChannelFeed = {
 export const [feeds, setFeeds] = createStore<
   Record<string, ChannelFeed | undefined>
 >({});
+
+/// Entries added or changed since the feed log last took them, per channel,
+/// one per id: what is taken is each entry's latest state.
+const unlogged = new Map<string, Map<string, FeedEntry>>();
+
+export function toLog(broadcasterId: string, entries: Iterable<FeedEntry>) {
+  let channel = unlogged.get(broadcasterId);
+  for (const entry of entries) {
+    if (!channel) {
+      channel = new Map();
+      unlogged.set(broadcasterId, channel);
+    }
+    channel.set(getEntryId(entry), entry);
+  }
+}
+
+export function takeUnlogged(): Map<string, FeedEntry[]> {
+  const taken = new Map(
+    [...unlogged].map(([id, entries]) => [id, [...entries.values()]]),
+  );
+  unlogged.clear();
+  return taken;
+}
 
 const emptyFeed = (): ChannelFeed => ({
   messages: [],

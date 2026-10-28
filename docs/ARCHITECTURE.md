@@ -50,6 +50,8 @@ and reconnects.
 The rest is smaller. `emotes/` talks to BTTV, FFZ, and 7TV, plus a 7TV WebSocket
 for live set updates. `history/` fetches backlog from recent-messages.robotty.de
 and maps it to the EventSub chat message shape so the feed has one code path.
+`feedlog/` keeps feed entries on disk, per signed-in account, one JSON-lines file
+per channel per hour, for seven days or up to 1 GB, and reads pages of them back.
 `link/` registers the host manifests (`bridge.rs`), merges every connected
 browser into one state (`ipc.rs`), and is the host process (`host.rs`).
 `discord/`, `notifications/`, and `diagnostics/` do rich presence, the taskbar
@@ -71,7 +73,10 @@ A chat message arrives as an EventSub notification, becomes a Tauri event, is
 mapped in `events/chat.ts` (where AutoMod and redemptions are correlated,
 mentions recorded into the inbox, and triggers run), lands in `stores/feeds/` as
 a capped per-channel buffer, and renders through `FeedItem`. Backlog from
-`history/` takes the same path.
+`history/` takes the same path. The feed renders only the rows in view. Entries
+the cap drops go to the feed log; scrolling past the oldest in memory, or
+jumping to a message no longer there, opens a stretch of history read back from
+it (`services/history.ts`) until the view returns to live.
 
 ## Where things live
 
@@ -79,5 +84,6 @@ Twitch tokens are in the Windows credential store under `deatch` / `auth`.
 Preferences, the inbox, and caches are in the WebView's `localStorage`, under
 the keys in `constants/storage.ts`; any other key is removed at startup. App logs
 go to `%LOCALAPPDATA%\com.deaptic.deatch\logs`, the host's to
-`%TEMP%\deatch-host.log`. Native-host manifests sit in `%LOCALAPPDATA%\Deatch\`
-with their `HKCU` registry keys.
+`%TEMP%\deatch-host.log`. Feed history is in `%LOCALAPPDATA%\Deatch\logs\feed\<account id>\`.
+Native-host manifests sit in `%LOCALAPPDATA%\Deatch\` with their `HKCU`
+registry keys.

@@ -10,17 +10,19 @@ import {
   onCleanup,
   onMount,
   Show,
+  untrack,
 } from "solid-js";
 import type {
   FeedEntry,
   FeedEvent as Event,
   FeedMessage as Message,
 } from "../../lib/types/index.ts";
-import {
-  feeds,
-  getEntryId,
-  isFeedEntryVisible,
-} from "../../lib/stores/feeds.ts";
+import { feeds, isFeedEntryVisible } from "../../lib/stores/feeds.ts";
+import { getEntryId } from "../../lib/utils/entryId.ts";
+import { historyViews } from "../../lib/stores/history.ts";
+import * as history from "../../lib/services/history.ts";
+import { addToast } from "../../lib/stores/toasts.ts";
+import { isAtBottom } from "../../lib/utils/feedScroll.ts";
 import {
   thirdPartyEmoteMap,
   usableFavorites,
@@ -90,10 +92,18 @@ export default function Feed(props: Props) {
   let rootRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
   let listRef: HTMLDivElement | undefined;
-  const scroll = createFeedScroll(() => scrollRef);
+  // The window is built below; the scroll asks it where rows are only later.
+  const scroll = createFeedScroll(() => scrollRef, {
+    idAt: (y) => win.idAt(y),
+    topOf: (id) => win.topOf(id),
+  });
 
   const entries = createMemo<FeedEntry[]>(() => {
-    const all = props.entries ?? feeds[props.broadcasterId]?.messages ?? [];
+    const all =
+      props.entries ??
+      historyViews[props.broadcasterId]?.entries ??
+      feeds[props.broadcasterId]?.messages ??
+      [];
     return props.filter ? all.filter(props.filter) : all;
   });
   const ids = createMemo(() => entries().map(getEntryId));
@@ -107,6 +117,50 @@ export default function Feed(props: Props) {
     const { start, end } = win.range();
     return entries().slice(start, end);
   });
+
+  /// A feed given its own entries has no history to page through.
+  const ownsHistory = () => props.entries === undefined;
+
+  /// Near the top, reads further back; near the bottom of a stretch of
+  /// history, reads forward, and at its end hands back to the live feed.
+  function loadAtEdges(el: HTMLElement) {
+    if (!ownsHistory()) return;
+    const id = props.broadcasterId;
+    if (el.scrollTop < el.clientHeight) void history.older(id);
+    const view = historyViews[id];
+    if (!view) return;
+    if (view.atLive && isAtBottom(el)) history.close(id);
+    else if (
+      el.scrollHeight - el.clientHeight - el.scrollTop <
+      el.clientHeight
+    ) {
+      void history.newer(id);
+    }
+  }
+
+  function toPresent() {
+    if (ownsHistory()) history.close(props.broadcasterId);
+    scroll.toBottom();
+  }
+  onCleanup(() => {
+    if (ownsHistory()) history.close(props.broadcasterId);
+  });
+
+  // A jump to a message no longer in memory opens the feed log around it, once
+  // the backlog has had its chance to bring it.
+  let lookingUp: string | null = null;
+  function lookUp(messageId: string, timestamp: number | null) {
+    if (lookingUp === messageId) return;
+    lookingUp = messageId;
+    void history
+      .around(props.broadcasterId, messageId, timestamp)
+      .then((found) => {
+        lookingUp = null;
+        if (found) return;
+        setJumpTarget(null);
+        addToast(t("FEED_MESSAGE_GONE"));
+      });
+  }
 
   /// Brings row `id` into the rendered window, leaving follow mode if the
   /// view has to move for it.
@@ -211,7 +265,12 @@ export default function Feed(props: Props) {
   createEffect(() => {
     const target = jumpTarget();
     if (!target || target.broadcasterId !== props.broadcasterId) return;
-    if (!messageList().some((m) => m.message_id === target.messageId)) return;
+    if (!messageList().some((m) => m.message_id === target.messageId)) {
+      if (ownsHistory() && feeds[props.broadcasterId]?.backfilled) {
+        untrack(() => lookUp(target.messageId, target.timestamp));
+      }
+      return;
+    }
     const smooth = settled && !matchMedia(REDUCED_MOTION).matches;
     const behavior = smooth ? "smooth" : "instant";
     queueMicrotask(() => {
@@ -247,7 +306,7 @@ export default function Feed(props: Props) {
 
   onMount(() => {
     props.ref?.({
-      scrollToBottom: scroll.toBottom,
+      scrollToBottom: toPresent,
       isPaused: scroll.isPaused,
       getBounds: () => rootRef?.getBoundingClientRect() ?? null,
       getElement: () => rootRef ?? null,
@@ -305,6 +364,7 @@ export default function Feed(props: Props) {
           batch(() => {
             win.sync();
             scroll.onScroll(e);
+            loadAtEdges(e.currentTarget);
           })
         }
         onWheel={props.onWheel}

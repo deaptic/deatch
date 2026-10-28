@@ -4,6 +4,7 @@ export * from "./twitch/index.ts";
 export * from "./chatter.ts";
 export * from "./diagnostics.ts";
 export * from "./feed.ts";
+export * from "./history.ts";
 export * from "./inbox.ts";
 export * from "./log.ts";
 export * from "./nonEmpty.ts";

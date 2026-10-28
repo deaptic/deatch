@@ -13,7 +13,11 @@ export type AppController = {
   selectChannel: (ch: User) => void;
   toggleLink: () => void;
   openChannel: (broadcasterId: string) => void;
-  jumpToMessage: (broadcasterId: string, messageId: string) => void;
+  jumpToMessage: (
+    broadcasterId: string,
+    messageId: string,
+    timestamp: number | null,
+  ) => void;
 };
 
 export function createAppController(): AppController {
