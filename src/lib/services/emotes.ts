@@ -9,21 +9,30 @@ import {
 import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
 import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat.ts";
 import type { InvokeOptions } from "../api/utils.ts";
+import { createEffect, createRoot } from "solid-js";
 import {
+  bttvChannel,
+  bttvGlobal,
   dedupeById,
+  ffzChannel,
+  ffzGlobal,
   setBttvChannel,
   setBttvGlobal,
   setFfzChannel,
   setFfzGlobal,
   setGlobalEmotes,
   setSevenTvGlobal,
+  setThirdPartyEmoteMap,
   setUserEmotes,
+  sevenTvChannel,
+  sevenTvGlobal,
 } from "../stores/emotes.ts";
 import { user } from "../stores/users.ts";
 import { type ChannelRef, channelResource } from "./channelResource.ts";
 import type { Emote, EmoteEntry, UserEmote } from "../types/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
+import { emoteMap } from "../utils/emoteMap.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
@@ -83,12 +92,28 @@ export async function loadGlobal(): Promise<Emote[]> {
   return fresh;
 }
 
-/// Loads each provider's global emotes, retrying each until it succeeds.
+/// Loads each provider's global emotes, retrying each until it succeeds,
+/// and keeps the third-party emote map in step with every list.
 export function start(): () => void {
   const stops = [
     keepLoading(seventvGetGlobalEmotes, setSevenTvGlobal),
     keepLoading(bttvGetGlobalEmotes, setBttvGlobal),
     keepLoading(ffzGetGlobalEmotes, setFfzGlobal),
+    createRoot((dispose) => {
+      createEffect(() =>
+        setThirdPartyEmoteMap(
+          emoteMap([
+            sevenTvGlobal(),
+            bttvGlobal(),
+            ffzGlobal(),
+            sevenTvChannel(),
+            bttvChannel(),
+            ffzChannel(),
+          ]),
+        ),
+      );
+      return dispose;
+    }),
   ];
   return () => {
     for (const stop of stops) stop();

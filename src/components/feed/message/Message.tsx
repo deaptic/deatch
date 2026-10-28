@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
 import { t } from "../../../lib/i18n/index.ts";
-import type { EmoteMap } from "../../../lib/stores/emotes.ts";
+import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import type {
   BadgeMap,

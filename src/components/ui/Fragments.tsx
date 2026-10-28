@@ -1,6 +1,6 @@
 import { For, Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
-import type { EmoteMap } from "../../lib/stores/emotes.ts";
+import type { EmoteMap } from "../../lib/utils/emoteMap.ts";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
 import type { Fragment } from "../../lib/types/index.ts";
 import { type CheermoteMap, cheermoteTier } from "../../lib/utils/cheermote.ts";
