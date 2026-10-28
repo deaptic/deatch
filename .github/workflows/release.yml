@@ -13,13 +13,7 @@ jobs:
     needs: checks
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: windows-latest
-            args: ""
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
     env:
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: sccache
@@ -45,7 +39,6 @@ jobs:
           releaseDraft: false
           prerelease: false
           updaterJsonPreferNsis: false
-          args: ${{ matrix.args }}
 
       - name: sccache stats
         if: always()
