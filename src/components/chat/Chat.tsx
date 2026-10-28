@@ -12,7 +12,7 @@ import {
 import * as chat from "../../lib/services/chat.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import * as clipboard from "../../lib/services/clipboard.ts";
 import { isMention } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
@@ -258,7 +258,7 @@ export default function Chat(props: Props) {
       shortcuts.registerLocal("r", withSelected(startReply), "feedSelected"),
       shortcuts.registerLocal(
         "c",
-        withSelected((m) => copyField(textOf(m))),
+        withSelected((m) => clipboard.copy(textOf(m))),
         "feedSelected",
       ),
     ];

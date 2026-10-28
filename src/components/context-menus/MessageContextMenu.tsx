@@ -14,7 +14,7 @@ import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import { textOf } from "../../lib/utils/message.ts";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import * as clipboard from "../../lib/services/clipboard.ts";
 
 type Props = {
   x: number;
@@ -50,7 +50,7 @@ export default function MessageContextMenu(props: Props) {
       <MenuItem
         label={t("MENU_COPY_TEXT")}
         icon={<Copy />}
-        onClick={() => copyField(textOf(props.msg))}
+        onClick={() => clipboard.copy(textOf(props.msg))}
       />
       <Show when={props.showCopypasta}>
         <MenuItem

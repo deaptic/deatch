@@ -2,7 +2,7 @@ import { Copy } from "lucide-solid";
 import { t } from "../../lib/i18n/index.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
-import { copyField } from "../../lib/utils/clipboard.ts";
+import * as clipboard from "../../lib/services/clipboard.ts";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedEvent } from "../../lib/types/index.ts";
 
@@ -20,7 +20,7 @@ export default function EventContextMenu(props: Props) {
       <MenuItem
         label={t("MENU_COPY_TEXT")}
         icon={<Copy />}
-        onClick={() => copyField(props.item.system_message)}
+        onClick={() => clipboard.copy(props.item.system_message)}
       />
       <CopyPayloadItem show={props.developerMode} data={props.item} />
     </Menu>
