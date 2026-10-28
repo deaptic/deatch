@@ -1,3 +1,5 @@
+import { escapeRegExp } from "./regExp.ts";
+
 /// A notice's text cut into plain runs and the people named in it, so each
 /// name can render as a link. Twitch's text may change a name's case.
 export type Segment = { text: string } | { text: string; person: number };
@@ -9,9 +11,7 @@ export function splitNames(text: string, names: string[]): Segment[] {
     .filter(({ name }) => name)
     .sort((a, b) => b.name.length - a.name.length);
   if (!wanted.length) return [{ text }];
-  const pattern = wanted
-    .map(({ name }) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-    .join("|");
+  const pattern = wanted.map(({ name }) => escapeRegExp(name)).join("|");
   const matcher = new RegExp(`(?<![\\w])(?:${pattern})(?![\\w])`, "gi");
   const segments: Segment[] = [];
   let cursor = 0;

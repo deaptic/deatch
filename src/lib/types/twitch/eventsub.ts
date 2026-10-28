@@ -23,7 +23,7 @@ export type RawFragment =
 
 type RawCheermote = { prefix: string; bits: number; tier: number };
 
-type RawReply = {
+export type RawReply = {
   parent_message_id: string;
   parent_message_body: string;
   parent_user_name: string;
@@ -336,12 +336,13 @@ export type RawWarningAcknowledge = RawModUser & {
 
 // channel.suspicious_user.message / update
 export type LowTrustStatus = "none" | "active_monitoring" | "restricted";
+export type BanEvasion = "unknown" | "possible" | "likely";
 
 export type RawSuspiciousUserMessage = RawModUser & {
   broadcaster_user_id: string;
   low_trust_status: LowTrustStatus;
   types: string[];
-  ban_evasion_evaluation: "unknown" | "possible" | "likely";
+  ban_evasion_evaluation: BanEvasion;
   message: { message_id: string; text: string; fragments: RawFragment[] };
 };
 

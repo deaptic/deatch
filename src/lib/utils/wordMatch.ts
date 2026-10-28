@@ -1,3 +1,5 @@
+import { escapeRegExp } from "./regExp.ts";
+
 // A term is a whole whitespace-separated word: anything glued to either side
 // makes it a different word in chat (`@name`, `#tag`, `dead!`) unless a `*`
 // allows it there. `\b` would not do, since it needs a word character next to
@@ -10,10 +12,6 @@ const CACHE_LIMIT = 256;
 export type Anchor = "anywhere" | "start" | "exact";
 
 const compiled = new Map<string, RegExp>();
-
-function escapeRegExp(text: string): string {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 
 function termPattern(term: string): string {
   return term.split("*").map(escapeRegExp).join(WILDCARD);

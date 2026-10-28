@@ -3,6 +3,7 @@ import type { EmoteEntry } from "../types/index.ts";
 import type { Emote, UserEmote } from "../types/index.ts";
 import type { User } from "../types/index.ts";
 import { type EmoteMap, emoteMap } from "../utils/emoteMap.ts";
+import { isUserId } from "../utils/knownUsers.ts";
 import { knownUser } from "./users.ts";
 
 export type { EmoteEntry };
@@ -126,11 +127,7 @@ export function computeGlobalSections(
 
   for (const e of userEmotes()) {
     if (e.ownerId === broadcaster?.id) continue;
-    if (
-      e.emoteType === "subscriptions" &&
-      e.ownerId &&
-      /^\d+$/.test(e.ownerId)
-    ) {
+    if (e.emoteType === "subscriptions" && e.ownerId && isUserId(e.ownerId)) {
       const list = subGroupMap.get(e.ownerId) ?? [];
       list.push({ name: e.name, url: e.url });
       subGroupMap.set(e.ownerId, list);

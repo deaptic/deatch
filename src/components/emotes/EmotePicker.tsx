@@ -35,6 +35,7 @@ import {
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 import { at } from "../../lib/utils/at.ts";
+import { isUserId } from "../../lib/utils/knownUsers.ts";
 
 type Tab = "channel" | "global" | "emoji";
 
@@ -67,7 +68,7 @@ export default function EmotePicker(props: Props) {
         e.emoteType === "subscriptions" &&
         e.ownerId &&
         e.ownerId !== broadcaster?.id &&
-        /^\d+$/.test(e.ownerId)
+        isUserId(e.ownerId)
       ) {
         ids.add(e.ownerId);
       }

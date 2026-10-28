@@ -1,3 +1,4 @@
+import type { Anchor } from "../../utils/wordMatch.ts";
 import {
   BADGE_CATEGORIES,
   type BadgeCategoryKey,
@@ -40,14 +41,13 @@ export function clampCooldown(value: number): number {
   );
 }
 
-export type TriggerLocation = "start" | "exact" | "anywhere";
 export type TriggerAction = "send" | "reply";
 export type Trigger = {
   id: string;
   enabled: boolean;
   name: string;
   phrase: string;
-  location: TriggerLocation;
+  location: Anchor;
   caseSensitive: boolean;
   cooldown: number;
   action: TriggerAction;
