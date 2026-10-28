@@ -12,9 +12,9 @@ import {
 import type { GetUsersParams, User, UserRef } from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
 import { addToast } from "../stores/toasts.ts";
+import { userFromRef } from "../stores/channels.ts";
 import {
   freshEntries,
-  isComplete,
   isKnownUser,
   isUserId,
   type KnownUser,
@@ -59,11 +59,23 @@ export function start(): () => void {
   };
 }
 
-/// `at` is when Twitch last returned the user; partial users from stream
-/// data refresh names but never count as a fetch.
+/// Whole users as Twitch returned them; each counts as fetched now.
 export function set(users: User[]): void {
+  apply(users, Date.now());
+}
+
+/// What a stream, a chat message or a search result says about users: it
+/// renames them and fills gaps, but never counts as a fetch.
+export function note(partials: (UserRef & Partial<User>)[]): void {
+  apply(
+    partials.map((p) => ({ ...userFromRef(p), ...p })),
+    null,
+  );
+}
+
+function apply(users: User[], fetchedAt: number | null) {
   const now = Date.now();
-  const pending = changedEntries(unwrap(knownUsers), users, now);
+  const pending = changedEntries(unwrap(knownUsers), users, fetchedAt);
   if (pending.size === 0) return;
   setKnownUsers(
     produce((table) => {
@@ -75,20 +87,21 @@ export function set(users: User[]): void {
 }
 
 /// The entries `users` change, applied in order so a later duplicate builds
-/// on an earlier one. An unchanged user keeps its object, so only `at` moves.
+/// on an earlier one. An unchanged user keeps its object, so only
+/// `fetchedAt` moves.
 function changedEntries(
   table: Record<string, KnownUser>,
   users: User[],
-  now: number,
+  fetchedAt: number | null,
 ): Map<string, KnownUser> {
   const pending = new Map<string, KnownUser>();
   for (const next of users) {
     const prev = pending.get(next.id) ?? table[next.id];
-    const merged = mergeUser(prev?.user, next);
-    const at = isComplete(next) ? now : (prev?.at ?? 0);
+    const merged = mergeUser(prev?.user, next, fetchedAt !== null);
+    const at = fetchedAt ?? prev?.fetchedAt ?? null;
     const same = prev !== undefined && sameUser(prev.user, merged);
-    if (same && prev.at === at) continue;
-    pending.set(next.id, { user: same ? prev.user : merged, at });
+    if (same && prev.fetchedAt === at) continue;
+    pending.set(next.id, { user: same ? prev.user : merged, fetchedAt: at });
   }
   return pending;
 }
@@ -178,8 +191,9 @@ function recentlyMissing(id: string): boolean {
 }
 
 function isKnown(id: string): boolean {
-  const entry = knownUsers[id];
-  return !!entry && isComplete(entry.user) && Date.now() - entry.at < TTL_MS;
+  const fetchedAt = knownUsers[id]?.fetchedAt;
+  if (fetchedAt === undefined || fetchedAt === null) return false;
+  return Date.now() - fetchedAt < TTL_MS;
 }
 
 function enqueue(id: string): Promise<void> {

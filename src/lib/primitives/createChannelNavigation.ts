@@ -71,7 +71,7 @@ export function createChannelNavigation(): ChannelNavigation {
     on(selectedChannel, (ch) => {
       if (!ch) return;
       recordVisit(ch);
-      users.set([ch]);
+      users.note([ch]);
       ensureFeed(ch.id);
       markSeen(ch.id);
       inbox.markChannelRead(ch.id);

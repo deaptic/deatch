@@ -11,7 +11,6 @@ import {
   setFollowedLive,
   setLiveStreams,
   setPinsLoaded,
-  userFromRef,
 } from "../stores/channels.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import { linkedChannel, linkWarmedChannels } from "../stores/link.ts";
@@ -104,7 +103,7 @@ async function loadLive(viewerId: string): Promise<User[] | null> {
   if (!extraStreams || user()?.id !== viewerId) return null;
   const streams = [...followed, ...extraStreams];
 
-  users.set(streams.map((s) => userFromRef(s.user)));
+  users.note(streams.map((s) => s.user));
   trackedIds.clear();
   for (const id of [...followedIds, ...extraIds]) trackedIds.add(id);
   setLiveStreams(streams);
