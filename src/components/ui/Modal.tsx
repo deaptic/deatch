@@ -5,7 +5,7 @@ import * as shortcuts from "../../lib/services/shortcuts.ts";
 
 /// A dialog centres a short exchange; a palette drops from the top for
 /// search-as-you-type.
-export type ModalLook = "dialog" | "palette";
+type ModalLook = "dialog" | "palette";
 
 const SCRIM: Record<ModalLook, string> = {
   dialog: "items-center p-4",

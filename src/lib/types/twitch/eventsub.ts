@@ -355,7 +355,7 @@ export type RawSuspiciousUserUpdate = RawModUser & {
 };
 
 // automod.message.hold
-export type AutomodHeldReason =
+type AutomodHeldReason =
   | {
       reason: "automod";
       automod: { category: string; level: number };

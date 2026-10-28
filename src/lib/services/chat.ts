@@ -5,7 +5,7 @@ import { addToast } from "../stores/toasts.ts";
 import type { SendChatMessageParams } from "../types/index.ts";
 import { dropMessage } from "../utils/dropReason.ts";
 
-export type SendOutcome = "sent" | "held" | "failed";
+type SendOutcome = "sent" | "held" | "failed";
 
 export async function send(
   params: SendChatMessageParams,

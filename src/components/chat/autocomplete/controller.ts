@@ -2,8 +2,6 @@ import { createSignal } from "solid-js";
 
 import { type Active, detect, type Kind } from "./detect.ts";
 
-export type { Kind };
-
 type Options = {
   getValue: () => string;
   getCursor: () => number;
@@ -21,10 +19,6 @@ export function createChatAutocompleteController(opts: Options) {
 
   function update(value: string, cursor: number) {
     setActive(detect(value.slice(0, cursor)));
-  }
-
-  function reset() {
-    setActive(null);
   }
 
   function isActive() {
@@ -78,7 +72,6 @@ export function createChatAutocompleteController(opts: Options) {
 
   return {
     update,
-    reset,
     isActive,
     handleKey,
     dismiss,

@@ -1,4 +1,4 @@
-export type ScrollMetrics = {
+type ScrollMetrics = {
   scrollTop: number;
   scrollHeight: number;
   clientHeight: number;

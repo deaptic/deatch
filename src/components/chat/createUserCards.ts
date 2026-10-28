@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 
-export type OpenUserCard = {
+type OpenUserCard = {
   key: number;
   x: number;
   y: number;

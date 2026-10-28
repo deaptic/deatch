@@ -7,7 +7,7 @@ import {
   triggers,
 } from "../stores/preferences.ts";
 
-export type IncomingMessage = {
+type IncomingMessage = {
   text: string;
   broadcasterId: string;
   messageId: string;

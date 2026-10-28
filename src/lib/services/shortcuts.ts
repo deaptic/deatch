@@ -107,8 +107,7 @@ function dispatch(seq: string): boolean {
   return run(names.map((n) => actions.get(n)));
 }
 
-function run(entries: Iterable<ActionEntry | undefined> | undefined): boolean {
-  if (!entries) return false;
+function run(entries: Iterable<ActionEntry | undefined>): boolean {
   for (const entry of entries) {
     if (!entry) continue;
     if (entry.when && !entry.when(contexts)) continue;

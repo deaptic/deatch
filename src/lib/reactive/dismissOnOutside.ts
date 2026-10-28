@@ -4,7 +4,7 @@ import { onCleanup } from "solid-js";
 /// mousedown that toggles them is not also counted as an outside click.
 export const POPOVER_TOGGLE = "data-popover-toggle";
 
-export type DismissOnOutsideOptions = {
+type DismissOnOutsideOptions = {
   ref: () => HTMLElement | undefined;
   opener?: () => HTMLElement | undefined;
   onDismiss: () => void;

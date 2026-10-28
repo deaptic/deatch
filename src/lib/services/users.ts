@@ -115,7 +115,7 @@ export async function fetch(
   return users;
 }
 
-export type Lookup =
+type Lookup =
   | { status: "found"; user: User }
   | { status: "missing" }
   | { status: "failed" };

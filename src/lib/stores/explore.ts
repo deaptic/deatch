@@ -1,7 +1,7 @@
 import type { Category } from "../types/index.ts";
 import { createStore } from "solid-js/store";
 
-export type ExploreFilters = {
+type ExploreFilters = {
   followingOnly: boolean;
   category: Category | null;
 };

@@ -4,7 +4,7 @@ import { daysBetween } from "./time.ts";
 
 export const GROUP_WINDOW_MS = 7 * 60 * 1000;
 
-export type RowLayout = { dayStart: boolean; continued: boolean };
+type RowLayout = { dayStart: boolean; continued: boolean };
 
 function standsAlone(msg: FeedMessage): boolean {
   return !!(

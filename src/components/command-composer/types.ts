@@ -32,7 +32,7 @@ export type CommandOption =
       search: (query: string) => Promise<OptionSuggestion[]>;
     });
 
-export type CommandRole = "broadcaster" | "mod" | "regular";
+type CommandRole = "broadcaster" | "mod" | "regular";
 
 export type Command = {
   name: string;

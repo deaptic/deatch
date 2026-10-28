@@ -1,4 +1,4 @@
-export type DividerVariant = "accent" | "pill";
+type DividerVariant = "accent" | "pill";
 
 const LOOKS: Record<
   DividerVariant,

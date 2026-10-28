@@ -4,7 +4,7 @@ import { emptyHistory, step, visit } from "../utils/history.ts";
 import { at } from "../utils/at.ts";
 
 // The single source of truth for what the app is showing: a page or a channel.
-export type ActiveView = "explore" | "settings" | User;
+type ActiveView = "explore" | "settings" | User;
 
 const [activeView, setActiveView] = createSignal<ActiveView>("explore");
 export { activeView };
@@ -109,7 +109,7 @@ export function leavePage(): boolean {
 }
 
 // A message to bring into view once its channel's feed holds it.
-export type JumpTarget = { channelId: string; messageId: string };
+type JumpTarget = { channelId: string; messageId: string };
 export const [jumpTarget, setJumpTarget] = createSignal<JumpTarget | null>(
   null,
 );

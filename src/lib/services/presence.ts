@@ -35,7 +35,7 @@ export type PresenceContext = {
   liveStreams: Stream[];
 };
 
-export type PresenceSession = { startedAt: number; lurkPhrase: MessageKey };
+type PresenceSession = { startedAt: number; lurkPhrase: MessageKey };
 
 function activeChannel(ctx: PresenceContext): User | null {
   return ctx.exploreOpen ? null : ctx.channel;

@@ -12,7 +12,7 @@ function resetUserScopedCaches() {
   emotes.resetUser();
 }
 
-export type SessionDeps = {
+type SessionDeps = {
   leaveAll(): void;
 };
 

@@ -2,7 +2,7 @@ import { t } from "../i18n/index.ts";
 import type { ChatState } from "../types/index.ts";
 import { errorMessage } from "../utils/error.ts";
 
-export type ConnectFailure = Extract<
+type ConnectFailure = Extract<
   ChatState,
   { type: "rejected" | "failed" | "capped" }
 >;

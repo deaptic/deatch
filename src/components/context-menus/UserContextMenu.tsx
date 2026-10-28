@@ -15,7 +15,7 @@ import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 
-export type UserContextTarget = {
+type UserContextTarget = {
   userId: string;
   userLogin: string;
   userDisplayName: string;
