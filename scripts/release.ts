@@ -53,7 +53,7 @@ async function patchCargoLock(
 
 async function captureStdout(cmd: string[]): Promise<string> {
   const { stdout } = await execFileAsync(cmd[0], cmd.slice(1));
-  return stdout.trim();
+  return stdout.trimEnd();
 }
 
 const pkg = await readJson(FILES.pkg);
