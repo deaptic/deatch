@@ -21,7 +21,7 @@ test("shows a celebration with its emote", () => {
     }),
     0,
   );
-  expect(item?.system_message).toStrictEqual(
+  expect(item?.system_message).toBe(
     "Foo used 500 bits on an On-Screen Celebration",
   );
   expect(item?.message).toStrictEqual([
@@ -35,15 +35,15 @@ test("names a custom Power-up", () => {
       use({ type: "custom_power_up", custom_power_up: { title: "Hydrate" } }),
       0,
     )?.system_message,
-  ).toStrictEqual("Foo used 500 bits on Hydrate");
+  ).toBe("Foo used 500 bits on Hydrate");
 });
 
 test("leaves cheers and message Power-ups to their chat message", () => {
-  expect(mapBitsUse(use({ type: "cheer" }), 0)).toStrictEqual(null);
+  expect(mapBitsUse(use({ type: "cheer" }), 0)).toBeNull();
   expect(
     mapBitsUse(
       use({ power_up: { type: "gigantify_an_emote", emote: null } }),
       0,
     ),
-  ).toStrictEqual(null);
+  ).toBeNull();
 });

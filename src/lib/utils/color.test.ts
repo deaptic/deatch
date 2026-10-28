@@ -23,16 +23,14 @@ test("matches reference oklch values for pure primaries", () => {
 test("accepts hex without # and rejects anything else", () => {
   expect(hexToOklch("9481FF")).toStrictEqual(hexToOklch("#9481ff"));
   for (const bad of ["#fff", "red", "#12345g", ""]) {
-    expect(hexToOklch(bad), bad).toStrictEqual(null);
+    expect(hexToOklch(bad), bad).toBeNull();
   }
 });
 
 test("formats css oklch with three decimals and optional alpha", () => {
   const color = { l: 0.123456, c: 0.0451, h: 300.98765 };
-  expect(oklchCss(color)).toStrictEqual("oklch(0.123 0.045 300.988)");
-  expect(oklchCss(color, 0.5)).toStrictEqual(
-    "oklch(0.123 0.045 300.988 / 0.5)",
-  );
+  expect(oklchCss(color)).toBe("oklch(0.123 0.045 300.988)");
+  expect(oklchCss(color, 0.5)).toBe("oklch(0.123 0.045 300.988 / 0.5)");
 });
 
 test("reads the oklch hue of a coloured name", () => {
@@ -41,7 +39,7 @@ test("reads the oklch hue of a coloured name", () => {
 });
 
 test("has no hue for greys, blanks, and junk", () => {
-  expect(hueOf("#808080")).toStrictEqual(undefined);
-  expect(hueOf("")).toStrictEqual(undefined);
-  expect(hueOf("red")).toStrictEqual(undefined);
+  expect(hueOf("#808080")).toBeUndefined();
+  expect(hueOf("")).toBeUndefined();
+  expect(hueOf("red")).toBeUndefined();
 });

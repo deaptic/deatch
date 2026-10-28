@@ -173,16 +173,14 @@ test("marks the first row of each new day and breaks groups there", () => {
 
 test("labels days relative to now", () => {
   const now = new Date(2026, 9, 1, 12, 0).getTime();
-  expect(dayLabel(new Date(2026, 9, 1, 0, 5).getTime(), now)).toStrictEqual(
-    "Today",
-  );
-  expect(dayLabel(new Date(2026, 8, 30, 23, 0).getTime(), now)).toStrictEqual(
+  expect(dayLabel(new Date(2026, 9, 1, 0, 5).getTime(), now)).toBe("Today");
+  expect(dayLabel(new Date(2026, 8, 30, 23, 0).getTime(), now)).toBe(
     "Yesterday",
   );
-  expect(dayLabel(new Date(2026, 8, 28, 9, 0).getTime(), now)).toStrictEqual(
+  expect(dayLabel(new Date(2026, 8, 28, 9, 0).getTime(), now)).toBe(
     "Monday 28 September",
   );
-  expect(dayLabel(new Date(2025, 11, 31, 9, 0).getTime(), now)).toStrictEqual(
+  expect(dayLabel(new Date(2025, 11, 31, 9, 0).getTime(), now)).toBe(
     "31 December 2025",
   );
 });

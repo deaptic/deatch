@@ -24,5 +24,5 @@ test("nextVerticalIndex moves within a section and across sections", () => {
   expect(nextVerticalIndex(sections, COLUMNS + 3, -1)).toStrictEqual(
     COLUMNS + 1,
   );
-  expect(nextVerticalIndex(sections, 0, -1)).toStrictEqual(0);
+  expect(nextVerticalIndex(sections, 0, -1)).toBe(0);
 });

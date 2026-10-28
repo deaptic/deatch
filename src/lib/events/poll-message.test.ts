@@ -27,5 +27,5 @@ test("ranks the results, noting an early end", () => {
     text: "Poll “Pizza?” ended early",
     detail: "Results: No 7 votes and Yes 3 votes",
   });
-  expect(pollEnd(poll({ status: "archived" }))).toStrictEqual(null);
+  expect(pollEnd(poll({ status: "archived" }))).toBeNull();
 });

@@ -23,7 +23,7 @@ test("removes, renames, then appends added emotes", () => {
     }),
   );
   expect(next.map((e) => e.name)).toStrictEqual(["Fresh", "Pog", "New1"]);
-  expect(next[0].url).toStrictEqual("https://cdn/Old");
+  expect(next[0].url).toBe("https://cdn/Old");
 });
 
 test("describes each change, crediting Someone without an actor", () => {

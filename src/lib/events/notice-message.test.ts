@@ -15,10 +15,10 @@ const notice = (n: Partial<RawNotification>) =>
 test("describes subs by plan", () => {
   expect(
     notice({ notice_type: "sub", sub: { sub_tier: "2000", is_prime: false } }),
-  ).toStrictEqual("Viewer subscribed at Tier 2.");
+  ).toBe("Viewer subscribed at Tier 2.");
   expect(
     notice({ notice_type: "sub", sub: { sub_tier: "1000", is_prime: true } }),
-  ).toStrictEqual("Viewer subscribed with Prime.");
+  ).toBe("Viewer subscribed with Prime.");
 });
 
 test("adds the streak to a resub only when there is one", () => {
@@ -28,14 +28,12 @@ test("adds the streak to a resub only when there is one", () => {
     cumulative_months: 14,
     streak_months: 3,
   };
-  expect(notice({ notice_type: "resub", resub })).toStrictEqual(
+  expect(notice({ notice_type: "resub", resub })).toBe(
     "Viewer subscribed at Tier 1. They've subscribed for 14 months, currently on a 3 month streak!",
   );
   expect(
     notice({ notice_type: "resub", resub: { ...resub, streak_months: null } }),
-  ).toStrictEqual(
-    "Viewer subscribed at Tier 1. They've subscribed for 14 months!",
-  );
+  ).toBe("Viewer subscribed at Tier 1. They've subscribed for 14 months!");
 });
 
 test("credits an anonymous gifter", () => {
@@ -49,17 +47,13 @@ test("credits an anonymous gifter", () => {
         cumulative_total: null,
       },
     }),
-  ).toStrictEqual(
-    "An anonymous gifter is gifting 5 Tier 1 Subs to the community!",
-  );
+  ).toBe("An anonymous gifter is gifting 5 Tier 1 Subs to the community!");
   expect(
     notice({
       notice_type: "gift_paid_upgrade",
       gift_paid_upgrade: { gifter_is_anonymous: true, gifter_user_name: null },
     }),
-  ).toStrictEqual(
-    "Viewer is continuing the Gift Sub they got from an anonymous user!",
-  );
+  ).toBe("Viewer is continuing the Gift Sub they got from an anonymous user!");
 });
 
 test("reads the shared chat variant", () => {
@@ -68,7 +62,7 @@ test("reads the shared chat variant", () => {
       notice_type: "shared_chat_raid",
       shared_chat_raid: { user_name: "Raider", viewer_count: 1 },
     }),
-  ).toStrictEqual("1 raider from Raider has joined!");
+  ).toBe("1 raider from Raider has joined!");
 });
 
 test("formats a charity amount in its currency", () => {
@@ -80,22 +74,22 @@ test("formats a charity amount in its currency", () => {
         amount: { value: 1050, decimal_place: 2, currency: "USD" },
       },
     }),
-  ).toStrictEqual("Viewer donated US$10.50 to support Kind Org.");
+  ).toBe("Viewer donated US$10.50 to support Kind Org.");
 });
 
 test("names who made an announcement", () => {
-  expect(
-    notice({ notice_type: "announcement", system_message: "" }),
-  ).toStrictEqual("Announcement from Viewer");
+  expect(notice({ notice_type: "announcement", system_message: "" })).toBe(
+    "Announcement from Viewer",
+  );
 });
 
 test("counts a moderator's months", () => {
   expect(
     notice({ notice_type: "modiversary", modiversary: { months: 84 } }),
-  ).toStrictEqual("Viewer has been a moderator for 84 months!");
+  ).toBe("Viewer has been a moderator for 84 months!");
 });
 
 test("leaves unknown notices to Twitch's text", () => {
-  expect(notice({ notice_type: "watch_streak" })).toStrictEqual(null);
-  expect(notice({ notice_type: "sub" })).toStrictEqual(null);
+  expect(notice({ notice_type: "watch_streak" })).toBeNull();
+  expect(notice({ notice_type: "sub" })).toBeNull();
 });

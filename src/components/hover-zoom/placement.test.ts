@@ -19,20 +19,14 @@ test("sits right of the anchor, centred on it", () => {
 
 test("centres a wide image by its own height", () => {
   const wide = { width: 300, height: 100 };
-  expect(zoomPlacement(anchorAt(100, 300), wide, viewport).y).toStrictEqual(
-    270,
-  );
+  expect(zoomPlacement(anchorAt(100, 300), wide, viewport).y).toBe(270);
 });
 
 test("flips left when the right side is too narrow", () => {
-  expect(zoomPlacement(anchorAt(800, 300), square, viewport).x).toStrictEqual(
-    492,
-  );
+  expect(zoomPlacement(anchorAt(800, 300), square, viewport).x).toBe(492);
 });
 
 test("stays inside the viewport near its top and bottom edges", () => {
-  expect(zoomPlacement(anchorAt(100, 0), square, viewport).y).toStrictEqual(8);
-  expect(zoomPlacement(anchorAt(100, 780), square, viewport).y).toStrictEqual(
-    492,
-  );
+  expect(zoomPlacement(anchorAt(100, 0), square, viewport).y).toBe(8);
+  expect(zoomPlacement(anchorAt(100, 780), square, viewport).y).toBe(492);
 });

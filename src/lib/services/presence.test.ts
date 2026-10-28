@@ -47,33 +47,33 @@ const session = {
 } as const;
 
 test("no presence when disabled or signed out", () => {
-  expect(presenceMode(ctx({ enabled: false }))).toStrictEqual(null);
-  expect(presenceMode(ctx({ authenticated: false }))).toStrictEqual(null);
+  expect(presenceMode(ctx({ enabled: false }))).toBeNull();
+  expect(presenceMode(ctx({ authenticated: false }))).toBeNull();
 });
 
 test("Explore or no channel counts as browsing", () => {
-  expect(presenceMode(ctx({ exploreOpen: true }))).toStrictEqual("browsing");
-  expect(presenceMode(ctx({ channel: null }))).toStrictEqual("browsing");
+  expect(presenceMode(ctx({ exploreOpen: true }))).toBe("browsing");
+  expect(presenceMode(ctx({ channel: null }))).toBe("browsing");
   const activity = buildPresence(ctx({ exploreOpen: true }), session);
-  expect(activity.details).toStrictEqual("Browsing channels");
-  expect(activity.startedAt).toStrictEqual(100);
+  expect(activity.details).toBe("Browsing channels");
+  expect(activity.startedAt).toBe(100);
 });
 
 test("a live channel shows its game, viewers and stream start", () => {
   const activity = buildPresence(ctx({ liveStreams: [stream()] }), session);
-  expect(presenceMode(ctx())).toStrictEqual("ch:1");
-  expect(activity.stateText).toStrictEqual("Chess · 1.2k viewers");
-  expect(activity.largeText).toStrictEqual("Chess with chat");
+  expect(presenceMode(ctx())).toBe("ch:1");
+  expect(activity.stateText).toBe("Chess · 1.2k viewers");
+  expect(activity.largeText).toBe("Chess with chat");
   expect(activity.startedAt).toStrictEqual(
     Date.parse("2026-10-01T10:00:00Z") / 1000,
   );
 });
 
 test("an offline channel is Offline, your own shows the lurk phrase", () => {
-  expect(buildPresence(ctx(), session).stateText).toStrictEqual("Offline");
+  expect(buildPresence(ctx(), session).stateText).toBe("Offline");
   const own = buildPresence(ctx({ userId: "1" }), session);
-  expect(own.stateText).toStrictEqual("Self-lurking");
-  expect(own.startedAt).toStrictEqual(100);
+  expect(own.stateText).toBe("Self-lurking");
+  expect(own.startedAt).toBe(100);
 });
 
 test("long titles are cut without splitting an emoji", () => {
@@ -83,5 +83,5 @@ test("long titles are cut without splitting an emoji", () => {
     session,
   );
   expect(largeText).toStrictEqual("a".repeat(126) + "…");
-  expect(largeText!.length <= 128).toStrictEqual(true);
+  expect(largeText!.length <= 128).toBe(true);
 });

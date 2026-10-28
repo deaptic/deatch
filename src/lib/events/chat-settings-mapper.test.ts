@@ -38,6 +38,6 @@ test("mapChatSettingsUpdate drops durations of disabled modes", () => {
     slow_mode_wait_time_seconds: 30,
     follower_mode_duration_minutes: 10,
   });
-  expect(settings.slowModeSeconds).toStrictEqual(null);
-  expect(settings.followerModeMinutes).toStrictEqual(null);
+  expect(settings.slowModeSeconds).toBeNull();
+  expect(settings.followerModeMinutes).toBeNull();
 });

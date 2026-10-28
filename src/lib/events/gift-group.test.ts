@@ -49,7 +49,7 @@ test("folds a batch's gifted subs into their community gift", () => {
     { id: "id-Bar", login: "bar", name: "Bar" },
     { id: "id-Baz", login: "baz", name: "Baz" },
   ]);
-  expect(community.item.recipients).toStrictEqual(undefined);
+  expect(community.item.recipients).toBeUndefined();
 });
 
 const notice = (n: Partial<RawNotification>): RawNotification => ({
@@ -109,5 +109,5 @@ test("leaves a direct gift on its own", () => {
         },
       }),
     ),
-  ).toStrictEqual(null);
+  ).toBeNull();
 });

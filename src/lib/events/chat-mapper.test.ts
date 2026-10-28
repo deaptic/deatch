@@ -19,13 +19,13 @@ const raw = (overrides: Partial<RawChatMessage> = {}): RawChatMessage => ({
 
 test("maps chatter fields and timestamp", () => {
   const msg = mapChatMessage(raw(), 42);
-  expect(msg.kind).toStrictEqual("message");
-  expect(msg.message_id).toStrictEqual("m1");
-  expect(msg.chatter_login).toStrictEqual("foo");
-  expect(msg.chatter_name).toStrictEqual("Foo");
-  expect(msg.timestamp).toStrictEqual(42);
-  expect(msg.reply).toStrictEqual(undefined);
-  expect(msg.first_message).toStrictEqual(false);
+  expect(msg.kind).toBe("message");
+  expect(msg.message_id).toBe("m1");
+  expect(msg.chatter_login).toBe("foo");
+  expect(msg.chatter_name).toBe("Foo");
+  expect(msg.timestamp).toBe(42);
+  expect(msg.reply).toBeUndefined();
+  expect(msg.first_message).toBe(false);
 });
 
 test("flattens every fragment kind", () => {
@@ -59,17 +59,15 @@ test("keeps an event's words only when there are some", () => {
   expect(
     wordsOf({ text: "hi", fragments: [{ type: "text", text: "hi" }] }),
   ).toStrictEqual([{ type: "text", text: "hi" }]);
-  expect(wordsOf({ text: "  ", fragments: [] })).toStrictEqual(undefined);
-  expect(wordsOf(null)).toStrictEqual(undefined);
+  expect(wordsOf({ text: "  ", fragments: [] })).toBeUndefined();
+  expect(wordsOf(null)).toBeUndefined();
 });
 
 test("carries the cheered amount", () => {
   expect(mapChatMessage(raw({ cheer: { bits: 250 } }), 0).cheer).toStrictEqual({
     bits: 250,
   });
-  expect(mapChatMessage(raw({ cheer: null }), 0).cheer).toStrictEqual(
-    undefined,
-  );
+  expect(mapChatMessage(raw({ cheer: null }), 0).cheer).toBeUndefined();
 });
 
 test("keeps a GIF's URL exactly as Twitch sent it", () => {
@@ -117,7 +115,7 @@ test("classifies channel point messages", () => {
   );
   expect(reward.channel_points).toStrictEqual({ kind: "custom_reward" });
   expect(highlight.channel_points).toStrictEqual({ kind: "highlight" });
-  expect(mapChatMessage(raw(), 0).channel_points).toStrictEqual(undefined);
+  expect(mapChatMessage(raw(), 0).channel_points).toBeUndefined();
 });
 
 test("keeps bits Power-ups apart from channel points", () => {
@@ -125,9 +123,9 @@ test("keeps bits Power-ups apart from channel points", () => {
     raw({ message_type: "power_ups_gigantified_emote" }),
     0,
   );
-  expect(gigantified.power_up).toStrictEqual("gigantified_emote");
-  expect(gigantified.channel_points).toStrictEqual(undefined);
-  expect(mapChatMessage(raw(), 0).power_up).toStrictEqual(undefined);
+  expect(gigantified.power_up).toBe("gigantified_emote");
+  expect(gigantified.channel_points).toBeUndefined();
+  expect(mapChatMessage(raw(), 0).power_up).toBeUndefined();
 });
 
 test("marks only shared chat messages with their source channel", () => {
@@ -149,13 +147,13 @@ test("marks only shared chat messages with their source channel", () => {
     messageId: "orig",
     badges: [{ set_id: "subscriber", id: "12", info: "12" }],
   });
-  expect(unshared.source).toStrictEqual(undefined);
-  expect(mapChatMessage(raw(), 0).source).toStrictEqual(undefined);
+  expect(unshared.source).toBeUndefined();
+  expect(mapChatMessage(raw(), 0).source).toBeUndefined();
   const local = mapChatMessage(
     raw({ source_broadcaster_user_id: raw().broadcaster_user_id }),
     0,
   );
-  expect(local.source).toStrictEqual(undefined);
+  expect(local.source).toBeUndefined();
 });
 
 test("marks first-time chatters and keeps deleted backlog flag", () => {
@@ -163,6 +161,6 @@ test("marks first-time chatters and keeps deleted backlog flag", () => {
     raw({ message_type: "user_intro", deleted: true }),
     0,
   );
-  expect(msg.first_message).toStrictEqual(true);
-  expect(msg.deleted).toStrictEqual(true);
+  expect(msg.first_message).toBe(true);
+  expect(msg.deleted).toBe(true);
 });

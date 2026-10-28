@@ -26,7 +26,7 @@ test("quotes each blocked term once from the message", () => {
     reason: "blocked_term",
     blocked_term: { terms_found: [term(2, 4), term(6, 10), term(12, 14)] },
   };
-  expect(automodReason(p)).toStrictEqual("Blocked term: bad, words");
+  expect(automodReason(p)).toBe("Blocked term: bad, words");
 });
 
 test("quotes a blocked link", () => {
@@ -37,7 +37,7 @@ test("quotes a blocked link", () => {
     reason: "blocked_link",
     blocked_term: { terms_found: [term(4, 15)] },
   };
-  expect(automodReason(p)).toStrictEqual("Blocked link: evil.example");
+  expect(automodReason(p)).toBe("Blocked link: evil.example");
 });
 
 test("names the AutoMod category and level", () => {
@@ -47,5 +47,5 @@ test("names the AutoMod category and level", () => {
     reason: "automod",
     automod: { category: "swearing", level: 2 },
   };
-  expect(automodReason(p)).toStrictEqual("AutoMod: Swearing (level 2)");
+  expect(automodReason(p)).toBe("AutoMod: Swearing (level 2)");
 });

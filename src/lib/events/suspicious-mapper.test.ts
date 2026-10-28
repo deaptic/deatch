@@ -27,12 +27,10 @@ test("explains why a chatter is flagged", () => {
       types: ["banned_in_shared_channel"],
     }),
   );
-  expect(info && formatSuspicious(info)).toStrictEqual(
+  expect(info && formatSuspicious(info)).toBe(
     "Restricted chatter, only mods see this, likely ban evader, banned in a shared channel",
   );
-  expect(suspiciousInfo(message({ low_trust_status: "none" }))).toStrictEqual(
-    null,
-  );
+  expect(suspiciousInfo(message({ low_trust_status: "none" }))).toBeNull();
 });
 
 test("describes a mod changing a chatter's status", () => {
