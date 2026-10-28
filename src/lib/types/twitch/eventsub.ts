@@ -423,7 +423,8 @@ export type RawHypeTrain = {
   progress?: number;
   goal?: number;
   top_contributions: RawHypeTrainContribution[];
-  type: "regular" | "golden_kappa" | "treasure" | string;
+  /// "regular", "golden_kappa", "treasure", or a kind Twitch adds later.
+  type: string;
   is_shared_train: boolean;
 };
 
@@ -486,7 +487,8 @@ export type RawBitsUse = {
   user_login: string;
   user_name: string;
   bits: number;
-  type: "cheer" | "power_up" | "custom_power_up" | string;
+  /// "cheer", "power_up", "custom_power_up", or a kind Twitch adds later.
+  type: string;
   power_up: {
     type: string;
     emote: { id: string; name: string } | null;

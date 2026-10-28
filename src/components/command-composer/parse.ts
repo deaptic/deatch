@@ -4,7 +4,7 @@ import { DURATION_UNITS, formatDuration } from "../../lib/format/duration.ts";
 
 export type Slot = {
   raw: string;
-  resolved: unknown | null;
+  resolved: unknown;
   displayLabel: string;
   error: string | null;
 };
