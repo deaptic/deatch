@@ -191,13 +191,15 @@ impl Coordinator<'_> {
     /// moderator ones follow once the list lands.
     fn refresh_viewer(&mut self, authed: &Authed<'_>) {
         let id = UserId::from(authed.token.user_id.as_str());
-        let new_viewer = self.viewer.as_ref().is_none_or(|v| v.id != id);
-        if new_viewer {
+        if self.viewer.as_ref().is_none_or(|v| v.id != id) {
             let moderated = HashSet::new();
             self.viewer = Some(Viewer { id, moderated });
+            // Stored rather than acted on once, so a fetch still in flight for
+            // the previous viewer can't swallow it.
+            self.moderated_stale = true;
+            self.moderated_retry_at = None;
         }
         if !refetch_due(
-            new_viewer,
             self.moderated_stale,
             self.moderated_pending,
             self.moderated_retry_at,
@@ -381,16 +383,9 @@ async fn sleep_until(at: Option<Instant>) {
     }
 }
 
-/// One fetch at a time; a failed one waits out its retry delay, a new
-/// viewer never waits.
-fn refetch_due(
-    new_viewer: bool,
-    stale: bool,
-    pending: bool,
-    retry_at: Option<Instant>,
-    now: Instant,
-) -> bool {
-    !pending && (new_viewer || (stale && retry_at.is_none_or(|at| at <= now)))
+/// One fetch at a time; a failed one waits out its retry delay.
+fn refetch_due(stale: bool, pending: bool, retry_at: Option<Instant>, now: Instant) -> bool {
+    !pending && stale && retry_at.is_none_or(|at| at <= now)
 }
 
 /// Nothing due can run before sync resumes, so waking earlier would spin.
@@ -410,23 +405,21 @@ mod tests {
     fn stale_list_waits_for_its_retry_time() {
         let now = Instant::now();
         let later = Some(now + Duration::from_secs(30));
-        assert!(!refetch_due(false, true, false, later, now));
+        assert!(!refetch_due(true, false, later, now));
         assert!(refetch_due(
-            false,
             true,
             false,
             later,
             now + Duration::from_secs(30)
         ));
-        assert!(refetch_due(false, true, false, None, now));
-        assert!(!refetch_due(false, false, false, None, now));
-        assert!(refetch_due(true, false, false, later, now));
+        assert!(refetch_due(true, false, None, now));
+        assert!(!refetch_due(false, false, None, now));
     }
 
     #[test]
     fn never_fetches_twice_at_once() {
         let now = Instant::now();
-        assert!(!refetch_due(true, true, true, None, now));
+        assert!(!refetch_due(true, true, None, now));
     }
 
     #[test]
