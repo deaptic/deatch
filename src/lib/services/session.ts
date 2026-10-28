@@ -32,7 +32,7 @@ export async function logout(): Promise<void> {
 }
 
 export async function restore(): Promise<void> {
-  const user = await restoreSession().catch(() => null);
+  const user = await restoreSession({ silent: true }).catch(() => null);
   if (user) {
     setUser(user);
     users.set([user]);
