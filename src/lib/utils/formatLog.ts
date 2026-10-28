@@ -9,16 +9,31 @@ function formatValue(value: unknown): string {
   }
   if (value === undefined || typeof value === "function") return String(value);
   try {
-    return JSON.stringify(value, errorReplacer);
+    return JSON.stringify(value, logReplacer());
   } catch {
-    // Values JSON can't serialize (circular) only need to not crash logging.
-    // oxlint-disable-next-line typescript/no-base-to-string
-    return String(value);
+    return `[unserializable ${typeName(value)}]`;
   }
 }
 
-function errorReplacer(_key: string, value: unknown): unknown {
-  return value instanceof Error
-    ? { name: value.name, message: value.message }
-    : value;
+/// Makes errors, bigints and cycles printable. Only an object among its own
+/// ancestors is a cycle; the same object twice side by side prints twice.
+function logReplacer() {
+  const ancestors: unknown[] = [];
+  return function (this: unknown, _key: string, value: unknown): unknown {
+    if (typeof value === "bigint") return `${value}n`;
+    if (value instanceof Error) {
+      return { name: value.name, message: value.message };
+    }
+    if (typeof value !== "object" || value === null) return value;
+    while (ancestors.length > 0 && ancestors.at(-1) !== this) ancestors.pop();
+    if (ancestors.includes(value)) return "[Circular]";
+    ancestors.push(value);
+    return value;
+  };
+}
+
+function typeName(value: unknown): string {
+  return value === null || typeof value !== "object"
+    ? typeof value
+    : (value.constructor?.name ?? "Object");
 }
