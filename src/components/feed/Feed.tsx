@@ -41,6 +41,7 @@ import type { Density } from "../../lib/constants/density.ts";
 import { dayLabel, layoutFeed } from "../../lib/utils/feedLayout.ts";
 import type { UserActions } from "../ui/userLink.ts";
 import { at } from "../../lib/utils/at.ts";
+import { REDUCED_MOTION } from "../../lib/constants/accessibility.ts";
 
 export type FeedApi = {
   scrollToBottom: () => void;
@@ -80,8 +81,6 @@ type Props = UserActions & {
   onWheel?: (e: WheelEvent) => void;
   ref?: (api: FeedApi) => void;
 };
-
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 export default function Feed(props: Props) {
   const [selectedId, setSelectedId] = createSignal<string | null>(null);
@@ -190,7 +189,8 @@ export default function Feed(props: Props) {
     if (!target || target.channelId !== props.broadcasterId) return;
     if (!messageList().some((m) => m.message_id === target.messageId)) return;
     setJumpTarget(null);
-    const behavior = settled && !reducedMotion.matches ? "smooth" : "instant";
+    const smooth = settled && !matchMedia(REDUCED_MOTION).matches;
+    const behavior = smooth ? "smooth" : "instant";
     queueMicrotask(() => {
       const el = rootRef?.querySelector<HTMLElement>(
         `[data-item-id="${CSS.escape(target.messageId)}"]`,
