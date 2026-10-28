@@ -32,7 +32,7 @@ export default function InputPopover(props: Props) {
           }}
         />
         <IconButton
-          label={t("COMMON_APPLY")}
+          label={t("UI_APPLY")}
           variant="neutral"
           onClick={props.onSubmit}
           loading={props.loading}

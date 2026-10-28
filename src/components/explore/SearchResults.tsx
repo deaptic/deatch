@@ -62,7 +62,7 @@ export default function SearchResults(props: Props) {
   async function forceOpenByLogin() {
     const login = props.query.trim().toLowerCase();
     if (!login) return;
-    const found = await users.lookUp(login, t("COMMON_CHANNEL_NOT_FOUND"));
+    const found = await users.lookUp(login, t("EXPLORE_CHANNEL_NOT_FOUND"));
     if (found) props.onSelect(found);
   }
 
@@ -127,7 +127,7 @@ export default function SearchResults(props: Props) {
             <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
               <Show
                 when={!results.loading && !categories.loading}
-                fallback={t("COMMON_SEARCHING")}
+                fallback={t("EXPLORE_SEARCHING")}
               >
                 {t("EXPLORE_NO_RESULTS", { query: debounced() })}
               </Show>
@@ -166,7 +166,7 @@ export default function SearchResults(props: Props) {
                       <p class="truncate text-small text-ink-soft">
                         <Show
                           when={channel.isLive}
-                          fallback={t("COMMON_OFFLINE")}
+                          fallback={t("EXPLORE_OFFLINE")}
                         >
                           {liveLine(channel.gameName)}
                         </Show>

@@ -75,7 +75,7 @@ export default function ToasterItem(props: Props) {
       <button
         type="button"
         onClick={dismiss}
-        aria-label={t("COMMON_DISMISS")}
+        aria-label={t("TOAST_DISMISS")}
         class="shrink-0 size-7 grid place-items-center rounded-sm text-ink-faint hover:text-ink hover:bg-raised transition-colors duration-snap cursor-pointer"
       >
         <X class="size-4" />

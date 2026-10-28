@@ -78,7 +78,7 @@ export default function LinkMenu(props: Props) {
         />
         <Show when={linkHasAudio()}>
           <MenuItem
-            label={t("SETTINGS_LINK_COMPRESSOR")}
+            label={t("RAIL_LINK_COMPRESSOR")}
             icon={<AudioWaveform />}
             active={linkCompressor()}
             onClick={() => setLinkCompressor(!linkCompressor())}

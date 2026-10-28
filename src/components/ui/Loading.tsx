@@ -15,7 +15,7 @@ export default function Loading(props: Props) {
   return (
     <span
       role="status"
-      aria-label={t("COMMON_LOADING")}
+      aria-label={t("UI_LOADING")}
       class={`inline-block shrink-0 rounded-full border-2 border-current/25 border-t-current animate-spin text-ink-soft ${
         SIZES[props.size ?? 20]
       }`}

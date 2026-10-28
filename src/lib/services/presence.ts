@@ -73,7 +73,7 @@ export function buildPresence(
         })
       : isOwnChannel
         ? t(session.lurkPhrase)
-        : t("COMMON_OFFLINE");
+        : t("PRESENCE_OFFLINE");
   const streamStartedAt = stream
     ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
     : null;

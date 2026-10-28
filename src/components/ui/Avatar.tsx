@@ -17,9 +17,9 @@ type Props = {
 };
 
 const PRESENCE: Record<Presence, { dot: string; label: MessageKey }> = {
-  live: { dot: "bg-live", label: "COMMON_LIVE" },
-  online: { dot: "bg-positive", label: "COMMON_ONLINE" },
-  offline: { dot: "bg-ink-faint", label: "COMMON_OFFLINE" },
+  live: { dot: "bg-live", label: "UI_LIVE" },
+  online: { dot: "bg-positive", label: "UI_ONLINE" },
+  offline: { dot: "bg-ink-faint", label: "UI_OFFLINE" },
 };
 
 const SIZES: Record<AvatarSize, { box: string; dot: string }> = {

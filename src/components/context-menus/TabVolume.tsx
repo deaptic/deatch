@@ -38,7 +38,7 @@ export default function TabVolume(props: Props) {
           disabled={gain() === DEFAULT_CHANNEL_GAIN}
           onClick={() => setChannelGain(props.login, DEFAULT_CHANNEL_GAIN)}
         >
-          {t("COMMON_RESET")}
+          {t("MENU_RESET")}
         </Button>
       </div>
     </div>

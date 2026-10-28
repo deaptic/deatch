@@ -28,11 +28,11 @@ export default function ChannelRow(props: Props) {
   const sub = () => {
     const s = stream();
     if (s) {
-      return `${s.game.name || t("COMMON_LIVE")} · ${formatViewers(
+      return `${s.game.name || t("RAIL_LIVE")} · ${formatViewers(
         s.viewerCount,
       )}`;
     }
-    return info()?.game.name || t("COMMON_OFFLINE");
+    return info()?.game.name || t("RAIL_OFFLINE");
   };
 
   return (

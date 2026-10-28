@@ -36,7 +36,7 @@ export function streamGame(stream?: Described, info?: Described): string {
 
 /// "Live · game · viewers" for a live channel, skipping what is unknown.
 export function liveLine(game?: string, viewers?: number): string {
-  const parts = [t("COMMON_LIVE"), game];
+  const parts = [t("STREAM_LIVE"), game];
   if (viewers !== undefined) parts.push(formatViewers(viewers));
   return parts.filter(Boolean).join(" · ");
 }
