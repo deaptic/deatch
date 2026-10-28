@@ -15,14 +15,15 @@ fn log_path() -> std::path::PathBuf {
     std::env::temp_dir().join("deatch-host.log")
 }
 
-/// The host runs without Tauri, so it keeps its own log file. A failed log
-/// write has nowhere else to go and is dropped.
+/// The host runs without Tauri, so it keeps its own log file. Every browser
+/// runs its own host on it, so it is cleared once it outgrows the cap rather
+/// than on start. A failed log write has nowhere else to go and is dropped.
 fn log(message: impl Display) {
-    if let Ok(mut file) = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(log_path())
-    {
+    let path = log_path();
+    if std::fs::metadata(&path).is_ok_and(|m| m.len() > MAX_LOG_BYTES) {
+        let _ = std::fs::write(&path, "");
+    }
+    if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(path) {
         let _ = writeln!(
             file,
             "{} {} {message}",
@@ -38,11 +39,6 @@ enum Event {
 }
 
 pub fn run() {
-    // Every browser runs its own host on this file, so it is only cleared
-    // once it outgrows the cap, never on start.
-    if std::fs::metadata(log_path()).is_ok_and(|m| m.len() > MAX_LOG_BYTES) {
-        let _ = std::fs::write(log_path(), "");
-    }
     log("host started");
     let (tx, rx) = mpsc::channel();
     let forward_tx = tx.clone();
