@@ -9,7 +9,7 @@ import {
   setKnownUsers,
   user as self,
 } from "../stores/users.ts";
-import type { GetUsersParams, User } from "../types/index.ts";
+import type { GetUsersParams, User, UserRef } from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
 import { addToast } from "../stores/toasts.ts";
 import {
@@ -117,6 +117,32 @@ export async function lookUp(
   const lookup = await findByLogin(login);
   if (lookup.status === "missing") addToast(notFound, "error");
   return lookup.status === "found" ? lookup.user : null;
+}
+
+/// The full reference for a partly known user, looked up by id or else by
+/// login; null when neither finds one.
+export async function resolve(
+  identity: Partial<UserRef>,
+): Promise<UserRef | null> {
+  const { id, login, displayName } = identity;
+  if (id && login && displayName) return { id, login, displayName };
+  if (id) {
+    const [user] = await get([id]).catch(() => []);
+    return user ? toUserRef(user) : null;
+  }
+  if (!login) return null;
+  const lookup = await findByLogin(login);
+  return lookup.status === "found" ? toUserRef(lookup.user) : null;
+}
+
+export async function resolveId(
+  identity: Partial<UserRef>,
+): Promise<string | null> {
+  return identity.id ?? (await resolve(identity))?.id ?? null;
+}
+
+function toUserRef({ id, login, displayName }: User): UserRef {
+  return { id, login, displayName };
 }
 
 export async function findByLogin(
