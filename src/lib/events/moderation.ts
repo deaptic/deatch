@@ -1,4 +1,5 @@
 import { t } from "../i18n/index.ts";
+import { createTimeouts } from "../utils/timeouts.ts";
 import {
   listenApp,
   listenEventSub,
@@ -74,7 +75,8 @@ const HOLD_OUTCOMES: Record<string, AutomodHoldStatus> = {
 };
 
 export function start(): () => void {
-  return unlistenAll([
+  const timeouts = createTimeouts();
+  const stop = unlistenAll([
     listenApp("moderatedChannelsChanged", setModeratedChannels),
     listenEventSub<RawChatMessageDelete>("channel.chat.message_delete", (e) => {
       const raw = e.event;
@@ -165,9 +167,9 @@ export function start(): () => void {
         const item = suspiciousMessage(raw, info, serverTime(e));
         // The chat copy, when Twitch sends one, may come first or just after;
         // flag it so it keeps its badges, else show this event's copy.
-        setTimeout(() => {
+        timeouts.after(CHAT_COPY_WAIT_MS, () => {
           if (!setSuspicious(id, item.message_id, info)) appendItem(id, item);
-        }, CHAT_COPY_WAIT_MS);
+        });
       },
     ),
     listenFeed<RawSuspiciousUserUpdate>(
@@ -205,4 +207,8 @@ export function start(): () => void {
       );
     }),
   ]);
+  return () => {
+    stop();
+    timeouts.clear();
+  };
 }
