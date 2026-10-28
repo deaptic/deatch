@@ -10,6 +10,7 @@ import * as clock from "../services/clock.ts";
 import * as theme from "../services/theme.ts";
 import * as emotes from "../services/emotes.ts";
 import * as view from "../services/view.ts";
+import * as channelPoints from "../services/channelPoints.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -18,6 +19,7 @@ export function createServices(): void {
       view.start(),
       theme.start(),
       inbox.start(),
+      channelPoints.start(),
       backendEvents.start(),
       users.start(),
       chatActivity.start(),

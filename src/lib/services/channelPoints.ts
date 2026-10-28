@@ -8,22 +8,34 @@
 
 import type { Redemption } from "../types/feed.ts";
 import { setChannelPointsRedemption } from "../stores/feeds.ts";
+import { createTimeouts } from "../utils/timeouts.ts";
 
 const WINDOW_MS = 3000;
+
+type Timeout = ReturnType<typeof setTimeout>;
 
 type PendingChat = {
   broadcasterId: string;
   messageId: string;
-  timer: ReturnType<typeof setTimeout>;
+  timer: Timeout;
 };
 
 type PendingRedemption = {
   redemption: Redemption;
-  timer: ReturnType<typeof setTimeout>;
+  timer: Timeout;
 };
 
 const chatPending = new Map<string, PendingChat[]>();
 const redemptionPending = new Map<string, PendingRedemption[]>();
+const timeouts = createTimeouts();
+
+export function start(): () => void {
+  return () => {
+    timeouts.clear();
+    chatPending.clear();
+    redemptionPending.clear();
+  };
+}
 
 function key(broadcasterId: string, userId: string, rewardId: string): string {
   return `${broadcasterId}:${userId}:${rewardId}`;
@@ -49,7 +61,7 @@ function remove<T>(queue: Map<string, T[]>, k: string, item: T) {
   else queue.set(k, list);
 }
 
-export function noteChatRedemption(
+export function noteChatMessage(
   broadcasterId: string,
   userId: string,
   rewardId: string,
@@ -58,19 +70,19 @@ export function noteChatRedemption(
   const k = key(broadcasterId, userId, rewardId);
   const pending = takeFirst(redemptionPending, k);
   if (pending) {
-    clearTimeout(pending.timer);
+    timeouts.cancel(pending.timer);
     setChannelPointsRedemption(broadcasterId, messageId, pending.redemption);
     return;
   }
   const entry: PendingChat = {
     broadcasterId,
     messageId,
-    timer: setTimeout(() => remove(chatPending, k, entry), WINDOW_MS),
+    timer: timeouts.after(WINDOW_MS, () => remove(chatPending, k, entry)),
   };
   enqueue(chatPending, k, entry);
 }
 
-export function correlateRedemption(
+export function correlate(
   broadcasterId: string,
   userId: string,
   redemption: Redemption,
@@ -83,7 +95,7 @@ export function correlateRedemption(
   const k = key(broadcasterId, userId, redemption.reward.id);
   const pending = takeFirst(chatPending, k);
   if (pending) {
-    clearTimeout(pending.timer);
+    timeouts.cancel(pending.timer);
     setChannelPointsRedemption(
       pending.broadcasterId,
       pending.messageId,
@@ -93,10 +105,10 @@ export function correlateRedemption(
   }
   const entry: PendingRedemption = {
     redemption,
-    timer: setTimeout(() => {
+    timer: timeouts.after(WINDOW_MS, () => {
       remove(redemptionPending, k, entry);
       emit();
-    }, WINDOW_MS),
+    }),
   };
   enqueue(redemptionPending, k, entry);
 }

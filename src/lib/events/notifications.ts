@@ -23,7 +23,8 @@ import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { isModOfChannel } from "../stores/users.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
-import { correlateRedemption } from "./channelPointsCorrelator.ts";
+import * as channelPoints from "../services/channelPoints.ts";
+import { createTimeouts } from "../utils/timeouts.ts";
 import { mapRedemption } from "../mappers/redemption-mapper.ts";
 import { mapNotice } from "../mappers/notice-mapper.ts";
 import { mapAutomaticRedemption } from "../mappers/automatic-redemption-mapper.ts";
@@ -65,10 +66,13 @@ function redemptionEvent(
 }
 
 const GIFT_WINDOW_MS = 60_000;
+/// Twitch may send a community gift's subs before the notice they belong to.
+const GIFT_NOTICE_WAIT_MS = 600;
 
 export function start(): () => void {
   // Community gift id → its feed row, while its subs are still arriving.
   const communityRows = new Map<string, string>();
+  const timeouts = createTimeouts();
   const stop = unlistenAll([
     listenEventSub<RawNotification>("channel.chat.notification", (e) => {
       const raw = e.event;
@@ -78,15 +82,16 @@ export function start(): () => void {
       const group = giftGroup(raw);
       if (group?.role === "community") {
         communityRows.set(group.giftId, item.id);
-        setTimeout(() => communityRows.delete(group.giftId), GIFT_WINDOW_MS);
+        timeouts.after(GIFT_WINDOW_MS, () =>
+          communityRows.delete(group.giftId),
+        );
         appendItem(id, item);
       } else if (group?.role === "member") {
-        // Twitch may send the gifts before the community notice they belong to.
-        setTimeout(() => {
+        timeouts.after(GIFT_NOTICE_WAIT_MS, () => {
           const row = communityRows.get(group.giftId);
           if (row) addGiftRecipient(id, row, group.recipient);
           else appendItem(id, item);
-        }, 600);
+        });
       } else {
         appendItem(id, item);
       }
@@ -114,7 +119,7 @@ export function start(): () => void {
         const raw = e.event;
         const ts = serverTime(e);
         const redemption = mapRedemption(raw);
-        correlateRedemption(
+        channelPoints.correlate(
           raw.broadcaster_user_id,
           raw.user_id,
           redemption,
@@ -134,6 +139,7 @@ export function start(): () => void {
   ]);
   return () => {
     stop();
+    timeouts.clear();
     communityRows.clear();
   };
 }
