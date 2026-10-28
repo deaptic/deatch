@@ -35,6 +35,7 @@ import {
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 import { at } from "../../lib/utils/at.ts";
+import { autofocus } from "../../lib/reactive/focus.ts";
 import { isUserId } from "../../lib/utils/knownUsers.ts";
 
 type Tab = "channel" | "global" | "emoji";
@@ -186,7 +187,6 @@ export default function EmotePicker(props: Props) {
   };
 
   onMount(() => {
-    queueMicrotask(() => searchRef?.focus());
     const unbind = shortcuts.bindScope("emotePickerOpen", {
       left: () => move(-1),
       right: () => move(1),
@@ -248,7 +248,10 @@ export default function EmotePicker(props: Props) {
           size="sm"
           class="w-full"
           icon={<Search />}
-          ref={(el) => (searchRef = el)}
+          ref={(el) => {
+            searchRef = el;
+            autofocus(el);
+          }}
           placeholder={t("EMOTES_SEARCH")}
           value={search()}
           onInput={(e) => setSearch(e.currentTarget.value)}

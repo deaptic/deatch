@@ -15,6 +15,7 @@ import {
 import * as users from "../../lib/services/users.ts";
 import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import { userFromRef } from "../../lib/stores/channels.ts";
+import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
@@ -76,19 +77,16 @@ export default function SearchResults(props: Props) {
   });
 
   onMount(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        move(e.key === "ArrowDown" ? 1 : -1);
-      } else if (e.key === "Enter") {
-        e.preventDefault();
+    const unbind = shortcuts.bindScope("exploreSearchOpen", {
+      up: () => move(-1),
+      down: () => move(1),
+      enter: () => {
         const channel = ranked()[active()];
         if (channel) open(channel);
         else void forceOpenByLogin();
-      }
-    };
-    globalThis.addEventListener("keydown", onKey);
-    onCleanup(() => globalThis.removeEventListener("keydown", onKey));
+      },
+    });
+    onCleanup(unbind);
   });
 
   return (

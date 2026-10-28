@@ -3,6 +3,7 @@ import { warnUser } from "../../lib/api/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import Textarea from "../ui/Textarea.tsx";
+import { autofocus } from "../../lib/reactive/focus.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -64,7 +65,7 @@ export default function WarnModal(props: Props) {
             void warn();
           }
         }}
-        autofocus
+        ref={autofocus}
       />
     </Dialog>
   );

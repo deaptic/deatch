@@ -53,6 +53,7 @@ import TabMuteBadge from "./TabMuteBadge.tsx";
 import InputPopover from "../ui/InputPopover.tsx";
 import { SIDE_GAP } from "../ui/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
+import { createPopover } from "../ui/createPopover.ts";
 import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
 import { t } from "../../lib/i18n/index.ts";
@@ -130,28 +131,20 @@ export default function Rail(props: Props) {
     };
   };
 
-  const [chMenu, setChMenu] = createSignal<{
-    ch: User;
-    x: number;
-    y: number;
-  } | null>(null);
-  const [addPop, setAddPop] = createSignal<{ x: number; y: number } | null>(
-    null,
-  );
+  const chMenu = createPopover<{ ch: User }>();
+  const addPop = createPopover();
   const [addInput, setAddInput] = createSignal("");
   const [addLoading, setAddLoading] = createSignal(false);
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
-  const [linkMenu, setLinkMenu] = createSignal<{ x: number; y: number } | null>(
-    null,
-  );
+  const linkMenu = createPopover();
   let linkBtn: HTMLButtonElement | undefined;
 
   function openLinkMenu() {
-    if (!linkBtn || linkMenu()) return setLinkMenu(null);
+    if (!linkBtn || linkMenu.state()) return linkMenu.close();
     const rect = linkBtn.getBoundingClientRect();
-    setLinkMenu({ x: rect.right + SIDE_GAP, y: rect.top });
+    linkMenu.open(rect.right + SIDE_GAP, rect.top, {});
   }
 
   createEffect(
@@ -227,11 +220,11 @@ export default function Rail(props: Props) {
     if (!addBtn) return;
     const rect = addBtn.getBoundingClientRect();
     setAddInput("");
-    setAddPop({ x: rect.right + SIDE_GAP, y: rect.top });
+    addPop.open(rect.right + SIDE_GAP, rect.top, {});
   }
 
   function closeAdd() {
-    setAddPop(null);
+    addPop.close();
     setAddInput("");
   }
 
@@ -326,7 +319,7 @@ export default function Rail(props: Props) {
                             onSelect={() => props.onSelect(c())}
                             onMiddleClick={() => openInBrowser(c())}
                             onContextMenu={(x, y) =>
-                              setChMenu({ ch: c(), x, y })
+                              chMenu.open(x, y, { ch: c() })
                             }
                           />
                         </div>
@@ -373,7 +366,7 @@ export default function Rail(props: Props) {
                       mentions={channelMentionCount(ch.id)}
                       onSelect={() => props.onSelect(ch)}
                       onMiddleClick={() => openInBrowser(ch)}
-                      onContextMenu={(x, y) => setChMenu({ ch, x, y })}
+                      onContextMenu={(x, y) => chMenu.open(x, y, { ch })}
                     />
                   </div>
                 )}
@@ -416,7 +409,7 @@ export default function Rail(props: Props) {
                       onToggleMute={() => link.toggleMuted(ch.login)}
                       onSelect={() => props.onSelect(ch)}
                       onMiddleClick={() => link.close(ch.login)}
-                      onContextMenu={(x, y) => setChMenu({ ch, x, y })}
+                      onContextMenu={(x, y) => chMenu.open(x, y, { ch })}
                     />
                   </div>
                 )}
@@ -439,7 +432,7 @@ export default function Rail(props: Props) {
                 ephemeral
                 onSelect={() => props.onSelect(nv())}
                 onMiddleClick={() => openInBrowser(nv())}
-                onContextMenu={(x, y) => setChMenu({ ch: nv(), x, y })}
+                onContextMenu={(x, y) => chMenu.open(x, y, { ch: nv() })}
               />
             </div>
           </>
@@ -511,7 +504,7 @@ export default function Rail(props: Props) {
                 if (ownTab()) link.close(u().login);
                 else openInBrowser(u());
               }}
-              onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
+              onContextMenu={(x, y) => chMenu.open(x, y, { ch: u() })}
             >
               <Avatar
                 src={u().profileImageUrl}
@@ -534,26 +527,26 @@ export default function Rail(props: Props) {
         </Show>
       </div>
 
-      <Show when={linkMenu()}>
+      <Show when={linkMenu.state()}>
         {(m) => (
           <LinkMenu
             x={m().x}
             y={m().y}
             opener={() => linkBtn}
-            onClose={() => setLinkMenu(null)}
+            onClose={linkMenu.close}
             onToggleSync={props.onToggleLink}
           />
         )}
       </Show>
 
-      <Show when={chMenu()}>
+      <Show when={chMenu.state()}>
         {(m) => (
           <ChannelContextMenu
             x={m().x}
             y={m().y}
             ch={m().ch}
             place="rail"
-            onClose={() => setChMenu(null)}
+            onClose={chMenu.close}
             onLogout={
               m().ch.id === user()?.id ? () => session.logout() : undefined
             }
@@ -561,7 +554,7 @@ export default function Rail(props: Props) {
         )}
       </Show>
 
-      <Show when={addPop()}>
+      <Show when={addPop.state()}>
         {(p) => (
           <InputPopover
             x={p().x}

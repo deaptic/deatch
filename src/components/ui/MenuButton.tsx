@@ -2,8 +2,7 @@ import { ChevronDown } from "lucide-solid";
 import { createSignal, type JSX, Show } from "solid-js";
 import Button, { type ButtonVariant } from "./Button.tsx";
 import Menu from "./Menu.tsx";
-
-const GAP = 4;
+import { OVERLAY_GAP } from "./Popover.tsx";
 
 type Props = {
   label: string;
@@ -25,7 +24,7 @@ export default function MenuButton(props: Props) {
   function toggle() {
     if (anchor() || !button) return close();
     const r = button.getBoundingClientRect();
-    setAnchor({ x: r.left, y: r.bottom + GAP });
+    setAnchor({ x: r.left, y: r.bottom + OVERLAY_GAP });
   }
 
   return (

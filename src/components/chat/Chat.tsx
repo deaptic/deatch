@@ -53,7 +53,7 @@ import {
   feedShowCopypasta,
   moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
-import { createPopover } from "./createPopover.ts";
+import { createPopover } from "../ui/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 
