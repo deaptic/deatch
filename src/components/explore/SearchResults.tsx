@@ -55,7 +55,7 @@ export default function SearchResults(props: Props) {
 
   function open(channel: SearchChannel) {
     const user = toUser(channel);
-    users.set([user]);
+    users.note([user]);
     props.onSelect(user);
   }
 

@@ -10,7 +10,6 @@ import * as channelPoints from "../services/channelPoints.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as users from "../services/users.ts";
 import * as badges from "../services/badges.ts";
-import { userFromRef } from "../stores/channels.ts";
 import * as triggers from "../services/triggers.ts";
 
 function noteRename(raw: RawChatMessage) {
@@ -22,12 +21,12 @@ function noteRename(raw: RawChatMessage) {
   ) {
     return;
   }
-  users.set([
-    userFromRef({
+  users.note([
+    {
       id: raw.chatter_user_id,
       login: raw.chatter_user_login,
       displayName: raw.chatter_user_name,
-    }),
+    },
   ]);
 }
 

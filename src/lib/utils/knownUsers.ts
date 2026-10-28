@@ -1,6 +1,8 @@
 import type { User } from "../types/index.ts";
 
-export type KnownUser = { user: User; at: number };
+/// `fetchedAt` is when Twitch last returned the whole user; null while only
+/// partial data (names from streams, chat or search) has been seen.
+export type KnownUser = { user: User; fetchedAt: number | null };
 
 const USER_ID = /^\d+$/;
 
@@ -8,8 +10,14 @@ export function isUserId(id: string): boolean {
   return USER_ID.test(id);
 }
 
-export function mergeUser(prev: User | undefined, next: User): User {
-  if (!prev || isComplete(next)) return next;
+/// A whole user from Twitch replaces the cached one; a partial one only
+/// renames it and fills the fields it lacks.
+export function mergeUser(
+  prev: User | undefined,
+  next: User,
+  whole: boolean,
+): User {
+  if (!prev || whole) return next;
   const merged = { ...prev };
   for (const key of Object.keys(next) as (keyof User)[]) {
     if (!merged[key] && next[key]) {
@@ -31,14 +39,10 @@ export function sameUser(a: User, b: User): boolean {
   return [...keys].every((k) => a[k] === b[k]);
 }
 
-export function isComplete(user: User): boolean {
-  return user.createdAt !== "";
-}
-
 export function isKnownUser(value: unknown): value is KnownUser {
   const e = value as Partial<KnownUser> | null;
   return (
-    typeof e?.at === "number" &&
+    (typeof e?.fetchedAt === "number" || e?.fetchedAt === null) &&
     typeof e.user?.id === "string" &&
     typeof e.user.login === "string"
   );
@@ -51,11 +55,14 @@ export function freshEntries(
   max: number,
   keep: ReadonlySet<string> = new Set(),
 ): Record<string, KnownUser> {
+  // Never fetched counts as expired: only kept ids hold on to partial data.
+  const age = (e: KnownUser) =>
+    e.fetchedAt === null ? Infinity : now - e.fetchedAt;
   const fresh = Object.entries(entries)
-    .filter(([id, e]) => keep.has(id) || now - e.at < ttlMs)
+    .filter(([id, e]) => keep.has(id) || age(e) < ttlMs)
     .sort(
       ([a, x], [b, y]) =>
-        Number(keep.has(b)) - Number(keep.has(a)) || y.at - x.at,
+        Number(keep.has(b)) - Number(keep.has(a)) || age(x) - age(y),
     )
     .slice(0, max);
   return Object.fromEntries(fresh);

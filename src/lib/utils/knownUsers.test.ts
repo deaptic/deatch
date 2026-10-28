@@ -2,7 +2,6 @@ import { expect, test } from "vite-plus/test";
 import type { User } from "../types/index.ts";
 import {
   freshEntries,
-  isComplete,
   isKnownUser,
   isUserId,
   mergeUser,
@@ -29,7 +28,7 @@ test("mergeUser lets a partial user only rename and fill gaps", () => {
     broadcasterType: "normal",
     createdAt: "",
   };
-  expect(mergeUser(full, partial)).toStrictEqual({
+  expect(mergeUser(full, partial, false)).toStrictEqual({
     ...full,
     displayName: "MAYA",
   });
@@ -40,13 +39,14 @@ test("mergeUser lets a partial user only rename and fill gaps", () => {
         ...partial,
         profileImageUrl: "https://cdn/new.png",
       },
+      false,
     ).profileImageUrl,
   ).toBe("https://cdn/new.png");
 });
 
-test("mergeUser takes a complete user from Twitch as is", () => {
+test("mergeUser takes a whole user from Twitch as is", () => {
   const renamed = { ...full, login: "maya2", description: "" };
-  expect(mergeUser(full, renamed)).toStrictEqual(renamed);
+  expect(mergeUser(full, renamed, true)).toStrictEqual(renamed);
 });
 
 test("sameUser compares every field", () => {
@@ -61,11 +61,6 @@ test("sameUser sees fields the cached user never had", () => {
   );
 });
 
-test("isComplete is true only for users Twitch has returned", () => {
-  expect(isComplete(full)).toBe(true);
-  expect(isComplete({ ...full, createdAt: "" })).toBe(false);
-});
-
 test("isUserId accepts Twitch numeric ids only", () => {
   expect(isUserId("52679773")).toBe(true);
   expect(isUserId("maya")).toBe(false);
@@ -73,15 +68,23 @@ test("isUserId accepts Twitch numeric ids only", () => {
 });
 
 test("isKnownUser rejects malformed stored entries", () => {
-  expect(isKnownUser({ user: full, at: 1 })).toBe(true);
+  expect(isKnownUser({ user: full, fetchedAt: 1 })).toBe(true);
+  expect(isKnownUser({ user: full, fetchedAt: null })).toBe(true);
   expect(isKnownUser(null)).toBe(false);
-  expect(isKnownUser({ user: null, at: 1 })).toBe(false);
+  expect(isKnownUser({ user: null, fetchedAt: 1 })).toBe(false);
   expect(isKnownUser({ user: full })).toBe(false);
+  expect(isKnownUser({ user: full, at: 1 })).toBe(false);
 });
 
 test("freshEntries drops expired entries and keeps the newest up to max", () => {
-  const at = (n: number) => ({ user: full, at: n });
-  const entries = { old: at(0), a: at(900), b: at(950), c: at(990) };
+  const at = (n: number | null) => ({ user: full, fetchedAt: n });
+  const entries = {
+    old: at(0),
+    partial: at(null),
+    a: at(900),
+    b: at(950),
+    c: at(990),
+  };
   expect(Object.keys(freshEntries(entries, 1000, 500, 2))).toStrictEqual([
     "c",
     "b",
@@ -89,8 +92,8 @@ test("freshEntries drops expired entries and keeps the newest up to max", () => 
 });
 
 test("freshEntries never drops kept ids", () => {
-  const at = (n: number) => ({ user: full, at: n });
-  const entries = { me: at(0), a: at(900), b: at(950), c: at(990) };
+  const at = (n: number | null) => ({ user: full, fetchedAt: n });
+  const entries = { me: at(null), a: at(900), b: at(950), c: at(990) };
   expect(
     Object.keys(freshEntries(entries, 1000, 500, 2, new Set(["me"]))),
   ).toStrictEqual(["me", "c"]);
