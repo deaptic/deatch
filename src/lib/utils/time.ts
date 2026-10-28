@@ -110,7 +110,10 @@ export class Time {
     if (days === 1) {
       return t("TIME_YESTERDAY_AT", { time: this.timeShort(date) });
     }
-    return `${this.dateShort(date)} ${this.timeShort(date)}`;
+    return t("TIME_DATE_TIME", {
+      date: this.dateShort(date),
+      time: this.timeShort(date),
+    });
   }
 
   toString(): string {

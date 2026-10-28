@@ -16,6 +16,7 @@ import { at } from "../../lib/utils/at.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import ChatterRow from "../suggestions/ChatterRow.tsx";
 import { rankChatters } from "../../lib/utils/rankChatters.ts";
+import { formatAlternatives } from "../../lib/format/list.ts";
 import type { Chatter } from "../../lib/types/index.ts";
 import Artwork from "../ui/Artwork.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
@@ -318,7 +319,7 @@ export default function CommandComposer(props: Props) {
         displayLabel: value,
         error:
           value !== "" && !exact
-            ? `Must be one of: ${allowed.join(", ")}`
+            ? t("COMMAND_ENUM_INVALID", { values: formatAlternatives(allowed) })
             : null,
       });
     } else {
