@@ -1,16 +1,17 @@
 # Testing
 
-Run this before every commit; CI runs the same on every push.
+Run this before every commit; CI runs the same on every push, with
+`pnpm check` and `cargo fmt` checking instead of fixing.
 
 ```powershell
-vp check --fix --deny-warnings && pnpm check:tauri && pnpm test
+pnpm check --fix --deny-warnings && pnpm check:tauri && pnpm test && pnpm build
 cd src-tauri
 cargo fmt && cargo clippy --all-targets -- -D warnings
 cargo test --lib
 ```
 
 Frontend tests are `*.test.ts` files next to the module they cover, using
-Vitest from `vite-plus/test`. `vp check` type-checks them with the rest of the
+Vitest from `vite-plus/test`. `pnpm check` type-checks them with the rest of the
 code. Tests run in plain Node with no Tauri and no DOM: importing any module
 works, but a call that reaches Tauri fails, or comes back as the failure
 outcome of a service that handles it. So pure logic goes in its own file and
@@ -24,5 +25,5 @@ parsers, mappings, and params, asserting wire shapes with
 `pnpm bindings` and commit. `build.rs` embeds the app manifest so test
 binaries can start on Windows; keep it that way.
 
-`vp check` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
+`pnpm check` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
 hex, shadows, gradients, or arbitrary Tailwind values.
