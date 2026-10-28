@@ -7,7 +7,7 @@ export function write(text: string): Promise<boolean> {
     () => true,
     (e: unknown) => {
       console.warn("clipboard write failed", e);
-      addToast(t("COMMON_COPY_FAILED"), "error");
+      addToast(t("CLIPBOARD_COPY_FAILED"), "error");
       return false;
     },
   );
@@ -16,6 +16,6 @@ export function write(text: string): Promise<boolean> {
 /// Like `write`, and confirms a success with a toast.
 export function copy(text: string) {
   void write(text).then((ok) => {
-    if (ok) addToast(t("COMMON_COPIED"), "success");
+    if (ok) addToast(t("CLIPBOARD_COPIED"), "success");
   });
 }

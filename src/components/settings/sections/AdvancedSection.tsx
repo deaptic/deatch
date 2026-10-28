@@ -54,7 +54,7 @@ export default function AdvancedSection() {
           actions={
             <>
               <Button variant="neutral" onClick={() => setRestartFor(null)}>
-                {t("COMMON_CANCEL")}
+                {t("SETTINGS_ADVANCED_CANCEL")}
               </Button>
               <Button
                 onClick={() => restart(restartFor()!)}

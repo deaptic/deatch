@@ -137,7 +137,7 @@ export default function UserCardHeader(props: Props) {
         <div class="flex gap-(--card-gap)">
           <button
             type="button"
-            aria-label={t("MENU_OPEN_CHAT")}
+            aria-label={t("USER_CARD_OPEN_CHAT")}
             class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-(--avatar-lift)"
             onMouseDown={(e) => {
               e.stopPropagation();

@@ -92,7 +92,7 @@ export default function BanModal(props: Props) {
       actions={
         <>
           <Button variant="neutral" onClick={props.onClose}>
-            {t("COMMON_CANCEL")}
+            {t("BAN_CANCEL")}
           </Button>
           <Button
             variant={choice() === "unban" ? "accent" : "danger"}

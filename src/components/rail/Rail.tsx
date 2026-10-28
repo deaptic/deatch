@@ -443,7 +443,7 @@ export default function Rail(props: Props) {
       <div class={`flex flex-col py-1.5 shrink-0 ${railGap()}`}>
         <RailRow
           ref={(el) => (linkBtn = el)}
-          label={t("SETTINGS_LINK")}
+          label={t("RAIL_LINK")}
           sub={linkStatus().sub}
           subTone={linkStatus().tone}
           tooltip={
@@ -472,10 +472,10 @@ export default function Rail(props: Props) {
           </RailTile>
         </RailRow>
         <RailRow
-          label={t("SETTINGS_TITLE")}
+          label={t("RAIL_SETTINGS")}
           sub={t("RAIL_SETTINGS_SUB")}
           tooltip={
-            <p class="font-semibold whitespace-nowrap">{t("SETTINGS_TITLE")}</p>
+            <p class="font-semibold whitespace-nowrap">{t("RAIL_SETTINGS")}</p>
           }
           selected={isSettingsOpen()}
           onClick={toggleSettings}

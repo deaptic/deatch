@@ -201,7 +201,7 @@ export default function QuickSwitch(props: Props) {
                             >
                               <Show
                                 when={stream()}
-                                fallback={t("COMMON_OFFLINE")}
+                                fallback={t("QUICK_SWITCH_OFFLINE")}
                               >
                                 {(s) =>
                                   liveLine(s().game.name, s().viewerCount)

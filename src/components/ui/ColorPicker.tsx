@@ -31,7 +31,7 @@ export default function ColorPicker(props: Props) {
         disabled={props.resetDisabled}
         onClick={() => props.onReset()}
       >
-        {t("COMMON_RESET")}
+        {t("UI_RESET")}
       </Button>
     </div>
   );

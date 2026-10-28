@@ -43,7 +43,7 @@ export function createChannelNavigation(): ChannelNavigation {
     users.get([channelId]).then(
       ([ch]) => {
         if (!ch) {
-          return addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");
+          return addToast(t("CHANNEL_NOT_FOUND"), "error");
         }
         then?.();
         if (selectedChannel()?.id !== channelId) selectChannel(ch);

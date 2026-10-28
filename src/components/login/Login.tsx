@@ -74,7 +74,7 @@ export default function Login() {
                     onClick={() => codeCopy.copy(code().user_code)}
                   >
                     {codeCopy.copied()
-                      ? t("COMMON_COPIED")
+                      ? t("LOGIN_COPIED")
                       : t("LOGIN_COPY_CODE")}
                   </Button>
                 </>
@@ -82,7 +82,7 @@ export default function Login() {
             </Show>
           </div>
           <Button variant="ghost" onClick={() => session.abort()}>
-            {t("COMMON_CANCEL")}
+            {t("LOGIN_CANCEL")}
           </Button>
         </Show>
       </div>

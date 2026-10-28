@@ -115,8 +115,8 @@ export default function TitleBar(props: Props) {
               class={`${CONTROL} ${
                 isOverlayOpen("diagnostics") ? PRESSED : ""
               }`}
-              aria-label={t("DIAGNOSTICS_TITLE")}
-              data-tip={t("DIAGNOSTICS_TITLE")}
+              aria-label={t("TITLE_BAR_DIAGNOSTICS")}
+              data-tip={t("TITLE_BAR_DIAGNOSTICS")}
               aria-pressed={isOverlayOpen("diagnostics")}
               {...{ [POPOVER_TOGGLE]: "" }}
               onMouseDown={(e) => e.preventDefault()}
@@ -128,8 +128,8 @@ export default function TitleBar(props: Props) {
           <button
             ref={inboxBtn}
             class={`${CONTROL} ${isOverlayOpen("inbox") ? PRESSED : ""}`}
-            aria-label={t("INBOX_TITLE")}
-            data-tip={t("INBOX_TITLE")}
+            aria-label={t("TITLE_BAR_INBOX")}
+            data-tip={t("TITLE_BAR_INBOX")}
             aria-pressed={isOverlayOpen("inbox")}
             {...{ [POPOVER_TOGGLE]: "" }}
             onMouseDown={(e) => e.preventDefault()}
@@ -162,7 +162,7 @@ export default function TitleBar(props: Props) {
           <button
             class={`${CONTROL} hover:bg-negative! hover:text-on-accent!`}
             onClick={() => closeWindow().catch(() => {})}
-            aria-label={t("COMMON_CLOSE")}
+            aria-label={t("TITLE_BAR_CLOSE")}
           >
             <X class="size-3" />
           </button>

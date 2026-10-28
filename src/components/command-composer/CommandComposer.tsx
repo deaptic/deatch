@@ -181,7 +181,7 @@ export default function CommandComposer(props: Props) {
   const hintBody = createMemo(() => {
     if (resolving()) {
       return activeOption()?.type === "search"
-        ? t("COMMON_SEARCHING")
+        ? t("COMMAND_SEARCHING")
         : t("COMMAND_LOOKING_UP_USER");
     }
     const opt = activeOption();
