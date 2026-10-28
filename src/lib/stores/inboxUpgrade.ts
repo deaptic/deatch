@@ -1,5 +1,5 @@
 import type { FeedMessage, Fragment, Mention } from "../types/index.ts";
-import type { MentionReason } from "../utils/mention.ts";
+import type { MentionReason } from "../types/index.ts";
 
 /// Mentions saved before they kept the whole message.
 type Legacy = {

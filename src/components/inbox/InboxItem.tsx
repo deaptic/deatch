@@ -9,7 +9,7 @@ import {
   feedKeywords,
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
-import type { MentionReason } from "../../lib/utils/mention.ts";
+import type { MentionReason } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Card from "../ui/Card.tsx";
 import IconButton from "../ui/IconButton.tsx";
