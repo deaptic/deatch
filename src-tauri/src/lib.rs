@@ -5,6 +5,7 @@ mod discord;
 mod emit;
 mod emotes;
 mod error;
+mod feedlog;
 mod graphics;
 mod history;
 mod http;
@@ -45,6 +46,9 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             link::events::LinkDisconnected,
         ])
         .commands(tauri_specta::collect_commands![
+            feedlog::commands::feedlog_append,
+            feedlog::commands::feedlog_page,
+            feedlog::commands::feedlog_around,
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
@@ -166,6 +170,8 @@ pub fn run() {
             link::ipc::start_server(app.handle().clone(), hosts.clone());
             app.manage(hosts);
             app.manage(emotes::seventv_events::spawn(app.handle().clone()));
+            app.manage(feedlog::FeedLog::open()?);
+            feedlog::spawn_pruning(app.handle().clone());
 
             Ok(())
         })

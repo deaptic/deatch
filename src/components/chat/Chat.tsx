@@ -45,7 +45,6 @@ import {
   setPaused as setFeedPaused,
   trimToLatest,
 } from "../../lib/stores/feeds.ts";
-import { addToast } from "../../lib/stores/toasts.ts";
 import {
   advancedDeveloperMode,
   feedDensity,
@@ -64,7 +63,11 @@ type Props = {
   broadcasterName: string;
   userLogin: string;
   onOpenChannel: (broadcasterId: string) => void;
-  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
+  onJumpToMessage: (
+    broadcasterId: string,
+    messageId: string,
+    timestamp: number | null,
+  ) => void;
 };
 
 export default function Chat(props: Props) {
@@ -148,16 +151,9 @@ export default function Chat(props: Props) {
     if (text) inputApi?.replace(text);
   }
 
-  // This feed is mounted with its backlog, so a message it lacks never arrives.
+  /// The feed finds the message in memory or the feed log, or says it's gone.
   function jumpToMessage(messageId: string): boolean {
-    const held = feeds[props.broadcasterId]?.messages.some(
-      (m) => m.kind === "message" && m.message_id === messageId,
-    );
-    if (!held) {
-      addToast(t("CHAT_MESSAGE_GONE"));
-      return false;
-    }
-    props.onJumpToMessage(props.broadcasterId, messageId);
+    props.onJumpToMessage(props.broadcasterId, messageId, null);
     return true;
   }
 

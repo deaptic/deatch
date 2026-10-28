@@ -11,28 +11,35 @@ type Mode = "follow" | "paused" | "jumping";
 
 type JumpBehavior = "smooth" | "instant";
 
-export function createFeedScroll(scroller: () => HTMLElement | undefined) {
+/// Where rows sit in the scroller's content, rendered or not.
+type Rows = {
+  idAt: (y: number) => string | null;
+  topOf: (id: string) => number | null;
+};
+
+/// The anchor is kept through `rows` rather than the DOM: the row under the
+/// view may not be rendered yet, or may be rebuilt.
+export function createFeedScroll(
+  scroller: () => HTMLElement | undefined,
+  rows: Rows,
+) {
   const [mode, setMode] = createSignal<Mode>("follow");
   // A programmatic scroll echoes one scroll event that must not count as
   // the user scrolling.
   let echo = false;
   // The message at the top of the view while paused, and how far below the
-  // view's top it sat, so a resize can put it back.
-  let anchor: { item: Element; offset: number } | null = null;
+  // view's top it sat, so a resize can put it back. Held by id: the row may
+  // be rebuilt, as when the feed switches to a stretch of history.
+  let anchor: { id: string; offset: number } | null = null;
   // The content height last seen; a scroll that comes with a new height was
   // made by layout (the browser clamping after a shrink), not by the user.
   let height = 0;
 
   function remember(el: HTMLElement) {
-    const box = el.getBoundingClientRect();
-    // Every element at the point, so a popover over the feed doesn't hide it.
-    const item = document
-      .elementsFromPoint(box.left + box.width / 2, box.top + 1)
-      .find((hit) => el.contains(hit))
-      ?.closest("[data-item-id]");
-    anchor = item
-      ? { item, offset: item.getBoundingClientRect().top - box.top }
-      : null;
+    const id = rows.idAt(el.scrollTop + 1);
+    const top = id === null ? null : rows.topOf(id);
+    anchor =
+      id !== null && top !== null ? { id, offset: top - el.scrollTop } : null;
   }
 
   // The anchor is taken before the mode changes: a feed may render more or
@@ -45,11 +52,10 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
 
   function restore() {
     const el = scroller();
-    if (!el || !anchor?.item.isConnected) return;
-    const shift =
-      anchor.item.getBoundingClientRect().top -
-      el.getBoundingClientRect().top -
-      anchor.offset;
+    if (!el || !anchor) return;
+    const top = rows.topOf(anchor.id);
+    if (top === null) return;
+    const shift = top - el.scrollTop - anchor.offset;
     if (Math.abs(shift) < 1) return;
     const before = el.scrollTop;
     el.scrollTop += shift;

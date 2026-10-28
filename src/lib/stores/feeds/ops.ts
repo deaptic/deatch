@@ -1,9 +1,6 @@
 import type { FeedEntry } from "../../types/index.ts";
 import { enforceCaps } from "./caps.ts";
-
-export function getEntryId(item: FeedEntry): string {
-  return item.kind === "message" ? item.message_id : item.id;
-}
+import { getEntryId } from "../../utils/entryId.ts";
 
 export function append(
   messages: FeedEntry[],

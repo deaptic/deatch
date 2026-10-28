@@ -33,9 +33,9 @@ export default function AppLayout(props: AppLayoutProps) {
   return (
     <div class="flex flex-col h-screen bg-canvas relative">
       <TitleBar
-        onJumpToMessage={(broadcasterId, messageId) => {
+        onJumpToMessage={(broadcasterId, messageId, timestamp) => {
           inbox.markRead(messageId);
-          c.jumpToMessage(broadcasterId, messageId);
+          c.jumpToMessage(broadcasterId, messageId, timestamp);
         }}
         onOpenChannel={c.openChannel}
       />

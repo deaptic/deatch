@@ -5,6 +5,9 @@ import * as __TAURI_EVENT from "@tauri-apps/api/event";
 
 /** Commands */
 export const commands = {
+	feedlogAppend: (params: AppendParams) => __TAURI_INVOKE<null>("feedlog_append", { params }),
+	feedlogPage: (params: PageParams) => __TAURI_INVOKE<string[]>("feedlog_page", { params }),
+	feedlogAround: (params: AroundParams) => __TAURI_INVOKE<string[] | null>("feedlog_around", { params }),
 	discordConnect: () => __TAURI_INVOKE<null>("discord_connect"),
 	discordDisconnect: () => __TAURI_INVOKE<null>("discord_disconnect"),
 	discordSetActivity: (params: SetActivityParams) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
@@ -109,6 +112,19 @@ export type AppStats = {
 	app: ProcessStats,
 	webview: ProcessStats,
 	eventsub: EventSubStats,
+};
+
+export type AppendParams = {
+	broadcasterId: UserId,
+	entries: LogEntry[],
+};
+
+export type AroundParams = {
+	broadcasterId: UserId,
+	id: string,
+	/**  When the entry was sent, if known; the search starts at its hour. */
+	timestamp?: number | null,
+	limit: number,
 };
 
 export type AuthFailed = Error;
@@ -296,6 +312,9 @@ export type CreatedClip = {
 	id: string,
 };
 
+/**  Which side of a moment a page is read from. */
+export type Cursor = { side: "before"; timestamp: number } | { side: "after"; timestamp: number };
+
 export type DcfAuthResponse = {
 	userCode: string,
 	verificationUri: string,
@@ -430,6 +449,13 @@ export type LinkState = {
 	audio?: boolean,
 };
 
+export type LogEntry = {
+	id: string,
+	timestamp: number,
+	/**  The entry as JSON, kept as-is. */
+	entry: string,
+};
+
 export type ManageHeldAutomodMessageParams = {
 	messageId: MessageId,
 	action: AutomodAction,
@@ -456,6 +482,12 @@ export type ModifyChannelInformationParams = {
 	broadcasterId: UserId,
 	title?: string | null,
 	gameId?: GameId | null,
+};
+
+export type PageParams = {
+	broadcasterId: UserId,
+	cursor: Cursor,
+	limit: number,
 };
 
 export type PaginatedResponse<T> = {

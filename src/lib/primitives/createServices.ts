@@ -14,6 +14,7 @@ import * as channelPoints from "../services/channelPoints.ts";
 import * as live from "../services/live.ts";
 import * as link from "../services/link.ts";
 import * as preferences from "../services/preferences.ts";
+import * as feedLog from "../services/feedLog.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -32,6 +33,7 @@ export function createServices(): void {
       clock.start(),
       emotes.start(),
       live.start(),
+      feedLog.start(),
       link.start(),
     ];
     onCleanup(() => {

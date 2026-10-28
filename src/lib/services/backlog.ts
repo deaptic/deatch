@@ -7,7 +7,7 @@ import {
   appendItem,
   feeds,
   insertEntries,
-  MESSAGE_CAP,
+  FEED_CAP,
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
@@ -83,7 +83,7 @@ export function fillGap(
 /// a failed fetch leaves it unset so the next visit tries again.
 export function load(broadcasterId: string, broadcasterLogin: string) {
   if (feeds[broadcasterId]?.backfilled) return;
-  getRecentMessages({ broadcasterLogin, limit: MESSAGE_CAP }, { silent: true })
+  getRecentMessages({ broadcasterLogin, limit: FEED_CAP }, { silent: true })
     .then((history) => {
       const added = prependEntries(broadcasterId, entriesOf(history));
       noteChatters(broadcasterId, added);

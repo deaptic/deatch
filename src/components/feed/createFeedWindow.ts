@@ -29,19 +29,36 @@ export function createFeedWindow(opts: Options) {
   const [top, setTop] = createSignal(0);
   const [viewport, setViewport] = createSignal(0);
 
+  // Observers only record; the re-render they cause waits for the next frame,
+  // or it would resize what they observe while they are still delivering.
+  let frame: number | null = null;
+  let remeasured = false;
+  function later() {
+    frame ??= requestAnimationFrame(() => {
+      frame = null;
+      if (remeasured) {
+        remeasured = false;
+        setVersion((v) => v + 1);
+      }
+      sync();
+    });
+  }
+
   const rows = new ResizeObserver((entries) => {
-    let changed = false;
     for (const entry of entries) {
       const id = (entry.target as HTMLElement).dataset.rowId;
       const height = entry.borderBoxSize[0]?.blockSize;
       if (id === undefined || height === undefined) continue;
       if (measured.get(id) === height) continue;
       measured.set(id, height);
-      changed = true;
+      remeasured = true;
     }
-    if (changed) setVersion((v) => v + 1);
+    if (remeasured) later();
   });
-  onCleanup(() => rows.disconnect());
+  onCleanup(() => {
+    rows.disconnect();
+    if (frame !== null) cancelAnimationFrame(frame);
+  });
 
   function estimate(): number {
     let total = 0;
@@ -71,12 +88,21 @@ export function createFeedWindow(opts: Options) {
     return windowAt(heights(), top() - OVERSCAN_PX, top() + span);
   });
 
+  /// Where the list starts in the scroller's content.
+  function listTop(el: HTMLElement, list: HTMLElement): number {
+    return (
+      list.getBoundingClientRect().top -
+      el.getBoundingClientRect().top +
+      el.scrollTop
+    );
+  }
+
   /// Reads the scroll position and view size; call on every scroll.
   function sync() {
     const el = opts.scroller();
     const list = opts.list();
     if (!el || !list) return;
-    setTop(el.scrollTop - list.offsetTop);
+    setTop(el.scrollTop - listTop(el, list));
     setViewport(el.clientHeight);
   }
 
@@ -84,7 +110,7 @@ export function createFeedWindow(opts: Options) {
   function watch(): () => void {
     const el = opts.scroller();
     if (!el) return () => {};
-    const observer = new ResizeObserver(sync);
+    const observer = new ResizeObserver(later);
     observer.observe(el);
     sync();
     return () => observer.disconnect();
@@ -102,18 +128,44 @@ export function createFeedWindow(opts: Options) {
     return i >= from && i < end;
   }
 
+  /// Where row `id` starts in the scroller's content: read from the row when
+  /// it is rendered, else summed from the heights; null for an unknown id.
+  function topOf(id: string): number | null {
+    const el = opts.scroller();
+    const list = opts.list();
+    if (!el || !list) return null;
+    const row = list.querySelector(`[data-row-id="${CSS.escape(id)}"]`);
+    if (row) {
+      return (
+        row.getBoundingClientRect().top -
+        el.getBoundingClientRect().top +
+        el.scrollTop
+      );
+    }
+    const i = opts.ids().indexOf(id);
+    return i < 0 ? null : listTop(el, list) + offsetOf(heights(), i);
+  }
+
+  /// The row at `y` in the scroller's content, rendered or not.
+  function idAt(y: number): string | null {
+    const el = opts.scroller();
+    const list = opts.list();
+    if (!el || !list) return null;
+    const { start } = windowAt(heights(), y - listTop(el, list), 0);
+    return opts.ids()[start] ?? null;
+  }
+
   /// Scrolls so row `id` is centred and therefore rendered. Only for a feed
   /// that is not following, whose window follows the scroll position.
   function reveal(id: string) {
-    const i = opts.ids().indexOf(id);
     const el = opts.scroller();
-    const list = opts.list();
-    if (i < 0 || !el || !list) return;
-    const h = heights();
-    const rowTop = list.offsetTop + offsetOf(h, i);
-    el.scrollTop = rowTop - (el.clientHeight - (h[i] ?? 0)) / 2;
+    const rowTop = topOf(id);
+    if (!el || rowTop === null) return;
+    const i = opts.ids().indexOf(id);
+    const height = heights()[i] ?? 0;
+    el.scrollTop = rowTop - (el.clientHeight - height) / 2;
     sync();
   }
 
-  return { range, sync, watch, measure, isRendered, reveal };
+  return { range, sync, watch, measure, isRendered, topOf, idAt, reveal };
 }
