@@ -123,6 +123,15 @@ impl State {
             State::Retrying { .. } | State::Waiting { .. } | State::Capped => None,
         }
     }
+
+    /// The connection whose slot this takes; Twitch never created a rejected
+    /// subscription, so it counts against no connection's limit.
+    fn slot(&self) -> Option<ConnId> {
+        match self {
+            State::Rejected { .. } => None,
+            _ => self.conn(),
+        }
+    }
 }
 
 #[derive(Default)]
@@ -239,9 +248,7 @@ impl Subs {
                 subscriptions: self
                     .states
                     .values()
-                    .filter(|state| {
-                        !matches!(state, State::Rejected { .. }) && state.conn() == Some(id)
-                    })
+                    .filter(|state| state.slot() == Some(id))
                     .count() as u32,
             })
             .collect();
@@ -304,7 +311,7 @@ impl Subs {
         pending.sort_by_cached_key(|(subscription, _)| priority(subscription, &self.channels));
 
         let mut load: BTreeMap<ConnId, usize> = self.conns.keys().map(|&id| (id, 0)).collect();
-        for conn in self.states.values().filter_map(State::conn) {
+        for conn in self.states.values().filter_map(State::slot) {
             *load.entry(conn).or_default() += 1;
         }
 
@@ -351,7 +358,7 @@ impl Subs {
             plan.close = self
                 .conns
                 .keys()
-                .filter(|id| load.get(*id).is_none_or(|&n| n == 0))
+                .filter(|&&id| !self.states.values().any(|state| state.conn() == Some(id)))
                 .copied()
                 .collect();
             for id in &plan.close {
@@ -793,6 +800,29 @@ mod tests {
                 .any(|b| b.subscriptions.contains(&sub("c0", CHAT))),
             "a new session tries again"
         );
+    }
+
+    #[test]
+    fn rejections_free_their_slot() {
+        let mut subs = subs_for(background(200));
+        plan(&mut subs);
+        subs.up(0, "s0".into());
+        let full = plan(&mut subs);
+        assert_eq!(created_count(&full), PER_CONNECTION);
+        let batch = &full.create[0];
+        let rejected = batch.subscriptions[0].clone();
+        subs.accept(
+            created(
+                batch,
+                rejected,
+                Err(CreateError::Rejected("not a moderator".into())),
+            ),
+            Instant::now(),
+        );
+        let next = plan(&mut subs);
+        assert_eq!(next.create.len(), 1);
+        assert_eq!(next.create[0].conn, 0);
+        assert_eq!(created_count(&next), 1);
     }
 
     #[test]
