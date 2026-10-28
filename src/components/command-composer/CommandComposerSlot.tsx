@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 import type { CommandOption } from "./types.ts";
+import { optionLabel } from "./usage.ts";
 
 type Props = {
   option: CommandOption;
@@ -32,8 +33,7 @@ export default function CommandComposerSlot(props: Props) {
               : "bg-raised/30 text-ink-faint hover:bg-raised/50"
           }`}
         >
-          {text() ||
-            `${props.option.name}${props.option.required === false ? "?" : ""}`}
+          {text() || optionLabel(props.option)}
         </button>
       }
     >

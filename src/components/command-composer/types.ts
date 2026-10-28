@@ -10,7 +10,7 @@ export type OptionSuggestion = { id: string; label: string; image?: string };
 type OptionBase = {
   name: string;
   description: MessageKey;
-  required?: boolean;
+  required?: true;
   hint?: MessageKey;
 };
 
