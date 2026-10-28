@@ -14,6 +14,7 @@ import { textSegments } from "../../lib/utils/textSegments.ts";
 import { emoteUrl } from "../../lib/utils/twitchUrl.ts";
 import { formatLocale } from "../../lib/i18n/index.ts";
 import Artwork from "./Artwork.tsx";
+import { REDUCED_MOTION } from "../../lib/constants/accessibility.ts";
 import { type UserActions, userLink, userLinkHover } from "./userLink.ts";
 
 const INLINE_EMOTE =
@@ -136,10 +137,7 @@ function Cheermote(props: {
         return (
           <span class="whitespace-nowrap">
             <picture>
-              <source
-                media="(prefers-reduced-motion: reduce)"
-                srcset={image().still}
-              />
+              <source media={REDUCED_MOTION} srcset={image().still} />
               <img
                 src={image().animated}
                 alt={props.text}

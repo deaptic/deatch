@@ -42,3 +42,5 @@ export function canStep(
 ): boolean {
   return stepStop(value, stops, direction) !== value;
 }
+
+export const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
