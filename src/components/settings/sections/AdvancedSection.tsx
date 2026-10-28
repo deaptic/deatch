@@ -8,8 +8,6 @@ import Dialog from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
 import { relaunchApp } from "../../../lib/api/app.ts";
 import { setHardwareAcceleration } from "../../../lib/api/graphics.ts";
-import { addToast } from "../../../lib/stores/toasts.ts";
-import { errorMessage } from "../../../lib/utils/error.ts";
 import {
   advancedAlwaysOnTop,
   advancedAutostart,
@@ -31,12 +29,13 @@ export default function AdvancedSection() {
 
   async function restart(enabled: boolean) {
     setRestarting(true);
+    const options = { failureMessage: t("SETTINGS_ADVANCED_RESTART_FAILED") };
     try {
-      await setHardwareAcceleration({ enabled });
+      await setHardwareAcceleration({ enabled }, options);
       setAdvancedHardwareAcceleration(enabled);
-      await relaunchApp({ silent: true });
-    } catch (e) {
-      addToast(t("SETTINGS_ADVANCED_RESTART_FAILED"), "error", errorMessage(e));
+      await relaunchApp(options);
+    } catch {
+      // invokeCommand already toasted; the dialog closes so the user can retry.
     } finally {
       setRestarting(false);
       setRestartFor(null);

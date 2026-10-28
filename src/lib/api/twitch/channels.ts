@@ -13,10 +13,7 @@ export function getChannelInformation(
   params: GetChannelInformationParams,
   options?: InvokeOptions,
 ): Promise<ChannelInfo[]> {
-  return invokeCommand(commands.getChannelInformation, [params], {
-    silent: true,
-    ...options,
-  });
+  return invokeCommand(commands.getChannelInformation, [params], options);
 }
 
 export function getFollowedAt(

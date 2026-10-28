@@ -29,8 +29,11 @@ export function createChannelNavigation(): ChannelNavigation {
   function selectChannel(ch: User) {
     if (linkSynced()) {
       const linked = linkWarmedChannels().some((c) => c.id === ch.id);
-      if (linked) linkFocus({ channel: ch.login }).catch(() => {});
-      else setLinkSynced(false);
+      if (linked) {
+        linkFocus({ channel: ch.login }, { silent: true }).catch(() => {});
+      } else {
+        setLinkSynced(false);
+      }
     }
     setSelectedChannel(ch);
   }

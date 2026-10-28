@@ -24,15 +24,28 @@ import { getStreamsFromIds } from "../api/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
 import type { LinkState, SetAudioParams, User } from "../types/index.ts";
+import type { InvokeOptions } from "../api/utils.ts";
 import { t } from "../i18n/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
 
+/// For tab actions the user asked for; failing means the browser is gone.
+function tabAction(): InvokeOptions {
+  return { failureMessage: t("LINK_TAB_UNREACHABLE") };
+}
+
+export function focus(login: string) {
+  linkFocus({ channel: login }, tabAction()).catch(() => {});
+}
+
+export function close(login: string) {
+  linkClose({ channel: login }, tabAction()).catch(() => {});
+}
+
 function closeTabs(tabs: User[]) {
-  for (const ch of tabs)
-    if (ch.login) linkClose({ channel: ch.login }).catch(() => {});
+  for (const ch of tabs) if (ch.login) close(ch.login);
 }
 
 export function closeAll() {
@@ -92,7 +105,7 @@ async function keepingFocus(action: () => Promise<unknown>) {
 export function openTab() {
   const tab = selectedLinked();
   if (tab) {
-    linkFocus({ channel: tab.login }).catch(() => {});
+    focus(tab.login);
     return;
   }
   const ch = selectedChannel();
@@ -105,7 +118,9 @@ export function openTab() {
 export function closeTab(): boolean {
   const tab = selectedLinked();
   if (!tab) return false;
-  keepingFocus(() => linkClose({ channel: tab.login })).catch(() => {});
+  keepingFocus(() => linkClose({ channel: tab.login }, tabAction())).catch(
+    () => {},
+  );
   return true;
 }
 
@@ -127,7 +142,9 @@ export function sendAudio(
   audioPending = { enabled, compressor: { ...compressor }, gains: factors };
   audioTimer ??= window.setTimeout(() => {
     audioTimer = undefined;
-    if (audioPending) linkSetAudio(audioPending).catch(() => {});
+    if (audioPending) {
+      linkSetAudio(audioPending, { silent: true }).catch(() => {});
+    }
   }, AUDIO_SEND_MS);
 }
 
@@ -135,14 +152,25 @@ export function anyUnmuted(): boolean {
   return linkWarmedChannels().some((ch) => ch.login && !isMuted(ch.login));
 }
 
-// Only the shown tab plays; every other tab goes quiet.
 export function muteOthers() {
+  setOthersMuted(tabAction());
+}
+
+/// For following channel switches, which say nothing when a tab is gone.
+export function muteOthersSilently() {
+  setOthersMuted({ silent: true });
+}
+
+// Only the shown tab plays; every other tab goes quiet.
+function setOthersMuted(options: InvokeOptions) {
   const focusedLogin = selectedLinked()?.login ?? null;
   for (const ch of linkWarmedChannels()) {
     if (!ch.login) continue;
     const shouldBeMuted = ch.login !== focusedLogin;
     if (isMuted(ch.login) !== shouldBeMuted) {
-      linkSetMuted({ channel: ch.login, muted: shouldBeMuted }).catch(() => {});
+      linkSetMuted({ channel: ch.login, muted: shouldBeMuted }, options).catch(
+        () => {},
+      );
     }
   }
 }
@@ -154,7 +182,9 @@ export function toggleMuteAll() {
   for (const ch of linked) {
     if (!ch.login) continue;
     if (isMuted(ch.login) !== muteAll) {
-      linkSetMuted({ channel: ch.login, muted: muteAll }).catch(() => {});
+      linkSetMuted({ channel: ch.login, muted: muteAll }, tabAction()).catch(
+        () => {},
+      );
     }
   }
 }
@@ -166,10 +196,9 @@ export function currentMuted(): boolean | null {
 }
 
 export function toggleMuted(login: string) {
-  linkSetMuted(
-    { channel: login, muted: !isMuted(login) },
-    { silent: false, failureMessage: t("LINK_TAB_UNREACHABLE") },
-  ).catch(() => {});
+  linkSetMuted({ channel: login, muted: !isMuted(login) }, tabAction()).catch(
+    () => {},
+  );
 }
 
 export function toggleMute() {

@@ -12,7 +12,7 @@ export function watch(onSample: (sample: Diagnostics) => void): () => void {
   let stopped = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const tick = async () => {
-    const app = await getAppStats().catch(() => null);
+    const app = await getAppStats({ silent: true }).catch(() => null);
     if (app && !stopped) onSample({ app, cache: cacheStats() });
     if (!stopped) timer = setTimeout(tick, POLL_MS);
   };
