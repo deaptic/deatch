@@ -44,6 +44,7 @@ export function createUsernameTabComplete(opts: Options) {
 
   function writeCycle(c: Cycle) {
     const name = c.matches[c.index];
+    if (name === undefined) return;
     const v = opts.value();
     opts.setValue(v.slice(0, c.start) + name + v.slice(c.end));
     c.end = c.start + name.length;

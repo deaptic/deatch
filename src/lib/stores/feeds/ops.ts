@@ -33,9 +33,8 @@ export function insert(
 ): FeedEntry[] {
   const added = fresh(messages, items);
   for (const it of added) {
-    let at = messages.length;
-    while (at > 0 && messages[at - 1].timestamp > it.timestamp) at--;
-    messages.splice(at, 0, it);
+    const after = messages.findLastIndex((m) => m.timestamp <= it.timestamp);
+    messages.splice(after + 1, 0, it);
   }
   if (added.length > 0) enforceCaps(messages, paused);
   return added;

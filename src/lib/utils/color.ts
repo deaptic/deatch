@@ -1,4 +1,5 @@
 import type { ResolvedTheme } from "../constants/theme.ts";
+import { at } from "./at.ts";
 
 export type Oklch = { l: number; c: number; h: number };
 
@@ -15,7 +16,7 @@ const HEX = /^#?([0-9a-f]{6})$/i;
 export function hexToOklch(hex: string): Oklch | null {
   const m = HEX.exec(hex.trim());
   if (!m) return null;
-  const n = parseInt(m[1], 16);
+  const n = parseInt(at(m, 1), 16);
   const r = toLinear(((n >> 16) & 255) / 255);
   const g = toLinear(((n >> 8) & 255) / 255);
   const b = toLinear((n & 255) / 255);

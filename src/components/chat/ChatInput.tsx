@@ -191,9 +191,10 @@ export default function ChatInput(props: Props) {
         () => {
           if (input().trim() === "") {
             const mentions = props.getMentions();
-            if (mentions.length === 0) return;
             const idx = Math.min(mentionIdx(), mentions.length - 1);
-            props.onReplyMention(mentions[idx]);
+            const mention = mentions[idx];
+            if (!mention) return;
+            props.onReplyMention(mention);
             setMentionIdx(idx + 1);
             return;
           }

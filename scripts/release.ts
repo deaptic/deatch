@@ -12,7 +12,7 @@ import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import { setLockedVersion } from "./cargo-lock.ts";
-import { run } from "./run.ts";
+import { type Command, run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
 const execFileAsync = promisify(execFile);
@@ -51,8 +51,8 @@ async function patchCargoLock(
   await writeFile(path, setLockedVersion(text, name, newVersion));
 }
 
-async function captureStdout(cmd: string[]): Promise<string> {
-  const { stdout } = await execFileAsync(cmd[0], cmd.slice(1));
+async function captureStdout([command, ...args]: Command): Promise<string> {
+  const { stdout } = await execFileAsync(command, args);
   return stdout.trimEnd();
 }
 

@@ -3,6 +3,7 @@ import type { Person } from "../../lib/types/index.ts";
 import { splitNames } from "../../lib/utils/splitNames.ts";
 import DisplayName from "./DisplayName.tsx";
 import type { UserActions } from "./userLink.ts";
+import { at } from "../../lib/utils/at.ts";
 
 type Props = UserActions & { text: string; people: Person[] };
 
@@ -17,7 +18,7 @@ export default function NamedText(props: Props) {
     >
       {(segment) => {
         if (!("person" in segment)) return segment.text;
-        const person = props.people[segment.person];
+        const person = at(props.people, segment.person);
         return (
           <DisplayName
             login={person.login}

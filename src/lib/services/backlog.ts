@@ -66,9 +66,10 @@ export function fillGap(
       // A full page means robotty dropped the oldest messages of the gap;
       // it keeps the newest `limit`, so the hole sits before the first one.
       const lines = history.messages.length + history.notices.length;
-      if (lines >= GAP_LIMIT && items.length > 0) {
+      const first = items[0];
+      if (lines >= GAP_LIMIT && first) {
         insertEntries(broadcasterId, [
-          feedEvent("local", t("BACKLOG_GAP"), items[0].timestamp - 1, {
+          feedEvent("local", t("BACKLOG_GAP"), first.timestamp - 1, {
             silent: true,
           }),
         ]);
@@ -143,8 +144,7 @@ function deepPage(channelLogin: string): Promise<RecentHistory> {
 function rememberOwnMessages(broadcasterId: string, added: FeedEntry[]) {
   const me = user();
   if (!me) return;
-  for (let i = added.length - 1; i >= 0; i--) {
-    const it = added[i];
+  for (const it of added.toReversed()) {
     if (it.kind !== "message" || it.chatter_user_id !== me.id) continue;
     const text = textOf(it);
     if (text) appendSentHistoryOlder(broadcasterId, text);

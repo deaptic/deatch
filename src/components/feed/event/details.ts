@@ -41,7 +41,7 @@ export type Look = {
   title: MessageKey;
 };
 
-const LOOKS: Record<string, Look> = {
+const LOOKS: Record<string, Look> & { local: Look } = {
   sub: {
     color: "var(--color-event-sub)",
     Icon: Gift,
@@ -206,7 +206,8 @@ const ANNOUNCEMENT_COLORS: Record<
 /// colour replaces the type's own.
 export function look(item: Event): Look {
   const type = item.notice_type.replace(/^shared_chat_/, "");
-  const base = LOOKS[type] ?? LOOKS[NOTICE_TO_EVENT[type]] ?? LOOKS.local;
+  const event = NOTICE_TO_EVENT[type];
+  const base = LOOKS[type] ?? (event && LOOKS[event]) ?? LOOKS.local;
   const picked = item.announcement_color;
   return {
     ...base,

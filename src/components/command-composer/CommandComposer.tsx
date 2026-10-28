@@ -12,6 +12,7 @@ import {
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import * as users from "../../lib/services/users.ts";
+import { at } from "../../lib/utils/at.ts";
 import { rankSuggestions } from "../../lib/utils/rankSuggestions.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import Artwork from "../ui/Artwork.tsx";
@@ -92,6 +93,8 @@ export default function CommandComposer(props: Props) {
   onCleanup(() => clearTimeout(requiredFlashTimer));
 
   const activeOption = () => options[activeIdx()] ?? null;
+  /// Slots and options are parallel arrays of the same length.
+  const slotAt = (i: number) => at(slots(), i);
   const activeSlot = () => slots()[activeIdx()];
   const activeRaw = () => activeSlot()?.raw ?? "";
 
@@ -223,10 +226,10 @@ export default function CommandComposer(props: Props) {
   });
 
   const canSubmit = () =>
-    options.every((opt, i) => slotSatisfied(opt, slots()[i]));
+    options.every((opt, i) => slotSatisfied(opt, slotAt(i)));
 
   async function resolveUserSlot(idx: number): Promise<boolean> {
-    const login = slots()[idx].raw.replace(/^@/, "").trim().toLowerCase();
+    const login = slotAt(idx).raw.replace(/^@/, "").trim().toLowerCase();
     if (!login) return false;
     setResolving(true);
     const lookup = await users.findByLogin(login, { silent: true });
@@ -246,7 +249,7 @@ export default function CommandComposer(props: Props) {
 
   async function resolveSearchSlot(idx: number): Promise<boolean> {
     const opt = options[idx];
-    const query = slots()[idx].raw.trim();
+    const query = slotAt(idx).raw.trim();
     if (opt?.type !== "search" || !query) return false;
     setResolving(true);
     const matches = await opt.search(query).catch(() => null);
@@ -270,7 +273,7 @@ export default function CommandComposer(props: Props) {
   }
 
   async function resolvePending(idx: number): Promise<boolean> {
-    const slot = slots()[idx];
+    const slot = slotAt(idx);
     if (!slot.raw || slot.resolved !== null || slot.error) return true;
     const type = options[idx]?.type;
     if (type === "user") return await resolveUserSlot(idx);
@@ -282,7 +285,7 @@ export default function CommandComposer(props: Props) {
     const idx = activeIdx();
     const opt = options[idx];
     if (!opt || !(await resolvePending(idx))) return false;
-    if (!slotSatisfied(opt, slots()[idx])) return false;
+    if (!slotSatisfied(opt, slotAt(idx))) return false;
     if (idx + 1 >= options.length) return false;
     setActiveIdx(idx + 1);
     return true;
@@ -291,7 +294,7 @@ export default function CommandComposer(props: Props) {
   function submit() {
     const values: Record<string, unknown> = {};
     options.forEach((opt, i) => {
-      values[opt.name] = slots()[i].resolved ?? null;
+      values[opt.name] = slotAt(i).resolved ?? null;
     });
     props.onSubmit(values);
   }
@@ -469,7 +472,7 @@ export default function CommandComposer(props: Props) {
           </span>
           <For each={options}>
             {(opt, i) => {
-              const slot = () => slots()[i()];
+              const slot = () => slotAt(i());
               const active = () => i() === activeIdx();
               return (
                 <CommandComposerSlot

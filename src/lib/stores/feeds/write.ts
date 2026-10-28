@@ -52,9 +52,8 @@ export function prependEntries(id: string, items: FeedEntry[]): FeedEntry[] {
       f.backfilled = true;
       added = prepend(f.messages, items, f.paused);
       // Backlog is already-seen; it must not count as unread.
-      if (!f.lastSeenEntryId && f.messages.length > 0) {
-        f.lastSeenEntryId = getEntryId(f.messages[f.messages.length - 1]);
-      }
+      const last = f.messages.at(-1);
+      if (!f.lastSeenEntryId && last) f.lastSeenEntryId = getEntryId(last);
     }),
   );
   return added;

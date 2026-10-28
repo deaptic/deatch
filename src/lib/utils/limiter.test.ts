@@ -1,5 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import { createLimiter } from "./limiter.ts";
+import { at } from "./at.ts";
 
 function deferred() {
   let resolve!: () => void;
@@ -20,7 +21,7 @@ test("never runs more than the limit at once", async () => {
     }),
   );
   expect(started).toStrictEqual([0, 1]);
-  gates[0].resolve();
+  at(gates, 0).resolve();
   await flush();
   expect(started).toStrictEqual([0, 1, 2]);
 });

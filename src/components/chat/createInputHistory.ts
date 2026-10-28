@@ -20,7 +20,7 @@ export function createInputHistory(opts: Options) {
   }
 
   function textAt(idx: number, arr: readonly string[]): string {
-    return idx === -1 ? savedDraft : arr[idx];
+    return arr[idx] ?? savedDraft;
   }
 
   function apply(text: string) {

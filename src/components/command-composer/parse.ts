@@ -1,6 +1,7 @@
 import { t } from "../../lib/i18n/index.ts";
 import type { CommandOption, DurationOption } from "./types.ts";
 import { DURATION_UNITS, formatDuration } from "../../lib/format/duration.ts";
+import { at } from "../../lib/utils/at.ts";
 
 export type Slot = {
   raw: string;
@@ -13,8 +14,9 @@ export function parseDuration(raw: string): number | null {
   const text = raw.trim().toLowerCase();
   if (!/^(\d+[smhdw]?)+$/.test(text)) return null;
   let total = 0;
-  for (const [, n, unit] of text.matchAll(/(\d+)([smhdw]?)/g)) {
-    total += parseInt(n, 10) * (DURATION_UNITS[unit] ?? 1);
+  for (const match of text.matchAll(/(\d+)([smhdw]?)/g)) {
+    const unit = DURATION_UNITS[at(match, 2)] ?? 1;
+    total += parseInt(at(match, 1), 10) * unit;
   }
   return total;
 }

@@ -2,6 +2,7 @@ import { expect, test } from "vite-plus/test";
 import type { RawNotification } from "../types/index.ts";
 import { giftGroup, groupGifts } from "./gift-group.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
+import { at } from "../utils/at.ts";
 
 const mapped = (raw: RawNotification) => ({
   raw,
@@ -45,7 +46,7 @@ test("folds a batch's gifted subs into their community gift", () => {
     sub("s4", "Orphan", "g9"),
   ]);
   expect(rows.map((r) => r.id)).toStrictEqual(["c1", "s3", "s4"]);
-  expect(rows[0].recipients).toStrictEqual([
+  expect(at(rows, 0).recipients).toStrictEqual([
     { id: "id-Bar", login: "bar", name: "Bar" },
     { id: "id-Baz", login: "baz", name: "Baz" },
   ]);

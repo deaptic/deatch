@@ -2,6 +2,7 @@ import { createMemo, createRoot, createSignal } from "solid-js";
 import type { User } from "../types/index.ts";
 import { createDebounced } from "../primitives/createDebounced.ts";
 import { emptyHistory, step, visit } from "../utils/history.ts";
+import { at } from "../utils/at.ts";
 
 // The single source of truth for what the app is showing: a page or a channel.
 export type ActiveView = "explore" | "settings" | User;
@@ -64,7 +65,7 @@ export function historyStep(delta: 1 | -1): User | null {
   const next = step(history, delta);
   if (!next) return null;
   history = next;
-  return next.entries[next.index];
+  return at(next.entries, next.index);
 }
 
 export function showExplore() {

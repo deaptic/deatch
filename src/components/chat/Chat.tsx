@@ -144,14 +144,12 @@ export default function Chat(props: Props) {
   function getMentions(): Message[] {
     const kws = feedKeywords();
     const msgs = feeds[props.broadcasterId]?.messages ?? [];
-    const out: Message[] = [];
-    for (let i = msgs.length - 1; i >= 0; i--) {
-      const m = msgs[i];
-      if (m.kind === "message" && isMention(m, props.userLogin, kws)) {
-        out.push(m);
-      }
-    }
-    return out;
+    return msgs
+      .filter(
+        (m): m is Message =>
+          m.kind === "message" && isMention(m, props.userLogin, kws),
+      )
+      .reverse();
   }
 
   function react(msg: Message, value: string) {

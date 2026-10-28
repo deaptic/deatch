@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import type { EmoteSetUpdated } from "../types/index.ts";
 import * as emoteSetUpdate from "./emoteSetUpdate.ts";
+import { at } from "../utils/at.ts";
 
 const emote = (name: string) => ({ name, url: `https://cdn/${name}` });
 
@@ -23,7 +24,7 @@ test("removes, renames, then appends added emotes", () => {
     }),
   );
   expect(next.map((e) => e.name)).toStrictEqual(["Fresh", "Pog", "New1"]);
-  expect(next[0].url).toBe("https://cdn/Old");
+  expect(at(next, 0).url).toBe("https://cdn/Old");
 });
 
 test("describes each change, crediting Someone without an actor", () => {

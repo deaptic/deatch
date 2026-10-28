@@ -15,6 +15,7 @@ import {
   linkCompressor,
 } from "../stores/preferences.ts";
 import * as link from "../services/link.ts";
+import { at } from "../utils/at.ts";
 
 export type LinkControls = {
   cycleChannel: (direction: 1 | -1) => void;
@@ -62,7 +63,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
           ? 0
           : list.length - 1
         : (i + direction + list.length) % list.length;
-    nav.selectChannel(list[nextIdx]);
+    nav.selectChannel(at(list, nextIdx));
   }
 
   // Turning on keeps the open channel when it has a tab, and the browser

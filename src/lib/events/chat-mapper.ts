@@ -79,17 +79,19 @@ export function mapChatMessage(
     badges: raw.badges,
     reply: raw.reply ?? undefined,
     timestamp,
-    channel_points: raw.channel_points_custom_reward_id
-      ? { kind: "custom_reward" }
-      : PERKS[raw.message_type]
-        ? { kind: PERKS[raw.message_type] }
-        : undefined,
+    channel_points: channelPointsOf(raw),
     first_message: raw.message_type === "user_intro",
     cheer: raw.cheer ?? undefined,
     power_up: POWER_UPS[raw.message_type],
     deleted: raw.deleted,
     source: sourceOf(raw),
   };
+}
+
+function channelPointsOf(raw: RawChatMessage): FeedMessage["channel_points"] {
+  if (raw.channel_points_custom_reward_id) return { kind: "custom_reward" };
+  const perk = PERKS[raw.message_type];
+  return perk ? { kind: perk } : undefined;
 }
 
 /// Only a message sent in a partner channel has a source; your own channel's
