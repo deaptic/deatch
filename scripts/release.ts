@@ -4,8 +4,8 @@
 //   pnpm release major
 //   pnpm release 1.2.3
 //
-// Bumps version in package.json, src-tauri/tauri.conf.json, src-tauri/Cargo.toml,
-// commits with message "chore: release vX.Y.Z", tags vX.Y.Z, and pushes the
+// Bumps version in package.json, src-tauri/tauri.conf.json, src-tauri/Cargo.toml
+// and src-tauri/Cargo.lock, commits with message "chore: release vX.Y.Z", tags vX.Y.Z, and pushes the
 // current branch + tag. The release GitHub Action takes over from the tag.
 
 import { execFile } from "node:child_process";
@@ -80,6 +80,10 @@ const branch = await captureStdout([
   "--abbrev-ref",
   "HEAD",
 ]);
+if (branch === "HEAD") {
+  console.error("HEAD is detached — check out the branch to release from");
+  process.exit(1);
+}
 
 console.log(`bumping ${current} → ${next}`);
 
