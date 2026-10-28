@@ -108,7 +108,7 @@ export default function UserCardHeader(props: Props) {
           )}
         </Show>
       </div>
-      <div class="absolute top-(--card-gap) right-(--card-gap) flex gap-(--card-gap)">
+      <div class="absolute top-card-gap right-card-gap flex gap-card-gap">
         <div class="flex rounded-sm bg-media-scrim">
           <Show when={user()}>
             {(u) => (
@@ -134,12 +134,12 @@ export default function UserCardHeader(props: Props) {
           </IconButton>
         </div>
       </div>
-      <div class="flex flex-col gap-(--card-gap) px-(--card-pad) pb-(--card-pad)">
-        <div class="flex gap-(--card-gap)">
+      <div class="flex flex-col gap-card-gap px-card-pad pb-card-pad">
+        <div class="flex gap-card-gap">
           <button
             type="button"
             aria-label={t("USER_CARD_OPEN_CHAT")}
-            class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-(--avatar-lift)"
+            class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-card-avatar-lift"
             onMouseDown={(e) => {
               e.stopPropagation();
               preventAutoscroll(e);
@@ -153,7 +153,7 @@ export default function UserCardHeader(props: Props) {
               size={80}
             />
           </button>
-          <div class="ml-auto flex items-center pt-(--card-gap) text-(length:--card-name)">
+          <div class="ml-auto flex items-center pt-card-gap text-card-name">
             <BadgeBox
               badges={latestBadges()}
               channelBadges={channelBadges()}

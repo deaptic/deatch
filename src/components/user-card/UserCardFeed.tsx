@@ -13,14 +13,14 @@ type Props = UserActions & {
 };
 
 export default function UserCardFeed(props: Props) {
-  // Out of flow so the card's min-content height sees only --feed-min-h.
+  // Out of flow so the card's min-content height sees only its minimum height.
   return (
-    <div class="relative flex-1 min-h-(--feed-min-h) text-(length:--chat-size)">
+    <div class="relative flex-1 min-h-card-feed-min text-(length:--chat-size)">
       <div class="absolute inset-0 flex flex-col">
         <Show
           when={props.messages.length > 0}
           fallback={
-            <div class="flex-1 min-h-0 flex items-center justify-center text-ink-soft p-(--card-pad) text-center">
+            <div class="flex-1 min-h-0 flex items-center justify-center text-ink-soft p-card-pad text-center">
               {t(
                 props.loading
                   ? "USER_CARD_LOADING_MESSAGES"

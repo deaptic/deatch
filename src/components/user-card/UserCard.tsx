@@ -40,20 +40,6 @@ type Props = {
 
 const PAD = 8;
 
-const CARD_VARS = {
-  "--card-w": "22.5rem",
-  "--card-h": "35rem",
-  "--feed-min-h": "calc(3lh + 0.5rem)",
-  "--card-max-w": "40rem",
-  "--card-max-h": "50rem",
-  "--card-pad": "1.25rem",
-  "--card-gap": "0.625rem",
-  "--card-name": "1.45rem",
-  "--card-meta": "0.95rem",
-  "--avatar-lift": "2.5rem",
-  "--meta-icon": "1em",
-};
-
 export default function UserCard(props: Props) {
   captureFocusForRestore();
   let cardRef: HTMLDivElement | undefined;
@@ -171,15 +157,14 @@ export default function UserCard(props: Props) {
         role="dialog"
         aria-label={t("USER_CARD_LABEL")}
         onTransitionEnd={() => setEntered(true)}
-        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-(--card-w) h-(--card-h) min-w-(--card-w) min-h-min resize transition duration-quick ease-out ${
+        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-card-width min-h-min resize transition duration-quick ease-out ${
           entered() ? "" : "starting:opacity-0 starting:translate-y-1"
         }`}
         style={{
-          ...CARD_VARS,
           "--x": `${pos().x}px`,
           "--y": `${pos().y}px`,
-          "--max-w": `min(var(--card-max-w), ${room().w}px)`,
-          "--max-h": `min(var(--card-max-h), ${room().h}px)`,
+          "--max-w": `min(var(--spacing-card-max-width), ${room().w}px)`,
+          "--max-h": `min(var(--spacing-card-max-height), ${room().h}px)`,
         }}
       >
         <UserCardHeader

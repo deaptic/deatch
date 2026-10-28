@@ -39,10 +39,8 @@ export default function InboxItem(props: Props) {
   return (
     <Card tone={m().unread ? "accent" : "plain"}>
       <header class="flex items-center gap-2 p-2 border-b border-line-soft text-(length:--chat-size)">
-        {/* Shrunk like the meta text beside it (0.85em). */}
         <span
-          class={`shrink-0 size-(--tile) ${link.cursor}`}
-          style={{ "--tile": "calc(var(--chat-tile) * 0.85)" }}
+          class={`shrink-0 size-feed-meta-tile ${link.cursor}`}
           {...link.handlers}
         >
           <Avatar
