@@ -39,10 +39,13 @@ export default function ToasterItem(props: Props) {
   const [visible, setVisible] = createSignal(false);
   const [leaving, setLeaving] = createSignal(false);
 
+  let leaveTimer: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(leaveTimer));
+
   function dismiss() {
     if (leaving()) return;
     setLeaving(true);
-    setTimeout(() => props.onDismiss(toast.id), 240);
+    leaveTimer = setTimeout(() => props.onDismiss(toast.id), 240);
   }
 
   onMount(() => {

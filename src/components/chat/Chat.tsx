@@ -247,7 +247,7 @@ export default function Chat(props: Props) {
     ];
   }
 
-  createEffect(() => {
+  onMount(() => {
     const unbindDivider = shortcuts.registerLocal("escape", () => {
       clearDivider(props.broadcasterId);
       return false;
@@ -355,7 +355,7 @@ export default function Chat(props: Props) {
             broadcasterId={props.broadcasterId}
             developerMode={advancedDeveloperMode()}
             onClose={userMenu.close}
-            onModerate={(action, t) => setModAction({ action, ...t })}
+            onModerate={(action, target) => setModAction({ action, ...target })}
             onShowProfile={(x, y, userId) => userCards.open(x, y, userId)}
             onMention={mentionUser}
           />

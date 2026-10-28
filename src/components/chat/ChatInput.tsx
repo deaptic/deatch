@@ -246,7 +246,7 @@ export default function ChatInput(props: Props) {
     void emotes.ensureUserLoaded();
   });
 
-  createEffect(() => {
+  onMount(() => {
     const unbind = bindShortcuts();
     onCleanup(() => {
       for (const u of unbind) u();
@@ -291,9 +291,9 @@ export default function ChatInput(props: Props) {
               textAreaApi = api;
               props.ref?.({
                 focus,
-                insert: (t) => api.insert(t),
-                replace: (t) => {
-                  onInputChange(t);
+                insert: (text) => api.insert(text),
+                replace: (text) => {
+                  onInputChange(text);
                   queueMicrotask(() => {
                     focus();
                     setCursor(t.length);

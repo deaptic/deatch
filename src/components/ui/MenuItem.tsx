@@ -10,7 +10,7 @@ type Props = {
   shortcut?: string;
   /// Opens a nested view in the same menu instead of closing it.
   submenu?: boolean;
-  /// Leaves the menu open, for toggles and stepping back.
+  /// Leaves the menu open, for stepping back out of a submenu.
   keepOpen?: boolean;
   active?: boolean;
   tone?: "negative" | "caution";
