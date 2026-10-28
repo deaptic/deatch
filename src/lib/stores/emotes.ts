@@ -9,19 +9,8 @@ export type { EmoteEntry };
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 export type FavoriteEmote = { value: string; url: string; label: string };
 
-const FAVORITES_KEY = "emote_favorites";
-
-const initialFavorites: FavoriteEmote[] = (() => {
-  try {
-    return JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? "[]");
-  } catch {
-    return [];
-  }
-})();
-
-const [favorites, setFavorites] =
-  createSignal<FavoriteEmote[]>(initialFavorites);
-export { favorites };
+/// The emotes service loads and saves them.
+export const [favorites, setFavorites] = createSignal<FavoriteEmote[]>([]);
 
 export const [globalEmotes, setGlobalEmotes] = createSignal<Emote[]>([]);
 export const [userEmotes, setUserEmotes] = createSignal<UserEmote[]>([]);
@@ -37,18 +26,6 @@ export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 /// Every third-party emote by name; the emotes service keeps it current.
 export const [thirdPartyEmoteMap, setThirdPartyEmoteMap] =
   createSignal<EmoteMap>(emoteMap([]));
-
-function persistFavorites(list: FavoriteEmote[]) {
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-  setFavorites(list);
-}
-
-export function toggleFavorite(emote: FavoriteEmote) {
-  const list = favorites();
-  const idx = list.findIndex((e) => e.value === emote.value);
-  if (idx >= 0) persistFavorites(list.filter((_, i) => i !== idx));
-  else persistFavorites([...list, emote]);
-}
 
 const EMOJI = /^\p{RGI_Emoji}$/v;
 

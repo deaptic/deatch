@@ -6,6 +6,7 @@ import { upgradeMention } from "../stores/inboxUpgrade.ts";
 import { notificationsMentionSound } from "../stores/preferences.ts";
 import { selectedChannel } from "../stores/view.ts";
 import type { Mention } from "../types/index.ts";
+import * as storage from "../utils/storage.ts";
 
 const MAX = 100;
 const STORAGE_KEY = "mentions";
@@ -34,27 +35,17 @@ export function start(): () => void {
 }
 
 function load(): Mention[] {
-  try {
-    const stored: Parameters<typeof upgradeMention>[0][] = JSON.parse(
-      localStorage.getItem(STORAGE_KEY) ?? "[]",
-    );
-    const upgraded = stored.map(upgradeMention).filter((m) => m !== null);
-    return fresh(upgraded, Date.now());
-  } catch (e) {
-    console.warn("mentions not loaded", e);
-    return [];
-  }
+  const stored = storage.read(STORAGE_KEY);
+  if (!Array.isArray(stored)) return [];
+  const upgraded = stored.map(upgradeMention).filter((m) => m !== null);
+  return fresh(upgraded, Date.now());
 }
 
 function flush() {
   clearTimeout(saveTimer);
   saveTimer = undefined;
   if (!unsaved) return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(unsaved));
-  } catch (e) {
-    console.warn("mentions not persisted", e);
-  }
+  storage.write(STORAGE_KEY, unsaved);
   unsaved = undefined;
 }
 

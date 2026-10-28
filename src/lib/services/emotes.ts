@@ -15,9 +15,12 @@ import {
   bttvGlobal,
   dedupeById,
   ffzChannel,
+  favorites,
   ffzGlobal,
+  type FavoriteEmote,
   setBttvChannel,
   setBttvGlobal,
+  setFavorites,
   setFfzChannel,
   setFfzGlobal,
   setGlobalEmotes,
@@ -33,12 +36,14 @@ import type { Emote, EmoteEntry, UserEmote } from "../types/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 import { emoteMap } from "../utils/emoteMap.ts";
+import * as storage from "../utils/storage.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
 const GLOBALS_RETRY_MIN_MS = 30_000;
 const GLOBALS_RETRY_MAX_MS = 300_000;
+const FAVORITES_KEY = "emote_favorites";
 
 const bttv = channelResource((c) =>
   bttvGetChannelEmotes({ channelId: c.id }, { silent: true }),
@@ -114,6 +119,7 @@ async function fetchGlobal(): Promise<void> {
 /// Loads each provider's global emotes, retrying each until it succeeds,
 /// and keeps the third-party emote map in step with every list.
 export function start(): () => void {
+  setFavorites(loadFavorites());
   const stops = [
     keepLoading(seventvGetGlobalEmotes, setSevenTvGlobal),
     keepLoading(bttvGetGlobalEmotes, setBttvGlobal),
@@ -165,4 +171,28 @@ export function loadChannelThirdParty(channel: ChannelRef) {
 export function resetChannelThirdParty() {
   bttv.clear();
   ffz.clear();
+}
+
+function loadFavorites(): FavoriteEmote[] {
+  const stored = storage.read(FAVORITES_KEY);
+  return Array.isArray(stored) ? stored.filter(isFavorite) : [];
+}
+
+function isFavorite(value: unknown): value is FavoriteEmote {
+  if (typeof value !== "object" || value === null) return false;
+  const f = value as Record<string, unknown>;
+  return (
+    typeof f.value === "string" &&
+    typeof f.url === "string" &&
+    typeof f.label === "string"
+  );
+}
+
+export function toggleFavorite(emote: FavoriteEmote) {
+  const list = favorites();
+  const next = list.some((e) => e.value === emote.value)
+    ? list.filter((e) => e.value !== emote.value)
+    : [...list, emote];
+  setFavorites(next);
+  storage.write(FAVORITES_KEY, next);
 }

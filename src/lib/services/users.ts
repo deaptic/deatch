@@ -10,6 +10,7 @@ import {
   user as self,
 } from "../stores/users.ts";
 import type { GetUsersParams, User } from "../types/index.ts";
+import * as storage from "../utils/storage.ts";
 import {
   freshEntries,
   isComplete,
@@ -208,17 +209,13 @@ function scheduleSave() {
 }
 
 function load(): Record<string, KnownUser> {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    const parsed = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
-    return Object.fromEntries(
-      Object.entries(parsed).filter((e): e is [string, KnownUser] =>
-        isKnownUser(e[1]),
-      ),
-    );
-  } catch {
-    return {};
-  }
+  const stored = storage.read(CACHE_KEY);
+  if (typeof stored !== "object" || stored === null) return {};
+  return Object.fromEntries(
+    Object.entries(stored).filter((e): e is [string, KnownUser] =>
+      isKnownUser(e[1]),
+    ),
+  );
 }
 
 function save() {
@@ -226,9 +223,5 @@ function save() {
   saveTimer = undefined;
   if (!dirty) return;
   dirty = false;
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(unwrap(knownUsers)));
-  } catch (e) {
-    console.warn("user cache not saved", e);
-  }
+  storage.write(CACHE_KEY, unwrap(knownUsers));
 }
