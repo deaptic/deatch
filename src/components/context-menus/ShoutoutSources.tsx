@@ -29,7 +29,7 @@ async function liveSources(target: User): Promise<UserRef[]> {
   const streams = await getStreamsFromIds(
     { userIds: sources.map((c) => c.id) },
     { silent: true },
-  );
+  ).catch(() => []);
   const live = new Set(streams.map((s) => s.user.id));
   return sources.filter((c) => live.has(c.id));
 }
@@ -37,11 +37,7 @@ async function liveSources(target: User): Promise<UserRef[]> {
 export default function ShoutoutSources(props: Props) {
   const [sources] = createResource(
     () => props.target,
-    (target) =>
-      liveSources(target).catch((e) => {
-        console.warn("shoutout sources unavailable", e);
-        return [];
-      }),
+    (target) => liveSources(target),
   );
   return (
     <>

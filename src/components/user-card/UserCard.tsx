@@ -158,11 +158,7 @@ export default function UserCard(props: Props) {
   );
   const [history, { mutate: setHistory }] = createResource(
     () => untrack(live).length === 0 && props.chatterId,
-    (chatterId) =>
-      backlog.forChatter(props.broadcasterLogin, chatterId).catch((e) => {
-        console.warn("[user-card] history not loaded", e);
-        return [];
-      }),
+    (chatterId) => backlog.forChatter(props.broadcasterLogin, chatterId),
   );
   const messages = createMemo(() =>
     mergeMessages(history.latest ?? [], live(), props.chatterId),

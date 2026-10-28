@@ -32,10 +32,9 @@ export async function subscribe(broadcasterId: string): Promise<void> {
   byBroadcaster.set(broadcasterId, entry);
   bySetId.set(entry.setId, entry);
   pushIfActive(entry);
-  void seventvSubscribeEmoteSet(
-    { emoteSetId: entry.setId },
-    { silent: true },
-  ).catch(() => {});
+  seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true }).catch(
+    () => {},
+  );
 }
 
 export function unsubscribe(broadcasterId: string): void {
@@ -44,7 +43,7 @@ export function unsubscribe(broadcasterId: string): void {
   byBroadcaster.delete(broadcasterId);
   bySetId.delete(entry.setId);
   if (broadcasterId === activeChannelId) setSevenTvChannel([]);
-  void seventvUnsubscribeEmoteSet(
+  seventvUnsubscribeEmoteSet(
     { emoteSetId: entry.setId },
     {
       silent: true,

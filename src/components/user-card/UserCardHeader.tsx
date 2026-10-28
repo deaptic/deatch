@@ -73,10 +73,7 @@ export default function UserCardHeader(props: Props) {
   const [chatColor] = createResource(
     () => props.chatterId,
     (userId) =>
-      getUserChatColor({ userId }, { silent: true }).catch((e) => {
-        console.warn("[user-card] chat color not loaded", e);
-        return null;
-      }),
+      getUserChatColor({ userId }, { silent: true }).catch(() => null),
   );
   // A switched card keeps the last chatter's colour until the new one lands.
   const color = createMemo(

@@ -27,6 +27,8 @@ export type CommandOption =
   | (OptionBase & { type: "enum"; values: string[] })
   | (OptionBase & {
       type: "search";
+      /// Rejects on failure, which the composer shows on the slot; call the
+      /// api silently.
       search: (query: string) => Promise<OptionSuggestion[]>;
     });
 

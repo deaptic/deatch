@@ -33,7 +33,7 @@ export function start(): () => void {
 
   return () => {
     window.clearInterval(interval);
-    void unlisten.then((u) => u());
+    unlisten.then((u) => u()).catch(() => {});
   };
 }
 

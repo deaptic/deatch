@@ -14,9 +14,7 @@ export default function Source(props: {
   onOpen?: (channelId: string) => void;
 }) {
   createEffect(() => {
-    users
-      .get([props.source.id])
-      .catch((e) => console.warn("shared chat channel lookup failed", e));
+    users.get([props.source.id]).catch(() => {});
   });
 
   const channel = () => knownUser(props.source.id);

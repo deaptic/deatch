@@ -29,23 +29,23 @@ export function createChannelNavigation(): ChannelNavigation {
   function selectChannel(ch: User) {
     if (linkSynced()) {
       const linked = linkWarmedChannels().some((c) => c?.id === ch.id);
-      if (linked) void linkFocus(ch.login);
+      if (linked) linkFocus(ch.login).catch(() => {});
       else setLinkSynced(false);
     }
     setSelectedChannel(ch);
   }
 
   function openChannel(channelId: string, then?: () => void) {
-    users
-      .get([channelId])
-      .then(([ch]) => {
+    users.get([channelId]).then(
+      ([ch]) => {
         if (!ch) {
           return addToast(t("COMMON_CHANNEL_NOT_FOUND"), "error");
         }
         then?.();
         if (selectedChannel()?.id !== channelId) selectChannel(ch);
-      })
-      .catch((e) => console.warn("channel lookup failed", e));
+      },
+      () => {},
+    );
   }
 
   // The feed scrolls once it holds the message, so this works whether the

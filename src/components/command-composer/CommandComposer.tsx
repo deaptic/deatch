@@ -249,26 +249,24 @@ export default function CommandComposer(props: Props) {
     const query = slots()[idx].raw.trim();
     if (opt?.type !== "search" || !query) return false;
     setResolving(true);
-    try {
-      const match = (await opt.search(query))[0];
-      if (!match) {
-        patchSlot(idx, { error: t("COMMAND_NO_MATCH", { query }) });
-        return false;
-      }
+    const matches = await opt.search(query).catch(() => null);
+    setResolving(false);
+    const match = matches?.[0];
+    if (!match) {
       patchSlot(idx, {
-        raw: match.label,
-        resolved: match,
-        displayLabel: match.label,
-        error: null,
+        error: matches
+          ? t("COMMAND_NO_MATCH", { query })
+          : t("COMMAND_LOOKUP_FAILED"),
       });
-      return true;
-    } catch (e) {
-      console.error("search lookup failed", e);
-      patchSlot(idx, { error: t("COMMAND_LOOKUP_FAILED") });
       return false;
-    } finally {
-      setResolving(false);
     }
+    patchSlot(idx, {
+      raw: match.label,
+      resolved: match,
+      displayLabel: match.label,
+      error: null,
+    });
+    return true;
   }
 
   async function resolvePending(idx: number): Promise<boolean> {

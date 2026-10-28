@@ -26,7 +26,7 @@ export default function UserCardModActions(props: Props) {
       userId: props.chatterId,
     };
     if (choice === "unban") {
-      void unbanUser(target).catch(() => {});
+      unbanUser(target).catch(() => {});
       return;
     }
     banUser({ ...target, duration: secondsFor(choice) })

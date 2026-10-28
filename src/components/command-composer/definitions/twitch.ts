@@ -527,7 +527,10 @@ export const twitchCommands: Command[] = [
         required: true,
         hint: "COMMAND_GAME_GAME_HINT",
         search: async (query) => {
-          const results = await searchCategories({ query, first: 8 });
+          const results = await searchCategories(
+            { query, first: 8 },
+            { silent: true },
+          );
           return results.map((c) => ({
             id: c.id,
             label: c.name,
