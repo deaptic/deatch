@@ -1,23 +1,34 @@
-type Kind = "patch" | "minor" | "major";
+const KINDS = ["patch", "minor", "major"] as const;
+type Kind = (typeof KINDS)[number];
 
-function bump(current: string, kind: Kind): string {
-  const [maj, min, pat] = current.split(".").map((n) => parseInt(n, 10));
-  if ([maj, min, pat].some(Number.isNaN)) {
-    throw new Error(`unparseable current version: ${current}`);
-  }
-  if (kind === "major") return `${maj + 1}.0.0`;
-  if (kind === "minor") return `${maj}.${min + 1}.0`;
-  return `${maj}.${min}.${pat + 1}`;
+type Version = { major: number; minor: number; patch: number };
+
+const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
+
+function parse(version: string): Version | null {
+  const match = SEMVER.exec(version);
+  if (!match) return null;
+  const [, major, minor, patch] = match;
+  return { major: Number(major), minor: Number(minor), patch: Number(patch) };
 }
 
-/// `arg` is a bump kind or an explicit version; exits on anything else.
+function isKind(arg: string): arg is Kind {
+  return (KINDS as readonly string[]).includes(arg);
+}
+
+function bump({ major, minor, patch }: Version, kind: Kind): string {
+  if (kind === "major") return `${major + 1}.0.0`;
+  if (kind === "minor") return `${major}.${minor + 1}.0`;
+  return `${major}.${minor}.${patch + 1}`;
+}
+
+/// `arg` is a bump kind or an explicit version; throws on anything else.
 export function nextVersion(current: string, arg = "patch"): string {
-  const next = ["patch", "minor", "major"].includes(arg)
-    ? bump(current, arg as Kind)
-    : arg;
-  if (!/^\d+\.\d+\.\d+$/.test(next)) {
-    console.error(`invalid version: ${next}`);
-    process.exit(1);
+  if (!isKind(arg)) {
+    if (!parse(arg)) throw new Error(`invalid version: ${arg}`);
+    return arg;
   }
-  return next;
+  const version = parse(current);
+  if (!version) throw new Error(`unparseable current version: ${current}`);
+  return bump(version, arg);
 }

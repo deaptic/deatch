@@ -1,4 +1,5 @@
 import type { EmoteGridItem } from "./types.ts";
+import { at } from "../../lib/utils/at.ts";
 
 export const COLUMNS = 8;
 
@@ -39,8 +40,8 @@ export function nextVerticalIndex(
       activeIndex >= s.startIndex &&
       activeIndex < s.startIndex + s.items.length,
   );
-  if (secIdx < 0) return activeIndex;
   const sec = sections[secIdx];
+  if (!sec) return activeIndex;
   const pos = activeIndex - sec.startIndex;
   const col = pos % COLUMNS;
   const targetRow = Math.floor(pos / COLUMNS) + direction;
@@ -57,7 +58,7 @@ export function nextVerticalIndex(
     i >= 0 && i < sections.length;
     i += direction
   ) {
-    const target = sections[i];
+    const target = at(sections, i);
     if (!target.items.length) continue;
     const row =
       direction === 1 ? 0 : Math.floor((target.items.length - 1) / COLUMNS);

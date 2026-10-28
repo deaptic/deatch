@@ -5,6 +5,7 @@ import {
   clampToStops,
   FONT_SIZE_STOPS,
   GROUP_SPACING_STOPS,
+  type Stops,
   UI_DENSITIES,
   type UiDensity,
   ZOOM_STOPS,
@@ -125,11 +126,7 @@ function sanitizeTheme(raw: unknown): Theme {
     : DEFAULT_PREFERENCES.appearance.theme;
 }
 
-function sanitizeStop(
-  raw: unknown,
-  stops: readonly number[],
-  fallback: number,
-): number {
+function sanitizeStop(raw: unknown, stops: Stops, fallback: number): number {
   return typeof raw === "number" && Number.isFinite(raw)
     ? clampToStops(raw, stops)
     : fallback;

@@ -38,8 +38,10 @@ export default function Suggestions<T>(props: Props<T>) {
           (e.key === "Enter" && !e.shiftKey) ||
           (props.selectOnSpace && e.key === " ")
         ) {
+          const picked = s[active()];
+          if (!picked) return false;
           e.preventDefault();
-          props.onSelect(s[active()]);
+          props.onSelect(picked);
           return true;
         }
         if (e.key === "Escape") {

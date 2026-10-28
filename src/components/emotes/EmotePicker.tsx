@@ -34,6 +34,7 @@ import {
 } from "./helpers.ts";
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { at } from "../../lib/utils/at.ts";
 
 type Tab = "channel" | "global" | "emoji";
 
@@ -202,7 +203,7 @@ export default function EmotePicker(props: Props) {
 
   function cycleTab(direction: 1 | -1) {
     const idx = TABS.findIndex((entry) => entry.id === tab());
-    setTab(TABS[(idx + direction + TABS.length) % TABS.length].id);
+    setTab(at(TABS, (idx + direction + TABS.length) % TABS.length).id);
     setSearch("");
   }
 

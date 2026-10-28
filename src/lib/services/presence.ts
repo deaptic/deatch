@@ -1,5 +1,6 @@
 import type {
   ActivityInput as DiscordActivity,
+  NonEmpty,
   Stream,
   User,
 } from "../types/index.ts";
@@ -7,7 +8,7 @@ import { formatViewers } from "../format/stream.ts";
 import { categoryUrl, channelUrl } from "../utils/twitchUrl.ts";
 import { type MessageKey, t } from "../i18n/index.ts";
 
-export const SELF_LURK_PHRASES: MessageKey[] = [
+export const SELF_LURK_PHRASES: NonEmpty<MessageKey> = [
   "PRESENCE_LURK_TALKING_TO_THEMSELVES",
   "PRESENCE_LURK_EMPTY_ROOM",
   "PRESENCE_LURK_PRACTICING_INTRO",

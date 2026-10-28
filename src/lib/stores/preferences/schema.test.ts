@@ -5,6 +5,7 @@ import {
   MIN_TRIGGER_COOLDOWN,
   sanitize,
 } from "./schema.ts";
+import { at } from "../../utils/at.ts";
 
 test("anything that is not an object falls back to the defaults", () => {
   for (const raw of [null, undefined, "x", 42, []]) {
@@ -74,7 +75,8 @@ test("triggers without an id or phrase are dropped, the rest repaired", () => {
     ],
   });
   expect(prefs.triggers.map((t) => t.id)).toStrictEqual(["a", "b"]);
-  const [a, b] = prefs.triggers;
+  const a = at(prefs.triggers, 0);
+  const b = at(prefs.triggers, 1);
   expect(a.location).toBe("anywhere");
   expect(a.cooldown).toStrictEqual(MAX_TRIGGER_COOLDOWN);
   expect(a.action).toBe("reply");

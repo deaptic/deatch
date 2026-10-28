@@ -29,10 +29,7 @@ export function isSilent(item: FeedEntry): boolean {
 }
 
 export function lastVisible(feed: ChannelFeed): FeedEntry | undefined {
-  for (let i = feed.messages.length - 1; i >= 0; i--) {
-    if (!isSilent(feed.messages[i])) return feed.messages[i];
-  }
-  return undefined;
+  return feed.messages.findLast((item) => !isSilent(item));
 }
 
 export function ensureFeed(id: string) {

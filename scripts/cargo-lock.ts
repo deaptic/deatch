@@ -5,7 +5,7 @@ const ENTRY = /\[\[package\]\]\r?\nname = "([^"]+)"\r?\nversion = "([^"]+)"/g;
 export function lockedVersions(lock: string): Map<string, string> {
   const versions = new Map<string, string>();
   for (const [, name, version] of lock.matchAll(ENTRY)) {
-    versions.set(name, version);
+    if (name && version) versions.set(name, version);
   }
   return versions;
 }

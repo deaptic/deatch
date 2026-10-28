@@ -1,12 +1,17 @@
 import { spawn } from "node:child_process";
 
-export function run(cmd: string[]): Promise<void> {
+export type Command = readonly [string, ...string[]];
+
+export function run([command, ...args]: Command): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(cmd[0], cmd.slice(1), { stdio: "inherit" })
+    spawn(command, args, { stdio: "inherit" })
       .on("error", reject)
       .on("exit", (code) => {
         if (code === 0) resolve();
-        else reject(new Error(`${cmd.join(" ")} exited with ${code}`));
+        else
+          reject(
+            new Error(`${[command, ...args].join(" ")} exited with ${code}`),
+          );
       });
   });
 }

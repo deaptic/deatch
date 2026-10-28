@@ -26,6 +26,7 @@ import Chip from "../ui/Chip.tsx";
 import Button from "../ui/Button.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
 import { t } from "../../lib/i18n/index.ts";
+import { at } from "../../lib/utils/at.ts";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -33,7 +34,7 @@ type Props = {
 
 const PAGE_SIZE = 40;
 const THUMBNAIL_REFRESH_MS = 5 * 60_000;
-const systemLanguage = () => navigator.language.split("-")[0];
+const systemLanguage = () => at(navigator.language.split("-"), 0);
 
 export default function LiveNow(props: Props) {
   const [remote, setRemote] = createSignal<Stream[]>([]);
@@ -127,7 +128,7 @@ export default function LiveNow(props: Props) {
 
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting) void fetchPage(false);
+      if (entries.some((e) => e.isIntersecting)) void fetchPage(false);
     },
     { rootMargin: "400px" },
   );

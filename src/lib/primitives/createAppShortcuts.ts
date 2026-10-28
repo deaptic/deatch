@@ -82,8 +82,8 @@ export function createAppShortcuts(
       const idx = i - 1;
       unbind.push(
         shortcuts.register(`channel::select${i}`, () => {
-          const ordered = channelsInOrder();
-          if (idx < ordered.length) nav.selectChannel(ordered[idx]);
+          const channel = channelsInOrder()[idx];
+          if (channel) nav.selectChannel(channel);
         }),
       );
     }

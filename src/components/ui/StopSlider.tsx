@@ -1,10 +1,10 @@
 import { createSignal, For } from "solid-js";
-import { nearestStop } from "../../lib/constants/accessibility.ts";
+import { nearestStop, type Stops } from "../../lib/constants/accessibility.ts";
 
 type Props = {
   label: string;
   value: number;
-  stops: readonly number[];
+  stops: Stops;
   format: (value: number) => string;
   onChange: (value: number) => void;
   disabled?: boolean;
@@ -14,7 +14,8 @@ export default function StopSlider(props: Props) {
   const [dragging, setDragging] = createSignal<number | null>(null);
   const current = () => dragging() ?? nearestStop(props.value, props.stops);
   const index = () => props.stops.indexOf(current());
-  const stopAt = (el: HTMLInputElement) => props.stops[Number(el.value)];
+  const stopAt = (el: HTMLInputElement) =>
+    props.stops[Number(el.value)] ?? current();
 
   return (
     <div
