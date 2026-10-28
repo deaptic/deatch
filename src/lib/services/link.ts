@@ -70,6 +70,7 @@ export function selectedLinked() {
 const REFOCUS_MS = 2000;
 
 async function keepingFocus(action: () => Promise<unknown>) {
+  // Without the listener the action still runs; only the refocus is lost.
   const unlisten = await onWindowFocusChanged(
     (focused) => {
       if (focused) return;
@@ -77,7 +78,7 @@ async function keepingFocus(action: () => Promise<unknown>) {
       focusWindow({ silent: true }).catch(() => {});
     },
     { silent: true },
-  );
+  ).catch(() => () => {});
   const timer = setTimeout(stop, REFOCUS_MS);
   function stop() {
     clearTimeout(timer);
