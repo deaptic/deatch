@@ -15,6 +15,7 @@ import {
 import * as users from "../../lib/services/users.ts";
 import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
+import { userFromRef } from "../../lib/stores/channels.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
@@ -47,14 +48,8 @@ export default function SearchResults(props: Props) {
   const ranked = () => results() ?? [];
 
   const toUser = (channel: SearchChannel): User => ({
-    id: channel.user.id,
-    login: channel.user.login,
-    displayName: channel.user.displayName,
+    ...userFromRef(channel.user),
     profileImageUrl: channel.profileImageUrl,
-    offlineImageUrl: null,
-    description: "",
-    broadcasterType: "normal",
-    createdAt: "",
   });
 
   function open(channel: SearchChannel) {

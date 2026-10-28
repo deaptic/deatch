@@ -10,7 +10,6 @@ export type {
   EventPref,
   Trigger,
   TriggerAction,
-  TriggerLocation,
   UserPreferences,
 } from "./preferences/core.ts";
 export * from "./preferences/feed.ts";

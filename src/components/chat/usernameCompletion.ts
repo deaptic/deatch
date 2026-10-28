@@ -1,12 +1,14 @@
-type Chatter = { login: string; displayName: string; lastSeen: number };
+import type { Chatter } from "../../lib/types/index.ts";
+
+type Named = Pick<Chatter, "login" | "displayName" | "lastSeen">;
 
 /// The name Twitch resolves as a mention: the display name only when it is
 /// just a recased login, otherwise the login itself.
-function mentionName(c: Pick<Chatter, "login" | "displayName">) {
+function mentionName(c: Pick<Named, "login" | "displayName">) {
   return c.displayName.toLowerCase() === c.login ? c.displayName : c.login;
 }
 
-export function completions(chatters: Iterable<Chatter>, query: string) {
+export function completions(chatters: Iterable<Named>, query: string) {
   const q = query.toLowerCase();
   return [...chatters]
     .filter(

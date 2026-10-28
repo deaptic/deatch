@@ -1,16 +1,11 @@
 import { createSignal } from "solid-js";
+import type { UserRef } from "../types/index.ts";
 
 export const RAID_DURATION_MS = 90_000;
 
-export type RaidTarget = {
-  id: string;
-  login: string;
-  displayName: string;
-};
-
 export type PendingRaid = {
   fromId: string;
-  target: RaidTarget;
+  target: UserRef;
   startedAt: number;
 };
 

@@ -1,5 +1,10 @@
 import type { AnnouncementColor } from "../bindings.ts";
-import type { MessageBadge } from "./twitch/eventsub.ts";
+import type {
+  BanEvasion,
+  LowTrustStatus,
+  MessageBadge,
+  RawReply,
+} from "./twitch/eventsub.ts";
 
 export type Fragment =
   | { type: "text"; text: string }
@@ -8,17 +13,6 @@ export type Fragment =
   | { type: "cheermote"; text: string; prefix: string; bits: number }
   /// Twitch requires the URL be shown exactly as given.
   | { type: "gif"; text: string; url: string };
-
-type FeedReply = {
-  parent_message_id: string;
-  parent_message_body: string;
-  parent_user_name: string;
-  parent_user_login: string;
-  parent_user_id: string;
-  thread_message_id?: string | null;
-  thread_user_login?: string | null;
-  thread_user_name?: string | null;
-};
 
 export type BadgeMap = Record<string, { url: string; title: string }>;
 
@@ -40,8 +34,8 @@ export type AutomodHoldInfo = {
 
 /// Why Twitch flags the chatter, shown to mods on their messages.
 export type SuspiciousInfo = {
-  status: "active_monitoring" | "restricted";
-  evasion: "unknown" | "possible" | "likely";
+  status: Exclude<LowTrustStatus, "none">;
+  evasion: BanEvasion;
   bannedElsewhere: boolean;
 };
 
@@ -65,7 +59,7 @@ export type FeedMessage = {
   color: string;
   fragments: Fragment[];
   badges: MessageBadge[];
-  reply?: FeedReply;
+  reply?: RawReply;
   timestamp: number;
   channel_points?:
     | { kind: MessagePerk }
