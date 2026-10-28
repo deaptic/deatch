@@ -55,7 +55,7 @@ export function mapNotice(
   timestamp: number,
 ): FeedEvent | null {
   const system_message = noticeMessage(raw) ?? raw.system_message;
-  if (!system_message?.trim()) return null;
+  if (!system_message.trim()) return null;
   return feedEvent(raw.notice_type, system_message, timestamp, {
     // Live and history share Twitch's message id, so the feed drops repeats.
     id: raw.message_id,

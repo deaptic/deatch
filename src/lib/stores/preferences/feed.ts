@@ -6,13 +6,7 @@ import {
   GROUP_SPACING_STOPS,
   stepStop,
 } from "../../constants/accessibility.ts";
-import {
-  type BadgePref,
-  type EventPref,
-  persist,
-  prefs,
-  setPrefs,
-} from "./core.ts";
+import { persist, prefs, setPrefs } from "./core.ts";
 
 export const feedFontSize = () => prefs.feed.fontSize;
 export const feedDensity = () => prefs.feed.density;
@@ -23,10 +17,8 @@ export const feedShowCopypasta = () => prefs.feed.showCopypasta;
 export const feedShowAvatars = () => prefs.feed.showAvatars;
 export const feedShowBadges = () => prefs.feed.showBadges;
 export const feedShowEvents = () => prefs.feed.showEvents;
-export const feedBadges = () =>
-  prefs.feed.badges as Record<BadgeCategoryKey, BadgePref>;
-export const feedEvents = () =>
-  prefs.feed.events as Record<EventKey, EventPref>;
+export const feedBadges = () => prefs.feed.badges;
+export const feedEvents = () => prefs.feed.events;
 
 export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STOPS));

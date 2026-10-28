@@ -65,7 +65,7 @@ type Props = {
 
 export default function ChannelContextMenu(props: Props) {
   const url = () => channelUrl(props.ch.login);
-  const hasTab = () => linkWarmedChannels().some((c) => c?.id === props.ch.id);
+  const hasTab = () => linkWarmedChannels().some((c) => c.id === props.ch.id);
   const muted = () => linkMutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);
   // Shortcuts act on the open channel, so only its menu shows them.

@@ -28,7 +28,7 @@ export function createChannelNavigation(): ChannelNavigation {
   // While synced the browser follows along; leaving the linked tabs ends it.
   function selectChannel(ch: User) {
     if (linkSynced()) {
-      const linked = linkWarmedChannels().some((c) => c?.id === ch.id);
+      const linked = linkWarmedChannels().some((c) => c.id === ch.id);
       if (linked) linkFocus(ch.login).catch(() => {});
       else setLinkSynced(false);
     }

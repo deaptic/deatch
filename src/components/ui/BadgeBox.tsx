@@ -26,7 +26,7 @@ export default function BadgeBox(props: Props) {
     !feedShowBadges()
       ? []
       : props.badges.flatMap((b) => {
-          if (feedBadges()[badgeCategoryFor(b.set_id)]?.show === false)
+          if (feedBadges()[badgeCategoryFor(b.set_id)].show === false)
             return [];
           const badge = props.channelBadges[`${b.set_id}/${b.id}`];
           return badge ? [{ ...badge, info: b.info }] : [];

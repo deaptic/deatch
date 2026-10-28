@@ -114,13 +114,13 @@ export function computeChannelSections(
   if (broadcaster) {
     const seen = new Map<string, string>();
     for (const e of userEmotes()) {
-      if (e.ownerId !== broadcaster?.id) continue;
+      if (e.ownerId !== broadcaster.id) continue;
       if (!seen.has(e.name)) seen.set(e.name, e.url);
     }
     if (seen.size) {
       sections.push({
         id: "twitch",
-        label: broadcaster?.displayName,
+        label: broadcaster.displayName,
         emotes: [...seen.entries()]
           .map(([name, url]) => ({ name, url }))
           .sort((a, b) => a.name.localeCompare(b.name)),
