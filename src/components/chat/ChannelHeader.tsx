@@ -3,7 +3,12 @@ import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
-import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
+import {
+  formatUptime,
+  formatViewers,
+  streamGame,
+  streamTitle,
+} from "../../lib/format/stream.ts";
 import { createCopyable } from "../ui/copyable.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
@@ -17,8 +22,8 @@ type Props = {
 export default function ChannelHeader(props: Props) {
   const stream = () => streamForUserId(props.channel.id);
   const info = () => channelInfoFor(props.channel.id);
-  const title = () => stream()?.title ?? info()?.title ?? "";
-  const game = () => stream()?.game.name ?? info()?.game.name ?? "";
+  const title = () => streamTitle(stream(), info());
+  const game = () => streamGame(stream(), info());
   const link = createChannelLink(() => props.channel);
   const name = createCopyable("text-ink");
   const titleCopy = createCopyable("text-ink-soft");

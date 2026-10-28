@@ -1,5 +1,12 @@
 import { expect, test } from "vite-plus/test";
-import { formatClock, formatUptime, formatViewers } from "./stream.ts";
+import {
+  formatClock,
+  formatUptime,
+  formatViewers,
+  liveLine,
+  streamGame,
+  streamTitle,
+} from "./stream.ts";
 
 test("abbreviates viewer counts in the given locale", () => {
   expect(formatViewers(999, "en-US")).toBe("999");
@@ -22,4 +29,19 @@ test("formats uptime from the given moment", () => {
 
 test("returns empty uptime for an unparseable start", () => {
   expect(formatUptime("not a date", 0)).toBe("");
+});
+
+test("the live line leaves out what is unknown", () => {
+  expect(liveLine("Chess", 1_500)).toBe(
+    `Live · Chess · ${formatViewers(1_500)}`,
+  );
+  expect(liveLine("")).toBe("Live");
+});
+
+test("a live stream's title wins over the channel's last one", () => {
+  const live = { title: "now", game: { name: "Chess" } };
+  const last = { title: "before", game: { name: "Go" } };
+  expect(streamTitle(live, last)).toBe("now");
+  expect(streamGame(undefined, last)).toBe("Go");
+  expect(streamTitle()).toBe("");
 });

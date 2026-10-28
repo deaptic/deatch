@@ -1,5 +1,6 @@
 import { For } from "solid-js";
 import type { EmoteGridItem } from "./types.ts";
+import { GRID_COLUMNS } from "./helpers.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 import { emoteZoom } from "../../lib/utils/emoteZoom.ts";
 
@@ -18,7 +19,7 @@ type Props = {
 
 export default function EmoteGrid(props: Props) {
   return (
-    <div class="grid grid-cols-8 gap-1">
+    <div class={`grid gap-1 ${GRID_COLUMNS}`}>
       <For each={props.items}>
         {(item, i) => {
           const idx = () => props.startIndex + i();

@@ -7,9 +7,8 @@ import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
 import Button from "../ui/Button.tsx";
 import MenuButton from "../ui/MenuButton.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
+import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import ChatModesList from "./ChatModesList.tsx";
-
-const AD_LENGTHS = [30, 60, 90, 120, 150, 180];
 
 type Props = {
   broadcasterId: string;

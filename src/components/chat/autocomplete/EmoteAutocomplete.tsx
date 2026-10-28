@@ -1,5 +1,6 @@
 import { createMemo, onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
+import { TRIGGERS } from "./detect.ts";
 import {
   bttvChannel,
   bttvGlobal,
@@ -54,7 +55,7 @@ export default function EmoteAutocomplete(props: Props) {
 
   function select(s: EmoteSuggestion) {
     props.controller.clearAndSplice(
-      /(?:^|\s):(\w+)$/,
+      TRIGGERS.emote,
       (m) => (m.startsWith(":") ? "" : m[0]) + s.name + " ",
     );
   }

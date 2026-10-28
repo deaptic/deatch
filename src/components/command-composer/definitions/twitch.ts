@@ -23,14 +23,10 @@ import {
   startCommercial,
 } from "../../../lib/api/twitch/channels.ts";
 import type { Command, OptionSuggestion } from "../types.ts";
-
-const ANNOUNCEMENT_COLORS: AnnouncementColor[] = [
-  "primary",
-  "blue",
-  "green",
-  "orange",
-  "purple",
-];
+import {
+  AD_LENGTHS,
+  ANNOUNCEMENT_COLORS,
+} from "../../../lib/constants/twitch.ts";
 
 export const twitchCommands: Command[] = [
   {
@@ -557,7 +553,7 @@ export const twitchCommands: Command[] = [
         description: "COMMAND_COMMERCIAL_LENGTH",
         type: "enum",
         required: true,
-        values: ["30", "60", "90", "120", "150", "180"],
+        values: AD_LENGTHS.map(String),
       },
     ],
     execute: async ({ length }, ctx) => {

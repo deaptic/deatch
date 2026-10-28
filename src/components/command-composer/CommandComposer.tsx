@@ -13,8 +13,10 @@ import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import { chattersByChannel } from "../../lib/stores/users.ts";
 import * as users from "../../lib/services/users.ts";
 import { at } from "../../lib/utils/at.ts";
-import { rankSuggestions } from "../../lib/utils/rankSuggestions.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
+import ChatterRow from "../suggestions/ChatterRow.tsx";
+import { rankChatters } from "../../lib/utils/rankChatters.ts";
+import type { Chatter } from "../../lib/types/index.ts";
 import Artwork from "../ui/Artwork.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
@@ -25,35 +27,11 @@ import {
   slotSatisfied,
 } from "./parse.ts";
 
-type UserSuggestion = {
-  id: string;
-  login: string;
-  displayName: string;
-  color: string;
-};
-
 type Popup = {
   items: () => unknown[];
   select: (item: unknown) => void;
   render: (item: unknown) => JSX.Element;
 };
-
-function renderUserItem(s: UserSuggestion): JSX.Element {
-  return (
-    <>
-      <span
-        class="font-semibold text-left truncate text-(--name)"
-        style={{ "--name": s.color || "var(--color-ink)" }}
-      >
-        {s.displayName}
-      </span>
-      <span class="flex-1" />
-      <span class="text-small font-semibold shrink-0 text-ink-soft">
-        {s.displayName.toLowerCase() !== s.login ? s.login : ""}
-      </span>
-    </>
-  );
-}
 
 function renderSearchItem(s: OptionSuggestion): JSX.Element {
   return (
@@ -126,21 +104,11 @@ export default function CommandComposer(props: Props) {
     });
   });
 
-  const userSuggestions = createMemo<UserSuggestion[]>(() => {
+  const userSuggestions = createMemo<Chatter[]>(() => {
     const opt = activeOption();
     if (opt?.type !== "user" || activeSlot()?.resolved !== null) return [];
     const bucket = chattersByChannel.get(props.ctx.broadcasterId);
-    if (!bucket) return [];
-    return rankSuggestions([...bucket.values()], activeRaw(), {
-      keys: (c) => [c.login.toLowerCase(), c.displayName.toLowerCase()],
-      compare: (a, b) => b.lastSeen - a.lastSeen,
-      limit: 10,
-    }).map((c) => ({
-      id: c.id,
-      login: c.login,
-      displayName: c.displayName,
-      color: c.color,
-    }));
+    return bucket ? rankChatters(bucket.values(), activeRaw()) : [];
   });
 
   const enumSuggestions = createMemo<string[]>(() => {
@@ -183,8 +151,8 @@ export default function CommandComposer(props: Props) {
           ? null
           : {
               items: userSuggestions,
-              select: (i) => selectUser(i as UserSuggestion),
-              render: (i) => renderUserItem(i as UserSuggestion),
+              select: (i) => selectUser(i as Chatter),
+              render: (i) => <ChatterRow chatter={i as Chatter} />,
             };
       case "enum":
         return enumSuggestions().length === 0
@@ -363,7 +331,7 @@ export default function CommandComposer(props: Props) {
     }
   }
 
-  function selectUser(s: UserSuggestion) {
+  function selectUser(s: Chatter) {
     fillUserSlot(activeIdx(), s.displayName, s.id);
     void advance();
   }

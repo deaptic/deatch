@@ -1,3 +1,4 @@
+import { formatPx } from "../../lib/format/units.ts";
 import {
   feedFontSize,
   stepFeedFontSize,
@@ -9,7 +10,7 @@ export function createFontSizeWheel() {
     if (!e.altKey || e.deltaY === 0) return;
     e.preventDefault();
     stepFeedFontSize(e.deltaY < 0 ? 1 : -1);
-    readout.show(`${feedFontSize()}px`);
+    readout.show(formatPx(feedFontSize()));
   }
 
   return { onWheel };

@@ -21,9 +21,7 @@ import {
   setFeedGroupSpacing,
 } from "../../../lib/stores/preferences.ts";
 
-const px = (value: number) => `${value}px`;
-const percent = (value: number) => `${value}%`;
-
+import { formatPx, formatWholePercent } from "../../../lib/format/units.ts";
 export default function DensityCard() {
   return (
     <Card>
@@ -72,7 +70,7 @@ export default function DensityCard() {
           disabled={feedDensity() !== "comfortable"}
           value={feedGroupSpacing()}
           stops={GROUP_SPACING_STOPS}
-          format={px}
+          format={formatPx}
           onChange={setFeedGroupSpacing}
         />
       </SettingsRow>
@@ -85,7 +83,7 @@ export default function DensityCard() {
           label={t("SETTINGS_APPEARANCE_ZOOM")}
           value={appearanceZoom()}
           stops={ZOOM_STOPS}
-          format={percent}
+          format={formatWholePercent}
           onChange={setAppearanceZoom}
         />
       </SettingsRow>

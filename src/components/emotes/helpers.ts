@@ -2,6 +2,8 @@ import type { EmoteGridItem } from "./types.ts";
 import { at } from "../../lib/utils/at.ts";
 
 export const COLUMNS = 8;
+/// Tailwind needs a literal class, so it is written out beside `COLUMNS`.
+export const GRID_COLUMNS = "grid-cols-8";
 
 export type RenderSection = {
   label?: string;
