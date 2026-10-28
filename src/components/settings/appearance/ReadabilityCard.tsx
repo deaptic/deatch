@@ -16,8 +16,7 @@ import {
   setFeedUserShowDisplayName,
 } from "../../../lib/stores/preferences.ts";
 
-const px = (value: number) => `${value}px`;
-
+import { formatPx } from "../../../lib/format/units.ts";
 export default function ReadabilityCard() {
   return (
     <Card>
@@ -27,7 +26,7 @@ export default function ReadabilityCard() {
           label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
           value={feedFontSize()}
           stops={FONT_SIZE_STOPS}
-          format={px}
+          format={formatPx}
           onChange={setFeedFontSize}
         />
       </SettingsRow>

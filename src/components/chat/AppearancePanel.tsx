@@ -1,3 +1,4 @@
+import { formatPx } from "../../lib/format/units.ts";
 import {
   AtSign,
   BadgeCheck,
@@ -106,7 +107,7 @@ export default function AppearancePanel(props: Props) {
       <MenuStepper
         label={t("CHAT_APPEARANCE_TEXT_SIZE")}
         icon={<Type />}
-        value={`${feedFontSize()}px`}
+        value={formatPx(feedFontSize())}
         lessLabel={t("CHAT_APPEARANCE_TEXT_SMALLER")}
         moreLabel={t("CHAT_APPEARANCE_TEXT_LARGER")}
         canLess={canStep(feedFontSize(), FONT_SIZE_STOPS, -1)}
@@ -116,7 +117,7 @@ export default function AppearancePanel(props: Props) {
       <MenuStepper
         label={t("CHAT_APPEARANCE_GROUP_SPACING")}
         icon={<SeparatorHorizontal />}
-        value={`${feedGroupSpacing()}px`}
+        value={formatPx(feedGroupSpacing())}
         lessLabel={t("CHAT_APPEARANCE_GROUP_SPACING_LESS")}
         moreLabel={t("CHAT_APPEARANCE_GROUP_SPACING_MORE")}
         canLess={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, -1)}

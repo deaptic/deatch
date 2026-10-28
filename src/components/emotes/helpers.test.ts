@@ -1,5 +1,14 @@
 import { expect, test } from "vite-plus/test";
-import { COLUMNS, emojiUrl, nextVerticalIndex } from "./helpers.ts";
+import {
+  COLUMNS,
+  emojiUrl,
+  GRID_COLUMNS,
+  nextVerticalIndex,
+} from "./helpers.ts";
+
+test("the grid class shows as many columns as keyboard moves assume", () => {
+  expect(GRID_COLUMNS).toBe(`grid-cols-${COLUMNS}`);
+});
 
 test("emojiUrl keeps FE0F only inside joiner sequences", () => {
   expect(emojiUrl("❤️")).toContain("/2764.png");

@@ -18,7 +18,7 @@ import * as pins from "../../lib/services/pins.ts";
 import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { formatViewers } from "../../lib/format/stream.ts";
+import { liveLine } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
@@ -203,8 +203,9 @@ export default function QuickSwitch(props: Props) {
                                 when={stream()}
                                 fallback={t("COMMON_OFFLINE")}
                               >
-                                {t("COMMON_LIVE")} · {stream()!.game.name} ·{" "}
-                                {formatViewers(stream()!.viewerCount)}
+                                {(s) =>
+                                  liveLine(s().game.name, s().viewerCount)
+                                }
                               </Show>
                               <Show
                                 when={pinnedChannels().includes(r().user.id)}

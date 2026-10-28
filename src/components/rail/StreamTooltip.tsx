@@ -1,6 +1,11 @@
 import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
 import { Show } from "solid-js";
-import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
+import {
+  formatUptime,
+  formatViewers,
+  streamGame,
+  streamTitle,
+} from "../../lib/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
 import type { ChannelInfo, Stream, User } from "../../lib/types/index.ts";
 import Stat from "../ui/Stat.tsx";
@@ -11,8 +16,8 @@ export default function StreamTooltip(props: {
   stream?: Stream;
   info?: ChannelInfo;
 }) {
-  const title = () => props.stream?.title ?? props.info?.title ?? "";
-  const game = () => props.stream?.game.name ?? props.info?.game.name ?? "";
+  const title = () => streamTitle(props.stream, props.info);
+  const game = () => streamGame(props.stream, props.info);
 
   return (
     <div class="flex flex-col gap-2 max-w-72 px-0.5 py-0.5">

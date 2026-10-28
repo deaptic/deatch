@@ -16,6 +16,7 @@ import * as users from "../../lib/services/users.ts";
 import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import { userFromRef } from "../../lib/stores/channels.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
+import { liveLine } from "../../lib/format/stream.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
@@ -167,10 +168,7 @@ export default function SearchResults(props: Props) {
                           when={channel.isLive}
                           fallback={t("COMMON_OFFLINE")}
                         >
-                          {t("COMMON_LIVE")}
-                          <Show when={channel.gameName}>
-                            {` · ${channel.gameName}`}
-                          </Show>
+                          {liveLine(channel.gameName)}
                         </Show>
                       </p>
                     </div>

@@ -11,8 +11,7 @@ type Props = {
   login: string;
 };
 
-const percent = (value: number) => `${value}%`;
-
+import { formatWholePercent } from "../../lib/format/units.ts";
 /// The volume of a channel's browser tab, after the compressor, as its own
 /// menu section: the slider across the menu, its value and reset below.
 export default function TabVolume(props: Props) {
@@ -26,11 +25,13 @@ export default function TabVolume(props: Props) {
         value={gain()}
         min={0}
         max={MAX_CHANNEL_GAIN}
-        format={percent}
+        format={formatWholePercent}
         onChange={(value) => setChannelGain(props.login, value)}
       />
       <div class="h-control-sm flex items-center justify-between">
-        <span class="text-small tabular-nums text-ink">{percent(gain())}</span>
+        <span class="text-small tabular-nums text-ink">
+          {formatWholePercent(gain())}
+        </span>
         <Button
           variant="ghost"
           size="sm"
