@@ -135,6 +135,7 @@ fn connect_to_gui(id: u64, rx: &mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) 
             std::thread::spawn(move || {
                 pump_to_browser(reader);
                 log("sink closed");
+                // Fails only once the forwarder has exited, which nobody awaits.
                 let _ = tx.send(Event::GuiClosed(id));
             });
         }

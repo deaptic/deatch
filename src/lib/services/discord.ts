@@ -3,7 +3,7 @@ import {
   discordDisconnect,
   discordSetActivity,
 } from "../api/discord.ts";
-import type { ActivityInput as DiscordActivity } from "../types/index.ts";
+import type { SetActivityParams } from "../types/index.ts";
 import {
   buildPresence,
   type PresenceContext,
@@ -19,7 +19,7 @@ let selfLurkPhrase = SELF_LURK_PHRASES[0];
 let connected = false;
 let lastSerialized: string | null = null;
 let pendingTimer: number | undefined;
-let pendingActivity: DiscordActivity | null = null;
+let pendingActivity: SetActivityParams | null = null;
 
 async function connect(): Promise<boolean> {
   if (connected) return true;
@@ -57,7 +57,7 @@ async function disconnect(): Promise<void> {
 // rapid changes — e.g. quickly cycling channels with Ctrl+Tab.
 const UPDATE_DEBOUNCE_MS = 1500;
 
-function scheduleActivity(activity: DiscordActivity): void {
+function scheduleActivity(activity: SetActivityParams): void {
   pendingActivity = activity;
   if (pendingTimer !== undefined) return;
   pendingTimer = window.setTimeout(() => {
@@ -68,7 +68,7 @@ function scheduleActivity(activity: DiscordActivity): void {
   }, UPDATE_DEBOUNCE_MS);
 }
 
-async function flush(activity: DiscordActivity): Promise<void> {
+async function flush(activity: SetActivityParams): Promise<void> {
   if (!connected && !(await connect())) return;
   const serialized = JSON.stringify(activity);
   if (serialized === lastSerialized) return;

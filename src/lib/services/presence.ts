@@ -1,5 +1,5 @@
 import type {
-  ActivityInput as DiscordActivity,
+  SetActivityParams,
   NonEmpty,
   Stream,
   User,
@@ -50,7 +50,7 @@ export function presenceMode(ctx: PresenceContext): string | null {
 export function buildPresence(
   ctx: PresenceContext,
   session: PresenceSession,
-): DiscordActivity {
+): SetActivityParams {
   const ch = activeChannel(ctx);
   if (!ch) {
     return {

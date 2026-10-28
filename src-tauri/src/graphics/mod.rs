@@ -30,15 +30,18 @@ pub fn hardware_acceleration_enabled(dir: &Path) -> bool {
     !dir.join(DISABLE_GPU_MARKER).exists()
 }
 
-pub fn set_hardware_acceleration(dir: &Path, enabled: bool) -> io::Result<()> {
+pub fn set_hardware_acceleration(
+    dir: &Path,
+    params: SetHardwareAccelerationParams,
+) -> crate::error::Result<()> {
     let marker = dir.join(DISABLE_GPU_MARKER);
-    if enabled {
+    if params.enabled {
         match fs::remove_file(marker) {
-            Err(e) if e.kind() != io::ErrorKind::NotFound => Err(e),
+            Err(e) if e.kind() != io::ErrorKind::NotFound => Err(e.into()),
             _ => Ok(()),
         }
     } else {
-        fs::write(marker, "")
+        Ok(fs::write(marker, "")?)
     }
 }
 
@@ -51,10 +54,10 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("deatch-graphics-{}", std::process::id()));
         fs::create_dir_all(&dir).unwrap();
         assert!(hardware_acceleration_enabled(&dir));
-        set_hardware_acceleration(&dir, false).unwrap();
+        set_hardware_acceleration(&dir, SetHardwareAccelerationParams { enabled: false }).unwrap();
         assert!(!hardware_acceleration_enabled(&dir));
-        set_hardware_acceleration(&dir, true).unwrap();
-        set_hardware_acceleration(&dir, true).unwrap();
+        set_hardware_acceleration(&dir, SetHardwareAccelerationParams { enabled: true }).unwrap();
+        set_hardware_acceleration(&dir, SetHardwareAccelerationParams { enabled: true }).unwrap();
         assert!(hardware_acceleration_enabled(&dir));
         fs::remove_dir_all(dir).unwrap();
     }

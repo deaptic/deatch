@@ -86,6 +86,13 @@ from_display!(Discord: discord_rich_presence::error::Error);
 from_display!(Io: std::io::Error, tauri::Error);
 from_display!(Invalid: serde_json::Error);
 
+/// A background task's channel closed: the task stopped.
+impl<T> From<tokio::sync::mpsc::error::SendError<T>> for Error {
+    fn from(e: tokio::sync::mpsc::error::SendError<T>) -> Self {
+        Self::Io(e.to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Error;

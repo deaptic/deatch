@@ -143,7 +143,7 @@ pub enum AutomodAction {
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ManageHeldAutomodMessageParams {
-    pub msg_id: MessageId,
+    pub message_id: MessageId,
     pub action: AutomodAction,
 }
 
@@ -153,7 +153,7 @@ pub async fn manage_held_automod_message(
 ) -> Result<()> {
     let body = ManageHeldAutoModMessagesBody::new(
         twitch.token.user_id.as_str(),
-        params.msg_id.as_str(),
+        params.message_id.as_str(),
         matches!(params.action, AutomodAction::Allow),
     );
     twitch
@@ -171,7 +171,7 @@ mod tests {
     #[test]
     fn automod_action_is_allow_or_deny() {
         let params: ManageHeldAutomodMessageParams =
-            serde_json::from_value(json!({ "msgId": "m1", "action": "deny" })).unwrap();
+            serde_json::from_value(json!({ "messageId": "m1", "action": "deny" })).unwrap();
         assert!(matches!(params.action, AutomodAction::Deny));
         assert!(serde_json::from_value::<ManageHeldAutomodMessageParams>(
             json!({ "msgId": "m1", "action": "approve" })
