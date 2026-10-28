@@ -1,6 +1,12 @@
 import { setUser } from "../stores/users.ts";
 import * as users from "./users.ts";
-import { setAuthChecked, setDeviceCode, setWaiting } from "../stores/auth.ts";
+import {
+  setAuthChecked,
+  setDeviceCode,
+  setRestoreFailure,
+  setWaiting,
+} from "../stores/auth.ts";
+import { isAppError } from "../utils/error.ts";
 import {
   cancelLogin,
   getDeviceCode,
@@ -9,6 +15,7 @@ import {
 } from "../api/twitch/auth.ts";
 
 export async function login(): Promise<void> {
+  setRestoreFailure(null);
   setDeviceCode(null);
   setWaiting(true);
   try {
@@ -32,7 +39,12 @@ export async function logout(): Promise<void> {
 }
 
 export async function restore(): Promise<void> {
-  const user = await restoreSession({ silent: true }).catch(() => null);
+  const user = await restoreSession({ silent: true }).catch((e: unknown) => {
+    if (isAppError(e) && e.kind === "missingScope") {
+      setRestoreFailure("missingScope");
+    }
+    return null;
+  });
   if (user) {
     setUser(user);
     users.set([user]);

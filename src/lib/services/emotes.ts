@@ -1,3 +1,4 @@
+import { STORAGE_KEYS, userEmotesKey } from "../constants/storage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
@@ -39,11 +40,9 @@ import { dedupeById } from "../utils/emoteSections.ts";
 import * as storage from "../utils/storage.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
-const GLOBAL_EMOTES_CACHE_KEY = "cache:global_emotes";
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
 const GLOBALS_RETRY_MIN_MS = 30_000;
 const GLOBALS_RETRY_MAX_MS = 300_000;
-const FAVORITES_KEY = "emote_favorites";
 
 const bttv = channelResource((c) =>
   bttvGetChannelEmotes({ broadcasterId: c.id }, { silent: true }),
@@ -62,7 +61,7 @@ export async function ensureUserLoaded(): Promise<void> {
   if (!u) return;
   userEmotesLoadStarted = true;
 
-  const key = `cache:user_emotes:${u.id}`;
+  const key = userEmotesKey(u.id);
   const cached = loadCache<UserEmote[]>(key, USER_EMOTES_TTL);
   if (cached) {
     setUserEmotes(dedupeById(cached));
@@ -101,7 +100,10 @@ export function ensureGlobalLoaded(): void {
 
 /// A cached list shows at once and is refreshed behind it.
 async function loadGlobal(): Promise<void> {
-  const cached = loadCache<Emote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
+  const cached = loadCache<Emote[]>(
+    STORAGE_KEYS.globalEmotes,
+    GLOBAL_EMOTES_TTL,
+  );
   if (cached) {
     setGlobalEmotes(cached);
     fetchGlobal().catch(() => {});
@@ -112,7 +114,7 @@ async function loadGlobal(): Promise<void> {
 
 async function fetchGlobal(): Promise<void> {
   const fetched = await getGlobalEmotes({ silent: true });
-  saveCache(GLOBAL_EMOTES_CACHE_KEY, fetched);
+  saveCache(STORAGE_KEYS.globalEmotes, fetched);
   setGlobalEmotes(fetched);
 }
 
@@ -174,7 +176,7 @@ export function resetChannelThirdParty() {
 }
 
 function loadFavorites(): FavoriteEmote[] {
-  const stored = storage.read(FAVORITES_KEY);
+  const stored = storage.read(STORAGE_KEYS.emoteFavorites);
   return Array.isArray(stored) ? stored.filter(isFavorite) : [];
 }
 
@@ -194,5 +196,5 @@ export function toggleFavorite(emote: FavoriteEmote) {
     ? list.filter((e) => e.value !== emote.value)
     : [...list, emote];
   setFavorites(next);
-  storage.write(FAVORITES_KEY, next);
+  storage.write(STORAGE_KEYS.emoteFavorites, next);
 }

@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "../constants/storage.ts";
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
 import { getUsers } from "../api/twitch/users.ts";
@@ -22,7 +23,6 @@ import {
   userFromRef,
 } from "../utils/knownUsers.ts";
 
-const CACHE_KEY = "cache:users";
 const TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_KNOWN = 2000;
 const SAVE_DELAY_MS = 2000;
@@ -261,7 +261,7 @@ function scheduleSave() {
 }
 
 function load(): Record<string, KnownUser> {
-  const stored = storage.read(CACHE_KEY);
+  const stored = storage.read(STORAGE_KEYS.users);
   if (typeof stored !== "object" || stored === null) return {};
   return Object.fromEntries(
     Object.entries(stored).filter((e): e is [string, KnownUser] =>
@@ -275,5 +275,5 @@ function save() {
   saveTimer = undefined;
   if (!dirty) return;
   dirty = false;
-  storage.write(CACHE_KEY, unwrap(knownUsers));
+  storage.write(STORAGE_KEYS.users, unwrap(knownUsers));
 }

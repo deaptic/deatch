@@ -405,6 +405,7 @@
   "LOGIN_COPIED": "Copied",
   "LOGIN_COPY_CODE": "Copy code",
   "LOGIN_ENTER_CODE": "Enter this code at",
+  "LOGIN_MISSING_SCOPE": "Deatch needs new permissions, so log in again to grant them.",
   "LOGIN_REQUESTING": "Asking Twitch for a code…",
   "LOGIN_TAGLINE": "Every Twitch chat you care about, in one warm little window.",
   "LOGIN_WELCOME": "Welcome to Deatch",

@@ -1,4 +1,6 @@
+import { createEffect, createRoot, on } from "solid-js";
 import { selectedChannel } from "../stores/view.ts";
+import { user } from "../stores/users.ts";
 import {
   linkConnected,
   linkedChannel,
@@ -212,9 +214,10 @@ const retry = createBackoff(RETRY_MIN_MS, RETRY_MAX_MS);
 
 // The tab list lands before `current` so a new tab counts as linked by the
 // time the app follows it.
-/// A failed lookup stays pending and is retried.
+/// A failed lookup stays pending and is retried. Lookups need a signed-in
+/// user, so tabs reported before login wait for `start` to drain them.
 async function drainPending() {
-  if (!linkConnected()) return;
+  if (!linkConnected() || !user()) return;
   if (pendingFetch.size > 0) await drainWarmed();
   if (pendingCurrent) await drainCurrent(pendingCurrent);
 
@@ -273,6 +276,17 @@ export async function applyState({ channels, current, audio }: LinkState) {
   if (!cur && linkedChannel() !== null) setLinkedChannel(null);
 
   await drainPending();
+}
+
+export function start(): () => void {
+  return createRoot((dispose) => {
+    createEffect(
+      on(user, (signedIn) => {
+        if (signedIn) void drainPending();
+      }),
+    );
+    return dispose;
+  });
 }
 
 export function disconnect() {

@@ -4,7 +4,7 @@ import TwitchIcon from "./TwitchIcon.tsx";
 import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
 import { CARD_FRAME } from "../ui/Card.tsx";
-import { deviceCode, waiting } from "../../lib/stores/auth.ts";
+import { deviceCode, restoreFailure, waiting } from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { createCopied } from "../ui/createCopied.ts";
@@ -18,6 +18,9 @@ export default function Login() {
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
         <h1 class="text-hero text-ink">{t("LOGIN_WELCOME")}</h1>
         <p class="text-body text-ink-soft">{t("LOGIN_TAGLINE")}</p>
+        <Show when={restoreFailure() === "missingScope"}>
+          <p class="text-small text-caution">{t("LOGIN_MISSING_SCOPE")}</p>
+        </Show>
 
         <Show
           when={waiting()}

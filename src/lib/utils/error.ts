@@ -13,7 +13,7 @@ const MESSAGES: Record<GenericKind, MessageKey> = {
   invalid: "ERROR_INVALID",
 };
 
-function isAppError(e: unknown): e is AppError {
+export function isAppError(e: unknown): e is AppError {
   return typeof e === "object" && e !== null && "kind" in e;
 }
 
