@@ -1,11 +1,9 @@
 import { Show } from "solid-js";
-import { banUser, unbanUser } from "../../lib/api/twitch/moderation.ts";
+import * as bans from "../../lib/services/bans.ts";
+import type { BanChoice } from "../../lib/constants/timeouts.ts";
 import { isModOfChannel, user as currentUser } from "../../lib/stores/users.ts";
 import { moderationActionsDisabled } from "../../lib/stores/preferences.ts";
-import BanChoiceStrip, {
-  type BanChoice,
-  secondsFor,
-} from "../ban-modal/BanChoiceStrip.tsx";
+import BanChoiceStrip from "../ban-modal/BanChoiceStrip.tsx";
 
 type Props = {
   chatterId: string;
@@ -21,16 +19,14 @@ export default function UserCardModActions(props: Props) {
     isModOfChannel(props.broadcasterId);
 
   function apply(choice: BanChoice) {
-    const target = {
-      broadcasterId: props.broadcasterId,
-      userId: props.chatterId,
-    };
-    if (choice === "unban") {
-      unbanUser(target).catch(() => {});
-      return;
-    }
-    banUser({ ...target, duration: secondsFor(choice) })
-      .then(props.onRemoved)
+    bans
+      .apply(
+        { broadcasterId: props.broadcasterId, userId: props.chatterId },
+        choice,
+      )
+      .then(() => {
+        if (choice !== "unban") props.onRemoved();
+      })
       .catch(() => {});
   }
 

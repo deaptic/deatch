@@ -1,13 +1,12 @@
 import type { BannedUser } from "../../lib/types/index.ts";
 import { createSignal, onMount, Show } from "solid-js";
-import { banUser, getBan, unbanUser } from "../../lib/api/twitch/moderation.ts";
+import { getBan } from "../../lib/api/twitch/moderation.ts";
+import * as bans from "../../lib/services/bans.ts";
+import type { BanChoice } from "../../lib/constants/timeouts.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import Textarea from "../ui/Textarea.tsx";
-import BanChoiceStrip, {
-  type BanChoice,
-  secondsFor,
-} from "./BanChoiceStrip.tsx";
+import BanChoiceStrip from "./BanChoiceStrip.tsx";
 import { user } from "../../lib/stores/users.ts";
 import { formatLocale, t } from "../../lib/i18n/index.ts";
 
@@ -51,18 +50,11 @@ export default function BanModal(props: Props) {
     if (pending() || banInfo() === undefined) return;
     setPending(true);
     try {
-      const target = {
-        broadcasterId: props.broadcasterId,
-        userId: props.userId,
-      };
-      const picked = choice();
-      await (picked === "unban"
-        ? unbanUser(target)
-        : banUser({
-            ...target,
-            duration: secondsFor(picked),
-            reason: reason(),
-          }));
+      await bans.apply(
+        { broadcasterId: props.broadcasterId, userId: props.userId },
+        choice(),
+        reason(),
+      );
       props.onClose();
     } catch {
       // invokeCommand already toasted; the modal stays open to retry.
