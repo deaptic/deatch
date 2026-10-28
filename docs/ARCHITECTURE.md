@@ -76,7 +76,8 @@ a capped per-channel buffer, and renders through `FeedItem`. Backlog from
 ## Where things live
 
 Twitch tokens are in the Windows credential store under `deatch` / `auth`.
-Preferences, the inbox, and caches are in the WebView's `localStorage`. App logs
+Preferences, the inbox, and caches are in the WebView's `localStorage`, under
+the keys in `constants/storage.ts`; any other key is removed at startup. App logs
 go to `%LOCALAPPDATA%\com.deaptic.deatch\logs`, the host's to
 `%TEMP%\deatch-host.log`. Native-host manifests sit in `%LOCALAPPDATA%\Deatch\`
 with their `HKCU` registry keys.

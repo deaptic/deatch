@@ -12,6 +12,7 @@ import * as emotes from "../services/emotes.ts";
 import * as view from "../services/view.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import * as live from "../services/live.ts";
+import * as link from "../services/link.ts";
 import * as preferences from "../services/preferences.ts";
 
 export function createServices(): void {
@@ -31,6 +32,7 @@ export function createServices(): void {
       clock.start(),
       emotes.start(),
       live.start(),
+      link.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

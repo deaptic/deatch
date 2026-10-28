@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "../constants/storage.ts";
 import { createEffect } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
 import { mentions, setMentions } from "../stores/inbox.ts";
@@ -9,7 +10,6 @@ import type { Mention } from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
 
 const MAX = 100;
-const STORAGE_KEY = "mentions";
 const SAVE_DELAY_MS = 1000;
 
 let sound: HTMLAudioElement | null = null;
@@ -35,7 +35,7 @@ export function start(): () => void {
 }
 
 function load(): Mention[] {
-  const stored = storage.read(STORAGE_KEY);
+  const stored = storage.read(STORAGE_KEYS.mentions);
   if (!Array.isArray(stored)) return [];
   const upgraded = stored.map(upgradeMention).filter((m) => m !== null);
   return fresh(upgraded, Date.now());
@@ -45,7 +45,7 @@ function flush() {
   clearTimeout(saveTimer);
   saveTimer = undefined;
   if (!unsaved) return;
-  storage.write(STORAGE_KEY, unsaved);
+  storage.write(STORAGE_KEYS.mentions, unsaved);
   unsaved = undefined;
 }
 

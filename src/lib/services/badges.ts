@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "../constants/storage.ts";
 import {
   getChannelChatBadges,
   getGlobalChatBadges,
@@ -12,7 +13,6 @@ import {
 import type { BadgeMap, BadgeSet } from "../types/index.ts";
 import { type ChannelRef, channelResource } from "./channelResource.ts";
 
-const GLOBAL_BADGES_CACHE_KEY = "cache:global_badges";
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;
 
 let globalBadgesPromise: Promise<BadgeSet[]> | null = null;
@@ -20,20 +20,20 @@ let globalBadgesPromise: Promise<BadgeSet[]> | null = null;
 function loadGlobalBadges(): Promise<BadgeSet[]> {
   if (globalBadgesPromise) return globalBadgesPromise;
   const cached = loadCache<BadgeSet[]>(
-    GLOBAL_BADGES_CACHE_KEY,
+    STORAGE_KEYS.globalBadges,
     GLOBAL_BADGES_TTL,
   );
   if (cached) {
     // Stale-while-revalidate: serve cache, refresh in background.
     getGlobalChatBadges({ silent: true })
-      .then((fetched) => saveCache(GLOBAL_BADGES_CACHE_KEY, fetched))
+      .then((fetched) => saveCache(STORAGE_KEYS.globalBadges, fetched))
       .catch(() => {});
     globalBadgesPromise = Promise.resolve(cached);
     return globalBadgesPromise;
   }
   globalBadgesPromise = getGlobalChatBadges({ silent: true })
     .then((fetched) => {
-      saveCache(GLOBAL_BADGES_CACHE_KEY, fetched);
+      saveCache(STORAGE_KEYS.globalBadges, fetched);
       return fetched;
     })
     .catch((e) => {
