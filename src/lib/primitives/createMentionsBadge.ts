@@ -52,7 +52,7 @@ export function createMentionsBadge(): void {
       (bytes) => {
         // A newer count may have finished drawing first.
         if (key !== last) return;
-        setMentionsBadge(count, bytes).catch(() => {});
+        setMentionsBadge({ count, iconBytes: bytes }).catch(() => {});
       },
       (e) => console.error("mentions badge not drawn", e),
     );

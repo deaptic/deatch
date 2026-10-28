@@ -428,7 +428,9 @@ export default function Rail(props: Props) {
                       muted={linkMutedByLogin()[ch.login] === true}
                       onToggleMute={() => link.toggleMuted(ch.login)}
                       onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() => linkClose(ch.login).catch(() => {})}
+                      onMiddleClick={() =>
+                        linkClose({ channel: ch.login }).catch(() => {})
+                      }
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -521,7 +523,7 @@ export default function Rail(props: Props) {
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() => {
-                if (ownTab()) linkClose(u().login).catch(() => {});
+                if (ownTab()) linkClose({ channel: u().login }).catch(() => {});
                 else openInBrowser(u());
               }}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}

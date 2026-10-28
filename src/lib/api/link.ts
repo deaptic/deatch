@@ -1,33 +1,54 @@
-import { commands, type Compressor } from "../bindings.ts";
-import { invokeCommand } from "./utils.ts";
+import { commands } from "../bindings.ts";
+import type {
+  LinkChannelParams,
+  SetAudioParams,
+  SetMutedParams,
+} from "../types/index.ts";
+import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
 export async function linkSetMuted(
-  channel: string,
-  muted: boolean,
+  params: SetMutedParams,
+  options?: InvokeOptions,
 ): Promise<void> {
-  await invokeCommand(commands.linkSetMuted, [{ channel, muted }], {
+  await invokeCommand(commands.linkSetMuted, [params], {
     silent: true,
+    ...options,
   });
 }
 
 export async function linkSetAudio(
-  enabled: boolean,
-  compressor: Compressor,
-  gains: Record<string, number>,
+  params: SetAudioParams,
+  options?: InvokeOptions,
 ): Promise<void> {
-  await invokeCommand(commands.linkSetAudio, [{ enabled, compressor, gains }], {
+  await invokeCommand(commands.linkSetAudio, [params], {
     silent: true,
+    ...options,
   });
 }
 
-export async function linkRequestState(): Promise<void> {
-  await invokeCommand(commands.linkRequestState, [], { silent: true });
+export async function linkRequestState(options?: InvokeOptions): Promise<void> {
+  await invokeCommand(commands.linkRequestState, [], {
+    silent: true,
+    ...options,
+  });
 }
 
-export async function linkFocus(channel: string): Promise<void> {
-  await invokeCommand(commands.linkFocus, [{ channel }], { silent: true });
+export async function linkFocus(
+  params: LinkChannelParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.linkFocus, [params], {
+    silent: true,
+    ...options,
+  });
 }
 
-export async function linkClose(channel: string): Promise<void> {
-  await invokeCommand(commands.linkClose, [{ channel }], { silent: true });
+export async function linkClose(
+  params: LinkChannelParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.linkClose, [params], {
+    silent: true,
+    ...options,
+  });
 }

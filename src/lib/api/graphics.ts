@@ -1,8 +1,13 @@
 import { commands } from "../bindings.ts";
-import { invokeCommand } from "./utils.ts";
+import type { SetHardwareAccelerationParams } from "../types/index.ts";
+import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
-export async function setHardwareAcceleration(enabled: boolean): Promise<void> {
-  await invokeCommand(commands.setHardwareAcceleration, [{ enabled }], {
+export async function setHardwareAcceleration(
+  params: SetHardwareAccelerationParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.setHardwareAcceleration, [params], {
     silent: true,
+    ...options,
   });
 }

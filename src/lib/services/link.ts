@@ -23,14 +23,15 @@ import type { CompressorSettings } from "../constants/audio.ts";
 import { getStreamsFromIds } from "../api/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
-import type { LinkState, User } from "../types/index.ts";
+import type { LinkState, SetAudioParams, User } from "../types/index.ts";
 import { t } from "../i18n/index.ts";
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
 
 function closeTabs(tabs: User[]) {
-  for (const ch of tabs) if (ch.login) linkClose(ch.login).catch(() => {});
+  for (const ch of tabs)
+    if (ch.login) linkClose({ channel: ch.login }).catch(() => {});
 }
 
 export function closeAll() {
@@ -89,7 +90,7 @@ async function keepingFocus(action: () => Promise<unknown>) {
 export function openTab() {
   const tab = selectedLinked();
   if (tab) {
-    linkFocus(tab.login).catch(() => {});
+    linkFocus({ channel: tab.login }).catch(() => {});
     return;
   }
   const ch = selectedChannel();
@@ -102,7 +103,7 @@ export function openTab() {
 export function closeTab(): boolean {
   const tab = selectedLinked();
   if (!tab) return false;
-  keepingFocus(() => linkClose(tab.login)).catch(() => {});
+  keepingFocus(() => linkClose({ channel: tab.login })).catch(() => {});
   return true;
 }
 
@@ -110,7 +111,7 @@ export function closeTab(): boolean {
 /// go out at most this often, the latest ones last.
 const AUDIO_SEND_MS = 50;
 let audioTimer: number | undefined;
-let audioPending: Parameters<typeof linkSetAudio> | null = null;
+let audioPending: SetAudioParams | null = null;
 
 /// Channel gains go out as factors (1 is unchanged), not percent.
 export function sendAudio(
@@ -121,10 +122,10 @@ export function sendAudio(
   const factors = Object.fromEntries(
     Object.entries(gains).map(([login, percent]) => [login, percent / 100]),
   );
-  audioPending = [enabled, { ...compressor }, factors];
+  audioPending = { enabled, compressor: { ...compressor }, gains: factors };
   audioTimer ??= window.setTimeout(() => {
     audioTimer = undefined;
-    linkSetAudio(...audioPending!).catch(() => {});
+    if (audioPending) linkSetAudio(audioPending).catch(() => {});
   }, AUDIO_SEND_MS);
 }
 
@@ -139,7 +140,7 @@ export function muteOthers() {
     if (!ch.login) continue;
     const shouldBeMuted = ch.login !== focusedLogin;
     if (isMuted(ch.login) !== shouldBeMuted) {
-      linkSetMuted(ch.login, shouldBeMuted).catch(() => {});
+      linkSetMuted({ channel: ch.login, muted: shouldBeMuted }).catch(() => {});
     }
   }
 }
@@ -151,7 +152,7 @@ export function toggleMuteAll() {
   for (const ch of linked) {
     if (!ch.login) continue;
     if (isMuted(ch.login) !== muteAll) {
-      linkSetMuted(ch.login, muteAll).catch(() => {});
+      linkSetMuted({ channel: ch.login, muted: muteAll }).catch(() => {});
     }
   }
 }
@@ -163,9 +164,10 @@ export function currentMuted(): boolean | null {
 }
 
 export function toggleMuted(login: string) {
-  linkSetMuted(login, !isMuted(login)).catch(() =>
-    addToast(t("LINK_TAB_UNREACHABLE"), "error"),
-  );
+  linkSetMuted(
+    { channel: login, muted: !isMuted(login) },
+    { silent: false, failureMessage: t("LINK_TAB_UNREACHABLE") },
+  ).catch(() => {});
 }
 
 export function toggleMute() {
