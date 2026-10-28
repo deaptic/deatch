@@ -3,8 +3,7 @@
 
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
-import type { NoticeText } from "../types/feed.ts";
-import type { RawHypeTrain } from "../types/twitch/eventsub.ts";
+import type { NoticeText, RawHypeTrain } from "../types/index.ts";
 import { noticeText } from "../utils/feedEvent.ts";
 
 function contributors(raw: RawHypeTrain): string {

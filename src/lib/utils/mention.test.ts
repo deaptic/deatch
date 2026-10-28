@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedMessage } from "../types/feed.ts";
+import type { FeedMessage } from "../types/index.ts";
 import { isMention, mentionReason } from "./mention.ts";
 
 const message = (overrides: Partial<FeedMessage>): FeedMessage =>

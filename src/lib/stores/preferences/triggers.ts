@@ -1,4 +1,5 @@
-import { MIN_TRIGGER_COOLDOWN, prefs, setPrefs, type Trigger } from "./core.ts";
+import { prefs, setPrefs } from "./core.ts";
+import { MIN_TRIGGER_COOLDOWN, type Trigger } from "./schema.ts";
 
 export const triggers = () => prefs.triggers;
 

@@ -4,7 +4,7 @@ import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
-import { EVENTS } from "../../../lib/constants.ts";
+import { EVENTS } from "../../../lib/constants/events.ts";
 import {
   feedEvents,
   feedShowEvents,

@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawPrediction } from "../types/twitch/eventsub.ts";
+import type { RawPrediction } from "../types/index.ts";
 import {
   predictionBegin,
   predictionEnd,

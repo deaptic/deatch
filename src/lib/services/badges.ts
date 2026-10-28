@@ -9,8 +9,7 @@ import {
   setSourceBadges,
   sourceBadges,
 } from "../stores/sourceBadges.ts";
-import type { BadgeSet } from "../types/index.ts";
-import type { BadgeMap } from "../types/feed.ts";
+import type { BadgeMap, BadgeSet } from "../types/index.ts";
 import { type ChannelRef, channelResource } from "./channelResource.ts";
 
 const GLOBAL_BADGES_CACHE_KEY = "cache:global_badges";

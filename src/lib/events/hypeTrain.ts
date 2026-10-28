@@ -1,5 +1,5 @@
 import { listenFeed, unlistenAll } from "./listen.ts";
-import type { RawHypeTrain } from "../types/twitch/eventsub.ts";
+import type { RawHypeTrain } from "../types/index.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
 import { HYPE_TRAIN } from "../constants/events.ts";
 import {

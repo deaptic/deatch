@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawChannelPointsRedemption } from "../types/twitch/eventsub.ts";
+import type { RawChannelPointsRedemption } from "../types/index.ts";
 import { mapRedemption } from "./redemption-mapper.ts";
 
 const raw = (

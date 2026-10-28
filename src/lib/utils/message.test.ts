@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedMessage } from "../types/feed.ts";
+import type { FeedMessage } from "../types/index.ts";
 import { textOf, withoutReplyMention } from "./message.ts";
 
 const reply = (fragments: FeedMessage["fragments"]): FeedMessage =>

@@ -1,5 +1,5 @@
 import { createStore, reconcile } from "solid-js/store";
-import type { BadgeMap } from "../types/feed.ts";
+import type { BadgeMap } from "../types/index.ts";
 
 /// Badge sets of shared chat partner channels, by channel id, so a partner
 /// chatter's badges resolve against the channel they chatted in.

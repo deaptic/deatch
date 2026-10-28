@@ -1,7 +1,8 @@
 import { produce } from "solid-js/store";
-import { feeds, getEntryId, isSilent, setFeeds } from "./core.ts";
+import { feeds, isSilent, setFeeds } from "./core.ts";
+import { getEntryId } from "./ops.ts";
 import { append, insert, prepend } from "./ops.ts";
-import type { FeedEntry, NoticeText } from "../../types/feed.ts";
+import type { FeedEntry, NoticeText } from "../../types/index.ts";
 import { feedEvent } from "../../utils/feedEvent.ts";
 import { selectedChannel } from "../view.ts";
 

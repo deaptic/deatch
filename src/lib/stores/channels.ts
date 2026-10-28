@@ -1,7 +1,5 @@
 import { createSignal } from "solid-js";
-import type { ChannelInfo } from "../types/index.ts";
-import type { Stream } from "../types/index.ts";
-import type { User, UserRef } from "../types/index.ts";
+import type { ChannelInfo, Stream, User, UserRef } from "../types/index.ts";
 import { pinnedChannels } from "./preferences.ts";
 import { linkWarmedChannels } from "./link.ts";
 import { knownUser } from "./users.ts";

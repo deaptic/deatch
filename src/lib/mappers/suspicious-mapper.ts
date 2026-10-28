@@ -2,12 +2,14 @@
 // can be tested without Tauri.
 
 import { t } from "../i18n/index.ts";
-import type { FeedMessage, NoticeText, SuspiciousInfo } from "../types/feed.ts";
-import { chatterFields, person } from "../utils/feedEvent.ts";
 import type {
+  FeedMessage,
+  NoticeText,
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
-} from "../types/twitch/eventsub.ts";
+  SuspiciousInfo,
+} from "../types/index.ts";
+import { chatterFields, person } from "../utils/feedEvent.ts";
 import { mapFragment } from "./chat-mapper.ts";
 
 /// Null once Twitch no longer treats the chatter as suspicious.

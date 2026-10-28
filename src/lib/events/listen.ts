@@ -4,8 +4,7 @@ import {
   onAppEvent,
   onEventSub,
 } from "../api/events.ts";
-import type { EventEnvelope, EventKind } from "../types/twitch/eventsub.ts";
-import type { FeedEntry } from "../types/feed.ts";
+import type { EventEnvelope, EventKind, FeedEntry } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
 
 type Unlisten = () => void;

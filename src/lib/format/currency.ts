@@ -1,5 +1,5 @@
 import { formatLocale } from "../i18n/index.ts";
-import type { RawAmount } from "../types/twitch/eventsub.ts";
+import type { RawAmount } from "../types/index.ts";
 
 export function formatAmount(amount: RawAmount): string {
   return new Intl.NumberFormat(formatLocale(), {

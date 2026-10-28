@@ -2,8 +2,7 @@
 // tested without Tauri.
 
 import { t } from "../i18n/index.ts";
-import type { FeedEvent, Fragment } from "../types/feed.ts";
-import type { RawBitsUse } from "../types/twitch/eventsub.ts";
+import type { FeedEvent, Fragment, RawBitsUse } from "../types/index.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { BITS_USE } from "../constants/events.ts";
 import { wordsOf } from "./chat-mapper.ts";

@@ -9,8 +9,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
-import type { Stream } from "../../lib/types/index.ts";
+import type { Stream, User } from "../../lib/types/index.ts";
 import { liveStreams } from "../../lib/stores/channels.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import {

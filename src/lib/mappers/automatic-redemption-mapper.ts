@@ -1,8 +1,7 @@
 // Pure mapper for Twitch's built-in channel points rewards.
 
 import { t } from "../i18n/index.ts";
-import type { FeedEvent } from "../types/feed.ts";
-import type { RawAutomaticRedemption } from "../types/twitch/eventsub.ts";
+import type { FeedEvent, RawAutomaticRedemption } from "../types/index.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
 

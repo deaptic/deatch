@@ -2,6 +2,7 @@ import { produce } from "solid-js/store";
 import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
 import type {
+  AutomodHoldStatus,
   BadgeMap,
   FeedEntry,
   FeedEvent,
@@ -9,8 +10,7 @@ import type {
   Person,
   Redemption,
   SuspiciousInfo,
-} from "../../types/feed.ts";
-import type { AutomodHoldStatus } from "../../types/index.ts";
+} from "../../types/index.ts";
 
 /// Changes the first entry `find` picks; false when there is none.
 function updateFirst<T extends FeedEntry>(

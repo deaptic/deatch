@@ -6,7 +6,7 @@
 // arrives first waits ~3s for the other. Rewards without input never echo
 // into chat, so they post straight away.
 
-import type { Redemption } from "../types/feed.ts";
+import type { Redemption } from "../types/index.ts";
 import { setChannelPointsRedemption } from "../stores/feeds.ts";
 import { createTimeouts } from "../utils/timeouts.ts";
 

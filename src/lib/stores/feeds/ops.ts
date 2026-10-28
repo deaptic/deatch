@@ -1,4 +1,4 @@
-import type { FeedEntry } from "../../types/feed.ts";
+import type { FeedEntry } from "../../types/index.ts";
 import { enforceCaps } from "./caps.ts";
 
 export function getEntryId(item: FeedEntry): string {

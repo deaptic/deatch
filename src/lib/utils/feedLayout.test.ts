@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedEvent, FeedMessage } from "../types/feed.ts";
+import type { FeedEvent, FeedMessage } from "../types/index.ts";
 import { dayLabel, GROUP_WINDOW_MS, layoutFeed } from "./feedLayout.ts";
 
 const T0 = new Date(2026, 9, 1, 10, 0).getTime();

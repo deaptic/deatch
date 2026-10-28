@@ -2,9 +2,8 @@ import type { Anchor } from "../../utils/wordMatch.ts";
 import {
   BADGE_CATEGORIES,
   type BadgeCategoryKey,
-  EVENTS,
-  type EventKey,
-} from "../../constants.ts";
+} from "../../constants/badges.ts";
+import { EVENTS, type EventKey } from "../../constants/events.ts";
 import { DENSITIES, type Density } from "../../constants/density.ts";
 import { type Theme, THEMES } from "../../constants/theme.ts";
 import {

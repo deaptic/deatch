@@ -1,5 +1,5 @@
 import { children, For, type JSX, Show } from "solid-js";
-import { badgeCategoryFor } from "../../lib/constants.ts";
+import { badgeCategoryFor } from "../../lib/constants/badges.ts";
 import { feedBadges, feedShowBadges } from "../../lib/stores/preferences.ts";
 import type { BadgeMap } from "../../lib/types/index.ts";
 

@@ -4,7 +4,7 @@ import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
-import { BADGE_CATEGORIES } from "../../../lib/constants.ts";
+import { BADGE_CATEGORIES } from "../../../lib/constants/badges.ts";
 import {
   feedBadges,
   feedShowBadges,

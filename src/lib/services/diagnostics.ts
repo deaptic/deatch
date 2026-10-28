@@ -2,7 +2,7 @@ import { unwrap } from "solid-js/store";
 import { getAppStats } from "../api/diagnostics.ts";
 import { feeds } from "../stores/feeds.ts";
 import { knownUsers } from "../stores/users.ts";
-import type { CacheStats, Diagnostics } from "../types/diagnostics.ts";
+import type { CacheStats, Diagnostics } from "../types/index.ts";
 
 const POLL_MS = 1000;
 

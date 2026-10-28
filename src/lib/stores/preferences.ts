@@ -1,17 +1,16 @@
+export { prefs, restorePreferences } from "./preferences/core.ts";
 export {
   clampCooldown,
   MAX_TRIGGER_COOLDOWN,
   MIN_TRIGGER_COOLDOWN,
-  prefs,
-  restorePreferences,
-} from "./preferences/core.ts";
+} from "./preferences/schema.ts";
 export type {
   BadgePref,
   EventPref,
   Trigger,
   TriggerAction,
   UserPreferences,
-} from "./preferences/core.ts";
+} from "./preferences/schema.ts";
 export * from "./preferences/feed.ts";
 export * from "./preferences/users.ts";
 export * from "./preferences/keywords.ts";
