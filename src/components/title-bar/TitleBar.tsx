@@ -6,7 +6,15 @@ import {
   Square,
   X,
 } from "lucide-solid";
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
+import { createDebounced } from "../../lib/primitives/createDebounced.ts";
 import { appVersion } from "../../lib/api/app.ts";
 import {
   closeWindow,
@@ -25,6 +33,8 @@ import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
+
+const RESIZE_SETTLE_MS = 100;
 
 const CONTROL =
   "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
@@ -54,6 +64,17 @@ export default function TitleBar(props: Props) {
       .catch(() => {});
   });
 
+  // A drag-resize fires many events; the state is only asked once they settle.
+  const [resizes, setResizes] = createSignal(0);
+  const settled = createDebounced(resizes, RESIZE_SETTLE_MS);
+  createEffect(
+    on(settled, () => {
+      isWindowMaximized({ silent: true })
+        .then(setMaximized)
+        .catch(() => {});
+    }),
+  );
+
   onMount(() => {
     let unlisten: (() => void) | undefined;
     let cancelled = false;
@@ -61,12 +82,7 @@ export default function TitleBar(props: Props) {
       cancelled = true;
       unlisten?.();
     });
-    const syncMaximized = () =>
-      isWindowMaximized({ silent: true })
-        .then(setMaximized)
-        .catch(() => {});
-    void syncMaximized();
-    onWindowResized(syncMaximized, { silent: true })
+    onWindowResized(() => setResizes((n) => n + 1), { silent: true })
       .then((off) => {
         if (cancelled) off();
         else unlisten = off;
