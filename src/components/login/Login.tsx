@@ -50,17 +50,17 @@ export default function Login() {
                   <p class="text-small text-ink-soft">
                     {t("LOGIN_ENTER_CODE")}{" "}
                     <a
-                      href={code().verification_uri}
+                      href={code().verificationUri}
                       onClick={(e) => {
                         e.preventDefault();
-                        browser.open(code().verification_uri);
+                        browser.open(code().verificationUri);
                       }}
                       class="text-accent-ink hover:underline"
                     >
                       twitch.tv/activate
                     </a>
                   </p>
-                  <p class="font-mono text-hero text-ink">{code().user_code}</p>
+                  <p class="font-mono text-hero text-ink">{code().userCode}</p>
                   <Button
                     variant="neutral"
                     size="sm"
@@ -71,7 +71,7 @@ export default function Login() {
                         <Copy class="size-4" />
                       )
                     }
-                    onClick={() => codeCopy.copy(code().user_code)}
+                    onClick={() => codeCopy.copy(code().userCode)}
                   >
                     {codeCopy.copied()
                       ? t("LOGIN_COPIED")

@@ -7,6 +7,7 @@ pub struct EmoteEntry {
 }
 
 #[derive(Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct ChannelResult {
     pub emotes: Vec<EmoteEntry>,
     pub emote_set_id: Option<String>,

@@ -28,10 +28,10 @@ export async function subscribe(broadcasterId: string): Promise<void> {
       silent: true,
     },
   ).catch(() => null);
-  if (requests.get(broadcasterId) !== request || !channel?.emote_set_id) return;
+  if (requests.get(broadcasterId) !== request || !channel?.emoteSetId) return;
   const entry: Entry = {
     broadcasterId,
-    setId: channel.emote_set_id,
+    setId: channel.emoteSetId,
     emotes: channel.emotes,
   };
   byBroadcaster.set(broadcasterId, entry);
