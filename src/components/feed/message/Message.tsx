@@ -19,7 +19,7 @@ import Fragments from "../../ui/Fragments.tsx";
 import Timestamp from "../../ui/Timestamp.tsx";
 import type { UserActions } from "../../ui/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
-import * as message from "./details.ts";
+import * as details from "./details.ts";
 import Avatar from "./Avatar.tsx";
 import Actions from "./Actions.tsx";
 import Reply from "./Reply.tsx";
@@ -67,8 +67,8 @@ export default function Message(props: Props) {
   // Spacious rows pin the source channel to the avatar instead.
   const badges = (placement: BadgePlacement) => (
     <BadgeBox
-      badges={props.showBadges !== false ? message.chatterBadges(item) : []}
-      channelBadges={message.badgeMap(item, props.badges)}
+      badges={props.showBadges !== false ? details.chatterBadges(item) : []}
+      channelBadges={details.badgeMap(item, props.badges)}
       placement={placement}
     >
       <Show when={!comfortable() && item.source}>
@@ -162,11 +162,11 @@ export default function Message(props: Props) {
       flush={props.flush}
       bare={props.bare}
       showTimestamp={props.showTimestamp}
-      tone={message.tone(
+      tone={details.tone(
         item,
         props.highlightMentions !== false && mentioned(),
       )}
-      dimmed={message.isHoldResolved(item)}
+      dimmed={details.isHoldResolved(item)}
       tile={comfortable() ? avatar : undefined}
       overlay={toolbar}
       onContextMenu={
@@ -192,12 +192,12 @@ export default function Message(props: Props) {
               class="text-caution"
               label={t("FEED_AUTOMOD_HELD", { reason: h().reason })}
               suffix={
-                message.isHoldResolved(item)
-                  ? message.holdOutcome(h())
+                details.isHoldResolved(item)
+                  ? details.holdOutcome(h())
                   : undefined
               }
               actions={
-                message.isHoldPending(item)
+                details.isHoldPending(item)
                   ? [
                       {
                         title: t("FEED_AUTOMOD_APPROVE"),
@@ -241,7 +241,7 @@ export default function Message(props: Props) {
             />
           )}
         </Show>
-        <Show when={message.pointsLabel(item)}>
+        <Show when={details.pointsLabel(item)}>
           {(label) => (
             <FeedItem.Note class="text-event-channel-points" label={label()} />
           )}
