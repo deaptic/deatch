@@ -1,4 +1,4 @@
-import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { createCopied } from "./createCopied.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 /// Click-to-copy text: the same cursor, hover, green flash and hint

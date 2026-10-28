@@ -10,14 +10,14 @@ import { feeds } from "../../lib/stores/feeds.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
-import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
 import { mergeMessages } from "./mergeMessages.ts";
 import type { UserAction } from "../ui/userLink.ts";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import { dismissOnOutside } from "../../lib/reactive/dismissOnOutside.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 import { t } from "../../lib/i18n/index.ts";
 

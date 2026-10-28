@@ -10,7 +10,7 @@ import {
   Suspense,
 } from "solid-js";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
+import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
 import * as chat from "../../lib/services/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";

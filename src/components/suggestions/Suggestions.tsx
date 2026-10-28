@@ -1,5 +1,5 @@
 import { createEffect, For, type JSX, onMount } from "solid-js";
-import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
+import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import SuggestionItem from "./SuggestionItem.tsx";
 
 type Props<T> = {

@@ -1,8 +1,8 @@
 import { createSignal, type JSX, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
-import { dismissOnOutside } from "../../lib/primitives/dismissOnOutside.ts";
+import { dismissOnOutside } from "../../lib/reactive/dismissOnOutside.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 
 const MARGIN = 8;
 /** Distance between an overlay and the control that opened it: below it, or

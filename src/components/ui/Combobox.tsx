@@ -8,7 +8,7 @@ import {
 } from "solid-js";
 import { Check, ChevronDown, X } from "lucide-solid";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
+import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import Field from "./Field.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
