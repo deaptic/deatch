@@ -18,10 +18,10 @@ import { markChannelMentionsRead } from "../stores/inbox.ts";
 import { t } from "../i18n/index.ts";
 
 export type ChannelNavigation = {
-  selectChannel(ch: User): void;
-  openChannel(channelId: string): void;
-  jumpToMessage(channelId: string, messageId: string): void;
-  stepHistory(delta: 1 | -1): void;
+  selectChannel: (ch: User) => void;
+  openChannel: (channelId: string) => void;
+  jumpToMessage: (channelId: string, messageId: string) => void;
+  stepHistory: (delta: 1 | -1) => void;
 };
 
 export function createChannelNavigation(): ChannelNavigation {

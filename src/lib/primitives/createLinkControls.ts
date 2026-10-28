@@ -17,8 +17,8 @@ import {
 import * as link from "../services/link.ts";
 
 export type LinkControls = {
-  cycleChannel(direction: 1 | -1): void;
-  toggleLink(): void;
+  cycleChannel: (direction: 1 | -1) => void;
+  toggleLink: () => void;
 };
 
 export function createLinkControls(nav: ChannelNavigation): LinkControls {

@@ -17,7 +17,7 @@ import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 export type ChannelSubscriptions = {
   setLiveStreams: (streams: User[]) => void;
   setLiveLoaded: (loaded: boolean) => void;
-  leaveAll(): void;
+  leaveAll: () => void;
 };
 
 export function createChannelSubscriptions(): ChannelSubscriptions {
