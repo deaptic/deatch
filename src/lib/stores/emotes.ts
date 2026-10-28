@@ -1,11 +1,11 @@
-import { createMemo, createRoot, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import type { EmoteEntry } from "../types/index.ts";
 import type { Emote, UserEmote } from "../types/index.ts";
 import type { User } from "../types/index.ts";
+import { type EmoteMap, emoteMap } from "../utils/emoteMap.ts";
 import { knownUser } from "./users.ts";
 
 export type { EmoteEntry };
-export type EmoteMap = Record<string, string>;
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 export type FavoriteEmote = { value: string; url: string; label: string };
 
@@ -34,21 +34,9 @@ export const [sevenTvChannel, setSevenTvChannel] = createSignal<EmoteEntry[]>(
 export const [bttvChannel, setBttvChannel] = createSignal<EmoteEntry[]>([]);
 export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 
-function computeThirdPartyEmoteMap(): EmoteMap {
-  // No prototype: chat words like "constructor" must not hit Object.prototype.
-  const map: EmoteMap = Object.create(null);
-  for (const e of sevenTvGlobal()) map[e.name] = e.url;
-  for (const e of bttvGlobal()) map[e.name] = e.url;
-  for (const e of ffzGlobal()) map[e.name] = e.url;
-  for (const e of sevenTvChannel()) map[e.name] = e.url;
-  for (const e of bttvChannel()) map[e.name] = e.url;
-  for (const e of ffzChannel()) map[e.name] = e.url;
-  return map;
-}
-
-export const thirdPartyEmoteMap = createRoot(() =>
-  createMemo(computeThirdPartyEmoteMap),
-);
+/// Every third-party emote by name; the emotes service keeps it current.
+export const [thirdPartyEmoteMap, setThirdPartyEmoteMap] =
+  createSignal<EmoteMap>(emoteMap([]));
 
 function persistFavorites(list: FavoriteEmote[]) {
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
