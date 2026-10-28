@@ -3,6 +3,7 @@ import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
 import { commands } from "../../command-composer/commands.ts";
 import type { Command } from "../../command-composer/types.ts";
+import { commandUsage } from "../../command-composer/usage.ts";
 import {
   isBroadcasterOfChannel,
   isModOfChannel,
@@ -38,13 +39,10 @@ export default function CommandAutocomplete(props: Props) {
     const items: CommandSuggestion[] = [];
     for (const c of commands) {
       if (!canRunCommand(c, props.broadcasterId)) continue;
-      const usage = c.options
-        .map((o) => (o.required === false ? `[${o.name}?]` : `[${o.name}]`))
-        .join(" ");
       items.push({
         name: c.name,
         aliases: c.aliases ?? [],
-        usage,
+        usage: commandUsage(c),
         description: t(c.description),
       });
     }
