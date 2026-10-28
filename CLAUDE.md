@@ -9,11 +9,11 @@ fix the code.
 ## Commands
 
 ```powershell
-pnpm install           # frontend deps
-pnpm tauri dev         # run app in dev
-pnpm bindings          # regenerate src/lib/bindings.ts
-pnpm test              # frontend unit tests
-vp check --fix         # format, lint, type-check
+pnpm install                    # frontend deps
+pnpm tauri dev                  # run app in dev
+pnpm bindings                   # regenerate src/lib/bindings.ts
+pnpm test                       # frontend unit tests
+vp check --fix --deny-warnings  # format, lint, type-check
 cd src-tauri && cargo fmt && cargo clippy --all-targets && cargo test --lib
 ```
 
