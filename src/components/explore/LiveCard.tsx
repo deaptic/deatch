@@ -9,6 +9,7 @@ import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
+import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   stream: Stream;
@@ -41,7 +42,7 @@ export default function LiveCard(props: Props) {
           <Show when={rate() > 0}>
             <span class={OVERLAY_CHIP}>
               <MessageSquare class="size-3" />
-              {rate()}/min
+              {t("EXPLORE_CHAT_RATE", { rate: rate() })}
             </span>
           </Show>
           <span class={OVERLAY_CHIP}>

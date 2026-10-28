@@ -3,6 +3,7 @@ import type { Emote, EmoteEntry, User, UserEmote } from "../types/index.ts";
 import { type EmoteMap, emoteMap } from "../utils/emoteMap.ts";
 import { isUserId } from "../utils/knownUsers.ts";
 import { knownUser } from "./users.ts";
+import { t } from "../i18n/index.ts";
 
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 export type FavoriteEmote = { value: string; url: string; label: string };
@@ -92,13 +93,17 @@ export function computeChannelSections(
   }
   const stv = sevenTvChannel();
   if (stv.length) {
-    sections.push({ id: "7tv-channel", label: "7TV", emotes: sortByName(stv) });
+    sections.push({
+      id: "7tv-channel",
+      label: t("EMOTES_SECTION_7TV"),
+      emotes: sortByName(stv),
+    });
   }
   const bttv = bttvChannel();
   if (bttv.length) {
     sections.push({
       id: "bttv-channel",
-      label: "BetterTTV",
+      label: t("EMOTES_SECTION_BTTV"),
       emotes: sortByName(bttv),
     });
   }
@@ -106,7 +111,7 @@ export function computeChannelSections(
   if (ffz.length) {
     sections.push({
       id: "ffz-channel",
-      label: "FrankerFaceZ",
+      label: t("EMOTES_SECTION_FFZ"),
       emotes: sortByName(ffz),
     });
   }
@@ -154,16 +159,28 @@ export function computeGlobalSections(
   return [
     ...subscriptionSections,
     ...(merged.length
-      ? [{ id: "twitch-global", label: "Twitch Global", emotes: merged }]
+      ? [
+          {
+            id: "twitch-global",
+            label: t("EMOTES_SECTION_TWITCH_GLOBAL"),
+            emotes: merged,
+          },
+        ]
       : []),
     ...(stv.length
-      ? [{ id: "7tv", label: "7TV", emotes: sortByName(stv) }]
+      ? [{ id: "7tv", label: t("EMOTES_SECTION_7TV"), emotes: sortByName(stv) }]
       : []),
     ...(bttv.length
-      ? [{ id: "bttv", label: "BetterTTV", emotes: sortByName(bttv) }]
+      ? [
+          {
+            id: "bttv",
+            label: t("EMOTES_SECTION_BTTV"),
+            emotes: sortByName(bttv),
+          },
+        ]
       : []),
     ...(ffz.length
-      ? [{ id: "ffz", label: "FrankerFaceZ", emotes: sortByName(ffz) }]
+      ? [{ id: "ffz", label: t("EMOTES_SECTION_FFZ"), emotes: sortByName(ffz) }]
       : []),
   ];
 }

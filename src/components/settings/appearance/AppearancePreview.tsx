@@ -37,10 +37,12 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
     ...extra,
   });
   return [
-    message("p1", "Welcome in, grab a seat", 12),
-    message("p2", "We start in five minutes", 11.5),
-    message("p3", "Wrong tab, ignore that", 11, { deleted: true }),
-    message("p4", "Thanks for hanging out today", 1),
+    message("p1", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_WELCOME"), 12),
+    message("p2", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_START"), 11.5),
+    message("p3", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_WRONG_TAB"), 11, {
+      deleted: true,
+    }),
+    message("p4", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_THANKS"), 1),
     feedEvent(
       "sub",
       t("SETTINGS_APPEARANCE_PREVIEW_SUB", { name: me.name }),

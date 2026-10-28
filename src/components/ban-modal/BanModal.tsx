@@ -2,7 +2,8 @@ import type { BannedUser } from "../../lib/types/index.ts";
 import { createSignal, onMount, Show } from "solid-js";
 import { getBan } from "../../lib/api/twitch/moderation.ts";
 import * as bans from "../../lib/services/bans.ts";
-import type { BanChoice } from "../../lib/constants/timeouts.ts";
+import { type BanChoice, secondsFor } from "../../lib/constants/timeouts.ts";
+import { formatDuration } from "../../lib/format/duration.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import { autofocus } from "../../lib/reactive/focus.ts";
@@ -40,12 +41,14 @@ export default function BanModal(props: Props) {
   );
 
   const isBroadcaster = () => user()?.id === props.broadcasterId;
-  const confirmLabel = () =>
-    choice() === "unban"
-      ? t("BAN_UNBAN")
-      : choice() === "ban"
-        ? t("BAN_BAN")
-        : t("BAN_TIME_OUT", { duration: choice() });
+  const confirmLabel = () => {
+    const picked = choice();
+    if (picked === "unban") return t("BAN_UNBAN");
+    const seconds = secondsFor(picked);
+    return seconds === null
+      ? t("BAN_BAN")
+      : t("BAN_TIME_OUT", { duration: formatDuration(seconds) });
+  };
 
   async function confirm() {
     if (pending() || banInfo() === undefined) return;

@@ -1,25 +1,29 @@
+import { type MessageKey, t } from "../i18n/index.ts";
+
 export const MODIFIER_KEYS = new Set(["Control", "Alt", "Shift", "Meta"]);
 
-const KEY_LABELS: Record<string, string> = {
-  ctrl: "Ctrl",
-  alt: "Alt",
-  shift: "Shift",
-  meta: "Win",
-  up: "↑",
-  down: "↓",
-  left: "←",
-  right: "→",
-  enter: "Enter",
-  escape: "Esc",
-  tab: "Tab",
-  pageup: "PgUp",
-  pagedown: "PgDn",
+const KEY_LABELS: Record<string, MessageKey> = {
+  ctrl: "KEY_CTRL",
+  alt: "KEY_ALT",
+  shift: "KEY_SHIFT",
+  meta: "KEY_META",
+  up: "KEY_UP",
+  down: "KEY_DOWN",
+  left: "KEY_LEFT",
+  right: "KEY_RIGHT",
+  enter: "KEY_ENTER",
+  escape: "KEY_ESCAPE",
+  tab: "KEY_TAB",
+  pageup: "KEY_PAGE_UP",
+  pagedown: "KEY_PAGE_DOWN",
 };
 
 export function keyLabels(combo: string): string[] {
-  return combo
-    .split(/-(?!$)/)
-    .map((k) => KEY_LABELS[k] ?? (k.length === 1 ? k.toUpperCase() : k));
+  return combo.split(/-(?!$)/).map((k) => {
+    const label = KEY_LABELS[k];
+    if (label) return t(label);
+    return k.length === 1 ? k.toUpperCase() : k;
+  });
 }
 
 export function comboFor(e: KeyboardEvent): string {

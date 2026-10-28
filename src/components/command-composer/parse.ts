@@ -1,6 +1,6 @@
 import { t } from "../../lib/i18n/index.ts";
 import type { CommandOption, DurationOption } from "./types.ts";
-import { DURATION_UNITS, formatDuration } from "../../lib/format/duration.ts";
+import { formatDuration, secondsPer } from "../../lib/format/duration.ts";
 import { at } from "../../lib/utils/at.ts";
 
 export type Slot = {
@@ -15,7 +15,7 @@ export function parseDuration(raw: string): number | null {
   if (!/^(\d+[smhdw]?)+$/.test(text)) return null;
   let total = 0;
   for (const match of text.matchAll(/(\d+)([smhdw]?)/g)) {
-    const unit = DURATION_UNITS[at(match, 2)] ?? 1;
+    const unit = secondsPer(at(match, 2));
     total += parseInt(at(match, 1), 10) * unit;
   }
   return total;

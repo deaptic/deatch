@@ -1,25 +1,49 @@
-export const DURATION_UNITS: Record<string, number> = {
-  s: 1,
-  m: 60,
-  h: 3600,
-  d: 86400,
-  w: 604800,
+import { formatLocale } from "../i18n/index.ts";
+
+type Unit = {
+  /// What users type after a number: `10m`, `1h30m`.
+  letter: string;
+  seconds: number;
+  name: "week" | "day" | "hour" | "minute" | "second";
 };
 
-export function formatDuration(seconds: number): string {
-  if (seconds <= 0) return "0s";
-  const [unit, size] = Object.entries(DURATION_UNITS)
-    .reverse()
-    .find(([, size]) => seconds % size === 0) ?? ["s", 1];
-  return `${seconds / size}${unit}`;
+const SECOND: Unit = { letter: "s", seconds: 1, name: "second" };
+
+/// Largest first.
+const UNITS: readonly Unit[] = [
+  { letter: "w", seconds: 604800, name: "week" },
+  { letter: "d", seconds: 86400, name: "day" },
+  { letter: "h", seconds: 3600, name: "hour" },
+  { letter: "m", seconds: 60, name: "minute" },
+  SECOND,
+];
+
+/// Seconds per typed unit letter; a bare number is seconds.
+export function secondsPer(letter: string): number {
+  return UNITS.find((u) => u.letter === letter)?.seconds ?? 1;
 }
 
+function format(value: number, unit: Unit): string {
+  return new Intl.NumberFormat(formatLocale(), {
+    style: "unit",
+    unit: unit.name,
+    unitDisplay: "narrow",
+  }).format(value);
+}
+
+/// Exact, in the largest unit that divides it evenly.
+export function formatDuration(seconds: number): string {
+  if (seconds <= 0) return format(0, SECOND);
+  const unit = UNITS.find((u) => seconds % u.seconds === 0) ?? SECOND;
+  return format(seconds / unit.seconds, unit);
+}
+
+/// Rounded to the nearest whole unit, up to days.
 export function formatApproxDuration(seconds: number): string {
-  if (seconds <= 0) return "0s";
-  if (seconds >= 86400) return `${Math.round(seconds / 86400)}d`;
-  if (seconds >= 3600) return `${Math.round(seconds / 3600)}h`;
-  if (seconds >= 60) return `${Math.round(seconds / 60)}m`;
-  return `${seconds}s`;
+  if (seconds <= 0) return format(0, SECOND);
+  const unit =
+    UNITS.find((u) => u.name !== "week" && seconds >= u.seconds) ?? SECOND;
+  return format(Math.round(seconds / unit.seconds), unit);
 }
 
 /// Approximate time between two ISO timestamps.

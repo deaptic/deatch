@@ -107,7 +107,7 @@ export default function Message(props: Props) {
       </span>
       <Show when={item.deleted}>
         <span class="ml-1.5 text-feed-meta text-ink-faint select-none">
-          (deleted)
+          {t("MESSAGE_DELETED")}
         </span>
       </Show>
     </Show>
