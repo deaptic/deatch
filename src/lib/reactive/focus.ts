@@ -8,3 +8,9 @@ export function captureFocusForRestore() {
     }
   });
 }
+
+/// Focuses an element once it is on screen; as a `ref`, it runs before the
+/// element is attached, so the focus waits a turn.
+export function autofocus(el: HTMLElement): void {
+  setTimeout(() => el.focus());
+}

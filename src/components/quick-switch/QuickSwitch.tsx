@@ -9,10 +9,8 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { Portal } from "solid-js/web";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
-import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
@@ -26,6 +24,9 @@ import Avatar from "../ui/Avatar.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Field from "../ui/Field.tsx";
 import Loading from "../ui/Loading.tsx";
+import Modal from "../ui/Modal.tsx";
+import { autofocus } from "../../lib/reactive/focus.ts";
+import Kbd from "../ui/Kbd.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -34,9 +35,6 @@ type Props = {
 };
 
 type Row = { kind: "channel"; user: User } | { kind: "search"; query: string };
-
-const KBD =
-  "min-w-5.5 h-5 px-1.5 inline-grid place-items-center rounded-xs bg-raised text-micro text-ink-faint font-sans";
 
 function candidates(): User[] {
   const seen = new Set<string>();
@@ -57,10 +55,8 @@ function matches(u: User, q: string): boolean {
 }
 
 export default function QuickSwitch(props: Props) {
-  captureFocusForRestore();
   const [query, setQuery] = createSignal("");
   const [searching, setSearching] = createSignal(false);
-  let inputRef: HTMLInputElement | undefined;
 
   const rows = createMemo<Row[]>(() => {
     const q = query().trim().toLowerCase();
@@ -102,7 +98,6 @@ export default function QuickSwitch(props: Props) {
   }
 
   onMount(() => {
-    queueMicrotask(() => inputRef?.focus());
     const unbind = shortcuts.bindScope("quickSwitchOpen", {
       up: () => move(-1),
       down: () => move(1),
@@ -119,141 +114,131 @@ export default function QuickSwitch(props: Props) {
   });
 
   return (
-    <Portal>
-      <div
-        class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-40 bg-scrim"
-        onMouseDown={(e) => {
-          if (e.target === e.currentTarget) props.onClose();
-        }}
-      >
-        <div
-          role="dialog"
-          aria-label={t("QUICK_SWITCH_LABEL")}
-          class="w-140 max-w-full max-h-3/5 flex flex-col bg-overlay border border-line rounded-lg p-2.5 transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+    <Modal
+      look="palette"
+      label={t("QUICK_SWITCH_LABEL")}
+      onClose={props.onClose}
+    >
+      <Field
+        size="lg"
+        icon={<Search />}
+        ref={autofocus}
+        placeholder={t("QUICK_SWITCH_PLACEHOLDER")}
+        value={query()}
+        onInput={(e) => setQuery(e.currentTarget.value)}
+        trailing={<Kbd size="sm" combo="escape" />}
+      />
+      <div class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5">
+        <Show
+          when={rows().length > 0}
+          fallback={
+            <p class="py-8 text-center text-body text-ink-soft">
+              {t("QUICK_SWITCH_EMPTY")}
+            </p>
+          }
         >
-          <Field
-            size="lg"
-            icon={<Search />}
-            ref={(el) => (inputRef = el)}
-            placeholder={t("QUICK_SWITCH_PLACEHOLDER")}
-            value={query()}
-            onInput={(e) => setQuery(e.currentTarget.value)}
-            trailing={<kbd class={KBD}>Esc</kbd>}
-          />
-          <div class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5">
-            <Show
-              when={rows().length > 0}
-              fallback={
-                <p class="py-8 text-center text-body text-ink-soft">
-                  {t("QUICK_SWITCH_EMPTY")}
-                </p>
-              }
-            >
-              <For each={rows()}>
-                {(row, i) => {
-                  const link = createChannelLink(() =>
-                    row.kind === "channel" ? row.user : undefined,
-                  );
-                  return (
-                    <button
-                      type="button"
-                      data-switch-index={i()}
-                      onMouseMove={() => setActive(i())}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(e) => void open(row, e.ctrlKey)}
-                      onContextMenu={link.handlers.onContextMenu}
-                      onAuxClick={link.handlers.onAuxClick}
-                      class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
-                        active() === i() ? "bg-raised" : "hover:bg-raised"
-                      }`}
-                    >
-                      <Show
-                        when={row.kind === "channel" ? row : null}
-                        fallback={
-                          <>
-                            <span class="size-8 rounded-full bg-raised grid place-items-center text-ink-soft">
+          <For each={rows()}>
+            {(row, i) => {
+              const link = createChannelLink(() =>
+                row.kind === "channel" ? row.user : undefined,
+              );
+              return (
+                <button
+                  type="button"
+                  data-switch-index={i()}
+                  onMouseMove={() => setActive(i())}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={(e) => void open(row, e.ctrlKey)}
+                  onContextMenu={link.handlers.onContextMenu}
+                  onAuxClick={link.handlers.onAuxClick}
+                  class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
+                    active() === i() ? "bg-raised" : "hover:bg-raised"
+                  }`}
+                >
+                  <Show
+                    when={row.kind === "channel" ? row : null}
+                    fallback={
+                      <>
+                        <span class="size-8 rounded-full bg-raised grid place-items-center text-ink-soft">
+                          <Show
+                            when={!searching()}
+                            fallback={<Loading size={16} />}
+                          >
+                            <Search class="size-4" />
+                          </Show>
+                        </span>
+                        <span class="flex-1 min-w-0 flex flex-col">
+                          <span class="text-body font-semibold text-ink truncate">
+                            {t("QUICK_SWITCH_SEARCH_TWITCH", {
+                              query: query().trim(),
+                            })}
+                          </span>
+                          <span class="text-small text-ink-soft">
+                            {t("QUICK_SWITCH_NOT_IN_RAIL")}
+                          </span>
+                        </span>
+                      </>
+                    }
+                  >
+                    {(r) => {
+                      const stream = () => streamForUserId(r().user.id);
+                      return (
+                        <>
+                          <Avatar
+                            src={r().user.profileImageUrl}
+                            alt={r().user.displayName}
+                            size={32}
+                            presence={stream() ? "live" : "offline"}
+                          />
+                          <span class="flex-1 min-w-0 flex flex-col">
+                            <span class="text-body font-semibold text-ink truncate">
+                              {r().user.displayName}
+                            </span>
+                            <span
+                              class={`text-small truncate ${
+                                stream() ? "text-live" : "text-ink-soft"
+                              }`}
+                            >
                               <Show
-                                when={!searching()}
-                                fallback={<Loading size={16} />}
+                                when={stream()}
+                                fallback={t("COMMON_OFFLINE")}
                               >
-                                <Search class="size-4" />
+                                {t("COMMON_LIVE")} · {stream()!.game.name} ·{" "}
+                                {formatViewers(stream()!.viewerCount)}
+                              </Show>
+                              <Show
+                                when={pinnedChannels().includes(r().user.id)}
+                              >
+                                {` · ${t("QUICK_SWITCH_PINNED_TAG")}`}
                               </Show>
                             </span>
-                            <span class="flex-1 min-w-0 flex flex-col">
-                              <span class="text-body font-semibold text-ink truncate">
-                                {t("QUICK_SWITCH_SEARCH_TWITCH", {
-                                  query: query().trim(),
-                                })}
-                              </span>
-                              <span class="text-small text-ink-soft">
-                                {t("QUICK_SWITCH_NOT_IN_RAIL")}
-                              </span>
-                            </span>
-                          </>
-                        }
-                      >
-                        {(r) => {
-                          const stream = () => streamForUserId(r().user.id);
-                          return (
-                            <>
-                              <Avatar
-                                src={r().user.profileImageUrl}
-                                alt={r().user.displayName}
-                                size={32}
-                                presence={stream() ? "live" : "offline"}
-                              />
-                              <span class="flex-1 min-w-0 flex flex-col">
-                                <span class="text-body font-semibold text-ink truncate">
-                                  {r().user.displayName}
-                                </span>
-                                <span
-                                  class={`text-small truncate ${
-                                    stream() ? "text-live" : "text-ink-soft"
-                                  }`}
-                                >
-                                  <Show
-                                    when={stream()}
-                                    fallback={t("COMMON_OFFLINE")}
-                                  >
-                                    {t("COMMON_LIVE")} · {stream()!.game.name} ·{" "}
-                                    {formatViewers(stream()!.viewerCount)}
-                                  </Show>
-                                  <Show
-                                    when={pinnedChannels().includes(
-                                      r().user.id,
-                                    )}
-                                  >
-                                    {` · ${t("QUICK_SWITCH_PINNED_TAG")}`}
-                                  </Show>
-                                </span>
-                              </span>
-                            </>
-                          );
-                        }}
-                      </Show>
-                      <Show when={active() === i()}>
-                        <kbd class={KBD}>↵</kbd>
-                      </Show>
-                      {link.menu()}
-                    </button>
-                  );
-                }}
-              </For>
-            </Show>
-          </div>
-          <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 border-t border-line-soft text-small text-ink-faint">
-            <span class="flex items-center gap-1.5">
-              <kbd class={KBD}>↑↓</kbd> {t("QUICK_SWITCH_MOVE")}
-            </span>
-            <span class="flex items-center gap-1.5">
-              <kbd class={KBD}>↵</kbd> {t("QUICK_SWITCH_OPEN")}
-            </span>
-            <span class="flex items-center gap-1.5">
-              <kbd class={KBD}>Ctrl ↵</kbd> {t("QUICK_SWITCH_OPEN_PIN")}
-            </span>
-          </div>
-        </div>
+                          </span>
+                        </>
+                      );
+                    }}
+                  </Show>
+                  <Show when={active() === i()}>
+                    <Kbd size="sm" combo="enter" />
+                  </Show>
+                  {link.menu()}
+                </button>
+              );
+            }}
+          </For>
+        </Show>
       </div>
-    </Portal>
+      <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 border-t border-line-soft text-small text-ink-faint">
+        <span class="flex items-center gap-1.5">
+          <Kbd size="sm" combo="up" />
+          <Kbd size="sm" combo="down" /> {t("QUICK_SWITCH_MOVE")}
+        </span>
+        <span class="flex items-center gap-1.5">
+          <Kbd size="sm" combo="enter" /> {t("QUICK_SWITCH_OPEN")}
+        </span>
+        <span class="flex items-center gap-1.5">
+          <Kbd size="sm" combo="ctrl-enter" /> {t("QUICK_SWITCH_OPEN_PIN")}
+        </span>
+      </div>
+    </Modal>
   );
 }

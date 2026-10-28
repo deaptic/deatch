@@ -5,6 +5,7 @@ import * as bans from "../../lib/services/bans.ts";
 import type { BanChoice } from "../../lib/constants/timeouts.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
+import { autofocus } from "../../lib/reactive/focus.ts";
 import Textarea from "../ui/Textarea.tsx";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";
 import { user } from "../../lib/stores/users.ts";
@@ -136,7 +137,7 @@ export default function BanModal(props: Props) {
             void confirm();
           }
         }}
-        autofocus
+        ref={autofocus}
       />
     </Dialog>
   );

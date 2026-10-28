@@ -1,8 +1,8 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
 import { Swords } from "lucide-solid";
 import { t } from "../../lib/i18n/index.ts";
 import { type PendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
 import * as raid from "../../lib/services/raid.ts";
+import * as clock from "../../lib/services/clock.ts";
 import { knownUser } from "../../lib/stores/users.ts";
 import Button from "../ui/Button.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
@@ -13,16 +13,12 @@ type Props = {
 };
 
 export default function RaidBanner(props: Props) {
-  const [now, setNow] = createSignal(Date.now());
-  onMount(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    onCleanup(() => clearInterval(id));
-  });
-
   const remaining = () =>
     Math.max(
       0,
-      Math.ceil((RAID_DURATION_MS - (now() - props.raid.startedAt)) / 1000),
+      Math.ceil(
+        (RAID_DURATION_MS - (clock.now() - props.raid.startedAt)) / 1000,
+      ),
     );
 
   const link = createChannelLink(

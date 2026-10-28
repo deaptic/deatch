@@ -1,7 +1,5 @@
-import { type JSX, onCleanup, Show } from "solid-js";
-import { Portal } from "solid-js/web";
-import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
+import { type JSX, Show } from "solid-js";
+import Modal from "./Modal.tsx";
 
 type Props = {
   title: string;
@@ -12,32 +10,16 @@ type Props = {
 };
 
 export default function Dialog(props: Props) {
-  captureFocusForRestore();
-  onCleanup(shortcuts.registerLocal("escape", () => props.onClose()));
   return (
-    <Portal>
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-scrim"
-        onMouseDown={(e) => {
-          if (e.target === e.currentTarget) props.onClose();
-        }}
-      >
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={props.title}
-          class="w-110 max-w-full bg-surface border border-line rounded-lg p-6 flex flex-col gap-4 transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
-        >
-          <div class="flex flex-col gap-1">
-            <h2 class="text-title text-ink">{props.title}</h2>
-            <Show when={props.description}>
-              <p class="text-body text-ink-soft">{props.description}</p>
-            </Show>
-          </div>
-          {props.children}
-          <div class="flex gap-2 justify-end pt-2">{props.actions}</div>
-        </div>
+    <Modal look="dialog" label={props.title} onClose={props.onClose}>
+      <div class="flex flex-col gap-1">
+        <h2 class="text-title text-ink">{props.title}</h2>
+        <Show when={props.description}>
+          <p class="text-body text-ink-soft">{props.description}</p>
+        </Show>
       </div>
-    </Portal>
+      {props.children}
+      <div class="flex gap-2 justify-end pt-2">{props.actions}</div>
+    </Modal>
   );
 }

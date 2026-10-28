@@ -6,7 +6,7 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
-import { createPopover } from "../chat/createPopover.ts";
+import { createPopover } from "../ui/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";
 
 /// The one way a channel responds to the mouse: left opens its chat, right

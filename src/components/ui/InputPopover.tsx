@@ -2,6 +2,7 @@ import { Check } from "lucide-solid";
 import Field from "./Field.tsx";
 import IconButton from "./IconButton.tsx";
 import Popover from "./Popover.tsx";
+import { autofocus } from "../../lib/reactive/focus.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -21,7 +22,7 @@ export default function InputPopover(props: Props) {
       <div class="w-72 p-2 flex gap-2 items-center">
         <Field
           class="flex-1 min-w-0"
-          ref={(el) => setTimeout(() => el.focus())}
+          ref={autofocus}
           placeholder={props.placeholder}
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
