@@ -16,7 +16,7 @@ function categoryOf(item: FeedEntry): string {
 export function enforceCaps(messages: FeedEntry[], paused = false) {
   const factor = paused ? PAUSED_FACTOR : 1;
   const counts: Record<string, number> = {};
-  const keep = new Array<boolean>(messages.length);
+  const keep = Array.from({ length: messages.length }, () => false);
   for (let i = messages.length - 1; i >= 0; i--) {
     const cat = categoryOf(messages[i]);
     counts[cat] = (counts[cat] ?? 0) + 1;

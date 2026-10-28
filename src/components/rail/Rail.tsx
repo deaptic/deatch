@@ -3,6 +3,7 @@ import {
   createMemo,
   createSignal,
   For,
+  on,
   onCleanup,
   Show,
 } from "solid-js";
@@ -155,17 +156,18 @@ export default function Rail(props: Props) {
     setLinkMenu({ x: rect.right + SIDE_GAP, y: rect.top });
   }
 
-  createEffect(() => {
-    pinnedChannels();
-    channels.onlineList().length;
-    expanded();
-    queueMicrotask(main.update);
-  });
+  createEffect(
+    on([pinnedChannels, () => channels.onlineList().length, expanded], () =>
+      queueMicrotask(main.update),
+    ),
+  );
 
-  createEffect(() => {
-    linkWarmedChannels().length;
-    queueMicrotask(linkScroll.update);
-  });
+  createEffect(
+    on(
+      () => linkWarmedChannels().length,
+      () => queueMicrotask(linkScroll.update),
+    ),
+  );
 
   createEffect(() => {
     const sel = pendingChannel();

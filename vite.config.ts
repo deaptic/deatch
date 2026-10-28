@@ -24,17 +24,21 @@ export default defineConfig({
       },
     },
     rules: {
-      // Solid assigns refs through JSX and tracks signals by bare reads.
-      "no-unassigned-vars": "off",
-      "no-unused-expressions": "off",
       "no-unused-vars": ["warn", { ignoreRestSiblings: true }],
-      "unicorn/no-new-array": "off",
       "shadcn/no-raw-colors": "error",
       "shadcn/no-arbitrary-values": "error",
       "shadcn/no-restyle": ["error", { allow: ["layout"] }],
       "shadcn/no-inline-styles": "error",
       "shadcn/require-static-classes": "error",
     },
+    overrides: [
+      {
+        // Solid assigns `let` refs through JSX `ref={...}`, which the rule
+        // cannot see.
+        files: ["**/*.tsx"],
+        rules: { "no-unassigned-vars": "off" },
+      },
+    ],
   },
 
   test: {

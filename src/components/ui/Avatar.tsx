@@ -1,4 +1,4 @@
-import { createEffect, createSignal, type JSX, Show } from "solid-js";
+import { createEffect, createSignal, type JSX, on, Show } from "solid-js";
 import { avatarZoom } from "../../lib/utils/avatar.ts";
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
@@ -37,10 +37,12 @@ export default function Avatar(props: Props) {
   const initial = () => (props.alt?.trim()?.[0] ?? "?").toUpperCase();
   const shape = () => (props.square ? "rounded-xs" : "rounded-full");
 
-  createEffect(() => {
-    props.src;
-    setFailed(false);
-  });
+  createEffect(
+    on(
+      () => props.src,
+      () => setFailed(false),
+    ),
+  );
 
   return (
     <span
