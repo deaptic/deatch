@@ -36,10 +36,8 @@ import {
 } from "../../lib/stores/link.ts";
 import * as link from "../../lib/services/link.ts";
 import { hasUnread, markSeen } from "../../lib/stores/feeds.ts";
-import {
-  channelMentionCount,
-  markChannelMentionsRead,
-} from "../../lib/stores/inbox.ts";
+import { channelMentionCount } from "../../lib/stores/inbox.ts";
+import * as inbox from "../../lib/services/inbox.ts";
 import { user } from "../../lib/stores/users.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import * as raid from "../../lib/services/raid.ts";
@@ -109,7 +107,7 @@ export default function ChannelContextMenu(props: Props) {
             disabled={!unread()}
             onClick={() => {
               markSeen(props.ch.id);
-              markChannelMentionsRead(props.ch.id);
+              inbox.markChannelRead(props.ch.id);
             }}
           />
           <MenuDivider />

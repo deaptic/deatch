@@ -15,7 +15,7 @@ import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 import { activeView } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
-import { markMentionRead } from "../../lib/stores/inbox.ts";
+import * as inbox from "../../lib/services/inbox.ts";
 import { removeToast, toasts } from "../../lib/stores/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
 import { t } from "../../lib/i18n/index.ts";
@@ -34,7 +34,7 @@ export default function AppLayout(props: AppLayoutProps) {
     <div class="flex flex-col h-screen bg-canvas relative">
       <TitleBar
         onJumpToMessage={(channelId, messageId) => {
-          markMentionRead(messageId);
+          inbox.markRead(messageId);
           c.jumpToMessage(channelId, messageId);
         }}
         onOpenChannel={c.openChannel}

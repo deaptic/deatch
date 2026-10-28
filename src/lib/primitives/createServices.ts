@@ -17,12 +17,12 @@ export function createServices(): void {
       log.start(),
       view.start(),
       theme.start(),
+      inbox.start(),
       backendEvents.start(),
       users.start(),
       chatActivity.start(),
       shortcuts.start(),
       updater.start(),
-      inbox.start(),
       clock.start(),
       emotes.start(),
     ];

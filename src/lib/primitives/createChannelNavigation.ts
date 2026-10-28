@@ -15,7 +15,7 @@ import { linkWarmedChannels } from "../stores/link.ts";
 import { linkFocus } from "../api/link.ts";
 import { reportFailure } from "../api/utils.ts";
 import { ensureFeed, markSeen } from "../stores/feeds.ts";
-import { markChannelMentionsRead } from "../stores/inbox.ts";
+import * as inbox from "../services/inbox.ts";
 import { t } from "../i18n/index.ts";
 
 export type ChannelNavigation = {
@@ -74,7 +74,7 @@ export function createChannelNavigation(): ChannelNavigation {
       users.set([ch]);
       ensureFeed(ch.id);
       markSeen(ch.id);
-      markChannelMentionsRead(ch.id);
+      inbox.markChannelRead(ch.id);
     }),
   );
 
