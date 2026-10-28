@@ -23,7 +23,7 @@ jobs:
           rust-components: rustfmt, clippy
 
       - name: vp check
-        run: vp check
+        run: vp check --deny-warnings
       - name: vp test
         run: pnpm test
       - name: vite build
