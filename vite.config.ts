@@ -2,11 +2,8 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
-const host = process.env.TAURI_DEV_HOST;
-
 const ignored = ["extension/**", "src-tauri/**", "src/lib/bindings.ts"];
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: lazyPlugins(() => [tailwindcss(), solid()]),
 
@@ -51,29 +48,19 @@ export default defineConfig({
     ignorePatterns: ignored,
   },
 
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent Vite from obscuring rust errors
+  // Keep cargo's output visible in the terminal tauri dev shares.
   clearScreen: false,
   build: {
     // WebView2 is evergreen Chromium, and the app already relies on Temporal.
     target: "esnext",
     sourcemap: true,
   },
-  // 2. tauri expects a fixed port, fail if that port is not available
   server: {
+    // devUrl in tauri.conf.json points here.
     port: 1420,
     strictPort: true,
-    host: host || false,
-    hmr: host
-      ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
-      : undefined,
     watch: {
-      // 3. tell Vite to ignore watching `src-tauri`
+      // Rust changes rebuild through cargo; a page reload would only add noise.
       ignored: ["**/src-tauri/**"],
     },
   },
