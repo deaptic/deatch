@@ -12,6 +12,7 @@ mod link;
 mod local_dir;
 mod notifications;
 mod twitch;
+mod ws;
 
 pub use link::host as browser_host;
 
