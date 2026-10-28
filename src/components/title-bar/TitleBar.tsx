@@ -14,7 +14,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { createDebounced } from "../../lib/primitives/createDebounced.ts";
+import { createDebounced } from "../../lib/reactive/createDebounced.ts";
 import { appVersion } from "../../lib/api/app.ts";
 import {
   closeWindow,
@@ -26,7 +26,7 @@ import {
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
-import { POPOVER_TOGGLE } from "../../lib/primitives/dismissOnOutside.ts";
+import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
 import { OVERLAY_GAP } from "../ui/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";

@@ -63,7 +63,8 @@ mapping itself is pure and lives in `mappers/`, which backlog replay shares.
 `api/` is a thin typed wrapper per command and the only caller of `bindings.ts`.
 `stores/` is signals and state and never calls the backend. `primitives/` wires
 app lifecycle: `App.tsx` → `createAppController` → `createServices`, which calls
-every `start()` once and runs the cleanups on unmount. Nothing runs on import.
+every `start()` once and runs the cleanups on unmount. Generic Solid helpers
+sit apart in `reactive/`, a leaf every layer may use. Nothing runs on import.
 
 A chat message arrives as an EventSub notification, becomes a Tauri event, is
 mapped in `events/chat.ts` (where AutoMod and redemptions are correlated,

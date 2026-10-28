@@ -11,8 +11,8 @@ import {
 } from "solid-js";
 import { Portal } from "solid-js/web";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
-import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
+import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinChannel, pinnedChannels } from "../../lib/stores/preferences.ts";

@@ -11,8 +11,11 @@ import downward:
 - `api/` — one thin typed wrapper per command; the only layer that calls
   `bindings.ts`. No state, no logic beyond toasts.
 - `stores/` — signals and state only. Never call the backend.
+- `primitives/` — app wiring: `createAppController` composes the lifecycle
+  pieces and `createServices` starts every service. Only `App.tsx` calls it.
 - `types/`, `constants/`, `utils/`, `format/`, `i18n/`, `mappers/` — shared
-  leaves.
+  leaves. `reactive/` is the leaf for generic Solid helpers, which import
+  nothing but `solid-js`.
 
 All user-facing text goes through `t()` from `i18n/`, keyed in
 `src/locales/en.json`. Names of things (Deatch, Link, Twitch, badges) stay as

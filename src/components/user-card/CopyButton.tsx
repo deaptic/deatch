@@ -1,6 +1,6 @@
 import { Check } from "lucide-solid";
 import type { JSX } from "solid-js";
-import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { createCopied } from "../ui/createCopied.ts";
 import IconButton from "../ui/IconButton.tsx";
 
 type Props = {

@@ -1,6 +1,6 @@
 import { type JSX, onCleanup, Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import { captureFocusForRestore } from "../../lib/utils/focus.ts";
+import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 
 type Props = {

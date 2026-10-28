@@ -13,7 +13,7 @@ import {
   searchChannels,
 } from "../../lib/api/twitch/search.ts";
 import * as users from "../../lib/services/users.ts";
-import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
+import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";

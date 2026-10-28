@@ -39,7 +39,7 @@ import {
 } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
 import { user } from "../../lib/stores/users.ts";
-import { createScrollAffordance } from "../../lib/primitives/createScrollAffordance.ts";
+import { createScrollAffordance } from "./createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
 import RailRow, { type SubTone } from "./RailRow.tsx";
 import RailTile, { type TileTone } from "./RailTile.tsx";

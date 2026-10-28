@@ -24,7 +24,7 @@ import Field from "../ui/Field.tsx";
 import NavItem from "../ui/NavItem.tsx";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import ComposerPanel from "../ui/ComposerPanel.tsx";
-import { createListNavigation } from "../../lib/primitives/createListNavigation.ts";
+import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
 import type { EmoteGridItem } from "./types.ts";
 import {
   emojiUrl,

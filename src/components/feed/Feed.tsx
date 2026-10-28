@@ -27,7 +27,7 @@ import {
 import { knownUser } from "../../lib/stores/users.ts";
 import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
 import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
-import { createFeedScroll } from "../../lib/primitives/createFeedScroll.ts";
+import { createFeedScroll } from "./createFeedScroll.ts";
 import {
   feedKeywords,
   feedShowDeletedContent,

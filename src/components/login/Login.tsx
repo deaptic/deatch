@@ -5,7 +5,7 @@ import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
 import { deviceCode, waiting } from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
-import { createCopied } from "../../lib/primitives/createCopied.ts";
+import { createCopied } from "../ui/createCopied.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 export default function Login() {
