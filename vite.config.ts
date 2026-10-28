@@ -4,6 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
+const ignored = ["extension/**", "src-tauri/**", "src/lib/bindings.ts"];
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: lazyPlugins(() => [tailwindcss(), solid()]),
@@ -14,13 +16,7 @@ export default defineConfig({
       typeAware: true,
       typeCheck: true,
     },
-    ignorePatterns: [
-      "dist/**",
-      "docs/**",
-      "extension/**",
-      "src-tauri/**",
-      "src/lib/bindings.ts",
-    ],
+    ignorePatterns: ignored,
     settings: {
       shadcn: {
         ui: "src/components/ui",
@@ -48,12 +44,7 @@ export default defineConfig({
 
   fmt: {
     printWidth: 80,
-    ignorePatterns: [
-      ".claude/**",
-      "extension/**",
-      "src-tauri/**",
-      "src/lib/bindings.ts",
-    ],
+    ignorePatterns: ignored,
   },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
