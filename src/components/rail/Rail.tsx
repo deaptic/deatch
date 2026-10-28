@@ -12,7 +12,6 @@ import * as browser from "../../lib/services/browser.ts";
 import {
   appearanceRailExpanded,
   linkAudioLink,
-  pinChannel,
   pinnedChannels,
   reorderPinnedChannels,
   setAppearanceRailExpanded,
@@ -27,6 +26,7 @@ import {
 } from "../../lib/stores/link.ts";
 import LinkMenu from "./LinkMenu.tsx";
 import * as link from "../../lib/services/link.ts";
+import * as pins from "../../lib/services/pins.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import {
   activeView,
@@ -239,24 +239,15 @@ export default function Rail(props: Props) {
     const login = addInput().trim().toLowerCase();
     if (!login) return;
     setAddLoading(true);
-    const lookup = await users.findByLogin(login);
+    const found = await users.lookUp(login, t("RAIL_USER_NOT_FOUND"));
     setAddLoading(false);
-    if (lookup.status === "missing") {
-      addToast(t("RAIL_USER_NOT_FOUND"), "error");
-      return;
-    }
-    if (lookup.status === "failed") return;
-    if (pinnedChannels().includes(lookup.user.id)) {
+    if (!found) return;
+    if (pinnedChannels().includes(found.id)) {
       addToast(t("RAIL_ALREADY_PINNED"), "error");
     } else {
-      pinChannel(lookup.user.id);
+      pins.add(found);
     }
     closeAdd();
-  }
-
-  function pin(ch: User) {
-    users.set([ch]);
-    pinChannel(ch.id);
   }
 
   return (
@@ -563,7 +554,6 @@ export default function Rail(props: Props) {
             ch={m().ch}
             place="rail"
             onClose={() => setChMenu(null)}
-            onPin={pin}
             onLogout={
               m().ch.id === user()?.id ? () => session.logout() : undefined
             }

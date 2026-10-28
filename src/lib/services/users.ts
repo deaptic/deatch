@@ -11,6 +11,7 @@ import {
 } from "../stores/users.ts";
 import type { GetUsersParams, User } from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
+import { addToast } from "../stores/toasts.ts";
 import {
   freshEntries,
   isComplete,
@@ -107,6 +108,17 @@ export type Lookup =
   | { status: "failed" };
 
 /// A failed request is already reported by invokeCommand; callers only branch.
+/// The user with that login, or null once the user has been told why not:
+/// a missing login toasts `notFound`, a failed request was already reported.
+export async function lookUp(
+  login: string,
+  notFound: string,
+): Promise<User | null> {
+  const lookup = await findByLogin(login);
+  if (lookup.status === "missing") addToast(notFound, "error");
+  return lookup.status === "found" ? lookup.user : null;
+}
+
 export async function findByLogin(
   login: string,
   options?: InvokeOptions,
