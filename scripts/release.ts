@@ -11,6 +11,7 @@
 import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
+import { setLockedVersion } from "./cargo-lock.ts";
 import { run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
@@ -47,12 +48,7 @@ async function patchCargoLock(
   newVersion: string,
 ): Promise<void> {
   const text = await readFile(path, "utf8");
-  const re = new RegExp(
-    `(\\[\\[package\\]\\]\\r?\\nname = "${name}"\\r?\\nversion = ")[^"]+(")`,
-  );
-  const patched = text.replace(re, `$1${newVersion}$2`);
-  if (patched === text) throw new Error(`failed to bump ${name} in ${path}`);
-  await writeFile(path, patched);
+  await writeFile(path, setLockedVersion(text, name, newVersion));
 }
 
 async function captureStdout(cmd: string[]): Promise<string> {

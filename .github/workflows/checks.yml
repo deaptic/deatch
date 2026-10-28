@@ -24,6 +24,8 @@ jobs:
 
       - name: vp check
         run: vp check --deny-warnings
+      - name: tauri versions
+        run: pnpm check:tauri
       - name: vp test
         run: pnpm test
       - name: vp build

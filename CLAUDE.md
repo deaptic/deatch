@@ -14,6 +14,7 @@ pnpm tauri dev                  # run app in dev
 pnpm bindings                   # regenerate src/lib/bindings.ts
 pnpm test                       # frontend unit tests
 vp check --fix --deny-warnings  # format, lint, type-check
+pnpm check:tauri                # npm and crate versions agree
 cd src-tauri && cargo fmt && cargo clippy --all-targets && cargo test --lib
 ```
 
