@@ -8,3 +8,14 @@ export const TIMEOUT_PRESETS = [
 ] as const;
 
 export type TimeoutLabel = (typeof TIMEOUT_PRESETS)[number]["label"];
+
+/// A preset label picks a timeout; "ban" and "unban" are the two ends.
+export type BanChoice = "unban" | "ban" | TimeoutLabel;
+
+/// Seconds for a timeout, null for a permanent ban.
+export function secondsFor(choice: Exclude<BanChoice, "unban">): number | null {
+  if (choice === "ban") return null;
+  const preset = TIMEOUT_PRESETS.find((p) => p.label === choice);
+  if (!preset) throw new Error(`unknown timeout preset: ${choice}`);
+  return preset.seconds;
+}
