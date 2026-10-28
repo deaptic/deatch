@@ -1,8 +1,8 @@
 import { createEffect } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
 import { mentions, setMentions } from "../stores/inbox.ts";
-import { fresh, msUntilNextExpiry } from "../stores/inboxRetention.ts";
-import { upgradeMention } from "../stores/inboxUpgrade.ts";
+import { fresh, msUntilNextExpiry } from "../utils/inboxRetention.ts";
+import { upgradeMention } from "../utils/inboxUpgrade.ts";
 import { notificationsMentionSound } from "../stores/preferences.ts";
 import { selectedChannel } from "../stores/view.ts";
 import type { Mention } from "../types/index.ts";

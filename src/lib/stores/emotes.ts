@@ -1,11 +1,14 @@
 import { createSignal } from "solid-js";
 import type { Emote, EmoteEntry, User, UserEmote } from "../types/index.ts";
 import { type EmoteMap, emoteMap } from "../utils/emoteMap.ts";
-import { isUserId } from "../utils/knownUsers.ts";
+import {
+  channelSections,
+  type EmoteSection,
+  globalSections,
+  usableIn,
+} from "../utils/emoteSections.ts";
 import { knownUser } from "./users.ts";
-import { t } from "../i18n/index.ts";
 
-export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 export type FavoriteEmote = { value: string; url: string; label: string };
 
 /// The emotes service loads and saves them.
@@ -26,14 +29,6 @@ export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 export const [thirdPartyEmoteMap, setThirdPartyEmoteMap] =
   createSignal<EmoteMap>(emoteMap([]));
 
-const EMOJI = /^\p{RGI_Emoji}$/v;
-
-/// Emoji work in every channel; emotes only where these sections offer them.
-export function usableIn(sections: EmoteSection[]): (value: string) => boolean {
-  const names = new Set(sections.flatMap((s) => s.emotes.map((e) => e.name)));
-  return (value) => names.has(value) || EMOJI.test(value);
-}
-
 export function usableFavorites(broadcaster: User | null): FavoriteEmote[] {
   const usable = usableIn([
     ...computeChannelSections(broadcaster),
@@ -42,145 +37,32 @@ export function usableFavorites(broadcaster: User | null): FavoriteEmote[] {
   return favorites().filter((f) => usable(f.value));
 }
 
-/// Deduplicate a list of user emotes by id. Twitch's `Get User Emotes`
-/// endpoint returns the same emote once per emote-set it belongs to, so
-/// callers ingesting the raw response (e.g. the cache loader) must run
-/// it through here before writing the signal.
-export function dedupeById(list: UserEmote[]): UserEmote[] {
-  const seen = new Set<string>();
-  const out: UserEmote[] = [];
-  for (const e of list) {
-    if (seen.has(e.id)) continue;
-    seen.add(e.id);
-    out.push(e);
-  }
-  return out;
-}
-
 export function clearChannelThirdPartyEmotes() {
   setSevenTvChannel([]);
   setBttvChannel([]);
   setFfzChannel([]);
 }
 
-function sortByName<T extends { name: string }>(arr: readonly T[]): T[] {
-  return [...arr].sort((a, b) => a.name.localeCompare(b.name));
-}
-
-/// Builds the `User` tab sections for the emote picker: the broadcaster's
-/// own Twitch emotes (deduplicated by name) followed by the channel's 7TV /
-/// BTTV / FFZ sets. Reads the relevant signals internally so it can be wrapped
-/// in a `createMemo` at the call site.
+/// The picker's channel tab, from the current emote signals.
 export function computeChannelSections(
   broadcaster: User | null,
 ): EmoteSection[] {
-  const sections: EmoteSection[] = [];
-  if (broadcaster) {
-    const seen = new Map<string, string>();
-    for (const e of userEmotes()) {
-      if (e.ownerId !== broadcaster.id) continue;
-      if (!seen.has(e.name)) seen.set(e.name, e.url);
-    }
-    if (seen.size) {
-      sections.push({
-        id: "twitch",
-        label: broadcaster.displayName,
-        emotes: [...seen.entries()]
-          .map(([name, url]) => ({ name, url }))
-          .sort((a, b) => a.name.localeCompare(b.name)),
-      });
-    }
-  }
-  const stv = sevenTvChannel();
-  if (stv.length) {
-    sections.push({
-      id: "7tv-channel",
-      label: t("EMOTES_SECTION_7TV"),
-      emotes: sortByName(stv),
-    });
-  }
-  const bttv = bttvChannel();
-  if (bttv.length) {
-    sections.push({
-      id: "bttv-channel",
-      label: t("EMOTES_SECTION_BTTV"),
-      emotes: sortByName(bttv),
-    });
-  }
-  const ffz = ffzChannel();
-  if (ffz.length) {
-    sections.push({
-      id: "ffz-channel",
-      label: t("EMOTES_SECTION_FFZ"),
-      emotes: sortByName(ffz),
-    });
-  }
-  return sections;
+  return channelSections(broadcaster, userEmotes(), {
+    sevenTv: sevenTvChannel(),
+    bttv: bttvChannel(),
+    ffz: ffzChannel(),
+  });
 }
 
-/// Builds the `Global` tab sections: one section per channel the user subs to
-/// (using known users for display names), then global Twitch, 7TV, BTTV, FFZ.
-/// Emotes already attributed to the active broadcaster are excluded.
+/// The picker's global tab, from the current emote signals.
 export function computeGlobalSections(
   broadcaster: User | null,
 ): EmoteSection[] {
-  const subGroupMap = new Map<string, EmoteEntry[]>();
-  const otherEmotes = new Map<string, string>();
-
-  for (const e of userEmotes()) {
-    if (e.ownerId === broadcaster?.id) continue;
-    if (e.emoteType === "subscriptions" && e.ownerId && isUserId(e.ownerId)) {
-      const list = subGroupMap.get(e.ownerId) ?? [];
-      list.push({ name: e.name, url: e.url });
-      subGroupMap.set(e.ownerId, list);
-    } else {
-      otherEmotes.set(e.name, e.url);
-    }
-  }
-
-  const subscriptionSections: EmoteSection[] = [...subGroupMap.entries()]
-    .map(([ownerId, emotes]) => ({
-      id: `channel-${ownerId}`,
-      label: knownUser(ownerId)?.displayName ?? ownerId,
-      emotes: sortByName(emotes),
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-
-  for (const e of globalEmotes()) {
-    if (!otherEmotes.has(e.name)) otherEmotes.set(e.name, e.url);
-  }
-  const merged = sortByName(
-    [...otherEmotes.entries()].map(([name, url]) => ({ name, url })),
+  return globalSections(
+    broadcaster,
+    userEmotes(),
+    globalEmotes(),
+    { sevenTv: sevenTvGlobal(), bttv: bttvGlobal(), ffz: ffzGlobal() },
+    (id) => knownUser(id)?.displayName,
   );
-
-  const stv = sevenTvGlobal();
-  const bttv = bttvGlobal();
-  const ffz = ffzGlobal();
-  return [
-    ...subscriptionSections,
-    ...(merged.length
-      ? [
-          {
-            id: "twitch-global",
-            label: t("EMOTES_SECTION_TWITCH_GLOBAL"),
-            emotes: merged,
-          },
-        ]
-      : []),
-    ...(stv.length
-      ? [{ id: "7tv", label: t("EMOTES_SECTION_7TV"), emotes: sortByName(stv) }]
-      : []),
-    ...(bttv.length
-      ? [
-          {
-            id: "bttv",
-            label: t("EMOTES_SECTION_BTTV"),
-            emotes: sortByName(bttv),
-          },
-        ]
-      : []),
-    ...(ffz.length
-      ? [{ id: "ffz", label: t("EMOTES_SECTION_FFZ"), emotes: sortByName(ffz) }]
-      : []),
-  ];
 }

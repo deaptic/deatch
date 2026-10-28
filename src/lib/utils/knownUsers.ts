@@ -1,10 +1,24 @@
-import type { User } from "../types/index.ts";
+import type { User, UserRef } from "../types/index.ts";
 
 /// `fetchedAt` is when Twitch last returned the whole user; null while only
 /// partial data (names from streams, chat or search) has been seen.
 export type KnownUser = { user: User; fetchedAt: number | null };
 
 const USER_ID = /^\d+$/;
+
+/// A user from just a reference, until Twitch returns the whole of them.
+export function userFromRef(ref: UserRef): User {
+  return {
+    id: ref.id,
+    login: ref.login,
+    displayName: ref.displayName,
+    profileImageUrl: "",
+    offlineImageUrl: null,
+    description: "",
+    broadcasterType: "normal",
+    createdAt: "",
+  };
+}
 
 export function isUserId(id: string): boolean {
   return USER_ID.test(id);
