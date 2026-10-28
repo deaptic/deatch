@@ -238,7 +238,13 @@ export type ChatSettings = {
 	uniqueChatMode: boolean,
 };
 
-export type ChatState = { type: "connected" } | { type: "disconnected" } | { type: "failed"; error: string };
+export type ChatState = { type: "connected" } | { type: "disconnected" } | 
+/**  Twitch refused the subscription; `message` is its own explanation. */
+{ type: "rejected"; message: string } | 
+/**  A request failed; it is retried. */
+{ type: "failed"; error: Error } | 
+/**  Every connection Twitch allows is full. */
+{ type: "capped"; connections: number; perConnection: number };
 
 export type ChatStatus = {
 	broadcasterId: UserId,
@@ -355,7 +361,11 @@ export type EmoteSetUpdated = {
 	renamed: Rename[],
 };
 
-export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
+export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | 
+/**  The stored token predates a scope the app now needs. */
+{ kind: "missingScope"; message: {
+	scope: string,
+} } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
 export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shared_chat.begin" | "channel.shared_chat.update" | "channel.shared_chat.end" | "channel.shoutout.create" | "channel.shoutout.receive" | "channel.follow" | "channel.moderate" | "channel.unban_request.create" | "channel.unban_request.resolve" | "channel.warning.acknowledge" | "channel.suspicious_user.message" | "channel.suspicious_user.update" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.channel_points_automatic_reward_redemption.add" | "channel.update" | "channel.hype_train.begin" | "channel.hype_train.progress" | "channel.hype_train.end" | "channel.poll.begin" | "channel.poll.end" | "channel.prediction.begin" | "channel.prediction.lock" | "channel.prediction.end" | "channel.goal.begin" | "channel.goal.end" | "channel.ad_break.begin" | "channel.bits.use" | "channel.charity_campaign.start" | "channel.charity_campaign.stop" | "stream.online" | "stream.offline";
 

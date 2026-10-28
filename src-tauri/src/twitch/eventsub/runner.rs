@@ -279,13 +279,12 @@ impl Coordinator<'_> {
                     "subscribe failed {subscription} attempt={attempts}, retrying in {delay:?}: {error}"
                 );
                 if announce {
-                    let error = error.to_string();
                     self.chat_status(&subscription, ChatState::Failed { error });
                 }
             }
             Outcome::Rejected(message) => {
                 log::warn!("subscribe rejected {subscription}: {message}");
-                self.chat_status(&subscription, ChatState::Failed { error: message });
+                self.chat_status(&subscription, ChatState::Rejected { message });
             }
             Outcome::Orphaned(sub_id) => {
                 spawn_deletes(self.twitch.clone(), vec![(subscription, sub_id)]);
@@ -335,14 +334,12 @@ impl Coordinator<'_> {
             "eventsub full ({MAX_CONNECTIONS} connections x {PER_CONNECTION}), {} subscriptions skipped",
             capped.len()
         );
-        let error = format!(
-            "Twitch allows {MAX_CONNECTIONS} connections of {PER_CONNECTION} subscriptions"
-        );
         for subscription in &capped {
             self.chat_status(
                 subscription,
-                ChatState::Failed {
-                    error: error.clone(),
+                ChatState::Capped {
+                    connections: MAX_CONNECTIONS,
+                    per_connection: PER_CONNECTION,
                 },
             );
         }

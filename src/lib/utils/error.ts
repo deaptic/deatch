@@ -7,6 +7,7 @@ const MESSAGES: Record<GenericKind, MessageKey> = {
   notAuthenticated: "ERROR_NOT_AUTHENTICATED",
   http: "ERROR_NETWORK",
   auth: "ERROR_AUTH",
+  missingScope: "ERROR_MISSING_SCOPE",
   discord: "ERROR_DISCORD",
   io: "ERROR_IO",
   invalid: "ERROR_INVALID",
