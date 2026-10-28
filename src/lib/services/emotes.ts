@@ -48,6 +48,8 @@ const ffz = channelResource((c) =>
 );
 
 let userEmotesLoadStarted = false;
+let globalLoadStarted = false;
+const globalRetry = createBackoff(GLOBALS_RETRY_MIN_MS, GLOBALS_RETRY_MAX_MS);
 
 export async function ensureUserLoaded(): Promise<void> {
   if (userEmotesLoadStarted) return;
@@ -74,22 +76,39 @@ export async function ensureUserLoaded(): Promise<void> {
 export function resetUser() {
   setUserEmotes([]);
   userEmotesLoadStarted = false;
+  globalLoadStarted = false;
+  globalRetry.reset();
 }
 
-export async function loadGlobal(): Promise<Emote[]> {
+/// Twitch's global emotes need a signed-in user; a failed load retries
+/// until it lands or the user signs out.
+export function ensureGlobalLoaded(): void {
+  if (globalLoadStarted || !user()) return;
+  globalLoadStarted = true;
+  loadGlobal().then(
+    () => globalRetry.succeeded(),
+    () => {
+      globalLoadStarted = false;
+      globalRetry.schedule(ensureGlobalLoaded);
+    },
+  );
+}
+
+/// A cached list shows at once and is refreshed behind it.
+async function loadGlobal(): Promise<void> {
   const cached = loadCache<Emote[]>(GLOBAL_EMOTES_CACHE_KEY, GLOBAL_EMOTES_TTL);
   if (cached) {
-    getGlobalEmotes({ silent: true })
-      .then((fresh) => {
-        saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
-        setGlobalEmotes(fresh);
-      })
-      .catch(() => {});
-    return cached;
+    setGlobalEmotes(cached);
+    fetchGlobal().catch(() => {});
+    return;
   }
+  await fetchGlobal();
+}
+
+async function fetchGlobal(): Promise<void> {
   const fresh = await getGlobalEmotes({ silent: true });
   saveCache(GLOBAL_EMOTES_CACHE_KEY, fresh);
-  return fresh;
+  setGlobalEmotes(fresh);
 }
 
 /// Loads each provider's global emotes, retrying each until it succeeds,
