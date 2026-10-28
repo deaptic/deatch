@@ -54,7 +54,7 @@ export function start(): () => void {
     globalThis.removeEventListener("pagehide", save);
     clearTimeout(batchTimer);
     batchTimer = undefined;
-    queued.clear();
+    for (const id of waiters.keys()) settle(id, new Error("stopped"));
     save();
   };
 }
