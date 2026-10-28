@@ -22,13 +22,13 @@ jobs:
         with:
           rust-components: rustfmt, clippy
 
-      - name: vp check
-        run: vp check --deny-warnings
+      - name: check
+        run: pnpm check --deny-warnings
       - name: tauri versions
         run: pnpm check:tauri
-      - name: vp test
+      - name: test
         run: pnpm test
-      - name: vp build
+      - name: build
         run: pnpm build
 
       - name: cargo fmt
