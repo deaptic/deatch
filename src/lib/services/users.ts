@@ -12,7 +12,6 @@ import {
 import type { GetUsersParams, User, UserRef } from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
 import { addToast } from "../stores/toasts.ts";
-import { userFromRef } from "../stores/channels.ts";
 import {
   freshEntries,
   isKnownUser,
@@ -20,6 +19,7 @@ import {
   type KnownUser,
   mergeUser,
   sameUser,
+  userFromRef,
 } from "../utils/knownUsers.ts";
 
 const CACHE_KEY = "cache:users";

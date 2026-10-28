@@ -14,7 +14,7 @@ import {
 } from "../../lib/api/twitch/search.ts";
 import * as users from "../../lib/services/users.ts";
 import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
-import { userFromRef } from "../../lib/stores/channels.ts";
+import { userFromRef } from "../../lib/utils/knownUsers.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { liveLine } from "../../lib/format/stream.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";

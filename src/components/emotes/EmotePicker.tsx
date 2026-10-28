@@ -12,9 +12,9 @@ import {
   computeChannelSections,
   computeGlobalSections,
   favorites,
-  usableIn,
   userEmotes,
 } from "../../lib/stores/emotes.ts";
+import { usableIn } from "../../lib/utils/emoteSections.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import * as users from "../../lib/services/users.ts";
 import * as emotes from "../../lib/services/emotes.ts";

@@ -13,7 +13,6 @@ import { createEffect, createRoot } from "solid-js";
 import {
   bttvChannel,
   bttvGlobal,
-  dedupeById,
   ffzChannel,
   favorites,
   ffzGlobal,
@@ -36,6 +35,7 @@ import type { Emote, EmoteEntry, UserEmote } from "../types/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 import { emoteMap } from "../utils/emoteMap.ts";
+import { dedupeById } from "../utils/emoteSections.ts";
 import * as storage from "../utils/storage.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;

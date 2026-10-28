@@ -3,6 +3,8 @@ import type { ChannelInfo, Stream, User, UserRef } from "../types/index.ts";
 import { pinnedChannels } from "./preferences.ts";
 import { linkWarmedChannels } from "./link.ts";
 import { knownUser } from "./users.ts";
+import { orderChannels } from "../utils/channelOrder.ts";
+import { userFromRef } from "../utils/knownUsers.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 
@@ -44,44 +46,12 @@ export function streamForUserId(userId: string): Stream | undefined {
 }
 
 export function channelsInOrder(): User[] {
-  const pinnedIds = pinnedChannels();
-  const pinnedSet = new Set(pinnedIds);
-  const warmedSet = new Set(linkWarmedChannels().map((c) => c.id));
-  const live = liveStreams();
-  const ordered: User[] = [];
-  const seen = new Set<string>();
-  const push = (u: User | undefined) => {
-    if (u && !seen.has(u.id) && !warmedSet.has(u.id)) {
-      seen.add(u.id);
-      ordered.push(u);
-    }
-  };
-  for (const id of pinnedIds) {
-    push(knownUser(id) ?? userFromStream(live, id));
-  }
-  for (const s of live) {
-    if (pinnedSet.has(s.user.id)) continue;
-    push(knownUser(s.user.id) ?? userFromRef(s.user));
-  }
-  return ordered;
-}
-
-function userFromStream(streams: Stream[], userId: string): User | undefined {
-  const s = streams.find((x) => x.user.id === userId);
-  return s ? userFromRef(s.user) : undefined;
-}
-
-export function userFromRef(ref: UserRef): User {
-  return {
-    id: ref.id,
-    login: ref.login,
-    displayName: ref.displayName,
-    profileImageUrl: "",
-    offlineImageUrl: null,
-    description: "",
-    broadcasterType: "normal",
-    createdAt: "",
-  };
+  return orderChannels({
+    pinnedIds: pinnedChannels(),
+    tabIds: new Set(linkWarmedChannels().map((c) => c.id)),
+    streams: liveStreams(),
+    knownUser,
+  });
 }
 
 export function resolveUser(ref: UserRef): User {
