@@ -1,7 +1,8 @@
 // Usage: pnpm check:tauri
 //
 // Fails when a @tauri-apps npm package and its Rust crate differ in
-// major.minor, which tauri dev and tauri build refuse.
+// major.minor, which tauri dev and tauri build refuse, or when the crate is
+// missing, which leaves the package's calls failing at runtime.
 
 import { readFile } from "node:fs/promises";
 import { lockedVersions } from "./cargo-lock.ts";
@@ -39,7 +40,9 @@ const crateVersions = lockedVersions(
 
 const found = mismatches(npmVersions, crateVersions);
 for (const m of found) {
-  console.error(`${m.npm} ${m.npmVersion} ≠ ${m.crate} ${m.crateVersion}`);
+  console.error(
+    `${m.npm} ${m.npmVersion} ≠ ${m.crate} ${m.crateVersion ?? "(not in Cargo.lock)"}`,
+  );
 }
 if (found.length > 0) process.exit(1);
 console.log("Tauri npm packages match their crates.");

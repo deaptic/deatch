@@ -2,7 +2,8 @@ export type Mismatch = {
   npm: string;
   npmVersion: string;
   crate: string;
-  crateVersion: string;
+  /// Null when the crate is not in Cargo.lock, so the package's calls fail.
+  crateVersion: string | null;
 };
 
 /// The Rust crate an npm package must match, or null when it has none.
@@ -20,8 +21,9 @@ export function mismatches(
   const found: Mismatch[] = [];
   for (const [npm, npmVersion] of npmVersions) {
     const crate = crateFor(npm);
-    const crateVersion = crate ? crateVersions.get(crate) : undefined;
-    if (crate && crateVersion && minor(crateVersion) !== minor(npmVersion)) {
+    if (!crate) continue;
+    const crateVersion = crateVersions.get(crate) ?? null;
+    if (crateVersion === null || minor(crateVersion) !== minor(npmVersion)) {
       found.push({ npm, npmVersion, crate, crateVersion });
     }
   }

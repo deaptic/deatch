@@ -27,7 +27,14 @@ test("reports pairs whose major.minor differ", () => {
   ]);
 });
 
-test("ignores packages without a locked crate", () => {
+test("reports packages whose crate is not locked", () => {
   const npm = new Map([["@tauri-apps/plugin-window-state", "2.5.0"]]);
-  expect(mismatches(npm, new Map())).toStrictEqual([]);
+  expect(mismatches(npm, new Map())).toStrictEqual([
+    {
+      npm: "@tauri-apps/plugin-window-state",
+      npmVersion: "2.5.0",
+      crate: "tauri-plugin-window-state",
+      crateVersion: null,
+    },
+  ]);
 });
