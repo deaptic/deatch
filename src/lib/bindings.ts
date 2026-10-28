@@ -74,6 +74,10 @@ export const commands = {
 	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
 	linkSetAudio: (params: SetAudioParams) => __TAURI_INVOKE<null>("link_set_audio", { params }),
+	/**
+	 *  Asks connected browsers to report; one that connects later reports on its
+	 *  own, so none being connected is not a failure.
+	 */
 	linkRequestState: () => __TAURI_INVOKE<null>("link_request_state"),
 	setMentionsBadge: (params: SetMentionsBadgeParams) => __TAURI_INVOKE<null>("set_mentions_badge", { params }),
 	setHardwareAcceleration: (params: SetHardwareAccelerationParams) => __TAURI_INVOKE<null>("set_hardware_acceleration", { params }),
