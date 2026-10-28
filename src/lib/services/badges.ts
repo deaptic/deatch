@@ -82,10 +82,10 @@ export function loadChannel(channel: ChannelRef) {
 /// A shared chat partner's badges, fetched once and kept while signed in.
 export function loadSource(channel: ChannelRef) {
   if (sourceBadges[channel.id]) return;
-  channelBadges
-    .get(channel)
-    .then((map) => setSourceBadges(channel.id, map))
-    .catch((e) => console.warn("shared chat badges not loaded", e));
+  channelBadges.get(channel).then(
+    (map) => setSourceBadges(channel.id, map),
+    () => {},
+  );
 }
 
 export function resetChannelCache() {

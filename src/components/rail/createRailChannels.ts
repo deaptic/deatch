@@ -20,6 +20,7 @@ import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { linkedChannel, linkWarmedChannels } from "../../lib/stores/link.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import type { Stream, User } from "../../lib/types/index.ts";
+import { idsNotIn } from "./idsNotIn.ts";
 
 export type RailChannels = {
   loadingPinned: () => boolean;
@@ -80,61 +81,56 @@ export function createRailChannels(
     await channelInfo.load(ids);
   }
 
+  /// Followed channels plus the ones the user is looking at or keeps close.
+  function wantedIds(): (string | undefined)[] {
+    return [
+      ...pinnedChannels(),
+      ...linkWarmedChannels().map((ch) => ch.id),
+      linkedChannel()?.id,
+      selectedChannel()?.id,
+    ];
+  }
+
+  /// A failed request keeps the last known list; a blip must not show
+  /// everyone offline or hold back joining the channels that don't depend on
+  /// it.
   async function fetchLive() {
     try {
-      const followed = await getFollowedStreams();
-      const followedIds = new Set(followed.map((s) => s.user.id));
-      const pinnedSet = new Set(pinnedChannels());
-      const extraIds = new Set<string>();
-      for (const id of pinnedSet) if (!followedIds.has(id)) extraIds.add(id);
-      const wc = linkedChannel();
-      if (wc && !followedIds.has(wc?.id) && !pinnedSet.has(wc?.id)) {
-        extraIds.add(wc?.id);
-      }
-      for (const ch of linkWarmedChannels()) {
-        if (!followedIds.has(ch?.id) && !pinnedSet.has(ch?.id)) {
-          extraIds.add(ch?.id);
-        }
-      }
-      const sel = selectedChannel();
-      if (sel && !followedIds.has(sel.id) && !pinnedSet.has(sel.id)) {
-        extraIds.add(sel.id);
-      }
-      const extraIdList = [...extraIds];
-      const extraStreams =
-        extraIdList.length > 0
-          ? await getStreamsFromIds({ userIds: extraIdList })
-          : [];
-      const streams = [...followed, ...extraStreams];
-
-      users.set(streams.map((s) => userFromRef(s.user)));
-      trackedIds.clear();
-      for (const id of [...followedIds, ...extraIdList]) trackedIds.add(id);
-      setLiveStreams(streams);
-      const self = user();
-      void loadOfflineInfo(
-        self ? [...extraIdList, self.id] : extraIdList,
-        streams,
-      );
-      const data: User[] = [];
-      if (streams.length > 0) {
-        const found = await users.get(streams.map((s) => s.user.id));
-        const byId = new Map(found.map((u) => [u.id, u]));
-        for (const s of followed) {
-          const u = byId.get(s.user.id);
-          if (u) data.push(u);
-        }
-      }
-      setLive(reconcile(data, { key: "id" }));
-      onLiveChange?.(data);
-    } catch (e) {
-      // Keep the last known list; a blip must not show everyone offline or
-      // hold back joining the channels that don't depend on it.
-      console.warn("live streams refresh failed", e);
-      onLiveChange?.([...live]);
+      onLiveChange?.((await loadLive()) ?? [...live]);
     } finally {
       setLoadingLive(false);
     }
+  }
+
+  /// Null when a request failed.
+  async function loadLive(): Promise<User[] | null> {
+    const followed = await getFollowedStreams().catch(() => null);
+    if (!followed) return null;
+    const followedIds = new Set(followed.map((s) => s.user.id));
+    const extraIds = idsNotIn(followedIds, wantedIds());
+    const extraStreams =
+      extraIds.length > 0
+        ? await getStreamsFromIds({ userIds: extraIds }).catch(() => null)
+        : [];
+    if (!extraStreams) return null;
+    const streams = [...followed, ...extraStreams];
+
+    users.set(streams.map((s) => userFromRef(s.user)));
+    trackedIds.clear();
+    for (const id of [...followedIds, ...extraIds]) trackedIds.add(id);
+    setLiveStreams(streams);
+    const self = user();
+    void loadOfflineInfo(self ? [...extraIds, self.id] : extraIds, streams);
+
+    const found =
+      streams.length > 0
+        ? await users.get(streams.map((s) => s.user.id)).catch(() => null)
+        : [];
+    if (!found) return null;
+    const byId = new Map(found.map((u) => [u.id, u]));
+    const data = followed.flatMap((s) => byId.get(s.user.id) ?? []);
+    setLive(reconcile(data, { key: "id" }));
+    return data;
   }
 
   createEffect(() => {
@@ -142,16 +138,16 @@ export function createRailChannels(
       (id) => !pinnedMeta[id] && !liveById().get(id),
     );
     if (missing.length === 0) return;
-    users
-      .get(missing)
-      .then((users) => {
+    users.get(missing).then(
+      (users) => {
         const updates: Record<string, User> = {};
         for (const u of users) {
           updates[u.id] = u;
         }
         setPinnedMeta(updates);
-      })
-      .catch((e) => console.warn("pinned channel lookup failed", missing, e));
+      },
+      () => {},
+    );
   });
 
   onMount(() => {
@@ -163,31 +159,22 @@ export function createRailChannels(
 
   async function track(ids: string[]) {
     for (const id of ids) trackedIds.add(id);
-    try {
-      const streams = await getStreamsFromIds({ userIds: ids });
-      const fetched = new Set(ids);
-      setLiveStreams((prev) => [
-        ...prev.filter((s) => !fetched.has(s.user.id)),
-        ...streams,
-      ]);
-      await loadOfflineInfo(ids, streams);
-    } catch (e) {
+    const streams = await getStreamsFromIds({ userIds: ids }).catch(() => null);
+    if (!streams) {
       for (const id of ids) trackedIds.delete(id);
-      console.warn("channel state lookup failed", ids, e);
+      return;
     }
+    const fetched = new Set(ids);
+    setLiveStreams((prev) => [
+      ...prev.filter((s) => !fetched.has(s.user.id)),
+      ...streams,
+    ]);
+    await loadOfflineInfo(ids, streams);
   }
 
   createEffect(() => {
     if (loadingLive()) return;
-    const wanted = [
-      ...pinnedChannels(),
-      ...linkWarmedChannels().map((ch) => ch?.id),
-      linkedChannel()?.id,
-      selectedChannel()?.id,
-    ];
-    const fresh = [...new Set(wanted)].filter(
-      (id): id is string => !!id && !trackedIds.has(id),
-    );
+    const fresh = idsNotIn(trackedIds, wantedIds());
     if (fresh.length > 0) void track(fresh);
   });
 

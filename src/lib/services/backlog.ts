@@ -59,8 +59,8 @@ export function fillGap(
   return getRecentMessages(
     { channelLogin, limit: GAP_LIMIT, after: sinceMs - GAP_MARGIN_MS },
     { silent: true },
-  )
-    .then((history) => {
+  ).then(
+    (history) => {
       const items = entriesOf(history);
       noteChatters(broadcasterId, insertEntries(broadcasterId, items));
       // A full page means robotty dropped the oldest messages of the gap;
@@ -73,8 +73,9 @@ export function fillGap(
           }),
         ]);
       }
-    })
-    .catch((e) => console.error("[feeds] gap fill failed", channelLogin, e));
+    },
+    () => {},
+  );
 }
 
 /// One-time hydration of a channel feed with recent history from robotty.
@@ -103,14 +104,17 @@ export function load(broadcasterId: string, channelLogin: string) {
 
 /// For a user card whose chatter has nothing in the live feed: robotty's
 /// deepest page, narrowed to that chatter, held by the card and not the feed.
+/// Empty when the page is unavailable.
 export function forChatter(
   channelLogin: string,
   chatterId: string,
 ): Promise<FeedMessage[]> {
-  return deepPage(channelLogin).then((history) =>
-    history.messages
-      .filter((m) => m.chatter_user_id === chatterId)
-      .map((m) => mapChatMessage(m, m.timestamp_ms)),
+  return deepPage(channelLogin).then(
+    (history) =>
+      history.messages
+        .filter((m) => m.chatter_user_id === chatterId)
+        .map((m) => mapChatMessage(m, m.timestamp_ms)),
+    () => [],
   );
 }
 

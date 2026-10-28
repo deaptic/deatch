@@ -32,7 +32,10 @@ export function listenFeed<T>(
 
 export function unlistenAll(listeners: Promise<UnlistenFn>[]): () => void {
   return () => {
-    for (const listener of listeners) void listener.then((stop) => stop());
+    // A listener that never registered was reported when it failed.
+    for (const listener of listeners) {
+      listener.then((stop) => stop()).catch(() => {});
+    }
   };
 }
 

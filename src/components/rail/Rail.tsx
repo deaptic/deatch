@@ -426,7 +426,7 @@ export default function Rail(props: Props) {
                       muted={linkMutedByLogin()[ch?.login] === true}
                       onToggleMute={() => link.toggleMuted(ch?.login)}
                       onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() => void linkClose(ch?.login)}
+                      onMiddleClick={() => linkClose(ch?.login).catch(() => {})}
                       onContextMenu={(x, y) => setChMenu({ ch, x, y })}
                     />
                   </div>
@@ -518,9 +518,10 @@ export default function Rail(props: Props) {
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
-              onMiddleClick={() =>
-                ownTab() ? void linkClose(u().login) : openInBrowser(u())
-              }
+              onMiddleClick={() => {
+                if (ownTab()) linkClose(u().login).catch(() => {});
+                else openInBrowser(u());
+              }}
               onContextMenu={(x, y) => setChMenu({ ch: u(), x, y })}
             >
               <Avatar

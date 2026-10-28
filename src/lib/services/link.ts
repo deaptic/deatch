@@ -30,7 +30,7 @@ const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
 
 function closeTabs(tabs: User[]) {
-  for (const ch of tabs) if (ch?.login) void linkClose(ch.login);
+  for (const ch of tabs) if (ch?.login) linkClose(ch.login).catch(() => {});
 }
 
 export function closeAll() {
@@ -88,7 +88,10 @@ async function keepingFocus(action: () => Promise<unknown>) {
 /// when it has none; the extension then links the new tab.
 export function openTab() {
   const tab = selectedLinked();
-  if (tab) return void linkFocus(tab.login);
+  if (tab) {
+    linkFocus(tab.login).catch(() => {});
+    return;
+  }
   const ch = selectedChannel();
   if (!ch) return;
   keepingFocus(() => openUrl(channelUrl(ch.login))).catch(() => {});
@@ -121,9 +124,7 @@ export function sendAudio(
   audioPending = [enabled, { ...compressor }, factors];
   audioTimer ??= window.setTimeout(() => {
     audioTimer = undefined;
-    linkSetAudio(...audioPending!).catch((e) =>
-      console.warn("audio settings not sent", e),
-    );
+    linkSetAudio(...audioPending!).catch(() => {});
   }, AUDIO_SEND_MS);
 }
 
@@ -138,7 +139,7 @@ export function muteOthers() {
     if (!ch?.login) continue;
     const shouldBeMuted = ch.login !== focusedLogin;
     if (isMuted(ch.login) !== shouldBeMuted) {
-      void linkSetMuted(ch.login, shouldBeMuted);
+      linkSetMuted(ch.login, shouldBeMuted).catch(() => {});
     }
   }
 }
@@ -149,7 +150,9 @@ export function toggleMuteAll() {
   const muteAll = anyUnmuted();
   for (const ch of linked) {
     if (!ch?.login) continue;
-    if (isMuted(ch.login) !== muteAll) void linkSetMuted(ch.login, muteAll);
+    if (isMuted(ch.login) !== muteAll) {
+      linkSetMuted(ch.login, muteAll).catch(() => {});
+    }
   }
 }
 
@@ -186,43 +189,44 @@ function scheduleRetry() {
 
 // The tab list lands before `current` so a new tab counts as linked by the
 // time the app follows it.
+/// A failed lookup stays pending and is retried.
 async function drainPending() {
   if (!linkConnected()) return;
-
-  if (pendingFetch.size > 0) {
-    const toFetch = Array.from(pendingFetch);
-    try {
-      const fresh = await users.fetch({ logins: toFetch }, { silent: true });
-      for (const login of toFetch) pendingFetch.delete(login);
-      const current = linkWarmedChannels();
-      const known = new Set(current.map((c) => c.login));
-      setLinkWarmedChannels([
-        ...current,
-        ...fresh.filter((u) => !known.has(u.login)),
-      ]);
-    } catch (e) {
-      console.warn("link tab lookup failed, retrying", e);
-    }
-  }
-
-  if (pendingCurrent) {
-    const slug = pendingCurrent;
-    try {
-      const [ch] = await users.fetch({ logins: [slug] }, { silent: true });
-      // An unknown login (banned, renamed) resolves to nothing; retrying
-      // would never change that.
-      if (pendingCurrent === slug) pendingCurrent = null;
-      if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
-    } catch (e) {
-      console.warn("link current channel lookup failed, retrying", e);
-    }
-  }
+  if (pendingFetch.size > 0) await drainWarmed();
+  if (pendingCurrent) await drainCurrent(pendingCurrent);
 
   if (pendingFetch.size > 0 || pendingCurrent) {
     scheduleRetry();
   } else {
     retryDelay = RETRY_MIN_MS;
   }
+}
+
+async function drainWarmed() {
+  const toFetch = Array.from(pendingFetch);
+  const fresh = await users
+    .fetch({ logins: toFetch }, { silent: true })
+    .catch(() => null);
+  if (!fresh) return;
+  for (const login of toFetch) pendingFetch.delete(login);
+  const current = linkWarmedChannels();
+  const known = new Set(current.map((c) => c.login));
+  setLinkWarmedChannels([
+    ...current,
+    ...fresh.filter((u) => !known.has(u.login)),
+  ]);
+}
+
+async function drainCurrent(slug: string) {
+  const found = await users
+    .fetch({ logins: [slug] }, { silent: true })
+    .catch(() => null);
+  if (!found) return;
+  // An unknown login (banned, renamed) resolves to nothing; retrying would
+  // never change that.
+  if (pendingCurrent === slug) pendingCurrent = null;
+  const [ch] = found;
+  if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
 }
 
 export async function applyState({ channels, current, audio }: LinkState) {

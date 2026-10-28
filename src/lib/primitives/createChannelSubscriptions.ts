@@ -30,9 +30,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
       broadcasterId,
       focus,
     }));
-    void setEventsubChannels({ channels }, { silent: true }).catch((e) =>
-      console.warn("eventsub channel update failed", e),
-    );
+    setEventsubChannels({ channels }, { silent: true }).catch(() => {});
   }
 
   function leaveChannel(broadcasterId: string) {
