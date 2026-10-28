@@ -4,13 +4,15 @@ Components render. Everything else lives in `src/lib/`, in layers that only
 import downward:
 
 - `events/` — listeners that map backend events into stores. One file per event
-  family, each exporting `start()`.
+  family, each exporting `start()`. The mapping itself is pure and lives in
+  `mappers/`, which backlog replay shares.
 - `services/` — one module per feature holding its logic, state, and lifecycle
   (caching, dedupe, outcome handling, retries, listeners).
 - `api/` — one thin typed wrapper per command; the only layer that calls
   `bindings.ts`. No state, no logic beyond toasts.
 - `stores/` — signals and state only. Never call the backend.
-- `types/`, `constants/`, `utils/`, `format/`, `i18n/` — shared leaves.
+- `types/`, `constants/`, `utils/`, `format/`, `i18n/`, `mappers/` — shared
+  leaves.
 
 All user-facing text goes through `t()` from `i18n/`, keyed in
 `src/locales/en.json`. Names of things (Deatch, Link, Twitch, badges) stay as

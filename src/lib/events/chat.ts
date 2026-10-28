@@ -5,7 +5,7 @@ import { knownUser, recordChatter, user } from "../stores/users.ts";
 import * as inbox from "../services/inbox.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { mentionReason } from "../utils/mention.ts";
-import { chatterOf, mapChatMessage } from "./chat-mapper.ts";
+import { chatterOf, mapChatMessage } from "../mappers/chat-mapper.ts";
 import { noteChatRedemption } from "./channelPointsCorrelator.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as users from "../services/users.ts";

@@ -15,7 +15,7 @@ code. Tests run in plain Node with no Tauri and no DOM: importing any module
 works, but a call that reaches Tauri fails, or comes back as the failure
 outcome of a service that handles it. So pure logic goes in its own file and
 that is what gets tested (`services/emoteSetUpdate.ts` and
-`events/chat-mapper.ts` are the pattern).
+`mappers/chat-mapper.ts` are the pattern).
 
 Rust tests are a `#[cfg(test)] mod tests` at the bottom of the file. They cover
 parsers, mappings, and params, asserting wire shapes with

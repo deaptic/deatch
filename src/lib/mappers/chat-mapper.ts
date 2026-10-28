@@ -1,9 +1,5 @@
-// Pure mapper from backend chat-message DTOs to the UI feed shape. Lives in
-// its own file (no side effects, no `feeds.ts` import) so that `feeds.ts`
-// can use it for backlog hydration without creating a cycle with the
-// chat-event listener in `./chat.ts`.
-
 import type {
+  Chatter,
   FeedMessage,
   Fragment,
   MessagePerk,
@@ -11,7 +7,6 @@ import type {
   RawChatMessage,
   RawFragment,
 } from "../types/index.ts";
-import type { Chatter } from "../stores/users.ts";
 
 const PERKS: Record<string, MessagePerk> = {
   channel_points_highlighted: "highlight",

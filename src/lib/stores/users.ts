@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import type { User, UserRef } from "../types/index.ts";
+import type { Chatter, User, UserRef } from "../types/index.ts";
 import type { KnownUser } from "../utils/knownUsers.ts";
 
 export const [user, setUser] = createSignal<User | null>(null);
@@ -24,14 +24,6 @@ export const [knownUsers, setKnownUsers] = createStore<
 export function knownUser(id: string): User | undefined {
   return knownUsers[id]?.user;
 }
-
-export type Chatter = {
-  id: string;
-  login: string;
-  displayName: string;
-  color: string;
-  lastSeen: number;
-};
 
 export const chattersByChannel = new Map<string, Map<string, Chatter>>();
 

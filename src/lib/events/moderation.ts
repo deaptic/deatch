@@ -31,14 +31,14 @@ import {
 } from "../stores/feeds.ts";
 import { chatterFields, feedEvent, noticeText } from "../utils/feedEvent.ts";
 import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
-import { mapFragment } from "./chat-mapper.ts";
-import { moderateMessage } from "./moderate-message.ts";
-import { automodReason } from "./automod-reason.ts";
+import { mapFragment } from "../mappers/chat-mapper.ts";
+import { moderateMessage } from "../mappers/moderate-message.ts";
+import { automodReason } from "../mappers/automod-reason.ts";
 import {
   suspiciousInfo,
   suspiciousMessage,
   suspiciousUpdate,
-} from "./suspicious-mapper.ts";
+} from "../mappers/suspicious-mapper.ts";
 import {
   moderateNoticeType,
   SUSPICIOUS_USER,

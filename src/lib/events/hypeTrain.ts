@@ -6,7 +6,7 @@ import {
   hypeTrainBegin,
   hypeTrainEnd,
   hypeTrainProgress,
-} from "./hype-train-message.ts";
+} from "../mappers/hype-train-message.ts";
 
 export function start(): () => void {
   // Progress arrives on every contribution; only a new level earns a row.
