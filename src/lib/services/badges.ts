@@ -26,13 +26,13 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
   );
   if (cached) {
     // Stale-while-revalidate: serve cache, refresh in background.
-    getGlobalChatBadges()
+    getGlobalChatBadges({ silent: true })
       .then((fresh) => saveCache(GLOBAL_BADGES_CACHE_KEY, fresh))
       .catch(() => {});
     globalBadgesPromise = Promise.resolve(cached);
     return globalBadgesPromise;
   }
-  globalBadgesPromise = getGlobalChatBadges()
+  globalBadgesPromise = getGlobalChatBadges({ silent: true })
     .then((fresh) => {
       saveCache(GLOBAL_BADGES_CACHE_KEY, fresh);
       return fresh;
@@ -59,7 +59,7 @@ function toBadgeMap(sets: BadgeSet[]): BadgeMap {
 const channelBadges = channelResource((c) =>
   Promise.all([
     loadGlobalBadges(),
-    getChannelChatBadges({ broadcasterId: c.id }),
+    getChannelChatBadges({ broadcasterId: c.id }, { silent: true }),
   ]).then(([global, channel]) => toBadgeMap([...global, ...channel])),
 );
 

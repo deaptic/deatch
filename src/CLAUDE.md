@@ -22,7 +22,8 @@ come from `types/`, never re-exported through `api/`.
 
 Every Tauri call, commands and plugins alike, goes through `invokeCommand`,
 which logs each failure and toasts it unless `silent`; callers never report it
-again. Await the call when the outcome matters, otherwise end it with
+again. Toasts are for what the user did: background work (polling, preloading,
+startup sync) calls silently. Await the call when the outcome matters, otherwise end it with
 `.catch(() => {})`. `void` marks only promises that cannot reject.
 
 ## Services
