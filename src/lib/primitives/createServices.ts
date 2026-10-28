@@ -11,6 +11,7 @@ import * as theme from "../services/theme.ts";
 import * as emotes from "../services/emotes.ts";
 import * as view from "../services/view.ts";
 import * as channelPoints from "../services/channelPoints.ts";
+import * as live from "../services/live.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -27,6 +28,7 @@ export function createServices(): void {
       updater.start(),
       clock.start(),
       emotes.start(),
+      live.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

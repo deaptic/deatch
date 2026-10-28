@@ -60,7 +60,6 @@ import { t } from "../../lib/i18n/index.ts";
 type Props = {
   onSelect: (ch: User) => void;
   onToggleLink: () => void;
-  onLiveChange?: (live: User[]) => void;
 };
 
 type LinkStatus = {
@@ -72,7 +71,7 @@ type LinkStatus = {
 
 export default function Rail(props: Props) {
   const expanded = appearanceRailExpanded;
-  const channels = createRailChannels(props.onLiveChange);
+  const channels = createRailChannels();
   const main = createScrollAffordance();
   const linkScroll = createScrollAffordance();
 
@@ -250,14 +249,12 @@ export default function Rail(props: Props) {
     if (pinnedChannels().includes(lookup.user.id)) {
       addToast(t("RAIL_ALREADY_PINNED"), "error");
     } else {
-      channels.cachePinned(lookup.user);
       pinChannel(lookup.user.id);
     }
     closeAdd();
   }
 
   function pin(ch: User) {
-    channels.cachePinned(ch);
     users.set([ch]);
     pinChannel(ch.id);
   }
