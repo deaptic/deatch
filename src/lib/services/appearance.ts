@@ -7,8 +7,6 @@ export const defaultAccentHex = "#9481ff";
 const [applied, setApplied] = createSignal(0);
 const tokens = new Map<string, string>();
 
-const DEFAULT_ACCENT: Oklch = hexToOklch(defaultAccentHex)!;
-
 type AccentShades = {
   accent: string;
   hover: string;
@@ -32,7 +30,8 @@ const SHADES: Record<ResolvedTheme, (base: Oklch) => AccentShades> = {
 };
 
 function deriveAccent(hex: string, theme: ResolvedTheme): AccentShades {
-  const parsed = hexToOklch(hex) ?? DEFAULT_ACCENT;
+  const parsed = hexToOklch(hex) ?? hexToOklch(defaultAccentHex);
+  if (!parsed) throw new Error(`default accent ${defaultAccentHex} is not hex`);
   return SHADES[theme]({ ...parsed, c: Math.min(parsed.c, 0.2) });
 }
 

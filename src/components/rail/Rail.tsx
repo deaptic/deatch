@@ -164,11 +164,11 @@ export default function Rail(props: Props) {
     const sel = pendingChannel();
     if (!sel) return;
     queueMicrotask(() => {
-      const targets = document.querySelectorAll(
+      const targets = document.querySelectorAll<HTMLElement>(
         `[data-channel-id="${sel.id}"]`,
       );
       for (const target of targets) {
-        (target as HTMLElement).scrollIntoView({
+        target.scrollIntoView({
           block: "nearest",
           behavior: "smooth",
         });
@@ -190,8 +190,9 @@ export default function Rail(props: Props) {
     const onMove = (ev: MouseEvent) => {
       const row = document
         .elementFromPoint(ev.clientX, ev.clientY)
-        ?.closest("[data-pinned-index]") as HTMLElement | null;
-      const i = row ? parseInt(row.dataset.pinnedIndex!) : null;
+        ?.closest<HTMLElement>("[data-pinned-index]");
+      const index = row?.dataset.pinnedIndex;
+      const i = index === undefined ? null : parseInt(index);
       setOverIdx(i !== null && !isNaN(i) ? i : null);
     };
     const end = () => {

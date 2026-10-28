@@ -56,7 +56,7 @@ export default function RailRow(props: Props) {
             props.onContextMenu &&
               ((x, y) => {
                 setTip(null);
-                props.onContextMenu!(x, y);
+                props.onContextMenu?.(x, y);
               }),
           )
         }
@@ -89,7 +89,7 @@ export default function RailRow(props: Props) {
             {props.children}
             <Show when={(props.mentions ?? 0) > 0 && !expanded()}>
               <span class="absolute -top-1 -right-1.5 z-10">
-                <Badge count={props.mentions!} floating />
+                <Badge count={props.mentions ?? 0} floating />
               </span>
             </Show>
           </span>
@@ -114,15 +114,17 @@ export default function RailRow(props: Props) {
               </Show>
             </span>
             <Show when={expanded() && (props.mentions ?? 0) > 0}>
-              <Badge count={props.mentions!} />
+              <Badge count={props.mentions ?? 0} />
             </Show>
           </span>
         </span>
       </button>
-      <Show when={tip() && props.tooltip}>
-        <Tooltip side="right" x={tip()!.x} y={tip()!.y}>
-          {props.tooltip}
-        </Tooltip>
+      <Show when={props.tooltip ? tip() : null}>
+        {(at) => (
+          <Tooltip side="right" x={at().x} y={at().y}>
+            {props.tooltip}
+          </Tooltip>
+        )}
       </Show>
     </>
   );

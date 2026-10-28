@@ -202,7 +202,10 @@ export default function ChannelContextMenu(props: Props) {
             <MenuItem
               label={t("MENU_RAID")}
               icon={<Radio />}
-              onClick={() => raid.begin(self()!.id, props.ch).catch(() => {})}
+              onClick={() => {
+                const me = self();
+                if (me) raid.begin(me.id, props.ch).catch(() => {});
+              }}
             />
           </Show>
           <Show when={canShoutout()}>

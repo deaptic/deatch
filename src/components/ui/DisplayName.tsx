@@ -24,11 +24,12 @@ export default function DisplayName(props: Props) {
   const known = () =>
     props.color || (props.userId ? knownChatterColor(props.userId) : "");
 
-  const color = () =>
-    feedUserOverrideNameColor() ||
-    (known()
-      ? readableColor(known()!, resolvedTheme())
-      : "var(--color-ink-soft)");
+  const color = () => {
+    const override = feedUserOverrideNameColor();
+    if (override) return override;
+    const own = known();
+    return own ? readableColor(own, resolvedTheme()) : "var(--color-ink-soft)";
+  };
 
   return (
     <span

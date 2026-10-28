@@ -129,26 +129,19 @@ export default function Message(props: Props) {
     />
   );
 
+  /// The toolbar shows only with every action it offers.
+  const toolbarActions = () => {
+    const { onReply, onReact, onCopypasta, onContextMenu } = props;
+    if (hold() || props.showToolbar === false) return null;
+    if (!onReply || !onReact || !onCopypasta || !onContextMenu) return null;
+    return { onReply, onReact, onCopypasta, onMore: onContextMenu };
+  };
+
   const toolbar = (hovered: () => boolean) => (
-    <Show
-      when={
-        hovered() &&
-        !hold() &&
-        props.showToolbar !== false &&
-        props.onReply &&
-        props.onReact &&
-        props.onCopypasta &&
-        props.onContextMenu
-      }
-    >
-      <Actions
-        item={item}
-        reactions={props.reactions}
-        onReact={props.onReact!}
-        onReply={props.onReply!}
-        onCopypasta={props.onCopypasta!}
-        onMore={props.onContextMenu!}
-      />
+    <Show when={hovered() && toolbarActions()}>
+      {(actions) => (
+        <Actions item={item} reactions={props.reactions} {...actions()} />
+      )}
     </Show>
   );
 
@@ -170,7 +163,7 @@ export default function Message(props: Props) {
       tile={comfortable() ? avatar : undefined}
       overlay={toolbar}
       onContextMenu={
-        props.onContextMenu && ((x, y) => props.onContextMenu!(x, y, item))
+        props.onContextMenu && ((x, y) => props.onContextMenu?.(x, y, item))
       }
     >
       <FeedItem.Context

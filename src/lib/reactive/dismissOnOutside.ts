@@ -25,8 +25,8 @@ export function dismissOnOutside(opts: DismissOnOutsideOptions): void {
   stack.push(opts.ref);
   const handler = (e: Event) => {
     if (opts.shouldDismiss && !opts.shouldDismiss()) return;
-    const target = e.target as HTMLElement | null;
-    if (!target) return;
+    const target = e.target;
+    if (!(target instanceof Element)) return;
     if (opts.ref()?.contains(target)) return;
     if (opts.opener?.()?.contains(target)) return;
     if (target.closest(`[${POPOVER_TOGGLE}]`)) return;

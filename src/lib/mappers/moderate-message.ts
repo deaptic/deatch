@@ -36,8 +36,18 @@ function actedOn(p: RawModerate): Person[] {
   const field = p.action.endsWith("_unban_request")
     ? "unban_request"
     : p.action;
-  const target = (p as unknown as Record<string, Partial<RawModUser>>)[field];
-  return person(target?.user_id, target?.user_login, target?.user_name);
+  const target = fieldOf(p, field);
+  const text = (key: keyof RawModUser) => {
+    const value = fieldOf(target, key);
+    return typeof value === "string" ? value : undefined;
+  };
+  return person(text("user_id"), text("user_login"), text("user_name"));
+}
+
+/// A field whose name is only known at run time.
+function fieldOf(value: unknown, key: string): unknown {
+  if (typeof value !== "object" || value === null) return undefined;
+  return Object.entries(value).find(([name]) => name === key)?.[1];
 }
 
 export function moderateMessage(

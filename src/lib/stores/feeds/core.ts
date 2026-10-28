@@ -1,4 +1,4 @@
-import { createStore } from "solid-js/store";
+import { createStore, produce } from "solid-js/store";
 import type { BadgeMap, FeedEntry } from "../../types/index.ts";
 
 export type ChannelFeed = {
@@ -10,7 +10,10 @@ export type ChannelFeed = {
   backfilled: boolean;
 };
 
-export const [feeds, setFeeds] = createStore<Record<string, ChannelFeed>>({});
+/// A channel left is removed, so its entry can be missing.
+export const [feeds, setFeeds] = createStore<
+  Record<string, ChannelFeed | undefined>
+>({});
 
 const emptyFeed = (): ChannelFeed => ({
   messages: [],
@@ -20,6 +23,21 @@ const emptyFeed = (): ChannelFeed => ({
   dividerAtEntryId: null,
   backfilled: false,
 });
+
+/// Changes the channel's feed in place; false when it has none.
+export function updateFeed(
+  id: string,
+  change: (feed: ChannelFeed) => void,
+): boolean {
+  if (!feeds[id]) return false;
+  setFeeds(
+    id,
+    produce((feed) => {
+      if (feed) change(feed);
+    }),
+  );
+  return true;
+}
 
 export function isSilent(item: FeedEntry): boolean {
   return item.kind === "event" && item.silent === true;

@@ -25,7 +25,7 @@ export function createScrollAffordance(): ScrollAffordance {
 
   function scrollByOne(direction: -1 | 1) {
     if (!el) return;
-    const first = el.querySelector("[data-channel-id]") as HTMLElement | null;
+    const first = el.querySelector<HTMLElement>("[data-channel-id]");
     const step = first?.offsetHeight ?? 48;
     el.scrollBy({ top: direction * step, behavior: "smooth" });
   }

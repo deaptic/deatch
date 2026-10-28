@@ -18,12 +18,14 @@ export default function UserCardIdentity(props: Props) {
             <span class="font-semibold text-ink">{props.chatterId}</span>
           }
         >
-          <DisplayName
-            login={props.user!.login}
-            displayName={props.user!.displayName}
-            color={props.color}
-            userId={props.chatterId}
-          />
+          {(user) => (
+            <DisplayName
+              login={user().login}
+              displayName={user().displayName}
+              color={props.color}
+              userId={props.chatterId}
+            />
+          )}
         </Show>
       </span>
     </div>

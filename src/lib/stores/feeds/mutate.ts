@@ -1,5 +1,4 @@
-import { produce } from "solid-js/store";
-import { type ChannelFeed, ensureFeed, feeds, setFeeds } from "./core.ts";
+import { ensureFeed, feeds, setFeeds, updateFeed } from "./core.ts";
 import { enforceCaps } from "./caps.ts";
 import type {
   AutomodHoldStatus,
@@ -18,18 +17,14 @@ function updateFirst<T extends FeedEntry>(
   find: (entry: FeedEntry) => entry is T,
   change: (entry: T) => void,
 ): boolean {
-  if (!feeds[channel]) return false;
   let found = false;
-  setFeeds(
-    channel,
-    produce((f) => {
-      const entry = f.messages.find(find);
-      if (entry) {
-        change(entry);
-        found = true;
-      }
-    }),
-  );
+  updateFeed(channel, (f) => {
+    const entry = f.messages.find(find);
+    if (entry) {
+      change(entry);
+      found = true;
+    }
+  });
   return found;
 }
 
@@ -39,13 +34,9 @@ function updateEach<T extends FeedEntry>(
   find: (entry: FeedEntry) => entry is T,
   change: (entry: T) => void,
 ) {
-  if (!feeds[channel]) return;
-  setFeeds(
-    channel,
-    produce((f) => {
-      for (const entry of f.messages) if (find(entry)) change(entry);
-    }),
-  );
+  updateFeed(channel, (f) => {
+    for (const entry of f.messages) if (find(entry)) change(entry);
+  });
 }
 
 const messageWithId =
@@ -112,17 +103,14 @@ export function setBadges(id: string, badges: BadgeMap) {
 
 export function trimToLatest(id: string) {
   ensureFeed(id);
-  setFeeds(
-    id,
-    produce((f) => {
-      enforceCaps(f.messages);
-      f.paused = false;
-    }),
-  );
+  updateFeed(id, (f) => {
+    enforceCaps(f.messages);
+    f.paused = false;
+  });
 }
 
 export function dropFeed(id: string) {
-  setFeeds(id, undefined as unknown as ChannelFeed);
+  setFeeds(id, undefined);
 }
 
 export function setChannelPointsRedemption(

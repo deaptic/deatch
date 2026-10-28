@@ -24,7 +24,10 @@ import {
 } from "../../../lib/stores/preferences.ts";
 
 export default function AdvancedSection() {
-  const [restartFor, setRestartFor] = createSignal<boolean | null>(null);
+  /// The hardware acceleration setting waiting on a confirmed restart.
+  const [pendingRestart, setPendingRestart] = createSignal<{
+    enabled: boolean;
+  } | null>(null);
   const [restarting, setRestarting] = createSignal(false);
 
   async function restart(enabled: boolean) {
@@ -38,33 +41,38 @@ export default function AdvancedSection() {
       // invokeCommand already toasted; the dialog closes so the user can retry.
     } finally {
       setRestarting(false);
-      setRestartFor(null);
+      setPendingRestart(null);
     }
   }
 
   return (
     <PageBody title={t("SETTINGS_ADVANCED")} lede={t("SETTINGS_ADVANCED_LEDE")}>
-      <Show when={restartFor() !== null}>
-        <Dialog
-          title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
-            enabled: restartFor(),
-          })}
-          description={t("SETTINGS_ADVANCED_RESTART_DESCRIPTION")}
-          onClose={() => setRestartFor(null)}
-          actions={
-            <>
-              <Button variant="neutral" onClick={() => setRestartFor(null)}>
-                {t("SETTINGS_ADVANCED_CANCEL")}
-              </Button>
-              <Button
-                onClick={() => restart(restartFor()!)}
-                loading={restarting()}
-              >
-                {t("SETTINGS_ADVANCED_RESTART")}
-              </Button>
-            </>
-          }
-        />
+      <Show when={pendingRestart()}>
+        {(pending) => (
+          <Dialog
+            title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
+              enabled: pending().enabled,
+            })}
+            description={t("SETTINGS_ADVANCED_RESTART_DESCRIPTION")}
+            onClose={() => setPendingRestart(null)}
+            actions={
+              <>
+                <Button
+                  variant="neutral"
+                  onClick={() => setPendingRestart(null)}
+                >
+                  {t("SETTINGS_ADVANCED_CANCEL")}
+                </Button>
+                <Button
+                  onClick={() => restart(pending().enabled)}
+                  loading={restarting()}
+                >
+                  {t("SETTINGS_ADVANCED_RESTART")}
+                </Button>
+              </>
+            }
+          />
+        )}
       </Show>
       <Card>
         <SettingsRow
@@ -93,8 +101,10 @@ export default function AdvancedSection() {
         >
           <Toggle
             label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION")}
-            checked={restartFor() ?? advancedHardwareAcceleration()}
-            onChange={setRestartFor}
+            checked={
+              pendingRestart()?.enabled ?? advancedHardwareAcceleration()
+            }
+            onChange={(enabled) => setPendingRestart({ enabled })}
           />
         </SettingsRow>
         <SettingsRow

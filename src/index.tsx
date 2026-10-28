@@ -5,4 +5,6 @@ import App from "./App.tsx";
 import * as preferences from "./lib/services/preferences.ts";
 
 preferences.load();
-render(() => <App />, document.getElementById("root") as HTMLElement);
+const root = document.getElementById("root");
+if (!root) throw new Error("index.html has no #root element");
+render(() => <App />, root);

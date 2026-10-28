@@ -23,7 +23,7 @@ import {
   MAX_CHANNEL_GAIN,
 } from "../../constants/audio.ts";
 import { fromKeys } from "../../utils/fromKeys.ts";
-import defaults from "../default-preferences.json" with { type: "json" };
+import { DEFAULTS as defaults } from "./defaults.ts";
 
 type ShowPref = { show: boolean };
 export type EventPref = ShowPref;
@@ -145,7 +145,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     badges: showPrefs(BADGE_KEYS, defaults.feed.badges),
   },
   link: { ...defaults.link, compressorSettings: DEFAULT_COMPRESSOR },
-} as UserPreferences;
+};
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
@@ -163,10 +163,17 @@ function sanitizeHex(raw: unknown): string | null {
     : null;
 }
 
+/// `raw` when it is one of `values`, else the fallback.
+function oneOf<T extends string>(
+  values: readonly T[],
+  raw: unknown,
+  fallback: T,
+): T {
+  return values.find((v) => v === raw) ?? fallback;
+}
+
 function sanitizeTheme(raw: unknown): Theme {
-  return THEMES.includes(raw as Theme)
-    ? (raw as Theme)
-    : DEFAULT_PREFERENCES.appearance.theme;
+  return oneOf(THEMES, raw, DEFAULT_PREFERENCES.appearance.theme);
 }
 
 function sanitizeStop(raw: unknown, stops: Stops, fallback: number): number {
@@ -176,15 +183,11 @@ function sanitizeStop(raw: unknown, stops: Stops, fallback: number): number {
 }
 
 function sanitizeUiDensity(raw: unknown): UiDensity {
-  return UI_DENSITIES.includes(raw as UiDensity)
-    ? (raw as UiDensity)
-    : DEFAULT_PREFERENCES.appearance.uiDensity;
+  return oneOf(UI_DENSITIES, raw, DEFAULT_PREFERENCES.appearance.uiDensity);
 }
 
 function sanitizeDensity(raw: unknown): Density {
-  return DENSITIES.includes(raw as Density)
-    ? (raw as Density)
-    : DEFAULT_PREFERENCES.feed.density;
+  return oneOf(DENSITIES, raw, DEFAULT_PREFERENCES.feed.density);
 }
 
 // A hand-edited "false" string is truthy; only real booleans count.

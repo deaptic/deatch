@@ -24,7 +24,9 @@ export function watch(onSample: (sample: Diagnostics) => void): () => void {
 }
 
 function cacheStats(): CacheStats {
-  const channelFeeds = Object.values(unwrap(feeds));
+  const channelFeeds = Object.values(unwrap(feeds)).filter(
+    (feed) => feed !== undefined,
+  );
   return {
     users: Object.keys(unwrap(knownUsers)).length,
     channels: channelFeeds.length,

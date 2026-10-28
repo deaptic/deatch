@@ -52,13 +52,13 @@ export function createFeedScroll(scroller: () => HTMLElement | undefined) {
     echo = el.scrollTop !== before;
   }
 
-  function onScroll(e: Event) {
+  function onScroll(e: Event & { currentTarget: HTMLElement }) {
     if (echo) {
       echo = false;
       return;
     }
     if (mode() === "jumping") return;
-    const el = e.currentTarget as HTMLElement;
+    const el = e.currentTarget;
     if (el.scrollHeight !== height) keep();
     else settle(el);
   }
