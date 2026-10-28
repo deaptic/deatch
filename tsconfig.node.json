@@ -1,13 +1,7 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
+    "lib": ["ESNext"],
     "types": ["node"]
   },
   "include": ["vite.config.ts", "scripts"]
