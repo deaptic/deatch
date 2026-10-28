@@ -128,14 +128,12 @@ export default function ChatInput(props: Props) {
     if (!cmd) return;
     setCommandMode(null);
     setInput("");
-    try {
-      await cmd.execute(values, {
+    await cmd
+      .execute(values, {
         broadcasterId: props.broadcasterId,
         openUserCard: props.openUserCard,
-      });
-    } catch (e) {
-      console.error(`/${cmd.name} failed`, e);
-    }
+      })
+      .catch(() => {});
     queueMicrotask(focus);
   }
 

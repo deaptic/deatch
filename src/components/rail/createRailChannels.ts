@@ -13,8 +13,6 @@ import {
 import * as users from "../../lib/services/users.ts";
 import * as channelInfo from "../../lib/services/channelInfo.ts";
 import { user } from "../../lib/stores/users.ts";
-import { addToast } from "../../lib/stores/toasts.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
 import { setLiveStreams, userFromRef } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { linkedChannel, linkWarmedChannels } from "../../lib/stores/link.ts";
@@ -57,18 +55,15 @@ export function createRailChannels(
       setLoadingPinned(false);
       return;
     }
-    try {
-      const found = await users.get(ids);
+    const found = await users.get(ids).catch(() => null);
+    if (found) {
       const next: Record<string, User> = {};
       for (const u of found) {
         next[u.id] = u;
       }
       setPinnedMeta(reconcile(next));
-    } catch (e) {
-      addToast(errorMessage(e), "error");
-    } finally {
-      setLoadingPinned(false);
     }
+    setLoadingPinned(false);
   }
 
   const trackedIds = new Set<string>();

@@ -40,6 +40,7 @@ export type Command = {
   description: MessageKey;
   role: CommandRole;
   options: CommandOption[];
+  /// Rejects only with a failure the api already reported.
   execute: (
     values: Record<string, unknown>,
     ctx: CommandContext,

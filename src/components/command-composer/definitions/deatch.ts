@@ -92,7 +92,10 @@ export const deatchCommands: Command[] = [
     options: [],
     execute: async (_, ctx) => {
       try {
-        const [s] = await getStreamsFromIds({ userIds: [ctx.broadcasterId] });
+        const [s] = await getStreamsFromIds(
+          { userIds: [ctx.broadcasterId] },
+          { silent: true },
+        );
         if (!s) {
           appendLocalNotice(ctx.broadcasterId, t("COMMAND_UPTIME_OFFLINE"));
           return;
@@ -116,10 +119,10 @@ export const deatchCommands: Command[] = [
       const me = user();
       if (!me) return;
       try {
-        const followedAt = await getFollowedAt({
-          broadcasterId: ctx.broadcasterId,
-          userId: me.id,
-        });
+        const followedAt = await getFollowedAt(
+          { broadcasterId: ctx.broadcasterId, userId: me.id },
+          { silent: true },
+        );
         if (!followedAt) {
           appendLocalNotice(
             ctx.broadcasterId,
