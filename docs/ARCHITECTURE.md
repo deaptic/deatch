@@ -57,7 +57,8 @@ badge, and stats.
 ## Frontend
 
 Everything outside components lives in `src/lib/`, in layers that only import
-downward. `events/` maps backend events into stores, one file per family.
+downward. `events/` maps backend events into stores, one file per family; the
+mapping itself is pure and lives in `mappers/`, which backlog replay shares.
 `services/` holds one module per feature with its logic, state, and lifecycle.
 `api/` is a thin typed wrapper per command and the only caller of `bindings.ts`.
 `stores/` is signals and state and never calls the backend. `primitives/` wires

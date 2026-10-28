@@ -1,6 +1,6 @@
 import { t } from "../i18n/index.ts";
 import { getRecentMessages } from "../api/twitch/chat.ts";
-import { chatterOf, mapChatMessage } from "../events/chat-mapper.ts";
+import { chatterOf, mapChatMessage } from "../mappers/chat-mapper.ts";
 import { errorMessage } from "../utils/error.ts";
 import { textOf } from "../utils/message.ts";
 import {
@@ -12,8 +12,8 @@ import {
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
-import { mapNotice } from "../events/notice-mapper.ts";
-import { groupGifts } from "../events/gift-group.ts";
+import { mapNotice } from "../mappers/notice-mapper.ts";
+import { groupGifts } from "../mappers/gift-group.ts";
 import type { FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
 import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
