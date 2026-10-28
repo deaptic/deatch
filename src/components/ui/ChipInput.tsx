@@ -6,23 +6,17 @@ import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   placeholder: string;
-  onAdd: (value: string) => void | Promise<void>;
+  onAdd: (value: string) => void;
 };
 
 export default function ChipInput(props: Props) {
   const [value, setValue] = createSignal("");
-  const [busy, setBusy] = createSignal(false);
 
-  async function submit() {
+  function submit() {
     const v = value().trim();
-    if (!v || busy()) return;
-    setBusy(true);
-    try {
-      await props.onAdd(v);
-      setValue("");
-    } finally {
-      setBusy(false);
-    }
+    if (!v) return;
+    props.onAdd(v);
+    setValue("");
   }
 
   return (
@@ -33,14 +27,13 @@ export default function ChipInput(props: Props) {
         value={value()}
         onInput={(e) => setValue(e.currentTarget.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") void submit();
+          if (e.key === "Enter") submit();
         }}
       />
       <IconButton
         label={t("COMMON_ADD")}
         variant="neutral"
         onClick={submit}
-        loading={busy()}
         disabled={!value().trim()}
       >
         <Plus class="size-4" />
