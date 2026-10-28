@@ -56,6 +56,8 @@ export default defineConfig({
   // 1. prevent Vite from obscuring rust errors
   clearScreen: false,
   build: {
+    // WebView2 is evergreen Chromium, and the app already relies on Temporal.
+    target: "esnext",
     sourcemap: true,
   },
   // 2. tauri expects a fixed port, fail if that port is not available
