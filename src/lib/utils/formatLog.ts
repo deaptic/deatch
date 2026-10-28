@@ -11,6 +11,8 @@ function formatValue(value: unknown): string {
   try {
     return JSON.stringify(value, errorReplacer);
   } catch {
+    // Values JSON can't serialize (circular) only need to not crash logging.
+    // oxlint-disable-next-line typescript/no-base-to-string
     return String(value);
   }
 }
