@@ -216,7 +216,7 @@ export type ChannelLoginParams = {
 
 export type ChannelResult = {
 	emotes: EmoteEntry[],
-	emote_set_id: string | null,
+	emoteSetId: string | null,
 };
 
 export type CharityAmount = {
@@ -319,8 +319,8 @@ export type CreatedClip = {
 };
 
 export type DcfAuthResponse = {
-	user_code: string,
-	verification_uri: string,
+	userCode: string,
+	verificationUri: string,
 };
 
 export type DeleteChatMessagesParams = {
