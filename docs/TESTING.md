@@ -3,15 +3,15 @@
 Run this before every commit; CI runs the same on every push.
 
 ```powershell
-vp check --fix && deno check src/ && pnpm test
+vp check --fix && pnpm test
 cd src-tauri
 cargo fmt && cargo clippy --all-targets -- -D warnings
 cargo test --lib
 ```
 
 Frontend tests are `*.test.ts` files next to the module they cover, using
-`@std/assert`, with `/// <reference lib="deno.ns" />` as the first line.
-Anything that imports a store or touches Tauri at load fails under `deno test`,
+Vitest from `vite-plus/test`. `vp check` type-checks them with the rest of the
+code. Anything that touches Tauri at load fails under `vp test`,
 so pure logic goes in its own file and that is what gets tested
 (`services/emoteSetUpdate.ts` and `events/chat-mapper.ts` are the pattern).
 

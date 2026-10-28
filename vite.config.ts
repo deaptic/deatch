@@ -2,7 +2,6 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
-// @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
@@ -11,6 +10,10 @@ export default defineConfig({
 
   lint: {
     jsPlugins: ["@shadcn/lint"],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
     ignorePatterns: [
       "dist/**",
       "docs/**",
@@ -36,6 +39,11 @@ export default defineConfig({
       "shadcn/no-inline-styles": "error",
       "shadcn/require-static-classes": "error",
     },
+  },
+
+  test: {
+    // vite-plugin-solid defaults to jsdom; the tests cover pure logic.
+    environment: "node",
   },
 
   fmt: {

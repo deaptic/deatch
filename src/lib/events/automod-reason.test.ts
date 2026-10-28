@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { RawAutomodMessageHold } from "../types/index.ts";
 import { automodReason } from "./automod-reason.ts";
 
@@ -19,7 +18,7 @@ const term = (start_pos: number, end_pos: number) => ({
   boundary: { start_pos, end_pos },
 });
 
-Deno.test("quotes each blocked term once from the message", () => {
+test("quotes each blocked term once from the message", () => {
   const text = "😀 bad words bad";
   const p: RawAutomodMessageHold = {
     ...base,
@@ -27,10 +26,10 @@ Deno.test("quotes each blocked term once from the message", () => {
     reason: "blocked_term",
     blocked_term: { terms_found: [term(2, 4), term(6, 10), term(12, 14)] },
   };
-  assertEquals(automodReason(p), "Blocked term: bad, words");
+  expect(automodReason(p)).toStrictEqual("Blocked term: bad, words");
 });
 
-Deno.test("quotes a blocked link", () => {
+test("quotes a blocked link", () => {
   const text = "see evil.example";
   const p: RawAutomodMessageHold = {
     ...base,
@@ -38,15 +37,15 @@ Deno.test("quotes a blocked link", () => {
     reason: "blocked_link",
     blocked_term: { terms_found: [term(4, 15)] },
   };
-  assertEquals(automodReason(p), "Blocked link: evil.example");
+  expect(automodReason(p)).toStrictEqual("Blocked link: evil.example");
 });
 
-Deno.test("names the AutoMod category and level", () => {
+test("names the AutoMod category and level", () => {
   const p: RawAutomodMessageHold = {
     ...base,
     message: { text: "x", fragments: [] },
     reason: "automod",
     automod: { category: "swearing", level: 2 },
   };
-  assertEquals(automodReason(p), "AutoMod: Swearing (level 2)");
+  expect(automodReason(p)).toStrictEqual("AutoMod: Swearing (level 2)");
 });

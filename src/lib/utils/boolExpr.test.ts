@@ -1,34 +1,33 @@
-/// <reference lib="deno.ns" />
-import { assertEquals, assertThrows } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { compile } from "./boolExpr.ts";
 
 const flags = (...on: string[]) => new Map(on.map((name) => [name, true]));
 
-Deno.test("evaluates a single flag, treating unknown flags as false", () => {
-  assertEquals(compile("mod")(flags("mod")), true);
-  assertEquals(compile("mod")(flags()), false);
+test("evaluates a single flag, treating unknown flags as false", () => {
+  expect(compile("mod")(flags("mod"))).toStrictEqual(true);
+  expect(compile("mod")(flags())).toStrictEqual(false);
 });
 
-Deno.test("binds && tighter than ||", () => {
+test("binds && tighter than ||", () => {
   const pred = compile("a || b && c");
-  assertEquals(pred(flags("a")), true);
-  assertEquals(pred(flags("b")), false);
-  assertEquals(pred(flags("b", "c")), true);
+  expect(pred(flags("a"))).toStrictEqual(true);
+  expect(pred(flags("b"))).toStrictEqual(false);
+  expect(pred(flags("b", "c"))).toStrictEqual(true);
 });
 
-Deno.test("honours parentheses and negation", () => {
+test("honours parentheses and negation", () => {
   const pred = compile("!(a || b) && c");
-  assertEquals(pred(flags("c")), true);
-  assertEquals(pred(flags("a", "c")), false);
-  assertEquals(compile("!!a")(flags("a")), true);
+  expect(pred(flags("c"))).toStrictEqual(true);
+  expect(pred(flags("a", "c"))).toStrictEqual(false);
+  expect(compile("!!a")(flags("a"))).toStrictEqual(true);
 });
 
-Deno.test("accepts namespaced identifiers", () => {
-  assertEquals(compile("badge:vip.1-x")(flags("badge:vip.1-x")), true);
+test("accepts namespaced identifiers", () => {
+  expect(compile("badge:vip.1-x")(flags("badge:vip.1-x"))).toStrictEqual(true);
 });
 
-Deno.test("rejects malformed expressions", () => {
+test("rejects malformed expressions", () => {
   for (const src of ["", "a &&", "(a", "a b", "a & b", "a )"]) {
-    assertThrows(() => compile(src), Error, undefined, src);
+    expect(() => compile(src), src).toThrow(Error);
   }
 });

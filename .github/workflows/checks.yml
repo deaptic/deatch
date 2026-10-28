@@ -24,9 +24,7 @@ jobs:
 
       - name: vp check
         run: vp check
-      - name: deno check
-        run: deno check src/
-      - name: deno test
+      - name: vp test
         run: pnpm test
       - name: vite build
         run: pnpm build

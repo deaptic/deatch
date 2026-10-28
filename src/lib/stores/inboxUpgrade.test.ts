@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { upgradeMention } from "./inboxUpgrade.ts";
 
 const legacy = {
@@ -18,16 +17,16 @@ const legacy = {
   unread: true,
 };
 
-Deno.test("rebuilds a legacy mention into a message", () => {
+test("rebuilds a legacy mention into a message", () => {
   const m = upgradeMention(legacy)!;
-  assertEquals(m.message.message_id, "m1");
-  assertEquals(m.message.chatter_name, "Foo");
-  assertEquals(m.message.fragments, legacy.fragments);
-  assertEquals(m.unread, true);
+  expect(m.message.message_id).toStrictEqual("m1");
+  expect(m.message.chatter_name).toStrictEqual("Foo");
+  expect(m.message.fragments).toStrictEqual(legacy.fragments);
+  expect(m.unread).toStrictEqual(true);
 });
 
-Deno.test("passes current mentions through and drops unrenderable ones", () => {
+test("passes current mentions through and drops unrenderable ones", () => {
   const current = upgradeMention(legacy)!;
-  assertEquals(upgradeMention(current), current);
-  assertEquals(upgradeMention({ id: "x", timestamp: 1 }), null);
+  expect(upgradeMention(current)).toStrictEqual(current);
+  expect(upgradeMention({ id: "x", timestamp: 1 })).toStrictEqual(null);
 });

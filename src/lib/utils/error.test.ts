@@ -1,24 +1,23 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { errorMessage } from "./error.ts";
 
-Deno.test("shows Twitch's helix message as-is", () => {
-  assertEquals(errorMessage({ kind: "helix", message: "nope" }), "nope");
+test("shows Twitch's helix message as-is", () => {
+  expect(errorMessage({ kind: "helix", message: "nope" })).toStrictEqual(
+    "nope",
+  );
 });
 
-Deno.test("translates other backend error kinds", () => {
-  assertEquals(
-    errorMessage({ kind: "notAuthenticated" }),
+test("translates other backend error kinds", () => {
+  expect(errorMessage({ kind: "notAuthenticated" })).toStrictEqual(
     "Not signed in to Twitch",
   );
-  assertEquals(
-    errorMessage({ kind: "http", message: "timed out" }),
+  expect(errorMessage({ kind: "http", message: "timed out" })).toStrictEqual(
     "Network request failed",
   );
 });
 
-Deno.test("falls back for non-backend errors", () => {
-  assertEquals(errorMessage(new Error("boom")), "boom");
-  assertEquals(errorMessage("plain"), "plain");
-  assertEquals(errorMessage(null), "null");
+test("falls back for non-backend errors", () => {
+  expect(errorMessage(new Error("boom"))).toStrictEqual("boom");
+  expect(errorMessage("plain")).toStrictEqual("plain");
+  expect(errorMessage(null)).toStrictEqual("null");
 });

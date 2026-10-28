@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import {
   allLanguages,
   languageName,
@@ -7,14 +6,14 @@ import {
   searchLanguages,
 } from "./languages.ts";
 
-Deno.test("names language codes in English", () => {
-  assertEquals(languageName("fi"), "Finnish");
-  assertEquals(languageName("pt"), "Portuguese");
-  assertEquals(languageName("other"), "Other");
+test("names language codes in English", () => {
+  expect(languageName("fi")).toStrictEqual("Finnish");
+  expect(languageName("pt")).toStrictEqual("Portuguese");
+  expect(languageName("other")).toStrictEqual("Other");
 });
 
-Deno.test("keeps pinned codes first, then the rest by name", () => {
-  assertEquals(orderLanguages(["en", "de", "fi", "ja", "fi"], ["fi"]), [
+test("keeps pinned codes first, then the rest by name", () => {
+  expect(orderLanguages(["en", "de", "fi", "ja", "fi"], ["fi"])).toStrictEqual([
     "fi",
     "en",
     "de",
@@ -22,24 +21,24 @@ Deno.test("keeps pinned codes first, then the rest by name", () => {
   ]);
 });
 
-Deno.test("drops blanks and duplicates across pinned and seen", () => {
-  assertEquals(orderLanguages(["", "en", "sv"], ["sv", "", "sv"]), [
+test("drops blanks and duplicates across pinned and seen", () => {
+  expect(orderLanguages(["", "en", "sv"], ["sv", "", "sv"])).toStrictEqual([
     "sv",
     "en",
   ]);
 });
 
-Deno.test("knows every two-letter language the platform can name", () => {
+test("knows every two-letter language the platform can name", () => {
   const all = allLanguages();
-  assertEquals(all.includes("fi"), true);
-  assertEquals(all.includes("en"), true);
-  assertEquals(all.includes("zz"), false);
-  assertEquals(all.includes("iw"), false);
+  expect(all.includes("fi")).toStrictEqual(true);
+  expect(all.includes("en")).toStrictEqual(true);
+  expect(all.includes("zz")).toStrictEqual(false);
+  expect(all.includes("iw")).toStrictEqual(false);
 });
 
-Deno.test("finds languages by name or code, exact code first", () => {
-  assertEquals(searchLanguages("fi")[0], "fi");
-  assertEquals(searchLanguages("finn"), ["fi"]);
-  assertEquals(searchLanguages("  GERM "), ["de"]);
-  assertEquals(searchLanguages(""), []);
+test("finds languages by name or code, exact code first", () => {
+  expect(searchLanguages("fi")[0]).toStrictEqual("fi");
+  expect(searchLanguages("finn")).toStrictEqual(["fi"]);
+  expect(searchLanguages("  GERM ")).toStrictEqual(["de"]);
+  expect(searchLanguages("")).toStrictEqual([]);
 });

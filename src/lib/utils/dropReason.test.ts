@@ -1,21 +1,18 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { dropMessage } from "./dropReason.ts";
 
-Deno.test("explains a known drop code", () => {
-  assertEquals(
-    dropMessage({ code: "duplicate" }),
+test("explains a known drop code", () => {
+  expect(dropMessage({ code: "duplicate" })).toStrictEqual(
     "Your message is identical to the one you just sent",
   );
 });
 
-Deno.test("keeps Twitch's text for an unknown code", () => {
-  assertEquals(
-    dropMessage({ code: "unknown", message: "new rule" }),
+test("keeps Twitch's text for an unknown code", () => {
+  expect(dropMessage({ code: "unknown", message: "new rule" })).toStrictEqual(
     "new rule",
   );
 });
 
-Deno.test("falls back when Twitch gives no reason", () => {
-  assertEquals(dropMessage(null), "Message dropped");
+test("falls back when Twitch gives no reason", () => {
+  expect(dropMessage(null)).toStrictEqual("Message dropped");
 });

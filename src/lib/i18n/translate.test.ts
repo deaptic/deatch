@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { createTranslator } from "./translate.ts";
 
 const t = createTranslator(
@@ -10,17 +9,15 @@ const t = createTranslator(
   "en-GB",
 );
 
-Deno.test("returns plain messages as written", () => {
-  assertEquals(t("GREETING"), "Hello");
+test("returns plain messages as written", () => {
+  expect(t("GREETING")).toStrictEqual("Hello");
 });
 
-Deno.test("fills values and picks the plural form", () => {
-  assertEquals(
-    t("RAID", { name: "xqc", count: 1 }),
+test("fills values and picks the plural form", () => {
+  expect(t("RAID", { name: "xqc", count: 1 })).toStrictEqual(
     "xqc raided with 1 viewer",
   );
-  assertEquals(
-    t("RAID", { name: "xqc", count: 1500 }),
+  expect(t("RAID", { name: "xqc", count: 1500 })).toStrictEqual(
     "xqc raided with 1,500 viewers",
   );
 });

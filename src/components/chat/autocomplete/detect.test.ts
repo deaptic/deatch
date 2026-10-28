@@ -1,16 +1,15 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { detect } from "./detect.ts";
 
-Deno.test("detects commands only at the start", () => {
-  assertEquals(detect("/ba"), { kind: "command", query: "ba" });
-  assertEquals(detect("/"), { kind: "command", query: "" });
-  assertEquals(detect("hi /ba"), null);
+test("detects commands only at the start", () => {
+  expect(detect("/ba")).toStrictEqual({ kind: "command", query: "ba" });
+  expect(detect("/")).toStrictEqual({ kind: "command", query: "" });
+  expect(detect("hi /ba")).toStrictEqual(null);
 });
 
-Deno.test("detects emotes and mentions after whitespace", () => {
-  assertEquals(detect("lol :Kap"), { kind: "emote", query: "Kap" });
-  assertEquals(detect(":"), null);
-  assertEquals(detect("hey @bo"), { kind: "mention", query: "bo" });
-  assertEquals(detect("mail@bo"), null);
+test("detects emotes and mentions after whitespace", () => {
+  expect(detect("lol :Kap")).toStrictEqual({ kind: "emote", query: "Kap" });
+  expect(detect(":")).toStrictEqual(null);
+  expect(detect("hey @bo")).toStrictEqual({ kind: "mention", query: "bo" });
+  expect(detect("mail@bo")).toStrictEqual(null);
 });

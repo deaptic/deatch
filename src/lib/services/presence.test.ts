@@ -1,5 +1,4 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import type { Stream, User } from "../types/index.ts";
 import {
   buildPresence,
@@ -47,40 +46,42 @@ const session = {
   lurkPhrase: "PRESENCE_LURK_SELF_LURKING",
 } as const;
 
-Deno.test("no presence when disabled or signed out", () => {
-  assertEquals(presenceMode(ctx({ enabled: false })), null);
-  assertEquals(presenceMode(ctx({ authenticated: false })), null);
+test("no presence when disabled or signed out", () => {
+  expect(presenceMode(ctx({ enabled: false }))).toStrictEqual(null);
+  expect(presenceMode(ctx({ authenticated: false }))).toStrictEqual(null);
 });
 
-Deno.test("Explore or no channel counts as browsing", () => {
-  assertEquals(presenceMode(ctx({ exploreOpen: true })), "browsing");
-  assertEquals(presenceMode(ctx({ channel: null })), "browsing");
+test("Explore or no channel counts as browsing", () => {
+  expect(presenceMode(ctx({ exploreOpen: true }))).toStrictEqual("browsing");
+  expect(presenceMode(ctx({ channel: null }))).toStrictEqual("browsing");
   const activity = buildPresence(ctx({ exploreOpen: true }), session);
-  assertEquals(activity.details, "Browsing channels");
-  assertEquals(activity.startedAt, 100);
+  expect(activity.details).toStrictEqual("Browsing channels");
+  expect(activity.startedAt).toStrictEqual(100);
 });
 
-Deno.test("a live channel shows its game, viewers and stream start", () => {
+test("a live channel shows its game, viewers and stream start", () => {
   const activity = buildPresence(ctx({ liveStreams: [stream()] }), session);
-  assertEquals(presenceMode(ctx()), "ch:1");
-  assertEquals(activity.stateText, "Chess · 1.2K viewers");
-  assertEquals(activity.largeText, "Chess with chat");
-  assertEquals(activity.startedAt, Date.parse("2026-10-01T10:00:00Z") / 1000);
+  expect(presenceMode(ctx())).toStrictEqual("ch:1");
+  expect(activity.stateText).toStrictEqual("Chess · 1.2k viewers");
+  expect(activity.largeText).toStrictEqual("Chess with chat");
+  expect(activity.startedAt).toStrictEqual(
+    Date.parse("2026-10-01T10:00:00Z") / 1000,
+  );
 });
 
-Deno.test("an offline channel is Offline, your own shows the lurk phrase", () => {
-  assertEquals(buildPresence(ctx(), session).stateText, "Offline");
+test("an offline channel is Offline, your own shows the lurk phrase", () => {
+  expect(buildPresence(ctx(), session).stateText).toStrictEqual("Offline");
   const own = buildPresence(ctx({ userId: "1" }), session);
-  assertEquals(own.stateText, "Self-lurking");
-  assertEquals(own.startedAt, 100);
+  expect(own.stateText).toStrictEqual("Self-lurking");
+  expect(own.startedAt).toStrictEqual(100);
 });
 
-Deno.test("long titles are cut without splitting an emoji", () => {
+test("long titles are cut without splitting an emoji", () => {
   const title = "a".repeat(126) + "😀" + "tail";
   const { largeText } = buildPresence(
     ctx({ liveStreams: [stream({ title })] }),
     session,
   );
-  assertEquals(largeText, "a".repeat(126) + "…");
-  assertEquals(largeText!.length <= 128, true);
+  expect(largeText).toStrictEqual("a".repeat(126) + "…");
+  expect(largeText!.length <= 128).toStrictEqual(true);
 });

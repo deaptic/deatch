@@ -1,19 +1,18 @@
-/// <reference lib="deno.ns" />
-import { assertEquals } from "@std/assert";
+import { expect, test } from "vite-plus/test";
 import { formatApproxDuration, formatDuration } from "./duration.ts";
 
-Deno.test("formatDuration uses the largest unit that divides evenly", () => {
-  assertEquals(formatDuration(0), "0s");
-  assertEquals(formatDuration(90), "90s");
-  assertEquals(formatDuration(120), "2m");
-  assertEquals(formatDuration(129600), "36h");
-  assertEquals(formatDuration(1209600), "2w");
+test("formatDuration uses the largest unit that divides evenly", () => {
+  expect(formatDuration(0)).toStrictEqual("0s");
+  expect(formatDuration(90)).toStrictEqual("90s");
+  expect(formatDuration(120)).toStrictEqual("2m");
+  expect(formatDuration(129600)).toStrictEqual("36h");
+  expect(formatDuration(1209600)).toStrictEqual("2w");
 });
 
-Deno.test("formatApproxDuration rounds to the nearest whole unit", () => {
-  assertEquals(formatApproxDuration(0), "0s");
-  assertEquals(formatApproxDuration(30), "30s");
-  assertEquals(formatApproxDuration(599), "10m");
-  assertEquals(formatApproxDuration(7200), "2h");
-  assertEquals(formatApproxDuration(604800), "7d");
+test("formatApproxDuration rounds to the nearest whole unit", () => {
+  expect(formatApproxDuration(0)).toStrictEqual("0s");
+  expect(formatApproxDuration(30)).toStrictEqual("30s");
+  expect(formatApproxDuration(599)).toStrictEqual("10m");
+  expect(formatApproxDuration(7200)).toStrictEqual("2h");
+  expect(formatApproxDuration(604800)).toStrictEqual("7d");
 });
