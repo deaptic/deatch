@@ -45,6 +45,8 @@ export type MessageBadge = {
 
 export type RawChatMessage = {
   broadcaster_user_id: string;
+  broadcaster_user_login?: string;
+  broadcaster_user_name?: string;
   message_id: string;
   chatter_user_id: string;
   chatter_user_login: string;

@@ -52,6 +52,13 @@ export const CHANNEL_UPDATE = "channel_update";
 export const SHARED_CHAT_SESSION = "shared_chat_session";
 export const STREAM_ONLINE = "stream_online";
 export const STREAM_OFFLINE = "stream_offline";
+export const FOLLOW = "follow";
+export const LOCAL = "local";
+export const CHAT_CONNECTED = "chat_connected";
+export const CHAT_DISCONNECTED = "chat_disconnected";
+export const CHAT_CONNECT_FAILED = "chat_connect_failed";
+export const CHAT_CLEARED = "chat_cleared";
+export const SEVENTV_UPDATE = "seventv_update";
 
 export function moderateNoticeType(action: RawModerate["action"]): string {
   return `moderate_${action}`;
@@ -69,7 +76,7 @@ export const EVENTS = [
     key: "follow",
     label: "EVENT_TYPE_FOLLOW",
     description: "EVENT_TYPE_FOLLOW_DESCRIPTION",
-    types: ["follow"],
+    types: [FOLLOW],
     modOnly: true,
   },
   {

@@ -41,6 +41,7 @@ import {
   suspiciousUpdate,
 } from "../mappers/suspicious.ts";
 import {
+  CHAT_CLEARED,
   moderateNoticeType,
   SUSPICIOUS_USER,
   UNBAN_REQUEST,
@@ -96,7 +97,7 @@ export function start(): () => void {
       const now = serverTime(e);
       appendItem(
         broadcasterId,
-        feedEvent("chat_cleared", t("EVENT_CHAT_CLEARED"), now, {
+        feedEvent(CHAT_CLEARED, t("EVENT_CHAT_CLEARED"), now, {
           id: `chat-cleared-${broadcasterId}-${now}`,
         }),
       );

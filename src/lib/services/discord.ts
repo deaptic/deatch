@@ -17,12 +17,18 @@ let activityStartedAt = Math.floor(Date.now() / 1000);
 let selfLurkPhrase = SELF_LURK_PHRASES[0];
 
 let connected = false;
+let connecting: Promise<boolean> | null = null;
 let lastSerialized: string | null = null;
 let pendingTimer: number | undefined;
 let pendingActivity: SetActivityParams | null = null;
 
-async function connect(): Promise<boolean> {
-  if (connected) return true;
+function connect(): Promise<boolean> {
+  if (connected) return Promise.resolve(true);
+  connecting ??= open().finally(() => (connecting = null));
+  return connecting;
+}
+
+async function open(): Promise<boolean> {
   try {
     await discordConnect({ silent: true });
     connected = true;
@@ -79,6 +85,10 @@ async function flush(activity: SetActivityParams): Promise<void> {
     connected = false;
     lastSerialized = null;
   }
+}
+
+export function start(): () => void {
+  return () => void disconnect();
 }
 
 export function applyPresence(ctx: PresenceContext): void {
