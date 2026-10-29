@@ -195,14 +195,25 @@ export default function EmotePicker(props: Props) {
       tab: () => cycleTab(1),
       "shift-tab": () => cycleTab(-1),
       enter: () => selectActive(false),
-      "shift-enter": () => selectActive(true),
-      "ctrl-d": () => {
-        const item = activeItem();
-        if (item) onToggleFavorite(item);
-      },
     });
+    const unbindActions = [
+      shortcuts.register(
+        "emotePicker::insertKeepOpen",
+        () => selectActive(true),
+        "emotePickerOpen",
+      ),
+      shortcuts.register(
+        "emotePicker::favorite",
+        () => {
+          const item = activeItem();
+          if (item) onToggleFavorite(item);
+        },
+        "emotePickerOpen",
+      ),
+    ];
     onCleanup(() => {
       unbind();
+      for (const u of unbindActions) u();
     });
   });
 

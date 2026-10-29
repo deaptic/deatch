@@ -1,23 +1,25 @@
 import { Heart } from "lucide-solid";
 import {
-  createEffect,
   createMemo,
   createSignal,
   For,
-  on,
   onCleanup,
   onMount,
   Show,
 } from "solid-js";
-import type { Stream, User } from "../../lib/types/index.ts";
+import type { User } from "../../lib/types/index.ts";
 import { liveStreams } from "../../lib/stores/channels.ts";
-import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
+import {
+  exploreFilters,
+  liveBrowse,
+  setExploreFilters,
+} from "../../lib/stores/explore.ts";
 import {
   exploreLanguage,
   setExploreLanguage,
 } from "../../lib/stores/preferences.ts";
-import { getStreams } from "../../lib/api/twitch/streams.ts";
-import * as users from "../../lib/services/users.ts";
+import * as explore from "../../lib/services/explore.ts";
+import { byViewers, matchingStreams } from "../../lib/utils/liveFilter.ts";
 import { orderLanguages } from "../../lib/utils/languages.ts";
 import LiveCard from "./LiveCard.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
@@ -31,15 +33,10 @@ type Props = {
   onSelect: (channel: User) => void;
 };
 
-const PAGE_SIZE = 40;
 const THUMBNAIL_REFRESH_MS = 5 * 60_000;
 const systemLanguage = () => at(navigator.language.split("-"), 0);
 
 export default function LiveNow(props: Props) {
-  const [remote, setRemote] = createSignal<Stream[]>([]);
-  const [cursor, setCursor] = createSignal<string | null>(null);
-  const [fetching, setFetching] = createSignal(false);
-  const [exhausted, setExhausted] = createSignal(false);
   const [thumbnailVersion, setThumbnailVersion] = createSignal(0);
 
   onMount(() => {
@@ -48,74 +45,24 @@ export default function LiveNow(props: Props) {
       THUMBNAIL_REFRESH_MS,
     );
     onCleanup(() => clearInterval(id));
+    onCleanup(explore.watch());
   });
 
-  // A filter change starts a new generation; pages from the old one are
-  // dropped when they land.
-  let generation = 0;
-
-  async function fetchPage(reset: boolean) {
-    if (exploreFilters.followingOnly) return;
-    if (!reset && (fetching() || exhausted())) return;
-    const mine = ++generation;
-    setFetching(true);
-    try {
-      const { data, pagination } = await getStreams({
-        gameIds: exploreFilters.category
-          ? [exploreFilters.category.id]
-          : undefined,
-        language: exploreLanguage() || undefined,
-        first: PAGE_SIZE,
-        after: reset ? undefined : (cursor() ?? undefined),
-      });
-      if (mine !== generation) return;
-      if (data.length) {
-        users.get(data.map((s) => s.user.id)).catch(() => {});
-      }
-      setRemote((prev) => (reset ? data : [...prev, ...data]));
-      setCursor(pagination.cursor);
-      setExhausted(!pagination.cursor || data.length === 0);
-    } catch {
-      if (mine === generation) setExhausted(true);
-    } finally {
-      if (mine === generation) setFetching(false);
-    }
-  }
-
-  createEffect(
-    on(
-      () => [
-        exploreFilters.followingOnly,
-        exploreLanguage(),
-        exploreFilters.category,
-      ],
-      () => {
-        setRemote([]);
-        setCursor(null);
-        setExhausted(false);
-        if (!exploreFilters.followingOnly) void fetchPage(true);
-      },
-    ),
-  );
-
-  const source = () => {
-    if (!exploreFilters.followingOnly) return remote();
-    const lang = exploreLanguage();
-    const category = exploreFilters.category;
-    return liveStreams().filter(
-      (s) =>
-        (!lang || s.language === lang) &&
-        (!category || s.game.id === category.id),
-    );
-  };
-
   const sorted = () =>
-    [...source()].sort((a, b) => b.viewerCount - a.viewerCount);
+    byViewers(
+      exploreFilters.followingOnly
+        ? matchingStreams(
+            liveStreams(),
+            exploreLanguage(),
+            exploreFilters.category,
+          )
+        : liveBrowse.streams,
+    );
 
   const seenLanguages = createMemo<Set<string>>((prev) => {
     const next = new Set(prev);
     for (const s of liveStreams()) next.add(s.language);
-    for (const s of remote()) next.add(s.language);
+    for (const s of liveBrowse.streams) next.add(s.language);
     return next.size === prev.size ? prev : next;
   }, new Set());
 
@@ -123,11 +70,13 @@ export default function LiveNow(props: Props) {
     orderLanguages(seenLanguages(), [systemLanguage(), exploreLanguage()]);
 
   const initialLoading = () =>
-    !exploreFilters.followingOnly && fetching() && remote().length === 0;
+    !exploreFilters.followingOnly &&
+    liveBrowse.fetching &&
+    liveBrowse.streams.length === 0;
 
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries.some((e) => e.isIntersecting)) void fetchPage(false);
+      if (entries.some((e) => e.isIntersecting)) explore.loadMore();
     },
     { rootMargin: "400px" },
   );
@@ -217,7 +166,9 @@ export default function LiveNow(props: Props) {
         <div ref={(el) => observer.observe(el)} class="h-px" />
         <Show
           when={
-            !exploreFilters.followingOnly && fetching() && remote().length > 0
+            !exploreFilters.followingOnly &&
+            liveBrowse.fetching &&
+            liveBrowse.streams.length > 0
           }
         >
           <p class="py-4 text-center text-small text-ink-soft">

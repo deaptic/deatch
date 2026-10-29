@@ -6,23 +6,14 @@ import {
   Square,
   X,
 } from "lucide-solid";
-import {
-  createEffect,
-  createSignal,
-  on,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
-import { createDebounced } from "../../lib/reactive/createDebounced.ts";
+import { createSignal, onMount, Show } from "solid-js";
 import { appVersion } from "../../lib/api/app.ts";
 import {
   closeWindow,
-  isWindowMaximized,
   minimizeWindow,
-  onWindowResized,
   toggleMaximizeWindow,
 } from "../../lib/api/window.ts";
+import { windowMaximized as maximized } from "../../lib/stores/window.ts";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
@@ -33,8 +24,6 @@ import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
-
-const RESIZE_SETTLE_MS = 100;
 
 const CONTROL =
   "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
@@ -53,7 +42,6 @@ type Props = {
 };
 
 export default function TitleBar(props: Props) {
-  const [maximized, setMaximized] = createSignal(false);
   const [version, setVersion] = createSignal("");
   let inboxBtn: HTMLButtonElement | undefined;
   let diagnosticsBtn: HTMLButtonElement | undefined;
@@ -61,32 +49,6 @@ export default function TitleBar(props: Props) {
   onMount(() => {
     appVersion({ silent: true })
       .then(setVersion)
-      .catch(() => {});
-  });
-
-  // A drag-resize fires many events; the state is only asked once they settle.
-  const [resizes, setResizes] = createSignal(0);
-  const settled = createDebounced(resizes, RESIZE_SETTLE_MS);
-  createEffect(
-    on(settled, () => {
-      isWindowMaximized({ silent: true })
-        .then(setMaximized)
-        .catch(() => {});
-    }),
-  );
-
-  onMount(() => {
-    let unlisten: (() => void) | undefined;
-    let cancelled = false;
-    onCleanup(() => {
-      cancelled = true;
-      unlisten?.();
-    });
-    onWindowResized(() => setResizes((n) => n + 1), { silent: true })
-      .then((off) => {
-        if (cancelled) off();
-        else unlisten = off;
-      })
       .catch(() => {});
   });
 

@@ -25,8 +25,6 @@ import TabVolume from "./TabVolume.tsx";
 import {
   advancedDeveloperMode,
   pinnedChannels,
-  reorderPinnedChannels,
-  unpinChannel,
 } from "../../lib/stores/preferences.ts";
 import {
   linkHasAudio,
@@ -35,7 +33,7 @@ import {
 } from "../../lib/stores/link.ts";
 import * as link from "../../lib/services/link.ts";
 import * as pins from "../../lib/services/pins.ts";
-import { hasUnread, markSeen } from "../../lib/stores/feeds.ts";
+import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
 import * as inbox from "../../lib/services/inbox.ts";
 import { user } from "../../lib/stores/users.ts";
@@ -68,8 +66,7 @@ export default function ChannelContextMenu(props: Props) {
   // Shortcuts act on the open channel, so only its menu shows them.
   const selected = () => selectedChannel()?.id === props.ch.id;
   const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
-  const movePin = (by: number) => () =>
-    reorderPinnedChannels(pinIndex(), pinIndex() + by);
+  const movePin = (by: number) => () => pins.move(pinIndex(), pinIndex() + by);
   const unread = () =>
     hasUnread(props.ch.id) || channelMentionCount(props.ch.id) > 0;
   const self = () => user();
@@ -106,8 +103,7 @@ export default function ChannelContextMenu(props: Props) {
             icon={<CheckCheck />}
             disabled={!unread()}
             onClick={() => {
-              markSeen(props.ch.id);
-              inbox.markChannelRead(props.ch.id);
+              inbox.markChannelSeen(props.ch.id);
             }}
           />
           <MenuDivider />
@@ -167,7 +163,7 @@ export default function ChannelContextMenu(props: Props) {
             <MenuItem
               label={t("MENU_UNPIN")}
               icon={<PinOff />}
-              onClick={() => unpinChannel(props.ch.id)}
+              onClick={() => pins.remove(props.ch.id)}
             />
             <Show when={props.place === "rail" && pinIndex() > 0}>
               <MenuItem

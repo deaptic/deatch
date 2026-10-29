@@ -18,6 +18,8 @@ import * as preferences from "../services/preferences.ts";
 import * as feedLog from "../services/feedLog.ts";
 import * as exit from "../services/exit.ts";
 import * as discord from "../services/discord.ts";
+import * as windowState from "../services/windowState.ts";
+import * as explore from "../services/explore.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -40,6 +42,8 @@ export function createServices(): void {
       feedLog.start(),
       exit.start(),
       discord.start(),
+      windowState.start(),
+      explore.start(),
       link.start(),
     ];
     onCleanup(() => {

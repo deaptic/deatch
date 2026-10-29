@@ -7,14 +7,15 @@ const isOwn = (id: string) => id === user()?.id;
 export const pinnedChannels = () =>
   prefs.menu.channels.pinned.filter((id) => !isOwn(id));
 
-export function pinChannel(broadcasterId: string): boolean {
-  if (
-    isOwn(broadcasterId) ||
-    prefs.menu.channels.pinned.includes(broadcasterId)
-  )
-    return false;
+export type PinOutcome = "pinned" | "alreadyPinned" | "own";
+
+export function pinChannel(broadcasterId: string): PinOutcome {
+  if (isOwn(broadcasterId)) return "own";
+  if (prefs.menu.channels.pinned.includes(broadcasterId)) {
+    return "alreadyPinned";
+  }
   setPrefs("menu", "channels", "pinned", (p) => [...p, broadcasterId]);
-  return true;
+  return "pinned";
 }
 
 export function unpinChannel(broadcasterId: string) {

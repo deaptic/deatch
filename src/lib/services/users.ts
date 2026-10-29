@@ -2,15 +2,23 @@ import { STORAGE_KEYS } from "../constants/storage.ts";
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
 import { getUsers } from "../api/twitch/users.ts";
+import { getFollowedAt } from "../api/twitch/channels.ts";
+import { getUserChatColor } from "../api/twitch/chat.ts";
 import { type InvokeOptions, reportFailure } from "../api/utils.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import {
+  isModOfChannel,
   knownUser,
   knownUsers,
   setKnownUsers,
   user as self,
 } from "../stores/users.ts";
-import type { GetUsersParams, User, UserRef } from "../types/index.ts";
+import type {
+  FollowStatus,
+  GetUsersParams,
+  User,
+  UserRef,
+} from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
 import { addToast } from "../stores/toasts.ts";
 import {
@@ -153,6 +161,25 @@ export async function resolveId(
   identity: Partial<UserRef>,
 ): Promise<string | null> {
   return identity.id ?? (await resolve(identity))?.id ?? null;
+}
+
+export function chatColor(userId: string): Promise<string | null> {
+  return getUserChatColor({ userId }, { silent: true }).catch(() => null);
+}
+
+export async function followStatus(
+  broadcasterId: string,
+  chatterId: string,
+): Promise<FollowStatus> {
+  if (self()?.id !== chatterId && !isModOfChannel(broadcasterId)) {
+    return { kind: "hidden" };
+  }
+  const at = await getFollowedAt(
+    { broadcasterId, userId: chatterId },
+    { silent: true },
+  ).catch(() => undefined);
+  if (at === undefined) return { kind: "unknown" };
+  return at ? { kind: "since", at } : { kind: "none" };
 }
 
 function toUserRef({ id, login, displayName }: User): UserRef {

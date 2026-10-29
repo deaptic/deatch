@@ -5,3 +5,6 @@ export const [pendingUpdate, setPendingUpdate] = createSignal<Update | null>(
   null,
 );
 export const [installing, setInstalling] = createSignal(false);
+export const [installError, setInstallError] = createSignal<string | null>(
+  null,
+);

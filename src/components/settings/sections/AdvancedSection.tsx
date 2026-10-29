@@ -6,9 +6,8 @@ import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import Dialog from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
-import * as exit from "../../../lib/services/exit.ts";
+import * as graphics from "../../../lib/services/graphics.ts";
 import * as history from "../../../lib/services/history.ts";
-import { setHardwareAcceleration } from "../../../lib/api/graphics.ts";
 import {
   advancedAlwaysOnTop,
   advancedAutostart,
@@ -20,7 +19,6 @@ import {
   setAdvancedAutostart,
   setAdvancedDeveloperMode,
   setAdvancedDiscordRichPresence,
-  setAdvancedHardwareAcceleration,
   setAdvancedShowLogs,
 } from "../../../lib/stores/preferences.ts";
 
@@ -49,9 +47,7 @@ export default function AdvancedSection() {
     setRestarting(true);
     const options = { failureMessage: t("SETTINGS_ADVANCED_RESTART_FAILED") };
     try {
-      await setHardwareAcceleration({ enabled }, options);
-      setAdvancedHardwareAcceleration(enabled);
-      await exit.relaunch(options);
+      await graphics.setHardwareAcceleration(enabled, options);
     } catch {
       // invokeCommand already toasted; the dialog closes so the user can retry.
     } finally {

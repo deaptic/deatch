@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from "../constants/storage.ts";
 import { createEffect, createRoot } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
 import { mentions, setMentions } from "../stores/inbox.ts";
+import { markSeen } from "../stores/feeds.ts";
 import { fresh, msUntilNextExpiry } from "../utils/inboxRetention.ts";
 import { upgradeMention } from "../utils/inboxUpgrade.ts";
 import { notificationsMentionSound } from "../stores/preferences.ts";
@@ -83,8 +84,10 @@ function markReadWhere(match: (m: Mention) => boolean) {
 }
 
 export const markRead = (id: string) => markReadWhere((m) => m.id === id);
-export const markChannelRead = (broadcasterId: string) =>
+export function markChannelSeen(broadcasterId: string): void {
+  markSeen(broadcasterId);
   markReadWhere((m) => m.broadcasterId === broadcasterId);
+}
 
 export function dismiss(id: string) {
   setMentions((prev) => {

@@ -19,7 +19,7 @@ const keymap = new Map<string, string[]>(
   Object.entries(defaultKeymap as Record<string, string[]>),
 );
 
-const actions = new Map<string, ActionEntry>();
+const actions = new Map<string, Set<ActionEntry>>();
 const contexts = new Map<string, boolean>();
 const localBindings = new Map<string, Set<ActionEntry>>();
 let pending: { seq: string; timer: number } | null = null;
@@ -34,10 +34,25 @@ export function register(
   handler: Handler,
   when?: string,
 ): () => void {
-  const entry = makeEntry(handler, when);
-  actions.set(name, entry);
+  return addEntry(actions, name, makeEntry(handler, when));
+}
+
+function addEntry(
+  table: Map<string, Set<ActionEntry>>,
+  key: string,
+  entry: ActionEntry,
+): () => void {
+  let set = table.get(key);
+  if (!set) {
+    set = new Set();
+    table.set(key, set);
+  }
+  set.add(entry);
   return () => {
-    if (actions.get(name) === entry) actions.delete(name);
+    const s = table.get(key);
+    if (!s) return;
+    s.delete(entry);
+    if (s.size === 0) table.delete(key);
   };
 }
 
@@ -67,19 +82,7 @@ export function registerLocal(
   handler: Handler,
   when?: string,
 ): () => void {
-  const entry = makeEntry(handler, when);
-  let set = localBindings.get(combo);
-  if (!set) {
-    set = new Set();
-    localBindings.set(combo, set);
-  }
-  set.add(entry);
-  return () => {
-    const s = localBindings.get(combo);
-    if (!s) return;
-    s.delete(entry);
-    if (s.size === 0) localBindings.delete(combo);
-  };
+  return addEntry(localBindings, combo, makeEntry(handler, when));
 }
 
 export function setContext(name: string, value: boolean): void {
@@ -110,7 +113,7 @@ function dispatch(seq: string): boolean {
   if (local && run([...local].reverse())) return true;
   const names = keymap.get(seq);
   if (!names) return false;
-  return run(names.map((n) => actions.get(n)));
+  return run(names.flatMap((n) => [...(actions.get(n) ?? [])].reverse()));
 }
 
 function run(entries: Iterable<ActionEntry | undefined>): boolean {

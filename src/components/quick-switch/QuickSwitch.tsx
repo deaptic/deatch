@@ -76,25 +76,26 @@ export default function QuickSwitch(props: Props) {
   // Only typing resets the highlight; the live poll must not move it.
   createEffect(on(query, () => setActive(0)));
 
+  function choose(channel: User, pin: boolean) {
+    if (pin && pins.add(channel) === "pinned") {
+      addToast(
+        t("QUICK_SWITCH_PINNED", { name: channel.displayName }),
+        "success",
+      );
+    }
+    props.onSelect(channel);
+    props.onClose();
+  }
+
   async function open(row: Row, pin: boolean) {
     if (row.kind === "channel") {
-      if (pin && pins.add(row.user)) {
-        addToast(
-          t("QUICK_SWITCH_PINNED", { name: row.user.displayName }),
-          "success",
-        );
-      }
-      props.onSelect(row.user);
-      props.onClose();
+      choose(row.user, pin);
       return;
     }
     setSearching(true);
     const found = await users.lookUp(row.query, t("QUICK_SWITCH_NOT_FOUND"));
     setSearching(false);
-    if (!found) return;
-    if (pin) pins.add(found);
-    props.onSelect(found);
-    props.onClose();
+    if (found) choose(found, pin);
   }
 
   onMount(() => {
@@ -105,12 +106,19 @@ export default function QuickSwitch(props: Props) {
         const row = rows()[active()];
         if (row) void open(row, false);
       },
-      "ctrl-enter": () => {
+    });
+    const unbindPin = shortcuts.register(
+      "quickSwitch::openPinned",
+      () => {
         const row = rows()[active()];
         if (row) void open(row, true);
       },
+      "quickSwitchOpen",
+    );
+    onCleanup(() => {
+      unbind();
+      unbindPin();
     });
-    onCleanup(unbind);
   });
 
   return (
