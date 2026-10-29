@@ -6,15 +6,13 @@ import { fromLog, toLogEntry } from "../utils/feedLog.ts";
 
 const FLUSH_MS = 5_000;
 
-/// Writes every entry the feeds add or change, every few seconds and when the
-/// app goes away, so the log is never more than a moment behind the feed.
+/// Writes every entry the feeds add or change, every few seconds, so the log
+/// is never more than a moment behind the feed.
 export function start(): () => void {
   const flushNow = () => void flush();
   const timer = setInterval(flushNow, FLUSH_MS);
-  globalThis.addEventListener("pagehide", flushNow);
   return () => {
     clearInterval(timer);
-    globalThis.removeEventListener("pagehide", flushNow);
     flushNow();
   };
 }

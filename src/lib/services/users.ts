@@ -49,13 +49,11 @@ export function start(): () => void {
       for (const [id, entry] of Object.entries(saved)) table[id] ??= entry;
     }),
   );
-  globalThis.addEventListener("pagehide", save);
   return () => {
-    globalThis.removeEventListener("pagehide", save);
     clearTimeout(batchTimer);
     batchTimer = undefined;
     for (const id of waiters.keys()) settle(id, new Error("stopped"));
-    save();
+    flush();
   };
 }
 
@@ -257,7 +255,7 @@ function scheduleSave() {
   dirty = true;
   clearTimeout(saveTimer);
   const delay = Math.min(SAVE_DELAY_MS, Math.max(0, saveDeadline - now));
-  saveTimer = setTimeout(save, delay);
+  saveTimer = setTimeout(flush, delay);
 }
 
 function load(): Record<string, KnownUser> {
@@ -270,7 +268,7 @@ function load(): Record<string, KnownUser> {
   );
 }
 
-function save() {
+export function flush() {
   clearTimeout(saveTimer);
   saveTimer = undefined;
   if (!dirty) return;

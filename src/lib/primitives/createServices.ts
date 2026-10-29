@@ -15,6 +15,7 @@ import * as live from "../services/live.ts";
 import * as link from "../services/link.ts";
 import * as preferences from "../services/preferences.ts";
 import * as feedLog from "../services/feedLog.ts";
+import * as exit from "../services/exit.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -34,6 +35,7 @@ export function createServices(): void {
       emotes.start(),
       live.start(),
       feedLog.start(),
+      exit.start(),
       link.start(),
     ];
     onCleanup(() => {

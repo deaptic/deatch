@@ -1,6 +1,7 @@
 import { relaunchApp } from "../api/app.ts";
 import { checkForUpdate } from "../api/updater.ts";
 import { onWindowFocusChanged } from "../api/window.ts";
+import * as exit from "./exit.ts";
 import type { Update } from "../types/index.ts";
 import {
   installing,
@@ -38,6 +39,7 @@ export function start(): () => void {
 }
 
 export async function install(update: Update): Promise<void> {
+  await exit.flush();
   await update.install();
   await relaunchApp({ silent: true });
 }
