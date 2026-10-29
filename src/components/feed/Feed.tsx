@@ -152,11 +152,11 @@ export default function Feed(props: Props) {
   function lookUp(messageId: string) {
     if (lookingUp === messageId) return;
     lookingUp = messageId;
-    void history.around(props.broadcasterId, messageId).then((found) => {
+    void history.around(props.broadcasterId, messageId).then((outcome) => {
       lookingUp = null;
-      if (found) return;
-      setJumpTarget(null);
-      addToast(t("FEED_MESSAGE_GONE"));
+      if (outcome === "opened") return;
+      if (jumpTarget()?.messageId === messageId) setJumpTarget(null);
+      if (outcome === "missing") addToast(t("FEED_MESSAGE_GONE"));
     });
   }
 
