@@ -4,11 +4,21 @@ import TwitchIcon from "./TwitchIcon.tsx";
 import Button from "../ui/Button.tsx";
 import Loading from "../ui/Loading.tsx";
 import { CARD_FRAME } from "../ui/Card.tsx";
-import { deviceCode, restoreFailure, waiting } from "../../lib/stores/auth.ts";
+import {
+  deviceCode,
+  type RestoreFailure,
+  restoreFailure,
+  waiting,
+} from "../../lib/stores/auth.ts";
 import * as session from "../../lib/services/session.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { createCopied } from "../ui/createCopied.ts";
 import { t } from "../../lib/i18n/index.ts";
+
+const RESTORE_FAILURE_TEXT = {
+  missingScope: "LOGIN_MISSING_SCOPE",
+  unreachable: "LOGIN_RESTORE_RETRYING",
+} as const satisfies Record<RestoreFailure, string>;
 
 export default function Login() {
   const codeCopy = createCopied();
@@ -18,8 +28,12 @@ export default function Login() {
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
         <h1 class="text-hero text-ink">{t("LOGIN_WELCOME")}</h1>
         <p class="text-body text-ink-soft">{t("LOGIN_TAGLINE")}</p>
-        <Show when={restoreFailure() === "missingScope"}>
-          <p class="text-small text-caution">{t("LOGIN_MISSING_SCOPE")}</p>
+        <Show when={restoreFailure()}>
+          {(failure) => (
+            <p class="text-small text-caution">
+              {t(RESTORE_FAILURE_TEXT[failure()])}
+            </p>
+          )}
         </Show>
 
         <Show

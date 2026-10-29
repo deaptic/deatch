@@ -214,7 +214,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
-  if (info.url == null && !info.mutedInfo) return;
+  if (info.url == null && info.status == null && !info.mutedInfo) return;
   applyTab(tab);
   if (tabId === activeTabId && tabChannels.has(tabId)) {
     tabFocusedAt.set(tabId, Date.now());

@@ -1,4 +1,4 @@
-import { setUser } from "../stores/users.ts";
+import { setUser, user as signedIn } from "../stores/users.ts";
 import * as users from "./users.ts";
 import * as feedLog from "./feedLog.ts";
 import {
@@ -8,6 +8,7 @@ import {
   setWaiting,
 } from "../stores/auth.ts";
 import { isAppError } from "../utils/error.ts";
+import { createBackoff } from "../utils/backoff.ts";
 import {
   cancelLogin,
   getDeviceCode,
@@ -15,7 +16,18 @@ import {
   revokeSession,
 } from "../api/twitch/auth.ts";
 
+const RESTORE_RETRY_MIN_MS = 2_000;
+const RESTORE_RETRY_MAX_MS = 60_000;
+
+const restoreRetry = createBackoff(RESTORE_RETRY_MIN_MS, RESTORE_RETRY_MAX_MS);
+
+export function start(): () => void {
+  void restore();
+  return () => restoreRetry.reset();
+}
+
 export async function login(): Promise<void> {
+  restoreRetry.reset();
   setRestoreFailure(null);
   setDeviceCode(null);
   setWaiting(true);
@@ -42,16 +54,22 @@ export async function logout(): Promise<void> {
   setUser(null);
 }
 
-export async function restore(): Promise<void> {
-  const user = await restoreSession({ silent: true }).catch((e: unknown) => {
+async function restore(): Promise<void> {
+  if (signedIn()) return;
+  try {
+    const user = await restoreSession({ silent: true });
+    setRestoreFailure(null);
+    if (user) {
+      setUser(user);
+      users.set([user]);
+    }
+  } catch (e) {
     if (isAppError(e) && e.kind === "missingScope") {
       setRestoreFailure("missingScope");
+    } else {
+      setRestoreFailure("unreachable");
+      restoreRetry.schedule(() => void restore());
     }
-    return null;
-  });
-  if (user) {
-    setUser(user);
-    users.set([user]);
   }
   setAuthChecked(true);
 }

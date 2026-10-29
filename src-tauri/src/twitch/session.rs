@@ -67,7 +67,9 @@ impl Session {
 
 /// Twitch answering 4xx means the refresh token itself is dead; anything
 /// else is a blip worth retrying with the same token.
-fn is_final<E: std::error::Error + Send + Sync + 'static>(e: &RefreshTokenError<E>) -> bool {
+pub(super) fn is_final<E: std::error::Error + Send + Sync + 'static>(
+    e: &RefreshTokenError<E>,
+) -> bool {
     match e {
         RefreshTokenError::RequestParseError(RequestParseError::TwitchError(r)) => {
             r.status.is_client_error()

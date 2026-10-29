@@ -407,6 +407,7 @@
   "LOGIN_ENTER_CODE": "Enter this code at",
   "LOGIN_MISSING_SCOPE": "Deatch needs new permissions, so log in again to grant them.",
   "LOGIN_REQUESTING": "Asking Twitch for a code…",
+  "LOGIN_RESTORE_RETRYING": "Couldn't restore your session. Trying again…",
   "LOGIN_TAGLINE": "Every Twitch chat you care about, in one warm little window.",
   "LOGIN_WELCOME": "Welcome to Deatch",
   "MENU_BAN_TIMEOUT": "Ban / Timeout",

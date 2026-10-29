@@ -8,6 +8,6 @@ export const [deviceCode, setDeviceCode] = createSignal<DcfAuthResponse | null>(
 export const [authChecked, setAuthChecked] = createSignal(false);
 
 /// Why the stored session could not be restored, when the user should know.
-type RestoreFailure = "missingScope";
+export type RestoreFailure = "missingScope" | "unreachable";
 export const [restoreFailure, setRestoreFailure] =
   createSignal<RestoreFailure | null>(null);
