@@ -63,11 +63,7 @@ type Props = {
   broadcasterName: string;
   userLogin: string;
   onOpenChannel: (broadcasterId: string) => void;
-  onJumpToMessage: (
-    broadcasterId: string,
-    messageId: string,
-    timestamp: number | null,
-  ) => void;
+  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
 };
 
 export default function Chat(props: Props) {
@@ -153,7 +149,7 @@ export default function Chat(props: Props) {
 
   /// The feed finds the message in memory or the feed log, or says it's gone.
   function jumpToMessage(messageId: string): boolean {
-    props.onJumpToMessage(props.broadcasterId, messageId, null);
+    props.onJumpToMessage(props.broadcasterId, messageId);
     return true;
   }
 

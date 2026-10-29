@@ -21,11 +21,7 @@ import { t } from "../i18n/index.ts";
 export type ChannelNavigation = {
   selectChannel: (ch: User) => void;
   openChannel: (broadcasterId: string) => void;
-  jumpToMessage: (
-    broadcasterId: string,
-    messageId: string,
-    timestamp: number | null,
-  ) => void;
+  jumpToMessage: (broadcasterId: string, messageId: string) => void;
   stepHistory: (delta: 1 | -1) => void;
 };
 
@@ -60,13 +56,9 @@ export function createChannelNavigation(): ChannelNavigation {
 
   // The feed scrolls once it holds the message, so this works whether the
   // channel is already open or still has to mount and load its backlog.
-  function jumpToMessage(
-    broadcasterId: string,
-    messageId: string,
-    timestamp: number | null,
-  ) {
+  function jumpToMessage(broadcasterId: string, messageId: string) {
     openChannel(broadcasterId, () =>
-      setJumpTarget({ broadcasterId, messageId, timestamp }),
+      setJumpTarget({ broadcasterId, messageId }),
     );
   }
 

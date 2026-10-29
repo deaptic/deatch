@@ -48,11 +48,7 @@ function below(button: HTMLElement | undefined) {
 }
 
 type Props = {
-  onJumpToMessage: (
-    broadcasterId: string,
-    messageId: string,
-    timestamp: number | null,
-  ) => void;
+  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
   onOpenChannel: (broadcasterId: string) => void;
 };
 

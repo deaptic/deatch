@@ -122,8 +122,6 @@ export type AppendParams = {
 export type AroundParams = {
 	broadcasterId: UserId,
 	id: string,
-	/**  When the entry was sent, if known; the search starts at its hour. */
-	timestamp?: number | null,
 	limit: number,
 };
 

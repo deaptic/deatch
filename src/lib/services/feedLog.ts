@@ -66,12 +66,11 @@ export async function page(
 export async function around(
   broadcasterId: string,
   id: string,
-  timestamp: number | null,
   limit: number,
 ): Promise<FeedEntry[] | null> {
   await flush();
   const lines = await feedlogAround(
-    { broadcasterId, id, timestamp, limit },
+    { broadcasterId, id, limit },
     { silent: true },
   );
   return lines ? fromLog(lines) : null;

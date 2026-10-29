@@ -14,11 +14,7 @@ type Props = {
   x: number;
   y: number;
   onClose: () => void;
-  onJump: (
-    broadcasterId: string,
-    messageId: string,
-    timestamp: number | null,
-  ) => void;
+  onJump: (broadcasterId: string, messageId: string) => void;
   onOpenChannel: (broadcasterId: string) => void;
 };
 
@@ -36,7 +32,7 @@ export default function Inbox(props: Props) {
   const seen = () => mentions().filter((m) => !m.unread);
 
   function jump(m: Mention) {
-    props.onJump(m.broadcasterId, m.message.message_id, m.message.timestamp);
+    props.onJump(m.broadcasterId, m.message.message_id);
     props.onClose();
   }
 

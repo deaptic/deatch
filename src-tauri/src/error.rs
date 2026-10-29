@@ -83,7 +83,7 @@ from_display!(
     keyring_core::Error,
 );
 from_display!(Discord: discord_rich_presence::error::Error);
-from_display!(Io: std::io::Error, tauri::Error);
+from_display!(Io: std::io::Error, tauri::Error, rusqlite::Error);
 from_display!(Invalid: serde_json::Error);
 
 /// A background task's channel closed: the task stopped.
