@@ -1,4 +1,4 @@
-import type { FeedEntry, LogEntry } from "../types/index.ts";
+import type { Cursor, FeedEntry, LogEntry, Side } from "../types/index.ts";
 import { getEntryId } from "./entryId.ts";
 
 export function toLogEntry(entry: FeedEntry): LogEntry {
@@ -7,6 +7,11 @@ export function toLogEntry(entry: FeedEntry): LogEntry {
     timestamp: entry.timestamp,
     entry: JSON.stringify(entry),
   };
+}
+
+/// A page of the log read next to `entry`.
+export function cursorAt(side: Side, entry: FeedEntry): Cursor {
+  return { side, id: getEntryId(entry), timestamp: entry.timestamp };
 }
 
 function isFeedEntry(value: unknown): value is FeedEntry {

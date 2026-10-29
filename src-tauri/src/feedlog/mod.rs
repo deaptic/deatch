@@ -49,12 +49,21 @@ pub struct AppendParams {
     pub entries: Vec<LogEntry>,
 }
 
-/// Which side of a moment a page is read from.
 #[derive(Deserialize, specta::Type)]
-#[serde(tag = "side", rename_all = "camelCase")]
-pub enum Cursor {
-    Before { timestamp: u64 },
-    After { timestamp: u64 },
+#[serde(rename_all = "camelCase")]
+pub enum Side {
+    Before,
+    After,
+}
+
+/// The entry a page is read next to; `timestamp` places it should the log
+/// not have it.
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct Cursor {
+    pub side: Side,
+    pub id: String,
+    pub timestamp: u64,
 }
 
 #[derive(Deserialize, specta::Type)]
@@ -96,9 +105,19 @@ pub fn append(db: &mut Connection, params: AppendParams) -> Result<()> {
 
 pub fn page(db: &Connection, params: PageParams) -> Result<Vec<String>> {
     let channel = params.broadcaster_id.as_str();
-    match params.cursor {
-        Cursor::Before { timestamp } => before(db, channel, timestamp, params.limit),
-        Cursor::After { timestamp } => after(db, channel, timestamp, params.limit),
+    let Cursor {
+        side,
+        id,
+        timestamp,
+    } = params.cursor;
+    // An entry the log lacks counts as the last one logged at its moment.
+    let at = position(db, channel, &id)?.unwrap_or(Position {
+        timestamp,
+        rowid: i64::MAX,
+    });
+    match side {
+        Side::Before => before(db, channel, at, params.limit),
+        Side::After => after(db, channel, at, params.limit),
     }
 }
 
@@ -106,43 +125,67 @@ pub fn page(db: &Connection, params: PageParams) -> Result<Vec<String>> {
 /// log no longer has it.
 pub fn around(db: &Connection, params: AroundParams) -> Result<Option<Vec<String>>> {
     let channel = params.broadcaster_id.as_str();
-    let found: Option<u64> = db
-        .query_row(
-            "SELECT timestamp FROM feed_entries WHERE channel = ?1 AND id = ?2",
-            params![channel, params.id],
-            |row| row.get(0),
-        )
-        .optional()?;
-    let Some(timestamp) = found else {
+    let Some(at) = position(db, channel, &params.id)? else {
         return Ok(None);
     };
     let half = params.limit / 2;
-    let mut out = before(db, channel, timestamp + 1, half + 1)?;
-    out.extend(after(db, channel, timestamp, half)?);
+    let through = Position {
+        rowid: at.rowid + 1,
+        ..at
+    };
+    let mut out = before(db, channel, through, half + 1)?;
+    out.extend(after(db, channel, at, half)?);
     Ok(Some(out))
 }
 
-/// The newest `limit` entries older than `timestamp`, oldest first.
-fn before(db: &Connection, channel: &str, timestamp: u64, limit: usize) -> Result<Vec<String>> {
+/// Where an entry sits in the log: by time, and entries of one moment by
+/// when they were first logged.
+#[derive(Clone, Copy)]
+struct Position {
+    timestamp: u64,
+    rowid: i64,
+}
+
+fn position(db: &Connection, channel: &str, id: &str) -> Result<Option<Position>> {
+    Ok(db
+        .query_row(
+            "SELECT timestamp, rowid FROM feed_entries WHERE channel = ?1 AND id = ?2",
+            params![channel, id],
+            |row| {
+                Ok(Position {
+                    timestamp: row.get(0)?,
+                    rowid: row.get(1)?,
+                })
+            },
+        )
+        .optional()?)
+}
+
+/// The newest `limit` entries before `at`, oldest first.
+fn before(db: &Connection, channel: &str, at: Position, limit: usize) -> Result<Vec<String>> {
     let mut query = db.prepare_cached(
         "SELECT entry FROM (
             SELECT entry, timestamp, rowid FROM feed_entries
-            WHERE channel = ?1 AND timestamp < ?2
-            ORDER BY timestamp DESC, rowid DESC LIMIT ?3
+            WHERE channel = ?1 AND (timestamp, rowid) < (?2, ?3)
+            ORDER BY timestamp DESC, rowid DESC LIMIT ?4
         ) ORDER BY timestamp, rowid",
     )?;
-    let rows = query.query_map(params![channel, timestamp, limit], |row| row.get(0))?;
+    let rows = query.query_map(params![channel, at.timestamp, at.rowid, limit], |row| {
+        row.get(0)
+    })?;
     Ok(rows.collect::<rusqlite::Result<_>>()?)
 }
 
-/// The oldest `limit` entries newer than `timestamp`.
-fn after(db: &Connection, channel: &str, timestamp: u64, limit: usize) -> Result<Vec<String>> {
+/// The oldest `limit` entries after `at`.
+fn after(db: &Connection, channel: &str, at: Position, limit: usize) -> Result<Vec<String>> {
     let mut query = db.prepare_cached(
         "SELECT entry FROM feed_entries
-         WHERE channel = ?1 AND timestamp > ?2
-         ORDER BY timestamp, rowid LIMIT ?3",
+         WHERE channel = ?1 AND (timestamp, rowid) > (?2, ?3)
+         ORDER BY timestamp, rowid LIMIT ?4",
     )?;
-    let rows = query.query_map(params![channel, timestamp, limit], |row| row.get(0))?;
+    let rows = query.query_map(params![channel, at.timestamp, at.rowid, limit], |row| {
+        row.get(0)
+    })?;
     Ok(rows.collect::<rusqlite::Result<_>>()?)
 }
 
@@ -223,12 +266,29 @@ mod tests {
         db
     }
 
-    fn page_of(db: &Connection, cursor: Cursor, limit: usize) -> Vec<String> {
+    fn page_of(db: &Connection, side: Side, id: &str, timestamp: u64, limit: usize) -> Vec<String> {
+        let cursor = Cursor {
+            side,
+            id: id.into(),
+            timestamp,
+        };
         page(
             db,
             PageParams {
                 broadcaster_id: "c".into(),
                 cursor,
+                limit,
+            },
+        )
+        .unwrap()
+    }
+
+    fn around_of(db: &Connection, id: &str, limit: usize) -> Option<Vec<String>> {
+        around(
+            db,
+            AroundParams {
+                broadcaster_id: "c".into(),
+                id: id.into(),
                 limit,
             },
         )
@@ -242,10 +302,7 @@ mod tests {
             entry("b", 2, "b"),
             entry("a", 1, "new"),
         ]);
-        assert_eq!(
-            page_of(&db, Cursor::After { timestamp: 0 }, 10),
-            ["new", "b"]
-        );
+        assert_eq!(page_of(&db, Side::After, "start", 0, 10), ["new", "b"]);
     }
 
     #[test]
@@ -253,9 +310,43 @@ mod tests {
         let db = log((1..=6)
             .map(|t| entry(&t.to_string(), t, &t.to_string()))
             .collect());
-        assert_eq!(page_of(&db, Cursor::Before { timestamp: 5 }, 2), ["3", "4"]);
-        assert_eq!(page_of(&db, Cursor::After { timestamp: 2 }, 2), ["3", "4"]);
-        assert!(page_of(&db, Cursor::Before { timestamp: 1 }, 2).is_empty());
+        assert_eq!(page_of(&db, Side::Before, "5", 5, 2), ["3", "4"]);
+        assert_eq!(page_of(&db, Side::After, "2", 2, 2), ["3", "4"]);
+        assert!(page_of(&db, Side::Before, "1", 1, 2).is_empty());
+    }
+
+    fn one_moment() -> Connection {
+        log(vec![
+            entry("a", 1, "a"),
+            entry("b", 2, "b"),
+            entry("c", 2, "c"),
+            entry("d", 2, "d"),
+            entry("e", 2, "e"),
+            entry("f", 3, "f"),
+        ])
+    }
+
+    #[test]
+    fn entries_of_one_moment_page_in_logged_order_without_gaps() {
+        let db = one_moment();
+        assert_eq!(page_of(&db, Side::Before, "d", 2, 2), ["b", "c"]);
+        assert_eq!(page_of(&db, Side::After, "b", 2, 2), ["c", "d"]);
+        let mut back = vec!["f".to_string()];
+        while let Some(first) = back.first().cloned() {
+            let older = page_of(&db, Side::Before, &first, 0, 1);
+            if older.is_empty() {
+                break;
+            }
+            back.splice(0..0, older);
+        }
+        assert_eq!(back, ["a", "b", "c", "d", "e", "f"]);
+    }
+
+    #[test]
+    fn an_entry_the_log_lacks_is_placed_last_at_its_moment() {
+        let db = one_moment();
+        assert_eq!(page_of(&db, Side::Before, "x", 2, 2), ["d", "e"]);
+        assert_eq!(page_of(&db, Side::After, "x", 2, 2), ["f"]);
     }
 
     #[test]
@@ -263,26 +354,16 @@ mod tests {
         let db = log((1..=9)
             .map(|t| entry(&t.to_string(), t, &t.to_string()))
             .collect());
-        let found = around(
-            &db,
-            AroundParams {
-                broadcaster_id: "c".into(),
-                id: "5".into(),
-                limit: 4,
-            },
-        )
-        .unwrap();
-        assert_eq!(found.unwrap(), ["3", "4", "5", "6", "7"]);
-        let missing = around(
-            &db,
-            AroundParams {
-                broadcaster_id: "c".into(),
-                id: "x".into(),
-                limit: 4,
-            },
-        )
-        .unwrap();
-        assert!(missing.is_none());
+        assert_eq!(around_of(&db, "5", 4).unwrap(), ["3", "4", "5", "6", "7"]);
+        assert!(around_of(&db, "x", 4).is_none());
+    }
+
+    #[test]
+    fn around_keeps_the_entry_among_others_of_its_moment() {
+        let db = log(('a'..='i')
+            .map(|c| entry(&c.to_string(), 1, &c.to_string()))
+            .collect());
+        assert_eq!(around_of(&db, "e", 4).unwrap(), ["c", "d", "e", "f", "g"]);
     }
 
     #[test]
@@ -294,7 +375,7 @@ mod tests {
             .chain((0..50).map(|i| entry(&format!("k{i}"), 100 + i, &big)))
             .collect());
         prune(&db, now, 64 * 1024).unwrap();
-        let left = page_of(&db, Cursor::After { timestamp: 0 }, 100);
+        let left = page_of(&db, Side::After, "start", 0, 100);
         assert!(!left.contains(&"e".to_string()));
         assert!(!left.is_empty() && left.len() < 50);
         assert!(used_bytes(&db).unwrap() <= 64 * 1024);

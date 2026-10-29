@@ -4,6 +4,8 @@ import { feeds } from "../stores/feeds.ts";
 import { historyViews, setHistoryViews } from "../stores/history.ts";
 import type { FeedEntry } from "../types/index.ts";
 import { withNewer, withOlder } from "../utils/historyView.ts";
+import { cursorAt } from "../utils/feedLog.ts";
+import { getEntryId } from "../utils/entryId.ts";
 
 const PAGE = 200;
 // A view keeps this many entries; reading on lets go of the far end.
@@ -12,7 +14,7 @@ const MAX_VIEW = 1_000;
 const loading = new Set<string>();
 // The oldest live entry a check found nothing logged before, so scrolling at
 // the top of a channel with no history doesn't read the log on every event.
-const nothingBefore = new Map<string, number>();
+const nothingBefore = new Map<string, string>();
 
 function live(broadcasterId: string): FeedEntry[] {
   return structuredClone(unwrap(feeds[broadcasterId]?.messages ?? []));
@@ -42,11 +44,14 @@ export function older(broadcasterId: string): Promise<void> {
     };
     const first = view.entries[0];
     if (!first || view.atOldest) return;
-    if (nothingBefore.get(broadcasterId) === first.timestamp) return;
-    const cursor = { side: "before" as const, timestamp: first.timestamp };
-    const page = await feedLog.page(broadcasterId, cursor, PAGE);
+    if (nothingBefore.get(broadcasterId) === getEntryId(first)) return;
+    const page = await feedLog.page(
+      broadcasterId,
+      cursorAt("before", first),
+      PAGE,
+    );
     if (page.length === 0 && !historyViews[broadcasterId]) {
-      nothingBefore.set(broadcasterId, first.timestamp);
+      nothingBefore.set(broadcasterId, getEntryId(first));
       return;
     }
     setHistoryViews(broadcasterId, withOlder(view, page, MAX_VIEW));
@@ -59,8 +64,11 @@ export function newer(broadcasterId: string): Promise<void> {
     const view = historyViews[broadcasterId];
     const last = view?.entries.at(-1);
     if (!view || !last || view.atLive) return;
-    const cursor = { side: "after" as const, timestamp: last.timestamp };
-    const page = await feedLog.page(broadcasterId, cursor, PAGE);
+    const page = await feedLog.page(
+      broadcasterId,
+      cursorAt("after", last),
+      PAGE,
+    );
     setHistoryViews(
       broadcasterId,
       withNewer(view, page, live(broadcasterId), PAGE, MAX_VIEW),
