@@ -396,7 +396,15 @@ mod tests {
             .unwrap()
             .serialize(4, |s| s.to_string_lossy())
             .unwrap();
-        assert!(sddl.starts_with("D:P(A;;GA;;;S-1-5-"), "{sddl}");
+        let trustee = sddl
+            .strip_prefix("D:P(A;;GA;;;")
+            .and_then(|rest| rest.strip_suffix(')'))
+            .unwrap_or_else(|| panic!("{sddl}"));
+        let builtin_accounts = ["LA", "LG"];
+        assert!(
+            trustee.starts_with("S-1-5-21-") || builtin_accounts.contains(&trustee),
+            "{sddl}"
+        );
         assert_eq!(sddl.matches("(A;").count(), 1, "{sddl}");
     }
 
