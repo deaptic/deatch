@@ -1,34 +1,12 @@
-import { t } from "../../lib/i18n/index.ts";
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-  For,
-  type JSX,
-  onCleanup,
-  Show,
-} from "solid-js";
+import { createEffect, createMemo, For, type JSX, Show } from "solid-js";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
-import { chattersIn } from "../../lib/stores/users.ts";
-import * as users from "../../lib/services/users.ts";
-import { at } from "../../lib/utils/at.ts";
 import Suggestions from "../suggestions/Suggestions.tsx";
 import ChatterRow from "../suggestions/ChatterRow.tsx";
-import { rankChatters } from "../../lib/utils/rankChatters.ts";
-import { formatAlternatives } from "../../lib/format/list.ts";
 import type { Chatter } from "../../lib/types/index.ts";
 import Artwork from "../ui/Artwork.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
-import {
-  durationError,
-  invalid,
-  slotErrorText,
-  parseDuration,
-  type Slot,
-  slotSatisfied,
-} from "./parse.ts";
+import { createCommandComposer } from "./createCommandComposer.ts";
 
 type Popup = {
   items: () => unknown[];
@@ -55,44 +33,11 @@ type Props = {
 };
 
 export default function CommandComposer(props: Props) {
-  const options = props.command.options;
-  const [slots, setSlots] = createSignal<Slot[]>(
-    options.map(() => ({
-      raw: "",
-      resolved: null,
-      displayLabel: "",
-      error: null,
-    })),
-  );
-  const [activeIdx, setActiveIdx] = createSignal(0);
-  const [resolving, setResolving] = createSignal(false);
+  const composer = createCommandComposer(props);
+  const { options, hasSlots, slotAt, activeIdx, activeOption } = composer;
   let activeInput: HTMLInputElement | undefined;
   let composerRef: HTMLDivElement | undefined;
   let popupHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
-  let requiredFlashTimer: number | undefined;
-  const hasSlots = options.length > 0;
-  onCleanup(() => clearTimeout(requiredFlashTimer));
-
-  const activeOption = () => options[activeIdx()] ?? null;
-  /// Slots and options are parallel arrays of the same length.
-  const slotAt = (i: number) => at(slots(), i);
-  const activeSlot = () => slots()[activeIdx()];
-  const activeRaw = () => activeSlot()?.raw ?? "";
-
-  function patchSlot(idx: number, patch: Partial<Slot>) {
-    setSlots((prev) =>
-      prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)),
-    );
-  }
-
-  function fillUserSlot(idx: number, displayName: string, id: string) {
-    patchSlot(idx, {
-      raw: displayName,
-      resolved: id,
-      displayLabel: displayName,
-      error: null,
-    });
-  }
 
   createEffect(() => {
     activeIdx();
@@ -107,69 +52,36 @@ export default function CommandComposer(props: Props) {
     });
   });
 
-  const userSuggestions = createMemo<Chatter[]>(() => {
-    const opt = activeOption();
-    if (opt?.type !== "user" || activeSlot()?.resolved !== null) return [];
-    return rankChatters(chattersIn(props.ctx.broadcasterId), activeRaw());
-  });
-
-  const enumSuggestions = createMemo<string[]>(() => {
-    const opt = activeOption();
-    if (opt?.type !== "enum") return [];
-    if (activeSlot()?.resolved !== null) return [];
-    const q = activeRaw().toLowerCase();
-    if (q === "") return opt.values;
-    return opt.values.filter((v) => v.toLowerCase().includes(q));
-  });
-
-  const [searchQuery, setSearchQuery] = createSignal("");
-  createEffect(() => {
-    if (activeOption()?.type !== "search") return;
-    const q = activeRaw().trim();
-    const timer = setTimeout(() => setSearchQuery(q), 250);
-    onCleanup(() => clearTimeout(timer));
-  });
-
-  const [searchResults] = createResource(
-    () => (activeOption()?.type === "search" ? searchQuery() : ""),
-    async (q) => {
-      const opt = activeOption();
-      if (!q || opt?.type !== "search") return [];
-      return await opt.search(q).catch(() => []);
-    },
-  );
-
-  const searchSuggestions = createMemo<OptionSuggestion[]>(() => {
-    if (activeOption()?.type !== "search" || activeSlot()?.resolved !== null) {
-      return [];
-    }
-    return searchResults() ?? [];
-  });
-
   const activePopup = createMemo<Popup | null>(() => {
     switch (activeOption()?.type) {
       case "user":
-        return userSuggestions().length === 0
+        return composer.userSuggestions().length === 0
           ? null
           : {
-              items: userSuggestions,
-              select: (i) => selectUser(i as Chatter),
+              items: composer.userSuggestions,
+              select: (i) => {
+                const c = i as Chatter;
+                composer.choose(c.displayName, c.id);
+              },
               render: (i) => <ChatterRow chatter={i as Chatter} />,
             };
       case "enum":
-        return enumSuggestions().length === 0
+        return composer.enumSuggestions().length === 0
           ? null
           : {
-              items: enumSuggestions,
-              select: (i) => selectEnum(i as string),
+              items: composer.enumSuggestions,
+              select: (i) => composer.choose(i as string, i),
               render: (i) => <span class="text-ink">{i as string}</span>,
             };
       case "search":
-        return searchSuggestions().length === 0
+        return composer.searchSuggestions().length === 0
           ? null
           : {
-              items: searchSuggestions,
-              select: (i) => selectSearch(i as OptionSuggestion),
+              items: composer.searchSuggestions,
+              select: (i) => {
+                const s = i as OptionSuggestion;
+                composer.choose(s.label, s);
+              },
               render: (i) => renderSearchItem(i as OptionSuggestion),
             };
       default:
@@ -177,228 +89,9 @@ export default function CommandComposer(props: Props) {
     }
   });
 
-  const errorActive = createMemo(() => !!activeSlot()?.error);
-
-  const hintBody = createMemo(() => {
-    if (resolving()) {
-      return activeOption()?.type === "search"
-        ? t("COMMAND_SEARCHING")
-        : t("COMMAND_LOOKING_UP_USER");
-    }
-    const opt = activeOption();
-    const slot = activeSlot();
-    if (!opt || !slot) return hasSlots ? "" : t(props.command.description);
-    if (slot.error) return slotErrorText(slot.error);
-    const base = t(opt.hint ?? opt.description);
-    return opt.required && slot.resolved === null
-      ? t("COMMAND_REQUIRED_HINT", { hint: base })
-      : base;
-  });
-
-  const canSubmit = () =>
-    options.every((opt, i) => slotSatisfied(opt, slotAt(i)));
-
-  async function resolveUserSlot(idx: number): Promise<boolean> {
-    const login = slotAt(idx).raw.replace(/^@/, "").trim().toLowerCase();
-    if (!login) return false;
-    setResolving(true);
-    const lookup = await users.findByLogin(login, { silent: true });
-    setResolving(false);
-    if (lookup.status === "found") {
-      fillUserSlot(idx, lookup.user.displayName, lookup.user.id);
-      return true;
-    }
-    patchSlot(idx, {
-      error: invalid(
-        lookup.status === "missing"
-          ? t("COMMAND_USER_NOT_FOUND", { login })
-          : t("COMMAND_LOOKUP_FAILED"),
-      ),
-    });
-    return false;
-  }
-
-  async function resolveSearchSlot(idx: number): Promise<boolean> {
-    const opt = options[idx];
-    const query = slotAt(idx).raw.trim();
-    if (opt?.type !== "search" || !query) return false;
-    setResolving(true);
-    const matches = await opt.search(query).catch(() => null);
-    setResolving(false);
-    const match = matches?.[0];
-    if (!match) {
-      patchSlot(idx, {
-        error: invalid(
-          matches
-            ? t("COMMAND_NO_MATCH", { query })
-            : t("COMMAND_LOOKUP_FAILED"),
-        ),
-      });
-      return false;
-    }
-    patchSlot(idx, {
-      raw: match.label,
-      resolved: match,
-      displayLabel: match.label,
-      error: null,
-    });
-    return true;
-  }
-
-  async function resolvePending(idx: number): Promise<boolean> {
-    const slot = slotAt(idx);
-    if (!slot.raw || slot.resolved !== null || slot.error) return true;
-    const type = options[idx]?.type;
-    if (type === "user") return await resolveUserSlot(idx);
-    if (type === "search") return await resolveSearchSlot(idx);
-    return true;
-  }
-
-  async function advance(): Promise<boolean> {
-    const idx = activeIdx();
-    const opt = options[idx];
-    if (!opt || !(await resolvePending(idx))) return false;
-    if (!slotSatisfied(opt, slotAt(idx))) return false;
-    if (idx + 1 >= options.length) return false;
-    setActiveIdx(idx + 1);
-    return true;
-  }
-
-  function submit() {
-    const values: Record<string, unknown> = {};
-    options.forEach((opt, i) => {
-      values[opt.name] = slotAt(i).resolved ?? null;
-    });
-    props.onSubmit(values);
-  }
-
-  function flagMissingRequired() {
-    setSlots((prev) =>
-      prev.map((slot, i) =>
-        options[i]?.required && slot.resolved === null && !slot.error
-          ? { ...slot, error: { kind: "required" as const } }
-          : slot,
-      ),
-    );
-    clearTimeout(requiredFlashTimer);
-    requiredFlashTimer = window.setTimeout(() => {
-      requiredFlashTimer = undefined;
-      setSlots((prev) =>
-        prev.map((slot) =>
-          slot.error?.kind === "required" ? { ...slot, error: null } : slot,
-        ),
-      );
-    }, 1500);
-  }
-
-  function onActiveInput(e: InputEvent) {
-    const value = (e.currentTarget as HTMLInputElement).value;
-    const idx = activeIdx();
-    const opt = options[idx];
-    if (!opt) return;
-    if (opt.type === "duration") {
-      const n = value === "" ? null : parseDuration(value);
-      const message = value === "" ? null : durationError(opt, n);
-      patchSlot(idx, {
-        raw: value,
-        resolved: message ? null : n,
-        displayLabel: value,
-        error: message ? invalid(message) : null,
-      });
-    } else if (opt.type === "user" || opt.type === "search") {
-      patchSlot(idx, {
-        raw: value,
-        resolved: null,
-        displayLabel: value,
-        error: null,
-      });
-    } else if (opt.type === "enum") {
-      const allowed = opt.values;
-      const exact = allowed.includes(value);
-      patchSlot(idx, {
-        raw: value,
-        resolved: exact ? value : null,
-        displayLabel: value,
-        error:
-          value !== "" && !exact
-            ? invalid(
-                t("COMMAND_ENUM_INVALID", {
-                  values: formatAlternatives(allowed),
-                }),
-              )
-            : null,
-      });
-    } else {
-      patchSlot(idx, {
-        raw: value,
-        displayLabel: value,
-        resolved: value === "" ? null : value,
-        error: null,
-      });
-    }
-  }
-
-  function selectUser(s: Chatter) {
-    fillUserSlot(activeIdx(), s.displayName, s.id);
-    void advance();
-  }
-
-  function selectSearch(s: OptionSuggestion) {
-    patchSlot(activeIdx(), {
-      raw: s.label,
-      resolved: s,
-      displayLabel: s.label,
-      error: null,
-    });
-    void advance();
-  }
-
-  function selectEnum(value: string) {
-    patchSlot(activeIdx(), {
-      raw: value,
-      resolved: value,
-      displayLabel: value,
-      error: null,
-    });
-    void advance();
-  }
-
   function onKeyDown(e: KeyboardEvent) {
     if (popupHandleKey?.(e)) return;
-
-    if (e.key === "Escape") {
-      e.preventDefault();
-      props.onCancel();
-      return;
-    }
-    if (resolving()) {
-      if (e.key === "Tab" || e.key === "Enter") e.preventDefault();
-      return;
-    }
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      if (canSubmit()) {
-        submit();
-        return;
-      }
-      void (async () => {
-        for (let i = 0; i < options.length; i++) await resolvePending(i);
-        if (canSubmit()) return submit();
-        await advance();
-        flagMissingRequired();
-      })();
-      return;
-    }
-    if (e.key === "Tab") {
-      e.preventDefault();
-      void advance();
-      return;
-    }
-    if (e.key === "Backspace" && activeRaw() === "") {
-      e.preventDefault();
-      if (activeIdx() === 0) props.onCancel();
-      else setActiveIdx(activeIdx() - 1);
-    }
+    composer.handleKey(e);
   }
 
   return (
@@ -428,7 +121,7 @@ export default function CommandComposer(props: Props) {
                 {" · "}
                 <span
                   class={`font-semibold ${
-                    errorActive() ? "text-negative" : "text-accent-ink"
+                    composer.errorActive() ? "text-negative" : "text-accent-ink"
                   }`}
                 >
                   {name()}
@@ -436,10 +129,10 @@ export default function CommandComposer(props: Props) {
               </>
             )}
           </Show>
-          <Show when={hintBody()}>
-            <span class={errorActive() ? "text-negative" : ""}>
+          <Show when={composer.hint()}>
+            <span class={composer.errorActive() ? "text-negative" : ""}>
               {" — "}
-              {hintBody()}
+              {composer.hint()}
             </span>
           </Show>
         </span>
@@ -461,11 +154,13 @@ export default function CommandComposer(props: Props) {
                   isActive={active()}
                   isFilled={slot().resolved !== null && !active()}
                   errored={active() && !!slot().error}
-                  onActivate={() => setActiveIdx(i())}
+                  onActivate={() => composer.setActiveIdx(i())}
                   inputRef={(el) => {
                     activeInput = el;
                   }}
-                  onInput={onActiveInput}
+                  onInput={(e) =>
+                    composer.input((e.currentTarget as HTMLInputElement).value)
+                  }
                   onKeyDown={onKeyDown}
                 />
               );

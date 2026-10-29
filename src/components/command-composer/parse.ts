@@ -2,6 +2,7 @@ import { t } from "../../lib/i18n/index.ts";
 import type { CommandOption, DurationOption } from "./types.ts";
 import { formatDuration, secondsPer } from "../../lib/format/duration.ts";
 import { at } from "../../lib/utils/at.ts";
+import { formatAlternatives } from "../../lib/format/list.ts";
 
 /// A missing required value flashes and clears itself; an invalid one stays
 /// until it is edited.
@@ -56,4 +57,81 @@ export function durationError(
 export function slotSatisfied(opt: CommandOption, slot: Slot): boolean {
   if (slot.error) return false;
   return !opt.required || slot.resolved !== null;
+}
+
+export function emptySlot(): Slot {
+  return { raw: "", resolved: null, displayLabel: "", error: null };
+}
+
+export function chosenSlot(label: string, resolved: unknown): Slot {
+  return { raw: label, resolved, displayLabel: label, error: null };
+}
+
+export function slotFromInput(opt: CommandOption, value: string): Slot {
+  const typed = { raw: value, displayLabel: value };
+  switch (opt.type) {
+    case "duration": {
+      if (value === "") return { ...typed, resolved: null, error: null };
+      const seconds = parseDuration(value);
+      const message = durationError(opt, seconds);
+      return message
+        ? { ...typed, resolved: null, error: invalid(message) }
+        : { ...typed, resolved: seconds, error: null };
+    }
+    case "user":
+    case "search":
+      return { ...typed, resolved: null, error: null };
+    case "enum": {
+      const exact = opt.values.includes(value);
+      return {
+        ...typed,
+        resolved: exact ? value : null,
+        error:
+          value !== "" && !exact
+            ? invalid(
+                t("COMMAND_ENUM_INVALID", {
+                  values: formatAlternatives(opt.values),
+                }),
+              )
+            : null,
+      };
+    }
+    case "string":
+      return { ...typed, resolved: value === "" ? null : value, error: null };
+  }
+}
+
+export function enumMatches(values: string[], raw: string): string[] {
+  const q = raw.toLowerCase();
+  return q === "" ? values : values.filter((v) => v.toLowerCase().includes(q));
+}
+
+export function allSatisfied(options: CommandOption[], slots: Slot[]): boolean {
+  return options.every((opt, i) => slotSatisfied(opt, at(slots, i)));
+}
+
+export function withRequiredFlagged(
+  options: CommandOption[],
+  slots: Slot[],
+): Slot[] {
+  return slots.map((slot, i) =>
+    options[i]?.required && slot.resolved === null && !slot.error
+      ? { ...slot, error: { kind: "required" } }
+      : slot,
+  );
+}
+
+export function withoutRequiredFlags(slots: Slot[]): Slot[] {
+  return slots.map((slot) =>
+    slot.error?.kind === "required" ? { ...slot, error: null } : slot,
+  );
+}
+
+export function valuesOf(
+  options: CommandOption[],
+  slots: Slot[],
+): Record<string, unknown> {
+  return Object.fromEntries(
+    options.map((opt, i) => [opt.name, at(slots, i).resolved ?? null]),
+  );
 }
