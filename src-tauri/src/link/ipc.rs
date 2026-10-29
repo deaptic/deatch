@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;
+use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, Uid, UpdateKind};
 
 const PIPE_NAME: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
@@ -55,7 +56,10 @@ enum HostMessage {
 pub fn connect_to_gui() -> std::io::Result<interprocess::local_socket::Stream> {
     use interprocess::local_socket::{prelude::*, GenericNamespaced, Stream, ToNsName};
     let name = PIPE_NAME.to_ns_name::<GenericNamespaced>()?;
-    Stream::connect(name)
+    let stream = Stream::connect(name)?;
+    let server = stream.peer_creds()?.pid().and_then(user_of);
+    same_user(user_of(std::process::id()).as_ref(), server.as_ref())?;
+    Ok(stream)
 }
 
 type HostWriter = tokio::io::WriteHalf<interprocess::local_socket::tokio::Stream>;
@@ -242,22 +246,36 @@ async fn run_server(app: tauri::AppHandle, hosts: Hosts) -> std::io::Result<()> 
 }
 
 fn current_user_only() -> std::io::Result<SecurityDescriptor> {
-    use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, UpdateKind};
+    let user =
+        user_of(std::process::id()).ok_or_else(|| std::io::Error::other("current user unknown"))?;
+    let sddl = widestring::U16CString::from_str(format!("D:P(A;;GA;;;{})", *user))
+        .map_err(std::io::Error::other)?;
+    SecurityDescriptor::deserialize(&sddl)
+}
 
-    let own = sysinfo::get_current_pid().map_err(std::io::Error::other)?;
+fn user_of(pid: u32) -> Option<Uid> {
+    let pid = sysinfo::Pid::from_u32(pid);
     let mut system = System::new();
     system.refresh_processes_specifics(
-        ProcessesToUpdate::Some(&[own]),
+        ProcessesToUpdate::Some(&[pid]),
         false,
         ProcessRefreshKind::nothing().with_user(UpdateKind::Always),
     );
-    let user = system
-        .process(own)
-        .and_then(|p| p.user_id())
-        .ok_or_else(|| std::io::Error::other("current user unknown"))?;
-    let sddl = widestring::U16CString::from_str(format!("D:P(A;;GA;;;{})", **user))
-        .map_err(std::io::Error::other)?;
-    SecurityDescriptor::deserialize(&sddl)
+    system.process(pid)?.user_id().cloned()
+}
+
+fn same_user(own: Option<&Uid>, server: Option<&Uid>) -> std::io::Result<()> {
+    match (own, server) {
+        (Some(own), Some(server)) if own == server => Ok(()),
+        (Some(_), Some(_)) => Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "the pipe belongs to another user",
+        )),
+        _ => Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "the pipe's owner could not be checked",
+        )),
+    }
 }
 
 async fn read_line<R>(reader: &mut R) -> std::io::Result<Option<String>>
@@ -354,9 +372,21 @@ async fn handle_connection(
 #[cfg(test)]
 mod tests {
     use super::{
-        current_user_only, merge, read_line, Compressor, HostCommand, Hosts, LinkChannel,
-        LinkState, MAX_MESSAGE_SIZE,
+        current_user_only, merge, read_line, same_user, Compressor, HostCommand, Hosts,
+        LinkChannel, LinkState, MAX_MESSAGE_SIZE,
     };
+    use serde_json::json;
+    use sysinfo::Uid;
+
+    #[test]
+    fn only_a_pipe_run_by_the_same_user_is_trusted() {
+        let me: Uid = "S-1-5-21-1-2-3-1001".parse().unwrap();
+        let other: Uid = "S-1-5-21-1-2-3-1002".parse().unwrap();
+        assert!(same_user(Some(&me), Some(&me)).is_ok());
+        assert!(same_user(Some(&me), Some(&other)).is_err());
+        assert!(same_user(Some(&me), None).is_err());
+        assert!(same_user(None, Some(&me)).is_err());
+    }
 
     #[test]
     fn pipe_access_is_limited_to_the_current_user() {
@@ -369,7 +399,6 @@ mod tests {
         assert!(sddl.starts_with("D:P(A;;GA;;;S-1-5-"), "{sddl}");
         assert_eq!(sddl.matches("(A;").count(), 1, "{sddl}");
     }
-    use serde_json::json;
 
     fn lines(input: &[u8]) -> Vec<std::io::Result<Option<String>>> {
         let mut reader = input;

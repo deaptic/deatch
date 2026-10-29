@@ -1,3 +1,4 @@
+use crate::lock::lock;
 use http::HeaderMap;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -17,7 +18,7 @@ impl RateLimit {
     }
 
     pub fn paused_for(&self) -> Option<Duration> {
-        let resets_at = *self.resets_at.lock().unwrap();
+        let resets_at = *lock(&self.resets_at);
         resets_at.and_then(|at| until(at, now()))
     }
 
@@ -28,7 +29,7 @@ impl RateLimit {
         let remaining = header_number::<u32>(headers, "ratelimit-remaining");
         let resets_at = header_number::<u64>(headers, "ratelimit-reset");
         if let (Some(remaining), Some(resets_at)) = (remaining, resets_at) {
-            *self.resets_at.lock().unwrap() = (remaining == 0).then_some(resets_at);
+            *lock(&self.resets_at) = (remaining == 0).then_some(resets_at);
         }
     }
 }

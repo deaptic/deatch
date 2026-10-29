@@ -4,12 +4,13 @@
 //! a database has not had yet.
 
 use crate::error::Result;
+use crate::lock::lock;
 use crate::twitch::ids::UserId;
 use rusqlite::{Connection, OptionalExtension};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, Mutex};
 use tauri::Manager;
 
 /// A feature's tables: `steps[n]` takes them from version n to n + 1. Steps are
@@ -102,10 +103,6 @@ impl Databases {
     fn connect(&self, account: &UserId) -> Result<Connection> {
         connect(&self.dir.join(format!("{account}.sqlite")), self.schemas)
     }
-}
-
-fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
-    mutex.lock().unwrap_or_else(|e| e.into_inner())
 }
 
 fn close(account: &UserId, conn: Connection) {

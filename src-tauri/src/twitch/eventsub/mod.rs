@@ -13,6 +13,7 @@ pub use kind::{EventKind, Focus};
 use super::ids::UserId;
 use super::Twitch;
 use crate::error::Result;
+use crate::lock::lock;
 use dto::EventSubStats;
 use serde::Deserialize;
 use std::sync::Mutex;
@@ -51,11 +52,11 @@ impl Handle {
     }
 
     pub(crate) fn stats(&self) -> EventSubStats {
-        self.stats.lock().unwrap().clone()
+        lock(&self.stats).clone()
     }
 
     fn publish(&self, stats: EventSubStats) {
-        *self.stats.lock().unwrap() = stats;
+        *lock(&self.stats) = stats;
     }
 
     fn send(&self, channels: Channels) -> Result<()> {
@@ -64,7 +65,7 @@ impl Handle {
 }
 
 pub fn spawn(app: tauri::AppHandle, twitch: Twitch) {
-    let Some(rx) = twitch.eventsub.rx.lock().unwrap().take() else {
+    let Some(rx) = lock(&twitch.eventsub.rx).take() else {
         log::error!("eventsub task already started");
         return;
     };
