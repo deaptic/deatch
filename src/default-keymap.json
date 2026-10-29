@@ -38,5 +38,12 @@
   "enter": ["chat::send"],
   "escape": ["panel::close"],
   "tab": ["chat::tabComplete"],
-  "up": ["chat::recallPrev"]
+  "up": ["chat::recallPrev"],
+  "shift-up": ["feed::selectPrev"],
+  "shift-down": ["feed::selectNext"],
+  "r": ["feed::reply"],
+  "c": ["feed::copy"],
+  "ctrl-d": ["emotePicker::favorite"],
+  "shift-enter": ["emotePicker::insertKeepOpen"],
+  "ctrl-enter": ["quickSwitch::openPinned"]
 }

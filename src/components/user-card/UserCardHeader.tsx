@@ -1,20 +1,7 @@
-import type { FeedMessage, User } from "../../lib/types/index.ts";
-import {
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-  on,
-  Show,
-} from "solid-js";
+import type { FeedMessage, FollowStatus, User } from "../../lib/types/index.ts";
+import { createEffect, createMemo, createResource, on, Show } from "solid-js";
 import * as users from "../../lib/services/users.ts";
-import { getFollowedAt } from "../../lib/api/twitch/channels.ts";
-import { getUserChatColor } from "../../lib/api/twitch/chat.ts";
-import {
-  isModOfChannel,
-  knownUser,
-  user as currentUser,
-} from "../../lib/stores/users.ts";
+import { knownUser } from "../../lib/stores/users.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { AtSign, Hash, Pin } from "lucide-solid";
 import { feeds } from "../../lib/stores/feeds.ts";
@@ -27,7 +14,7 @@ import BadgeBox from "../ui/BadgeBox.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import CopyButton from "./CopyButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
-import UserCardMeta, { type FollowStatus } from "./UserCardMeta.tsx";
+import UserCardMeta from "./UserCardMeta.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -42,39 +29,22 @@ type Props = {
 
 export default function UserCardHeader(props: Props) {
   const user = (): User | null => knownUser(props.chatterId) ?? null;
-  const [follow, setFollow] = createSignal<FollowStatus>({ kind: "unknown" });
-
-  const canSeeFollow = (chatterId: string) =>
-    currentUser()?.id === chatterId || isModOfChannel(props.broadcasterId);
-
   createEffect(
     on(
       () => props.chatterId,
-      (id) => {
-        setFollow({ kind: "unknown" });
-        users.fetch({ ids: [id] }, { silent: true }).catch(() => {});
-        if (!canSeeFollow(id)) {
-          setFollow({ kind: "hidden" });
-          return;
-        }
-        getFollowedAt(
-          { broadcasterId: props.broadcasterId, userId: id },
-          { silent: true },
-        )
-          .then((at) => {
-            if (props.chatterId !== id) return;
-            setFollow(at ? { kind: "since", at } : { kind: "none" });
-          })
-          .catch(() => {});
-      },
+      (id) => users.fetch({ ids: [id] }, { silent: true }).catch(() => {}),
     ),
   );
 
-  const [chatColor] = createResource(
-    () => props.chatterId,
-    (userId) =>
-      getUserChatColor({ userId }, { silent: true }).catch(() => null),
+  const [followed] = createResource(
+    () => ({ broadcasterId: props.broadcasterId, chatterId: props.chatterId }),
+    ({ broadcasterId, chatterId }) =>
+      users.followStatus(broadcasterId, chatterId),
   );
+  const follow = (): FollowStatus =>
+    (!followed.loading && followed()) || { kind: "unknown" };
+
+  const [chatColor] = createResource(() => props.chatterId, users.chatColor);
   // A switched card keeps the last chatter's colour until the new one lands.
   const color = createMemo(
     () =>

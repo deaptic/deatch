@@ -5,3 +5,9 @@ export type Chatter = {
   color: string;
   lastSeen: number;
 };
+
+export type FollowStatus =
+  | { kind: "unknown" }
+  | { kind: "hidden" }
+  | { kind: "none" }
+  | { kind: "since"; at: string };

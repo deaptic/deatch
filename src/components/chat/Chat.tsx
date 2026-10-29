@@ -194,13 +194,14 @@ export default function Chat(props: Props) {
   function bindFeedShortcuts() {
     const withSelected = (fn: (msg: Message) => void) => () => {
       const m = feedApi()?.getSelectedMessage();
-      if (m) fn(m);
+      if (!m) return shortcuts.PASS;
+      fn(m);
     };
     return [
-      shortcuts.registerLocal("shift-up", () => {
+      shortcuts.register("feed::selectPrev", () => {
         feedApi()?.moveSelection(-1);
       }),
-      shortcuts.registerLocal("shift-down", () => {
+      shortcuts.register("feed::selectNext", () => {
         feedApi()?.moveSelection(1);
       }),
       shortcuts.registerLocal(
@@ -230,9 +231,13 @@ export default function Chat(props: Props) {
         withSelected(startReply),
         "feedSelected",
       ),
-      shortcuts.registerLocal("r", withSelected(startReply), "feedSelected"),
-      shortcuts.registerLocal(
-        "c",
+      shortcuts.register(
+        "feed::reply",
+        withSelected(startReply),
+        "feedSelected",
+      ),
+      shortcuts.register(
+        "feed::copy",
         withSelected((m) => clipboard.copy(textOf(m))),
         "feedSelected",
       ),

@@ -7,7 +7,7 @@ import {
   feedShowDeletedContent,
   feedShowTimestamp,
 } from "../../../lib/stores/preferences.ts";
-import { getUserChatColor } from "../../../lib/api/twitch/chat.ts";
+import * as users from "../../../lib/services/users.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { feedEvent } from "../../../lib/utils/feedEvent.ts";
 import { layoutFeed } from "../../../lib/utils/feedLayout.ts";
@@ -56,15 +56,7 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
 }
 
 export default function AppearancePreview() {
-  const [color] = createResource(
-    () => {
-      const id = user()?.id;
-      return id
-        ? getUserChatColor({ userId: id }, { silent: true }).catch(() => null)
-        : null;
-    },
-    { initialValue: null },
-  );
+  const [color] = createResource(() => user()?.id, users.chatColor);
   const me = (): Me => {
     const u = user();
     return {

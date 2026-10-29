@@ -2,12 +2,14 @@ import { relaunchApp } from "../api/app.ts";
 import { checkForUpdate } from "../api/updater.ts";
 import { onWindowFocusChanged } from "../api/window.ts";
 import * as exit from "./exit.ts";
-import type { Update } from "../types/index.ts";
 import {
   installing,
   pendingUpdate,
+  setInstallError,
+  setInstalling,
   setPendingUpdate,
 } from "../stores/updater.ts";
+import { errorMessage } from "../utils/error.ts";
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const THROTTLE_MS = 60 * 60 * 1000;
@@ -38,8 +40,17 @@ export function start(): () => void {
   };
 }
 
-export async function install(update: Update): Promise<void> {
-  await exit.flush();
-  await update.install();
-  await relaunchApp({ silent: true });
+export async function install(): Promise<void> {
+  const update = pendingUpdate();
+  if (!update || installing()) return;
+  setInstallError(null);
+  setInstalling(true);
+  try {
+    await exit.flush();
+    await update.install();
+    await relaunchApp({ silent: true });
+  } catch (e) {
+    setInstallError(errorMessage(e));
+    setInstalling(false);
+  }
 }

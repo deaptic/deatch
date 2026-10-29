@@ -1,15 +1,9 @@
-import type { User } from "../../lib/types/index.ts";
+import type { FollowStatus, User } from "../../lib/types/index.ts";
 import { Calendar, Heart } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { createCopyable } from "../ui/copyable.ts";
 import Timestamp from "../ui/Timestamp.tsx";
 import { t } from "../../lib/i18n/index.ts";
-
-export type FollowStatus =
-  | { kind: "unknown" }
-  | { kind: "hidden" }
-  | { kind: "none" }
-  | { kind: "since"; at: string };
 
 type Props = {
   user: User | null;

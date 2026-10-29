@@ -13,7 +13,6 @@ import {
   appearanceRailExpanded,
   linkAudioLink,
   pinnedChannels,
-  reorderPinnedChannels,
   setAppearanceRailExpanded,
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
@@ -207,7 +206,7 @@ export default function Rail(props: Props) {
     };
     const onUp = () => {
       const over = overIdx();
-      if (over !== null && over !== idx) reorderPinnedChannels(idx, over);
+      if (over !== null && over !== idx) pins.move(idx, over);
       end();
     };
     endDrag = end;
@@ -237,10 +236,8 @@ export default function Rail(props: Props) {
     const found = await users.lookUp(login, t("RAIL_USER_NOT_FOUND"));
     setAddLoading(false);
     if (!found) return;
-    if (pinnedChannels().includes(found.id)) {
+    if (pins.add(found) === "alreadyPinned") {
       addToast(t("RAIL_ALREADY_PINNED"), "error");
-    } else {
-      pins.add(found);
     }
     closeAdd();
   }
