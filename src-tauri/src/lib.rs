@@ -124,6 +124,15 @@ fn export_to(bindings: &tauri_specta::Builder<tauri::Wry>, path: &std::path::Pat
         .expect("failed to export typescript bindings");
 }
 
+fn bring_to_front(app: &tauri::AppHandle) {
+    let Some(window) = app.get_webview_window("main") else {
+        return;
+    };
+    if let Err(e) = window.unminimize().and_then(|()| window.set_focus()) {
+        log::warn!("window not brought to front: {e}");
+    }
+}
+
 /// Every feature's tables in the per-account databases.
 const SCHEMAS: &[db::Schema] = &[feedlog::SCHEMA];
 
@@ -133,7 +142,15 @@ pub fn run() {
     export_to(&bindings, std::path::Path::new(BINDINGS_PATH));
     let invoke_handler = bindings.invoke_handler();
     graphics::apply_startup_flags();
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+    // Two copies would refresh the same single-use token and sign each other
+    // out. A dev build is left free to run beside the installed app.
+    if !cfg!(debug_assertions) {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _, _| {
+            bring_to_front(app);
+        }));
+    }
+    builder
         .plugin(
             tauri_plugin_log::Builder::new()
                 .level(log::LevelFilter::Info)
