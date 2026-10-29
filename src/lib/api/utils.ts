@@ -19,7 +19,6 @@ export async function invokeCommand<A extends unknown[], T>(
   try {
     const result = await command(...args);
     const ms = Math.round(performance.now() - start);
-    console.log(`[cmd] ${name}`, { args, result, ms });
     if (!options.silent) {
       if (options.successMessage) addToast(options.successMessage, "success");
       else if (advancedShowLogs()) addToast(name, "log", summarize(result, ms));
@@ -27,7 +26,7 @@ export async function invokeCommand<A extends unknown[], T>(
     return result;
   } catch (e) {
     const ms = Math.round(performance.now() - start);
-    console.error(`[cmd] ${name} failed`, { args, error: e, ms });
+    console.error(`[cmd] ${name} failed`, { error: e, ms });
     if (!options.silent) reportFailure(e, options.failureMessage);
     throw e;
   }

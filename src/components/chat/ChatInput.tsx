@@ -296,7 +296,7 @@ export default function ChatInput(props: Props) {
                   onInputChange(text);
                   queueMicrotask(() => {
                     focus();
-                    setCursor(t.length);
+                    setCursor(text.length);
                   });
                 },
               });

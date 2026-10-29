@@ -143,8 +143,6 @@ pub fn run() {
     let invoke_handler = bindings.invoke_handler();
     graphics::apply_startup_flags();
     let mut builder = tauri::Builder::default();
-    // Two copies would refresh the same single-use token and sign each other
-    // out. A dev build is left free to run beside the installed app.
     if !cfg!(debug_assertions) {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, _, _| {
             bring_to_front(app);

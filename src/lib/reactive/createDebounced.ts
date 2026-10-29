@@ -31,7 +31,7 @@ export function createDebounced<T>(
       source,
       (next) => {
         clear();
-        if (!options.immediate || options.immediate(next, value())) {
+        if (options.immediate?.(next, value())) {
           setValue(() => next);
           return;
         }

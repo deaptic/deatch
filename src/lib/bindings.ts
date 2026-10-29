@@ -310,10 +310,6 @@ export type CreatedClip = {
 	id: string,
 };
 
-/**
- *  The entry a page is read next to; `timestamp` places it should the log
- *  not have it.
- */
 export type Cursor = {
 	side: Side,
 	id: string,

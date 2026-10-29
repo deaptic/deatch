@@ -234,12 +234,13 @@ async function drainWarmed() {
     .fetch({ logins: toFetch }, { silent: true })
     .catch(() => null);
   if (!fetched) return;
+  const stillOpen = fetched.filter((u) => pendingFetch.has(u.login));
   for (const login of toFetch) pendingFetch.delete(login);
   const current = linkWarmedChannels();
   const known = new Set(current.map((c) => c.login));
   setLinkWarmedChannels([
     ...current,
-    ...fetched.filter((u) => !known.has(u.login)),
+    ...stillOpen.filter((u) => !known.has(u.login)),
   ]);
 }
 
@@ -250,7 +251,8 @@ async function drainCurrent(slug: string) {
   if (!found) return;
   // An unknown login (banned, renamed) resolves to nothing; retrying would
   // never change that.
-  if (pendingCurrent === slug) pendingCurrent = null;
+  if (pendingCurrent !== slug) return;
+  pendingCurrent = null;
   const [ch] = found;
   if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
 }
@@ -292,6 +294,9 @@ export function start(): () => void {
 export function disconnect() {
   setLinkConnected(false);
   setLinkHasAudio(false);
+  setLinkWarmedChannels([]);
+  setLinkedChannel(null);
+  setLinkMutedByLogin({});
   pendingFetch.clear();
   pendingCurrent = null;
   retry.reset();

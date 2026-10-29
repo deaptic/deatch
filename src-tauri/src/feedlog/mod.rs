@@ -56,8 +56,6 @@ pub enum Side {
     After,
 }
 
-/// The entry a page is read next to; `timestamp` places it should the log
-/// not have it.
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Cursor {
@@ -110,7 +108,6 @@ pub fn page(db: &Connection, params: PageParams) -> Result<Vec<String>> {
         id,
         timestamp,
     } = params.cursor;
-    // An entry the log lacks counts as the last one logged at its moment.
     let at = position(db, channel, &id)?.unwrap_or(Position {
         timestamp,
         rowid: i64::MAX,
@@ -138,8 +135,6 @@ pub fn around(db: &Connection, params: AroundParams) -> Result<Option<Vec<String
     Ok(Some(out))
 }
 
-/// Where an entry sits in the log: by time, and entries of one moment by
-/// when they were first logged.
 #[derive(Clone, Copy)]
 struct Position {
     timestamp: u64,
