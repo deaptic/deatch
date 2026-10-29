@@ -53,6 +53,17 @@ impl Databases {
         work(conn)
     }
 
+    /// Closes every open database, which folds its write-ahead log back into
+    /// the file and removes the log; for app exit.
+    pub fn close(&self) {
+        let mut open = self.open.lock().unwrap_or_else(|e| e.into_inner());
+        for (account, conn) in open.drain() {
+            if let Err((_, e)) = conn.close() {
+                log::warn!("database for {account} not closed cleanly: {e}");
+            }
+        }
+    }
+
     /// Every account with a database, signed in or not, for upkeep.
     pub fn accounts(&self) -> Result<Vec<UserId>> {
         let mut accounts = Vec::new();

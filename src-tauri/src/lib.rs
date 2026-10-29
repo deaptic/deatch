@@ -182,8 +182,13 @@ pub fn run() {
         .manage(discord::DiscordState::default())
         .manage(diagnostics::Monitor::default())
         .invoke_handler(invoke_handler)
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            if let tauri::RunEvent::Exit = event {
+                app.state::<db::Databases>().close();
+            }
+        });
 }
 
 #[cfg(test)]
