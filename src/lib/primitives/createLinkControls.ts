@@ -16,6 +16,7 @@ import {
 } from "../stores/preferences.ts";
 import * as link from "../services/link.ts";
 import { at } from "../utils/at.ts";
+import { wrapIndex } from "../reactive/createListNavigation.ts";
 
 export type LinkControls = {
   cycleChannel: (direction: 1 | -1) => void;
@@ -62,7 +63,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
         ? direction === 1
           ? 0
           : list.length - 1
-        : (i + direction + list.length) % list.length;
+        : wrapIndex(i, direction, list.length);
     nav.selectChannel(at(list, nextIdx));
   }
 

@@ -1,5 +1,5 @@
 import { Swords } from "lucide-solid";
-import { t } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../lib/i18n/index.ts";
 import { type PendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
 import * as raid from "../../lib/services/raid.ts";
 import * as clock from "../../lib/services/clock.ts";
@@ -30,17 +30,21 @@ export default function RaidBanner(props: Props) {
     <div class="flex items-center gap-3 px-4 py-2.5 bg-raised border-b border-line-soft">
       <Swords class="size-4 shrink-0 text-event-raid" />
       <span class="min-w-0 truncate text-body text-ink">
-        {t("CHAT_RAID_RAIDING")}{" "}
-        <b
-          class={`font-semibold hover:underline ${link.cursor}`}
-          {...link.handlers}
-        >
-          {props.raid.target.displayName}
-        </b>{" "}
-        {t("CHAT_RAID_IN")}{" "}
-        <span class="font-semibold tabular-nums">
-          {t("CHAT_RAID_SECONDS", { seconds: remaining() })}
-        </span>
+        {tRich("CHAT_RAID_STATUS", {
+          name: props.raid.target.displayName,
+          seconds: remaining(),
+          target: (chunks) => (
+            <b
+              class={`font-semibold hover:underline ${link.cursor}`}
+              {...link.handlers}
+            >
+              {chunks}
+            </b>
+          ),
+          time: (chunks) => (
+            <span class="font-semibold tabular-nums">{chunks}</span>
+          ),
+        })}
       </span>
       <Button
         variant="neutral"

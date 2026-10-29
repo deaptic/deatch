@@ -1,8 +1,6 @@
 import { createSignal } from "solid-js";
-import type { ResolvedTheme } from "../constants/theme.ts";
+import { DEFAULT_ACCENT_HEX, type ResolvedTheme } from "../constants/theme.ts";
 import { hexToOklch, type Oklch, oklchCss } from "../utils/color.ts";
-
-export const defaultAccentHex = "#9481ff";
 
 const [applied, setApplied] = createSignal(0);
 const tokens = new Map<string, string>();
@@ -30,8 +28,9 @@ const SHADES: Record<ResolvedTheme, (base: Oklch) => AccentShades> = {
 };
 
 function deriveAccent(hex: string, theme: ResolvedTheme): AccentShades {
-  const parsed = hexToOklch(hex) ?? hexToOklch(defaultAccentHex);
-  if (!parsed) throw new Error(`default accent ${defaultAccentHex} is not hex`);
+  const parsed = hexToOklch(hex) ?? hexToOklch(DEFAULT_ACCENT_HEX);
+  if (!parsed)
+    throw new Error(`default accent ${DEFAULT_ACCENT_HEX} is not hex`);
   return SHADES[theme]({ ...parsed, c: Math.min(parsed.c, 0.2) });
 }
 

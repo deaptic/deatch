@@ -1,5 +1,5 @@
 import { SendHorizontal, SlidersHorizontal, Smile, X } from "lucide-solid";
-import { t } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../lib/i18n/index.ts";
 import {
   createEffect,
   createSignal,
@@ -203,16 +203,16 @@ export default function ChatInput(props: Props) {
       shortcuts.register(
         "chat::recallPrev",
         () => {
-          if (hasNewlineBeforeCursor()) return false;
-          return history.step(1);
+          if (hasNewlineBeforeCursor()) return shortcuts.PASS;
+          return shortcuts.passUnless(history.step(1));
         },
         WHEN,
       ),
       shortcuts.register(
         "chat::recallNext",
         () => {
-          if (hasNewlineAfterCursor()) return false;
-          return history.step(-1);
+          if (hasNewlineAfterCursor()) return shortcuts.PASS;
+          return shortcuts.passUnless(history.step(-1));
         },
         WHEN,
       ),
@@ -260,8 +260,12 @@ export default function ChatInput(props: Props) {
         {(reply) => (
           <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft">
             <span class="shrink-0">
-              {t("CHAT_INPUT_REPLYING_TO")}{" "}
-              <span class="font-semibold text-ink">{reply().name}</span>
+              {tRich("CHAT_INPUT_REPLYING_TO", {
+                user: reply().name,
+                name: (chunks) => (
+                  <span class="font-semibold text-ink">{chunks}</span>
+                ),
+              })}
             </span>
             <span class="flex-1 min-w-0 truncate">{reply().text}</span>
             <IconButton

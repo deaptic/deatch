@@ -242,7 +242,7 @@ export default function Chat(props: Props) {
   onMount(() => {
     const unbindDivider = shortcuts.registerLocal("escape", () => {
       clearDivider(props.broadcasterId);
-      return false;
+      return shortcuts.PASS;
     });
     const unbinds = bindFeedShortcuts();
     onCleanup(() => {

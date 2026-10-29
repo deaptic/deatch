@@ -2,20 +2,31 @@ import { IntlMessageFormat, type PrimitiveType } from "intl-messageformat";
 
 export type MessageValues = Record<string, PrimitiveType>;
 
-type Translator<K extends string> = (key: K, values?: MessageValues) => string;
+export type RichValues<T> = Record<
+  string,
+  PrimitiveType | ((chunks: (string | T)[]) => T)
+>;
 
 export function createTranslator<K extends string>(
   messages: Record<K, string>,
   locale: string,
-): Translator<K> {
+) {
   const formats = new Map<K, IntlMessageFormat>();
-  return (key, values) => {
+  function formatOf(key: K): IntlMessageFormat {
     let format = formats.get(key);
     if (!format) {
       format = new IntlMessageFormat(messages[key], locale);
       formats.set(key, format);
     }
+    return format;
+  }
+  return {
     // Primitive values always format to a single string.
-    return format.format(values) as string;
+    plain: (key: K, values?: MessageValues) =>
+      formatOf(key).format(values) as string,
+    rich: <T>(key: K, values: RichValues<T>): (string | T)[] => {
+      const parts = formatOf(key).format<T>(values);
+      return Array.isArray(parts) ? parts : [parts];
+    },
   };
 }

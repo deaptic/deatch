@@ -4,8 +4,10 @@ import CardLabel from "../../ui/CardLabel.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
 import Segmented from "../../ui/Segmented.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
-import * as appearance from "../../../lib/services/appearance.ts";
-import type { Theme } from "../../../lib/constants/theme.ts";
+import {
+  DEFAULT_ACCENT_HEX,
+  type Theme,
+} from "../../../lib/constants/theme.ts";
 import {
   appearanceAccent,
   appearanceTheme,
@@ -40,7 +42,7 @@ export default function ThemeCard() {
       >
         <ColorPicker
           swatchColor="var(--color-accent)"
-          value={appearanceAccent() ?? appearance.defaultAccentHex}
+          value={appearanceAccent() ?? DEFAULT_ACCENT_HEX}
           onInput={setAppearanceAccent}
           onReset={() => setAppearanceAccent(null)}
           resetDisabled={appearanceAccent() === null}

@@ -1,7 +1,8 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import * as diagnostics from "../../lib/services/diagnostics.ts";
 import type { Diagnostics as Sample } from "../../lib/types/index.ts";
-import { formatBytes, formatPercent } from "../../lib/format/size.ts";
+import { formatBytes } from "../../lib/format/size.ts";
+import { formatPercent } from "../../lib/format/units.ts";
 import Loading from "../ui/Loading.tsx";
 import Popover from "../ui/Popover.tsx";
 import ConnectionSlot from "./ConnectionSlot.tsx";

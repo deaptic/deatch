@@ -5,7 +5,13 @@ import {
   type Predicate as WhenFn,
 } from "../utils/boolExpr.ts";
 
-type Handler = () => boolean | void;
+export const PASS = Symbol("pass");
+
+type Handler = () => void | typeof PASS;
+
+export function passUnless(handled: boolean): void | typeof PASS {
+  return handled ? undefined : PASS;
+}
 type ActionEntry = { handler: Handler; when?: WhenFn };
 
 const CHORD_TIMEOUT_MS = 1000;
@@ -111,7 +117,7 @@ function run(entries: Iterable<ActionEntry | undefined>): boolean {
   for (const entry of entries) {
     if (!entry) continue;
     if (entry.when && !entry.when(contexts)) continue;
-    if (entry.handler() === false) continue;
+    if (entry.handler() === PASS) continue;
     clearPending();
     return true;
   }

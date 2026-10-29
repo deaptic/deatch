@@ -5,7 +5,6 @@ import ColorPicker from "../../ui/ColorPicker.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import StopSlider from "../../ui/StopSlider.tsx";
 import Toggle from "../../ui/Toggle.tsx";
-import * as appearance from "../../../lib/services/appearance.ts";
 import { FONT_SIZE_STOPS } from "../../../lib/constants/accessibility.ts";
 import {
   feedFontSize,
@@ -17,6 +16,7 @@ import {
 } from "../../../lib/stores/preferences.ts";
 
 import { formatPx } from "../../../lib/format/units.ts";
+import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
 export default function ReadabilityCard() {
   return (
     <Card>
@@ -46,7 +46,7 @@ export default function ReadabilityCard() {
       >
         <ColorPicker
           swatchColor={feedUserOverrideNameColor() || "transparent"}
-          value={feedUserOverrideNameColor() || appearance.defaultAccentHex}
+          value={feedUserOverrideNameColor() || DEFAULT_ACCENT_HEX}
           onInput={setFeedUserOverrideNameColor}
           onReset={() => setFeedUserOverrideNameColor("")}
           resetDisabled={!feedUserOverrideNameColor()}

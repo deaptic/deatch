@@ -55,7 +55,9 @@ export function reportFailure(
 }
 
 function summarize(result: unknown, ms: number): string {
-  if (Array.isArray(result)) return `${ms}ms · ${result.length} items`;
+  if (Array.isArray(result)) {
+    return t("API_LOG_ITEMS", { ms, count: result.length, more: false });
+  }
   if (
     result !== null &&
     typeof result === "object" &&
@@ -66,7 +68,7 @@ function summarize(result: unknown, ms: number): string {
     ).data;
     const more = (result as { pagination?: { cursor: string | null } })
       .pagination?.cursor;
-    return `${ms}ms · ${data.length} items${more ? " · more…" : ""}`;
+    return t("API_LOG_ITEMS", { ms, count: data.length, more: Boolean(more) });
   }
-  return `${ms}ms`;
+  return t("API_LOG_DURATION", { ms });
 }

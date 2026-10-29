@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 // Pure mapper from channel.chat.notification, live or from history, to the
 // feed shape. No side effects, so the backlog service can use it too.
 
@@ -54,7 +55,7 @@ export function mapNotice(
     chatter_login: raw.chatter_is_anonymous
       ? undefined
       : raw.chatter_user_login,
-    chatter_name: raw.chatter_user_name ?? "anonymous",
+    chatter_name: raw.chatter_user_name ?? t("EVENT_ANONYMOUS"),
     color: raw.color ?? "",
     message: wordsOf(raw.message),
     announcement_color: announcementColor(raw),
