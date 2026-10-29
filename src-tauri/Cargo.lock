@@ -823,7 +823,7 @@ dependencies = [
 
 [[package]]
 name = "deatch"
-version = "0.3.29"
+version = "0.3.30"
 dependencies = [
  "discord-rich-presence",
  "futures-util",
