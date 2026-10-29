@@ -1,5 +1,6 @@
 mod blocking;
 mod clock;
+mod db;
 mod diagnostics;
 mod discord;
 mod emit;
@@ -123,6 +124,9 @@ fn export_to(bindings: &tauri_specta::Builder<tauri::Wry>, path: &std::path::Pat
         .expect("failed to export typescript bindings");
 }
 
+/// Every feature's tables in the per-account databases.
+const SCHEMAS: &[db::Schema] = &[feedlog::SCHEMA];
+
 pub fn run() {
     let bindings = bindings();
     #[cfg(debug_assertions)]
@@ -170,7 +174,7 @@ pub fn run() {
             link::ipc::start_server(app.handle().clone(), hosts.clone());
             app.manage(hosts);
             app.manage(emotes::seventv_events::spawn(app.handle().clone()));
-            app.manage(feedlog::FeedLog::open()?);
+            app.manage(db::Databases::open(SCHEMAS)?);
             feedlog::spawn_pruning(app.handle().clone());
 
             Ok(())

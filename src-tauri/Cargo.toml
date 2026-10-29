@@ -39,6 +39,7 @@ http = "1"
 sysinfo = { version = "0.39", default-features = false, features = ["system"] }
 winreg = "0.56"
 windows-native-keyring-store = "1"
+rusqlite = { version = "0.41", features = ["bundled", "fallible_uint"] }
 
 [profile.dev.package."*"]
 debug = false

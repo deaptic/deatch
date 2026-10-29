@@ -149,17 +149,15 @@ export default function Feed(props: Props) {
   // A jump to a message no longer in memory opens the feed log around it, once
   // the backlog has had its chance to bring it.
   let lookingUp: string | null = null;
-  function lookUp(messageId: string, timestamp: number | null) {
+  function lookUp(messageId: string) {
     if (lookingUp === messageId) return;
     lookingUp = messageId;
-    void history
-      .around(props.broadcasterId, messageId, timestamp)
-      .then((found) => {
-        lookingUp = null;
-        if (found) return;
-        setJumpTarget(null);
-        addToast(t("FEED_MESSAGE_GONE"));
-      });
+    void history.around(props.broadcasterId, messageId).then((found) => {
+      lookingUp = null;
+      if (found) return;
+      setJumpTarget(null);
+      addToast(t("FEED_MESSAGE_GONE"));
+    });
   }
 
   /// Brings row `id` into the rendered window, leaving follow mode if the
@@ -267,7 +265,7 @@ export default function Feed(props: Props) {
     if (!target || target.broadcasterId !== props.broadcasterId) return;
     if (!messageList().some((m) => m.message_id === target.messageId)) {
       if (ownsHistory() && feeds[props.broadcasterId]?.backfilled) {
-        untrack(() => lookUp(target.messageId, target.timestamp));
+        untrack(() => lookUp(target.messageId));
       }
       return;
     }

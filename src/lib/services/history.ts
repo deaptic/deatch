@@ -73,10 +73,9 @@ export function newer(broadcasterId: string): Promise<void> {
 export async function around(
   broadcasterId: string,
   messageId: string,
-  timestamp: number | null,
 ): Promise<boolean> {
   const entries = await feedLog
-    .around(broadcasterId, messageId, timestamp, PAGE * 2)
+    .around(broadcasterId, messageId, PAGE * 2)
     .catch(() => null);
   if (!entries || entries.length === 0) return false;
   setHistoryViews(broadcasterId, { entries, atOldest: false, atLive: false });

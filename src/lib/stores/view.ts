@@ -108,13 +108,8 @@ export function leavePage(): boolean {
   return false;
 }
 
-// A message to bring into view once its channel's feed holds it. The
-// timestamp, when known, finds it in the feed log faster.
-type JumpTarget = {
-  broadcasterId: string;
-  messageId: string;
-  timestamp: number | null;
-};
+// A message to bring into view once its channel's feed holds it.
+type JumpTarget = { broadcasterId: string; messageId: string };
 export const [jumpTarget, setJumpTarget] = createSignal<JumpTarget | null>(
   null,
 );
