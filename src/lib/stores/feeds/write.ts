@@ -3,6 +3,7 @@ import { getEntryId } from "../../utils/entryId.ts";
 import { append, insert, prepend } from "./ops.ts";
 import type { FeedEntry, NoticeText } from "../../types/index.ts";
 import { feedEvent } from "../../utils/feedEvent.ts";
+import { LOCAL } from "../../constants/events.ts";
 import { selectedChannel } from "../view.ts";
 
 export function appendItem(broadcasterId: string, item: FeedEntry): boolean {
@@ -22,7 +23,7 @@ export function appendItem(broadcasterId: string, item: FeedEntry): boolean {
 export function appendLocalNotice(
   broadcasterId: string,
   notice: string | NoticeText,
-  noticeType = "local",
+  noticeType = LOCAL,
 ) {
   appendItem(
     broadcasterId,

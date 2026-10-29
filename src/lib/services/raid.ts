@@ -1,4 +1,7 @@
 import { cancelRaid, startRaid } from "../api/twitch/raids.ts";
+import { sendShoutout } from "../api/twitch/chat.ts";
+import { isModOfChannel } from "../stores/users.ts";
+import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import type { UserRef } from "../types/index.ts";
 import {
   pendingRaid,
@@ -20,6 +23,14 @@ export async function cancel(fromId?: string): Promise<void> {
   if (broadcasterId) await cancelRaid({ broadcasterId });
   clearExpiry();
   setPendingRaid(null);
+}
+
+export function shoutOutRaider(channelId: string, raiderId: string): void {
+  if (!moderationAutoShoutoutOnRaid() || !isModOfChannel(channelId)) return;
+  sendShoutout(
+    { fromBroadcasterId: channelId, toBroadcasterId: raiderId },
+    { silent: true },
+  ).catch(() => {});
 }
 
 function clearExpiry(): void {

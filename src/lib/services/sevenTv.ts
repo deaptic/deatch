@@ -7,6 +7,7 @@ import * as emoteSetUpdate from "./emoteSetUpdate.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
+import { SEVENTV_UPDATE } from "../constants/events.ts";
 import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
@@ -14,6 +15,8 @@ type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 /// Each wanted channel's latest request; a lookup that lands after its
 /// channel was left, or re-requested, is dropped.
 const requests = new Map<string, symbol>();
+const retries = new Map<string, ReturnType<typeof setTimeout>>();
+const RETRY_MS = 60_000;
 const byBroadcaster = new Map<string, Entry>();
 const bySetId = new Map<string, Entry>();
 let activeBroadcasterId: string | null = null;
@@ -27,8 +30,20 @@ export async function subscribe(broadcasterId: string): Promise<void> {
     {
       silent: true,
     },
-  ).catch(() => null);
-  if (requests.get(broadcasterId) !== request || !channel?.emoteSetId) return;
+  ).catch(() => undefined);
+  if (requests.get(broadcasterId) !== request) return;
+  if (channel === undefined) {
+    requests.delete(broadcasterId);
+    retries.set(
+      broadcasterId,
+      setTimeout(() => {
+        retries.delete(broadcasterId);
+        void subscribe(broadcasterId);
+      }, RETRY_MS),
+    );
+    return;
+  }
+  if (!channel.emoteSetId) return;
   const entry: Entry = {
     broadcasterId,
     setId: channel.emoteSetId,
@@ -44,6 +59,8 @@ export async function subscribe(broadcasterId: string): Promise<void> {
 
 export function unsubscribe(broadcasterId: string): void {
   requests.delete(broadcasterId);
+  clearTimeout(retries.get(broadcasterId));
+  retries.delete(broadcasterId);
   const entry = byBroadcaster.get(broadcasterId);
   if (!entry) return;
   byBroadcaster.delete(broadcasterId);
@@ -83,7 +100,7 @@ function announce(broadcasterId: string, update: EmoteSetUpdated): void {
   for (const message of emoteSetUpdate.describe(update)) {
     appendItem(
       broadcasterId,
-      feedEvent("seventv_update", message, timestamp, { chatter_name: actor }),
+      feedEvent(SEVENTV_UPDATE, message, timestamp, { chatter_name: actor }),
     );
   }
 }

@@ -67,8 +67,12 @@ export function start(): () => void {
       inbox.record({
         id: raw.message_id,
         broadcasterId: raw.broadcaster_user_id,
-        broadcasterLogin: ch?.login ?? raw.broadcaster_user_id,
-        broadcasterName: ch?.displayName ?? raw.broadcaster_user_id,
+        broadcasterLogin:
+          ch?.login ?? raw.broadcaster_user_login ?? raw.broadcaster_user_id,
+        broadcasterName:
+          ch?.displayName ??
+          raw.broadcaster_user_name ??
+          raw.broadcaster_user_id,
         message: msg,
         reason,
         timestamp: ts,

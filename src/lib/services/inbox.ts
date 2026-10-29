@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from "../constants/storage.ts";
-import { createEffect } from "solid-js";
+import { createEffect, createRoot } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
 import { mentions, setMentions } from "../stores/inbox.ts";
 import { fresh, msUntilNextExpiry } from "../utils/inboxRetention.ts";
@@ -20,12 +20,16 @@ export function start(): () => void {
   setMentions(load());
   sound = new Audio(notificationSound);
   let timer: number | undefined;
-  createEffect(() => {
-    clearTimeout(timer);
-    const delay = msUntilNextExpiry(mentions(), Date.now());
-    if (delay !== null) timer = window.setTimeout(pruneExpired, delay);
+  const dispose = createRoot((dispose) => {
+    createEffect(() => {
+      clearTimeout(timer);
+      const delay = msUntilNextExpiry(mentions(), Date.now());
+      if (delay !== null) timer = window.setTimeout(pruneExpired, delay);
+    });
+    return dispose;
   });
   return () => {
+    dispose();
     clearTimeout(timer);
     flush();
     sound = null;

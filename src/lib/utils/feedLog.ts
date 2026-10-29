@@ -31,7 +31,7 @@ function isFeedEntry(value: unknown): value is FeedEntry {
 /// Logged entries that still read as feed entries; the log outlives the code
 /// that wrote it, so anything else is dropped.
 export function fromLog(lines: string[]): FeedEntry[] {
-  return lines.flatMap((line) => {
+  const entries = lines.flatMap((line) => {
     try {
       const value: unknown = JSON.parse(line);
       return isFeedEntry(value) ? [value] : [];
@@ -39,4 +39,8 @@ export function fromLog(lines: string[]): FeedEntry[] {
       return [];
     }
   });
+  const dropped = lines.length - entries.length;
+  if (dropped > 0)
+    console.warn(`feed log: ${dropped} unreadable entries skipped`);
+  return entries;
 }

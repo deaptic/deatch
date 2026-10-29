@@ -1,4 +1,4 @@
-import { createEffect } from "solid-js";
+import { createEffect, on } from "solid-js";
 import { setModeratedChannels, user } from "../stores/users.ts";
 import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
@@ -18,13 +18,16 @@ type SessionDeps = {
 };
 
 export function createSessionLifecycle(deps: SessionDeps): void {
-  createEffect(() => {
-    if (user() !== null) {
-      emotes.ensureGlobalLoaded();
-      return;
-    }
-    deps.leaveAll();
-    resetUserScopedCaches();
-    resetView();
-  });
+  createEffect(
+    on(user, (signedIn, previous) => {
+      if (signedIn) {
+        emotes.ensureGlobalLoaded();
+        return;
+      }
+      if (!previous) return;
+      deps.leaveAll();
+      resetUserScopedCaches();
+      resetView();
+    }),
+  );
 }

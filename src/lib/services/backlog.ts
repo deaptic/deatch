@@ -11,6 +11,7 @@ import {
   prependEntries,
 } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";
+import { LOCAL } from "../constants/events.ts";
 import { mapNotice } from "../mappers/notice.ts";
 import { groupGifts } from "../mappers/giftGroup.ts";
 import type { FeedEntry, FeedMessage, RecentHistory } from "../types/index.ts";
@@ -68,7 +69,7 @@ export function fillGap(
       const first = items[0];
       if (lines >= GAP_LIMIT && first) {
         insertEntries(broadcasterId, [
-          feedEvent("local", t("BACKLOG_GAP"), first.timestamp - 1, {
+          feedEvent(LOCAL, t("BACKLOG_GAP"), first.timestamp - 1, {
             silent: true,
           }),
         ]);
@@ -93,7 +94,7 @@ export function load(broadcasterId: string, broadcasterLogin: string) {
       appendItem(
         broadcasterId,
         feedEvent(
-          "local",
+          LOCAL,
           t("BACKLOG_FAILED", { error: errorMessage(e) }),
           Date.now(),
           { id: `backlog-failed-${broadcasterId}`, silent: true },

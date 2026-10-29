@@ -2,7 +2,7 @@ import { STORAGE_KEYS } from "../constants/storage.ts";
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
 import { getUsers } from "../api/twitch/users.ts";
-import type { InvokeOptions } from "../api/utils.ts";
+import { type InvokeOptions, reportFailure } from "../api/utils.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import {
   knownUser,
@@ -138,7 +138,10 @@ export async function resolve(
   const { id, login, displayName } = identity;
   if (id && login && displayName) return { id, login, displayName };
   if (id) {
-    const [user] = await get([id]).catch(() => []);
+    const [user] = await get([id]).catch((e: unknown) => {
+      reportFailure(e);
+      return [];
+    });
     return user ? toUserRef(user) : null;
   }
   if (!login) return null;

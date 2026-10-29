@@ -18,10 +18,8 @@ import type {
 } from "../types/index.ts";
 import { addGiftRecipient, appendItem } from "../stores/feeds.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
-import { isModOfChannel } from "../stores/users.ts";
-import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
-import { sendShoutout } from "../api/twitch/chat.ts";
 import * as channelPoints from "../services/channelPoints.ts";
+import * as raid from "../services/raid.ts";
 import { createTimeouts } from "../utils/timeouts.ts";
 import { mapRedemption } from "../mappers/redemption.ts";
 import { mapNotice } from "../mappers/notice.ts";
@@ -29,11 +27,11 @@ import { mapAutomaticRedemption } from "../mappers/automaticRedemption.ts";
 import { mapBitsUse } from "../mappers/bitsUse.ts";
 import { giftGroup } from "../mappers/giftGroup.ts";
 import { mapShoutout, mapShoutoutReceive } from "../mappers/shoutout.ts";
-import { CHANNEL_POINTS_REDEMPTION } from "../constants/events.ts";
+import { CHANNEL_POINTS_REDEMPTION, FOLLOW } from "../constants/events.ts";
 
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   return feedEvent(
-    "follow",
+    FOLLOW,
     t("EVENT_FOLLOW", { user: raw.user_name }),
     timestamp,
     chatterFields(raw.user_id, raw.user_login, raw.user_name),
@@ -93,16 +91,8 @@ export function start(): () => void {
       } else {
         appendItem(id, item);
       }
-      if (
-        raw.notice_type === "raid" &&
-        moderationAutoShoutoutOnRaid() &&
-        raw.chatter_user_id &&
-        isModOfChannel(id)
-      ) {
-        sendShoutout(
-          { fromBroadcasterId: id, toBroadcasterId: raw.chatter_user_id },
-          { silent: true },
-        ).catch(() => {});
+      if (raw.notice_type === "raid" && raw.chatter_user_id) {
+        raid.shoutOutRaider(id, raw.chatter_user_id);
       }
     }),
     listenFeed<RawShoutout>("channel.shoutout.create", mapShoutout),
