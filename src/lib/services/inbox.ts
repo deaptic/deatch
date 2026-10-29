@@ -25,10 +25,8 @@ export function start(): () => void {
     const delay = msUntilNextExpiry(mentions(), Date.now());
     if (delay !== null) timer = window.setTimeout(pruneExpired, delay);
   });
-  globalThis.addEventListener("pagehide", flush);
   return () => {
     clearTimeout(timer);
-    globalThis.removeEventListener("pagehide", flush);
     flush();
     sound = null;
   };
@@ -41,7 +39,7 @@ function load(): Mention[] {
   return fresh(upgraded, Date.now());
 }
 
-function flush() {
+export function flush() {
   clearTimeout(saveTimer);
   saveTimer = undefined;
   if (!unsaved) return;

@@ -6,7 +6,7 @@ import SettingsRow from "../../ui/SettingsRow.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import Dialog from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
-import { relaunchApp } from "../../../lib/api/app.ts";
+import * as exit from "../../../lib/services/exit.ts";
 import { setHardwareAcceleration } from "../../../lib/api/graphics.ts";
 import {
   advancedAlwaysOnTop,
@@ -36,7 +36,7 @@ export default function AdvancedSection() {
     try {
       await setHardwareAcceleration({ enabled }, options);
       setAdvancedHardwareAcceleration(enabled);
-      await relaunchApp(options);
+      await exit.relaunch(options);
     } catch {
       // invokeCommand already toasted; the dialog closes so the user can retry.
     } finally {

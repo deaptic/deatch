@@ -19,6 +19,8 @@ const commands = {
   setZoom: (factor: number) => getCurrentWebview().setZoom(factor),
   onWindowResized: async (handler: () => void) =>
     wrapUnlisten(await getCurrentWindow().onResized(() => handler())),
+  onWindowCloseRequested: async (handler: () => Promise<void>) =>
+    wrapUnlisten(await getCurrentWindow().onCloseRequested(() => handler())),
   onWindowFocusChanged: async (handler: (focused: boolean) => void) =>
     wrapUnlisten(
       await getCurrentWindow().onFocusChanged(({ payload }) =>
@@ -80,6 +82,13 @@ export function onWindowResized(
   options?: InvokeOptions,
 ): Promise<Unlisten> {
   return invokeCommand(commands.onWindowResized, [handler], options);
+}
+
+export function onWindowCloseRequested(
+  handler: () => Promise<void>,
+  options?: InvokeOptions,
+): Promise<Unlisten> {
+  return invokeCommand(commands.onWindowCloseRequested, [handler], options);
 }
 
 export function onWindowFocusChanged(
