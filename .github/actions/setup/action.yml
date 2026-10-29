@@ -1,5 +1,5 @@
 name: setup
-description: Install Node, pnpm, Rust, sccache, caches, and frontend deps
+description: Install Node, vp, Rust, sccache, caches, and frontend deps
 
 inputs:
   rust-components:

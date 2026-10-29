@@ -59,7 +59,7 @@ themselves (Firefox would hold `target\debug\deatch.exe` open and block
 relinking):
 
 ```powershell
-pnpm tauri build --no-bundle
+vp exec tauri build --no-bundle
 ```
 
 Then run `release\deatch.exe` from the Cargo target directory (`src-tauri\target`

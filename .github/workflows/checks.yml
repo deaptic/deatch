@@ -26,13 +26,13 @@ jobs:
           rust-components: rustfmt, clippy
 
       - name: check
-        run: pnpm check --deny-warnings
+        run: vp check --deny-warnings
       - name: tauri versions
-        run: pnpm check:tauri
+        run: vp run check:tauri
       - name: test
-        run: pnpm test
+        run: vp test
       - name: build
-        run: pnpm build
+        run: vp build
 
       - name: cargo fmt
         working-directory: src-tauri

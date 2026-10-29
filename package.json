@@ -5,12 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
-    "build": "vp build",
-    "check": "vp check",
-    "test": "vp test",
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml -- --export-bindings",
-    "tauri": "tauri",
     "release": "node scripts/release.ts",
     "pack:extension": "node scripts/pack-extension.ts",
     "check:tauri": "node scripts/check-tauri.ts"
