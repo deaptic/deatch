@@ -2,9 +2,9 @@
 
 `src-tauri/src/` is one folder per feature. Crate-wide pieces (`error.rs`,
 `http.rs`, `ws.rs`, `db.rs`, `blocking.rs`, `emit.rs`, `keyring.rs`, `clock.rs`,
-`local_dir.rs`) sit at the root. `lib.rs` only wires the app: plugins, managed state, setup, and the
-tauri-specta command and event lists. Windows only: no `cfg` branches or
-dependencies for other platforms.
+`lock.rs`, `local_dir.rs`) sit at the root. `lib.rs` only wires the app:
+plugins, managed state, setup, and the tauri-specta command and event lists.
+Windows only: no `cfg` branches or dependencies for other platforms.
 
 Inside a feature folder:
 
@@ -35,6 +35,8 @@ the logic under test, and split parsing from fetching when a function mixes them
 - One shared `reqwest::Client` from `http.rs`; never construct another.
   `http::get_json` covers plain JSON GETs.
 - WebSockets open through `ws::connect`, which bounds the handshake.
+- A `std::sync::Mutex` is locked through `lock::lock`, which recovers from a
+  poisoned lock instead of panicking.
 - Data that belongs to the signed-in account lives in its database through
   `db::Databases`, keyed by `twitch.viewer()`. A feature owns its tables as a
   `db::Schema` registered in `lib.rs`; steps are only appended, never edited.

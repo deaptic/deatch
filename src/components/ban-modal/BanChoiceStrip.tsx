@@ -16,6 +16,7 @@ export default function BanChoiceStrip(props: Props) {
   return (
     <Segmented
       label={t("BAN_CHOICE")}
+      size="lg"
       value={props.value}
       options={[
         {

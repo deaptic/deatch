@@ -13,6 +13,7 @@ mod http;
 mod keyring;
 mod link;
 mod local_dir;
+mod lock;
 mod notifications;
 mod twitch;
 mod ws;

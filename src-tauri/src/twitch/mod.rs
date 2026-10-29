@@ -18,6 +18,7 @@ mod transport;
 pub mod users;
 
 use crate::error::{Error, Result};
+use crate::lock::lock;
 use ids::UserId;
 use session::Session;
 use std::sync::{Arc, Mutex};
@@ -61,7 +62,7 @@ impl Twitch {
     }
 
     pub fn begin_login(&self) -> u64 {
-        let mut login = self.login.lock().unwrap();
+        let mut login = lock(&self.login);
         login.generation += 1;
         if let Some(task) = login.task.take() {
             task.abort();
@@ -70,7 +71,7 @@ impl Twitch {
     }
 
     pub fn attach_login(&self, generation: u64, task: JoinHandle<()>) {
-        let mut login = self.login.lock().unwrap();
+        let mut login = lock(&self.login);
         if login.generation == generation {
             login.task = Some(task);
         } else {

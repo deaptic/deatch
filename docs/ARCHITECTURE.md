@@ -33,7 +33,7 @@ Each feature is a folder with `mod.rs` for the service, `commands.rs`, `dto.rs`
 for outgoing shapes, and `events.rs`. Upstream crate types never leave `dto.rs`.
 Crate-wide pieces sit at the root: `error.rs`, `http.rs` (the one
 `reqwest::Client`), `ws.rs` (WebSocket connects), `blocking.rs` (blocking work off the async
-workers), `emit.rs`, `keyring.rs`, `clock.rs`, `local_dir.rs`
+workers), `emit.rs`, `keyring.rs`, `clock.rs`, `lock.rs`, `local_dir.rs`
 (`%LOCALAPPDATA%\Deatch`).
 
 `twitch/` is the bulk of it. `Twitch` is cloneable managed state holding the

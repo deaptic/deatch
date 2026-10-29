@@ -1,6 +1,7 @@
 pub mod commands;
 pub mod dto;
 
+use crate::lock::lock;
 use crate::twitch::Twitch;
 use dto::{AppStats, ProcessStats};
 use std::collections::{HashMap, HashSet};
@@ -28,7 +29,7 @@ pub fn stats(monitor: &Monitor, twitch: &Twitch) -> AppStats {
 
 impl Monitor {
     fn sample(&self) -> (ProcessStats, ProcessStats) {
-        let mut system = self.0.lock().unwrap_or_else(|e| e.into_inner());
+        let mut system = lock(&self.0);
         let refresh = ProcessRefreshKind::nothing().with_memory().with_cpu();
         system.refresh_processes_specifics(ProcessesToUpdate::All, true, refresh);
         let samples: Vec<Sample> = system

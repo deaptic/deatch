@@ -10,8 +10,16 @@ const STEPS: Record<string, 1 | -1> = {
 
 type Option<T> = { value: T; label: string; icon?: JSX.Element };
 
+type SegmentedSize = "md" | "lg";
+
+const OPTION_HEIGHT: Record<SegmentedSize, string> = {
+  md: "h-7",
+  lg: "h-control-sm",
+};
+
 type Props<T extends string> = {
   label: string;
+  size?: SegmentedSize;
   value?: T;
   options: Option<T>[];
   onChange: (value: T) => void;
@@ -57,7 +65,7 @@ export default function Segmented<T extends string>(props: Props<T>) {
             aria-label={o.icon ? o.label : undefined}
             data-tip={o.icon ? o.label : undefined}
             onClick={() => props.onChange(o.value)}
-            class={`h-7 px-3 rounded-xs text-small font-semibold cursor-pointer grid place-items-center transition-colors duration-snap [&>svg]:size-4 ${
+            class={`${OPTION_HEIGHT[props.size ?? "md"]} px-3 rounded-xs text-small font-semibold cursor-pointer grid place-items-center transition-colors duration-snap [&>svg]:size-4 ${
               props.fill ? "flex-1" : ""
             } ${
               props.value === o.value

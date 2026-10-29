@@ -69,7 +69,7 @@ export async function manageHeldAutomodMessage(
 ): Promise<void> {
   const successMessage =
     params.action === "allow"
-      ? t("TOAST_MESSAGE_APPROVED")
+      ? t("TOAST_MESSAGE_ALLOWED")
       : t("TOAST_MESSAGE_DENIED");
   await invokeCommand(commands.manageHeldAutomodMessage, [params], {
     successMessage,

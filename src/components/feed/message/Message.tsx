@@ -194,7 +194,7 @@ export default function Message(props: Props) {
                 details.isHoldPending(item)
                   ? [
                       {
-                        title: t("FEED_AUTOMOD_APPROVE"),
+                        title: t("FEED_AUTOMOD_ALLOW"),
                         icon: () => <Check class="size-4" />,
                         tone: "success",
                         onClick: () => handleHold("allow"),

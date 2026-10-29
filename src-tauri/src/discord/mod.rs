@@ -1,6 +1,7 @@
 pub mod commands;
 
 use crate::error::{Error, Result};
+use crate::lock::lock;
 use discord_rich_presence::activity::{
     Activity, ActivityType, Assets, Button as ActivityButton, StatusDisplayType, Timestamps,
 };
@@ -40,7 +41,7 @@ pub struct SetActivityParams {
 pub fn connect(state: &DiscordState) -> Result<()> {
     let mut client = DiscordIpcClient::new(CLIENT_ID);
     client.connect()?;
-    if let Some(mut previous) = state.0.lock().unwrap().replace(client) {
+    if let Some(mut previous) = lock(&state.0).replace(client) {
         if let Err(e) = previous.close() {
             log::warn!("discord close of previous client failed: {e}");
         }
@@ -49,7 +50,7 @@ pub fn connect(state: &DiscordState) -> Result<()> {
 }
 
 pub fn disconnect(state: &DiscordState) -> Result<()> {
-    let Some(mut client) = state.0.lock().unwrap().take() else {
+    let Some(mut client) = lock(&state.0).take() else {
         return Ok(());
     };
     if let Err(e) = client.clear_activity() {
@@ -59,7 +60,7 @@ pub fn disconnect(state: &DiscordState) -> Result<()> {
 }
 
 pub fn set_activity(state: &DiscordState, params: SetActivityParams) -> Result<()> {
-    let mut guard = state.0.lock().unwrap();
+    let mut guard = lock(&state.0);
     let client = guard
         .as_mut()
         .ok_or_else(|| Error::Discord("not connected".into()))?;
