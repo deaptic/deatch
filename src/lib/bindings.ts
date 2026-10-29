@@ -310,8 +310,15 @@ export type CreatedClip = {
 	id: string,
 };
 
-/**  Which side of a moment a page is read from. */
-export type Cursor = { side: "before"; timestamp: number } | { side: "after"; timestamp: number };
+/**
+ *  The entry a page is read next to; `timestamp` places it should the log
+ *  not have it.
+ */
+export type Cursor = {
+	side: Side,
+	id: string,
+	timestamp: number,
+};
 
 export type DcfAuthResponse = {
 	userCode: string,
@@ -668,6 +675,8 @@ export type SetMutedParams = {
 	channel: string,
 	muted: boolean,
 };
+
+export type Side = "before" | "after";
 
 export type StartCommercialParams = {
 	broadcasterId: UserId,

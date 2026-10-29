@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { FeedEntry } from "../types/index.ts";
-import { fromLog, toLogEntry } from "./feedLog.ts";
+import { cursorAt, fromLog, toLogEntry } from "./feedLog.ts";
 
 const message = {
   kind: "message",
@@ -31,4 +31,17 @@ test("lines that are not feed entries are dropped", () => {
       "null",
     ]),
   ).toStrictEqual([]);
+});
+
+test("a cursor names its entry by id and moment", () => {
+  expect(cursorAt("before", message)).toStrictEqual({
+    side: "before",
+    id: "m1",
+    timestamp: 5,
+  });
+  expect(cursorAt("after", event)).toStrictEqual({
+    side: "after",
+    id: "e1",
+    timestamp: 6,
+  });
 });
