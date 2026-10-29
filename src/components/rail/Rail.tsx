@@ -57,6 +57,7 @@ import { createPopover } from "../ui/createPopover.ts";
 import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
 import { t } from "../../lib/i18n/index.ts";
+import { scrollBehavior } from "../ui/scrollBehavior.ts";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -170,7 +171,7 @@ export default function Rail(props: Props) {
       for (const target of targets) {
         target.scrollIntoView({
           block: "nearest",
-          behavior: "smooth",
+          behavior: scrollBehavior(),
         });
       }
     });

@@ -116,6 +116,7 @@ export default function TriggerCard(props: {
             />
             <TriggerField label={t("SETTINGS_TRIGGERS_LOCATION")}>
               <Segmented
+                label={t("SETTINGS_TRIGGERS_LOCATION")}
                 value={draft.location}
                 options={[
                   {
@@ -154,6 +155,7 @@ export default function TriggerCard(props: {
             />
             <TriggerField label={t("SETTINGS_TRIGGERS_ACTION")}>
               <Segmented
+                label={t("SETTINGS_TRIGGERS_ACTION")}
                 value={draft.action}
                 options={[
                   {

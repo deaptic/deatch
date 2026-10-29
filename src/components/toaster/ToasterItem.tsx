@@ -60,7 +60,7 @@ export default function ToasterItem(props: Props) {
 
   return (
     <div
-      role="status"
+      role={toast.type === "error" ? "alert" : undefined}
       class="flex items-center gap-3 w-90 pl-4 pr-2 py-3 bg-overlay border border-line rounded-md transition duration-settle ease-out"
       classList={{
         "opacity-0 -translate-y-2": !shown(),

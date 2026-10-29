@@ -5,6 +5,7 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import { onActivateKey } from "./keyActivation.ts";
 
 export type UserAction = (
   x: number,
@@ -23,7 +24,13 @@ export function userLink(
   identity: () => Partial<UserRef> & { login: string },
   actions: UserActions,
 ) {
+  const showCard = actions.onShowUserCard;
   return {
+    ...(showCard && {
+      role: "button" as const,
+      tabIndex: 0,
+      onKeyDown: onActivateKey((x, y) => showCard(x, y, identity())),
+    }),
     onClick: (e: MouseEvent) => {
       if (!actions.onShowUserCard) return;
       e.stopPropagation();

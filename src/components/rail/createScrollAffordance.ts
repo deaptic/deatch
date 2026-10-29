@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { scrollBehavior } from "../ui/scrollBehavior.ts";
 
 type ScrollAffordance = {
   canUp: () => boolean;
@@ -27,7 +28,7 @@ export function createScrollAffordance(): ScrollAffordance {
     if (!el) return;
     const first = el.querySelector<HTMLElement>("[data-channel-id]");
     const step = first?.offsetHeight ?? 48;
-    el.scrollBy({ top: direction * step, behavior: "smooth" });
+    el.scrollBy({ top: direction * step, behavior: scrollBehavior() });
   }
 
   return {
