@@ -184,6 +184,12 @@ fn after(db: &Connection, channel: &str, at: Position, limit: usize) -> Result<V
     Ok(rows.collect::<rusqlite::Result<_>>()?)
 }
 
+pub fn clear(db: &Connection) -> Result<()> {
+    db.execute("DELETE FROM feed_entries", [])?;
+    db.execute_batch("PRAGMA incremental_vacuum")?;
+    Ok(())
+}
+
 /// Lets go of entries past the age limit, then of the oldest tenth at a time
 /// while the database is over its size cap, and gives the space back.
 pub fn prune(db: &Connection, now_ms: u64, max_bytes: u64) -> Result<()> {
@@ -359,6 +365,13 @@ mod tests {
             .map(|c| entry(&c.to_string(), 1, &c.to_string()))
             .collect());
         assert_eq!(around_of(&db, "e", 4).unwrap(), ["c", "d", "e", "f", "g"]);
+    }
+
+    #[test]
+    fn clearing_lets_every_entry_go() {
+        let db = one_moment();
+        clear(&db).unwrap();
+        assert!(page_of(&db, Side::After, "start", 0, 10).is_empty());
     }
 
     #[test]

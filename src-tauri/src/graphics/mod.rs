@@ -5,6 +5,12 @@ use std::io;
 use std::path::Path;
 
 use serde::Deserialize;
+use tauri::Manager;
+use webview2_com::Microsoft::Web::WebView2::Win32::{
+    ICoreWebView2_19, COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL,
+    COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW, COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL,
+};
+use windows_core::Interface;
 
 /// WebView2 reads GPU flags once at process start, so the choice is a marker
 /// file checked before the window exists; a toggle applies on next launch.
@@ -42,6 +48,45 @@ pub fn set_hardware_acceleration(
         }
     } else {
         Ok(fs::write(marker, "")?)
+    }
+}
+
+pub fn on_window_event(window: &tauri::Window, event: &tauri::WindowEvent) {
+    if !matches!(event, tauri::WindowEvent::Resized(_)) {
+        return;
+    }
+    let minimized = match window.is_minimized() {
+        Ok(minimized) => minimized,
+        Err(e) => {
+            log::warn!("window state unreadable: {e}");
+            return;
+        }
+    };
+    let level = if minimized {
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+    } else {
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
+    };
+    let Some(webview) = window.get_webview_window(window.label()) else {
+        return;
+    };
+    let applied = webview.with_webview(move |platform| {
+        if let Err(e) = set_memory_target(&platform, level) {
+            log::warn!("webview memory target not set: {e}");
+        }
+    });
+    if let Err(e) = applied {
+        log::warn!("webview memory target not set: {e}");
+    }
+}
+
+fn set_memory_target(
+    platform: &tauri::webview::PlatformWebview,
+    level: COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL,
+) -> windows_core::Result<()> {
+    unsafe {
+        let webview: ICoreWebView2_19 = platform.controller().CoreWebView2()?.cast()?;
+        webview.SetMemoryUsageTargetLevel(level)
     }
 }
 

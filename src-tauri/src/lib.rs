@@ -50,6 +50,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             feedlog::commands::feedlog_append,
             feedlog::commands::feedlog_page,
             feedlog::commands::feedlog_around,
+            feedlog::commands::feedlog_clear,
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
@@ -196,6 +197,7 @@ pub fn run() {
         })
         .manage(discord::DiscordState::default())
         .manage(diagnostics::Monitor::default())
+        .on_window_event(graphics::on_window_event)
         .invoke_handler(invoke_handler)
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

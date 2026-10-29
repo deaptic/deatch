@@ -8,6 +8,7 @@ export const commands = {
 	feedlogAppend: (params: AppendParams) => __TAURI_INVOKE<null>("feedlog_append", { params }),
 	feedlogPage: (params: PageParams) => __TAURI_INVOKE<string[]>("feedlog_page", { params }),
 	feedlogAround: (params: AroundParams) => __TAURI_INVOKE<string[] | null>("feedlog_around", { params }),
+	feedlogClear: () => __TAURI_INVOKE<null>("feedlog_clear"),
 	discordConnect: () => __TAURI_INVOKE<null>("discord_connect"),
 	discordDisconnect: () => __TAURI_INVOKE<null>("discord_disconnect"),
 	discordSetActivity: (params: SetActivityParams) => __TAURI_INVOKE<null>("discord_set_activity", { params }),
@@ -505,7 +506,7 @@ export type PrimePaidUpgradeNotice = {
 };
 
 export type ProcessStats = {
-	memoryBytes: number,
+	privateBytes: number,
 	cpuPercent: number | null,
 	processes: number,
 };

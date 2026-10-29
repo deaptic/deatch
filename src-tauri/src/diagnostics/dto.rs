@@ -4,7 +4,7 @@ use serde::Serialize;
 #[derive(Debug, Default, PartialEq, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ProcessStats {
-    pub memory_bytes: u64,
+    pub private_bytes: u64,
     pub cpu_percent: f32,
     pub processes: u32,
 }

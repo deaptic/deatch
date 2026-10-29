@@ -3,6 +3,7 @@ import * as feedLog from "./feedLog.ts";
 import { feeds } from "../stores/feeds.ts";
 import { historyViews, setHistoryViews } from "../stores/history.ts";
 import type { FeedEntry } from "../types/index.ts";
+import type { InvokeOptions } from "../api/utils.ts";
 import { withNewer, withOlder } from "../utils/historyView.ts";
 import { cursorAt } from "../utils/feedLog.ts";
 import { getEntryId } from "../utils/entryId.ts";
@@ -108,6 +109,12 @@ export async function around(
   if (!entries || entries.length === 0) return "missing";
   setHistoryViews(broadcasterId, { entries, atOldest: false, atLive: false });
   return "opened";
+}
+
+export async function clear(options?: InvokeOptions): Promise<void> {
+  await feedLog.clear(options);
+  nothingBefore.clear();
+  for (const broadcasterId of Object.keys(historyViews)) close(broadcasterId);
 }
 
 export function close(broadcasterId: string) {

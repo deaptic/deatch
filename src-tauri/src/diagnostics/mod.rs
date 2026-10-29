@@ -40,7 +40,7 @@ impl Monitor {
             .map(|p| Sample {
                 pid: p.pid().as_u32(),
                 parent: p.parent().map(|parent| parent.as_u32()),
-                memory_bytes: p.memory(),
+                private_bytes: p.virtual_memory(),
                 cpu: p.cpu_usage(),
             })
             .collect();
@@ -52,7 +52,7 @@ impl Monitor {
 struct Sample {
     pid: u32,
     parent: Option<u32>,
-    memory_bytes: u64,
+    private_bytes: u64,
     cpu: f32,
 }
 
@@ -86,7 +86,7 @@ fn split(own: u32, samples: &[Sample], cores: f32) -> (ProcessStats, ProcessStat
 }
 
 fn add(stats: &mut ProcessStats, sample: &Sample, cores: f32) {
-    stats.memory_bytes += sample.memory_bytes;
+    stats.private_bytes += sample.private_bytes;
     stats.cpu_percent += sample.cpu / cores;
     stats.processes += 1;
 }
@@ -95,11 +95,11 @@ fn add(stats: &mut ProcessStats, sample: &Sample, cores: f32) {
 mod tests {
     use super::{split, Sample};
 
-    fn sample(pid: u32, parent: Option<u32>, memory_bytes: u64, cpu: f32) -> Sample {
+    fn sample(pid: u32, parent: Option<u32>, private_bytes: u64, cpu: f32) -> Sample {
         Sample {
             pid,
             parent,
-            memory_bytes,
+            private_bytes,
             cpu,
         }
     }
@@ -114,9 +114,9 @@ mod tests {
             sample(30, Some(2), 5000, 90.0),
         ];
         let (app, webview) = split(1, &samples, 4.0);
-        assert_eq!((app.memory_bytes, app.processes), (999, 1));
+        assert_eq!((app.private_bytes, app.processes), (999, 1));
         assert_eq!(app.cpu_percent, 12.5);
-        assert_eq!((webview.memory_bytes, webview.processes), (600, 3));
+        assert_eq!((webview.private_bytes, webview.processes), (600, 3));
         assert_eq!(webview.cpu_percent, 15.0);
     }
 
@@ -129,6 +129,6 @@ mod tests {
             sample(10, Some(20), 100, 0.0),
         ];
         let (_, webview) = split(1, &samples, 1.0);
-        assert_eq!((webview.memory_bytes, webview.processes), (300, 2));
+        assert_eq!((webview.private_bytes, webview.processes), (300, 2));
     }
 }
