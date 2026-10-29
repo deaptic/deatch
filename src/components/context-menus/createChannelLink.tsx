@@ -6,6 +6,7 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import { onActivateKey } from "../ui/keyActivation.ts";
 import { createPopover } from "../ui/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";
 
@@ -19,6 +20,11 @@ export function createChannelLink(
   const popover = createPopover<{ ch: User }>();
 
   const handlers = {
+    ...(onOpen && {
+      role: "button" as const,
+      tabIndex: 0,
+      onKeyDown: onActivateKey(() => onOpen()),
+    }),
     onClick: (e: MouseEvent) => {
       if (!onOpen) return;
       e.stopPropagation();

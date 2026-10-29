@@ -32,6 +32,7 @@ export default function MenuItem(props: Props) {
   return (
     <button
       type="button"
+      role="menuitem"
       disabled={props.disabled}
       onClick={select}
       class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-body text-left transition-colors duration-snap ${

@@ -49,7 +49,7 @@ export default function ChannelHeader(props: Props) {
         <h1
           class={`self-start max-w-full text-title truncate ${name.class()}`}
           data-tip={name.tip()}
-          onClick={() => name.copy(props.channel.displayName)}
+          {...name.handlers(() => props.channel.displayName)}
         >
           {props.channel.displayName}
         </h1>
@@ -58,7 +58,7 @@ export default function ChannelHeader(props: Props) {
             <p
               class={`self-start max-w-full text-body truncate ${titleCopy.class()}`}
               data-tip={titleCopy.tip(streamTitle())}
-              onClick={() => titleCopy.copy(streamTitle())}
+              {...titleCopy.handlers(streamTitle)}
             >
               {streamTitle()}
             </p>

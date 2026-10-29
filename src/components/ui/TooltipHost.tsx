@@ -38,18 +38,27 @@ export default function TooltipHost() {
     if (anchor && (e.target as Node).contains(anchor)) hide();
   };
 
-  const onOver = (e: MouseEvent) => {
-    const el = (e.target as Element).closest<HTMLElement>("[data-tip]");
+  function arm(target: Element) {
+    const el = target.closest<HTMLElement>("[data-tip]");
     if (el === anchor) return;
     hide();
     if (!el) return;
     anchor = el;
     timer = setTimeout(() => show(el), DELAY_MS);
+  }
+
+  const onOver = (e: MouseEvent) => arm(e.target as Element);
+
+  const onFocusIn = (e: FocusEvent) => {
+    const el = e.target as Element;
+    if (el.matches(":focus-visible")) arm(el);
   };
 
   onMount(() => {
     const root = document.documentElement;
     document.addEventListener("mouseover", onOver);
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", hide);
     document.addEventListener("mousedown", hide, true);
     document.addEventListener("scroll", onScroll, true);
     globalThis.addEventListener("blur", hide);
@@ -57,6 +66,8 @@ export default function TooltipHost() {
     onCleanup(() => {
       hide();
       document.removeEventListener("mouseover", onOver);
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", hide);
       document.removeEventListener("mousedown", hide, true);
       document.removeEventListener("scroll", onScroll, true);
       globalThis.removeEventListener("blur", hide);

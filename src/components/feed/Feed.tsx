@@ -45,7 +45,7 @@ import type { Density } from "../../lib/constants/density.ts";
 import { dayLabel, layoutFeed } from "../../lib/utils/feedLayout.ts";
 import type { UserActions } from "../ui/userLink.ts";
 import { at } from "../../lib/utils/at.ts";
-import { REDUCED_MOTION } from "../../lib/constants/accessibility.ts";
+import { scrollBehavior } from "../ui/scrollBehavior.ts";
 
 export type FeedApi = {
   scrollToBottom: () => void;
@@ -269,8 +269,7 @@ export default function Feed(props: Props) {
       }
       return;
     }
-    const smooth = settled && !matchMedia(REDUCED_MOTION).matches;
-    const behavior = smooth ? "smooth" : "instant";
+    const behavior = settled ? scrollBehavior() : "instant";
     queueMicrotask(() => {
       show(target.messageId);
       const el = rootRef?.querySelector<HTMLElement>(

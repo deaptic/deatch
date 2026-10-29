@@ -22,6 +22,7 @@ export default function ThemeCard() {
         description={t("SETTINGS_APPEARANCE_THEME_DESCRIPTION")}
       >
         <Segmented
+          label={t("SETTINGS_APPEARANCE_THEME")}
           value={appearanceTheme()}
           options={
             [

@@ -9,6 +9,7 @@ import {
   userLink,
   userLinkHover,
 } from "../../ui/userLink.ts";
+import { onActivateKey } from "../../ui/keyActivation.ts";
 
 export default function Reply(
   props: UserActions & {
@@ -33,12 +34,26 @@ export default function Reply(
     return name ? { id: r.thread_message_id, name } : null;
   };
 
+  function jumpTo(messageId: () => string) {
+    const jump = props.onJump;
+    if (!jump) return {};
+    return {
+      role: "button" as const,
+      tabIndex: 0,
+      onClick: (e: MouseEvent) => {
+        e.stopPropagation();
+        jump(messageId());
+      },
+      onKeyDown: onActivateKey(() => jump(messageId())),
+    };
+  }
+
   return (
     <div
       class={`flex items-center gap-1.5 min-w-0 text-ink-faint text-feed-meta transition-colors duration-snap ${
         props.onJump ? "cursor-pointer hover:text-ink-soft" : ""
       }`}
-      onClick={() => props.onJump?.(props.reply.parent_message_id)}
+      {...jumpTo(() => props.reply.parent_message_id)}
     >
       <Show when={props.showAvatar && props.reply.parent_user_id}>
         {(id) => {
@@ -74,10 +89,7 @@ export default function Reply(
         {(thread) => (
           <span
             class="shrink-0 hover:text-ink-soft"
-            onClick={(e) => {
-              e.stopPropagation();
-              props.onJump?.(thread().id);
-            }}
+            {...jumpTo(() => thread().id)}
           >
             {t("FEED_REPLY_THREAD", { user: thread().name })}
           </span>

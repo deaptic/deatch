@@ -31,6 +31,7 @@ export default function DensityCard() {
         description={t("SETTINGS_APPEARANCE_CHANNEL_SPACING_DESCRIPTION")}
       >
         <Segmented
+          label={t("SETTINGS_APPEARANCE_CHANNEL_SPACING")}
           value={appearanceUiDensity()}
           options={
             [
@@ -47,6 +48,7 @@ export default function DensityCard() {
         description={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_DESCRIPTION")}
       >
         <Segmented
+          label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
           value={feedDensity()}
           options={
             [

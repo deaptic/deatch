@@ -19,6 +19,7 @@
   "BADGE_VANITY_DESCRIPTION": "Twitch global, partner, and other miscellaneous badges.",
   "BAN_BAN": "Ban",
   "BAN_CANCEL": "Cancel",
+  "BAN_CHOICE": "Ban, time out or unban",
   "BAN_EXPIRES": "Expires: {date}",
   "BAN_REASON": "Reason: {reason}",
   "BAN_REASON_PLACEHOLDER": "Reason (optional)",

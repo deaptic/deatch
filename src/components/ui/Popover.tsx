@@ -3,6 +3,7 @@ import { Portal } from "solid-js/web";
 import { dismissOnOutside } from "../../lib/reactive/dismissOnOutside.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
+import { trapFocus } from "../../lib/reactive/trapFocus.ts";
 
 const MARGIN = 8;
 /// Distance between an overlay and the control that opened it: below it, or
@@ -25,6 +26,7 @@ export default function Popover(props: Props) {
   const [pos, setPos] = createSignal({ x: props.x, y: props.y });
   const [maxWidth, setMaxWidth] = createSignal(window.innerWidth - MARGIN * 2);
   let ref: HTMLDivElement | undefined;
+  trapFocus(() => ref);
 
   onMount(() => {
     if (!ref) return;
@@ -60,6 +62,7 @@ export default function Popover(props: Props) {
     <Portal>
       <div
         ref={ref}
+        tabIndex={-1}
         style={{
           "--x": `${pos().x}px`,
           "--y": `${pos().y}px`,

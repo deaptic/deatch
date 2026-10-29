@@ -1,6 +1,7 @@
 import { type JSX, onCleanup } from "solid-js";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
+import { trapFocus } from "../../lib/reactive/trapFocus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 
 /// A dialog centres a short exchange; a palette drops from the top for
@@ -27,6 +28,8 @@ type Props = {
 /// Escape or a click on the scrim closes it; focus returns where it was.
 export default function Modal(props: Props) {
   captureFocusForRestore();
+  let panel: HTMLDivElement | undefined;
+  trapFocus(() => panel);
   onCleanup(shortcuts.registerLocal("escape", () => props.onClose()));
   return (
     <Portal>
@@ -37,6 +40,8 @@ export default function Modal(props: Props) {
         }}
       >
         <div
+          ref={panel}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-label={props.label}

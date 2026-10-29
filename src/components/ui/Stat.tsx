@@ -18,9 +18,7 @@ export default function Stat(props: Props) {
           props.truncate ? "min-w-0" : "shrink-0"
         } ${props.copy ? copyable.class() : "text-ink-soft"}`}
         data-tip={props.copy ? copyable.tip() : undefined}
-        onClick={() => {
-          if (props.copy) void copyable.copy(props.copy);
-        }}
+        {...(props.copy && copyable.handlers(() => props.copy ?? ""))}
       >
         <span class="shrink-0 text-ink-faint [&>svg]:size-3.5">
           {props.icon}
