@@ -3,7 +3,7 @@ import { Dynamic } from "solid-js/web";
 import type { FeedEvent } from "../../../lib/types/index.ts";
 import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
-import { t } from "../../../lib/i18n/index.ts";
+import { t, tRich } from "../../../lib/i18n/index.ts";
 import Fragments from "../../ui/Fragments.tsx";
 import NamedText from "../../ui/NamedText.tsx";
 import NameList from "../../ui/NameList.tsx";
@@ -90,14 +90,17 @@ export default function Event(props: Props) {
         <Show when={item.recipients?.length ? item.recipients : undefined}>
           {(recipients) => (
             <div>
-              {`${t("EVENT_GIFTED_TO")} `}
-              <NameList
-                people={recipients()}
-                limit={details.RECIPIENTS_SHOWN}
-                more={(count) => t("EVENT_GIFT_MORE", { count })}
-                onShowUserCard={props.onShowUserCard}
-                onUserContextMenu={props.onUserContextMenu}
-              />
+              {tRich("EVENT_GIFTED_TO", {
+                names: () => (
+                  <NameList
+                    people={recipients()}
+                    limit={details.RECIPIENTS_SHOWN}
+                    more={(count) => t("EVENT_GIFT_MORE", { count })}
+                    onShowUserCard={props.onShowUserCard}
+                    onUserContextMenu={props.onUserContextMenu}
+                  />
+                ),
+              })}
             </div>
           )}
         </Show>

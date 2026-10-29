@@ -1,4 +1,6 @@
-const UNITS = ["B", "KB", "MB", "GB"];
+import { t } from "../i18n/index.ts";
+
+const UNITS = ["b", "kb", "mb", "gb"] as const;
 
 export function formatBytes(bytes: number): string {
   let value = bytes;
@@ -8,9 +10,8 @@ export function formatBytes(bytes: number): string {
     unit++;
   }
   const digits = unit >= 3 && value < 10 ? 1 : 0;
-  return `${value.toFixed(digits)} ${UNITS[unit]}`;
-}
-
-export function formatPercent(value: number): string {
-  return `${value < 10 ? value.toFixed(1) : Math.round(value)}%`;
+  return t("FORMAT_BYTES", {
+    value: Number(value.toFixed(digits)),
+    unit: UNITS[unit] ?? "gb",
+  });
 }

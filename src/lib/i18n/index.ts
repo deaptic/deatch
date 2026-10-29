@@ -1,13 +1,17 @@
-import { createSignal } from "solid-js";
+import { createSignal, type JSX } from "solid-js";
 import en from "../../locales/en.json" with { type: "json" };
-import { createTranslator, type MessageValues } from "./translate.ts";
+import {
+  createTranslator,
+  type MessageValues,
+  type RichValues,
+} from "./translate.ts";
 
 export type MessageKey = keyof typeof en;
 
 type Messages = Record<MessageKey, string>;
 
 function load(messages: Messages, format: string) {
-  return { format, translate: createTranslator(messages, format) };
+  return { format, ...createTranslator(messages, format) };
 }
 
 const LOCALES = {
@@ -23,5 +27,12 @@ export function formatLocale(): string {
 }
 
 export function t(key: MessageKey, values?: MessageValues): string {
-  return LOCALES[locale()].translate(key, values);
+  return LOCALES[locale()].plain(key, values);
+}
+
+export function tRich(
+  key: MessageKey,
+  values: RichValues<JSX.Element>,
+): JSX.Element {
+  return LOCALES[locale()].rich(key, values);
 }

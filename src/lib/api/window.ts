@@ -1,9 +1,7 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import type { ResizeDir } from "../types/index.ts";
+import type { ResizeDir, Unlisten } from "../types/index.ts";
 import { invokeCommand, type InvokeOptions, wrapUnlisten } from "./utils.ts";
-
-type Unlisten = () => void;
 
 const commands = {
   minimizeWindow: () => getCurrentWindow().minimize(),

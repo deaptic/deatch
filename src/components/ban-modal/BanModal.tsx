@@ -10,7 +10,7 @@ import { autofocus } from "../../lib/reactive/focus.ts";
 import Textarea from "../ui/Textarea.tsx";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";
 import { user } from "../../lib/stores/users.ts";
-import { formatLocale, t } from "../../lib/i18n/index.ts";
+import { formatLocale, t, tRich } from "../../lib/i18n/index.ts";
 
 type Props = {
   userId: string;
@@ -116,10 +116,11 @@ export default function BanModal(props: Props) {
         {(info) => (
           <div class="bg-negative/10 border-l-3 border-negative rounded-sm px-3 py-2.5 flex flex-col gap-0.5 text-small">
             <span class="text-ink">
-              {t("BAN_STATUS_BY", {
+              {tRich("BAN_STATUS_BY", {
                 status: info().expiresAt ? "timeout" : "ban",
-              })}{" "}
-              <span class="font-semibold">{info().moderator.displayName}</span>
+                moderator: info().moderator.displayName,
+                name: (chunks) => <span class="font-semibold">{chunks}</span>,
+              })}
             </span>
             <Show when={info().reason}>
               {(reason) => (

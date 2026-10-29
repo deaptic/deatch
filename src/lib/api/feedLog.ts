@@ -2,11 +2,11 @@ import { commands } from "../bindings.ts";
 import type { AppendParams, AroundParams, PageParams } from "../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "./utils.ts";
 
-export function feedlogAppend(
+export async function feedlogAppend(
   params: AppendParams,
   options?: InvokeOptions,
-): Promise<null> {
-  return invokeCommand(commands.feedlogAppend, [params], options);
+): Promise<void> {
+  await invokeCommand(commands.feedlogAppend, [params], options);
 }
 
 export function feedlogPage(
@@ -23,6 +23,6 @@ export function feedlogAround(
   return invokeCommand(commands.feedlogAround, [params], options);
 }
 
-export function feedlogClear(options?: InvokeOptions): Promise<null> {
-  return invokeCommand(commands.feedlogClear, [], options);
+export async function feedlogClear(options?: InvokeOptions): Promise<void> {
+  await invokeCommand(commands.feedlogClear, [], options);
 }

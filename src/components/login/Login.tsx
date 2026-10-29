@@ -13,7 +13,8 @@ import {
 import * as session from "../../lib/services/session.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { createCopied } from "../ui/createCopied.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../lib/i18n/index.ts";
+import { formatUrl } from "../../lib/format/url.ts";
 
 const RESTORE_FAILURE_TEXT = {
   missingScope: "LOGIN_MISSING_SCOPE",
@@ -68,17 +69,21 @@ export default function Login() {
               {(code) => (
                 <>
                   <p class="text-small text-ink-soft">
-                    {t("LOGIN_ENTER_CODE")}{" "}
-                    <a
-                      href={code().verificationUri}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        browser.open(code().verificationUri);
-                      }}
-                      class="text-accent-ink hover:underline"
-                    >
-                      twitch.tv/activate
-                    </a>
+                    {tRich("LOGIN_ENTER_CODE", {
+                      site: formatUrl(code().verificationUri),
+                      link: (chunks) => (
+                        <a
+                          href={code().verificationUri}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            browser.open(code().verificationUri);
+                          }}
+                          class="text-accent-ink hover:underline"
+                        >
+                          {chunks}
+                        </a>
+                      ),
+                    })}
                   </p>
                   <p class="font-mono text-hero text-ink">{code().userCode}</p>
                   <Button

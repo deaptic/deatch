@@ -1,3 +1,4 @@
+import { t } from "../i18n/index.ts";
 import { createEffect } from "solid-js";
 import { setMentionsBadge } from "../api/notifications.ts";
 import * as appearance from "../services/appearance.ts";
@@ -28,7 +29,11 @@ async function renderBadgeBytes(
   ctx.font = `bold 22px ${look.font}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(count > 9 ? "9+" : String(count), 16, 17);
+  ctx.fillText(
+    count > 9 ? t("MENTIONS_BADGE_OVERFLOW") : String(count),
+    16,
+    17,
+  );
   const blob = await new Promise<Blob | null>((r) =>
     canvas.toBlob((b) => r(b), "image/png"),
   );

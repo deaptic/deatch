@@ -123,10 +123,10 @@ type Lookup =
 /// a missing login toasts `notFound`, a failed request was already reported.
 export async function lookUp(
   login: string,
-  notFound: string,
+  notFoundMessage: string,
 ): Promise<User | null> {
   const lookup = await findByLogin(login);
-  if (lookup.status === "missing") addToast(notFound, "error");
+  if (lookup.status === "missing") addToast(notFoundMessage, "error");
   return lookup.status === "found" ? lookup.user : null;
 }
 

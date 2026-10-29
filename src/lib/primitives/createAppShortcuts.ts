@@ -19,13 +19,14 @@ import {
 import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import type { LinkControls } from "./createLinkControls.ts";
+import { formatWholePercent } from "../format/units.ts";
 
 // The mouse's side buttons.
 const MOUSE_HISTORY_STEPS: Record<number, 1 | -1> = { 3: -1, 4: 1 };
 
 function zoom(change: () => void): void {
   change();
-  readout.show(`${appearanceZoom()}%`);
+  readout.show(formatWholePercent(appearanceZoom()));
 }
 
 export function createAppShortcuts(
@@ -45,7 +46,9 @@ export function createAppShortcuts(
       shortcuts.register("link::toggleMute", link.toggleMute),
       shortcuts.register("link::muteOthers", link.muteOthers),
       shortcuts.register("link::toggleMuteAll", link.toggleMuteAll),
-      shortcuts.register("link::closeTab", link.closeTab),
+      shortcuts.register("link::closeTab", () =>
+        shortcuts.passUnless(link.closeTab()),
+      ),
       shortcuts.register("link::openTab", link.openTab),
       shortcuts.register("settings::toggle", toggleSettings),
       shortcuts.register("explore::show", showExplore),
@@ -64,7 +67,7 @@ export function createAppShortcuts(
           closeOverlay();
           return;
         }
-        return leavePage();
+        return shortcuts.passUnless(leavePage());
       }),
       shortcuts.register("view::toggleAlwaysOnTop", () => {
         setAdvancedAlwaysOnTop(!advancedAlwaysOnTop());

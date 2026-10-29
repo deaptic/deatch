@@ -36,7 +36,7 @@ export default function ModBar(props: Props) {
           <For each={AD_LENGTHS}>
             {(length) => (
               <MenuItem
-                label={t("CHAT_MODE_SECONDS", { count: length })}
+                label={t("CHAT_MOD_BAR_AD_SECONDS", { count: length })}
                 onClick={() =>
                   startCommercial({
                     broadcasterId: props.broadcasterId,

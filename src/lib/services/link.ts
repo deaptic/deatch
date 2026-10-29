@@ -115,8 +115,8 @@ export function openTab() {
   keepingFocus(() => openUrl(channelUrl(ch.login))).catch(() => {});
 }
 
-/// Passes the key on (false) when the open channel has no tab, so one key can
-/// close a tab and otherwise open it.
+/// False when the open channel has no tab, so one key can close a tab and
+/// otherwise open it.
 export function closeTab(): boolean {
   const tab = selectedLinked();
   if (!tab) return false;

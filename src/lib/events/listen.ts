@@ -4,10 +4,13 @@ import {
   onAppEvent,
   onEventSub,
 } from "../api/events.ts";
-import type { EventEnvelope, EventKind, FeedEntry } from "../types/index.ts";
+import type {
+  EventEnvelope,
+  EventKind,
+  FeedEntry,
+  Unlisten,
+} from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
-
-type Unlisten = () => void;
 
 /// Listeners run in the background, so a failed registration is logged
 /// rather than toasted.
