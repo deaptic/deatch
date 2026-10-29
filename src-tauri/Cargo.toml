@@ -42,6 +42,8 @@ windows-native-keyring-store = "1"
 rusqlite = { version = "0.41", features = ["bundled", "fallible_uint"] }
 tauri-plugin-single-instance = "2"
 widestring = "1"
+webview2-com = "0.39"
+windows-core = "0.62"
 
 [profile.dev.package."*"]
 debug = false

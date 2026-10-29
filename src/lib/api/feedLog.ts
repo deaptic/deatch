@@ -22,3 +22,7 @@ export function feedlogAround(
 ): Promise<string[] | null> {
   return invokeCommand(commands.feedlogAround, [params], options);
 }
+
+export function feedlogClear(options?: InvokeOptions): Promise<null> {
+  return invokeCommand(commands.feedlogClear, [], options);
+}

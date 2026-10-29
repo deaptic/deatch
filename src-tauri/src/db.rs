@@ -10,6 +10,7 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
+use tauri::Manager;
 
 /// A feature's tables: `steps[n]` takes them from version n to n + 1. Steps are
 /// only appended; one that has shipped never changes.
@@ -75,6 +76,17 @@ impl Databases {
         }
         Ok(accounts)
     }
+}
+
+pub async fn run<R: Send + 'static>(
+    app: tauri::AppHandle,
+    account: UserId,
+    work: impl FnOnce(&mut Connection) -> Result<R> + Send + 'static,
+) -> Result<R> {
+    crate::blocking::run(app, move |app| {
+        app.state::<Databases>().with(&account, work)
+    })
+    .await?
 }
 
 fn connect(path: &Path, schemas: &[Schema]) -> Result<Connection> {

@@ -38,7 +38,7 @@ export default function Diagnostics(props: Props) {
               <DiagnosticsSection title={t("DIAGNOSTICS_APP")}>
                 <MetricRow
                   label={t("DIAGNOSTICS_MEMORY")}
-                  value={formatBytes(s().app.app.memoryBytes)}
+                  value={formatBytes(s().app.app.privateBytes)}
                 />
                 <MetricRow
                   label={t("DIAGNOSTICS_CPU")}
@@ -49,7 +49,7 @@ export default function Diagnostics(props: Props) {
                   detail={t("DIAGNOSTICS_WEBVIEW_PROCESSES", {
                     count: s().app.webview.processes,
                   })}
-                  value={formatBytes(s().app.webview.memoryBytes)}
+                  value={formatBytes(s().app.webview.privateBytes)}
                 />
                 <MetricRow
                   label={t("DIAGNOSTICS_WEBVIEW_CPU")}

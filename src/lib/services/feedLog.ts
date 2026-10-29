@@ -1,5 +1,11 @@
 import { unwrap } from "solid-js/store";
-import { feedlogAppend, feedlogAround, feedlogPage } from "../api/feedLog.ts";
+import {
+  feedlogAppend,
+  feedlogAround,
+  feedlogClear,
+  feedlogPage,
+} from "../api/feedLog.ts";
+import type { InvokeOptions } from "../api/utils.ts";
 import { takeUnlogged } from "../stores/feeds.ts";
 import type { Cursor, FeedEntry } from "../types/index.ts";
 import { fromLog, toLogEntry } from "../utils/feedLog.ts";
@@ -45,6 +51,11 @@ export async function flush(): Promise<void> {
 /// signed in, and these entries were seen by someone who no longer is.
 export function discard() {
   takeUnlogged();
+}
+
+export async function clear(options?: InvokeOptions): Promise<void> {
+  await flush();
+  await feedlogClear(options);
 }
 
 export async function page(

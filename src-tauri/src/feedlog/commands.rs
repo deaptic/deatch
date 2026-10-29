@@ -1,11 +1,8 @@
 use super::{AppendParams, AroundParams, PageParams};
-use crate::blocking;
-use crate::db::Databases;
+use crate::db;
 use crate::error::Result;
 use crate::twitch::Twitch;
-use tauri::{Manager, State};
-
-// Each call reads and writes the signed-in account's own database.
+use tauri::State;
 
 #[tauri::command]
 #[specta::specta]
@@ -14,12 +11,7 @@ pub async fn feedlog_append(
     twitch: State<'_, Twitch>,
     params: AppendParams,
 ) -> Result<()> {
-    let viewer = twitch.viewer().await?;
-    blocking::run(app, move |app| {
-        app.state::<Databases>()
-            .with(&viewer, |db| super::append(db, params))
-    })
-    .await?
+    db::run(app, twitch.viewer().await?, |db| super::append(db, params)).await
 }
 
 #[tauri::command]
@@ -29,12 +21,7 @@ pub async fn feedlog_page(
     twitch: State<'_, Twitch>,
     params: PageParams,
 ) -> Result<Vec<String>> {
-    let viewer = twitch.viewer().await?;
-    blocking::run(app, move |app| {
-        app.state::<Databases>()
-            .with(&viewer, |db| super::page(db, params))
-    })
-    .await?
+    db::run(app, twitch.viewer().await?, |db| super::page(db, params)).await
 }
 
 #[tauri::command]
@@ -44,10 +31,11 @@ pub async fn feedlog_around(
     twitch: State<'_, Twitch>,
     params: AroundParams,
 ) -> Result<Option<Vec<String>>> {
-    let viewer = twitch.viewer().await?;
-    blocking::run(app, move |app| {
-        app.state::<Databases>()
-            .with(&viewer, |db| super::around(db, params))
-    })
-    .await?
+    db::run(app, twitch.viewer().await?, |db| super::around(db, params)).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn feedlog_clear(app: tauri::AppHandle, twitch: State<'_, Twitch>) -> Result<()> {
+    db::run(app, twitch.viewer().await?, |db| super::clear(db)).await
 }

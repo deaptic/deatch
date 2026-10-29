@@ -7,6 +7,7 @@ import Toggle from "../../ui/Toggle.tsx";
 import Dialog from "../../ui/Dialog.tsx";
 import Button from "../../ui/Button.tsx";
 import * as exit from "../../../lib/services/exit.ts";
+import * as history from "../../../lib/services/history.ts";
 import { setHardwareAcceleration } from "../../../lib/api/graphics.ts";
 import {
   advancedAlwaysOnTop,
@@ -29,6 +30,20 @@ export default function AdvancedSection() {
     enabled: boolean;
   } | null>(null);
   const [restarting, setRestarting] = createSignal(false);
+  const [confirmingClear, setConfirmingClear] = createSignal(false);
+  const [clearing, setClearing] = createSignal(false);
+
+  async function clearHistory() {
+    setClearing(true);
+    await history
+      .clear({
+        successMessage: t("SETTINGS_ADVANCED_CLEAR_HISTORY_DONE"),
+        failureMessage: t("SETTINGS_ADVANCED_CLEAR_HISTORY_FAILED"),
+      })
+      .catch(() => {});
+    setClearing(false);
+    setConfirmingClear(false);
+  }
 
   async function restart(enabled: boolean) {
     setRestarting(true);
@@ -116,6 +131,40 @@ export default function AdvancedSection() {
             checked={advancedDiscordRichPresence()}
             onChange={setAdvancedDiscordRichPresence}
           />
+        </SettingsRow>
+      </Card>
+      <Show when={confirmingClear()}>
+        <Dialog
+          title={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM")}
+          description={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM_DESCRIPTION")}
+          onClose={() => setConfirmingClear(false)}
+          actions={
+            <>
+              <Button
+                variant="neutral"
+                onClick={() => setConfirmingClear(false)}
+              >
+                {t("SETTINGS_ADVANCED_CANCEL")}
+              </Button>
+              <Button
+                variant="danger"
+                onClick={clearHistory}
+                loading={clearing()}
+              >
+                {t("SETTINGS_ADVANCED_CLEAR_HISTORY")}
+              </Button>
+            </>
+          }
+        />
+      </Show>
+      <Card>
+        <SettingsRow
+          label={t("SETTINGS_ADVANCED_FEED_HISTORY")}
+          description={t("SETTINGS_ADVANCED_FEED_HISTORY_DESCRIPTION")}
+        >
+          <Button variant="danger" onClick={() => setConfirmingClear(true)}>
+            {t("SETTINGS_ADVANCED_CLEAR_HISTORY")}
+          </Button>
         </SettingsRow>
       </Card>
       <Card>
