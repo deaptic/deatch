@@ -6,8 +6,8 @@ together.
 ## App
 
 ```powershell
-pnpm release           # patch
-pnpm release minor | major | 1.2.3
+vp run release           # patch
+vp run release minor | major | 1.2.3
 ```
 
 This bumps the version in `package.json` (which `tauri.conf.json` reads),
@@ -28,7 +28,7 @@ out there.
 ## Extension
 
 ```powershell
-pnpm pack:extension minor   # patch | major | 1.2.3; omit to keep version
+vp run pack:extension minor   # patch | major | 1.2.3; omit to keep version
 ```
 
 This writes one zip per browser into `extension/dist/`, each with a manifest

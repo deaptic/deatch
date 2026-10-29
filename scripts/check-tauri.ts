@@ -1,4 +1,4 @@
-// Usage: pnpm check:tauri
+// Usage: vp run check:tauri
 //
 // Fails when a @tauri-apps npm package and its Rust crate differ in
 // major.minor, which tauri dev and tauri build refuse, or when the crate is

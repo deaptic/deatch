@@ -36,3 +36,4 @@ jobs:
           releaseDraft: false
           prerelease: false
           updaterJsonPreferNsis: false
+          tauriScript: vp exec tauri

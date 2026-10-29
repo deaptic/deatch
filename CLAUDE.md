@@ -9,13 +9,13 @@ fix the code.
 ## Commands
 
 ```powershell
-pnpm install     # frontend deps
-pnpm tauri dev   # run app in dev
-pnpm bindings    # regenerate src/lib/bindings.ts
+vp install          # frontend deps
+vp exec tauri dev   # run app in dev
+vp run bindings     # regenerate src/lib/bindings.ts
 ```
 
 Run the check set in `docs/TESTING.md` before every commit; CI runs the same.
-Release with `pnpm release` (`docs/RELEASING.md`).
+Release with `vp run release` (`docs/RELEASING.md`).
 
 ## Principles
 

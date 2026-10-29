@@ -1,8 +1,8 @@
 // Usage:
-//   pnpm release patch          (default)
-//   pnpm release minor
-//   pnpm release major
-//   pnpm release 1.2.3
+//   vp run release patch          (default)
+//   vp run release minor
+//   vp run release major
+//   vp run release 1.2.3
 //
 // Bumps version in package.json (tauri.conf.json reads it from there),
 // src-tauri/Cargo.toml and src-tauri/Cargo.lock, commits with message

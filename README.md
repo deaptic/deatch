@@ -14,12 +14,12 @@ offers new versions in a banner and installs them with one click.
 ## Building
 
 Requires [Rust](https://rustup.rs/), [Node](https://nodejs.org/) (the version in
-`package.json` `engines`), [pnpm](https://pnpm.io/), and the
+`package.json` `engines`), [Vite+](https://viteplus.dev/), and the
 [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
 ```powershell
-pnpm install
-pnpm tauri dev
+vp install
+vp exec tauri dev
 ```
 
 Docs in [docs/](docs/): [architecture](docs/ARCHITECTURE.md),
