@@ -48,6 +48,11 @@ id_type!(UserId);
 id_type!(StreamId);
 id_type!(GameId);
 id_type!(MessageId);
+id_type!(EmoteId);
+id_type!(EmoteSetId);
+id_type!(RewardId);
+id_type!(CommunityGiftId);
+id_type!(SevenTvEmoteSetId);
 
 impl From<UserId> for twitch_api::types::UserId {
     fn from(id: UserId) -> Self {
@@ -58,5 +63,11 @@ impl From<UserId> for twitch_api::types::UserId {
 impl From<GameId> for twitch_api::types::CategoryId {
     fn from(id: GameId) -> Self {
         id.0.into()
+    }
+}
+
+impl From<&twitch_api::twitch_oauth2::UserToken> for UserId {
+    fn from(token: &twitch_api::twitch_oauth2::UserToken) -> Self {
+        token.user_id.as_str().into()
     }
 }

@@ -6,7 +6,14 @@ import {
   TriangleAlert,
   X,
 } from "lucide-solid";
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import type { Component } from "solid-js";
 import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
 import { t } from "../../lib/i18n/index.ts";
@@ -33,27 +40,58 @@ type Props = {
   onDismiss: (id: number) => void;
 };
 
+const settleMs = () =>
+  parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue(
+      "--duration-settle",
+    ),
+  ) || 0;
+
 export default function ToasterItem(props: Props) {
   const toast = props.toast;
   const Icon = ICONS[toast.type];
   const [visible, setVisible] = createSignal(false);
   const [leaving, setLeaving] = createSignal(false);
+  const [hovered, setHovered] = createSignal(false);
+  const [focused, setFocused] = createSignal(false);
 
   let leaveTimer: ReturnType<typeof setTimeout> | undefined;
-  onCleanup(() => clearTimeout(leaveTimer));
+  let dismissTimer: ReturnType<typeof setTimeout> | undefined;
+  let remaining = toast.duration;
+  let startedAt = 0;
+  onCleanup(() => {
+    clearTimeout(leaveTimer);
+    clearTimeout(dismissTimer);
+  });
 
   function dismiss() {
     if (leaving()) return;
     setLeaving(true);
-    leaveTimer = setTimeout(() => props.onDismiss(toast.id), 240);
+    leaveTimer = setTimeout(() => props.onDismiss(toast.id), settleMs());
   }
+
+  function pause() {
+    if (dismissTimer === undefined) return;
+    clearTimeout(dismissTimer);
+    dismissTimer = undefined;
+    remaining -= Date.now() - startedAt;
+  }
+
+  function resume() {
+    if (toast.duration <= 0 || leaving()) return;
+    startedAt = Date.now();
+    dismissTimer = setTimeout(dismiss, remaining);
+  }
+
+  createEffect(
+    on(
+      () => hovered() || focused(),
+      (held) => (held ? pause() : resume()),
+    ),
+  );
 
   onMount(() => {
     requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
-    if (toast.duration > 0) {
-      const timer = setTimeout(dismiss, toast.duration);
-      onCleanup(() => clearTimeout(timer));
-    }
   });
 
   const shown = () => visible() && !leaving();
@@ -61,6 +99,14 @@ export default function ToasterItem(props: Props) {
   return (
     <div
       role={toast.type === "error" ? "alert" : undefined}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusIn={() => setFocused(true)}
+      onFocusOut={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setFocused(false);
+        }
+      }}
       class="flex items-center gap-3 w-90 pl-4 pr-2 py-3 bg-overlay border border-line rounded-md transition duration-settle ease-out"
       classList={{
         "opacity-0 -translate-y-2": !shown(),

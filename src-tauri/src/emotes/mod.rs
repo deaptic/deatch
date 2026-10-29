@@ -6,6 +6,7 @@ mod ffz;
 mod seventv;
 pub mod seventv_events;
 
+use crate::twitch::ids::SevenTvEmoteSetId;
 use serde::Deserialize;
 
 #[derive(Deserialize, specta::Type)]
@@ -17,5 +18,5 @@ pub struct BroadcasterLoginParams {
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct EmoteSetParams {
-    pub emote_set_id: String,
+    pub emote_set_id: SevenTvEmoteSetId,
 }

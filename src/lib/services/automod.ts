@@ -1,28 +1,24 @@
 import { setAutomodHoldStatus } from "../stores/feeds.ts";
 import { manageHeldAutomodMessage } from "../api/twitch/moderation.ts";
-
-export type HoldAction = "approve" | "deny";
+import type { AutomodAction } from "../types/index.ts";
 
 export async function resolve(
   broadcasterId: string,
   messageId: string,
-  action: HoldAction,
+  action: AutomodAction,
 ) {
-  const approve = action === "approve";
+  const allow = action === "allow";
   setAutomodHoldStatus(
     broadcasterId,
     messageId,
-    approve ? "approving" : "denying",
+    allow ? "approving" : "denying",
   );
   try {
-    await manageHeldAutomodMessage({
-      messageId,
-      action: approve ? "allow" : "deny",
-    });
+    await manageHeldAutomodMessage({ messageId, action });
     setAutomodHoldStatus(
       broadcasterId,
       messageId,
-      approve ? "approved" : "denied",
+      allow ? "approved" : "denied",
     );
   } catch {
     setAutomodHoldStatus(broadcasterId, messageId, "pending");

@@ -10,14 +10,18 @@ pnpm release           # patch
 pnpm release minor | major | 1.2.3
 ```
 
-This bumps the version in `package.json`, `tauri.conf.json`, `Cargo.toml`, and
-`Cargo.lock`, commits, tags `vX.Y.Z`, and pushes. It refuses a dirty tree. The
-tag triggers `release.yml`, which runs the checks, builds with `tauri-action`,
+This bumps the version in `package.json` (which `tauri.conf.json` reads),
+`Cargo.toml`, and `Cargo.lock`, commits, tags `vX.Y.Z`, and pushes. It refuses
+a dirty tree, any branch but `main`, a `main` that differs from its upstream,
+and an explicit version that is not newer than the current one. If the push
+fails, the commit and tag stay local and the script prints how to retry or undo.
+The tag triggers `release.yml`, which runs the checks, builds with `tauri-action`,
 signs the updater artifacts with the `TAURI_SIGNING_PRIVATE_KEY*` secrets, and
 publishes a GitHub Release with the installers and `latest.json`.
 
 Installed copies check `latest.json` on boot, every six hours, and on window
-focus, then install and relaunch. The `pubkey` in `tauri.conf.json` must match
+focus at most once an hour, then show an update banner. Clicking it saves
+pending data, installs, and relaunches. The `pubkey` in `tauri.conf.json` must match
 the signing secret; rotating one without the other breaks updates for every copy
 out there.
 

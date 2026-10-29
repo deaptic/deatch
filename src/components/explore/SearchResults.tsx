@@ -1,25 +1,30 @@
 import {
   createEffect,
   createResource,
-  createSignal,
   For,
+  on,
   onCleanup,
   onMount,
   Show,
 } from "solid-js";
+import { createDebounced } from "../../lib/reactive/createDebounced.ts";
 import type { Category, SearchChannel, User } from "../../lib/types/index.ts";
 import {
   searchCategories,
   searchChannels,
 } from "../../lib/api/twitch/search.ts";
 import * as users from "../../lib/services/users.ts";
-import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
+import {
+  createListbox,
+  type ListboxField,
+} from "../../lib/reactive/createListbox.ts";
 import { userFromRef } from "../../lib/utils/knownUsers.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { liveLine } from "../../lib/format/stream.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
+import EmptyState from "../ui/EmptyState.tsx";
 import LivePill from "../ui/LivePill.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
@@ -27,16 +32,16 @@ type Props = {
   query: string;
   onSelect: (channel: User) => void;
   onSelectGame: (game: Category) => void;
+  ref: (field: ListboxField | undefined) => void;
 };
 
-export default function SearchResults(props: Props) {
-  const [debounced, setDebounced] = createSignal(props.query.trim());
+const SEARCH_DEBOUNCE_MS = 300;
 
-  createEffect(() => {
-    const q = props.query.trim();
-    const timer = setTimeout(() => setDebounced(q), 300);
-    onCleanup(() => clearTimeout(timer));
-  });
+export default function SearchResults(props: Props) {
+  const debounced = createDebounced(
+    () => props.query.trim(),
+    SEARCH_DEBOUNCE_MS,
+  );
 
   const [results] = createResource(debounced, (q) =>
     q ? searchChannels({ query: q, first: 24 }).catch(() => []) : [],
@@ -66,28 +71,25 @@ export default function SearchResults(props: Props) {
     if (found) props.onSelect(found);
   }
 
-  const rows: HTMLButtonElement[] = [];
-  const { active, setActive, move } = createListNavigation({
-    count: () => ranked().length,
-    rowAt: (i) => rows[i],
-  });
+  const listbox = createListbox({ count: () => ranked().length });
 
-  createEffect(() => {
-    ranked();
-    setActive(0);
-  });
+  createEffect(on(results, () => listbox.setActive(0), { defer: true }));
 
   onMount(() => {
+    props.ref(listbox.field);
     const unbind = shortcuts.bindScope("exploreSearchOpen", {
-      up: () => move(-1),
-      down: () => move(1),
+      up: () => listbox.move(-1),
+      down: () => listbox.move(1),
       enter: () => {
-        const channel = ranked()[active()];
+        const channel = ranked()[listbox.active()];
         if (channel) open(channel);
         else void forceOpenByLogin();
       },
     });
-    onCleanup(unbind);
+    onCleanup(() => {
+      unbind();
+      props.ref(undefined);
+    });
   });
 
   return (
@@ -124,20 +126,20 @@ export default function SearchResults(props: Props) {
         when={ranked().length}
         fallback={
           <Show when={!categories()?.length}>
-            <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
-              <Show
-                when={!results.loading && !categories.loading}
-                fallback={t("EXPLORE_SEARCHING")}
-              >
-                {t("EXPLORE_NO_RESULTS", { query: debounced() })}
-              </Show>
-            </p>
+            <EmptyState
+              variant="inline"
+              body={
+                results.loading || categories.loading
+                  ? t("EXPLORE_SEARCHING")
+                  : t("EXPLORE_NO_RESULTS", { query: debounced() })
+              }
+            />
           </Show>
         }
       >
         <section>
           <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_CHANNELS")}</h2>
-          <div class="flex flex-col gap-0.5">
+          <div {...listbox.list} class="flex flex-col gap-0.5">
             <For each={ranked()}>
               {(channel, index) => {
                 const link = createChannelLink(
@@ -147,11 +149,11 @@ export default function SearchResults(props: Props) {
                 return (
                   <button
                     type="button"
-                    ref={(el) => (rows[index()] = el)}
+                    {...listbox.option(index)}
                     {...link.handlers}
-                    onMouseMove={() => setActive(index())}
+                    onMouseMove={() => listbox.setActive(index())}
                     class={`flex items-center gap-3 h-14 rounded-sm px-3 text-left transition-colors duration-snap ${link.cursor}`}
-                    classList={{ "bg-raised": active() === index() }}
+                    classList={{ "bg-raised": listbox.active() === index() }}
                   >
                     <Avatar
                       src={channel.profileImageUrl}

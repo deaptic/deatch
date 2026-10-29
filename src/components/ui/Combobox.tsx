@@ -8,7 +8,7 @@ import {
 } from "solid-js";
 import { Check, ChevronDown, X } from "lucide-solid";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
+import { createListbox } from "../../lib/reactive/createListbox.ts";
 import Field from "./Field.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
@@ -28,14 +28,13 @@ export default function Combobox(props: Props) {
   const [query, setQuery] = createSignal("");
   const [typed, setTyped] = createSignal(false);
   let input: HTMLInputElement | undefined;
-  let list: HTMLDivElement | undefined;
 
   const text = () => (props.value ? props.label(props.value) : "");
   const shown = () =>
     typed() && query().trim() ? props.search(query()) : props.options;
-  const { active, setActive, move } = createListNavigation({
+  const { active, setActive, move, ...listbox } = createListbox({
     count: () => shown().length,
-    rowAt: (i) => list?.children[i],
+    open,
   });
 
   function show() {
@@ -67,9 +66,8 @@ export default function Combobox(props: Props) {
         ref={input}
         size="sm"
         icon={props.icon}
-        role="combobox"
         aria-label={props.ariaLabel}
-        aria-expanded={open()}
+        {...listbox.field}
         placeholder={props.placeholder}
         value={open() ? query() : text()}
         trailing={
@@ -112,8 +110,7 @@ export default function Combobox(props: Props) {
       />
       <Show when={open()}>
         <div
-          ref={list}
-          role="listbox"
+          {...listbox.list}
           class="absolute right-0 top-full mt-1 z-30 w-full min-w-55 max-h-80 overflow-y-auto p-1.5 flex flex-col bg-overlay border border-line rounded-md transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
         >
           <For
@@ -126,7 +123,7 @@ export default function Combobox(props: Props) {
           >
             {(value, i) => (
               <div
-                role="option"
+                {...listbox.option(i)}
                 aria-selected={value === props.value}
                 class={`h-control-md shrink-0 flex items-center gap-2.5 px-2.5 rounded-sm text-body text-ink cursor-pointer ${
                   i() === active() ? "bg-raised" : ""

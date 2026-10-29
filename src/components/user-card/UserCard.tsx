@@ -32,7 +32,7 @@ type Props = {
   onClose: () => void;
   onTogglePin: () => void;
   /// Returns whether the jump happened.
-  onJumpToMessage: (messageId: string) => boolean;
+  onJumpToMessage: (messageId: string) => void;
   onOpenChannel: (broadcasterId: string) => void;
   onUserContextMenu: UserAction;
   onSwitchUser?: (identity: Partial<UserRef>) => void;
@@ -190,9 +190,8 @@ export default function UserCard(props: Props) {
           messages={messages()}
           loading={history.loading}
           onJumpToMessage={(messageId) => {
-            if (props.onJumpToMessage(messageId) && !props.pinned) {
-              props.onClose();
-            }
+            props.onJumpToMessage(messageId);
+            if (!props.pinned) props.onClose();
           }}
           onShowUserCard={(_x, _y, identity) => props.onSwitchUser?.(identity)}
           onUserContextMenu={props.onUserContextMenu}

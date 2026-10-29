@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
-
+import { fieldFrom } from "../../../lib/reactive/createListbox.ts";
+import type { SuggestionsApi } from "../../suggestions/Suggestions.tsx";
 import { type Active, detect, type Kind } from "./detect.ts";
 
 type Options = {
@@ -15,7 +16,13 @@ export type ChatAutocompleteController = ReturnType<
 
 export function createChatAutocompleteController(opts: Options) {
   const [active, setActive] = createSignal<Active | null>(null);
-  const keyHandlers: Partial<Record<Kind, (e: KeyboardEvent) => boolean>> = {};
+  const [lists, setLists] = createSignal<Partial<Record<Kind, SuggestionsApi>>>(
+    {},
+  );
+  const activeList = () => {
+    const a = active();
+    return a ? lists()[a.kind] : undefined;
+  };
 
   function update(value: string, cursor: number) {
     setActive(detect(value.slice(0, cursor)));
@@ -31,20 +38,15 @@ export function createChatAutocompleteController(opts: Options) {
   }
 
   function handleKey(e: KeyboardEvent): boolean {
-    const a = active();
-    if (!a) return false;
-    return keyHandlers[a.kind]?.(e) ?? false;
+    return activeList()?.handleKey(e) ?? false;
   }
 
-  function registerKeyHandler(
-    kind: Kind,
-    handler: (e: KeyboardEvent) => boolean,
-  ) {
-    keyHandlers[kind] = handler;
+  function register(kind: Kind, list: SuggestionsApi) {
+    setLists((prev) => ({ ...prev, [kind]: list }));
   }
 
-  function unregisterKeyHandler(kind: Kind) {
-    delete keyHandlers[kind];
+  function unregister(kind: Kind) {
+    setLists(({ [kind]: _, ...rest }) => rest);
   }
 
   function queryFor(kind: Kind): string | null {
@@ -76,8 +78,9 @@ export function createChatAutocompleteController(opts: Options) {
     handleKey,
     dismiss,
     queryFor,
-    registerKeyHandler,
-    unregisterKeyHandler,
+    register,
+    unregister,
+    field: fieldFrom(() => activeList()?.field),
     clearAndSplice,
     clear,
     setValue: opts.setValue,

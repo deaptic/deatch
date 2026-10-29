@@ -1,9 +1,10 @@
 use super::dto::EmoteEntry;
+use crate::twitch::ids::SevenTvEmoteSetId;
 use serde::Serialize;
 
 #[derive(Serialize, Clone, specta::Type, tauri_specta::Event)]
 pub struct EmoteSetUpdated {
-    pub id: String,
+    pub id: SevenTvEmoteSetId,
     pub actor: Option<String>,
     pub added: Vec<EmoteEntry>,
     pub removed: Vec<String>,

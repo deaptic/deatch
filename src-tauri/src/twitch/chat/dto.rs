@@ -1,4 +1,4 @@
-use crate::twitch::ids::{MessageId, UserId};
+use crate::twitch::ids::{EmoteId, EmoteSetId, MessageId, UserId};
 use serde::Serialize;
 use twitch_api::helix::chat::{
     send_chat_message::{ChatMessageDropCode, ChatMessageDropReason, SendChatMessageResponse},
@@ -13,7 +13,7 @@ fn emote_url(id: &twitch_api::types::EmoteIdRef) -> String {
 #[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Emote {
-    pub id: String,
+    pub id: EmoteId,
     pub name: String,
     pub url: String,
 }
@@ -22,7 +22,7 @@ impl From<GlobalEmote> for Emote {
     fn from(e: GlobalEmote) -> Self {
         Self {
             url: emote_url(&e.id),
-            id: e.id.to_string(),
+            id: e.id.as_str().into(),
             name: e.name,
         }
     }
@@ -31,11 +31,11 @@ impl From<GlobalEmote> for Emote {
 #[derive(Debug, Clone, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UserEmote {
-    pub id: String,
+    pub id: EmoteId,
     pub name: String,
     pub url: String,
-    pub emote_type: String,
-    pub emote_set_id: String,
+    pub emote_type: EmoteType,
+    pub emote_set_id: EmoteSetId,
     pub owner_id: UserId,
 }
 
@@ -43,11 +43,53 @@ impl From<HelixUserEmote> for UserEmote {
     fn from(e: HelixUserEmote) -> Self {
         Self {
             url: emote_url(&e.id),
-            id: e.id.to_string(),
+            id: e.id.as_str().into(),
             name: e.name,
-            emote_type: e.emote_type,
-            emote_set_id: e.emote_set_id.to_string(),
+            emote_type: e.emote_type.into(),
+            emote_set_id: e.emote_set_id.as_str().into(),
             owner_id: UserId::from(e.owner_id.to_string()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "lowercase")]
+pub enum EmoteType {
+    None,
+    BitsTier,
+    Follower,
+    Subscriptions,
+    ChannelPoints,
+    Rewards,
+    HypeTrain,
+    Prime,
+    Turbo,
+    Smilies,
+    Globals,
+    Owl2019,
+    TwoFactor,
+    LimitedTime,
+    Unknown,
+}
+
+impl From<String> for EmoteType {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "none" => Self::None,
+            "bitstier" => Self::BitsTier,
+            "follower" => Self::Follower,
+            "subscriptions" => Self::Subscriptions,
+            "channelpoints" => Self::ChannelPoints,
+            "rewards" => Self::Rewards,
+            "hypetrain" => Self::HypeTrain,
+            "prime" => Self::Prime,
+            "turbo" => Self::Turbo,
+            "smilies" => Self::Smilies,
+            "globals" => Self::Globals,
+            "owl2019" => Self::Owl2019,
+            "twofactor" => Self::TwoFactor,
+            "limitedtime" => Self::LimitedTime,
+            _ => Self::Unknown,
         }
     }
 }
@@ -190,8 +232,33 @@ impl From<HelixChatSettings> for ChatSettings {
 
 #[cfg(test)]
 mod tests {
-    use super::{emote_url, ChatSettings, DropReason, SendMessageResult};
+    use super::{emote_url, ChatSettings, DropReason, EmoteType, SendMessageResult};
     use serde_json::json;
+
+    #[test]
+    fn emote_types_read_back_what_they_write_and_fall_back_to_unknown() {
+        use EmoteType::*;
+        for kind in [
+            None,
+            BitsTier,
+            Follower,
+            Subscriptions,
+            ChannelPoints,
+            Rewards,
+            HypeTrain,
+            Prime,
+            Turbo,
+            Smilies,
+            Globals,
+            Owl2019,
+            TwoFactor,
+            LimitedTime,
+        ] {
+            let written = serde_json::to_value(kind).unwrap();
+            assert_eq!(EmoteType::from(written.as_str().unwrap().to_string()), kind);
+        }
+        assert_eq!(EmoteType::from("brandnew".to_string()), Unknown);
+    }
 
     // The frontend's Ctrl-zoom and inline emotes expect this exact shape.
     #[test]

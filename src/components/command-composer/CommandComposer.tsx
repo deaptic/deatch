@@ -1,9 +1,21 @@
-import { createEffect, createMemo, For, type JSX, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  type JSX,
+  onCleanup,
+  Show,
+} from "solid-js";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
-import Suggestions from "../suggestions/Suggestions.tsx";
+import Suggestions, {
+  type SuggestionsApi,
+} from "../suggestions/Suggestions.tsx";
+import { comboboxFrom } from "../../lib/reactive/createListbox.ts";
 import ChatterRow from "../suggestions/ChatterRow.tsx";
 import type { Chatter } from "../../lib/types/index.ts";
 import Artwork from "../ui/Artwork.tsx";
+import Chip from "../ui/Chip.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
 import { createCommandComposer } from "./createCommandComposer.ts";
@@ -37,7 +49,8 @@ export default function CommandComposer(props: Props) {
   const { options, hasSlots, slotAt, activeIdx, activeOption } = composer;
   let activeInput: HTMLInputElement | undefined;
   let composerRef: HTMLDivElement | undefined;
-  let popupHandleKey: ((e: KeyboardEvent) => boolean) | undefined;
+  const [popup, setPopup] = createSignal<SuggestionsApi>();
+  const popupCombobox = comboboxFrom(() => popup()?.field);
 
   createEffect(() => {
     activeIdx();
@@ -90,7 +103,7 @@ export default function CommandComposer(props: Props) {
   });
 
   function onKeyDown(e: KeyboardEvent) {
-    if (popupHandleKey?.(e)) return;
+    if (popup()?.handleKey(e)) return;
     composer.handleKey(e);
   }
 
@@ -108,7 +121,8 @@ export default function CommandComposer(props: Props) {
           onDismiss={props.onCancel}
           renderItem={(i) => <>{activePopup()?.render(i)}</>}
           ref={(api) => {
-            popupHandleKey = api.handleKey;
+            setPopup(api);
+            onCleanup(() => setPopup(undefined));
           }}
         />
       </Show>
@@ -139,9 +153,7 @@ export default function CommandComposer(props: Props) {
       </div>
       <ComposerBox>
         <div class="flex-1 self-center flex items-center flex-wrap gap-2 min-h-9 py-0.5 min-w-0">
-          <span class="inline-flex items-center px-2 py-1 rounded-sm bg-accent-soft text-accent-ink text-body font-semibold shrink-0">
-            /{props.command.name}
-          </span>
+          <Chip variant="command" label={`/${props.command.name}`} selected />
           <For each={options}>
             {(opt, i) => {
               const slot = () => slotAt(i());
@@ -155,6 +167,7 @@ export default function CommandComposer(props: Props) {
                   isFilled={slot().resolved !== null && !active()}
                   errored={active() && !!slot().error}
                   onActivate={() => composer.setActiveIdx(i())}
+                  listbox={popupCombobox}
                   inputRef={(el) => {
                     activeInput = el;
                   }}

@@ -1,5 +1,5 @@
 import { getChannelInformation } from "../api/twitch/channels.ts";
-import { rememberChannelInfo } from "../stores/channels.ts";
+import { forgetChannelInfo, rememberChannelInfo } from "../stores/channels.ts";
 
 const FRESH_MS = 10 * 60_000;
 
@@ -18,4 +18,9 @@ export async function load(broadcasterIds: string[]): Promise<void> {
       for (const id of stale) fetchedAt.delete(id);
     },
   );
+}
+
+export function forget(broadcasterId: string): void {
+  fetchedAt.delete(broadcasterId);
+  forgetChannelInfo(broadcasterId);
 }

@@ -83,8 +83,8 @@ export default function EmoteAutocomplete(props: Props) {
         onDismiss={props.controller.dismiss}
         renderItem={render}
         ref={(api) => {
-          props.controller.registerKeyHandler("emote", api.handleKey);
-          onCleanup(() => props.controller.unregisterKeyHandler("emote"));
+          props.controller.register("emote", api);
+          onCleanup(() => props.controller.unregister("emote"));
         }}
       />
     </Show>

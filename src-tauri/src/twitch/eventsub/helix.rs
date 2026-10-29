@@ -1,4 +1,5 @@
-use futures_util::{stream, StreamExt};
+use futures_util::{stream, StreamExt, TryStreamExt};
+use serde_json::Value;
 use tokio::sync::mpsc;
 use twitch_api::twitch_oauth2::UserToken;
 
@@ -11,7 +12,7 @@ use super::versions::{
     ChannelPointsAutomaticRewardRedemptionAddV2,
 };
 use super::EventKind;
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::twitch::ids::UserId;
 use twitch_api::eventsub::{
     automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
@@ -32,7 +33,7 @@ use twitch_api::eventsub::{
     channel::{ChannelPredictionBeginV1, ChannelPredictionEndV1, ChannelPredictionLockV1},
     channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
     stream::{StreamOfflineV1, StreamOnlineV1},
-    Transport,
+    EventSubSubscription, Status, Transport, TransportResponse,
 };
 use twitch_api::helix::{ClientRequestError, HelixRequestPostError};
 
@@ -81,7 +82,7 @@ pub(super) fn spawn_moderated(
     signals: mpsc::UnboundedSender<Signal>,
 ) {
     tauri::async_runtime::spawn(async move {
-        let viewer = UserId::from(token.user_id.as_str());
+        let viewer = UserId::from(&token);
         let result = get_moderated_channels(&twitch.with_token(token)).await;
         if signals.send(Signal::Moderated { viewer, result }).is_err() {
             log::debug!("eventsub task stopped, dropping moderated channels");
@@ -123,10 +124,9 @@ async fn create(
 ) -> std::result::Result<String, CreateError> {
     let b = subscription.channel.as_str();
     let u = twitch.token.user_id.as_str();
-    let transport = Transport::websocket(session_id);
     macro_rules! subscribe {
         ($condition:expr) => {
-            send(twitch, $condition, transport).await
+            send(twitch, $condition, session_id).await
         };
     }
     match subscription.kind {
@@ -217,17 +217,27 @@ async fn create(
 async fn send<E>(
     twitch: &Authed<'_>,
     condition: E,
-    transport: Transport,
+    session_id: &str,
 ) -> std::result::Result<String, CreateError>
 where
     E: twitch_api::eventsub::EventSubscription + Send + 'static,
 {
     match twitch
         .helix
-        .create_eventsub_subscription(condition, transport, &twitch.token)
+        .create_eventsub_subscription(
+            condition.clone(),
+            Transport::websocket(session_id),
+            &twitch.token,
+        )
         .await
     {
         Ok(subscription) => Ok(subscription.id.to_string()),
+        Err(ClientRequestError::HelixRequestPostError(HelixRequestPostError::Error {
+            status: http::StatusCode::CONFLICT,
+            ..
+        })) => existing(twitch, &condition, session_id)
+            .await
+            .map_err(CreateError::Transient),
         Err(ClientRequestError::HelixRequestPostError(HelixRequestPostError::Error {
             status,
             message,
@@ -235,6 +245,50 @@ where
         })) if is_rejection(status) => Err(CreateError::Rejected(message)),
         Err(e) => Err(CreateError::Transient(e.into())),
     }
+}
+
+async fn existing<E>(twitch: &Authed<'_>, condition: &E, session_id: &str) -> Result<String>
+where
+    E: twitch_api::eventsub::EventSubscription,
+{
+    let condition = condition.condition()?;
+    let mut pages = twitch.helix.get_eventsub_subscriptions(
+        Status::Enabled,
+        E::EVENT_TYPE,
+        None,
+        &twitch.token,
+    );
+    while let Some(page) = pages.try_next().await? {
+        if let Some(found) = page
+            .subscriptions
+            .into_iter()
+            .find(|s| is_same(s, E::VERSION, session_id, &condition))
+        {
+            return Ok(found.id.to_string());
+        }
+    }
+    Err(Error::Helix(format!(
+        "{} conflicted but no matching subscription exists",
+        E::EVENT_TYPE
+    )))
+}
+
+fn is_same(
+    found: &EventSubSubscription,
+    version: &str,
+    session_id: &str,
+    condition: &Value,
+) -> bool {
+    let same_session = matches!(
+        &found.transport,
+        TransportResponse::Websocket(t) if t.session_id == session_id
+    );
+    let same_condition = condition.as_object().is_some_and(|wanted| {
+        wanted
+            .iter()
+            .all(|(key, value)| value.is_null() || found.condition.get(key) == Some(value))
+    });
+    found.version == version && same_session && same_condition
 }
 
 async fn delete(twitch: &Authed<'_>, subscription_id: &str) -> Result<()> {
@@ -250,28 +304,63 @@ fn is_rejection(status: http::StatusCode) -> bool {
     status.is_client_error()
         && status != StatusCode::TOO_MANY_REQUESTS
         && status != StatusCode::UNAUTHORIZED
+        && status != StatusCode::CONFLICT
 }
 
 #[cfg(test)]
 mod tests {
-    use super::is_rejection;
+    use super::{is_rejection, is_same};
     use http::StatusCode;
+    use serde_json::{json, Value};
+    use twitch_api::eventsub::EventSubSubscription;
+
+    fn found(version: &str, session_id: &str, condition: Value) -> EventSubSubscription {
+        serde_json::from_value(json!({
+            "id": "sub1",
+            "status": "enabled",
+            "type": "channel.chat.message",
+            "version": version,
+            "cost": 0,
+            "condition": condition,
+            "transport": { "method": "websocket", "session_id": session_id },
+            "created_at": "2026-01-01T00:00:00Z",
+        }))
+        .unwrap()
+    }
 
     #[test]
     fn only_final_client_errors_reject() {
-        for status in [
-            StatusCode::BAD_REQUEST,
-            StatusCode::FORBIDDEN,
-            StatusCode::CONFLICT,
-        ] {
+        for status in [StatusCode::BAD_REQUEST, StatusCode::FORBIDDEN] {
             assert!(is_rejection(status), "{status}");
         }
         for status in [
             StatusCode::UNAUTHORIZED,
+            StatusCode::CONFLICT,
             StatusCode::TOO_MANY_REQUESTS,
             StatusCode::INTERNAL_SERVER_ERROR,
         ] {
             assert!(!is_rejection(status), "{status}");
         }
+    }
+
+    #[test]
+    fn a_conflict_matches_the_same_subscription_on_this_session() {
+        let wanted = json!({ "broadcaster_user_id": "1", "user_id": "2", "reward_id": null });
+        let twitch = json!({ "broadcaster_user_id": "1", "user_id": "2", "reward_id": "" });
+        assert!(is_same(
+            &found("1", "s1", twitch.clone()),
+            "1",
+            "s1",
+            &wanted
+        ));
+        assert!(!is_same(
+            &found("1", "s2", twitch.clone()),
+            "1",
+            "s1",
+            &wanted
+        ));
+        assert!(!is_same(&found("2", "s1", twitch), "1", "s1", &wanted));
+        let other = json!({ "broadcaster_user_id": "3", "user_id": "2" });
+        assert!(!is_same(&found("1", "s1", other), "1", "s1", &wanted));
     }
 }

@@ -8,8 +8,8 @@ lets it follow the Twitch tab you are watching.
 ## Download
 
 Latest installer on the
-[releases page](https://github.com/deaptic/deatch/releases/latest). Updates
-install themselves.
+[releases page](https://github.com/deaptic/deatch/releases/latest). The app
+offers new versions in a banner and installs them with one click.
 
 ## Building
 

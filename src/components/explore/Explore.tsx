@@ -1,5 +1,6 @@
 import { createSignal, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
+import type { ListboxField } from "../../lib/reactive/createListbox.ts";
 import { setExploreFilters } from "../../lib/stores/explore.ts";
 import ExploreGreeting from "./ExploreGreeting.tsx";
 import ExploreSearch from "./ExploreSearch.tsx";
@@ -12,18 +13,20 @@ type Props = {
 
 export default function Explore(props: Props) {
   const [query, setQuery] = createSignal("");
+  const [results, setResults] = createSignal<ListboxField>();
 
   return (
     <div class="flex-1 min-h-0 min-w-0 overflow-y-auto">
       <div class="mx-auto max-w-260 px-6 pt-10 pb-12">
         <ExploreGreeting />
-        <ExploreSearch value={query()} onInput={setQuery} />
+        <ExploreSearch value={query()} onInput={setQuery} listbox={results()} />
         <Show
           when={query().trim()}
           fallback={<LiveNow onSelect={props.onSelectChannel} />}
         >
           <SearchResults
             query={query()}
+            ref={setResults}
             onSelect={props.onSelectChannel}
             onSelectGame={(game) => {
               setExploreFilters("category", game);

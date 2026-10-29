@@ -19,7 +19,7 @@ let selfLurkPhrase = SELF_LURK_PHRASES[0];
 let connected = false;
 let connecting: Promise<boolean> | null = null;
 let lastSerialized: string | null = null;
-let pendingTimer: number | undefined;
+let pendingTimer: ReturnType<typeof setTimeout> | undefined;
 let pendingActivity: SetActivityParams | null = null;
 
 function connect(): Promise<boolean> {
@@ -66,7 +66,7 @@ const UPDATE_DEBOUNCE_MS = 1500;
 function scheduleActivity(activity: SetActivityParams): void {
   pendingActivity = activity;
   if (pendingTimer !== undefined) return;
-  pendingTimer = window.setTimeout(() => {
+  pendingTimer = setTimeout(() => {
     pendingTimer = undefined;
     const next = pendingActivity;
     pendingActivity = null;

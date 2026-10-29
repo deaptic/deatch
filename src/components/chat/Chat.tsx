@@ -5,6 +5,7 @@ import {
   createMemo,
   createSignal,
   For,
+  on,
   onCleanup,
   onMount,
   Show,
@@ -13,7 +14,7 @@ import * as chat from "../../lib/services/chat.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import * as clipboard from "../../lib/services/clipboard.ts";
-import { isMention } from "../../lib/utils/mention.ts";
+import { mentionsIn } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
@@ -32,7 +33,7 @@ import { createUserCards } from "./createUserCards.ts";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
-import { isModOfChannel } from "../../lib/stores/users.ts";
+import { canModerate } from "../../lib/stores/users.ts";
 import type {
   FeedEvent as EventItem,
   FeedMessage as Message,
@@ -51,7 +52,6 @@ import {
   feedFontSize,
   feedKeywords,
   feedShowCopypasta,
-  moderationActionsDisabled,
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "../ui/createPopover.ts";
 import Button from "../ui/Button.tsx";
@@ -86,18 +86,20 @@ export default function Chat(props: Props) {
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
   let inputApi: ChatInputApi | undefined;
 
-  const isMod = createMemo(
-    () => !moderationActionsDisabled() && isModOfChannel(props.broadcasterId),
-  );
+  const isMod = createMemo(() => canModerate(props.broadcasterId));
 
   onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
 
-  createEffect(() => {
-    const api = feedApi();
-    if (!api) return;
-    setFeedPaused(props.broadcasterId, api.isPaused());
-    if (!api.isPaused()) markSeen(props.broadcasterId);
-  });
+  createEffect(
+    on(
+      () => feedApi()?.isPaused(),
+      (paused) => {
+        if (paused === undefined) return;
+        setFeedPaused(props.broadcasterId, paused);
+        if (!paused) markSeen(props.broadcasterId);
+      },
+    ),
+  );
   onCleanup(() => setFeedPaused(props.broadcasterId, false));
 
   createEffect(() => {
@@ -123,16 +125,12 @@ export default function Chat(props: Props) {
     setReplyTo(null);
   }
 
-  function getMentions(): Message[] {
-    const kws = feedKeywords();
-    const msgs = feeds[props.broadcasterId]?.messages ?? [];
-    return msgs
-      .filter(
-        (m): m is Message =>
-          m.kind === "message" && isMention(m, props.userLogin, kws),
-      )
-      .reverse();
-  }
+  const getMentions = () =>
+    mentionsIn(
+      feeds[props.broadcasterId]?.messages ?? [],
+      props.userLogin,
+      feedKeywords(),
+    );
 
   function react(msg: Message, value: string) {
     void chat.send({
@@ -148,9 +146,8 @@ export default function Chat(props: Props) {
   }
 
   /// The feed finds the message in memory or the feed log, or says it's gone.
-  function jumpToMessage(messageId: string): boolean {
+  function jumpToMessage(messageId: string) {
     props.onJumpToMessage(props.broadcasterId, messageId);
-    return true;
   }
 
   function jumpToLatest() {

@@ -32,7 +32,7 @@ export default function UserCardHeader(props: Props) {
   createEffect(
     on(
       () => props.chatterId,
-      (id) => users.fetch({ ids: [id] }, { silent: true }).catch(() => {}),
+      (id) => users.fetchFresh({ ids: [id] }, { silent: true }).catch(() => {}),
     ),
   );
 

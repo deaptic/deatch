@@ -20,10 +20,12 @@ export const userEmotesKey = (userId: string): StorageKey =>
 
 const fixedKeys: ReadonlySet<string> = new Set(Object.values(STORAGE_KEYS));
 
-export function isStorageKey(key: string): key is StorageKey {
+export function isUserEmotesKey(key: string): boolean {
   return (
-    fixedKeys.has(key) ||
-    (key.startsWith(USER_EMOTES_PREFIX) &&
-      key.length > USER_EMOTES_PREFIX.length)
+    key.startsWith(USER_EMOTES_PREFIX) && key.length > USER_EMOTES_PREFIX.length
   );
+}
+
+export function isStorageKey(key: string): key is StorageKey {
+  return fixedKeys.has(key) || isUserEmotesKey(key);
 }

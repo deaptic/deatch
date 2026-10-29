@@ -7,6 +7,7 @@ use std::time::Duration;
 use interprocess::local_socket::Stream;
 use interprocess::TryClone;
 
+use super::bridge::{CHROME_ORIGIN_SCHEME, FIREFOX_MANIFEST};
 use super::MAX_MESSAGE_SIZE;
 const RECONNECT_DELAY: Duration = Duration::from_millis(1500);
 const MAX_LOG_BYTES: u64 = 1_048_576;
@@ -31,6 +32,15 @@ fn log(message: impl Display) {
             std::process::id()
         );
     }
+}
+
+pub fn launched_by_browser(args: &[String]) -> bool {
+    // Firefox launches the host with the manifest path, Chromium with the
+    // extension origin.
+    args.iter().any(|a| a == "--browser-host")
+        || args
+            .get(1)
+            .is_some_and(|p| p.ends_with(FIREFOX_MANIFEST) || p.starts_with(CHROME_ORIGIN_SCHEME))
 }
 
 enum Event {
@@ -169,8 +179,34 @@ fn pump_to_browser(reader: Stream) {
 
 #[cfg(test)]
 mod tests {
-    use super::{read_message, MAX_MESSAGE_SIZE};
+    use super::{launched_by_browser, read_message, MAX_MESSAGE_SIZE};
     use std::io::Cursor;
+
+    fn args(list: &[&str]) -> Vec<String> {
+        list.iter().map(|a| a.to_string()).collect()
+    }
+
+    #[test]
+    fn recognises_every_browser_launch_and_nothing_else() {
+        assert!(launched_by_browser(&args(&[
+            "deatch.exe",
+            "--browser-host"
+        ])));
+        assert!(launched_by_browser(&args(&[
+            "deatch.exe",
+            r"C:SERSAPPDATAocaldeatchdeatch-host.json",
+            "deatch-link@deaptic.com",
+        ])));
+        assert!(launched_by_browser(&args(&[
+            "deatch.exe",
+            "chrome-extension://dmoblcekdcegdpjbbkhblfnjjefkagpd/",
+        ])));
+        assert!(!launched_by_browser(&args(&["deatch.exe"])));
+        assert!(!launched_by_browser(&args(&[
+            "deatch.exe",
+            "--export-bindings"
+        ])));
+    }
 
     fn framed(len: u32, body: &[u8]) -> Cursor<Vec<u8>> {
         Cursor::new([&len.to_le_bytes()[..], body].concat())

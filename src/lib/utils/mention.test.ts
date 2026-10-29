@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedMessage } from "../types/index.ts";
-import { isMention, mentionReason } from "./mention.ts";
+import type { FeedEntry, FeedMessage } from "../types/index.ts";
+import { isMention, mentionReason, mentionsIn } from "./mention.ts";
 
 const message = (overrides: Partial<FeedMessage>): FeedMessage =>
   ({
@@ -34,4 +34,25 @@ test("mentionReason names the matched keyword", () => {
     term: "the*",
   });
   expect(mentionReason(message({}), "me", [])).toBeNull();
+});
+
+test("mentionsIn lists the mentions among entries, newest first", () => {
+  const first = message({
+    message_id: "1",
+    fragments: [{ type: "text", text: "hi me" }],
+  });
+  const second = message({
+    message_id: "2",
+    fragments: [{ type: "text", text: "me again" }],
+  });
+  const event = { kind: "event", id: "e" } as unknown as FeedEntry;
+  const entries = [
+    { ...first, kind: "message" },
+    event,
+    message({ kind: "message", message_id: "3" }),
+    { ...second, kind: "message" },
+  ] as FeedEntry[];
+  expect(
+    mentionsIn(entries, "you", ["me"]).map((m) => m.message_id),
+  ).toStrictEqual(["2", "1"]);
 });

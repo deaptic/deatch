@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { User, UserEmote } from "../types/index.ts";
+import type { EmoteType, User, UserEmote } from "../types/index.ts";
 import {
   channelSections,
   dedupeById,
@@ -21,7 +21,7 @@ const broadcaster: User = {
 const emote = (
   name: string,
   ownerId: string,
-  emoteType = "subscriptions",
+  emoteType: EmoteType = "subscriptions",
   id = name,
 ): UserEmote => ({
   id,
@@ -44,14 +44,21 @@ test("emotes the channel offers and every emoji are usable", () => {
 });
 
 test("dedupeById keeps the first emote of each id", () => {
-  const list = [emote("a", "1", "x", "1"), emote("b", "1", "x", "1")];
+  const list = [
+    emote("a", "1", "subscriptions", "1"),
+    emote("b", "1", "subscriptions", "1"),
+  ];
   expect(dedupeById(list).map((e) => e.name)).toStrictEqual(["a"]);
 });
 
 test("the channel tab lists the broadcaster's emotes once, then its sets", () => {
   const sections = channelSections(
     broadcaster,
-    [emote("zed", "100"), emote("abe", "100"), emote("abe", "100", "x", "2")],
+    [
+      emote("zed", "100"),
+      emote("abe", "100"),
+      emote("abe", "100", "subscriptions", "2"),
+    ],
     { ...none, ffz: [{ name: "ffz1", url: "" }] },
   );
   expect(ids(sections)).toStrictEqual(["twitch", "ffz-channel"]);

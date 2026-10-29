@@ -1,3 +1,4 @@
+use crate::twitch::ids::SevenTvEmoteSetId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -11,7 +12,7 @@ pub struct EmoteEntry {
 #[serde(rename_all = "camelCase")]
 pub struct ChannelResult {
     pub emotes: Vec<EmoteEntry>,
-    pub emote_set_id: Option<String>,
+    pub emote_set_id: Option<SevenTvEmoteSetId>,
 }
 
 #[derive(Deserialize)]
@@ -82,8 +83,9 @@ pub(super) struct StvGlobalResponse {
 
 #[derive(Deserialize)]
 struct StvEmoteSet {
-    id: String,
-    emotes: Vec<StvEmote>,
+    id: SevenTvEmoteSetId,
+    #[serde(default)]
+    emotes: Option<Vec<StvEmote>>,
 }
 
 #[derive(Deserialize)]
@@ -104,7 +106,12 @@ impl From<StvChannelResponse> for ChannelResult {
     fn from(response: StvChannelResponse) -> Self {
         match response.emote_set {
             Some(set) => Self {
-                emotes: set.emotes.into_iter().map(EmoteEntry::from).collect(),
+                emotes: set
+                    .emotes
+                    .into_iter()
+                    .flatten()
+                    .map(EmoteEntry::from)
+                    .collect(),
                 emote_set_id: Some(set.id),
             },
             None => Self {
@@ -117,7 +124,7 @@ impl From<StvChannelResponse> for ChannelResult {
 
 #[cfg(test)]
 mod tests {
-    use super::{EmoteEntry, FfzResponse};
+    use super::{ChannelResult, EmoteEntry, FfzResponse, StvChannelResponse};
 
     #[test]
     fn missing_ffz_room_body_parses_as_no_emotes() {
@@ -125,5 +132,18 @@ mod tests {
             serde_json::from_str(r#"{"error":"Not Found","message":"No such room","status":404}"#)
                 .unwrap();
         assert!(Vec::<EmoteEntry>::from(response).is_empty());
+    }
+
+    #[test]
+    fn empty_seventv_set_parses_with_null_or_missing_emotes() {
+        for body in [
+            r#"{"emote_set":{"id":"s1","emotes":null}}"#,
+            r#"{"emote_set":{"id":"s1"}}"#,
+        ] {
+            let response: StvChannelResponse = serde_json::from_str(body).unwrap();
+            let result = ChannelResult::from(response);
+            assert!(result.emotes.is_empty());
+            assert_eq!(result.emote_set_id.unwrap().as_str(), "s1");
+        }
     }
 }

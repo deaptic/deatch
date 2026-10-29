@@ -4,6 +4,7 @@ import {
   createMemo,
   createSignal,
   For,
+  on,
   onCleanup,
   onMount,
   Show,
@@ -20,6 +21,12 @@ import * as users from "../../lib/services/users.ts";
 import * as emotes from "../../lib/services/emotes.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
+import {
+  indexSections,
+  itemAt,
+  matchingItems,
+  type PickerSection,
+} from "./sections.ts";
 import Field from "../ui/Field.tsx";
 import NavItem from "../ui/NavItem.tsx";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
@@ -113,37 +120,31 @@ export default function EmotePicker(props: Props) {
     },
   );
 
-  const sections = createMemo<RenderSection[]>(() => {
-    let offset = 0;
-    const out: RenderSection[] = [];
-    const add = (s: Omit<RenderSection, "startIndex">) => {
-      out.push({ ...s, startIndex: offset });
-      offset += s.items.length;
-    };
-    const q = search().toLowerCase();
-    if (q) {
-      const pool =
-        tab() === "emoji"
-          ? tabSections().flatMap((s) => s.items)
-          : [...channelSections(), ...globalSections()].flatMap((s) =>
-              s.emotes.map(toItem),
-            );
-      add({ items: pool.filter((i) => i.label.toLowerCase().includes(q)) });
-    } else {
-      add({
-        label: t("EMOTES_FAVOURITES"),
-        items: favorites().map((f) => ({
-          value: f.value,
-          url: f.url,
-          label: f.label,
-          disabled: !usable()(f.value),
-        })),
-        emptyHint: t("EMOTES_FAVOURITES_EMPTY"),
-      });
-      for (const s of tabSections()) add(s);
-    }
-    return out;
+  const searchPool = () =>
+    tab() === "emoji"
+      ? tabSections().flatMap((s) => s.items)
+      : [...channelSections(), ...globalSections()].flatMap((s) =>
+          s.emotes.map(toItem),
+        );
+
+  const favouritesSection = (): PickerSection => ({
+    label: t("EMOTES_FAVOURITES"),
+    items: favorites().map((f) => ({
+      value: f.value,
+      url: f.url,
+      label: f.label,
+      disabled: !usable()(f.value),
+    })),
+    emptyHint: t("EMOTES_FAVOURITES_EMPTY"),
   });
+
+  const sections = createMemo(() =>
+    indexSections(
+      search()
+        ? [{ items: matchingItems(searchPool(), search()) }]
+        : [favouritesSection(), ...tabSections()],
+    ),
+  );
 
   const totalItems = createMemo(() =>
     sections().reduce((n, s) => n + s.items.length, 0),
@@ -157,20 +158,9 @@ export default function EmotePicker(props: Props) {
     rowAt: (i) => panelRef?.querySelector(`[data-emote-index="${i}"]`),
   });
 
-  const activeItem = createMemo<EmoteGridItem | undefined>(() => {
-    const idx = activeIndex();
-    for (const s of sections()) {
-      const pos = idx - s.startIndex;
-      if (pos >= 0 && pos < s.items.length) return s.items[pos];
-    }
-    return undefined;
-  });
+  const activeItem = createMemo(() => itemAt(sections(), activeIndex()));
 
-  createEffect(() => {
-    tab();
-    search();
-    setActiveIndex(0);
-  });
+  createEffect(on([tab, search], () => setActiveIndex(0), { defer: true }));
 
   // Favourites lead the list, so a cursor past them moves by however much
   // they grew or shrank to stay on the same emote.

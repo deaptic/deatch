@@ -19,15 +19,12 @@ import { unreadMentionCount } from "../../lib/stores/inbox.ts";
 import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
 import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
+import TitleBarButton from "../ui/TitleBarButton.tsx";
 import { OVERLAY_GAP } from "../ui/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
-
-const CONTROL =
-  "relative w-11.5 h-full grid place-items-center text-ink-soft transition-colors duration-snap cursor-pointer hover:bg-raised hover:text-ink";
-const PRESSED = "bg-raised text-ink";
 
 function below(button: HTMLElement | undefined) {
   const r = button?.getBoundingClientRect();
@@ -72,29 +69,23 @@ export default function TitleBar(props: Props) {
         <div data-tauri-drag-region class="flex-1 h-full" />
         <div class="flex items-stretch h-full">
           <Show when={advancedDeveloperMode()}>
-            <button
+            <TitleBarButton
               ref={diagnosticsBtn}
-              class={`${CONTROL} ${
-                isOverlayOpen("diagnostics") ? PRESSED : ""
-              }`}
-              aria-label={t("TITLE_BAR_DIAGNOSTICS")}
+              label={t("TITLE_BAR_DIAGNOSTICS")}
               data-tip={t("TITLE_BAR_DIAGNOSTICS")}
-              aria-pressed={isOverlayOpen("diagnostics")}
+              pressed={isOverlayOpen("diagnostics")}
               {...{ [POPOVER_TOGGLE]: "" }}
-              onMouseDown={(e) => e.preventDefault()}
               onClick={() => toggleOverlay("diagnostics")}
             >
               <Activity class="size-4" />
-            </button>
+            </TitleBarButton>
           </Show>
-          <button
+          <TitleBarButton
             ref={inboxBtn}
-            class={`${CONTROL} ${isOverlayOpen("inbox") ? PRESSED : ""}`}
-            aria-label={t("TITLE_BAR_INBOX")}
+            label={t("TITLE_BAR_INBOX")}
             data-tip={t("TITLE_BAR_INBOX")}
-            aria-pressed={isOverlayOpen("inbox")}
+            pressed={isOverlayOpen("inbox")}
             {...{ [POPOVER_TOGGLE]: "" }}
-            onMouseDown={(e) => e.preventDefault()}
             onClick={() => toggleOverlay("inbox")}
           >
             <InboxIcon class="size-4" />
@@ -103,31 +94,29 @@ export default function TitleBar(props: Props) {
                 <Badge count={unreadMentionCount()} />
               </span>
             </Show>
-          </button>
+          </TitleBarButton>
           <div class="w-px h-5 self-center mx-1 bg-line-soft" />
-          <button
-            class={CONTROL}
+          <TitleBarButton
+            label={t("TITLE_BAR_MINIMIZE")}
             onClick={() => minimizeWindow().catch(() => {})}
-            aria-label={t("TITLE_BAR_MINIMIZE")}
           >
             <Minus class="size-3" />
-          </button>
-          <button
-            class={CONTROL}
-            onClick={() => toggleMaximizeWindow().catch(() => {})}
-            aria-label={
+          </TitleBarButton>
+          <TitleBarButton
+            label={
               maximized() ? t("TITLE_BAR_RESTORE") : t("TITLE_BAR_MAXIMIZE")
             }
+            onClick={() => toggleMaximizeWindow().catch(() => {})}
           >
             {maximized() ? <Copy class="size-3" /> : <Square class="size-3" />}
-          </button>
-          <button
-            class={`${CONTROL} hover:bg-negative! hover:text-on-accent!`}
+          </TitleBarButton>
+          <TitleBarButton
+            variant="close"
+            label={t("TITLE_BAR_CLOSE")}
             onClick={() => closeWindow().catch(() => {})}
-            aria-label={t("TITLE_BAR_CLOSE")}
           >
             <X class="size-3" />
-          </button>
+          </TitleBarButton>
         </div>
       </div>
       <Show when={isOverlayOpen("inbox")}>

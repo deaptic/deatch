@@ -16,7 +16,7 @@ import { mapNotice } from "../mappers/notice.ts";
 import { groupGifts } from "../mappers/giftGroup.ts";
 import type { FeedEntry, FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
-import { appendSentHistoryOlder } from "../stores/chatHistory.ts";
+import { appendOlderSentMessage } from "../stores/sentMessages.ts";
 import * as badges from "./badges.ts";
 
 const GAP_MARGIN_MS = 5_000;
@@ -140,13 +140,13 @@ function deepPage(broadcasterLogin: string): Promise<RecentHistory> {
 }
 
 /// Newest first, so the newest backlog entry lands just behind anything
-/// already in the sent history.
+/// already in the sent messages.
 function rememberOwnMessages(broadcasterId: string, added: FeedEntry[]) {
   const me = user();
   if (!me) return;
   for (const it of added.toReversed()) {
     if (it.kind !== "message" || it.chatter_user_id !== me.id) continue;
     const text = textOf(it);
-    if (text) appendSentHistoryOlder(broadcasterId, text);
+    if (text) appendOlderSentMessage(broadcasterId, text);
   }
 }

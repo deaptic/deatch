@@ -1,7 +1,7 @@
-import { createSignal, type JSX, Show } from "solid-js";
+import { type JSX, Show } from "solid-js";
 import Badge from "../ui/Badge.tsx";
-import Tooltip from "../ui/Tooltip.tsx";
-import { SIDE_GAP } from "../ui/Popover.tsx";
+import { createSideTip } from "../ui/createSideTip.tsx";
+import TipLabel from "../ui/TipLabel.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
 import { RAIL_ROW_HEIGHT } from "../ui/rowHeight.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
@@ -34,7 +34,9 @@ type Props = {
 
 export default function RailRow(props: Props) {
   const expanded = appearanceRailExpanded;
-  const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
+  const tip = createSideTip(
+    () => props.tooltip ?? <TipLabel>{props.label}</TipLabel>,
+  );
 
   return (
     <>
@@ -46,7 +48,7 @@ export default function RailRow(props: Props) {
         onClick={props.onClick}
         onAuxClick={onMiddleClick(() => {
           if (!props.onMiddleClick) return;
-          setTip(null);
+          tip.hide();
           props.onMiddleClick();
         })}
         onMouseDown={(e) => e.preventDefault()}
@@ -55,17 +57,15 @@ export default function RailRow(props: Props) {
             e,
             props.onContextMenu &&
               ((x, y) => {
-                setTip(null);
+                tip.hide();
                 props.onContextMenu?.(x, y);
               }),
           )
         }
         onMouseEnter={(e) => {
-          if (expanded()) return;
-          const r = e.currentTarget.getBoundingClientRect();
-          setTip({ x: r.right + SIDE_GAP, y: r.top + r.height / 2 });
+          if (!expanded()) tip.show(e.currentTarget);
         }}
-        onMouseLeave={() => setTip(null)}
+        onMouseLeave={tip.hide}
         class={`group relative w-full ${RAIL_ROW_HEIGHT} flex items-center pr-2 text-left cursor-pointer ${
           props.dimmed ? "opacity-40" : ""
         }`}
@@ -119,13 +119,7 @@ export default function RailRow(props: Props) {
           </span>
         </span>
       </button>
-      <Show when={props.tooltip ? tip() : null}>
-        {(at) => (
-          <Tooltip side="right" x={at().x} y={at().y}>
-            {props.tooltip}
-          </Tooltip>
-        )}
-      </Show>
+      {tip.view()}
     </>
   );
 }

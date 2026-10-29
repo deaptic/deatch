@@ -1,10 +1,6 @@
-import {
-  feedUserOverrideNameColor,
-  feedUserShowDisplayName,
-} from "../../lib/stores/preferences.ts";
-import { resolvedTheme } from "../../lib/stores/theme.ts";
+import { feedUserShowDisplayName } from "../../lib/stores/preferences.ts";
 import { knownChatterColor } from "../../lib/stores/users.ts";
-import { readableColor } from "../../lib/utils/color.ts";
+import { nameColor } from "./nameColor.ts";
 import { type UserActions, userLink, userLinkHover } from "./userLink.ts";
 
 type Props = UserActions & {
@@ -24,19 +20,12 @@ export default function DisplayName(props: Props) {
   const known = () =>
     props.color || (props.userId ? knownChatterColor(props.userId) : "");
 
-  const color = () => {
-    const override = feedUserOverrideNameColor();
-    if (override) return override;
-    const own = known();
-    return own ? readableColor(own, resolvedTheme()) : "var(--color-ink-soft)";
-  };
-
   return (
     <span
       class={`font-semibold text-(--name) ${userLinkHover(props)} ${
         props.truncate ? "truncate min-w-0" : ""
       }`}
-      style={{ "--name": color() }}
+      style={{ "--name": nameColor(known()) }}
       {...userLink(
         () => ({
           id: props.userId,

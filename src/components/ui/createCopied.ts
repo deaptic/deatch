@@ -5,14 +5,14 @@ const SHOW_MS = 1200;
 
 export function createCopied() {
   const [copied, setCopied] = createSignal(false);
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   onCleanup(() => clearTimeout(timer));
 
   async function copy(text: string) {
     if (!(await clipboard.write(text))) return;
     setCopied(true);
     clearTimeout(timer);
-    timer = window.setTimeout(() => setCopied(false), SHOW_MS);
+    timer = setTimeout(() => setCopied(false), SHOW_MS);
   }
 
   return { copied, copy };

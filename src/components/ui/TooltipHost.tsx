@@ -11,7 +11,7 @@ type Tip = TooltipPlace & { text: string };
 export default function TooltipHost() {
   const [tip, setTip] = createSignal<Tip | null>(null);
   let anchor: HTMLElement | null = null;
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   function hide() {
     clearTimeout(timer);

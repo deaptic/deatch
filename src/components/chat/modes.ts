@@ -1,12 +1,7 @@
-import { updateChatSettings } from "../../lib/api/twitch/chat.ts";
+import type { ChatSettingsChange } from "../../lib/services/chatSettings.ts";
 import { formatDuration } from "../../lib/format/duration.ts";
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
-import type {
-  ChatSettings,
-  UpdateChatSettingsParams,
-} from "../../lib/types/index.ts";
-
-type Change = Omit<UpdateChatSettingsParams, "broadcasterId">;
+import type { ChatSettings } from "../../lib/types/index.ts";
 
 type Preset = { value: number; label: MessageKey; count?: number };
 
@@ -14,13 +9,13 @@ type Base = {
   label: MessageKey;
   chip: (s: ChatSettings) => string;
   description: (s: ChatSettings) => string;
-  off: Change;
+  off: ChatSettingsChange;
 };
 
 type SwitchMode = Base & {
   kind: "switch";
   isOn: (s: ChatSettings) => boolean;
-  on: Change;
+  on: ChatSettingsChange;
 };
 
 export type TimedMode = Base & {
@@ -28,7 +23,7 @@ export type TimedMode = Base & {
   offLabel: MessageKey;
   current: (s: ChatSettings) => number | null;
   presets: Preset[];
-  set: (value: number) => Change;
+  set: (value: number) => ChatSettingsChange;
 };
 
 export type ChatMode = SwitchMode | TimedMode;
@@ -127,10 +122,3 @@ export const CHAT_MODES: ChatMode[] = [
     description: () => t("CHAT_MODE_UNIQUE_DESCRIPTION"),
   },
 ];
-
-export function applyChatMode(broadcasterId: string, change: Change) {
-  updateChatSettings(
-    { broadcasterId, ...change },
-    { successMessage: false },
-  ).catch(() => {});
-}

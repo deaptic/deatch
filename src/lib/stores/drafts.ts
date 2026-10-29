@@ -8,3 +8,7 @@ export function setDraft(broadcasterId: string, text: string) {
   if (text) drafts.set(broadcasterId, text);
   else drafts.delete(broadcasterId);
 }
+
+export function clearDraft(broadcasterId: string) {
+  drafts.delete(broadcasterId);
+}

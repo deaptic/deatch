@@ -28,10 +28,7 @@ pub fn stats(monitor: &Monitor, twitch: &Twitch) -> AppStats {
 
 impl Monitor {
     fn sample(&self) -> (ProcessStats, ProcessStats) {
-        let Ok(own) = sysinfo::get_current_pid() else {
-            return Default::default();
-        };
-        let mut system = self.0.lock().unwrap();
+        let mut system = self.0.lock().unwrap_or_else(|e| e.into_inner());
         let refresh = ProcessRefreshKind::nothing().with_memory().with_cpu();
         system.refresh_processes_specifics(ProcessesToUpdate::All, true, refresh);
         let samples: Vec<Sample> = system
@@ -45,7 +42,7 @@ impl Monitor {
             })
             .collect();
         let cores = std::thread::available_parallelism().map_or(1, |n| n.get());
-        split(own.as_u32(), &samples, cores as f32)
+        split(std::process::id(), &samples, cores as f32)
     }
 }
 

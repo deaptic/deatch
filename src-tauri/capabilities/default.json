@@ -9,7 +9,7 @@
     "window-state:default",
     "autostart:default",
     "updater:default",
-    "process:default",
+    "process:allow-restart",
     "log:default",
     "core:window:allow-minimize",
     "core:window:allow-toggle-maximize",

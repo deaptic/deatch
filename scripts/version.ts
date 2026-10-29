@@ -22,13 +22,18 @@ function bump({ major, minor, patch }: Version, kind: Kind): string {
   return `${major}.${minor}.${patch + 1}`;
 }
 
-/// `arg` is a bump kind or an explicit version; throws on anything else.
+function compare(a: Version, b: Version): number {
+  return a.major - b.major || a.minor - b.minor || a.patch - b.patch;
+}
+
 export function nextVersion(current: string, arg = "patch"): string {
-  if (!isKind(arg)) {
-    if (!parse(arg)) throw new Error(`invalid version: ${arg}`);
-    return arg;
-  }
   const version = parse(current);
   if (!version) throw new Error(`unparseable current version: ${current}`);
-  return bump(version, arg);
+  if (isKind(arg)) return bump(version, arg);
+  const explicit = parse(arg);
+  if (!explicit) throw new Error(`invalid version: ${arg}`);
+  if (compare(explicit, version) <= 0) {
+    throw new Error(`version ${arg} is not newer than ${current}`);
+  }
+  return arg;
 }

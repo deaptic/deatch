@@ -6,6 +6,7 @@ use super::dto::{
     RecentMessage, Reply,
 };
 use super::notice;
+use crate::twitch::ids::EmoteId;
 use std::collections::HashMap;
 
 pub(super) type Tags = HashMap<String, String>;
@@ -63,6 +64,14 @@ pub(super) fn nonempty<'a>(tags: &'a Tags, key: &str) -> Option<&'a str> {
     Some(tag(tags, key)).filter(|value| !value.is_empty())
 }
 
+pub(super) fn sent_at_ms(tags: &Tags) -> i64 {
+    let raw = tag(tags, "tmi-sent-ts");
+    raw.parse().unwrap_or_else(|e| {
+        log::warn!("recent message has unreadable tmi-sent-ts {raw:?}: {e}");
+        0
+    })
+}
+
 fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
     let text = body
         .strip_prefix("\u{0001}ACTION ")
@@ -91,7 +100,7 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
         badges: parse_badges(tags, "badges", "badge-info"),
         reply: parse_reply(tags),
         channel_points_custom_reward_id: nonempty(tags, "custom-reward-id").map(Into::into),
-        timestamp_ms: tag(tags, "tmi-sent-ts").parse().unwrap_or(0),
+        timestamp_ms: sent_at_ms(tags),
         deleted: false,
         source_broadcaster_user_id: source_room.map(Into::into),
         source_message_id: source_room.and(nonempty(tags, "source-id")).map(Into::into),
@@ -132,7 +141,7 @@ fn parse_reply(tags: &Tags) -> Option<Reply> {
 /// `emotes` IRC tag for emote positions and a `@\w+` scan for mentions.
 pub(super) fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragment> {
     enum Kind {
-        Emote(String),
+        Emote(EmoteId),
         Mention(String),
     }
     let chars: Vec<char> = text.chars().collect();
@@ -157,7 +166,8 @@ pub(super) fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragme
     let is_login = |c: char| c.is_ascii_alphanumeric() || c == '_';
     let mut i = 0;
     while i < chars.len() {
-        if chars[i] == '@' && chars.get(i + 1).is_some_and(|&c| is_login(c)) {
+        let word_start = i == 0 || !is_login(chars[i - 1]);
+        if chars[i] == '@' && word_start && chars.get(i + 1).is_some_and(|&c| is_login(c)) {
             let start = i;
             i += 1;
             while i < chars.len() && is_login(chars[i]) {
@@ -250,7 +260,7 @@ fn mark_deleted(messages: &mut [RecentMessage], cleared: impl Fn(&RecentMessage)
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_messages, MessageType};
+    use super::{build_fragments, parse_messages, MessageType};
     use crate::history::dto::{RecentHistory, RecentMessage};
     use serde_json::{json, Value};
 
@@ -342,6 +352,25 @@ mod tests {
                 { "type": "mention", "text": "@Bar", "mention": { "user_login": "bar" } },
             ])
         );
+    }
+
+    #[test]
+    fn mentions_start_only_at_a_word_boundary() {
+        let fragments = to_json(&build_fragments("mail@host (@Bar", ""));
+        assert_eq!(
+            fragments,
+            json!([
+                { "type": "text", "text": "mail@host (" },
+                { "type": "mention", "text": "@Bar", "mention": { "user_login": "bar" } },
+            ])
+        );
+    }
+
+    #[test]
+    fn unreadable_sent_time_falls_back_to_zero() {
+        let line = PRIVMSG.replace("tmi-sent-ts=1000", "tmi-sent-ts=soon");
+        assert_eq!(parse(&[&line])[0].timestamp_ms, 0);
+        assert_eq!(parse(&[PRIVMSG])[0].timestamp_ms, 1000);
     }
 
     #[test]

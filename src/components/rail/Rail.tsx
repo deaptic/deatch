@@ -43,6 +43,7 @@ import { createRailChannels } from "./createRailChannels.ts";
 import RailRow, { type SubTone } from "./RailRow.tsx";
 import RailTile, { type TileTone } from "./RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
+import TipLabel from "../ui/TipLabel.tsx";
 import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
@@ -331,11 +332,6 @@ export default function Rail(props: Props) {
             <RailRow
               ref={(el) => (addBtn = el)}
               label={t("RAIL_PIN_CHANNEL")}
-              tooltip={
-                <p class="font-semibold whitespace-nowrap">
-                  {t("RAIL_PIN_CHANNEL")}
-                </p>
-              }
               onClick={openAdd}
             >
               <RailTile>
@@ -446,9 +442,9 @@ export default function Rail(props: Props) {
           sub={linkStatus().sub}
           subTone={linkStatus().tone}
           tooltip={
-            <p class="font-semibold whitespace-nowrap">
+            <TipLabel>
               {t("RAIL_LINK_TOOLTIP", { status: linkStatus().sub })}
-            </p>
+            </TipLabel>
           }
           onClick={() => linkStatus().onClick?.()}
           onContextMenu={openLinkMenu}
@@ -460,9 +456,6 @@ export default function Rail(props: Props) {
         <RailRow
           label={t("RAIL_EXPLORE")}
           sub={t("RAIL_EXPLORE_SUB")}
-          tooltip={
-            <p class="font-semibold whitespace-nowrap">{t("RAIL_EXPLORE")}</p>
-          }
           selected={activeView() === "explore"}
           onClick={showExplore}
         >
@@ -473,9 +466,6 @@ export default function Rail(props: Props) {
         <RailRow
           label={t("RAIL_SETTINGS")}
           sub={t("RAIL_SETTINGS_SUB")}
-          tooltip={
-            <p class="font-semibold whitespace-nowrap">{t("RAIL_SETTINGS")}</p>
-          }
           selected={isSettingsOpen()}
           onClick={toggleSettings}
         >
@@ -492,9 +482,6 @@ export default function Rail(props: Props) {
             <RailRow
               label={u().displayName}
               sub={t("RAIL_YOUR_CHANNEL")}
-              tooltip={
-                <p class="font-semibold whitespace-nowrap">{u().displayName}</p>
-              }
               selected={selectedId() === u().id}
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}

@@ -4,6 +4,7 @@ import { t } from "../../../lib/i18n/index.ts";
 import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import type {
+  AutomodAction,
   BadgeMap,
   FeedMessage,
   Reaction,
@@ -55,7 +56,7 @@ export default function Message(props: Props) {
     props.density === "comfortable" && props.showName !== false;
   const density = (): Density => (comfortable() ? "comfortable" : "compact");
 
-  function handleHold(action: automod.HoldAction) {
+  function handleHold(action: AutomodAction) {
     const h = hold();
     if (h) void automod.resolve(h.broadcaster_user_id, item.message_id, action);
   }
@@ -196,7 +197,7 @@ export default function Message(props: Props) {
                         title: t("FEED_AUTOMOD_APPROVE"),
                         icon: () => <Check class="size-4" />,
                         tone: "success",
-                        onClick: () => handleHold("approve"),
+                        onClick: () => handleHold("allow"),
                       },
                       {
                         title: t("FEED_AUTOMOD_DENY"),

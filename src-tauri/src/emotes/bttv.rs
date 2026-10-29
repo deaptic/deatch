@@ -1,6 +1,6 @@
 use super::dto::{BttvChannelResponse, BttvEmote, EmoteEntry};
 use crate::error::Result;
-use crate::http::get_json;
+use crate::http::{get_json, url};
 use crate::twitch::ids::UserId;
 
 pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
@@ -15,7 +15,10 @@ pub async fn get_channel_emotes(
 ) -> Result<Vec<EmoteEntry>> {
     let response: BttvChannelResponse = get_json(
         http,
-        &format!("https://api.betterttv.net/3/cached/users/twitch/{broadcaster_id}"),
+        url(
+            "https://api.betterttv.net/3/cached/users/twitch",
+            &[broadcaster_id.as_str()],
+        )?,
     )
     .await?;
     Ok(response

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from "vite-plus/test";
 import { STORAGE_KEYS, userEmotesKey } from "../constants/storage.ts";
-import { prune, read, write } from "./storage.ts";
+import { prune, read, removeWhere, write } from "./storage.ts";
 
 const KEY = STORAGE_KEYS.mentions;
 
@@ -57,4 +57,12 @@ test("prune removes only keys the app no longer reads", () => {
   }
   prune();
   expect([...items.keys()]).toStrictEqual(kept);
+});
+
+test("removeWhere removes only the matching keys", () => {
+  for (const key of [userEmotesKey("1"), userEmotesKey("2"), KEY]) {
+    items.set(key, "1");
+  }
+  removeWhere((key) => key === userEmotesKey("1"));
+  expect([...items.keys()]).toStrictEqual([userEmotesKey("2"), KEY]);
 });

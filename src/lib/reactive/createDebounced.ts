@@ -17,7 +17,7 @@ export function createDebounced<T>(
   options: Options<T> = {},
 ): Accessor<T> {
   const [value, setValue] = createSignal(source(), { equals: options.equals });
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   const clear = () => {
     if (timer !== undefined) {

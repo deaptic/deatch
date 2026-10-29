@@ -59,11 +59,12 @@ themselves (Firefox would hold `target\debug\deatch.exe` open and block
 relinking):
 
 ```powershell
-pnpm build
-cd src-tauri && cargo build --release && .\target\release\deatch.exe
+pnpm tauri build --no-bundle
 ```
 
-That writes the host manifests to `%LOCALAPPDATA%\Deatch\` and the `HKCU`
+Then run `release\deatch.exe` from the Cargo target directory (`src-tauri\target`
+unless redirected). A plain `cargo build --release` would load the dev server
+URL and show a blank window. Running it writes the host manifests to `%LOCALAPPDATA%\Deatch\` and the `HKCU`
 registry keys for Firefox, Chrome, and Edge. Whichever release build ran last
 owns the host path. Reload the extension afterwards so the browser spawns a
 fresh host.

@@ -1,5 +1,5 @@
 name: setup
-description: Install Node, pnpm, Rust, caches, and frontend deps
+description: Install Node, pnpm, Rust, sccache, caches, and frontend deps
 
 inputs:
   rust-components:
@@ -27,3 +27,13 @@ runs:
         workspaces: src-tauri
         cache-on-failure: true
         cache-targets: false
+
+    - name: sccache
+      uses: mozilla-actions/sccache-action@9e326ebed976843c9932b3aa0e021c6f50310eb4 # v0.0.6
+
+    - name: compile through sccache
+      shell: pwsh
+      run: |
+        "SCCACHE_GHA_ENABLED=true" >> $env:GITHUB_ENV
+        "RUSTC_WRAPPER=sccache" >> $env:GITHUB_ENV
+        "CARGO_INCREMENTAL=0" >> $env:GITHUB_ENV
