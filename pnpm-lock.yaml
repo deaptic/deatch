@@ -181,9 +181,6 @@ importers:
       '@blobatar/solid':
         specifier: ^2.7.0
         version: 2.7.0(blobatar@2.7.0)(solid-js@1.9.17)
-      '@tailwindcss/vite':
-        specifier: ^4.3.3
-        version: 4.3.3(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@6.0.3))
       '@tauri-apps/api':
         specifier: ^2.12.4
         version: 2.12.4
@@ -214,9 +211,6 @@ importers:
       solid-js:
         specifier: ^1.9.15
         version: 1.9.17
-      tailwindcss:
-        specifier: ^4.3.3
-        version: 4.3.3
       unicode-emoji-json:
         specifier: ^0.9.0
         version: 0.9.0
@@ -224,12 +218,18 @@ importers:
       '@shadcn/lint':
         specifier: ^0.2.0
         version: 0.2.3
+      '@tailwindcss/vite':
+        specifier: ^4.3.3
+        version: 4.3.3(@voidzero-dev/vite-plus-core@1.4.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@6.0.3))
       '@tauri-apps/cli':
         specifier: ^2.12.4
         version: 2.12.4
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
+      tailwindcss:
+        specifier: ^4.3.3
+        version: 4.3.3
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

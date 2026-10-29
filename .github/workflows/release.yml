@@ -18,15 +18,9 @@ jobs:
       contents: write
     runs-on: windows-latest
     env:
-      SCCACHE_GHA_ENABLED: "true"
-      RUSTC_WRAPPER: sccache
-      CARGO_INCREMENTAL: "0"
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - name: sccache
-        uses: mozilla-actions/sccache-action@9e326ebed976843c9932b3aa0e021c6f50310eb4 # v0.0.6
 
       - uses: ./.github/actions/setup
 
@@ -42,7 +36,3 @@ jobs:
           releaseDraft: false
           prerelease: false
           updaterJsonPreferNsis: false
-
-      - name: sccache stats
-        if: always()
-        run: sccache --show-stats

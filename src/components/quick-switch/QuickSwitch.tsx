@@ -10,7 +10,7 @@ import {
   Show,
 } from "solid-js";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { createListNavigation } from "../../lib/reactive/createListNavigation.ts";
+import { createListbox } from "../../lib/reactive/createListbox.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
@@ -20,6 +20,11 @@ import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { liveLine } from "../../lib/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
+import {
+  type QuickSwitchRow,
+  quickSwitchRows,
+  uniqueUsers,
+} from "../../lib/utils/quickSwitch.ts";
 import Avatar from "../ui/Avatar.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Field from "../ui/Field.tsx";
@@ -34,47 +39,23 @@ type Props = {
   onClose: () => void;
 };
 
-type Row = { kind: "channel"; user: User } | { kind: "search"; query: string };
-
-function candidates(): User[] {
-  const seen = new Set<string>();
-  const out: User[] = [];
-  const push = (u: User | null | undefined) => {
-    if (!u || seen.has(u.id)) return;
-    seen.add(u.id);
-    out.push(u);
-  };
-  for (const u of channelsInOrder()) push(u);
-  for (const u of linkWarmedChannels()) push(u);
-  push(user());
-  return out;
-}
-
-function matches(u: User, q: string): boolean {
-  return u.login.includes(q) || u.displayName.toLowerCase().includes(q);
-}
-
 export default function QuickSwitch(props: Props) {
   const [query, setQuery] = createSignal("");
   const [searching, setSearching] = createSignal(false);
 
-  const rows = createMemo<Row[]>(() => {
-    const q = query().trim().toLowerCase();
-    const list = candidates().filter((u) => !q || matches(u, q));
-    const out: Row[] = list.map((user) => ({ kind: "channel", user }));
-    if (q && !list.some((u) => u.login === q)) {
-      out.push({ kind: "search", query: q });
-    }
-    return out;
-  });
+  const rows = createMemo(() =>
+    quickSwitchRows(
+      uniqueUsers([...channelsInOrder(), ...linkWarmedChannels(), user()]),
+      query(),
+    ),
+  );
 
-  const { active, setActive, move } = createListNavigation({
+  const listbox = createListbox({
     count: () => rows().length,
-    rowAt: (i) => document.querySelector(`[data-switch-index="${i}"]`),
   });
 
   // Only typing resets the highlight; the live poll must not move it.
-  createEffect(on(query, () => setActive(0)));
+  createEffect(on(query, () => listbox.setActive(0)));
 
   function choose(channel: User, pin: boolean) {
     if (pin && pins.add(channel) === "pinned") {
@@ -87,7 +68,7 @@ export default function QuickSwitch(props: Props) {
     props.onClose();
   }
 
-  async function open(row: Row, pin: boolean) {
+  async function open(row: QuickSwitchRow, pin: boolean) {
     if (row.kind === "channel") {
       choose(row.user, pin);
       return;
@@ -100,17 +81,17 @@ export default function QuickSwitch(props: Props) {
 
   onMount(() => {
     const unbind = shortcuts.bindScope("quickSwitchOpen", {
-      up: () => move(-1),
-      down: () => move(1),
+      up: () => listbox.move(-1),
+      down: () => listbox.move(1),
       enter: () => {
-        const row = rows()[active()];
+        const row = rows()[listbox.active()];
         if (row) void open(row, false);
       },
     });
     const unbindPin = shortcuts.register(
       "quickSwitch::openPinned",
       () => {
-        const row = rows()[active()];
+        const row = rows()[listbox.active()];
         if (row) void open(row, true);
       },
       "quickSwitchOpen",
@@ -129,6 +110,7 @@ export default function QuickSwitch(props: Props) {
     >
       <Field
         size="lg"
+        {...listbox.field}
         icon={<Search />}
         ref={autofocus}
         placeholder={t("QUICK_SWITCH_PLACEHOLDER")}
@@ -136,7 +118,10 @@ export default function QuickSwitch(props: Props) {
         onInput={(e) => setQuery(e.currentTarget.value)}
         trailing={<Kbd size="sm" combo="escape" />}
       />
-      <div class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5">
+      <div
+        {...listbox.list}
+        class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5"
+      >
         <Show
           when={rows().length > 0}
           fallback={
@@ -153,14 +138,14 @@ export default function QuickSwitch(props: Props) {
               return (
                 <button
                   type="button"
-                  data-switch-index={i()}
-                  onMouseMove={() => setActive(i())}
+                  {...listbox.option(i)}
+                  onMouseMove={() => listbox.setActive(i())}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={(e) => void open(row, e.ctrlKey)}
                   onContextMenu={link.handlers.onContextMenu}
                   onAuxClick={link.handlers.onAuxClick}
                   class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
-                    active() === i() ? "bg-raised" : "hover:bg-raised"
+                    listbox.active() === i() ? "bg-raised" : "hover:bg-raised"
                   }`}
                 >
                   <Show
@@ -226,7 +211,7 @@ export default function QuickSwitch(props: Props) {
                       );
                     }}
                   </Show>
-                  <Show when={active() === i()}>
+                  <Show when={listbox.active() === i()}>
                     <Kbd size="sm" combo="enter" />
                   </Show>
                   {link.menu()}

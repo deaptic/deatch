@@ -2,6 +2,7 @@ import { t } from "../../../lib/i18n/index.ts";
 import { Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
+import Card from "../../ui/Card.tsx";
 import Toggle from "../../ui/Toggle.tsx";
 import Textarea from "../../ui/Textarea.tsx";
 import Field from "../../ui/Field.tsx";
@@ -33,12 +34,8 @@ export default function TriggerCard(props: {
   const canSave = () => !props.persisted || dirty();
 
   return (
-    <div
-      class={`flex flex-col gap-4 rounded-lg border bg-surface p-4 ${
-        canSave() ? "border-accent/40" : "border-line-soft"
-      }`}
-    >
-      <div class="flex items-center gap-3">
+    <Card tone={canSave() ? "edited" : "plain"}>
+      <div class="flex items-center gap-3 p-4">
         <Toggle
           label={t("SETTINGS_TRIGGERS_ENABLED")}
           checked={draft.enabled}
@@ -89,9 +86,7 @@ export default function TriggerCard(props: {
       </div>
 
       <Show when={expanded()}>
-        <div class="flex flex-col gap-4">
-          <div class="h-px -mx-4 bg-line-soft" />
-
+        <div class="flex flex-col gap-4 p-4 border-t border-line-soft">
           <div class="flex flex-col gap-3">
             <TriggerSectionLabel>
               {t("SETTINGS_TRIGGERS_NAME")}
@@ -191,6 +186,6 @@ export default function TriggerCard(props: {
           </div>
         </div>
       </Show>
-    </div>
+    </Card>
   );
 }

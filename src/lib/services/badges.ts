@@ -87,6 +87,10 @@ export function loadSource(channel: ChannelRef) {
   );
 }
 
+export function forgetChannel(channelId: string) {
+  channelBadges.forget(channelId);
+}
+
 export function resetChannelCache() {
   channelBadges.clear();
   clearSourceBadges();

@@ -1,8 +1,7 @@
 import { Show } from "solid-js";
 import * as bans from "../../lib/services/bans.ts";
 import type { BanChoice } from "../../lib/constants/timeouts.ts";
-import { isModOfChannel, user as currentUser } from "../../lib/stores/users.ts";
-import { moderationActionsDisabled } from "../../lib/stores/preferences.ts";
+import { canModerate, user as currentUser } from "../../lib/stores/users.ts";
 import BanChoiceStrip from "../ban-modal/BanChoiceStrip.tsx";
 
 type Props = {
@@ -13,10 +12,8 @@ type Props = {
 };
 
 export default function UserCardModActions(props: Props) {
-  const canModerate = () =>
-    !moderationActionsDisabled() &&
-    currentUser()?.id !== props.chatterId &&
-    isModOfChannel(props.broadcasterId);
+  const canModerateChatter = () =>
+    currentUser()?.id !== props.chatterId && canModerate(props.broadcasterId);
 
   function apply(choice: BanChoice) {
     bans
@@ -31,7 +28,7 @@ export default function UserCardModActions(props: Props) {
   }
 
   return (
-    <Show when={canModerate()}>
+    <Show when={canModerateChatter()}>
       <div class="p-2.5 border-b border-line-soft shrink-0">
         <BanChoiceStrip onChange={apply} />
       </div>

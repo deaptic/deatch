@@ -4,11 +4,13 @@ import EmoteAutocomplete from "./EmoteAutocomplete.tsx";
 import MentionAutocomplete from "./MentionAutocomplete.tsx";
 import CommandAutocomplete from "./CommandAutocomplete.tsx";
 import type { Command } from "../../command-composer/types.ts";
+import type { ListboxField } from "../../../lib/reactive/createListbox.ts";
 
 export type ChatAutocompleteHandle = {
   update: (value: string, cursor: number) => void;
   handleKey: (e: KeyboardEvent) => boolean;
   isActive: () => boolean;
+  field: ListboxField;
 };
 
 type Props = {
@@ -34,6 +36,7 @@ export default function ChatAutocomplete(props: Props) {
       update: controller.update,
       handleKey: controller.handleKey,
       isActive: controller.isActive,
+      field: controller.field,
     });
   });
 

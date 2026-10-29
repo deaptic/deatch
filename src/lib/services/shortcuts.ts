@@ -22,7 +22,8 @@ const keymap = new Map<string, string[]>(
 const actions = new Map<string, Set<ActionEntry>>();
 const contexts = new Map<string, boolean>();
 const localBindings = new Map<string, Set<ActionEntry>>();
-let pending: { seq: string; timer: number } | null = null;
+let pending: { seq: string; timer: ReturnType<typeof setTimeout> } | null =
+  null;
 
 export function keyFor(action: string): string | undefined {
   for (const [combo, names] of keymap) if (names.includes(action)) return combo;
@@ -134,17 +135,17 @@ function armIfPrefix(seq: string): boolean {
     return false;
   };
   if (!matches(keymap.keys()) && !matches(localBindings.keys())) return false;
-  if (pending) window.clearTimeout(pending.timer);
+  if (pending) clearTimeout(pending.timer);
   pending = {
     seq,
-    timer: window.setTimeout(clearPending, CHORD_TIMEOUT_MS),
+    timer: setTimeout(clearPending, CHORD_TIMEOUT_MS),
   };
   return true;
 }
 
 function clearPending(): void {
   if (!pending) return;
-  window.clearTimeout(pending.timer);
+  clearTimeout(pending.timer);
   pending = null;
 }
 

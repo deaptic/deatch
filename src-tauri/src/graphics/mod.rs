@@ -15,6 +15,8 @@ use windows_core::Interface;
 /// WebView2 reads GPU flags once at process start, so the choice is a marker
 /// file checked before the window exists; a toggle applies on next launch.
 const DISABLE_GPU_MARKER: &str = "disable-gpu";
+const BROWSER_ARGUMENTS: &str = "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS";
+const DISABLE_GPU_ARGUMENT: &str = "--disable-gpu";
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
@@ -25,10 +27,21 @@ pub struct SetHardwareAccelerationParams {
 pub fn apply_startup_flags() {
     match crate::local_dir::local_dir() {
         Ok(dir) if !hardware_acceleration_enabled(&dir) => {
-            std::env::set_var("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "--disable-gpu");
+            let existing = std::env::var(BROWSER_ARGUMENTS).ok();
+            std::env::set_var(
+                BROWSER_ARGUMENTS,
+                with_argument(existing.as_deref(), DISABLE_GPU_ARGUMENT),
+            );
         }
         Ok(_) => {}
         Err(e) => log::warn!("hardware acceleration setting unreadable: {e}"),
+    }
+}
+
+fn with_argument(existing: Option<&str>, argument: &str) -> String {
+    match existing.map(str::trim) {
+        Some(existing) if !existing.is_empty() => format!("{existing} {argument}"),
+        _ => argument.to_string(),
     }
 }
 
@@ -105,5 +118,12 @@ mod tests {
         set_hardware_acceleration(&dir, SetHardwareAccelerationParams { enabled: true }).unwrap();
         assert!(hardware_acceleration_enabled(&dir));
         fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn appends_to_existing_browser_arguments() {
+        assert_eq!(with_argument(None, "--b"), "--b");
+        assert_eq!(with_argument(Some(" "), "--b"), "--b");
+        assert_eq!(with_argument(Some("--a=1 "), "--b"), "--a=1 --b");
     }
 }

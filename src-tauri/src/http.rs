@@ -1,5 +1,5 @@
 use crate::error::{Error, Result};
-use reqwest::{Method, StatusCode};
+use reqwest::{IntoUrl, Method, StatusCode, Url};
 use serde::de::DeserializeOwned;
 use std::fmt::Display;
 use std::time::{Duration, Instant};
@@ -15,7 +15,16 @@ pub fn client() -> reqwest::Result<reqwest::Client> {
         .build()
 }
 
-pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: &str) -> Result<T> {
+pub fn url(base: &str, segments: &[&str]) -> Result<Url> {
+    let mut url = Url::parse(base)?;
+    url.path_segments_mut()
+        .map_err(|()| Error::Invalid(format!("{base} cannot take path segments")))?
+        .pop_if_empty()
+        .extend(segments);
+    Ok(url)
+}
+
+pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: impl IntoUrl) -> Result<T> {
     let request = http.get(url).build()?;
     let target = request.url().clone();
     let started = Instant::now();
@@ -34,6 +43,7 @@ pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: &str) ->
         result
             .as_ref()
             .map(|(status, body)| (*status, body.as_ref())),
+        log::Level::Warn,
     );
     let (status, body) = result?;
     check_status(status, target.path())?;
@@ -59,6 +69,7 @@ pub fn log_request<E: Display>(
     path: &str,
     started: Instant,
     outcome: std::result::Result<(StatusCode, &[u8]), &E>,
+    client_error: log::Level,
 ) {
     let ms = started.elapsed().as_millis();
     match outcome {
@@ -70,7 +81,12 @@ pub fn log_request<E: Display>(
         Ok((status, _)) if status.is_success() => {
             log::info!("{method} {host}{path} status={} ms={ms}", status.as_u16())
         }
-        Ok((status, body)) => log::warn!(
+        Ok((status, body)) => log::log!(
+            if status.is_client_error() {
+                client_error
+            } else {
+                log::Level::Warn
+            },
             "{method} {host}{path} status={} ms={ms} body={}",
             status.as_u16(),
             String::from_utf8_lossy(body)
@@ -81,8 +97,18 @@ pub fn log_request<E: Display>(
 
 #[cfg(test)]
 mod tests {
-    use super::{check_status, client, get_json};
+    use super::{check_status, client, get_json, url};
     use reqwest::StatusCode;
+
+    #[test]
+    fn url_encodes_each_segment() {
+        assert_eq!(
+            url("https://a.test/v1/room/", &["a/b c", "%"])
+                .unwrap()
+                .as_str(),
+            "https://a.test/v1/room/a%2Fb%20c/%25"
+        );
+    }
 
     #[test]
     fn only_not_found_passes_among_failures() {

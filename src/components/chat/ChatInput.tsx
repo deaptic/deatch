@@ -4,6 +4,7 @@ import {
   createEffect,
   createSignal,
   lazy,
+  on,
   onCleanup,
   onMount,
   Show,
@@ -11,15 +12,16 @@ import {
 } from "solid-js";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
+import { fieldFrom } from "../../lib/reactive/createListbox.ts";
 import * as chat from "../../lib/services/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
 import CommandComposer from "../command-composer/CommandComposer.tsx";
 import * as emotes from "../../lib/services/emotes.ts";
 import {
-  getSentHistory,
-  pushSentHistory,
-} from "../../lib/stores/chatHistory.ts";
+  pushSentMessage,
+  sentMessages,
+} from "../../lib/stores/sentMessages.ts";
 import { getDraft, setDraft } from "../../lib/stores/drafts.ts";
 import {
   closeOverlay,
@@ -69,6 +71,7 @@ export default function ChatInput(props: Props) {
   const [commandMode, setCommandMode] = createSignal<Command | null>(null);
   const [autocomplete, setAutocomplete] =
     createSignal<ChatAutocompleteHandle | null>(null);
+  const suggestionsField = fieldFrom(() => autocomplete()?.field);
   const [mentionIdx, setMentionIdx] = createSignal(0);
   let textAreaApi: ComposerFieldApi | undefined;
 
@@ -80,7 +83,7 @@ export default function ChatInput(props: Props) {
   const setFocused = (b: boolean) => shortcuts.setContext("chat:focused", b);
 
   const history = createInputHistory({
-    history: () => getSentHistory(props.broadcasterId) ?? [],
+    history: () => sentMessages(props.broadcasterId) ?? [],
     value: input,
     setValue: setInput,
     setCursor,
@@ -112,7 +115,7 @@ export default function ChatInput(props: Props) {
         replyParentMessageId: reply?.messageId ?? null,
       });
       if (outcome !== "failed") {
-        pushSentHistory(props.broadcasterId, text);
+        pushSentMessage(props.broadcasterId, text);
         history.reset();
         setMentionIdx(0);
         setInput("");
@@ -233,9 +236,15 @@ export default function ChatInput(props: Props) {
     );
   });
 
-  createEffect(() => {
-    if (props.replyTo() === null) setMentionIdx(0);
-  });
+  createEffect(
+    on(
+      () => props.replyTo(),
+      (reply) => {
+        if (reply === null) setMentionIdx(0);
+      },
+      { defer: true },
+    ),
+  );
 
   createEffect(() => {
     shortcuts.setContext("chat:replyActive", props.replyTo() !== null);
@@ -282,6 +291,7 @@ export default function ChatInput(props: Props) {
         when={commandMode()}
         fallback={
           <ComposerField
+            {...suggestionsField}
             value={input()}
             onInput={onInputChange}
             onKeyDown={onKeyDown}

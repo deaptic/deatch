@@ -1,13 +1,23 @@
 import { type JSX, Show } from "solid-js";
 
-type Props = {
-  icon: JSX.Element;
-  title: string;
-  body: string;
-  action?: JSX.Element;
-};
+type Props =
+  | {
+      variant?: "page";
+      icon: JSX.Element;
+      title: string;
+      body: string;
+      action?: JSX.Element;
+    }
+  | { variant: "inline"; body: string };
 
 export default function EmptyState(props: Props) {
+  if (props.variant === "inline") {
+    return (
+      <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
+        {props.body}
+      </p>
+    );
+  }
   return (
     <div class="flex flex-1 items-center justify-center p-6">
       <div class="flex flex-col items-center text-center gap-3 max-w-90">

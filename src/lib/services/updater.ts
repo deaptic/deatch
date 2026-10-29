@@ -26,7 +26,7 @@ export function start(): () => void {
   }
 
   void maybeCheck();
-  const interval = window.setInterval(maybeCheck, CHECK_INTERVAL_MS);
+  const interval = setInterval(maybeCheck, CHECK_INTERVAL_MS);
   const unlisten = onWindowFocusChanged(
     (focused) => {
       if (focused) void maybeCheck();
@@ -35,7 +35,7 @@ export function start(): () => void {
   );
 
   return () => {
-    window.clearInterval(interval);
+    clearInterval(interval);
     unlisten.then((u) => u()).catch(() => {});
   };
 }

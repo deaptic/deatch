@@ -29,5 +29,10 @@ export function channelResource<T>(fetch: (channel: ChannelRef) => Promise<T>) {
       .catch(() => {});
   }
 
-  return { get, show, clear: () => cache.clear() };
+  return {
+    get,
+    show,
+    forget: (channelId: string) => cache.delete(channelId),
+    clear: () => cache.clear(),
+  };
 }

@@ -9,7 +9,7 @@ use rusqlite::{Connection, OptionalExtension};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex, MutexGuard};
 use tauri::Manager;
 
 /// A feature's tables: `steps[n]` takes them from version n to n + 1. Steps are
@@ -19,10 +19,12 @@ pub struct Schema {
     pub steps: &'static [&'static str],
 }
 
+type Shared = Arc<Mutex<Connection>>;
+
 pub struct Databases {
     dir: PathBuf,
     schemas: &'static [Schema],
-    open: Mutex<HashMap<UserId, Connection>>,
+    open: Mutex<HashMap<UserId, Shared>>,
 }
 
 impl Databases {
@@ -37,30 +39,50 @@ impl Databases {
     }
 
     /// Runs `work` on `account`'s database, opening and preparing it the first
-    /// time. Blocking: call from a blocking thread.
+    /// time and keeping it open. Blocking: call from a blocking thread.
     pub fn with<R>(
         &self,
         account: &UserId,
         work: impl FnOnce(&mut Connection) -> Result<R>,
     ) -> Result<R> {
-        let mut open = self.open.lock().unwrap_or_else(|e| e.into_inner());
-        let conn = match open.entry(account.clone()) {
-            Entry::Occupied(e) => e.into_mut(),
-            Entry::Vacant(e) => {
-                let path = self.dir.join(format!("{account}.sqlite"));
-                e.insert(connect(&path, self.schemas)?)
+        let conn = {
+            let mut open = lock(&self.open);
+            match open.entry(account.clone()) {
+                Entry::Occupied(e) => e.get().clone(),
+                Entry::Vacant(e) => e
+                    .insert(Arc::new(Mutex::new(self.connect(account)?)))
+                    .clone(),
             }
         };
-        work(conn)
+        let mut conn = lock(&conn);
+        work(&mut conn)
+    }
+
+    pub fn upkeep<R>(
+        &self,
+        account: &UserId,
+        work: impl FnOnce(&mut Connection) -> Result<R>,
+    ) -> Result<R> {
+        let cached = lock(&self.open).get(account).cloned();
+        if let Some(conn) = cached {
+            return work(&mut lock(&conn));
+        }
+        let mut conn = self.connect(account)?;
+        let result = work(&mut conn);
+        close(account, conn);
+        result
     }
 
     /// Closes every open database, which folds its write-ahead log back into
     /// the file and removes the log; for app exit.
     pub fn close(&self) {
-        let mut open = self.open.lock().unwrap_or_else(|e| e.into_inner());
-        for (account, conn) in open.drain() {
-            if let Err((_, e)) = conn.close() {
-                log::warn!("database for {account} not closed cleanly: {e}");
+        for (account, conn) in lock(&self.open).drain() {
+            match Arc::into_inner(conn) {
+                Some(conn) => close(
+                    &account,
+                    conn.into_inner().unwrap_or_else(|e| e.into_inner()),
+                ),
+                None => log::warn!("database for {account} still in use, not closed cleanly"),
             }
         }
     }
@@ -75,6 +97,20 @@ impl Databases {
             }
         }
         Ok(accounts)
+    }
+
+    fn connect(&self, account: &UserId) -> Result<Connection> {
+        connect(&self.dir.join(format!("{account}.sqlite")), self.schemas)
+    }
+}
+
+fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
+    mutex.lock().unwrap_or_else(|e| e.into_inner())
+}
+
+fn close(account: &UserId, conn: Connection) {
+    if let Err((_, e)) = conn.close() {
+        log::warn!("database for {account} not closed cleanly: {e}");
     }
 }
 

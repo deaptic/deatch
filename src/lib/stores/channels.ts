@@ -26,6 +26,15 @@ export function rememberChannelInfo(infos: ChannelInfo[]) {
   });
 }
 
+export function forgetChannelInfo(broadcasterId: string) {
+  setChannelInfoById((prev) => {
+    if (!(broadcasterId in prev)) return prev;
+    const next = { ...prev };
+    delete next[broadcasterId];
+    return next;
+  });
+}
+
 export function applyChannelInfo(info: ChannelInfo) {
   rememberChannelInfo([info]);
   setLiveStreams((streams) =>

@@ -28,7 +28,7 @@ export default function ToolbarItem(props: Props) {
         e.stopPropagation();
         props.onClick(e);
       }}
-      class={`size-7 grid place-items-center rounded-xs transition-colors duration-snap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed [&>svg]:size-4 ${
+      class={`size-control-sm grid place-items-center rounded-xs transition-colors duration-snap cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed [&>svg]:size-4 ${
         TONES[props.tone ?? "default"]
       }`}
     >

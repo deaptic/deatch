@@ -5,10 +5,9 @@ import { commands } from "../../command-composer/commands.ts";
 import type { Command } from "../../command-composer/types.ts";
 import { commandUsage } from "../../command-composer/usage.ts";
 import {
+  canModerate,
   isBroadcasterOfChannel,
-  isModOfChannel,
 } from "../../../lib/stores/users.ts";
-import { moderationActionsDisabled } from "../../../lib/stores/preferences.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
@@ -27,9 +26,8 @@ type Props = {
 
 function canRunCommand(cmd: Command, broadcasterId: string): boolean {
   if (cmd.role === "regular") return true;
-  if (moderationActionsDisabled()) return false;
-  if (cmd.role === "broadcaster") return isBroadcasterOfChannel(broadcasterId);
-  return isModOfChannel(broadcasterId);
+  if (!canModerate(broadcasterId)) return false;
+  return cmd.role !== "broadcaster" || isBroadcasterOfChannel(broadcasterId);
 }
 
 export default function CommandAutocomplete(props: Props) {
@@ -81,8 +79,8 @@ export default function CommandAutocomplete(props: Props) {
         renderItem={render}
         selectOnSpace
         ref={(api) => {
-          props.controller.registerKeyHandler("command", api.handleKey);
-          onCleanup(() => props.controller.unregisterKeyHandler("command"));
+          props.controller.register("command", api);
+          onCleanup(() => props.controller.unregister("command"));
         }}
       />
     </Show>

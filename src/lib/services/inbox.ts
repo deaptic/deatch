@@ -14,18 +14,18 @@ const MAX = 100;
 const SAVE_DELAY_MS = 1000;
 
 let sound: HTMLAudioElement | null = null;
-let saveTimer: number | undefined;
+let saveTimer: ReturnType<typeof setTimeout> | undefined;
 let unsaved: Mention[] | undefined;
 
 export function start(): () => void {
   setMentions(load());
   sound = new Audio(notificationSound);
-  let timer: number | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   const dispose = createRoot((dispose) => {
     createEffect(() => {
       clearTimeout(timer);
       const delay = msUntilNextExpiry(mentions(), Date.now());
-      if (delay !== null) timer = window.setTimeout(pruneExpired, delay);
+      if (delay !== null) timer = setTimeout(pruneExpired, delay);
     });
     return dispose;
   });
@@ -54,7 +54,7 @@ export function flush() {
 
 function save(list: Mention[]) {
   unsaved = list;
-  saveTimer ??= window.setTimeout(flush, SAVE_DELAY_MS);
+  saveTimer ??= setTimeout(flush, SAVE_DELAY_MS);
   return list;
 }
 

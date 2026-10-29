@@ -1,4 +1,4 @@
-use crate::twitch::ids::{MessageId, UserId};
+use crate::twitch::ids::{CommunityGiftId, EmoteId, MessageId, RewardId, UserId};
 use serde::Serialize;
 
 #[derive(Default, Serialize, specta::Type)]
@@ -19,7 +19,7 @@ pub struct RecentMessage {
     pub message_type: MessageType,
     pub badges: Vec<ChatterBadge>,
     pub reply: Option<Reply>,
-    pub channel_points_custom_reward_id: Option<String>,
+    pub channel_points_custom_reward_id: Option<RewardId>,
     pub timestamp_ms: i64,
     pub deleted: bool,
     /// Set only for shared chat messages sent in a partner channel, like
@@ -94,13 +94,13 @@ pub struct SubGiftNotice {
     pub recipient_user_login: String,
     pub recipient_user_name: String,
     pub cumulative_total: Option<u32>,
-    pub community_gift_id: Option<String>,
+    pub community_gift_id: Option<CommunityGiftId>,
 }
 
 #[derive(Debug, PartialEq, Serialize, specta::Type)]
 pub struct CommunitySubGiftNotice {
     /// Shared with each of its subs' `community_gift_id`.
-    pub id: Option<String>,
+    pub id: Option<CommunityGiftId>,
     pub sub_tier: SubTier,
     pub total: u32,
     pub cumulative_total: Option<u32>,
@@ -164,7 +164,7 @@ pub enum MessageFragment {
 
 #[derive(Serialize, specta::Type)]
 pub struct EmoteRef {
-    pub id: String,
+    pub id: EmoteId,
 }
 
 #[derive(Serialize, specta::Type)]

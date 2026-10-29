@@ -23,14 +23,18 @@ export function write(key: StorageKey, value: unknown): void {
 
 /// Removes keys no current code reads, left by earlier versions.
 export function prune(): void {
+  removeWhere((key) => !isStorageKey(key));
+}
+
+export function removeWhere(match: (key: string) => boolean): void {
   try {
     const keys = Array.from({ length: localStorage.length }, (_, i) =>
       localStorage.key(i),
     );
     for (const key of keys) {
-      if (key !== null && !isStorageKey(key)) localStorage.removeItem(key);
+      if (key !== null && match(key)) localStorage.removeItem(key);
     }
   } catch (e) {
-    console.warn("storage: not pruned", e);
+    console.warn("storage: keys not removed", e);
   }
 }

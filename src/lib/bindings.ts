@@ -209,7 +209,7 @@ export type ChannelInfo = {
 
 export type ChannelResult = {
 	emotes: EmoteEntry[],
-	emoteSetId: string | null,
+	emoteSetId: SevenTvEmoteSetId | null,
 };
 
 export type CharityAmount = {
@@ -269,9 +269,11 @@ export type CheermoteTier = {
 	light: CheermoteImage,
 };
 
+export type CommunityGiftId = string;
+
 export type CommunitySubGiftNotice = {
 	/**  Shared with each of its subs' `community_gift_id`. */
-	id: string | null,
+	id: CommunityGiftId | null,
 	sub_tier: SubTier,
 	total: number,
 	cumulative_total: number | null,
@@ -336,7 +338,7 @@ export type DropReason =
 { code: "held" } | { code: "rejected" } | { code: "banned" } | { code: "timedOut" } | { code: "suspended" } | { code: "channelBlocked" } | { code: "channelSuspended" } | { code: "badCharacters" } | { code: "duplicate" } | { code: "uniqueChat" } | { code: "rateLimit" } | { code: "slowMode" } | { code: "emoteOnly" } | { code: "followersOnly" } | { code: "subscribersOnly" } | { code: "phoneRequired" } | { code: "emailRequired" } | { code: "unknown"; message: string };
 
 export type Emote = {
-	id: string,
+	id: EmoteId,
 	name: string,
 	url: string,
 };
@@ -346,21 +348,27 @@ export type EmoteEntry = {
 	url: string,
 };
 
+export type EmoteId = string;
+
 export type EmoteRef = {
-	id: string,
+	id: EmoteId,
 };
 
+export type EmoteSetId = string;
+
 export type EmoteSetParams = {
-	emoteSetId: string,
+	emoteSetId: SevenTvEmoteSetId,
 };
 
 export type EmoteSetUpdated = {
-	id: string,
+	id: SevenTvEmoteSetId,
 	actor: string | null,
 	added: EmoteEntry[],
 	removed: string[],
 	renamed: Rename[],
 };
+
+export type EmoteType = "none" | "bitstier" | "follower" | "subscriptions" | "channelpoints" | "rewards" | "hypetrain" | "prime" | "turbo" | "smilies" | "globals" | "owl2019" | "twofactor" | "limitedtime" | "unknown";
 
 export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | 
 /**  The stored token predates a scope the app now needs. */
@@ -532,7 +540,7 @@ export type RecentMessage = {
 	message_type: MessageType,
 	badges: ChatterBadge[],
 	reply: Reply | null,
-	channel_points_custom_reward_id: string | null,
+	channel_points_custom_reward_id: RewardId | null,
 	timestamp_ms: number,
 	deleted: boolean,
 	/**
@@ -596,6 +604,8 @@ export type ResubNotice = {
 	cumulative_months: number,
 	streak_months: number | null,
 };
+
+export type RewardId = string;
 
 export type SearchChannel = {
 	user: UserRef,
@@ -673,6 +683,8 @@ export type SetMutedParams = {
 	muted: boolean,
 };
 
+export type SevenTvEmoteSetId = string;
+
 export type Side = "before" | "after";
 
 export type StartCommercialParams = {
@@ -701,7 +713,7 @@ export type SubGiftNotice = {
 	recipient_user_login: string,
 	recipient_user_name: string,
 	cumulative_total: number | null,
-	community_gift_id: string | null,
+	community_gift_id: CommunityGiftId | null,
 };
 
 export type SubNotice = {
@@ -738,11 +750,11 @@ export type User = {
 };
 
 export type UserEmote = {
-	id: string,
+	id: EmoteId,
 	name: string,
 	url: string,
-	emoteType: string,
-	emoteSetId: string,
+	emoteType: EmoteType,
+	emoteSetId: EmoteSetId,
 	ownerId: UserId,
 };
 

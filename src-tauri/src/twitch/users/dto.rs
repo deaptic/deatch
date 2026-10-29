@@ -69,3 +69,22 @@ impl From<helix_users::User> for User {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::BroadcasterType;
+    use serde_json::{json, Value};
+    use twitch_api::types;
+
+    fn mapped(twitch: &str) -> Value {
+        let upstream: types::BroadcasterType = serde_json::from_value(json!(twitch)).unwrap();
+        serde_json::to_value(BroadcasterType::from(upstream)).unwrap()
+    }
+
+    #[test]
+    fn maps_twitch_broadcaster_types() {
+        assert_eq!(mapped(""), json!("normal"));
+        assert_eq!(mapped("affiliate"), json!("affiliate"));
+        assert_eq!(mapped("partner"), json!("partner"));
+    }
+}

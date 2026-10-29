@@ -6,5 +6,3 @@ overrides:
 peerDependencyRules:
   allowAny:
     - vite
-  allowedVersions:
-    vite: "*"

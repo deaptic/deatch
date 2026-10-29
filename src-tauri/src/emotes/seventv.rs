@@ -1,6 +1,6 @@
 use super::dto::{ChannelResult, EmoteEntry, StvChannelResponse, StvGlobalResponse};
 use crate::error::Result;
-use crate::http::get_json;
+use crate::http::{get_json, url};
 use crate::twitch::ids::UserId;
 
 pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
@@ -14,7 +14,7 @@ pub async fn get_channel_emotes(
 ) -> Result<ChannelResult> {
     let response: StvChannelResponse = get_json(
         http,
-        &format!("https://7tv.io/v3/users/twitch/{broadcaster_id}"),
+        url("https://7tv.io/v3/users/twitch", &[broadcaster_id.as_str()])?,
     )
     .await?;
     Ok(response.into())

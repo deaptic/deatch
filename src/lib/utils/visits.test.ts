@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { emptyHistory, step, visit } from "./history.ts";
+import { emptyVisits, step, visit } from "./visits.ts";
 
 const ch = (id: string) => ({ id });
 const ids = (h: { entries: { id: string }[]; index: number }) => ({
@@ -7,7 +7,7 @@ const ids = (h: { entries: { id: string }[]; index: number }) => ({
   index: h.index,
 });
 
-const abc = [ch("a"), ch("b"), ch("c")].reduce(visit, emptyHistory());
+const abc = [ch("a"), ch("b"), ch("c")].reduce(visit, emptyVisits());
 
 test("visit appends and ignores the current entry", () => {
   expect(ids(visit(abc, ch("c")))).toStrictEqual({
@@ -22,7 +22,7 @@ test("step moves within bounds and stops at the ends", () => {
     index: 1,
   });
   expect(step(abc, 1)).toBeNull();
-  expect(step(emptyHistory(), -1)).toBeNull();
+  expect(step(emptyVisits(), -1)).toBeNull();
 });
 
 test("visiting after stepping back drops the forward entries", () => {

@@ -22,12 +22,11 @@ import type {
 import * as storage from "../utils/storage.ts";
 import { addToast } from "../stores/toasts.ts";
 import {
+  changedEntries,
   freshEntries,
   isKnownUser,
   isUserId,
   type KnownUser,
-  mergeUser,
-  sameUser,
   userFromRef,
 } from "../utils/knownUsers.ts";
 
@@ -92,27 +91,7 @@ function apply(users: User[], fetchedAt: number | null) {
   scheduleSave();
 }
 
-/// The entries `users` change, applied in order so a later duplicate builds
-/// on an earlier one. An unchanged user keeps its object, so only
-/// `fetchedAt` moves.
-function changedEntries(
-  table: Record<string, KnownUser>,
-  users: User[],
-  fetchedAt: number | null,
-): Map<string, KnownUser> {
-  const pending = new Map<string, KnownUser>();
-  for (const next of users) {
-    const prev = pending.get(next.id) ?? table[next.id];
-    const merged = mergeUser(prev?.user, next, fetchedAt !== null);
-    const at = fetchedAt ?? prev?.fetchedAt ?? null;
-    const same = prev !== undefined && sameUser(prev.user, merged);
-    if (same && prev.fetchedAt === at) continue;
-    pending.set(next.id, { user: same ? prev.user : merged, fetchedAt: at });
-  }
-  return pending;
-}
-
-export async function fetch(
+export async function fetchFresh(
   params: GetUsersParams,
   options?: InvokeOptions,
 ): Promise<User[]> {
@@ -191,7 +170,7 @@ export async function findByLogin(
   options?: InvokeOptions,
 ): Promise<Lookup> {
   try {
-    const [user] = await fetch({ logins: [login] }, options);
+    const [user] = await fetchFresh({ logins: [login] }, options);
     return user ? { status: "found", user } : { status: "missing" };
   } catch {
     return { status: "failed" };
@@ -212,10 +191,13 @@ export function get(ids: string[]): Promise<User[]> {
 
 function recentlyMissing(id: string): boolean {
   const at = notFound.get(id);
-  if (at === undefined) return false;
-  if (Date.now() - at < TTL_MS) return true;
-  notFound.delete(id);
-  return false;
+  return at !== undefined && Date.now() - at < TTL_MS;
+}
+
+function pruneNotFound(now: number) {
+  for (const [id, at] of notFound) {
+    if (now - at >= TTL_MS) notFound.delete(id);
+  }
 }
 
 function isKnown(id: string): boolean {
@@ -246,9 +228,10 @@ async function sendBatch() {
   if (ids.length === 0) return;
   try {
     const found = new Set(
-      (await fetch({ ids }, { silent: true })).map((u) => u.id),
+      (await fetchFresh({ ids }, { silent: true })).map((u) => u.id),
     );
     const now = Date.now();
+    pruneNotFound(now);
     for (const id of ids) {
       if (found.has(id)) notFound.delete(id);
       else notFound.set(id, now);

@@ -4,7 +4,8 @@ import { t } from "../../lib/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
-import { applyChatMode, presetLabel, type TimedMode } from "./modes.ts";
+import * as chatSettings from "../../lib/services/chatSettings.ts";
+import { presetLabel, type TimedMode } from "./modes.ts";
 
 type Props = {
   mode: TimedMode;
@@ -18,7 +19,7 @@ export default function ChatModePresets(props: Props) {
   };
 
   function apply(change: TimedMode["off"]) {
-    applyChatMode(props.broadcasterId, change);
+    chatSettings.update(props.broadcasterId, change);
   }
 
   return (

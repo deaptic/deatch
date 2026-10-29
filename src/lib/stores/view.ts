@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import type { User } from "../types/index.ts";
-import { emptyHistory, step, visit } from "../utils/history.ts";
+import { emptyVisits, step, visit } from "../utils/visits.ts";
 import { at } from "../utils/at.ts";
 
 // The single source of truth for what the app is showing: a page or a channel.
@@ -47,17 +47,17 @@ let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
 const [lastChannel, setLastChannel] = createSignal<User | null>(null);
 export { lastChannel };
 
-let history = emptyHistory<User>();
+let visits = emptyVisits<User>();
 
 export function recordVisit(channel: User) {
-  history = visit(history, channel);
+  visits = visit(visits, channel);
 }
 
 /// Moves `delta` steps through visited channels, returning the one to show.
-export function historyStep(delta: 1 | -1): User | null {
-  const next = step(history, delta);
+export function stepVisits(delta: 1 | -1): User | null {
+  const next = step(visits, delta);
   if (!next) return null;
-  history = next;
+  visits = next;
   return at(next.entries, next.index);
 }
 
@@ -67,7 +67,7 @@ export function showExplore() {
 }
 
 export function resetView() {
-  history = emptyHistory();
+  visits = emptyVisits();
   setLastChannel(null);
   beforeSettings = "explore";
   showExplore();

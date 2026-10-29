@@ -1,6 +1,6 @@
 use super::dto::{EmoteEntry, FfzResponse};
 use crate::error::Result;
-use crate::http::get_json;
+use crate::http::{get_json, url};
 
 pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
     let response: FfzResponse =
@@ -14,7 +14,10 @@ pub async fn get_channel_emotes(
 ) -> Result<Vec<EmoteEntry>> {
     let response: FfzResponse = get_json(
         http,
-        &format!("https://api.frankerfacez.com/v1/room/{broadcaster_login}"),
+        url(
+            "https://api.frankerfacez.com/v1/room",
+            &[&broadcaster_login],
+        )?,
     )
     .await?;
     Ok(response.into())

@@ -8,8 +8,9 @@ mod irc;
 mod notice;
 
 use crate::error::Result;
-use crate::http::get_json;
+use crate::http::{get_json, url};
 use dto::RecentHistory;
+use reqwest::Url;
 use serde::Deserialize;
 
 #[derive(Deserialize, specta::Type)]
@@ -35,12 +36,38 @@ pub async fn fetch_recent_messages(
         limit,
         after,
     } = params;
-    let mut url = format!(
-        "https://recent-messages.robotty.de/api/v2/recent-messages/{broadcaster_login}?limit={limit}"
-    );
-    if let Some(after) = after {
-        url.push_str(&format!("&after={after}"));
-    }
-    let resp: RobottyResponse = get_json(http, &url).await?;
+    let url = recent_messages_url(&broadcaster_login, limit, after)?;
+    let resp: RobottyResponse = get_json(http, url).await?;
     Ok(irc::parse_messages(&resp.messages))
+}
+
+fn recent_messages_url(login: &str, limit: usize, after: Option<u64>) -> Result<Url> {
+    let mut url = url(
+        "https://recent-messages.robotty.de/api/v2/recent-messages",
+        &[login],
+    )?;
+    url.query_pairs_mut()
+        .append_pair("limit", &limit.to_string());
+    if let Some(after) = after {
+        url.query_pairs_mut()
+            .append_pair("after", &after.to_string());
+    }
+    Ok(url)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::recent_messages_url;
+
+    #[test]
+    fn encodes_the_login_and_appends_after_only_when_given() {
+        assert_eq!(
+            recent_messages_url("a?b", 50, None).unwrap().as_str(),
+            "https://recent-messages.robotty.de/api/v2/recent-messages/a%3Fb?limit=50"
+        );
+        assert_eq!(
+            recent_messages_url("x", 50, Some(7)).unwrap().as_str(),
+            "https://recent-messages.robotty.de/api/v2/recent-messages/x?limit=50&after=7"
+        );
+    }
 }

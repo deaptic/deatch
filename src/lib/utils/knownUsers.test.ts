@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import type { User } from "../types/index.ts";
 import {
+  changedEntries,
   freshEntries,
   isKnownUser,
   isUserId,
@@ -97,4 +98,20 @@ test("freshEntries never drops kept ids", () => {
   expect(
     Object.keys(freshEntries(entries, 1000, 500, 2, new Set(["me"]))),
   ).toStrictEqual(["me", "c"]);
+});
+
+test("changedEntries skips unchanged users and builds on earlier duplicates", () => {
+  const table = { "1": { user: full, fetchedAt: 5 } };
+  expect(changedEntries(table, [{ ...full }], null).size).toBe(0);
+
+  const renamed = { ...full, displayName: "MAYA" };
+  const changed = changedEntries(table, [renamed, { ...renamed }], null);
+  expect(changed.get("1")).toStrictEqual({ user: renamed, fetchedAt: 5 });
+});
+
+test("changedEntries keeps the cached object when only fetchedAt moves", () => {
+  const table = { "1": { user: full, fetchedAt: 5 } };
+  const entry = changedEntries(table, [{ ...full }], 9).get("1");
+  expect(entry?.fetchedAt).toBe(9);
+  expect(entry?.user).toBe(full);
 });

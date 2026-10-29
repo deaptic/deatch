@@ -6,7 +6,8 @@ use super::dto::{
     CommunitySubGiftNotice, GifterNotice, MessageBody, PrimePaidUpgradeNotice, RaidNotice,
     RecentNotice, ResubNotice, SubGiftNotice, SubNotice, SubTier,
 };
-use super::irc::{build_fragments, nonempty, tag, Tags};
+use super::irc::{build_fragments, nonempty, sent_at_ms, tag, Tags};
+use crate::twitch::ids::CommunityGiftId;
 use std::str::FromStr;
 
 const ANONYMOUS_LOGIN: &str = "ananonymousgifter";
@@ -33,7 +34,7 @@ fn plan(tags: &Tags) -> Option<(SubTier, bool)> {
 
 /// Links a community gift to each of its subs. Not in Twitch's IRC docs, but
 /// sent on both, and equal to EventSub's `community_gift_id`.
-fn community_gift_id(tags: &Tags) -> Option<String> {
+fn community_gift_id(tags: &Tags) -> Option<CommunityGiftId> {
     nonempty(tags, "msg-param-community-gift-id").map(Into::into)
 }
 
@@ -59,7 +60,7 @@ pub(super) fn parse_usernotice(tags: &Tags, body: &str) -> RecentNotice {
             fragments: build_fragments(body, tag(tags, "emotes")),
             text: body.into(),
         },
-        timestamp_ms: num(tags, "tmi-sent-ts").unwrap_or(0),
+        timestamp_ms: sent_at_ms(tags),
         sub: None,
         resub: None,
         sub_gift: None,

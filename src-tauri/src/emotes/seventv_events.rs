@@ -6,11 +6,13 @@ use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
+use tokio::time::Instant;
 use tokio_tungstenite::tungstenite::{Error as WsError, Message};
 
 use super::dto::{EmoteEntry, StvEmote};
 use super::events::{EmoteSetUpdated, Rename};
 use crate::emit::emit;
+use crate::twitch::ids::SevenTvEmoteSetId;
 use crate::ws::{self, Socket};
 
 const WS_URL: &str = "wss://events.7tv.io/v3";
@@ -27,8 +29,8 @@ type Writer = SplitSink<Socket, Message>;
 
 #[derive(Debug)]
 pub enum SevenTvOp {
-    Subscribe(String),
-    Unsubscribe(String),
+    Subscribe(SevenTvEmoteSetId),
+    Unsubscribe(SevenTvEmoteSetId),
 }
 
 pub struct SevenTvEvents(UnboundedSender<SevenTvOp>);
@@ -69,7 +71,7 @@ async fn serve(
     app: &tauri::AppHandle,
     socket: Socket,
     rx: &mut UnboundedReceiver<SevenTvOp>,
-    active: &mut HashSet<String>,
+    active: &mut HashSet<SevenTvEmoteSetId>,
 ) -> End {
     log::info!("7tv connected, resubscribing {} emote sets", active.len());
     let (mut write, mut read) = socket.split();
@@ -78,6 +80,8 @@ async fn serve(
             return End::Lost;
         }
     }
+    let silence = tokio::time::sleep(READ_TIMEOUT);
+    tokio::pin!(silence);
     loop {
         tokio::select! {
             op = rx.recv() => match op {
@@ -88,29 +92,32 @@ async fn serve(
                 }
                 None => return End::Stopped,
             },
-            message = tokio::time::timeout(READ_TIMEOUT, read.next()) => match message {
-                Ok(Some(Ok(Message::Text(text)))) => {
-                    if let Some(update) = parse_update(&text) {
-                        emit(app, update);
+            message = read.next() => {
+                silence.as_mut().reset(Instant::now() + READ_TIMEOUT);
+                match message {
+                    Some(Ok(Message::Text(text))) => {
+                        if let Some(update) = parse_update(&text) {
+                            emit(app, update);
+                        }
+                    }
+                    Some(Ok(Message::Close(frame))) => {
+                        log::info!("7tv closed by server: {frame:?}");
+                        return End::Lost;
+                    }
+                    Some(Ok(_)) => {}
+                    Some(Err(e)) => {
+                        log::warn!("7tv socket error: {e}");
+                        return End::Lost;
+                    }
+                    None => {
+                        log::info!("7tv socket ended");
+                        return End::Lost;
                     }
                 }
-                Ok(Some(Ok(Message::Close(frame)))) => {
-                    log::info!("7tv closed by server: {frame:?}");
-                    return End::Lost;
-                }
-                Ok(Some(Ok(_))) => {}
-                Ok(Some(Err(e))) => {
-                    log::warn!("7tv socket error: {e}");
-                    return End::Lost;
-                }
-                Ok(None) => {
-                    log::info!("7tv socket ended");
-                    return End::Lost;
-                }
-                Err(_) => {
-                    log::warn!("7tv silent for {READ_TIMEOUT:?}, reconnecting");
-                    return End::Lost;
-                }
+            }
+            () = &mut silence => {
+                log::warn!("7tv silent for {READ_TIMEOUT:?}, reconnecting");
+                return End::Lost;
             }
         }
     }
@@ -118,7 +125,7 @@ async fn serve(
 
 async fn apply(
     write: &mut Writer,
-    active: &mut HashSet<String>,
+    active: &mut HashSet<SevenTvEmoteSetId>,
     op: SevenTvOp,
 ) -> Result<(), WsError> {
     match op {
@@ -138,7 +145,7 @@ async fn apply(
     Ok(())
 }
 
-async fn send(write: &mut Writer, op: u8, set_id: &str) -> Result<(), WsError> {
+async fn send(write: &mut Writer, op: u8, set_id: &SevenTvEmoteSetId) -> Result<(), WsError> {
     let request = json!({
         "op": op,
         "d": { "type": EMOTE_SET_UPDATE, "condition": { "object_id": set_id } },
@@ -165,7 +172,7 @@ struct Dispatch {
 
 #[derive(Deserialize)]
 struct Body {
-    id: String,
+    id: SevenTvEmoteSetId,
     #[serde(default)]
     actor: Option<Actor>,
     #[serde(default)]

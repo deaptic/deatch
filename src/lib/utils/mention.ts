@@ -1,4 +1,4 @@
-import type { FeedMessage, MentionReason } from "../types/index.ts";
+import type { FeedEntry, FeedMessage, MentionReason } from "../types/index.ts";
 import { textOf } from "./message.ts";
 import { matchedKeyword } from "./wordMatch.ts";
 
@@ -31,4 +31,17 @@ export function isMention(
   keywords: string[],
 ): boolean {
   return mentionReason(msg, myLogin, keywords) !== null;
+}
+
+export function mentionsIn(
+  entries: readonly FeedEntry[],
+  myLogin: string,
+  keywords: string[],
+): FeedMessage[] {
+  return entries
+    .filter(
+      (m): m is FeedMessage =>
+        m.kind === "message" && isMention(m, myLogin, keywords),
+    )
+    .reverse();
 }

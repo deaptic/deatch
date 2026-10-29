@@ -5,7 +5,6 @@ import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import {
-  applyChatMode,
   CHAT_MODES,
   type ChatMode,
   isOn,
@@ -13,6 +12,7 @@ import {
   type TimedMode,
 } from "./modes.ts";
 import ChatModePresets from "./ChatModePresets.tsx";
+import * as chatSettings from "../../lib/services/chatSettings.ts";
 
 type Props = {
   broadcasterId: string;
@@ -35,7 +35,7 @@ export default function ChatModesList(props: Props) {
 
   function pick(mode: ChatMode) {
     if (mode.kind === "timed") return setTimed(mode);
-    applyChatMode(props.broadcasterId, on(mode) ? mode.off : mode.on);
+    chatSettings.update(props.broadcasterId, on(mode) ? mode.off : mode.on);
   }
 
   return (

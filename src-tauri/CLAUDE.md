@@ -1,8 +1,8 @@
 # Backend
 
 `src-tauri/src/` is one folder per feature. Crate-wide pieces (`error.rs`,
-`http.rs`, `ws.rs`, `db.rs`, `blocking.rs`, `emit.rs`, `keyring.rs`, `clock.rs`)
-sit at the root. `lib.rs` only wires the app: plugins, managed state, setup, and the
+`http.rs`, `ws.rs`, `db.rs`, `blocking.rs`, `emit.rs`, `keyring.rs`, `clock.rs`,
+`local_dir.rs`) sit at the root. `lib.rs` only wires the app: plugins, managed state, setup, and the
 tauri-specta command and event lists. Windows only: no `cfg` branches or
 dependencies for other platforms.
 

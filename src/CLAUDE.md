@@ -12,7 +12,8 @@ import downward:
   `bindings.ts`. No state, no logic beyond toasts.
 - `stores/` — signals and state only. Never call the backend.
 - `primitives/` — app wiring: `createAppController` composes the lifecycle
-  pieces and `createServices` starts every service. Only `App.tsx` calls it.
+  pieces and calls `createServices`, which starts every service. Only `App.tsx`
+  calls `createAppController`.
 - `types/`, `constants/`, `utils/`, `format/`, `i18n/`, `mappers/` — shared
   leaves. `reactive/` is the leaf for generic Solid helpers, which import
   nothing but `solid-js`.

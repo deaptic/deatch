@@ -1,6 +1,7 @@
 import { Show } from "solid-js";
 import type { CommandOption } from "./types.ts";
 import { optionLabel } from "./usage.ts";
+import type { ListboxCombobox } from "../../lib/reactive/createListbox.ts";
 
 type Props = {
   option: CommandOption;
@@ -13,6 +14,7 @@ type Props = {
   inputRef?: (el: HTMLInputElement) => void;
   onInput?: (e: InputEvent) => void;
   onKeyDown?: (e: KeyboardEvent) => void;
+  listbox: ListboxCombobox;
 };
 
 export default function CommandComposerSlot(props: Props) {
@@ -46,6 +48,7 @@ export default function CommandComposerSlot(props: Props) {
           {props.raw || props.option.name}
         </span>
         <input
+          {...props.listbox}
           ref={props.inputRef}
           value={props.raw}
           onInput={props.onInput}

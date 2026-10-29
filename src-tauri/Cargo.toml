@@ -24,9 +24,12 @@ serde_json = "1"
 thiserror = "2"
 twitch_api = { version = "0.8", features = ["helix", "twitch_oauth2", "reqwest", "client", "eventsub", "beta"] }
 reqwest = { version = "0.13", features = ["json"] }
+url = "2"
 keyring-core = "1"
 tokio = { version = "1", features = ["net", "io-util", "sync", "macros", "time"] }
-tokio-tungstenite = { version = "0.30", features = ["native-tls"] }
+tokio-tungstenite = { version = "0.30", features = ["rustls-tls-native-roots"] }
+rustls = { version = "0.23", default-features = false, features = ["aws-lc-rs"] }
+rustls-platform-verifier = "0.7"
 futures-util = "0.3"
 discord-rich-presence = "1"
 interprocess = { version = "2", features = ["tokio"] }
@@ -47,3 +50,8 @@ windows-core = "0.62"
 
 [profile.dev.package."*"]
 debug = false
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

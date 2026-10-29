@@ -228,7 +228,7 @@ pub fn spawn_pruning(app: tauri::AppHandle) {
             let pruned = crate::blocking::run(app.clone(), |app| {
                 let dbs = app.state::<Databases>();
                 for account in dbs.accounts()? {
-                    dbs.with(&account, |db| prune(db, unix_ms(), MAX_BYTES))?;
+                    dbs.upkeep(&account, |db| prune(db, unix_ms(), MAX_BYTES))?;
                 }
                 Ok(())
             })

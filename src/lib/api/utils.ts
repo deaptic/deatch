@@ -1,6 +1,7 @@
 import { advancedShowLogs } from "../stores/preferences.ts";
 import { addToast } from "../stores/toasts.ts";
 import { errorMessage } from "../utils/error.ts";
+import { listSize } from "../utils/listSize.ts";
 import { t } from "../i18n/index.ts";
 
 export type InvokeOptions = {
@@ -55,20 +56,8 @@ export function reportFailure(
 }
 
 function summarize(result: unknown, ms: number): string {
-  if (Array.isArray(result)) {
-    return t("API_LOG_ITEMS", { ms, count: result.length, more: false });
-  }
-  if (
-    result !== null &&
-    typeof result === "object" &&
-    Array.isArray((result as { data?: unknown }).data)
-  ) {
-    const data = (
-      result as { data: unknown[]; pagination?: { cursor: string | null } }
-    ).data;
-    const more = (result as { pagination?: { cursor: string | null } })
-      .pagination?.cursor;
-    return t("API_LOG_ITEMS", { ms, count: data.length, more: Boolean(more) });
-  }
-  return t("API_LOG_DURATION", { ms });
+  const size = listSize(result);
+  return size
+    ? t("API_LOG_ITEMS", { ms, ...size })
+    : t("API_LOG_DURATION", { ms });
 }

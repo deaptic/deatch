@@ -24,6 +24,7 @@ import { orderLanguages } from "../../lib/utils/languages.ts";
 import LiveCard from "./LiveCard.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
 import Chip from "../ui/Chip.tsx";
+import EmptyState from "../ui/EmptyState.tsx";
 import Button from "../ui/Button.tsx";
 import Skeleton from "../ui/Skeleton.tsx";
 import { t } from "../../lib/i18n/index.ts";
@@ -140,14 +141,14 @@ export default function LiveNow(props: Props) {
         <Show
           when={sorted().length > 0}
           fallback={
-            <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
-              <Show
-                when={exploreFilters.followingOnly}
-                fallback={t("EXPLORE_NO_MATCHES")}
-              >
-                {t("EXPLORE_NONE_LIVE")}
-              </Show>
-            </p>
+            <EmptyState
+              variant="inline"
+              body={
+                exploreFilters.followingOnly
+                  ? t("EXPLORE_NONE_LIVE")
+                  : t("EXPLORE_NO_MATCHES")
+              }
+            />
           }
         >
           <div class="grid grid-cards gap-4">

@@ -10,8 +10,13 @@ import * as sevenTv from "../services/sevenTv.ts";
 import * as chatActivity from "../services/chatActivity.ts";
 import * as chatSettings from "../services/chatSettings.ts";
 import * as cheermotes from "../services/cheermotes.ts";
+import * as badges from "../services/badges.ts";
+import * as emotes from "../services/emotes.ts";
+import * as channelInfo from "../services/channelInfo.ts";
 import { clearChatSettings } from "../stores/chatSettings.ts";
 import { clearCheermotes } from "../stores/cheermotes.ts";
+import { clearDraft } from "../stores/drafts.ts";
+import { clearSentMessages } from "../stores/sentMessages.ts";
 import { followedLive } from "../stores/channels.ts";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
@@ -37,6 +42,11 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     clearChatSettings(broadcasterId);
     clearCheermotes(broadcasterId);
     chatActivity.clear(broadcasterId);
+    badges.forgetChannel(broadcasterId);
+    emotes.forgetChannelThirdParty(broadcasterId);
+    channelInfo.forget(broadcasterId);
+    clearDraft(broadcasterId);
+    clearSentMessages(broadcasterId);
   }
 
   createEffect(

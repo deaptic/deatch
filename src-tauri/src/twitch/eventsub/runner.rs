@@ -211,7 +211,7 @@ impl Coordinator<'_> {
     /// A new viewer gets their own-channel subscriptions right away; the
     /// moderator ones follow once the list lands.
     fn refresh_viewer(&mut self, authed: &Authed<'_>) {
-        let id = UserId::from(authed.token.user_id.as_str());
+        let id = UserId::from(&authed.token);
         if self.viewer.as_ref().is_none_or(|v| v.id != id) {
             let moderated = HashSet::new();
             self.viewer = Some(Viewer { id, moderated });

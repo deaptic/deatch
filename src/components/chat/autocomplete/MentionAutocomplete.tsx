@@ -34,8 +34,8 @@ export default function MentionAutocomplete(props: Props) {
         onDismiss={props.controller.dismiss}
         renderItem={(s) => <ChatterRow chatter={s} />}
         ref={(api) => {
-          props.controller.registerKeyHandler("mention", api.handleKey);
-          onCleanup(() => props.controller.unregisterKeyHandler("mention"));
+          props.controller.register("mention", api);
+          onCleanup(() => props.controller.unregister("mention"));
         }}
       />
     </Show>

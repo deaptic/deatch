@@ -1,6 +1,6 @@
-import { createSignal, type JSX, Show } from "solid-js";
-import Tooltip from "./Tooltip.tsx";
-import { SIDE_GAP } from "./Popover.tsx";
+import { type JSX, Show } from "solid-js";
+import { createSideTip } from "./createSideTip.tsx";
+import TipLabel from "./TipLabel.tsx";
 
 type Props = {
   label: string;
@@ -14,7 +14,7 @@ type Props = {
 
 export default function NavItem(props: Props) {
   const horizontal = () => props.orientation === "horizontal";
-  const [tip, setTip] = createSignal<{ x: number; y: number } | null>(null);
+  const tip = createSideTip(() => <TipLabel>{props.label}</TipLabel>);
 
   const shape = () => {
     if (horizontal()) {
@@ -39,11 +39,9 @@ export default function NavItem(props: Props) {
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => props.onClick?.()}
         onMouseEnter={(e) => {
-          if (!props.collapsed) return;
-          const r = e.currentTarget.getBoundingClientRect();
-          setTip({ x: r.right + SIDE_GAP, y: r.top + r.height / 2 });
+          if (props.collapsed) tip.show(e.currentTarget);
         }}
-        onMouseLeave={() => setTip(null)}
+        onMouseLeave={tip.hide}
         class={`relative flex items-center gap-2.5 text-body font-semibold cursor-pointer transition-colors duration-snap ${shape()}`}
       >
         <Show when={props.icon}>
@@ -62,13 +60,7 @@ export default function NavItem(props: Props) {
           <span class="absolute left-3 right-3 bottom-0 h-0.75 rounded-full bg-accent" />
         </Show>
       </button>
-      <Show when={tip()}>
-        {(t) => (
-          <Tooltip side="right" x={t().x} y={t().y}>
-            <p class="font-semibold whitespace-nowrap">{props.label}</p>
-          </Tooltip>
-        )}
-      </Show>
+      {tip.view()}
     </>
   );
 }

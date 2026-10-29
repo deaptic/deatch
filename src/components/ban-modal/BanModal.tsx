@@ -4,13 +4,15 @@ import { getBan } from "../../lib/api/twitch/moderation.ts";
 import * as bans from "../../lib/services/bans.ts";
 import { type BanChoice, secondsFor } from "../../lib/constants/timeouts.ts";
 import { formatDuration } from "../../lib/format/duration.ts";
+import { Time } from "../../lib/utils/time.ts";
 import Button from "../ui/Button.tsx";
+import Callout from "../ui/Callout.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import { autofocus } from "../../lib/reactive/focus.ts";
 import Textarea from "../ui/Textarea.tsx";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";
 import { user } from "../../lib/stores/users.ts";
-import { formatLocale, t, tRich } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../lib/i18n/index.ts";
 
 type Props = {
   userId: string;
@@ -27,16 +29,6 @@ type BanStatus =
   | { kind: "loading" }
   | { kind: "clear" }
   | { kind: "banned"; ban: BannedUser };
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString(formatLocale(), {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default function BanModal(props: Props) {
   const [choice, setChoice] = createSignal<BanChoice>(DEFAULT_CHOICE);
@@ -114,7 +106,7 @@ export default function BanModal(props: Props) {
     >
       <Show when={ban()}>
         {(info) => (
-          <div class="bg-negative/10 border-l-3 border-negative rounded-sm px-3 py-2.5 flex flex-col gap-0.5 text-small">
+          <Callout tone="negative">
             <span class="text-ink">
               {tRich("BAN_STATUS_BY", {
                 status: info().expiresAt ? "timeout" : "ban",
@@ -132,11 +124,13 @@ export default function BanModal(props: Props) {
             <Show when={info().expiresAt}>
               {(expiresAt) => (
                 <span class="text-ink-soft">
-                  {t("BAN_EXPIRES", { date: formatDate(expiresAt()) })}
+                  {t("BAN_EXPIRES", {
+                    date: new Time(expiresAt(), "f").toString(),
+                  })}
                 </span>
               )}
             </Show>
-          </div>
+          </Callout>
         )}
       </Show>
 

@@ -29,6 +29,7 @@ import type { LinkState, SetAudioParams, User } from "../types/index.ts";
 import type { InvokeOptions } from "../api/utils.ts";
 import { t } from "../i18n/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
+import { planLinkState } from "../utils/linkPlan.ts";
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
@@ -129,7 +130,7 @@ export function closeTab(): boolean {
 /// A dragged volume slider changes the settings every few milliseconds; they
 /// go out at most this often, the latest ones last.
 const AUDIO_SEND_MS = 50;
-let audioTimer: number | undefined;
+let audioTimer: ReturnType<typeof setTimeout> | undefined;
 let audioPending: SetAudioParams | null = null;
 
 /// Channel gains go out as factors (1 is unchanged), not percent.
@@ -142,7 +143,7 @@ export function sendAudio(
     Object.entries(gains).map(([login, percent]) => [login, percent / 100]),
   );
   audioPending = { enabled, compressor: { ...compressor }, gains: factors };
-  audioTimer ??= window.setTimeout(() => {
+  audioTimer ??= setTimeout(() => {
     audioTimer = undefined;
     if (audioPending) {
       linkSetAudio(audioPending, { silent: true }).catch(() => {});
@@ -231,7 +232,7 @@ async function drainPending() {
 async function drainWarmed() {
   const toFetch = Array.from(pendingFetch);
   const fetched = await users
-    .fetch({ logins: toFetch }, { silent: true })
+    .fetchFresh({ logins: toFetch }, { silent: true })
     .catch(() => null);
   if (!fetched) return;
   const stillOpen = fetched.filter((u) => pendingFetch.has(u.login));
@@ -246,7 +247,7 @@ async function drainWarmed() {
 
 async function drainCurrent(slug: string) {
   const found = await users
-    .fetch({ logins: [slug] }, { silent: true })
+    .fetchFresh({ logins: [slug] }, { silent: true })
     .catch(() => null);
   if (!found) return;
   // An unknown login (banned, renamed) resolves to nothing; retrying would
@@ -257,25 +258,17 @@ async function drainCurrent(slug: string) {
   if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
 }
 
-export async function applyState({ channels, current, audio }: LinkState) {
+export async function applyState(state: LinkState) {
   setLinkConnected(true);
-  setLinkHasAudio(audio === true);
+  setLinkHasAudio(state.audio === true);
 
-  const muted: Record<string, boolean> = {};
-  for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
-  setLinkMutedByLogin(muted);
-
-  const incoming = new Set(channels.map((c) => c.login.toLowerCase()));
   const warmed = linkWarmedChannels();
-  const keep = warmed.filter((c) => incoming.has(c.login));
-  if (keep.length !== warmed.length) setLinkWarmedChannels(keep);
-
-  const known = new Set(keep.map((c) => c.login));
-  pendingFetch = new Set([...incoming].filter((l) => !known.has(l)));
-
-  const cur = current?.toLowerCase() ?? null;
-  pendingCurrent = cur && linkedChannel()?.login !== cur ? cur : null;
-  if (!cur && linkedChannel() !== null) setLinkedChannel(null);
+  const plan = planLinkState(state, warmed, linkedChannel()?.login ?? null);
+  setLinkMutedByLogin(plan.muted);
+  if (plan.keep.length !== warmed.length) setLinkWarmedChannels(plan.keep);
+  pendingFetch = plan.fetch;
+  pendingCurrent = plan.lookUp;
+  if (plan.unlink) setLinkedChannel(null);
 
   await drainPending();
 }

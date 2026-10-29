@@ -33,8 +33,8 @@ Each feature is a folder with `mod.rs` for the service, `commands.rs`, `dto.rs`
 for outgoing shapes, and `events.rs`. Upstream crate types never leave `dto.rs`.
 Crate-wide pieces sit at the root: `error.rs`, `http.rs` (the one
 `reqwest::Client`), `ws.rs` (WebSocket connects), `blocking.rs` (blocking work off the async
-workers), `emit.rs`, `keyring.rs`,
-`clock.rs`.
+workers), `emit.rs`, `keyring.rs`, `clock.rs`, `local_dir.rs`
+(`%LOCALAPPDATA%\Deatch`).
 
 `twitch/` is the bulk of it. `Twitch` is cloneable managed state holding the
 Helix client, the session, and the EventSub handle. Sign-in is OAuth device
@@ -52,11 +52,14 @@ for live set updates. `history/` fetches backlog from recent-messages.robotty.de
 and maps it to the EventSub chat message shape so the feed has one code path.
 `db.rs` opens each signed-in account's own SQLite database and applies the
 schema steps each feature declares. `feedlog/` keeps every feed entry there, for
-seven days or up to 1 GB, and reads pages of them back.
+seven days or up to 1 GB, reads pages of them back, and clears them from
+Settings → Advanced.
 `link/` registers the host manifests (`bridge.rs`), merges every connected
 browser into one state (`ipc.rs`), and is the host process (`host.rs`).
 `discord/`, `notifications/`, and `diagnostics/` do rich presence, the taskbar
-badge, and stats.
+badge, and stats. `graphics/` turns off the WebView's GPU at startup when
+hardware acceleration is disabled and lowers its memory target while the window
+is minimized.
 
 ## Frontend
 
@@ -75,8 +78,9 @@ mapped in `events/chat.ts` (where AutoMod and redemptions are correlated,
 mentions recorded into the inbox, and triggers run), lands in `stores/feeds/` as
 a capped per-channel buffer, and renders through `FeedItem`. Backlog from
 `history/` takes the same path. The feed renders only the rows in view. Every
-entry added or changed is also written to the feed log within seconds;
-scrolling past the oldest in memory, or jumping to a message no longer there,
+entry added or changed is also written to the feed log within seconds, and
+`services/exit.ts` flushes pending writes when the window closes and before a
+relaunch or update. Scrolling past the oldest in memory, or jumping to a message no longer there,
 opens a stretch of history read back from it (`services/history.ts`) until the
 view returns to live.
 

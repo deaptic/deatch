@@ -89,9 +89,9 @@ function emitState() {
   const state = buildState();
   const key = JSON.stringify(state.channels) + "|" + (state.current ?? "");
   if (key === lastStateKey) return;
-  lastStateKey = key;
   try {
     port.postMessage(state);
+    lastStateKey = key;
   } catch (e) {
     console.warn("state not sent", e);
   }
@@ -186,8 +186,8 @@ function connect() {
   });
   port.onMessage.addListener((msg) => {
     reconnectDelay = RECONNECT_MIN_MS;
-    const run = COMMANDS[msg?.type];
-    if (!run) return;
+    if (!Object.hasOwn(COMMANDS, msg?.type)) return;
+    const run = COMMANDS[msg.type];
     if (typeof msg.channel === "string") {
       msg.channel = msg.channel.toLowerCase();
     } else if (!BROWSER_COMMANDS.has(msg.type)) return;

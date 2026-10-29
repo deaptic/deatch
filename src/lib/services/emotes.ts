@@ -1,4 +1,8 @@
-import { STORAGE_KEYS, userEmotesKey } from "../constants/storage.ts";
+import {
+  isUserEmotesKey,
+  STORAGE_KEYS,
+  userEmotesKey,
+} from "../constants/storage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
@@ -62,6 +66,7 @@ export async function ensureUserLoaded(): Promise<void> {
   userEmotesLoadStarted = true;
 
   const key = userEmotesKey(u.id);
+  storage.removeWhere((k) => isUserEmotesKey(k) && k !== key);
   const cached = loadCache<UserEmote[]>(key, USER_EMOTES_TTL);
   if (cached) {
     setUserEmotes(dedupeById(cached));
@@ -168,6 +173,11 @@ function keepLoading(
 export function loadChannelThirdParty(channel: ChannelRef) {
   bttv.show(channel, setBttvChannel);
   ffz.show(channel, setFfzChannel);
+}
+
+export function forgetChannelThirdParty(channelId: string) {
+  bttv.forget(channelId);
+  ffz.forget(channelId);
 }
 
 export function resetChannelThirdParty() {

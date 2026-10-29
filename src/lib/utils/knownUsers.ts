@@ -53,6 +53,26 @@ export function sameUser(a: User, b: User): boolean {
   return [...keys].every((k) => a[k] === b[k]);
 }
 
+/// The entries `users` change, applied in order so a later duplicate builds
+/// on an earlier one. An unchanged user keeps its object, so only
+/// `fetchedAt` moves.
+export function changedEntries(
+  table: Record<string, KnownUser>,
+  users: User[],
+  fetchedAt: number | null,
+): Map<string, KnownUser> {
+  const pending = new Map<string, KnownUser>();
+  for (const next of users) {
+    const prev = pending.get(next.id) ?? table[next.id];
+    const merged = mergeUser(prev?.user, next, fetchedAt !== null);
+    const at = fetchedAt ?? prev?.fetchedAt ?? null;
+    const same = prev !== undefined && sameUser(prev.user, merged);
+    if (same && prev.fetchedAt === at) continue;
+    pending.set(next.id, { user: same ? prev.user : merged, fetchedAt: at });
+  }
+  return pending;
+}
+
 export function isKnownUser(value: unknown): value is KnownUser {
   const e = value as Partial<KnownUser> | null;
   return (

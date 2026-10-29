@@ -3,7 +3,7 @@ import type { User } from "../types/index.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "../services/users.ts";
 import {
-  historyStep,
+  stepVisits,
   linkSynced,
   recordVisit,
   selectedChannel,
@@ -63,7 +63,7 @@ export function createChannelNavigation(): ChannelNavigation {
   }
 
   function stepHistory(delta: 1 | -1) {
-    const ch = historyStep(delta);
+    const ch = stepVisits(delta);
     if (ch) selectChannel(ch);
   }
 

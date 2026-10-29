@@ -14,7 +14,7 @@ export default function ScrollChevron(props: Props) {
         props.direction === "up" ? "RAIL_SCROLL_UP" : "RAIL_SCROLL_DOWN",
       )}
       onClick={() => props.onClick()}
-      class={`absolute inset-x-0 h-5 flex items-center justify-center z-10 bg-surface text-ink-faint hover:text-ink cursor-pointer ${
+      class={`absolute inset-x-0 h-control-sm flex items-center justify-center z-10 bg-surface text-ink-faint hover:text-ink cursor-pointer ${
         props.direction === "up" ? "top-0" : "bottom-0"
       }`}
     >

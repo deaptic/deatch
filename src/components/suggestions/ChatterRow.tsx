@@ -1,4 +1,5 @@
 import type { Chatter } from "../../lib/types/index.ts";
+import { nameColor } from "../ui/nameColor.ts";
 
 /// A chatter in a suggestion list: the name in their colour, and the login
 /// beside it when the name is not just the login recased.
@@ -9,7 +10,7 @@ export default function ChatterRow(props: {
     <>
       <span
         class="font-semibold text-left truncate text-(--name)"
-        style={{ "--name": props.chatter.color || "var(--color-ink)" }}
+        style={{ "--name": nameColor(props.chatter.color) }}
       >
         {props.chatter.displayName}
       </span>

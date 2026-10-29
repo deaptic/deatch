@@ -35,7 +35,7 @@ impl Session {
     /// Who is signed in, read without refreshing anything.
     pub async fn user_id(&self) -> Option<UserId> {
         let slot = self.token.lock().await;
-        slot.as_ref().map(|t| UserId::from(t.user_id.as_str()))
+        slot.as_ref().map(UserId::from)
     }
 
     pub async fn end(&self) -> Option<UserToken> {
@@ -91,5 +91,36 @@ fn persist(token: &UserToken) {
 fn forget() {
     if let Err(e) = credentials::delete() {
         log::warn!("credentials not deleted: {e}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_final;
+    use http::StatusCode;
+    use twitch_api::twitch_oauth2::id::TwitchTokenErrorResponse;
+    use twitch_api::twitch_oauth2::tokens::errors::RefreshTokenError;
+    use twitch_api::twitch_oauth2::RequestParseError;
+
+    fn twitch_said(status: StatusCode) -> RefreshTokenError<std::io::Error> {
+        RefreshTokenError::RequestParseError(RequestParseError::TwitchError(
+            TwitchTokenErrorResponse {
+                status,
+                message: "Invalid refresh token".into(),
+                error: None,
+            },
+        ))
+    }
+
+    #[test]
+    fn only_a_rejected_or_missing_refresh_token_ends_the_session() {
+        assert!(is_final(&twitch_said(StatusCode::BAD_REQUEST)));
+        assert!(is_final(
+            &RefreshTokenError::<std::io::Error>::NoRefreshToken
+        ));
+        assert!(!is_final(&twitch_said(StatusCode::SERVICE_UNAVAILABLE)));
+        assert!(!is_final(&RefreshTokenError::RequestError(
+            std::io::Error::other("offline")
+        )));
     }
 }

@@ -2,7 +2,7 @@ name: checks
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
   workflow_call:
 
@@ -17,7 +17,7 @@ jobs:
   checks:
     runs-on: windows-latest
     env:
-      CARGO_INCREMENTAL: "0"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 

@@ -10,6 +10,7 @@ import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
 import { CARD_FRAME } from "../ui/Card.tsx";
+import Chip from "../ui/Chip.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -17,9 +18,6 @@ type Props = {
   thumbnailVersion: number;
   onSelect: (channel: User) => void;
 };
-
-const OVERLAY_CHIP =
-  "flex items-center gap-1 rounded-xs bg-media-scrim px-1.5 py-0.5 text-micro text-on-accent tabular-nums";
 
 export default function LiveCard(props: Props) {
   const channel = () => resolveUser(props.stream.user);
@@ -41,14 +39,16 @@ export default function LiveCard(props: Props) {
         </span>
         <div class="absolute bottom-2.5 right-2.5 flex items-center gap-1">
           <Show when={rate() > 0}>
-            <span class={OVERLAY_CHIP}>
-              <MessageSquare class="size-3" />
-              {t("EXPLORE_CHAT_RATE", { rate: rate() })}
-            </span>
+            <Chip
+              variant="media"
+              icon={<MessageSquare class="size-3" />}
+              label={t("EXPLORE_CHAT_RATE", { rate: rate() })}
+            />
           </Show>
-          <span class={OVERLAY_CHIP}>
-            {formatUptime(props.stream.startedAt, clock.now())}
-          </span>
+          <Chip
+            variant="media"
+            label={formatUptime(props.stream.startedAt, clock.now())}
+          />
         </div>
       </Artwork>
 
