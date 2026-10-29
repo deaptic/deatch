@@ -1,6 +1,7 @@
 use super::events::{LinkChannel, LinkDisconnected, LinkState};
 use super::MAX_MESSAGE_SIZE;
 use crate::emit::emit;
+use interprocess::os::windows::security_descriptor::SecurityDescriptor;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -219,8 +220,13 @@ async fn run_server(app: tauri::AppHandle, hosts: Hosts) -> std::io::Result<()> 
         tokio::prelude::*, GenericNamespaced, ListenerOptions, ToNsName,
     };
 
+    use interprocess::os::windows::local_socket::ListenerOptionsExt;
+
     let name = PIPE_NAME.to_ns_name::<GenericNamespaced>()?;
-    let listener = ListenerOptions::new().name(name).create_tokio()?;
+    let listener = ListenerOptions::new()
+        .name(name)
+        .security_descriptor(current_user_only()?)
+        .create_tokio()?;
 
     loop {
         match listener.accept().await {
@@ -233,6 +239,25 @@ async fn run_server(app: tauri::AppHandle, hosts: Hosts) -> std::io::Result<()> 
             }
         }
     }
+}
+
+fn current_user_only() -> std::io::Result<SecurityDescriptor> {
+    use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, UpdateKind};
+
+    let own = sysinfo::get_current_pid().map_err(std::io::Error::other)?;
+    let mut system = System::new();
+    system.refresh_processes_specifics(
+        ProcessesToUpdate::Some(&[own]),
+        false,
+        ProcessRefreshKind::nothing().with_user(UpdateKind::Always),
+    );
+    let user = system
+        .process(own)
+        .and_then(|p| p.user_id())
+        .ok_or_else(|| std::io::Error::other("current user unknown"))?;
+    let sddl = widestring::U16CString::from_str(format!("D:P(A;;GA;;;{})", **user))
+        .map_err(std::io::Error::other)?;
+    SecurityDescriptor::deserialize(&sddl)
 }
 
 async fn read_line<R>(reader: &mut R) -> std::io::Result<Option<String>>
@@ -329,8 +354,21 @@ async fn handle_connection(
 #[cfg(test)]
 mod tests {
     use super::{
-        merge, read_line, Compressor, HostCommand, Hosts, LinkChannel, LinkState, MAX_MESSAGE_SIZE,
+        current_user_only, merge, read_line, Compressor, HostCommand, Hosts, LinkChannel,
+        LinkState, MAX_MESSAGE_SIZE,
     };
+
+    #[test]
+    fn pipe_access_is_limited_to_the_current_user() {
+        use interprocess::os::windows::security_descriptor::AsSecurityDescriptorExt;
+
+        let sddl = current_user_only()
+            .unwrap()
+            .serialize(4, |s| s.to_string_lossy())
+            .unwrap();
+        assert!(sddl.starts_with("D:P(A;;GA;;;S-1-5-"), "{sddl}");
+        assert_eq!(sddl.matches("(A;").count(), 1, "{sddl}");
+    }
     use serde_json::json;
 
     fn lines(input: &[u8]) -> Vec<std::io::Result<Option<String>>> {

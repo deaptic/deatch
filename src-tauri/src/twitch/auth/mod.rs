@@ -9,6 +9,7 @@ use crate::emit::emit;
 use crate::error::{Error, Result};
 use dto::DcfAuthResponse;
 use events::{AuthFailed, AuthSucceeded};
+use twitch_api::twitch_oauth2::tokens::errors::RetrieveTokenError;
 use twitch_api::twitch_oauth2::{
     AccessToken, ClientId, DeviceUserTokenBuilder, RefreshToken, Scope, TwitchToken, UserToken,
 };
@@ -90,14 +91,25 @@ pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
     let Some(creds) = credentials::load()? else {
         return Ok(None);
     };
-    let token = UserToken::from_existing_or_refresh_token(
+    let restored = UserToken::from_existing_or_refresh_token(
         &twitch.helix,
         AccessToken::new(creds.access_token),
         RefreshToken::new(creds.refresh_token),
         ClientId::new(CLIENT_ID.to_string()),
         None,
     )
-    .await?;
+    .await;
+    let token = match restored {
+        Ok(token) => token,
+        Err(RetrieveTokenError::RefreshTokenError { error, .. })
+            if super::session::is_final(&error) =>
+        {
+            log::warn!("stored session rejected: {error}");
+            credentials::delete()?;
+            return Ok(None);
+        }
+        Err(e) => return Err(e.into()),
+    };
     if let Some(missing) = SCOPES.iter().find(|s| !token.scopes().contains(s)) {
         credentials::delete()?;
         return Err(Error::MissingScope {

@@ -19,12 +19,11 @@ each channel's volume, or pull a fresh state dump when the app starts.
 
 ## Permissions
 
-| Permission          | Why                                                                                |
-| ------------------- | ---------------------------------------------------------------------------------- |
-| `tabs`              | Detect which Twitch tab is focused, react to tabs closing, mute/unmute on request. |
-| `nativeMessaging`   | Talk to the Deatch desktop app over a local pipe.                                  |
-| `storage`           | Keep the compressor and channel volume settings for your Twitch tabs.              |
-| Access to twitch.tv | Route the Twitch player's audio through the compressor and channel volume.         |
+| Permission          | Why                                                                                                               |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `nativeMessaging`   | Talk to the Deatch desktop app over a local pipe.                                                                 |
+| `storage`           | Keep the compressor and channel volume settings for your Twitch tabs.                                             |
+| Access to twitch.tv | See which Twitch channels your tabs show, and route the player's audio through the compressor and channel volume. |
 
 The extension does **not** read chat, change what pages show, send data to any
 third party, or talk to the network. On twitch.tv it only processes the player's

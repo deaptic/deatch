@@ -15,7 +15,12 @@
       }
     }
   },
-  "permissions": ["tabs", "nativeMessaging", "storage"],
+  "permissions": ["nativeMessaging", "storage"],
+  "host_permissions": [
+    "*://twitch.tv/*",
+    "*://www.twitch.tv/*",
+    "*://m.twitch.tv/*"
+  ],
   "background": {
     "scripts": ["background.js"],
     "service_worker": "background.js"
