@@ -56,10 +56,9 @@ pub(super) async fn run(
         sockets: HashMap::new(),
         viewer: None,
         moderated_stale: false,
-        moderated_pending: false,
+        moderated_fetch: ModeratedFetch::Idle,
         connected: true,
         resume_at: None,
-        moderated_retry_at: None,
     };
     let mut moderated_refresh = tokio::time::interval_at(
         tokio::time::Instant::now() + MODERATED_REFRESH,
@@ -107,10 +106,32 @@ struct Coordinator<'a> {
     sockets: HashMap<ConnId, JoinHandle<()>>,
     viewer: Option<Viewer>,
     moderated_stale: bool,
-    moderated_pending: bool,
+    moderated_fetch: ModeratedFetch,
     connected: bool,
     resume_at: Option<Instant>,
-    moderated_retry_at: Option<Instant>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum ModeratedFetch {
+    Idle,
+    InFlight,
+    RetryAt(Instant),
+}
+
+impl ModeratedFetch {
+    fn retry_at(self) -> Option<Instant> {
+        match self {
+            Self::RetryAt(at) => Some(at),
+            Self::Idle | Self::InFlight => None,
+        }
+    }
+
+    fn without_retry(self) -> Self {
+        match self {
+            Self::RetryAt(_) => Self::Idle,
+            other => other,
+        }
+    }
 }
 
 impl Coordinator<'_> {
@@ -119,7 +140,7 @@ impl Coordinator<'_> {
     }
 
     fn next_wake(&self) -> Option<Instant> {
-        let due = [self.subs.next_wake(), self.moderated_retry_at]
+        let due = [self.subs.next_wake(), self.moderated_fetch.retry_at()]
             .into_iter()
             .flatten()
             .min();
@@ -158,7 +179,7 @@ impl Coordinator<'_> {
             // session must load and send it again even for the same user.
             None => {
                 self.viewer = None;
-                self.moderated_retry_at = None;
+                self.moderated_fetch = self.moderated_fetch.without_retry();
             }
         }
 
@@ -197,18 +218,13 @@ impl Coordinator<'_> {
             // Stored rather than acted on once, so a fetch still in flight for
             // the previous viewer can't swallow it.
             self.moderated_stale = true;
-            self.moderated_retry_at = None;
+            self.moderated_fetch = self.moderated_fetch.without_retry();
         }
-        if !refetch_due(
-            self.moderated_stale,
-            self.moderated_pending,
-            self.moderated_retry_at,
-            Instant::now(),
-        ) {
+        if !refetch_due(self.moderated_stale, self.moderated_fetch, Instant::now()) {
             return;
         }
         self.moderated_stale = false;
-        self.moderated_pending = true;
+        self.moderated_fetch = ModeratedFetch::InFlight;
         spawn_moderated(
             self.twitch.clone(),
             authed.token.clone(),
@@ -219,7 +235,7 @@ impl Coordinator<'_> {
     /// A failed fetch keeps the last known list, so a blip never drops
     /// every moderator subscription.
     fn moderated(&mut self, viewer: UserId, result: Result<Vec<UserRef>>) {
-        self.moderated_pending = false;
+        self.moderated_fetch = ModeratedFetch::Idle;
         if self.viewer.as_ref().is_none_or(|v| v.id != viewer) {
             return;
         }
@@ -227,7 +243,6 @@ impl Coordinator<'_> {
             Ok(channels) => {
                 let moderated = channels.iter().map(|c| c.id.clone()).collect();
                 emit(self.app, ModeratedChannelsChanged(channels));
-                self.moderated_retry_at = None;
                 self.viewer = Some(Viewer {
                     id: viewer,
                     moderated,
@@ -236,7 +251,7 @@ impl Coordinator<'_> {
             Err(e) => {
                 log::warn!("moderated channels fetch failed: {e}");
                 self.moderated_stale = true;
-                self.moderated_retry_at = Some(Instant::now() + MODERATED_RETRY);
+                self.moderated_fetch = ModeratedFetch::RetryAt(Instant::now() + MODERATED_RETRY);
             }
         }
     }
@@ -381,8 +396,13 @@ async fn sleep_until(at: Option<Instant>) {
 }
 
 /// One fetch at a time; a failed one waits out its retry delay.
-fn refetch_due(stale: bool, pending: bool, retry_at: Option<Instant>, now: Instant) -> bool {
-    !pending && stale && retry_at.is_none_or(|at| at <= now)
+fn refetch_due(stale: bool, fetch: ModeratedFetch, now: Instant) -> bool {
+    stale
+        && match fetch {
+            ModeratedFetch::Idle => true,
+            ModeratedFetch::InFlight => false,
+            ModeratedFetch::RetryAt(at) => at <= now,
+        }
 }
 
 /// Nothing due can run before sync resumes, so waking earlier would spin.
@@ -395,28 +415,44 @@ fn wake_at(due: Option<Instant>, resume: Option<Instant>) -> Option<Instant> {
 
 #[cfg(test)]
 mod tests {
-    use super::{refetch_due, wake_at};
+    use super::{refetch_due, wake_at, ModeratedFetch};
     use std::time::{Duration, Instant};
 
     #[test]
     fn stale_list_waits_for_its_retry_time() {
         let now = Instant::now();
-        let later = Some(now + Duration::from_secs(30));
-        assert!(!refetch_due(true, false, later, now));
-        assert!(refetch_due(
-            true,
-            false,
-            later,
-            now + Duration::from_secs(30)
-        ));
-        assert!(refetch_due(true, false, None, now));
-        assert!(!refetch_due(false, false, None, now));
+        let later = ModeratedFetch::RetryAt(now + Duration::from_secs(30));
+        assert!(!refetch_due(true, later, now));
+        assert!(refetch_due(true, later, now + Duration::from_secs(30)));
+        assert!(refetch_due(true, ModeratedFetch::Idle, now));
+        assert!(!refetch_due(false, ModeratedFetch::Idle, now));
     }
 
     #[test]
     fn never_fetches_twice_at_once() {
         let now = Instant::now();
-        assert!(!refetch_due(true, true, None, now));
+        assert!(!refetch_due(true, ModeratedFetch::InFlight, now));
+    }
+
+    #[test]
+    fn only_a_waiting_retry_sets_a_wake_time() {
+        let at = Instant::now();
+        assert_eq!(ModeratedFetch::RetryAt(at).retry_at(), Some(at));
+        assert_eq!(ModeratedFetch::InFlight.retry_at(), None);
+        assert_eq!(ModeratedFetch::Idle.retry_at(), None);
+    }
+
+    #[test]
+    fn dropping_a_retry_leaves_a_fetch_in_flight() {
+        let at = Instant::now();
+        assert_eq!(
+            ModeratedFetch::RetryAt(at).without_retry(),
+            ModeratedFetch::Idle
+        );
+        assert_eq!(
+            ModeratedFetch::InFlight.without_retry(),
+            ModeratedFetch::InFlight
+        );
     }
 
     #[test]
