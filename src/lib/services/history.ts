@@ -53,7 +53,8 @@ async function once(
 /// the first time.
 export function older(broadcasterId: string): Promise<void> {
   return once(broadcasterId, async (current) => {
-    const view = historyViews[broadcasterId] ?? {
+    const opened = historyViews[broadcasterId];
+    const view = opened ?? {
       entries: live(broadcasterId),
       atOldest: false,
       atLive: true,
@@ -64,7 +65,7 @@ export function older(broadcasterId: string): Promise<void> {
     if (nothingBefore.get(broadcasterId) === anchor) return;
     const page = await feedLog.page(
       broadcasterId,
-      first ? cursorAt("before", first) : cursorBeforeNow(),
+      opened && first ? cursorAt("before", first) : cursorBeforeNow(),
       PAGE,
     );
     if (!current()) return;
