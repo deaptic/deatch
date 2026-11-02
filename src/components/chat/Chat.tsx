@@ -292,15 +292,16 @@ export default function Chat(props: Props) {
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
         footer={
           <Show when={feedApi()?.isPaused()}>
-            <Button
-              size="sm"
-              shape="pill"
-              icon={<ChevronDown class="size-4" />}
-              onClick={jumpToLatest}
-              class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
-            >
-              {t("CHAT_NEW_MESSAGES")}
-            </Button>
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+              <Button
+                size="sm"
+                shape="pill"
+                icon={<ChevronDown class="size-4" />}
+                onClick={jumpToLatest}
+              >
+                {t("CHAT_NEW_MESSAGES")}
+              </Button>
+            </div>
           </Show>
         }
         ref={setFeedApi}
