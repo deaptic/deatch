@@ -131,7 +131,10 @@ export default function Feed(props: Props) {
   }
 
   function toPresent() {
-    if (ownsHistory()) history.close(props.broadcasterId);
+    const view = historyViews[props.broadcasterId];
+    if (ownsHistory() && view && !view.atLive) {
+      history.close(props.broadcasterId);
+    }
     scroll.toBottom();
   }
   onCleanup(() => {
