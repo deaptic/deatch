@@ -17,7 +17,7 @@ const SHADES: Record<ResolvedTheme, (base: Oklch) => AccentShades> = {
     accent: oklchCss({ ...b, l: 0.52 }),
     hover: oklchCss({ ...b, l: 0.56 }),
     ink: oklchCss({ l: 0.82, c: Math.min(b.c, 0.13), h: b.h }),
-    soft: oklchCss({ ...b, l: 0.58 }, 0.14),
+    soft: oklchCss({ ...b, l: 0.52 }, 0.14),
   }),
   light: (b) => ({
     accent: oklchCss({ ...b, l: 0.54 }),

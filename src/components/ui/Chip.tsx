@@ -2,10 +2,10 @@ import { X } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 
-type Variant = "pill" | "command" | "media";
+type Variant = "tag" | "command" | "media";
 
 const SHAPES: Record<Variant, string> = {
-  pill: "h-control-sm px-3 rounded-full text-small font-semibold",
+  tag: "h-control-sm px-3 rounded-sm text-small font-semibold",
   command: "shrink-0 px-2 py-1 rounded-sm text-body font-semibold",
   media: "px-1.5 py-0.5 rounded-xs text-micro tabular-nums",
 };
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default function Chip(props: Props) {
-  const variant = () => props.variant ?? "pill";
+  const variant = () => props.variant ?? "tag";
   const tone = () => {
     if (variant() === "media") return "bg-media-scrim text-on-accent";
     return props.selected

@@ -1,4 +1,4 @@
-type DividerVariant = "accent" | "pill";
+type DividerVariant = "accent" | "tag";
 
 const LOOKS: Record<
   DividerVariant,
@@ -9,11 +9,11 @@ const LOOKS: Record<
     rule: "border-dotted border-accent",
     label: "text-micro text-accent-ink px-2",
   },
-  pill: {
+  tag: {
     box: "my-2",
     rule: "border-line-soft",
     label:
-      "h-6 px-3 inline-flex items-center rounded-full border border-line-soft text-small font-semibold text-ink-soft",
+      "h-6 px-3 inline-flex items-center rounded-sm border border-line-soft text-small font-semibold text-ink-soft",
   },
 };
 

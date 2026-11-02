@@ -1,12 +1,12 @@
-export type TallyMark = "selected" | "unread" | "none";
+export type EdgeMarkKind = "selected" | "unread" | "none";
 
-const MARKS: Record<TallyMark, string> = {
+const MARKS: Record<EdgeMarkKind, string> = {
   selected: "h-full bg-accent",
   unread: "h-2 bg-ink-soft",
   none: "h-0",
 };
 
-export default function Tally(props: { mark: TallyMark }) {
+export default function EdgeMark(props: { mark: EdgeMarkKind }) {
   return (
     <span
       aria-hidden

@@ -13,7 +13,7 @@ export default function ColorPicker(props: Props) {
   return (
     <div class="flex items-center gap-2">
       <label
-        class="relative size-7 rounded-full border border-line cursor-pointer overflow-hidden bg-(--swatch)"
+        class="relative size-7 rounded-sm border border-line cursor-pointer overflow-hidden bg-(--swatch)"
         style={{ "--swatch": props.swatchColor }}
         data-tip={t("UI_PICK_COLOUR")}
       >

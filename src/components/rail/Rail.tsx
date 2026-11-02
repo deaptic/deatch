@@ -308,7 +308,7 @@ export default function Rail(props: Props) {
                           onMouseDown={(e) => startDrag(e, index())}
                         >
                           <Show when={isOver()}>
-                            <div class="pointer-events-none absolute left-3 right-3 -top-px h-0.5 bg-accent rounded-full z-10" />
+                            <div class="pointer-events-none absolute left-3 right-3 -top-px h-0.5 bg-accent z-10" />
                           </Show>
                           <ChannelRow
                             ch={c()}
