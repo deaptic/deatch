@@ -47,3 +47,9 @@ export function withNewer(
     atLive: reachedLive,
   };
 }
+
+export function withLive(view: HistoryView, live: FeedEntry[]): FeedEntry[] {
+  if (!view.atLive) return view.entries;
+  const liveIds = new Set(live.map(getEntryId));
+  return [...view.entries.filter((e) => !liveIds.has(getEntryId(e))), ...live];
+}

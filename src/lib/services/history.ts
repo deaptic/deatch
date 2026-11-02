@@ -5,7 +5,7 @@ import { historyViews, setHistoryViews } from "../stores/history.ts";
 import type { FeedEntry } from "../types/index.ts";
 import type { InvokeOptions } from "../api/utils.ts";
 import { withNewer, withOlder } from "../utils/historyView.ts";
-import { cursorAt } from "../utils/feedLog.ts";
+import { cursorAt, cursorBeforeNow } from "../utils/feedLog.ts";
 import { getEntryId } from "../utils/entryId.ts";
 
 const PAGE = 200;
@@ -59,16 +59,17 @@ export function older(broadcasterId: string): Promise<void> {
       atLive: true,
     };
     const first = view.entries[0];
-    if (!first || view.atOldest) return;
-    if (nothingBefore.get(broadcasterId) === getEntryId(first)) return;
+    if (view.atOldest) return;
+    const anchor = first ? getEntryId(first) : "";
+    if (nothingBefore.get(broadcasterId) === anchor) return;
     const page = await feedLog.page(
       broadcasterId,
-      cursorAt("before", first),
+      first ? cursorAt("before", first) : cursorBeforeNow(),
       PAGE,
     );
     if (!current()) return;
     if (page.length === 0 && !historyViews[broadcasterId]) {
-      nothingBefore.set(broadcasterId, getEntryId(first));
+      nothingBefore.set(broadcasterId, anchor);
       return;
     }
     setHistoryViews(broadcasterId, withOlder(view, page, MAX_VIEW));

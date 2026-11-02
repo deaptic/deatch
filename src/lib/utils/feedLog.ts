@@ -14,6 +14,10 @@ export function cursorAt(side: Side, entry: FeedEntry): Cursor {
   return { side, id: getEntryId(entry), timestamp: entry.timestamp };
 }
 
+export function cursorBeforeNow(): Cursor {
+  return { side: "before", id: "", timestamp: Date.now() };
+}
+
 function isFeedEntry(value: unknown): value is FeedEntry {
   if (typeof value !== "object" || value === null) return false;
   if (!("timestamp" in value) || typeof value.timestamp !== "number") {
