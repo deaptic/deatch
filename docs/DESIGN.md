@@ -1,8 +1,8 @@
 # Design system
 
 The app keeps every chat you care about open at once, for people who spend hours
-in it. It should feel like a warm, well-lit room: switching is effortless and
-nothing gets in the way of reading.
+in it. It should feel like a moderation desk: calm graphite around the chat,
+every channel's state readable at a glance, and nothing in the way of reading.
 
 This is the rulebook. It says what the tokens mean and how things are built, not
 how each screen is laid out. Values live once, in the `@theme` block of
@@ -11,8 +11,8 @@ how each screen is laid out. Values live once, in the `@theme` block of
 ## Principles
 
 Reading comes first; if a choice makes chat harder to read, it is wrong. The
-interface is quiet so chat can be loud: plum-tinted surfaces, round corners,
-soft type, every common action one click or key away. Everything is flat, with
+interface is quiet so chat can be loud: cool graphite surfaces, tight corners,
+plain type, every common action one click or key away. Everything is flat, with
 no shadows, gradients, blur, or glass; depth comes from stepping between tones,
 plus a 1px line where a step alone is ambiguous. Neutrals build structure and
 anything with chroma is a signal: live, mention, event, status, selected. There
@@ -112,6 +112,11 @@ field; Escape, Tab, or clicking away close it unchanged.
 A value on a range is a `StopSlider` when it snaps to a few labelled choices
 (text size, zoom), or a `Slider` when it is continuous and changes live while
 dragging (a volume); a `Slider`'s value shows next to it, where it fits.
+
+The selected row in a list or nav is marked by `Tally`, a 3px `accent` bar on
+its leading edge over a `raised` row; the row itself stays neutral. Feed rows
+use that edge for their tone, so a selected feed row takes an `accent` outline
+instead.
 
 Fading means unusable: 40% for anything that can't be used or is finished
 (disabled controls, resolved AutoMod holds, a dragged rail row). Something

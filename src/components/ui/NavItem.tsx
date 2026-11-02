@@ -1,6 +1,7 @@
 import { type JSX, Show } from "solid-js";
 import { createSideTip } from "./createSideTip.tsx";
 import TipLabel from "./TipLabel.tsx";
+import Tally from "./Tally.tsx";
 
 type Props = {
   label: string;
@@ -23,11 +24,11 @@ export default function NavItem(props: Props) {
       }`;
     }
     const tone = props.active
-      ? "bg-accent-soft text-accent-ink"
+      ? "bg-raised text-ink"
       : "text-ink-soft hover:bg-raised hover:text-ink";
     return props.collapsed
-      ? `size-10 justify-center rounded-sm ${tone}`
-      : `h-10 px-2.5 rounded-sm text-left ${tone}`;
+      ? `size-10 justify-center rounded-sm overflow-hidden ${tone}`
+      : `h-10 px-2.5 rounded-sm overflow-hidden text-left ${tone}`;
   };
 
   return (
@@ -56,8 +57,13 @@ export default function NavItem(props: Props) {
         <Show when={!props.collapsed}>
           <span class="min-w-0 truncate">{props.label}</span>
         </Show>
-        <Show when={horizontal() && props.active}>
-          <span class="absolute left-3 right-3 bottom-0 h-0.75 rounded-full bg-accent" />
+        <Show
+          when={horizontal()}
+          fallback={<Tally mark={props.active ? "selected" : "none"} />}
+        >
+          <Show when={props.active}>
+            <span class="absolute left-3 right-3 bottom-0 h-0.75 bg-accent" />
+          </Show>
         </Show>
       </button>
       {tip.view()}
