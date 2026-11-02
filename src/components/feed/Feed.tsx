@@ -383,7 +383,7 @@ export default function Feed(props: Props) {
               >
                 <Show when={startsDay(getEntryId(entry))}>
                   <Divider
-                    variant="pill"
+                    variant="tag"
                     label={dayLabel(entry.timestamp, Date.now())}
                   />
                 </Show>

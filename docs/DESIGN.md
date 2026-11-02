@@ -44,7 +44,7 @@ rows), `on-accent` (text on fills). Users may replace it; only its hue and
 chroma are kept, so the set stays readable.
 
 Status colours are `live`, `positive`, `caution`, `negative`, `info`. Live and
-negative share a hue; shape tells them apart (a dot or pill is live). Events
+negative share a hue; shape tells them apart (a dot or the square-lamp tag is live). Events
 have `event-*`, one per Twitch event, shown as a 3px bar and a 10% tint, never a
 fill. When Twitch says which colour an event wears, it wears that one: an
 announcement takes the broadcaster's pick from `event-announce-*`, or
@@ -59,9 +59,10 @@ payloads. The scale is `hero` (greetings), `heading` (page titles), `title`
 tooltips, chips), `micro` (badges, counts). The feed sizes in `em` from the
 user's chat text size, so everything in a row scales with it.
 
-Space is the 4px scale. Radius grows with the thing: `xs` (only nested in `sm`),
-`sm` (controls), `md` (popovers, cards, composer), `lg` (dialogs, big cards),
-`round` (avatars, pills, badges). Control heights are `control-sm/md/lg`;
+Space is the 4px scale. Radius grows with the thing: `xs` (nested in `sm`, and thin
+things: meters, the live tag), `sm` (controls), `md` (popovers, cards, composer), `lg` (dialogs, big cards),
+`round` (avatars, presence dots, badges, toggles, buttons floating over
+content). Control heights are `control-sm/md/lg`;
 icon-only controls are square with a hit target of at least 32px. Motion is
 `snap` (colour changes), `quick` (small moves, popovers), `settle` (panes,
 pages), always `ease-out`.
@@ -113,7 +114,7 @@ A value on a range is a `StopSlider` when it snaps to a few labelled choices
 (text size, zoom), or a `Slider` when it is continuous and changes live while
 dragging (a volume); a `Slider`'s value shows next to it, where it fits.
 
-The selected row in a list or nav is marked by `Tally`, a 3px `accent` bar on
+The selected row in a list or nav is marked by `EdgeMark`, a 3px `accent` bar on
 its leading edge over a `raised` row; the row itself stays neutral. Feed rows
 use that edge for their tone, so a selected feed row takes an `accent` outline
 instead.

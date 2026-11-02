@@ -1,7 +1,7 @@
 import { type JSX, Show } from "solid-js";
 import { createSideTip } from "./createSideTip.tsx";
 import TipLabel from "./TipLabel.tsx";
-import Tally from "./Tally.tsx";
+import EdgeMark from "./EdgeMark.tsx";
 
 type Props = {
   label: string;
@@ -59,7 +59,7 @@ export default function NavItem(props: Props) {
         </Show>
         <Show
           when={horizontal()}
-          fallback={<Tally mark={props.active ? "selected" : "none"} />}
+          fallback={<EdgeMark mark={props.active ? "selected" : "none"} />}
         >
           <Show when={props.active}>
             <span class="absolute left-3 right-3 bottom-0 h-0.75 bg-accent" />

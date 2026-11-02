@@ -9,11 +9,11 @@ type Props = {
 export default function LivePill(props: Props) {
   return (
     <span
-      class={`inline-flex items-center gap-1.5 h-5.5 pl-2 pr-2.5 rounded-full text-micro tabular-nums whitespace-nowrap ${
+      class={`inline-flex items-center gap-1.5 h-5.5 pl-2 pr-2.5 rounded-xs text-micro tabular-nums whitespace-nowrap ${
         props.solid ? "bg-live text-on-accent" : "bg-live/15 text-live"
       }`}
     >
-      <span class="size-1.5 rounded-full bg-current" />
+      <span class="size-1.5 bg-current" />
       {t("UI_LIVE")}
       {props.viewers !== undefined && (
         <span class="opacity-80">· {formatViewers(props.viewers)}</span>

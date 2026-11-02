@@ -23,13 +23,11 @@ export default function Meter(props: Props) {
       aria-valuemin={0}
       aria-valuemax={props.max}
       aria-valuenow={props.value}
-      class="h-1.5 w-full rounded-full bg-raised overflow-hidden"
+      class="h-1.5 w-full rounded-xs bg-raised overflow-hidden"
     >
       <div
         style={{ "--fill": `${percent()}%` }}
-        class={`h-full w-(--fill) rounded-full ${
-          FILL[props.tone ?? "neutral"]
-        }`}
+        class={`h-full w-(--fill) rounded-xs ${FILL[props.tone ?? "neutral"]}`}
       />
     </div>
   );

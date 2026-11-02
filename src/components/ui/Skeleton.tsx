@@ -7,7 +7,7 @@ type Props = {
 
 const SHAPES: Record<Shape, string> = {
   block: "rounded-sm",
-  line: "rounded-full",
+  line: "rounded-xs",
   circle: "rounded-full",
   card: "rounded-lg",
 };
