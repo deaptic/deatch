@@ -289,6 +289,7 @@ export default function Feed(props: Props) {
         setSelectedId(null);
         queueMicrotask(scroll.toBottom);
       },
+      { defer: true },
     ),
   );
 
