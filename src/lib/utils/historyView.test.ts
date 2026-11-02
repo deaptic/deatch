@@ -1,7 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import type { FeedEntry } from "../types/index.ts";
 import { getEntryId } from "./entryId.ts";
-import { withNewer, withOlder } from "./historyView.ts";
+import { withLive, withNewer, withOlder } from "./historyView.ts";
 
 const m = (n: number): FeedEntry =>
   ({
@@ -45,4 +45,30 @@ test("paging newer past the limit lets go of the oldest end", () => {
   const next = withNewer(view([1, 2], true), [m(3), m(4)], [], 2, 3);
   expect(ids(next.entries)).toStrictEqual(["m2", "m3", "m4"]);
   expect(next.atOldest).toBe(false);
+});
+
+test("a view at live shows the live entries after its older ones", () => {
+  const live = [m(3), m(4), m(5)];
+  expect(ids(withLive(view([1, 2, 3], false, true), live))).toStrictEqual([
+    "m1",
+    "m2",
+    "m3",
+    "m4",
+    "m5",
+  ]);
+  expect(ids(withLive(view([1, 2, 3]), live))).toStrictEqual([
+    "m1",
+    "m2",
+    "m3",
+  ]);
+});
+
+test("a view at live takes the live state of an entry it also holds", () => {
+  const stale = { ...m(2), deleted: false } as unknown as FeedEntry;
+  const fresh = { ...m(2), deleted: true } as unknown as FeedEntry;
+  const shown = withLive(
+    { entries: [m(1), stale], atOldest: false, atLive: true },
+    [fresh],
+  );
+  expect(shown.at(-1)).toBe(fresh);
 });

@@ -20,9 +20,9 @@ import type {
 import { feeds, isFeedEntryVisible } from "../../lib/stores/feeds.ts";
 import { getEntryId } from "../../lib/utils/entryId.ts";
 import { historyViews } from "../../lib/stores/history.ts";
+import { withLive } from "../../lib/utils/historyView.ts";
 import * as history from "../../lib/services/history.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
-import { isAtBottom } from "../../lib/utils/feedScroll.ts";
 import {
   thirdPartyEmoteMap,
   usableFavorites,
@@ -99,11 +99,9 @@ export default function Feed(props: Props) {
   });
 
   const entries = createMemo<FeedEntry[]>(() => {
-    const all =
-      props.entries ??
-      historyViews[props.broadcasterId]?.entries ??
-      feeds[props.broadcasterId]?.messages ??
-      [];
+    const live = feeds[props.broadcasterId]?.messages ?? [];
+    const view = historyViews[props.broadcasterId];
+    const all = props.entries ?? (view ? withLive(view, live) : live);
     return props.filter ? all.filter(props.filter) : all;
   });
   const ids = createMemo(() => entries().map(getEntryId));
@@ -122,18 +120,12 @@ export default function Feed(props: Props) {
   const ownsHistory = () => props.entries === undefined;
 
   /// Near the top, reads further back; near the bottom of a stretch of
-  /// history, reads forward, and at its end hands back to the live feed.
+  /// history, reads forward until it meets the live feed.
   function loadAtEdges(el: HTMLElement) {
     if (!ownsHistory()) return;
     const id = props.broadcasterId;
     if (el.scrollTop < el.clientHeight) void history.older(id);
-    const view = historyViews[id];
-    if (!view) return;
-    if (view.atLive && isAtBottom(el)) history.close(id);
-    else if (
-      el.scrollHeight - el.clientHeight - el.scrollTop <
-      el.clientHeight
-    ) {
+    if (el.scrollHeight - el.clientHeight - el.scrollTop < el.clientHeight) {
       void history.newer(id);
     }
   }
@@ -296,6 +288,17 @@ export default function Feed(props: Props) {
   // The last entry, not the count: at the cap every append evicts one, so
   // the length never changes.
   createEffect(on(() => entries().at(-1), scroll.keep));
+
+  createEffect(
+    on(entries, () =>
+      queueMicrotask(() => {
+        const el = scrollRef;
+        if (ownsHistory() && el && el.scrollHeight <= el.clientHeight) {
+          void history.older(props.broadcasterId);
+        }
+      }),
+    ),
+  );
 
   onMount(() => {
     if (listRef) onCleanup(scroll.watch(listRef));
