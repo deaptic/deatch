@@ -1,5 +1,6 @@
 import { type JSX, Show } from "solid-js";
 import Badge from "../ui/Badge.tsx";
+import Tally from "../ui/Tally.tsx";
 import { createSideTip } from "../ui/createSideTip.tsx";
 import TipLabel from "../ui/TipLabel.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
@@ -70,19 +71,12 @@ export default function RailRow(props: Props) {
           props.dimmed ? "opacity-40" : ""
         }`}
       >
-        <span
-          aria-hidden
-          class={`absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-full transition-all duration-quick ease-out ${
-            props.selected
-              ? "h-full bg-accent"
-              : props.unread
-                ? "h-2 bg-ink-soft"
-                : "h-0"
-          }`}
+        <Tally
+          mark={props.selected ? "selected" : props.unread ? "unread" : "none"}
         />
         <span
           class={`flex-1 min-w-0 h-full flex items-center gap-3 pl-4 pr-2 rounded-r-sm overflow-hidden transition-colors duration-snap ${
-            props.selected ? "bg-accent-soft" : "group-hover:bg-raised"
+            props.selected ? "bg-raised" : "group-hover:bg-raised"
           }`}
         >
           <span class="relative shrink-0 flex">
