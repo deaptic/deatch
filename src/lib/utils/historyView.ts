@@ -17,7 +17,9 @@ export function withOlder(
   page: FeedEntry[],
   max: number,
 ): HistoryView {
-  const entries = unique([...page, ...view.entries]);
+  const entries = unique([...page, ...view.entries]).sort(
+    (a, b) => a.timestamp - b.timestamp,
+  );
   const trimmed = entries.length > max;
   return {
     entries: trimmed ? entries.slice(0, max) : entries,
@@ -51,5 +53,8 @@ export function withNewer(
 export function withLive(view: HistoryView, live: FeedEntry[]): FeedEntry[] {
   if (!view.atLive) return view.entries;
   const liveIds = new Set(live.map(getEntryId));
-  return [...view.entries.filter((e) => !liveIds.has(getEntryId(e))), ...live];
+  return [
+    ...view.entries.filter((e) => !liveIds.has(getEntryId(e))),
+    ...live,
+  ].sort((a, b) => a.timestamp - b.timestamp);
 }

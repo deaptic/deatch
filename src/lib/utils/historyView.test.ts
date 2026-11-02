@@ -23,6 +23,11 @@ test("an older page goes first, and an empty one marks the oldest", () => {
   expect(withOlder(view([3]), [], 10).atOldest).toBe(true);
 });
 
+test("an older page newer than part of the view is laid in time order", () => {
+  const next = withOlder(view([2, 6], false, true), [m(1), m(4)], 10);
+  expect(ids(next.entries)).toStrictEqual(["m1", "m2", "m4", "m6"]);
+});
+
 test("paging older past the limit lets go of the newest end", () => {
   const next = withOlder(view([3, 4], false, true), [m(1), m(2)], 3);
   expect(ids(next.entries)).toStrictEqual(["m1", "m2", "m3"]);
@@ -60,6 +65,15 @@ test("a view at live shows the live entries after its older ones", () => {
     "m1",
     "m2",
     "m3",
+  ]);
+});
+
+test("a view at live interleaves logged entries newer than the live ones", () => {
+  expect(ids(withLive(view([1, 5], false, true), [m(3), m(9)]))).toStrictEqual([
+    "m1",
+    "m3",
+    "m5",
+    "m9",
   ]);
 });
 
