@@ -227,6 +227,14 @@ export default function Feed(props: Props) {
     setSelectedId(null);
   }
 
+  onMount(() => {
+    const onFocusIn = (e: FocusEvent) => {
+      if (!rootRef?.contains(e.target as Node)) clearSelection();
+    };
+    document.addEventListener("focusin", onFocusIn);
+    onCleanup(() => document.removeEventListener("focusin", onFocusIn));
+  });
+
   createEffect(() => {
     shortcuts.setContext("feedSelected", selectedId() !== null);
   });
@@ -268,7 +276,9 @@ export default function Feed(props: Props) {
         `[data-item-id="${CSS.escape(target.messageId)}"]`,
       );
       if (el) {
-        scroll.jumpTo(el, behavior, () => setSelectedId(target.messageId));
+        scroll.jumpTo(target.messageId, el, behavior, () =>
+          setSelectedId(target.messageId),
+        );
       }
       setJumpTarget(null);
     });
@@ -353,10 +363,6 @@ export default function Feed(props: Props) {
       ref={rootRef}
       class={`flex-1 relative min-h-0 ${props.class ?? ""}`}
       style={props.style}
-      onFocusOut={(e) => {
-        const next = e.relatedTarget as Node | null;
-        if (!next || !rootRef?.contains(next)) clearSelection();
-      }}
     >
       {props.header}
       <div

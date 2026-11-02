@@ -107,19 +107,33 @@ export function createFeedScroll(
   }
 
   function jumpTo(
+    id: string,
     item: HTMLElement,
     behavior: JumpBehavior,
     onArrive: () => void,
   ) {
     const el = scroller();
     if (!el) return;
-    const itemTop =
-      item.getBoundingClientRect().top -
-      el.getBoundingClientRect().top +
-      el.scrollTop;
-    const top = centeredScrollTop(el, itemTop, item.offsetHeight);
+    const centred = () =>
+      centeredScrollTop(
+        el,
+        item.getBoundingClientRect().top -
+          el.getBoundingClientRect().top +
+          el.scrollTop,
+        item.offsetHeight,
+      );
+    const top = centred();
     const arrive = () => {
+      if (item.isConnected) {
+        const before = el.scrollTop;
+        el.scrollTop = centred();
+        if (el.scrollTop !== before) echo = true;
+      }
       settle(el);
+      const at = rows.topOf(id);
+      if (mode() === "paused" && at !== null) {
+        anchor = { id, offset: at - el.scrollTop };
+      }
       onArrive();
     };
     if (Math.abs(top - el.scrollTop) < 1) {
