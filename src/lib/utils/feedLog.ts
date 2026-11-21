@@ -1,5 +1,20 @@
 import type { Cursor, FeedEntry, LogEntry, Side } from "../types/index.ts";
 import { getEntryId } from "./entryId.ts";
+import {
+  CHAT_CONNECT_FAILED,
+  CHAT_CONNECTED,
+  CHAT_DISCONNECTED,
+} from "../constants/events.ts";
+
+const CONNECTION_NOTICES: ReadonlySet<string> = new Set([
+  CHAT_CONNECTED,
+  CHAT_DISCONNECTED,
+  CHAT_CONNECT_FAILED,
+]);
+
+export function isLogged(entry: FeedEntry): boolean {
+  return !(entry.kind === "event" && CONNECTION_NOTICES.has(entry.notice_type));
+}
 
 export function toLogEntry(entry: FeedEntry): LogEntry {
   return {
@@ -43,5 +58,5 @@ export function fromLog(lines: string[]): FeedEntry[] {
   const dropped = lines.length - entries.length;
   if (dropped > 0)
     console.warn(`feed log: ${dropped} unreadable entries skipped`);
-  return entries;
+  return entries.filter(isLogged);
 }

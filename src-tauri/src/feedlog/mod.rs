@@ -15,7 +15,8 @@ const PRUNE_EVERY: Duration = Duration::from_secs(60 * 60);
 
 pub const SCHEMA: Schema = Schema {
     feature: "feedlog",
-    steps: &["CREATE TABLE feed_entries (
+    steps: &[
+        "CREATE TABLE feed_entries (
             channel TEXT NOT NULL,
             id TEXT NOT NULL,
             timestamp INTEGER NOT NULL,
@@ -23,8 +24,16 @@ pub const SCHEMA: Schema = Schema {
             UNIQUE (channel, id)
         );
         CREATE INDEX feed_entries_by_channel_time ON feed_entries (channel, timestamp);
-        CREATE INDEX feed_entries_by_time ON feed_entries (timestamp);"],
+        CREATE INDEX feed_entries_by_time ON feed_entries (timestamp);",
+        DROP_CONNECTION_NOTICES,
+    ],
 };
+
+const DROP_CONNECTION_NOTICES: &str = "DELETE FROM feed_entries
+    WHERE json_valid(entry)
+      AND json_extract(entry, '$.kind') = 'event'
+      AND json_extract(entry, '$.notice_type')
+          IN ('chat_connected', 'chat_disconnected', 'chat_connect_failed');";
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
@@ -248,6 +257,39 @@ mod tests {
         )
         .unwrap();
         db
+    }
+
+    #[test]
+    fn connection_notices_are_dropped_from_old_logs() {
+        let notice = |id: &str, kind: &str| {
+            entry(
+                id,
+                1,
+                &format!(r#"{{"kind":"event","notice_type":"{kind}"}}"#),
+            )
+        };
+        let db = log(vec![
+            notice("a", "chat_connected"),
+            notice("b", "chat_disconnected"),
+            notice("c", "chat_connect_failed"),
+            notice("d", "follow"),
+            entry(
+                "e",
+                1,
+                r#"{"kind":"message","notice_type":"chat_connected"}"#,
+            ),
+            entry("f", 1, "not json"),
+        ]);
+        db.execute_batch(DROP_CONNECTION_NOTICES).unwrap();
+        let mut kept = db
+            .prepare("SELECT id FROM feed_entries ORDER BY id")
+            .unwrap()
+            .query_map([], |row| row.get::<_, String>(0))
+            .unwrap()
+            .collect::<std::result::Result<Vec<_>, _>>()
+            .unwrap();
+        kept.sort();
+        assert_eq!(kept, ["d", "e", "f"]);
     }
 
     fn page_of(db: &Connection, side: Side, id: &str, timestamp: u64, limit: usize) -> Vec<String> {

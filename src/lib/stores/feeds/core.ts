@@ -1,6 +1,7 @@
 import { createStore, produce } from "solid-js/store";
 import type { BadgeMap, FeedEntry } from "../../types/index.ts";
 import { getEntryId } from "../../utils/entryId.ts";
+import { isLogged } from "../../utils/feedLog.ts";
 
 export type ChannelFeed = {
   messages: FeedEntry[];
@@ -20,6 +21,7 @@ const unlogged = new Map<string, Map<string, FeedEntry>>();
 export function toLog(broadcasterId: string, entries: Iterable<FeedEntry>) {
   let channel = unlogged.get(broadcasterId);
   for (const entry of entries) {
+    if (!isLogged(entry)) continue;
     if (!channel) {
       channel = new Map();
       unlogged.set(broadcasterId, channel);

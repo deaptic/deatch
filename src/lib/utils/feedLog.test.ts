@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { FeedEntry } from "../types/index.ts";
-import { cursorAt, fromLog, toLogEntry } from "./feedLog.ts";
+import { cursorAt, fromLog, isLogged, toLogEntry } from "./feedLog.ts";
 
 const message = {
   kind: "message",
@@ -44,4 +44,23 @@ test("a cursor names its entry by id and moment", () => {
     id: "e1",
     timestamp: 6,
   });
+});
+
+test("connection notices are kept out of the log", () => {
+  const notice = (notice_type: string) =>
+    ({
+      kind: "event",
+      id: notice_type,
+      timestamp: 1,
+      notice_type,
+    }) as unknown as FeedEntry;
+  expect(isLogged(notice("chat_connected"))).toBe(false);
+  expect(isLogged(notice("chat_disconnected"))).toBe(false);
+  expect(isLogged(notice("chat_connect_failed"))).toBe(false);
+  expect(isLogged(notice("follow"))).toBe(true);
+  expect(isLogged(message)).toBe(true);
+  const stored = [notice("chat_connected"), notice("follow")].map(
+    (e) => toLogEntry(e).entry,
+  );
+  expect(fromLog(stored).map((e) => e.timestamp)).toHaveLength(1);
 });
