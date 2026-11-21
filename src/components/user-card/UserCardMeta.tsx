@@ -68,7 +68,8 @@ export default function UserCardMeta(props: Props) {
             role="img"
             aria-label={followTip(props.follow)}
             data-tip={followTip(props.follow)}
-            class={`${CHIP} text-on-accent`}
+            class={`${CHIP} text-on-accent cursor-default`}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             <Heart
               class={`size-4 ${props.follow.kind === "unknown" ? "opacity-60" : ""}`}
