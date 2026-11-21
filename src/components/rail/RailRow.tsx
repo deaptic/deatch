@@ -76,7 +76,11 @@ export default function RailRow(props: Props) {
         <EdgeMark
           mark={props.selected ? "selected" : props.unread ? "unread" : "none"}
         />
-        <span class="flex-1 min-w-0 h-full flex items-center gap-3 px-2 overflow-hidden rounded-md pressable group-hover:bg-raised group-active:pressed">
+        <span
+          class={`flex-1 min-w-0 h-full flex items-center gap-3 px-2 overflow-hidden rounded-md pressable group-active:pressed ${
+            expanded() ? "group-hover:bg-raised" : ""
+          }`}
+        >
           <span class="relative shrink-0 flex">
             {props.children}
             <Show when={hasMentions() && !expanded()}>

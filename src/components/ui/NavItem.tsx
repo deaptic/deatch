@@ -61,9 +61,9 @@ export default function NavItem(props: Props) {
       >
         <EdgeMark mark={props.active ? "selected" : "none"} />
         <span
-          class={`flex-1 min-w-0 h-10 flex items-center gap-2.5 overflow-hidden text-left rounded-md pressable group-hover:bg-raised group-active:pressed ${
-            props.collapsed ? "justify-center" : "px-2.5"
-          } ${tone()}`}
+          class={`flex-1 min-w-0 h-10 flex items-center gap-2.5 overflow-hidden text-left rounded-md pressable group-active:pressed ${
+            props.collapsed ? "" : "group-hover:bg-raised"
+          } ${props.collapsed ? "justify-center" : "px-2.5"} ${tone()}`}
         >
           {icon("[&>svg]:size-5")}
           <Show when={!props.collapsed}>
