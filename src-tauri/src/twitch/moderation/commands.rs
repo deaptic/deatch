@@ -1,9 +1,10 @@
 use super::dto::BannedUser;
 use crate::error::Result;
 use crate::twitch::moderation::{
-    self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams, WarnUserParams,
+    self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams,
+    UpdateShieldModeParams, WarnUserParams,
 };
-use crate::twitch::params::BroadcasterUserParams;
+use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -50,4 +51,19 @@ pub async fn manage_held_automod_message(
     params: ManageHeldAutomodMessageParams,
 ) -> Result<()> {
     moderation::manage_held_automod_message(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_shield_mode(twitch: State<'_, Twitch>, params: BroadcasterParams) -> Result<bool> {
+    moderation::get_shield_mode(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn update_shield_mode(
+    twitch: State<'_, Twitch>,
+    params: UpdateShieldModeParams,
+) -> Result<bool> {
+    moderation::update_shield_mode(&twitch.authed().await?, params).await
 }

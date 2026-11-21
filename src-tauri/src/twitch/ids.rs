@@ -53,6 +53,9 @@ id_type!(EmoteSetId);
 id_type!(RewardId);
 id_type!(CommunityGiftId);
 id_type!(SevenTvEmoteSetId);
+id_type!(PollId);
+id_type!(PredictionId);
+id_type!(PredictionOutcomeId);
 
 impl From<UserId> for twitch_api::types::UserId {
     fn from(id: UserId) -> Self {

@@ -18,10 +18,8 @@ import { mentionsIn } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
-import RaidBanner from "./RaidBanner.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
-import { pendingRaid } from "../../lib/stores/raid.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu, {
   type ModAction,
@@ -254,17 +252,8 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex-1 min-h-0 flex flex-col">
-      <Show
-        when={pendingRaid()}
-        fallback={
-          <Show when={!chatConnected()}>
-            <ConnectionBanner />
-          </Show>
-        }
-      >
-        {(raid) => (
-          <RaidBanner raid={raid()} onOpenChannel={props.onOpenChannel} />
-        )}
+      <Show when={!chatConnected()}>
+        <ConnectionBanner />
       </Show>
       <Feed
         broadcasterId={props.broadcasterId}

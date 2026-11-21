@@ -16,10 +16,12 @@ import Card from "../ui/Card.tsx";
 import Stat from "../ui/Stat.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { canModerate, user } from "../../lib/stores/users.ts";
-import ModBar from "./ModBar.tsx";
+import ChannelToolbar from "../channel-tools/ChannelToolbar.tsx";
+import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
 
 type Props = {
   channel: User;
+  onOpenChannel: (broadcasterId: string) => void;
 };
 
 export default function ChannelHeader(props: Props) {
@@ -95,9 +97,13 @@ export default function ChannelHeader(props: Props) {
         </div>
       </Card>
       <Show when={canModerate(props.channel.id)}>
-        <ModBar
+        <ChannelToolbar
           broadcasterId={props.channel.id}
           isBroadcaster={props.channel.id === user()?.id}
+        />
+        <ActivityStrip
+          broadcasterId={props.channel.id}
+          onOpenChannel={props.onOpenChannel}
         />
       </Show>
       {link.menu()}

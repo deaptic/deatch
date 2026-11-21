@@ -84,7 +84,12 @@ from_display!(
 );
 from_display!(Discord: discord_rich_presence::error::Error);
 from_display!(Io: std::io::Error, tauri::Error, rusqlite::Error);
-from_display!(Invalid: serde_json::Error, url::ParseError);
+from_display!(
+    Invalid: serde_json::Error,
+    url::ParseError,
+    time::error::Parse,
+    time::error::Format,
+);
 
 /// A background task's channel closed: the task stopped.
 impl<T> From<tokio::sync::mpsc::error::SendError<T>> for Error {

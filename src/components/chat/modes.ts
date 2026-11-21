@@ -1,3 +1,5 @@
+import type { Component } from "solid-js";
+import { CopyX, Hourglass, Smile, Star, UserCheck } from "lucide-solid";
 import type { ChatSettingsChange } from "../../lib/services/chatSettings.ts";
 import { formatDuration } from "../../lib/format/duration.ts";
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
@@ -6,6 +8,7 @@ import type { ChatSettings } from "../../lib/types/index.ts";
 type Preset = { value: number; label: MessageKey; count?: number };
 
 type Base = {
+  icon: Component<{ class?: string }>;
   label: MessageKey;
   chip: (s: ChatSettings) => string;
   description: (s: ChatSettings) => string;
@@ -22,6 +25,8 @@ export type TimedMode = Base & {
   kind: "timed";
   offLabel: MessageKey;
   current: (s: ChatSettings) => number | null;
+  /// The setting in a few characters ("5m"), or "" when it has no length.
+  short: (s: ChatSettings) => string;
   presets: Preset[];
   set: (value: number) => ChatSettingsChange;
 };
@@ -42,8 +47,10 @@ export const CHAT_MODES: ChatMode[] = [
   {
     kind: "timed",
     label: "CHAT_MODE_SLOW",
+    icon: Hourglass,
     offLabel: "CHAT_MODE_SLOW_OFF",
     current: (s) => s.slowModeSeconds,
+    short: (s) => formatDuration(s.slowModeSeconds ?? 0),
     presets: [
       { value: 3, label: "CHAT_MODE_SECONDS", count: 3 },
       { value: 5, label: "CHAT_MODE_SECONDS", count: 5 },
@@ -67,8 +74,11 @@ export const CHAT_MODES: ChatMode[] = [
   {
     kind: "timed",
     label: "CHAT_MODE_FOLLOWERS",
+    icon: UserCheck,
     offLabel: "CHAT_MODE_FOLLOWERS_OFF",
     current: (s) => s.followerModeMinutes,
+    short: (s) =>
+      s.followerModeMinutes ? followAge(s.followerModeMinutes) : "",
     presets: [
       { value: 0, label: "CHAT_MODE_FOLLOWERS_ANY" },
       { value: 10, label: "CHAT_MODE_MINUTES", count: 10 },
@@ -97,6 +107,7 @@ export const CHAT_MODES: ChatMode[] = [
   {
     kind: "switch",
     label: "CHAT_MODE_SUBSCRIBERS",
+    icon: Star,
     isOn: (s) => s.subscriberMode,
     on: { subscriberMode: true },
     off: { subscriberMode: false },
@@ -106,6 +117,7 @@ export const CHAT_MODES: ChatMode[] = [
   {
     kind: "switch",
     label: "CHAT_MODE_EMOTE_ONLY",
+    icon: Smile,
     isOn: (s) => s.emoteMode,
     on: { emoteMode: true },
     off: { emoteMode: false },
@@ -115,6 +127,7 @@ export const CHAT_MODES: ChatMode[] = [
   {
     kind: "switch",
     label: "CHAT_MODE_UNIQUE",
+    icon: CopyX,
     isOn: (s) => s.uniqueChatMode,
     on: { uniqueChatMode: true },
     off: { uniqueChatMode: false },

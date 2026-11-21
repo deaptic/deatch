@@ -16,7 +16,7 @@ use twitch_api::twitch_oauth2::{
 
 const CLIENT_ID: &str = "9zz5nm0knwecx9icd0xbkmkpnrdhjr";
 
-const SCOPES: [Scope; 32] = [
+const SCOPES: [Scope; 35] = [
     Scope::ChannelReadRedemptions,
     Scope::ChannelReadHypeTrain,
     Scope::ChannelReadPolls,
@@ -49,6 +49,9 @@ const SCOPES: [Scope; 32] = [
     Scope::ChannelEditCommercial,
     Scope::UserManageChatColor,
     Scope::ClipsEdit,
+    Scope::ChannelManagePolls,
+    Scope::ChannelManagePredictions,
+    Scope::ModeratorManageShieldMode,
 ];
 
 pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<DcfAuthResponse> {

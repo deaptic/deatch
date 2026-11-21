@@ -35,7 +35,7 @@ export default function ChatPanes(props: ChatPanesProps) {
       >
         {(ch) => (
           <div class="absolute inset-0 flex flex-col">
-            <ChannelHeader channel={ch} />
+            <ChannelHeader channel={ch} onOpenChannel={props.onOpenChannel} />
             <Boundary label={t("LAYOUT_CHANNEL_ERROR")}>
               <Chat
                 broadcasterId={ch.id}

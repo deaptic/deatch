@@ -1,3 +1,4 @@
+import * as activity from "./activity.ts";
 import * as auth from "./auth.ts";
 import * as channel from "./channel.ts";
 import * as chat from "./chat.ts";
@@ -12,6 +13,7 @@ import * as link from "./link.ts";
 
 export function start(): () => void {
   const stops = [
+    activity.start(),
     auth.start(),
     channel.start(),
     chat.start(),

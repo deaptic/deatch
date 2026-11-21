@@ -57,6 +57,24 @@ export const commands = {
 } | null>("get_ban", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
+	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
+	updateShieldMode: (params: UpdateShieldModeParams) => __TAURI_INVOKE<boolean>("update_shield_mode", { params }),
+	getActivePoll: (params: BroadcasterParams) => __TAURI_INVOKE<{
+	id: PollId,
+	title: string,
+	choices: PollChoice[],
+	endsAt: string,
+} | null>("get_active_poll", { params }),
+	createPoll: (params: CreatePollParams) => __TAURI_INVOKE<null>("create_poll", { params }),
+	endPoll: (params: EndPollParams) => __TAURI_INVOKE<null>("end_poll", { params }),
+	getActivePrediction: (params: BroadcasterParams) => __TAURI_INVOKE<{
+	id: PredictionId,
+	title: string,
+	phase: PredictionPhase,
+	outcomes: PredictionOutcome[],
+} | null>("get_active_prediction", { params }),
+	createPrediction: (params: CreatePredictionParams) => __TAURI_INVOKE<null>("create_prediction", { params }),
+	endPrediction: (params: EndPredictionParams) => __TAURI_INVOKE<null>("end_prediction", { params }),
 	addChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("add_channel_vip", { params }),
 	removeChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("remove_channel_vip", { params }),
 	startRaid: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("start_raid", { params }),
@@ -100,7 +118,7 @@ export const events = {
 };
 
 /* Constants */
-export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.ad_break.begin":"channel-ad-break-begin","channel.bits.use":"channel-bits-use","channel.channel_points_automatic_reward_redemption.add":"channel-points-automatic-redemption-add","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.charity_campaign.start":"channel-charity-campaign-start","channel.charity_campaign.stop":"channel-charity-campaign-stop","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.goal.begin":"channel-goal-begin","channel.goal.end":"channel-goal-end","channel.hype_train.begin":"channel-hype-train-begin","channel.hype_train.end":"channel-hype-train-end","channel.hype_train.progress":"channel-hype-train-progress","channel.moderate":"channel-moderate","channel.poll.begin":"channel-poll-begin","channel.poll.end":"channel-poll-end","channel.prediction.begin":"channel-prediction-begin","channel.prediction.end":"channel-prediction-end","channel.prediction.lock":"channel-prediction-lock","channel.shared_chat.begin":"channel-shared-chat-begin","channel.shared_chat.end":"channel-shared-chat-end","channel.shared_chat.update":"channel-shared-chat-update","channel.shoutout.create":"channel-shoutout-create","channel.shoutout.receive":"channel-shoutout-receive","channel.suspicious_user.message":"channel-suspicious-user-message","channel.suspicious_user.update":"channel-suspicious-user-update","channel.unban_request.create":"channel-unban-request-create","channel.unban_request.resolve":"channel-unban-request-resolve","channel.update":"channel-update","channel.warning.acknowledge":"channel-warning-acknowledge","stream.offline":"stream-offline","stream.online":"stream-online"} as const;
+export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.ad_break.begin":"channel-ad-break-begin","channel.bits.use":"channel-bits-use","channel.channel_points_automatic_reward_redemption.add":"channel-points-automatic-redemption-add","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.charity_campaign.start":"channel-charity-campaign-start","channel.charity_campaign.stop":"channel-charity-campaign-stop","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.goal.begin":"channel-goal-begin","channel.goal.end":"channel-goal-end","channel.hype_train.begin":"channel-hype-train-begin","channel.hype_train.end":"channel-hype-train-end","channel.hype_train.progress":"channel-hype-train-progress","channel.moderate":"channel-moderate","channel.poll.begin":"channel-poll-begin","channel.poll.end":"channel-poll-end","channel.poll.progress":"channel-poll-progress","channel.prediction.begin":"channel-prediction-begin","channel.prediction.end":"channel-prediction-end","channel.prediction.lock":"channel-prediction-lock","channel.prediction.progress":"channel-prediction-progress","channel.shared_chat.begin":"channel-shared-chat-begin","channel.shared_chat.end":"channel-shared-chat-end","channel.shared_chat.update":"channel-shared-chat-update","channel.shield_mode.begin":"channel-shield-mode-begin","channel.shield_mode.end":"channel-shield-mode-end","channel.shoutout.create":"channel-shoutout-create","channel.shoutout.receive":"channel-shoutout-receive","channel.suspicious_user.message":"channel-suspicious-user-message","channel.suspicious_user.update":"channel-suspicious-user-update","channel.unban_request.create":"channel-unban-request-create","channel.unban_request.resolve":"channel-unban-request-resolve","channel.update":"channel-update","channel.warning.acknowledge":"channel-warning-acknowledge","stream.offline":"stream-offline","stream.online":"stream-online"} as const;
 
 /* Types */
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
@@ -305,6 +323,20 @@ export type CreateClipParams = {
 	duration?: number | null,
 };
 
+export type CreatePollParams = {
+	broadcasterId: UserId,
+	title: string,
+	choices: string[],
+	durationSeconds: number,
+};
+
+export type CreatePredictionParams = {
+	broadcasterId: UserId,
+	title: string,
+	outcomes: string[],
+	windowSeconds: number,
+};
+
 export type CreateStreamMarkerParams = {
 	description?: string | null,
 };
@@ -370,13 +402,24 @@ export type EmoteSetUpdated = {
 
 export type EmoteType = "none" | "bitstier" | "follower" | "subscriptions" | "channelpoints" | "rewards" | "hypetrain" | "prime" | "turbo" | "smilies" | "globals" | "owl2019" | "twofactor" | "limitedtime" | "unknown";
 
+export type EndPollParams = {
+	broadcasterId: UserId,
+	pollId: PollId,
+};
+
+export type EndPredictionParams = {
+	broadcasterId: UserId,
+	predictionId: PredictionId,
+	end: PredictionEnd,
+};
+
 export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | 
 /**  The stored token predates a scope the app now needs. */
 { kind: "missingScope"; message: {
 	scope: string,
 } } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
-export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shared_chat.begin" | "channel.shared_chat.update" | "channel.shared_chat.end" | "channel.shoutout.create" | "channel.shoutout.receive" | "channel.follow" | "channel.moderate" | "channel.unban_request.create" | "channel.unban_request.resolve" | "channel.warning.acknowledge" | "channel.suspicious_user.message" | "channel.suspicious_user.update" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.channel_points_automatic_reward_redemption.add" | "channel.update" | "channel.hype_train.begin" | "channel.hype_train.progress" | "channel.hype_train.end" | "channel.poll.begin" | "channel.poll.end" | "channel.prediction.begin" | "channel.prediction.lock" | "channel.prediction.end" | "channel.goal.begin" | "channel.goal.end" | "channel.ad_break.begin" | "channel.bits.use" | "channel.charity_campaign.start" | "channel.charity_campaign.stop" | "stream.online" | "stream.offline";
+export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shared_chat.begin" | "channel.shared_chat.update" | "channel.shared_chat.end" | "channel.shoutout.create" | "channel.shoutout.receive" | "channel.follow" | "channel.moderate" | "channel.unban_request.create" | "channel.unban_request.resolve" | "channel.warning.acknowledge" | "channel.suspicious_user.message" | "channel.suspicious_user.update" | "channel.shield_mode.begin" | "channel.shield_mode.end" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.channel_points_automatic_reward_redemption.add" | "channel.update" | "channel.hype_train.begin" | "channel.hype_train.progress" | "channel.hype_train.end" | "channel.poll.begin" | "channel.poll.progress" | "channel.poll.end" | "channel.prediction.begin" | "channel.prediction.progress" | "channel.prediction.lock" | "channel.prediction.end" | "channel.goal.begin" | "channel.goal.end" | "channel.ad_break.begin" | "channel.bits.use" | "channel.charity_campaign.start" | "channel.charity_campaign.stop" | "stream.online" | "stream.offline";
 
 export type EventSubConnection = {
 	connected: boolean,
@@ -508,6 +551,43 @@ export type PaginatedResponse<T> = {
 export type Pagination = {
 	cursor: string | null,
 };
+
+export type Poll = {
+	id: PollId,
+	title: string,
+	choices: PollChoice[],
+	endsAt: string,
+};
+
+export type PollChoice = {
+	id: string,
+	title: string,
+	votes: number,
+};
+
+export type PollId = string;
+
+export type Prediction = {
+	id: PredictionId,
+	title: string,
+	phase: PredictionPhase,
+	outcomes: PredictionOutcome[],
+};
+
+export type PredictionEnd = { kind: "lock" } | { kind: "resolve"; winningOutcomeId: PredictionOutcomeId } | { kind: "cancel" };
+
+export type PredictionId = string;
+
+export type PredictionOutcome = {
+	id: PredictionOutcomeId,
+	title: string,
+	channelPoints: number,
+	users: number,
+};
+
+export type PredictionOutcomeId = string;
+
+export type PredictionPhase = { kind: "open"; locksAt: string } | { kind: "locked" };
 
 export type PrimePaidUpgradeNotice = {
 	sub_tier: SubTier,
@@ -732,6 +812,11 @@ export type UpdateChatSettingsParams = {
 	slowModeWaitTime?: number | null,
 	subscriberMode?: boolean | null,
 	uniqueChatMode?: boolean | null,
+};
+
+export type UpdateShieldModeParams = {
+	broadcasterId: UserId,
+	active: boolean,
 };
 
 export type UpdateUserChatColorParams = {

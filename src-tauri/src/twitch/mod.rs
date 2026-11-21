@@ -9,6 +9,8 @@ pub mod ids;
 pub mod moderation;
 pub mod pagination;
 pub mod params;
+pub mod polls;
+pub mod predictions;
 pub mod raids;
 pub mod search;
 pub mod session;

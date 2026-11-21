@@ -2,13 +2,32 @@ import { commands } from "../../bindings.ts";
 import type {
   BannedUser,
   BanUserParams,
+  BroadcasterParams,
   BroadcasterUserParams,
   DeleteChatMessagesParams,
   ManageHeldAutomodMessageParams,
+  UpdateShieldModeParams,
   WarnUserParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 import { t } from "../../i18n/index.ts";
+
+export function getShieldMode(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<boolean> {
+  return invokeCommand(commands.getShieldMode, [params], options);
+}
+
+export function updateShieldMode(
+  params: UpdateShieldModeParams,
+  options?: InvokeOptions,
+): Promise<boolean> {
+  return invokeCommand(commands.updateShieldMode, [params], {
+    successMessage: t(params.active ? "TOAST_SHIELD_ON" : "TOAST_SHIELD_OFF"),
+    ...options,
+  });
+}
 
 export async function deleteChatMessages(
   params: DeleteChatMessagesParams,

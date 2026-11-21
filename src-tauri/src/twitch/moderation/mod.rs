@@ -5,7 +5,7 @@ pub mod events;
 use super::Authed;
 use crate::error::Result;
 use crate::twitch::ids::{MessageId, UserId};
-use crate::twitch::params::BroadcasterUserParams;
+use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
 use dto::BannedUser;
 use serde::Deserialize;
@@ -13,7 +13,8 @@ use twitch_api::helix::moderation::{
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
-    GetBannedUsersRequest,
+    update_shield_mode_status::{UpdateShieldModeStatusBody, UpdateShieldModeStatusRequest},
+    GetBannedUsersRequest, GetShieldModeStatusRequest,
 };
 use twitch_api::types;
 
@@ -163,10 +164,43 @@ pub async fn manage_held_automod_message(
     Ok(())
 }
 
+pub async fn get_shield_mode(twitch: &Authed<'_>, params: BroadcasterParams) -> Result<bool> {
+    let request =
+        GetShieldModeStatusRequest::new(params.broadcaster_id.as_str(), &twitch.token.user_id);
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.is_active)
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateShieldModeParams {
+    pub broadcaster_id: UserId,
+    pub active: bool,
+}
+
+pub async fn update_shield_mode(
+    twitch: &Authed<'_>,
+    params: UpdateShieldModeParams,
+) -> Result<bool> {
+    let request =
+        UpdateShieldModeStatusRequest::new(params.broadcaster_id.as_str(), &twitch.token.user_id);
+    let body = UpdateShieldModeStatusBody::is_active(params.active);
+    let response = twitch.helix.req_put(request, body, &twitch.token).await?;
+    Ok(response.data.is_active)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{AutomodAction, ManageHeldAutomodMessageParams};
+    use super::{AutomodAction, ManageHeldAutomodMessageParams, UpdateShieldModeParams};
     use serde_json::json;
+
+    #[test]
+    fn update_shield_mode_params_are_camel_case() {
+        let params: UpdateShieldModeParams =
+            serde_json::from_value(json!({ "broadcasterId": "1", "active": true })).unwrap();
+        assert_eq!(params.broadcaster_id.as_str(), "1");
+        assert!(params.active);
+    }
 
     #[test]
     fn automod_action_is_allow_or_deny() {

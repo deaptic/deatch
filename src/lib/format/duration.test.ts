@@ -1,5 +1,16 @@
 import { expect, test } from "vite-plus/test";
-import { formatApproxDuration, formatDuration } from "./duration.ts";
+import {
+  formatApproxDuration,
+  formatCountdown,
+  formatDuration,
+} from "./duration.ts";
+
+test("formatCountdown shows minutes and padded seconds, rounding up", () => {
+  expect(formatCountdown(5000)).toBe("0:05");
+  expect(formatCountdown(125_000)).toBe("2:05");
+  expect(formatCountdown(4_100)).toBe("0:05");
+  expect(formatCountdown(-3000)).toBe("0:00");
+});
 
 test("formatDuration uses the largest unit that divides evenly", () => {
   expect(formatDuration(0)).toBe("0s");

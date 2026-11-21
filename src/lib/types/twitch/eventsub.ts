@@ -430,7 +430,7 @@ export type RawHypeTrain = {
   is_shared_train: boolean;
 };
 
-// channel.poll.begin / end
+// channel.poll.begin / progress / end
 export type RawPoll = {
   broadcaster_user_id: string;
   id: string;
@@ -442,7 +442,13 @@ export type RawPoll = {
   status?: "completed" | "terminated" | "archived";
 };
 
-// channel.prediction.begin / lock / end
+// channel.shield_mode.begin / end
+export type RawShieldMode = {
+  broadcaster_user_id: string;
+  moderator_user_id: string;
+};
+
+// channel.prediction.begin / progress / lock / end
 export type RawPrediction = {
   broadcaster_user_id: string;
   id: string;

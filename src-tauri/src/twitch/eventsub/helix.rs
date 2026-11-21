@@ -29,9 +29,13 @@ use twitch_api::eventsub::{
         ChannelUnbanRequestCreateV1, ChannelUnbanRequestResolveV1, ChannelUpdateV2,
         ChannelWarningAcknowledgeV1,
     },
-    channel::{ChannelPollBeginV1, ChannelPollEndV1},
-    channel::{ChannelPredictionBeginV1, ChannelPredictionEndV1, ChannelPredictionLockV1},
+    channel::{ChannelPollBeginV1, ChannelPollEndV1, ChannelPollProgressV1},
+    channel::{
+        ChannelPredictionBeginV1, ChannelPredictionEndV1, ChannelPredictionLockV1,
+        ChannelPredictionProgressV1,
+    },
     channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
+    channel::{ChannelShieldModeBeginV1, ChannelShieldModeEndV1},
     stream::{StreamOfflineV1, StreamOnlineV1},
     EventSubSubscription, Status, Transport, TransportResponse,
 };
@@ -157,6 +161,8 @@ async fn create(
         EventKind::ChannelSuspiciousUserUpdate => {
             subscribe!(ChannelSuspiciousUserUpdateV1::new(b, u))
         }
+        EventKind::ChannelShieldModeBegin => subscribe!(ChannelShieldModeBeginV1::new(b, u)),
+        EventKind::ChannelShieldModeEnd => subscribe!(ChannelShieldModeEndV1::new(b, u)),
         EventKind::AutomodMessageHold => subscribe!(AutomodMessageHoldV2::new(b, u)),
         EventKind::AutomodMessageUpdate => subscribe!(AutomodMessageUpdateV2::new(b, u)),
         EventKind::ChannelPointsCustomRewardRedemptionAdd => {
@@ -187,9 +193,13 @@ async fn create(
             broadcaster_user_id: b.into()
         }),
         EventKind::ChannelPollBegin => subscribe!(ChannelPollBeginV1::broadcaster_user_id(b)),
+        EventKind::ChannelPollProgress => subscribe!(ChannelPollProgressV1::broadcaster_user_id(b)),
         EventKind::ChannelPollEnd => subscribe!(ChannelPollEndV1::broadcaster_user_id(b)),
         EventKind::ChannelPredictionBegin => {
             subscribe!(ChannelPredictionBeginV1::broadcaster_user_id(b))
+        }
+        EventKind::ChannelPredictionProgress => {
+            subscribe!(ChannelPredictionProgressV1::broadcaster_user_id(b))
         }
         EventKind::ChannelPredictionLock => {
             subscribe!(ChannelPredictionLockV1::broadcaster_user_id(b))

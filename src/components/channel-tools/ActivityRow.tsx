@@ -1,0 +1,21 @@
+import type { JSX } from "solid-js";
+
+type Props = {
+  icon: JSX.Element;
+  title: JSX.Element;
+  children: JSX.Element;
+};
+
+/// One running thing in the activity strip: what it is, then its state and
+/// what can be done about it, wrapping under the title when narrow.
+export default function ActivityRow(props: Props) {
+  return (
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 px-2 py-1 border-t border-line-soft first:border-t-0 text-small">
+      <span class="shrink-0 text-accent-ink [&>svg]:size-4">{props.icon}</span>
+      <span class="flex-1 basis-40 min-w-0 truncate text-ink">
+        {props.title}
+      </span>
+      {props.children}
+    </div>
+  );
+}

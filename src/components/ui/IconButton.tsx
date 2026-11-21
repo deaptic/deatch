@@ -3,6 +3,8 @@ import Button, { type ButtonSize, type ButtonVariant } from "./Button.tsx";
 
 type Props = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
+  /// Replaces the label as the tooltip, to say why it can't be used.
+  tip?: string;
   variant?: ButtonVariant;
   size?: ButtonSize;
   pressed?: boolean;
@@ -11,7 +13,12 @@ type Props = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
 };
 
 export default function IconButton(props: Props) {
-  const [local, others] = splitProps(props, ["label", "variant", "children"]);
+  const [local, others] = splitProps(props, [
+    "label",
+    "tip",
+    "variant",
+    "children",
+  ]);
   return (
     <Button
       onMouseDown={(e) => e.preventDefault()}
@@ -19,7 +26,7 @@ export default function IconButton(props: Props) {
       variant={local.variant ?? "ghost"}
       icon={local.children}
       aria-label={local.label}
-      data-tip={local.label}
+      data-tip={local.tip ?? local.label}
     />
   );
 }

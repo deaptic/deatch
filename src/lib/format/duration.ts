@@ -46,6 +46,12 @@ export function formatApproxDuration(seconds: number): string {
   return format(Math.round(seconds / unit.seconds), unit);
 }
 
+/// A ticking countdown, `m:ss`, from the milliseconds left; never negative.
+export function formatCountdown(remainingMs: number): string {
+  const seconds = Math.max(0, Math.ceil(remainingMs / 1000));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 /// Approximate time between two ISO timestamps.
 export function formatSpan(from: string, to: string): string {
   return formatApproxDuration(
