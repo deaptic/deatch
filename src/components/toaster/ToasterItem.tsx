@@ -109,7 +109,7 @@ export default function ToasterItem(props: Props) {
       }}
       class="flex items-center gap-3 w-90 pl-4 pr-2 py-3 material-regular rounded-md transition duration-settle ease-out"
       classList={{
-        "opacity-0 -translate-y-2": !shown(),
+        "opacity-0 translate-y-2": !shown(),
         "opacity-100 translate-y-0": shown(),
       }}
     >

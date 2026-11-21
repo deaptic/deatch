@@ -1,14 +1,15 @@
 import { type JSX, useContext } from "solid-js";
 import { SettingsQuery } from "./settingsQuery.ts";
 
-type Tone = "plain" | "accent" | "edited" | "floating" | "floating-tint";
+type Tone = "plain" | "marked" | "edited" | "floating" | "floating-tint";
 
 const RESTING_BORDER =
   "border-transparent [[data-theme=light]_&]:border-line-soft";
 
 const TONES: Record<Tone, string> = {
   plain: `bg-surface ${RESTING_BORDER}`,
-  accent: `bg-accent-soft ${RESTING_BORDER}`,
+  marked:
+    "bg-accent/10 border-transparent border-l-3 border-l-accent rounded-l-none",
   edited: "bg-surface border-accent/40",
   floating: "material-thin transition-colors duration-settle ease-out",
   "floating-tint": "material-tint transition-colors duration-settle ease-out",

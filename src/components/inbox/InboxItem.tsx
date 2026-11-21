@@ -37,7 +37,7 @@ export default function InboxItem(props: Props) {
   const link = createChannelLink(channel, props.onOpenChannel);
 
   return (
-    <Card tone={m().unread ? "accent" : "plain"}>
+    <Card tone={m().unread ? "marked" : "plain"}>
       <header class="flex items-center gap-2 p-2 border-b border-line-soft text-(length:--chat-size)">
         <span
           class={`shrink-0 size-feed-meta-tile ${link.cursor}`}
