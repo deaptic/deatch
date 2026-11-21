@@ -44,7 +44,7 @@
   "CHANNEL_TOOLS_EDIT_INFO": "Edit stream info",
   "CHANNEL_TOOLS_ENDS_IN": "Ends in {time}",
   "CHANNEL_TOOLS_END_POLL": "End poll",
-  "CHANNEL_TOOLS_LIVE_ONLY": "Available while live",
+  "CHANNEL_TOOLS_LIVE_ONLY": "{action}\nAvailable while live",
   "CHANNEL_TOOLS_LOCK": "Lock",
   "CHANNEL_TOOLS_LOCKS_IN": "Locks in {time}",
   "CHANNEL_TOOLS_OPTION": "Option {number}",

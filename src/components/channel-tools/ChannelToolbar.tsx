@@ -37,7 +37,8 @@ export default function ChannelToolbar(props: Props) {
   onMount(() => activity.load(props.broadcasterId, props.isBroadcaster));
 
   const live = () => streamForUserId(props.broadcasterId) !== undefined;
-  const liveOnly = () => (live() ? undefined : t("CHANNEL_TOOLS_LIVE_ONLY"));
+  const liveOnly = (action: string) =>
+    live() ? undefined : t("CHANNEL_TOOLS_LIVE_ONLY", { action });
   const shield = () => activityFor(props.broadcasterId).shield;
 
   return (
@@ -62,7 +63,7 @@ export default function ChannelToolbar(props: Props) {
           <PopoverButton
             look="menu"
             label={t("CHANNEL_TOOLS_RUN_AD")}
-            tip={liveOnly()}
+            tip={liveOnly(t("CHANNEL_TOOLS_RUN_AD"))}
             disabled={!live()}
             icon={<Tv class="size-4" />}
           >
@@ -84,7 +85,7 @@ export default function ChannelToolbar(props: Props) {
           </PopoverButton>
           <IconButton
             label={t("CHANNEL_TOOLS_ADD_MARKER")}
-            tip={liveOnly()}
+            tip={liveOnly(t("CHANNEL_TOOLS_ADD_MARKER"))}
             size="sm"
             disabled={!live()}
             onClick={() => createStreamMarker().catch(() => {})}
