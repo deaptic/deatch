@@ -36,7 +36,6 @@ export default function Event(props: Props) {
       flush={props.flush}
       bare={props.bare}
       showTimestamp={props.showTimestamp}
-      tone="event"
       toneColor={look().color}
       tile={() => (
         <FeedItem.Tile color={look().color}>

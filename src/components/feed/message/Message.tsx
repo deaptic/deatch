@@ -154,7 +154,7 @@ export default function Message(props: Props) {
       flush={props.flush}
       bare={props.bare}
       showTimestamp={props.showTimestamp}
-      tone={details.tone(
+      toneColor={details.toneColor(
         item,
         props.highlightMentions !== false && mentioned(),
       )}

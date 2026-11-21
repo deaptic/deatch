@@ -28,6 +28,7 @@ import {
 } from "lucide-solid";
 import type { Component } from "solid-js";
 import { NOTICE_TO_EVENT } from "../../../lib/constants/events.ts";
+import { GROUP_COLORS } from "../groups.ts";
 import type { MessageKey } from "../../../lib/i18n/index.ts";
 import type {
   AnnouncementColor,
@@ -43,12 +44,12 @@ type Look = {
 
 const LOOKS: Record<string, Look> & { local: Look } = {
   sub: {
-    color: "var(--color-event-support)",
+    color: GROUP_COLORS.support,
     Icon: Gift,
     title: "EVENT_TITLE_SUB",
   },
   raid: {
-    color: "var(--color-event-community)",
+    color: GROUP_COLORS.community,
     Icon: Swords,
     title: "EVENT_TITLE_RAID",
   },
@@ -58,12 +59,12 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_ANNOUNCEMENT",
   },
   charity_donation: {
-    color: "var(--color-event-support)",
+    color: GROUP_COLORS.support,
     Icon: Heart,
     title: "EVENT_TITLE_CHARITY_DONATION",
   },
   shoutout: {
-    color: "var(--color-event-community)",
+    color: GROUP_COLORS.community,
     Icon: Radio,
     title: "EVENT_TITLE_SHOUTOUT",
   },
@@ -73,12 +74,12 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_FOLLOW",
   },
   bits_badge_tier: {
-    color: "var(--color-event-support)",
+    color: GROUP_COLORS.support,
     Icon: Gem,
     title: "EVENT_TITLE_BITS_BADGE_TIER",
   },
   channel_points_redemption: {
-    color: "var(--color-event-engagement)",
+    color: GROUP_COLORS.engagement,
     Icon: Star,
     title: "EVENT_TITLE_CHANNEL_POINTS_REDEMPTION",
   },
@@ -103,12 +104,12 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_CHAT_CONNECT_FAILED",
   },
   chat_cleared: {
-    color: "var(--color-caution)",
+    color: GROUP_COLORS.moderation,
     Icon: Eraser,
     title: "EVENT_TITLE_CHAT_CLEARED",
   },
   moderation: {
-    color: "var(--color-caution)",
+    color: GROUP_COLORS.moderation,
     Icon: Shield,
     title: "EVENT_TITLE_MODERATION",
   },
@@ -123,17 +124,17 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_CHANNEL_UPDATE",
   },
   poll: {
-    color: "var(--color-event-engagement)",
+    color: GROUP_COLORS.engagement,
     Icon: Vote,
     title: "EVENT_TITLE_POLL",
   },
   prediction: {
-    color: "var(--color-event-engagement)",
+    color: GROUP_COLORS.engagement,
     Icon: Trophy,
     title: "EVENT_TITLE_PREDICTION",
   },
   bits_use: {
-    color: "var(--color-event-support)",
+    color: GROUP_COLORS.support,
     Icon: Gem,
     title: "EVENT_TITLE_BITS_USE",
   },
@@ -143,12 +144,12 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_AD_BREAK",
   },
   goal: {
-    color: "var(--color-event-engagement)",
+    color: GROUP_COLORS.engagement,
     Icon: Target,
     title: "EVENT_TITLE_GOAL",
   },
   hype_train: {
-    color: "var(--color-event-support)",
+    color: GROUP_COLORS.support,
     Icon: TrainFront,
     title: "EVENT_TITLE_HYPE_TRAIN",
   },
@@ -168,7 +169,7 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_STREAM_OFFLINE",
   },
   watch_streak: {
-    color: "var(--color-event-engagement)",
+    color: GROUP_COLORS.engagement,
     Icon: Flame,
     title: "EVENT_TITLE_WATCH_STREAK",
   },

@@ -3,15 +3,6 @@ import type { Density } from "../../../lib/constants/density.ts";
 import { openMenuAt } from "../../../lib/utils/contextMenu.ts";
 import Timestamp from "../../ui/Timestamp.tsx";
 
-export type RowTone =
-  | "held"
-  | "mention"
-  | "cheer"
-  | "redemption"
-  | "first"
-  | "event"
-  | "plain";
-
 export type ItemLayout = {
   density: Density;
   continued?: boolean;
@@ -24,7 +15,6 @@ export type ItemLayout = {
 type Props = ItemLayout & {
   id: string;
   timestamp: number;
-  tone: RowTone;
   toneColor?: string;
   dimmed?: boolean;
   tile?: (active: () => boolean) => JSX.Element;
@@ -33,15 +23,16 @@ type Props = ItemLayout & {
   children: JSX.Element;
 };
 
-const TONES: Record<RowTone, string> = {
-  held: "border-caution bg-caution/12 hover:bg-caution/16",
-  mention: "border-accent bg-accent-soft hover:bg-accent/18",
-  cheer: "border-event-support bg-event-support/10 hover:bg-event-support/14",
-  redemption:
-    "border-event-engagement bg-event-engagement/10 hover:bg-event-engagement/14",
-  first: "border-line bg-surface hover:bg-overlay",
-  event: "border-(--tone) bg-(--tone)/10",
-  plain: "border-transparent hover:bg-raised",
+const TINTED = {
+  edge: "border-(--tone)",
+  rest: "bg-(--tone)/10 hover:bg-(--tone)/14",
+  selected: "bg-(--tone)/14",
+};
+
+const PLAIN = {
+  edge: "border-transparent",
+  rest: "hover:bg-raised",
+  selected: "bg-raised",
 };
 
 export const DensityContext = createContext<() => Density>(
@@ -94,6 +85,8 @@ export default function Item(props: Props) {
     </Show>
   );
 
+  const look = () => (props.toneColor ? TINTED : PLAIN);
+
   return (
     <DensityContext.Provider value={() => props.density}>
       <div
@@ -101,12 +94,10 @@ export default function Item(props: Props) {
         tabIndex={-1}
         class={`relative group grid grid-cols-(--feed-columns) leading-normal wrap-break-word ${
           props.bare ? "p-2" : `pl-3 pr-2 border-l-3 ${spacing()}`
-        } outline-accent transition-colors duration-snap ${
-          props.flush ? "rounded-r-sm" : "rounded-sm"
-        } ${TONES[props.tone]} ${
+        } ${props.flush && !props.selected ? "rounded-r-md" : "rounded-md"} ${look().edge} ${
           props.selected
-            ? "outline-3 -outline-offset-3 rounded-sm"
-            : "outline-none"
+            ? `${look().selected} outline-3 -outline-offset-3 outline-accent`
+            : `${look().rest} outline-none`
         } ${props.dimmed ? "opacity-40" : ""}`}
         style={props.toneColor ? { "--tone": props.toneColor } : undefined}
         onMouseEnter={() => setHovered(true)}

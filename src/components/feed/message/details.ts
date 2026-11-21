@@ -5,7 +5,7 @@ import type {
   BadgeMap,
   FeedMessage as Message,
 } from "../../../lib/types/index.ts";
-import type { RowTone } from "../item/index.ts";
+import { GROUP_COLORS } from "../groups.ts";
 
 export function isHoldPending(item: Message): boolean {
   return item.automod_hold?.status === "pending";
@@ -22,13 +22,16 @@ export function holdOutcome(hold: AutomodHoldInfo): string {
     : t("FEED_AUTOMOD_STATUS", { status: hold.status });
 }
 
-export function tone(item: Message, highlighted: boolean): RowTone {
-  if (item.automod_hold) return "held";
-  if (highlighted) return "mention";
-  if (item.cheer || item.power_up) return "cheer";
-  if (item.channel_points) return "redemption";
-  if (item.first_message) return "first";
-  return "plain";
+export function toneColor(
+  item: Message,
+  highlighted: boolean,
+): string | undefined {
+  if (item.automod_hold) return GROUP_COLORS.moderation;
+  if (highlighted) return "var(--color-accent)";
+  if (item.cheer || item.power_up) return GROUP_COLORS.support;
+  if (item.channel_points) return GROUP_COLORS.engagement;
+  if (item.first_message) return GROUP_COLORS.community;
+  return undefined;
 }
 
 export function pointsLabel(item: Message): string | undefined {
