@@ -55,6 +55,7 @@ export const commands = {
 	/**  None for a permanent ban. */
 	expiresAt: string | null,
 } | null>("get_ban", { params }),
+	getModeratedChannels: () => __TAURI_INVOKE<UserRef[]>("get_moderated_channels"),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),

@@ -7,10 +7,17 @@ import type {
   DeleteChatMessagesParams,
   ManageHeldAutomodMessageParams,
   UpdateShieldModeParams,
+  UserRef,
   WarnUserParams,
 } from "../../types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../utils.ts";
 import { t } from "../../i18n/index.ts";
+
+export function getModeratedChannels(
+  options?: InvokeOptions,
+): Promise<UserRef[]> {
+  return invokeCommand(commands.getModeratedChannels, [], options);
+}
 
 export function getShieldMode(
   params: BroadcasterParams,

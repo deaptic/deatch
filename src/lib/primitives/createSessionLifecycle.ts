@@ -4,6 +4,7 @@ import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
 import * as feedLog from "../services/feedLog.ts";
 import { resetView } from "../stores/view.ts";
+import { getModeratedChannels } from "../api/twitch/moderation.ts";
 
 function resetUserScopedCaches() {
   setModeratedChannels([]);
@@ -22,6 +23,13 @@ export function createSessionLifecycle(deps: SessionDeps): void {
     on(user, (signedIn, previous) => {
       if (signedIn) {
         emotes.ensureGlobalLoaded();
+        // The backend only announces the list when it changes, so a reloaded
+        // page asks for it instead of waiting for a change that won't come.
+        getModeratedChannels({ silent: true })
+          .then((channels) => {
+            if (user()?.id === signedIn.id) setModeratedChannels(channels);
+          })
+          .catch(() => {});
         return;
       }
       if (!previous) return;

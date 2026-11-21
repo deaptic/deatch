@@ -5,6 +5,7 @@ use crate::twitch::moderation::{
     UpdateShieldModeParams, WarnUserParams,
 };
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
+use crate::twitch::users::dto::UserRef;
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -66,4 +67,10 @@ pub async fn update_shield_mode(
     params: UpdateShieldModeParams,
 ) -> Result<bool> {
     moderation::update_shield_mode(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_moderated_channels(twitch: State<'_, Twitch>) -> Result<Vec<UserRef>> {
+    moderation::get_moderated_channels(&twitch.authed().await?).await
 }
