@@ -3,7 +3,7 @@ import type {
   FeedMessage as Message,
   UserRef,
 } from "../../../lib/types/index.ts";
-import ChatterPicture, { chatterLook } from "../../ui/ChatterPicture.tsx";
+import ChatterPicture, { chatterTint } from "../../ui/ChatterPicture.tsx";
 import {
   type UserActions,
   userLink,
@@ -15,7 +15,6 @@ import Source from "./Source.tsx";
 type Props = UserActions & {
   chatter: UserRef;
   color: string;
-  active: boolean;
   source?: Message["source"];
   onOpenSource?: (broadcasterId: string) => void;
 };
@@ -26,11 +25,10 @@ export default function Avatar(props: Props) {
       class={`relative shrink-0 grid ${userLinkHover(props)}`}
       {...userLink(() => props.chatter, props)}
     >
-      <FeedItem.Tile round color={chatterLook(props.color).tint}>
+      <FeedItem.Tile round color={chatterTint(props.color)}>
         <ChatterPicture
           userId={props.chatter.id}
-          color={props.color}
-          active={props.active}
+          name={props.chatter.displayName}
         />
       </FeedItem.Tile>
       <Show when={props.source}>

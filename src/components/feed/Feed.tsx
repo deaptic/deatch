@@ -39,6 +39,8 @@ import {
   feedKeywords,
   feedShowDeletedContent,
   feedShowTimestamp,
+  feedGroupMessages,
+  feedShowAvatars,
 } from "../../lib/stores/preferences.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import FeedRow from "./FeedRow.tsx";
@@ -175,7 +177,12 @@ export default function Feed(props: Props) {
 
   const layout = createMemo(() => {
     const visible = entries().filter(isFeedEntryVisible);
-    const rows = layoutFeed(visible, props.density === "comfortable");
+    const rows = layoutFeed(
+      visible,
+      props.density === "comfortable" &&
+        feedShowAvatars() &&
+        feedGroupMessages(),
+    );
     const dayStarts = new Set<string>();
     const continued = new Set<string>();
     visible.forEach((item, i) => {

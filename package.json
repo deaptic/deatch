@@ -11,14 +11,12 @@
     "check:tauri": "node scripts/check-tauri.ts"
   },
   "dependencies": {
-    "@blobatar/solid": "^2.7.0",
     "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/plugin-autostart": "^2.7.0",
     "@tauri-apps/plugin-log": "^2.10.1",
     "@tauri-apps/plugin-opener": "^2.7.2",
     "@tauri-apps/plugin-process": "^2.4.0",
     "@tauri-apps/plugin-updater": "^2.14.0",
-    "blobatar": "^2.7.0",
     "intl-messageformat": "^12.1.4",
     "lucide-solid": "^1.48.0",
     "solid-js": "^1.9.15",

@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import type { FeedMessage as Message } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
 import { t } from "../../../lib/i18n/index.ts";
-import ChatterPicture, { chatterLook } from "../../ui/ChatterPicture.tsx";
+import ChatterPicture, { chatterTint } from "../../ui/ChatterPicture.tsx";
 import DisplayName from "../../ui/DisplayName.tsx";
 import {
   type UserActions,
@@ -56,16 +56,21 @@ export default function Reply(
     >
       <Show when={props.showAvatar && props.reply.parent_user_id}>
         {(id) => {
-          const look = () => chatterLook(parentColor());
+          const tint = () => chatterTint(parentColor());
           return (
             <span
               class={`h-lh aspect-square shrink-0 grid overflow-hidden rounded-full ${
-                look().tint ? "bg-(--tile)/16" : "bg-raised"
+                tint()
+                  ? "bg-(--tile)/16 text-(--tile)"
+                  : "bg-raised text-ink-soft"
               } ${userLinkHover(props)}`}
-              style={look().tint ? { "--tile": look().tint } : undefined}
+              style={tint() ? { "--tile": tint() } : undefined}
               {...userLink(parent, props)}
             >
-              <ChatterPicture userId={id()} color={parentColor()} />
+              <ChatterPicture
+                userId={id()}
+                name={props.reply.parent_user_name}
+              />
             </span>
           );
         }}

@@ -178,9 +178,6 @@ importers:
 
   .:
     dependencies:
-      '@blobatar/solid':
-        specifier: ^2.7.0
-        version: 2.7.0(blobatar@2.7.0)(solid-js@1.9.17)
       '@tauri-apps/api':
         specifier: ^2.12.4
         version: 2.12.4
@@ -199,9 +196,6 @@ importers:
       '@tauri-apps/plugin-updater':
         specifier: ^2.14.0
         version: 2.14.0
-      blobatar:
-        specifier: ^2.7.0
-        version: 2.7.0
       intl-messageformat:
         specifier: ^12.1.4
         version: 12.1.4
@@ -332,12 +326,6 @@ packages:
 
   '@blazediff/core@1.10.0':
     resolution: {integrity: sha512-AOQff0zgR7cGsZL+4E7hVkmujoPUpm0J9xzWGWZj5wCjd3gmxESXAPfKyuzs93VdpQNFhHlBhfOjrcZ+XTERtQ==}
-
-  '@blobatar/solid@2.7.0':
-    resolution: {integrity: sha512-lP/t/GAD/85WJVmQiE+Thchi/kkL+IB/2w3on5VYomQL3bz/6xeR67jTYf+6k0sI6YvzdQn8423znYWD55ilkw==}
-    peerDependencies:
-      blobatar: 2.x
-      solid-js: '>=1'
 
   '@eslint/core@0.17.0':
     resolution: {integrity: sha512-yL/sLrpmtDaFEiUj1osRP4TI2MDz1AddJL+jZ7KSqvBuliN4xqYY54IfdN8qD8Toa6g1iloph1fxQNkjOxrrpQ==}
@@ -1283,17 +1271,6 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  blobatar@2.7.0:
-    resolution: {integrity: sha512-tL1p2J3dXE/Z9U/ITwHqU7HBHmTH+Am+hif1J1hWAhvFT1VYC2HG+eXtN7081yuY+L2lrp9bs/VaF7dVH3S2jw==}
-    peerDependencies:
-      react: '>=18'
-      vue: '>=3'
-    peerDependenciesMeta:
-      react:
-        optional: true
-      vue:
-        optional: true
-
   browserslist@4.29.4:
     resolution: {integrity: sha512-2TcbbiwXEq+N0kD36tykpCfyyQigUXmuwNQbnPp4Xk4PX9JOqVIKjJlIDjpH7uY6tmRGoAd+apeT1p60T8wsdA==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
@@ -1972,11 +1949,6 @@ snapshots:
 
   '@blazediff/core@1.10.0': {}
 
-  '@blobatar/solid@2.7.0(blobatar@2.7.0)(solid-js@1.9.17)':
-    dependencies:
-      blobatar: 2.7.0
-      solid-js: 1.9.17
-
   '@eslint/core@0.17.0':
     dependencies:
       '@types/json-schema': 7.0.15
@@ -2583,8 +2555,6 @@ snapshots:
       solid-js: 1.9.17
 
   baseline-browser-mapping@2.11.33: {}
-
-  blobatar@2.7.0: {}
 
   browserslist@4.29.4:
     dependencies:

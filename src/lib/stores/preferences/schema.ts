@@ -63,6 +63,7 @@ export type UserPreferences = {
     showDeletedContent: boolean;
     showCopypasta: boolean;
     showAvatars: boolean;
+    groupMessages: boolean;
     showBadges: boolean;
     showEvents: boolean;
     keywords: string[];
@@ -285,6 +286,10 @@ export function sanitize(raw: unknown): UserPreferences {
       showAvatars: bool(
         stored.feed?.showAvatars,
         DEFAULT_PREFERENCES.feed.showAvatars,
+      ),
+      groupMessages: bool(
+        stored.feed?.groupMessages,
+        DEFAULT_PREFERENCES.feed.groupMessages,
       ),
       showBadges: bool(
         stored.feed?.showBadges,

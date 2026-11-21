@@ -4,8 +4,8 @@ import {
   BadgeCheck,
   CircleUserRound,
   Clock,
+  Layers,
   Megaphone,
-  Rows2,
   SeparatorHorizontal,
   Settings,
   Trash2,
@@ -19,13 +19,13 @@ import {
   GROUP_SPACING_STOPS,
   ZOOM_STOPS,
 } from "../../lib/constants/accessibility.ts";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
 import {
   appearanceTheme,
   appearanceUiDensity,
   appearanceZoom,
   feedDensity,
   feedFontSize,
+  feedGroupMessages,
   feedGroupSpacing,
   feedShowAvatars,
   feedShowBadges,
@@ -33,6 +33,7 @@ import {
   feedShowEvents,
   feedShowTimestamp,
   feedUserShowDisplayName,
+  setFeedGroupMessages,
   setFeedShowAvatars,
   setFeedShowBadges,
   setFeedShowDeletedContent,
@@ -44,13 +45,14 @@ import {
   stepAppearanceZoom,
   stepFeedFontSize,
   stepFeedGroupSpacing,
-  toggleFeedDensity,
+  setFeedDensity,
 } from "../../lib/stores/preferences.ts";
 import { openSettings } from "../../lib/stores/view.ts";
 import Popover from "../ui/Popover.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import Segmented from "../ui/Segmented.tsx";
 import {
+  messageLayoutOptions,
   themeOptions,
   uiDensityOptions,
 } from "../settings/appearance/options.ts";
@@ -70,6 +72,7 @@ const SHOW_TOGGLES: {
   Icon: Component<{ class?: string }>;
   on: () => boolean;
   set: (on: boolean) => void;
+  disabled?: () => boolean;
 }[] = [
   {
     label: "CHAT_APPEARANCE_AVATARS",
@@ -106,6 +109,13 @@ const SHOW_TOGGLES: {
     Icon: Trash2,
     on: feedShowDeletedContent,
     set: setFeedShowDeletedContent,
+  },
+  {
+    label: "CHAT_APPEARANCE_GROUPING",
+    Icon: Layers,
+    on: feedGroupMessages,
+    set: setFeedGroupMessages,
+    disabled: () => feedDensity() !== "comfortable" || !feedShowAvatars(),
   },
 ];
 
@@ -161,27 +171,30 @@ export default function AppearancePanel(props: Props) {
           </div>
         </Section>
         <Section label={t("CHAT_APPEARANCE_SECTION_CHAT")}>
-          <div class="flex justify-between px-1 pb-1">
-            <For each={SHOW_TOGGLES}>
-              {(toggle) => (
-                <IconButton
-                  label={t(toggle.label)}
-                  variant="toggle"
-                  pressed={toggle.on()}
-                  onClick={() => toggle.set(!toggle.on())}
-                >
-                  <toggle.Icon class="size-4" />
-                </IconButton>
-              )}
-            </For>
+          <div class="flex flex-col gap-2 px-1 pb-1">
+            <Segmented
+              label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
+              value={feedDensity()}
+              options={messageLayoutOptions()}
+              onChange={setFeedDensity}
+              fill
+            />
+            <div class="flex justify-between">
+              <For each={SHOW_TOGGLES}>
+                {(toggle) => (
+                  <IconButton
+                    label={t(toggle.label)}
+                    variant="toggle"
+                    pressed={toggle.on()}
+                    disabled={toggle.disabled?.()}
+                    onClick={() => toggle.set(!toggle.on())}
+                  >
+                    <toggle.Icon class="size-4" />
+                  </IconButton>
+                )}
+              </For>
+            </div>
           </div>
-          <MenuItem
-            label={t("CHAT_APPEARANCE_SPACIOUS")}
-            icon={<Rows2 />}
-            active={feedDensity() === "comfortable"}
-            shortcut={shortcuts.keyFor("feed::toggleDensity")}
-            onClick={toggleFeedDensity}
-          />
           <MenuStepper
             label={t("CHAT_APPEARANCE_TEXT_SIZE")}
             icon={<Type />}

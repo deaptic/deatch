@@ -4,20 +4,23 @@ import CardLabel from "../../ui/CardLabel.tsx";
 import Segmented from "../../ui/Segmented.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
 import StopSlider from "../../ui/StopSlider.tsx";
+import Toggle from "../../ui/Toggle.tsx";
 import {
   GROUP_SPACING_STOPS,
   ZOOM_STOPS,
 } from "../../../lib/constants/accessibility.ts";
-import type { Density } from "../../../lib/constants/density.ts";
-import { uiDensityOptions } from "./options.ts";
+import { messageLayoutOptions, uiDensityOptions } from "./options.ts";
 import {
   appearanceUiDensity,
   appearanceZoom,
   feedDensity,
+  feedGroupMessages,
+  feedShowAvatars,
   feedGroupSpacing,
   setAppearanceUiDensity,
   setAppearanceZoom,
   setFeedDensity,
+  setFeedGroupMessages,
   setFeedGroupSpacing,
 } from "../../../lib/stores/preferences.ts";
 
@@ -44,16 +47,19 @@ export default function DensityCard() {
         <Segmented
           label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
           value={feedDensity()}
-          options={
-            [
-              { value: "compact", label: t("SETTINGS_APPEARANCE_DEFAULT") },
-              {
-                value: "comfortable",
-                label: t("SETTINGS_APPEARANCE_SPACIOUS"),
-              },
-            ] satisfies { value: Density; label: string }[]
-          }
+          options={messageLayoutOptions()}
           onChange={setFeedDensity}
+        />
+      </SettingsRow>
+      <SettingsRow
+        label={t("SETTINGS_APPEARANCE_GROUPING")}
+        description={t("SETTINGS_APPEARANCE_GROUPING_DESCRIPTION")}
+      >
+        <Toggle
+          label={t("SETTINGS_APPEARANCE_GROUPING")}
+          checked={feedGroupMessages()}
+          onChange={setFeedGroupMessages}
+          disabled={feedDensity() !== "comfortable" || !feedShowAvatars()}
         />
       </SettingsRow>
       <SettingsRow

@@ -1,5 +1,6 @@
 import type { UiDensity } from "../../../lib/constants/accessibility.ts";
 import type { Theme } from "../../../lib/constants/theme.ts";
+import type { Density } from "../../../lib/constants/density.ts";
 import { t } from "../../../lib/i18n/index.ts";
 
 export const themeOptions = (): { value: Theme; label: string }[] => [
@@ -12,4 +13,9 @@ export const uiDensityOptions = (): { value: UiDensity; label: string }[] => [
   { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT") },
   { value: "default", label: t("SETTINGS_APPEARANCE_DEFAULT") },
   { value: "spacious", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
+];
+
+export const messageLayoutOptions = (): { value: Density; label: string }[] => [
+  { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT") },
+  { value: "comfortable", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
 ];

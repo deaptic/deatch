@@ -20,6 +20,7 @@ export const DEFAULTS: Defaults = {
     showDeletedContent: false,
     showCopypasta: false,
     showAvatars: true,
+    groupMessages: true,
     showBadges: true,
     showEvents: true,
     keywords: [],

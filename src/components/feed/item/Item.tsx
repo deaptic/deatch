@@ -53,9 +53,9 @@ export default function Item(props: Props) {
 
   const lead = () => (
     <Show
-      when={comfortable()}
+      when={comfortable() && props.tile}
       fallback={
-        <Show when={props.showTimestamp}>
+        <Show when={!comfortable() && props.showTimestamp}>
           <Timestamp ts={props.timestamp} variant="column" />
         </Show>
       }

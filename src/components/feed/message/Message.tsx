@@ -11,6 +11,7 @@ import type {
 } from "../../../lib/types/index.ts";
 import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../../../lib/utils/mention.ts";
+import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
 import { formatSuspicious } from "../../../lib/format/suspicious.ts";
@@ -113,7 +114,7 @@ export default function Message(props: Props) {
     </Show>
   );
 
-  const avatar = (active: () => boolean) => (
+  const avatar = () => (
     <Avatar
       chatter={{
         id: item.chatter_user_id,
@@ -121,7 +122,6 @@ export default function Message(props: Props) {
         displayName: item.chatter_name,
       }}
       color={item.color}
-      active={active()}
       source={item.source}
       onOpenSource={props.onOpenChannel}
       onShowUserCard={props.onShowUserCard}
@@ -159,7 +159,7 @@ export default function Message(props: Props) {
         props.highlightMentions !== false && mentioned(),
       )}
       dimmed={details.isHoldResolved(item)}
-      tile={comfortable() ? avatar : undefined}
+      tile={comfortable() && feedShowAvatars() ? avatar : undefined}
       overlay={toolbar}
       onContextMenu={
         props.onContextMenu && ((x, y) => props.onContextMenu?.(x, y, item))
@@ -170,7 +170,7 @@ export default function Message(props: Props) {
           item.reply && (
             <Reply
               reply={item.reply}
-              showAvatar={comfortable()}
+              showAvatar={comfortable() && feedShowAvatars()}
               onJump={props.onJumpToMessage}
               onShowUserCard={props.onShowUserCard}
               onUserContextMenu={props.onUserContextMenu}
