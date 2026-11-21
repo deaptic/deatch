@@ -40,7 +40,7 @@ export default function ExploreBar(props: Props) {
     orderLanguages(seenLanguages(), [systemLanguage(), exploreLanguage()]);
 
   return (
-    <div class="sticky top-0 z-10 bg-canvas/85 backdrop-blur-regular">
+    <div class="sticky top-0 z-10 bg-canvas">
       <div class="mx-auto max-w-260 px-6 py-4 flex items-center gap-2">
         <Field
           size="lg"

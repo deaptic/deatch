@@ -137,10 +137,6 @@
     }
   }
 
-  --color-material: oklch(0.27 0 0 / 0.84);
-  --blur-thin: 12px;
-  --blur-regular: 20px;
-  --blur-thick: 32px;
   --elevation-1:
     inset 0 1px 0 oklch(1 0 0 / 0.05), 0 1px 2px oklch(0 0 0 / 0.3),
     0 4px 12px oklch(0 0 0 / 0.24);
@@ -194,7 +190,6 @@
   --color-overlay: oklch(0.995 0 0);
   --color-picture: oklch(0.87 0 0);
   --color-scrim: oklch(0.25 0 0 / 0.4);
-  --color-material: oklch(0.995 0 0 / 0.82);
   --elevation-1: 0 1px 2px oklch(0 0 0 / 0.06), 0 4px 12px oklch(0 0 0 / 0.08);
   --elevation-2: 0 2px 6px oklch(0 0 0 / 0.06), 0 12px 32px oklch(0 0 0 / 0.12);
   --elevation-3:
@@ -252,8 +247,7 @@
 }
 
 @utility material-thin {
-  background-color: var(--color-material);
-  backdrop-filter: blur(var(--blur-thin)) saturate(1.5);
+  background-color: var(--color-overlay);
   border: 1px solid var(--color-line);
   box-shadow: var(--elevation-1);
 }
@@ -262,21 +256,19 @@
   @apply material-thin;
   background-color: color-mix(
     in oklab,
-    var(--color-material),
+    var(--color-overlay),
     var(--tint, var(--color-accent)) 14%
   );
 }
 
 @utility material-regular {
-  background-color: var(--color-material);
-  backdrop-filter: blur(var(--blur-regular)) saturate(1.5);
+  background-color: var(--color-overlay);
   border: 1px solid var(--color-line);
   box-shadow: var(--elevation-2);
 }
 
 @utility material-thick {
-  background-color: var(--color-material);
-  backdrop-filter: blur(var(--blur-thick)) saturate(1.5);
+  background-color: var(--color-overlay);
   border: 1px solid var(--color-line);
   box-shadow: var(--elevation-3);
 }
@@ -286,7 +278,7 @@
   width: calc(var(--spacing) * 2.5);
   height: calc(var(--spacing) * 2.5);
   translate: -50% -50%;
-  background-color: var(--color-material);
+  background-color: var(--color-overlay);
   border-right: 1px solid var(--color-line);
   border-bottom: 1px solid var(--color-line);
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
@@ -352,16 +344,6 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-line) transparent;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  :root,
-  [data-theme="light"] {
-    --color-material: var(--color-overlay);
-    --blur-thin: 0px;
-    --blur-regular: 0px;
-    --blur-thick: 0px;
   }
 }
 

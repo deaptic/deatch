@@ -1,3 +1,4 @@
+import { createMeasuredHeight } from "../../lib/reactive/createMeasuredHeight.ts";
 import { ChevronDown } from "lucide-solid";
 import { t } from "../../lib/i18n/index.ts";
 import {
@@ -82,6 +83,7 @@ export default function Chat(props: Props) {
   let inputApi: ChatInputApi | undefined;
 
   const isMod = createMemo(() => canModerate(props.broadcasterId));
+  const composer = createMeasuredHeight();
 
   onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
 
@@ -248,11 +250,14 @@ export default function Chat(props: Props) {
   });
 
   return (
-    <div class="flex-1 min-h-0 flex flex-col">
+    <div
+      class="relative flex-1 min-h-0 flex flex-col"
+      style={{ "--composer-height": `${composer.height()}px` }}
+    >
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
-        scrollClass="pr-4 pt-(--header-height) pb-2 scroll-pt-(--header-height)"
+        scrollClass="pr-4 pt-(--header-height) pb-(--composer-height) scroll-pt-(--header-height) scroll-pb-(--composer-height)"
         flush
         density={feedDensity()}
         class="text-(length:--chat-size)"
@@ -268,7 +273,7 @@ export default function Chat(props: Props) {
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
         footer={
           <Show when={feedApi()?.isPaused()}>
-            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+            <div class="absolute bottom-(--composer-height) left-1/2 -translate-x-1/2 z-20 mb-2">
               <div class="enter-rise">
                 <Button
                   size="sm"
@@ -285,19 +290,21 @@ export default function Chat(props: Props) {
         ref={setFeedApi}
       />
 
-      <ChatInput
-        broadcasterId={props.broadcasterId}
-        broadcasterName={props.broadcasterName}
-        replyTo={replyTo}
-        onClearReply={clearReply}
-        getMentions={getMentions}
-        onReplyMention={startReply}
-        openUserCard={openUserCardFromInput}
-        ref={(api) => {
-          inputApi = api;
-          api.focus();
-        }}
-      />
+      <div ref={composer.measure} class="absolute inset-x-0 bottom-0 z-20">
+        <ChatInput
+          broadcasterId={props.broadcasterId}
+          broadcasterName={props.broadcasterName}
+          replyTo={replyTo}
+          onClearReply={clearReply}
+          getMentions={getMentions}
+          onReplyMention={startReply}
+          openUserCard={openUserCardFromInput}
+          ref={(api) => {
+            inputApi = api;
+            api.focus();
+          }}
+        />
+      </div>
 
       <Show when={messageMenu.state()}>
         {(cm) => (

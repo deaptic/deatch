@@ -277,7 +277,7 @@ export default function ChatInput(props: Props) {
   });
 
   return (
-    <div class="shrink-0 p-2">
+    <div class="p-2">
       <Show when={props.replyTo()}>
         {(reply) => (
           <ComposerCaption>

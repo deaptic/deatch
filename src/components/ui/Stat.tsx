@@ -6,8 +6,7 @@ type Tone = "plain" | "media";
 const TONES: Record<Tone, { value: string; icon: string }> = {
   plain: { value: "text-ink-soft", icon: "text-ink-faint" },
   media: {
-    value:
-      "h-6 px-2 rounded-sm bg-media-scrim backdrop-blur-thin text-on-accent font-semibold",
+    value: "h-6 px-2 rounded-sm bg-media-scrim text-on-accent font-semibold",
     icon: "text-on-accent",
   },
 };
