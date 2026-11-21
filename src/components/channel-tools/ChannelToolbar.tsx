@@ -43,7 +43,7 @@ export default function ChannelToolbar(props: Props) {
 
   return (
     <Card tone="floating">
-      <div class="flex flex-wrap items-center gap-0.5 p-0.5">
+      <div class="flex flex-wrap items-center gap-0.5 p-1">
         <For each={CHAT_MODES}>
           {(mode) => (
             <ModeButton mode={mode} broadcasterId={props.broadcasterId} />
