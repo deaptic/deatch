@@ -1,4 +1,5 @@
-import type { JSX } from "solid-js";
+import { type JSX, useContext } from "solid-js";
+import { SettingsQuery } from "./settingsQuery.ts";
 
 type Tone = "plain" | "accent" | "edited" | "floating" | "floating-tint";
 
@@ -21,8 +22,13 @@ type Props = {
 export const CARD_FRAME = `rounded-lg border ${RESTING_BORDER}`;
 
 export default function Card(props: Props) {
+  const query = useContext(SettingsQuery);
   return (
-    <section class={`rounded-lg border ${TONES[props.tone ?? "plain"]}`}>
+    <section
+      class={`rounded-lg border ${TONES[props.tone ?? "plain"]} ${
+        query().trim() ? "not-has-data-match:hidden" : ""
+      }`}
+    >
       {props.children}
     </section>
   );
