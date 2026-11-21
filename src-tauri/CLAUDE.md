@@ -20,8 +20,25 @@ Inside a feature folder:
 - `events.rs` — `tauri_specta::Event` structs, emitted with `crate::emit::emit`.
 
 Tests are a `#[cfg(test)] mod tests` at the bottom of the file; keep IO out of
-the logic under test, and split parsing from fetching when a function mixes them
-(`docs/TESTING.md`).
+the logic under test, and split parsing from fetching when a function mixes them.
+
+## Checks
+
+From `src-tauri`, before every commit:
+
+```powershell
+cargo fmt && cargo clippy --all-targets -- -D warnings && cargo test --lib
+```
+
+`src/lib/bindings.ts` is generated from the commands, events, and types listed
+in `lib.rs`; never edit it by hand. After changing any of them run
+`vp run bindings` from the repo root and commit both. The
+`committed_bindings_are_current` test fails when it is stale. `build.rs`
+embeds the app manifest so test binaries can start on Windows.
+
+## Logging
+
+Log through the `log` crate, never `println!`.
 
 ## Conventions
 

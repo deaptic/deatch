@@ -25,5 +25,5 @@ parsers, mappings, and params, asserting wire shapes with
 `vp run bindings` and commit. `build.rs` embeds the app manifest so test
 binaries can start on Windows; keep it that way.
 
-`vp check` enforces the token rules in [DESIGN.md](./DESIGN.md): no raw
-hex, shadows, gradients, or arbitrary Tailwind values.
+`vp check` enforces the design tokens: no raw hex, shadows, gradients, or
+arbitrary Tailwind values.

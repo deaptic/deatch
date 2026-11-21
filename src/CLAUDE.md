@@ -48,12 +48,37 @@ A service is a plain ES module, never a class; the module is the singleton.
   cleanup, registered once in `primitives/createServices.ts`. Collect Tauri
   unlisten promises with `unlistenAll`.
 - Pure logic with no state goes in its own file so it can be tested without
-  Tauri. Tests sit next to the module they cover (`docs/TESTING.md`).
+  Tauri. Tests are `*.test.ts` next to the module they cover, using Vitest
+  from `vite-plus/test`; they run in plain Node with no DOM, and a call that
+  reaches Tauri fails.
 
 ## UI
 
-`docs/DESIGN.md` is the source of truth for look and behaviour. Primitives live
-in `components/ui/`; feature components compose them without restyling, and a
-missing look is a new variant on the primitive. Colours, type, radii, sizes, and
-motion come from the `@theme` tokens in `App.css`; no raw hex, shadows, or
-arbitrary values.
+Primitives live in `components/ui/`; feature components compose them without
+restyling, and a missing look is a new variant on the primitive. Colours, type,
+radii, sizes, and motion come from the `@theme` tokens in `App.css`; depth is
+only `material-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
+
+## Commands
+
+```powershell
+vp install          # dependencies
+vp exec tauri dev   # run the app
+```
+
+Before every commit, from the repo root:
+
+```powershell
+vp check --fix --deny-warnings && vp run check:tauri && vp test && vp build
+```
+
+`vp check` rejects raw colours, arbitrary values, inline styles, and restyled
+primitives.
+
+`lib/bindings.ts` is generated from the Rust side by `vp run bindings`; never
+edit it by hand.
+
+## Logging
+
+Use `console.warn` / `console.error`; the log service forwards them to the
+backend log file.

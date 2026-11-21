@@ -9,8 +9,8 @@ the outside world, and a Solid.js frontend in `src` renders. Windows only.
 which starts the EventSub runner, the 7TV socket, the Link pipe server, and in
 release builds registers itself as the browser's native-messaging host. When a
 browser launches the exe for the Link extension it runs as a host instead: no
-Tauri, it only relays frames between browser stdio and the GUI pipe (see
-[LINK.md](./LINK.md)). `--export-bindings` writes `src/lib/bindings.ts` and
+Tauri, it only relays frames between browser stdio and the GUI pipe.
+`--export-bindings` writes `src/lib/bindings.ts` and
 exits.
 
 ## Backend and frontend

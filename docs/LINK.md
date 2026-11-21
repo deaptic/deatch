@@ -79,5 +79,3 @@ Every host logs its frames to `%TEMP%\deatch-host.log`, each line tagged with
 its process id so browsers can be told apart
 (`Get-Content $env:TEMP\deatch-host.log -Wait -Tail 20`). It retries the GUI
 pipe every 1.5 s and exits only when the browser closes stdin.
-
-Releasing is in [RELEASING.md](./RELEASING.md#extension).

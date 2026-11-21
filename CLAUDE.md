@@ -1,29 +1,15 @@
-# Deatch
-
-Native Twitch chat client. Tauri 2 (Rust backend) + Solid.js / Vite / Tailwind 4
-frontend. Windows only. Big picture in `docs/ARCHITECTURE.md`.
+# Engineering rules
 
 This file defines how the code _should_ be. When code and this file disagree,
 fix the code.
-
-## Commands
-
-```powershell
-vp install          # frontend deps
-vp exec tauri dev   # run app in dev
-vp run bindings     # regenerate src/lib/bindings.ts
-```
-
-Run the check set in `docs/TESTING.md` before every commit; CI runs the same.
-Release with `vp run release` (`docs/RELEASING.md`).
 
 ## Principles
 
 Two rules win every tie:
 
-- **DRY** — every piece of knowledge has one home. Extract logic, constants, and
+- **DRY**: every piece of knowledge has one home. Extract logic, constants, and
   shapes the moment they would exist in two places.
-- **Clean code** — small functions that do one thing, names that say what they
+- **Clean code**: small functions that do one thing, names that say what they
   mean, no dead code.
 
 Then:
@@ -44,7 +30,7 @@ Then:
 - **Composition over inheritance.** A base class has to earn its existence with
   real shared behaviour.
 - **Pure core, effects at the edge.** Decision and transformation logic is free
-  of IO and global state; network, storage, DOM, and presence live at the
+  of IO and global state; network, storage, UI, and timers live at the
   boundary. Pure logic goes in its own file so it can be tested alone.
 
 When unsure, optimize for the next reader.
@@ -62,8 +48,6 @@ clients talk to the outside world. Lower layers never reach back up. Handlers
 and components stay thin; logic and long-lived state live in services. State
 lives independently of what is mounted on screen.
 
-Frontend layering: `src/CLAUDE.md`. Backend layering: `src-tauri/CLAUDE.md`.
-
 ## Boundaries
 
 Map external shapes to your own types at the edge, once. Past the boundary the
@@ -71,8 +55,8 @@ app sees only its own types, never a third-party library's. When mapping would
 merely re-type a large external schema you don't control, pass it through and
 own the type definition on one side only. One home per shape.
 
-`src/lib/bindings.ts` is generated from the Rust commands, types, and events.
-Never edit it by hand; change the Rust side, regenerate, commit both.
+Generated files are never edited by hand: change their source, regenerate,
+commit both.
 
 ## Naming and comments
 
@@ -83,10 +67,14 @@ it. One word per concept, everywhere.
 No comments, doc comments included. Code that needs one to be understood is
 not done: rename, extract a function, name the constant, or move the knowledge
 into a type until it reads on its own. Only toolchain directives stay
-(`/// <reference>`, `@refresh`, lint and type-check suppressions).
+(type references, hot-reload pragmas, lint and type-check suppressions).
 
 ## Logging
 
-Backend logs go through the `log` crate, never `println!`. Frontend code uses
-`console.warn` / `console.error`; the log service forwards them to the backend
-log file.
+One logging path per runtime, never ad hoc prints. Log failures where they are
+handled, with enough context to act on them.
+
+## Before committing
+
+Run the project's full check set (format, lint, types, tests, build) and fix
+what it finds. CI runs the same.

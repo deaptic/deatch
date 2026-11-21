@@ -36,8 +36,3 @@ state, and only to the locally installed Deatch desktop app.
 You need the [Deatch desktop app](https://github.com/Deaptic/deatch) installed
 and run at least once. Deatch self-registers as a native messaging host on first
 launch.
-
-## Development
-
-See [docs/LINK.md](../docs/LINK.md) for the message protocol, dev-host
-registration, and how to load this extension as a temporary add-on.
