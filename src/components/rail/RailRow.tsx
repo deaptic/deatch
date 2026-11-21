@@ -4,7 +4,7 @@ import EdgeMark from "../ui/EdgeMark.tsx";
 import { createSideTip } from "../ui/createSideTip.tsx";
 import TipLabel from "../ui/TipLabel.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
-import { RAIL_ROW_HEIGHT } from "../ui/rowHeight.ts";
+import { railRowHeight } from "../ui/rowHeight.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
@@ -67,18 +67,14 @@ export default function RailRow(props: Props) {
           if (!expanded()) tip.show(e.currentTarget);
         }}
         onMouseLeave={tip.hide}
-        class={`group relative w-full ${RAIL_ROW_HEIGHT} flex items-center pr-2 text-left cursor-pointer ${
+        class={`group relative w-full ${railRowHeight()} flex items-center px-2 text-left cursor-pointer ${
           props.dimmed ? "opacity-40" : ""
         }`}
       >
         <EdgeMark
           mark={props.selected ? "selected" : props.unread ? "unread" : "none"}
         />
-        <span
-          class={`flex-1 min-w-0 h-full flex items-center gap-3 pl-4 pr-2 rounded-r-sm overflow-hidden transition-colors duration-snap ${
-            props.selected ? "bg-raised" : "group-hover:bg-raised"
-          }`}
-        >
+        <span class="flex-1 min-w-0 h-full flex items-center gap-3 px-2 overflow-hidden">
           <span class="relative shrink-0 flex">
             {props.children}
             <Show when={(props.mentions ?? 0) > 0 && !expanded()}>

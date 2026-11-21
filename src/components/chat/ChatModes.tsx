@@ -16,7 +16,7 @@ export default function ChatModes(props: Props) {
 
   return (
     <Show when={active().length > 0}>
-      <div class="flex flex-wrap items-center gap-1.5 px-1 pb-2">
+      <div class="flex flex-wrap items-center gap-1.5 px-3.5 pb-1.5">
         <For each={active()}>
           {(mode) => (
             <Show when={settings()}>

@@ -1,4 +1,10 @@
-import { type Accessor, createEffect, createSignal, on } from "solid-js";
+import {
+  type Accessor,
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+} from "solid-js";
 
 const CACHED_WITHIN_MS = 50;
 
@@ -7,9 +13,11 @@ export function createImageReveal(src: Accessor<string | null | undefined>) {
   const [cached, setCached] = createSignal(false);
   let mountedAt = 0;
 
+  const url = createMemo(src);
+
   createEffect(
     on(
-      src,
+      url,
       () => {
         setLoaded(false);
         setCached(false);

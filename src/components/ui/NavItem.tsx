@@ -13,22 +13,37 @@ type Props = {
 };
 
 export default function NavItem(props: Props) {
-  const horizontal = () => props.orientation === "horizontal";
   const tip = createSideTip(() => <TipLabel>{props.label}</TipLabel>);
+  const tone = () =>
+    props.active
+      ? "text-ink [&>span:first-child]:text-accent-ink"
+      : "text-ink-soft group-hover:text-ink";
 
-  const shape = () => {
-    if (horizontal()) {
-      return `h-control-lg px-3 shrink-0 whitespace-nowrap ${
-        props.active ? "text-accent-ink" : "text-ink-soft hover:text-ink"
-      }`;
-    }
-    const tone = props.active
-      ? "bg-raised text-ink"
-      : "text-ink-soft hover:bg-raised hover:text-ink";
-    return props.collapsed
-      ? `size-10 justify-center rounded-sm overflow-hidden ${tone}`
-      : `h-10 px-2.5 rounded-sm overflow-hidden text-left ${tone}`;
-  };
+  const icon = (size: string) => (
+    <Show when={props.icon}>
+      <span class={`shrink-0 ${size}`}>{props.icon}</span>
+    </Show>
+  );
+
+  if (props.orientation === "horizontal") {
+    return (
+      <button
+        type="button"
+        aria-current={props.active ? "page" : undefined}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => props.onClick?.()}
+        class={`relative h-control-lg px-3 shrink-0 whitespace-nowrap flex items-center gap-2.5 text-body font-semibold cursor-pointer transition-colors duration-snap ${
+          props.active ? "text-accent-ink" : "text-ink-soft hover:text-ink"
+        }`}
+      >
+        {icon("[&>svg]:size-4")}
+        <span class="min-w-0 truncate">{props.label}</span>
+        <Show when={props.active}>
+          <span class="absolute left-3 right-3 bottom-0 h-0.75 bg-accent" />
+        </Show>
+      </button>
+    );
+  }
 
   return (
     <>
@@ -42,28 +57,19 @@ export default function NavItem(props: Props) {
           if (props.collapsed) tip.show(e.currentTarget);
         }}
         onMouseLeave={tip.hide}
-        class={`relative flex items-center gap-2.5 text-body font-semibold cursor-pointer transition-colors duration-snap ${shape()}`}
+        class="group relative w-full flex px-2 text-body font-semibold cursor-pointer"
       >
-        <Show when={props.icon}>
-          <span
-            class={`shrink-0 ${
-              horizontal() ? "[&>svg]:size-4" : "[&>svg]:size-5"
-            }`}
-          >
-            {props.icon}
-          </span>
-        </Show>
-        <Show when={!props.collapsed}>
-          <span class="min-w-0 truncate">{props.label}</span>
-        </Show>
-        <Show
-          when={horizontal()}
-          fallback={<EdgeMark mark={props.active ? "selected" : "none"} />}
+        <EdgeMark mark={props.active ? "selected" : "none"} />
+        <span
+          class={`flex-1 min-w-0 h-10 flex items-center gap-2.5 overflow-hidden text-left transition-colors duration-snap ${
+            props.collapsed ? "justify-center" : "px-2.5"
+          } ${tone()}`}
         >
-          <Show when={props.active}>
-            <span class="absolute left-3 right-3 bottom-0 h-0.75 bg-accent" />
+          {icon("[&>svg]:size-5")}
+          <Show when={!props.collapsed}>
+            <span class="min-w-0 truncate">{props.label}</span>
           </Show>
-        </Show>
+        </span>
       </button>
       {tip.view()}
     </>

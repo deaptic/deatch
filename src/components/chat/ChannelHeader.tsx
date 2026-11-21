@@ -41,7 +41,7 @@ export default function ChannelHeader(props: Props) {
   return (
     <header class="shrink-0 flex flex-col gap-2 p-2">
       <Card>
-        <div class="flex items-center gap-3 px-2 py-1.5" {...link.handlers}>
+        <div class="flex items-center gap-3 px-2 py-1.75" {...link.handlers}>
           <Avatar
             src={props.channel.profileImageUrl}
             alt={props.channel.displayName}

@@ -75,16 +75,21 @@ const SECTIONS: {
   },
 ];
 
-const COLLAPSE_BELOW_PX = 640;
+const LABELLED_NAV_PX = 220;
+const ROW_SIDE_BY_SIDE_PX = 580;
+const COLLAPSE_BELOW_PX = LABELLED_NAV_PX + ROW_SIDE_BY_SIDE_PX;
 
 export default function Settings() {
   const [collapsed, setCollapsed] = createSignal(false);
+  const [measured, setMeasured] = createSignal(false);
   let root: HTMLDivElement | undefined;
 
   onMount(() => {
     if (!root) return;
     const observer = new ResizeObserver(([entry]) => {
-      if (entry) setCollapsed(entry.contentRect.width < COLLAPSE_BELOW_PX);
+      if (!entry) return;
+      setCollapsed(entry.contentRect.width < COLLAPSE_BELOW_PX);
+      if (!measured()) requestAnimationFrame(() => setMeasured(true));
     });
     observer.observe(root);
     onCleanup(() => observer.disconnect());
@@ -98,9 +103,9 @@ export default function Settings() {
       <div class="flex-1 flex min-h-0">
         <nav
           aria-label={t("SETTINGS_NAV_LABEL")}
-          class={`shrink-0 flex flex-col gap-0.5 px-3 pt-3 border-r border-line-soft overflow-hidden transition-all duration-settle ease-drawer ${
-            collapsed() ? "w-16" : "w-55"
-          }`}
+          class={`shrink-0 flex flex-col gap-0.5 pt-2 border-r border-line-soft overflow-hidden ${
+            measured() ? "transition-all duration-settle ease-drawer" : ""
+          } ${collapsed() ? "w-14" : "w-55"}`}
         >
           <For each={SECTIONS}>
             {(s) => (

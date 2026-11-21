@@ -49,7 +49,7 @@ export default function ChannelToolbar(props: Props) {
           )}
         </For>
         <Show when={props.isBroadcaster}>
-          <ToolbarDivider />
+          <ToolbarDivider in="toolbar" />
           <PopoverButton
             look="panel"
             label={t("CHANNEL_TOOLS_EDIT_INFO")}
@@ -91,7 +91,7 @@ export default function ChannelToolbar(props: Props) {
           >
             <Bookmark class="size-4" />
           </IconButton>
-          <ToolbarDivider />
+          <ToolbarDivider in="toolbar" />
           <PopoverButton
             look="panel"
             label={t("CHANNEL_TOOLS_START_POLL")}
@@ -143,7 +143,7 @@ export default function ChannelToolbar(props: Props) {
           <Eraser class="size-4" />
         </IconButton>
         <Show when={props.isBroadcaster}>
-          <ToolbarDivider />
+          <ToolbarDivider in="toolbar" />
           <PopoverButton
             look="panel"
             label={t("CHANNEL_TOOLS_RAID")}

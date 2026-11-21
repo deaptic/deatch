@@ -52,7 +52,7 @@ export default function ComposerPanel(props: Props) {
         }}
         role="dialog"
         aria-label={props.label}
-        class={`fixed right-4 bottom-(--bottom) z-40 max-w-full material-regular rounded-lg flex flex-col overflow-hidden enter-pop origin-bottom-right ${
+        class={`fixed right-2 bottom-(--bottom) z-40 max-w-full material-regular rounded-lg flex flex-col overflow-hidden enter-pop origin-bottom-right ${
           SIZES[props.size]
         }`}
         style={{ "--bottom": `${bottom()}px` }}

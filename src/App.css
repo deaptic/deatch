@@ -268,6 +268,17 @@
   box-shadow: var(--elevation-3);
 }
 
+@utility tooltip-arrow {
+  position: absolute;
+  width: calc(var(--spacing) * 2.5);
+  height: calc(var(--spacing) * 2.5);
+  translate: -50% -50%;
+  background-color: var(--color-material);
+  border-right: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
 @utility enter-pop {
   transition-property: opacity, scale;
   transition-duration: var(--duration-quick);

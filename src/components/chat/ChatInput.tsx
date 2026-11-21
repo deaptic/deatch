@@ -34,6 +34,7 @@ import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import AppearancePanel from "./AppearancePanel.tsx";
 import { composerInnerHeight } from "../ui/rowHeight.ts";
+import ComposerCaption from "../ui/ComposerCaption.tsx";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
@@ -263,11 +264,11 @@ export default function ChatInput(props: Props) {
   });
 
   return (
-    <div class="shrink-0 bg-surface border-t border-line-soft px-4 pt-3 pb-3">
+    <div class="shrink-0 p-2">
       <ChatModes broadcasterId={props.broadcasterId} />
       <Show when={props.replyTo()}>
         {(reply) => (
-          <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft">
+          <ComposerCaption>
             <span class="shrink-0">
               {tRich("CHAT_INPUT_REPLYING_TO", {
                 user: reply().name,
@@ -284,7 +285,7 @@ export default function ChatInput(props: Props) {
             >
               <X class="size-4" />
             </IconButton>
-          </div>
+          </ComposerCaption>
         )}
       </Show>
       <Show

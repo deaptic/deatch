@@ -65,8 +65,8 @@ export default function Segmented<T extends string>(props: Props<T>) {
             aria-label={o.icon ? o.label : undefined}
             data-tip={o.icon ? o.label : undefined}
             onClick={() => props.onChange(o.value)}
-            class={`${OPTION_HEIGHT[props.size ?? "md"]} px-3 rounded-xs text-small font-semibold cursor-pointer grid place-items-center transition-colors duration-snap [&>svg]:size-4 ${
-              props.fill ? "flex-1" : ""
+            class={`${OPTION_HEIGHT[props.size ?? "md"]} rounded-xs text-small font-semibold cursor-pointer grid place-items-center transition-colors duration-snap [&>svg]:size-4 ${
+              props.fill ? "flex-1 min-w-0 px-1" : "px-3"
             } ${
               props.value === o.value
                 ? "bg-overlay text-ink elevation-1"

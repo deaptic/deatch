@@ -6,7 +6,7 @@ import {
   onMount,
   untrack,
 } from "solid-js";
-import { feeds } from "../../lib/stores/feeds.ts";
+import { channelEntries } from "../../lib/stores/feeds.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import type { FeedMessage, UserRef } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
@@ -130,7 +130,7 @@ export default function UserCard(props: Props) {
   onCleanup(() => endDrag?.());
 
   const live = createMemo<FeedMessage[]>(() =>
-    (feeds[props.broadcasterId]?.messages ?? []).filter(
+    channelEntries(props.broadcasterId).filter(
       (m): m is FeedMessage =>
         m.kind === "message" && m.chatter_user_id === props.chatterId,
     ),
@@ -151,7 +151,7 @@ export default function UserCard(props: Props) {
         role="dialog"
         aria-label={t("USER_CARD_LABEL")}
         onTransitionEnd={() => setEntered(true)}
-        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 material-thick rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-card-width min-h-min resize origin-top-left transition duration-quick ease-out ${
+        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line elevation-3 rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-card-width min-h-min resize origin-top-left transition duration-quick ease-out ${
           entered() ? "" : "starting:opacity-0 starting:scale-97"
         }`}
         style={{

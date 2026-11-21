@@ -59,13 +59,14 @@ backdrop blur, a 1px `line` and its elevation. Bigger layers read thicker:
 
 - `material-thin`: tooltips, hover toolbars, transient readouts.
 - `material-regular`: menus, popovers, dropdown lists, toasts.
-- `material-thick`: command palettes, large floating cards.
+- `material-thick`: command palettes.
 
 Never stack one material on another.
 
 A solid element lifted off what is under it takes an elevation alone:
 `elevation-1` (a segment thumb, a toggle knob), `elevation-2` (a pill floating
-over content), `elevation-3` (a dialog, which also dims what is behind it). In
+over content), `elevation-3` (a dialog, which also dims what is behind it, or
+a large floating panel people read and work in, which stays solid). In
 dark themes, elevation adds a faint light edge along the top.
 
 Materials turn solid (`overlay`, no blur) when the system asks for reduced
@@ -141,7 +142,7 @@ platform.
 
 **Tooltips** are the app's own, never the native `title`. They appear after a
 short delay, above the element or below it when there is no room, and never
-cover window chrome. A tooltip only says what is not already on screen: the
+cover window chrome. A small notch points at the centre of what they describe. A tooltip only says what is not already on screen: the
 name of an icon, a full date, hidden detail. Icon-only controls also carry an
 `aria-label`.
 
@@ -162,9 +163,11 @@ the field, and Escape, Tab or clicking away close the list unchanged.
 choices, or a continuous slider that applies live while dragging. A continuous
 slider shows its value next to it.
 
-**Selection** in a list or nav is a 3px `accent` bar on the row's leading edge
-over a `raised` row; the row itself stays neutral. When that edge already
-carries meaning, selection becomes an `accent` outline.
+**Rows in a sidebar** carry no fill; what they show is the whole row. A 4px
+pill on the sidebar's own edge, centred on the row, marks state: full height
+and `accent-ink` when selected, a short neutral nub when unread, half height on
+hover. It changes by scale alone. Rows in a running list, whose leading edge
+already carries meaning, mark selection with an `accent` outline.
 
 **Fading means unusable.** Anything that can't be used or is finished fades to
 40%. Something switched off but still editable is not faded; its state shows in

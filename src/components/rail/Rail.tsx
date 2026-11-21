@@ -252,7 +252,7 @@ export default function Rail(props: Props) {
         aria-label={t(expanded() ? "RAIL_COLLAPSE_RAIL" : "RAIL_EXPAND_RAIL")}
         aria-expanded={expanded()}
         onClick={() => setAppearanceRailExpanded(!expanded())}
-        class="shrink-0 h-9 mx-2 mt-2 mb-0.5 pl-2 flex items-center gap-3 rounded-sm text-ink-faint hover:bg-raised hover:text-ink cursor-pointer transition-colors duration-snap overflow-hidden"
+        class="shrink-0 h-9 mx-2 mt-2 mb-0.5 pl-2 flex items-center gap-3 rounded-md text-ink-faint hover:bg-raised hover:text-ink cursor-pointer transition-colors duration-snap overflow-hidden"
       >
         <span class="w-10 shrink-0 grid place-items-center">
           <ChevronRight
@@ -283,7 +283,7 @@ export default function Rail(props: Props) {
           onScroll={main.update}
           class="flex flex-col h-full overflow-y-auto scrollbar-none"
         >
-          <div class={`flex flex-col py-1.5 ${railGap()}`}>
+          <div class={`flex flex-col py-2 ${railGap()}`}>
             <Show
               when={!channels.loadingPinned()}
               fallback={
@@ -305,7 +305,7 @@ export default function Rail(props: Props) {
                           onMouseDown={(e) => startDrag(e, index())}
                         >
                           <Show when={isOver()}>
-                            <div class="pointer-events-none absolute left-3 right-3 -top-px h-0.5 bg-accent z-10" />
+                            <div class="pointer-events-none absolute left-2 right-2 -top-px h-0.5 rounded-full bg-accent z-10" />
                           </Show>
                           <ChannelRow
                             ch={c()}
@@ -339,7 +339,7 @@ export default function Rail(props: Props) {
 
           <RailDivider />
 
-          <div class={`flex flex-col py-1.5 ${railGap()}`}>
+          <div class={`flex flex-col py-2 ${railGap()}`}>
             <Show
               when={!channels.loadingLive()}
               fallback={
@@ -370,7 +370,7 @@ export default function Rail(props: Props) {
 
       <Show when={linkedOthers().length > 0}>
         <RailDivider />
-        <div class="flex flex-col py-1.5 shrink-0">
+        <div class="flex flex-col py-2 shrink-0">
           <div class="relative">
             <Show when={linkScroll.canUp()}>
               <ScrollChevron
@@ -415,7 +415,7 @@ export default function Rail(props: Props) {
         {(nv) => (
           <>
             <RailDivider />
-            <div class="py-1.5 shrink-0" data-channel-id={nv().id}>
+            <div class="py-2 shrink-0" data-channel-id={nv().id}>
               <ChannelRow
                 ch={nv()}
                 selected={selectedId() === nv().id}
@@ -432,7 +432,7 @@ export default function Rail(props: Props) {
       </Show>
 
       <RailDivider />
-      <div class={`flex flex-col py-1.5 shrink-0 ${railGap()}`}>
+      <div class={`flex flex-col py-2 shrink-0 ${railGap()}`}>
         <RailRow
           ref={(el) => (linkBtn = el)}
           label={t("RAIL_LINK")}
@@ -473,7 +473,7 @@ export default function Rail(props: Props) {
       </div>
 
       <RailDivider />
-      <div class="flex flex-col pt-1.5 pb-3 shrink-0">
+      <div class="flex flex-col py-2 shrink-0">
         <Show when={user()}>
           {(u) => (
             <RailRow

@@ -17,10 +17,13 @@ import type {
   FeedEvent as Event,
   FeedMessage as Message,
 } from "../../lib/types/index.ts";
-import { feeds, isFeedEntryVisible } from "../../lib/stores/feeds.ts";
+import {
+  channelEntries,
+  feeds,
+  isFeedEntryVisible,
+} from "../../lib/stores/feeds.ts";
 import { getEntryId } from "../../lib/utils/entryId.ts";
 import { historyViews } from "../../lib/stores/history.ts";
-import { withLive } from "../../lib/utils/historyView.ts";
 import * as history from "../../lib/services/history.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import {
@@ -97,9 +100,7 @@ export default function Feed(props: Props) {
   });
 
   const entries = createMemo<FeedEntry[]>(() => {
-    const live = feeds[props.broadcasterId]?.messages ?? [];
-    const view = historyViews[props.broadcasterId];
-    const all = props.entries ?? (view ? withLive(view, live) : live);
+    const all = props.entries ?? channelEntries(props.broadcasterId);
     return props.filter ? all.filter(props.filter) : all;
   });
   const ids = createMemo(() => entries().map(getEntryId));

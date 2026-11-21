@@ -17,6 +17,7 @@ import type { Chatter } from "../../lib/types/index.ts";
 import Artwork from "../ui/Artwork.tsx";
 import Chip from "../ui/Chip.tsx";
 import ComposerBox from "../ui/ComposerBox.tsx";
+import ComposerCaption from "../ui/ComposerCaption.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
 import { createCommandComposer } from "./createCommandComposer.ts";
 
@@ -126,7 +127,7 @@ export default function CommandComposer(props: Props) {
           }}
         />
       </Show>
-      <div class="flex items-center gap-2 px-1 pb-2 text-small text-ink-soft min-w-0">
+      <ComposerCaption>
         <span class="truncate">
           /{props.command.name}
           <Show when={activeOption()?.name}>
@@ -150,7 +151,7 @@ export default function CommandComposer(props: Props) {
             </span>
           </Show>
         </span>
-      </div>
+      </ComposerCaption>
       <ComposerBox>
         <div class="flex-1 self-center flex items-center flex-wrap gap-2 min-h-9 py-0.5 min-w-0">
           <Chip variant="command" label={`/${props.command.name}`} selected />

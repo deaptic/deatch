@@ -4,6 +4,14 @@ import { selectedChannel } from "../view.ts";
 import { feedEvents, feedShowEvents } from "../preferences.ts";
 import { NOTICE_TO_EVENT } from "../../constants/events.ts";
 import type { FeedEntry } from "../../types/index.ts";
+import { historyViews } from "../history.ts";
+import { withLive } from "../../utils/historyView.ts";
+
+export function channelEntries(broadcasterId: string): FeedEntry[] {
+  const live = feeds[broadcasterId]?.messages ?? [];
+  const view = historyViews[broadcasterId];
+  return view ? withLive(view, live) : live;
+}
 
 export function hasUnread(broadcasterId: string): boolean {
   const feed = feeds[broadcasterId];

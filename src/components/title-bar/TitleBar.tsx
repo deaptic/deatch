@@ -96,7 +96,7 @@ export default function TitleBar(props: Props) {
               </span>
             </Show>
           </TitleBarButton>
-          <ToolbarDivider />
+          <ToolbarDivider in="titleBar" />
           <TitleBarButton
             label={t("TITLE_BAR_MINIMIZE")}
             onClick={() => minimizeWindow().catch(() => {})}
