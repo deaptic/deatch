@@ -157,8 +157,8 @@ export default function UserCard(props: Props) {
         role="dialog"
         aria-label={t("USER_CARD_LABEL")}
         onTransitionEnd={() => setEntered(true)}
-        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay border border-line rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-card-width min-h-min resize transition duration-quick ease-out ${
-          entered() ? "" : "starting:opacity-0 starting:translate-y-1"
+        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 material-thick rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-card-width min-h-min resize origin-top-left transition duration-quick ease-out ${
+          entered() ? "" : "starting:opacity-0 starting:scale-97"
         }`}
         style={{
           "--x": `${pos().x}px`,

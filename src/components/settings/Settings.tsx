@@ -100,7 +100,7 @@ export default function Settings() {
       <div class="flex-1 flex min-h-0">
         <nav
           aria-label={t("SETTINGS_NAV_LABEL")}
-          class={`shrink-0 flex flex-col gap-0.5 px-3 pt-3 border-r border-line-soft overflow-hidden transition-all duration-settle ease-out ${
+          class={`shrink-0 flex flex-col gap-0.5 px-3 pt-3 border-r border-line-soft overflow-hidden transition-all duration-settle ease-drawer ${
             collapsed() ? "w-16" : "w-55"
           }`}
         >

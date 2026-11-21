@@ -1,210 +1,196 @@
 # Design system
 
-The app keeps every chat you care about open at once, for people who spend hours
-in it. It should feel like a moderation desk: calm graphite around the chat,
-every channel's state readable at a glance, and nothing in the way of reading.
-
-This is the rulebook. It says what the tokens mean and how things are built, not
-how each screen is laid out. Values live once, in the `@theme` block of
-`src/App.css`. Code follows this document; when they disagree, fix the code.
+The rulebook for look and behaviour. It says what the tokens mean and how
+things are built, not how each screen is laid out. Values live once, in the
+theme tokens; code follows this document, and when they disagree, fix the code.
 
 ## Principles
 
-Reading comes first; if a choice makes chat harder to read, it is wrong. The
-interface is quiet so chat can be loud: cool graphite surfaces, tight corners,
-plain type, every common action one click or key away. Everything is flat, with
-no shadows, gradients, blur, or glass; depth comes from stepping between tones,
-plus a 1px line where a step alone is ambiguous. Neutrals build structure and
-anything with chroma is a signal: live, mention, event, status, selected. There
-is one way per job: one hover, one selection, one accent, one component. Space
-groups; a line separates only when a gap cannot. Only the live indicator moves
-on its own; everything else moves because the user did something, and finishes
-fast. Words are design: short, warm, plain, sentence case.
+- **Content first.** The interface is quiet so content can be loud. If a choice
+  makes the main content harder to read, it is wrong.
+- **Flat ground, floating materials.** The base layers step between tones, with
+  a 1px line only where a step alone is ambiguous, and cast no shadows. Only
+  what floats over content is a material, so it is always clear what sits above
+  and what is underneath.
+- **Neutral structure, chromatic signals.** Neutrals build the layout; anything
+  with colour means something: selected, status, a category.
+- **One way per job.** One hover, one selection, one accent, one component per
+  pattern.
+- **Space groups.** A line separates only when a gap cannot.
+- **Motion answers the user.** Nothing moves on its own except a live status
+  indicator. Everything else responds to the press and finishes fast.
+- **Words are design.** Short, warm, plain, sentence case.
 
 ## Tokens
 
-Use tokens only, by name. Every colour token has a dark and a light value,
-switched by `data-theme` on the root (defaulting to the system).
+Use tokens only, by name. Every colour has a dark and a light value, switched
+by `data-theme` on the root (defaulting to the system).
 
 ### Colour
 
-Tones step from darkest to lightest: `canvas` (window, feed), `surface` (rail,
-composer, cards, inputs), `raised` (hover, chips, active chrome), `overlay`
-(popovers, menus, tooltips; always with a 1px `line`). Hover moves one tone up,
-pressed two. `scrim` sits behind dialogs; `media-scrim` is the same dark wash in
-both themes, behind anything laid over images or video.
+Tones step from darkest to lightest: `canvas` (the window and main content),
+`surface` (side panels, cards, inputs), `raised` (hover, chips, active chrome),
+`overlay` (the solid top tone, such as a selected segment or a pressed
+control). Hover moves one tone up, pressed two. `scrim` dims everything behind
+a dialog; `media-scrim` is the same dark wash in both themes, behind anything
+laid over images or video.
 
-Text is `ink` (body, headings), `ink-soft` (secondary, timestamps, idle icons),
-or `ink-faint` (placeholders, disabled, metadata available another way). Lines
-are `line-soft` inside a surface and `line` on inputs and overlays.
+Text is `ink` (body, headings), `ink-soft` (secondary text, idle icons) or
+`ink-faint` (placeholders, disabled, information also available another way).
+Lines are `line-soft` inside a surface and `line` on inputs and floating
+layers.
 
 The accent is one colour meaning "selected, active, or about you": `accent`
-(fills), `accent-hover`, `accent-ink` (as text or icon), `accent-soft` (tinted
-rows), `on-accent` (text on fills). Users may replace it; only its hue and
-chroma are kept, so the set stays readable.
+(fills), `accent-hover`, `accent-ink` (text or icon), `accent-soft` (tinted
+rows, focus halos), `on-accent` (text on fills). If users can replace it, keep
+only its hue and chroma so the set stays readable.
 
-Status colours are `live`, `positive`, `caution`, `negative`, `info`. Live and
-negative share a hue; shape tells them apart (a dot or the square-lamp tag is live). Events
-have `event-*`, one per Twitch event, shown as a 3px bar and a 10% tint, never a
-fill. When Twitch says which colour an event wears, it wears that one: an
-announcement takes the broadcaster's pick from `event-announce-*`, or
-`event-announce` for the default. A chatter's Twitch colour is lightness-clamped
-per theme so it reads; a chatter with no colour is `ink-soft` grey everywhere.
+Status colours are `live`, `positive`, `caution`, `negative`, `info`. When two
+signals share a hue, shape tells them apart. Category colours mark with a thin
+bar or a light tint, never a full fill. Colours that come from outside (user-
+or data-chosen) are lightness-clamped per theme so they always read.
 
-### Type, space, shape
+### Materials and elevation
 
-Atkinson Hyperlegible Next for everything read; Cascadia Mono for IDs and
-payloads. The scale is `hero` (greetings), `heading` (page titles), `title`
-(names, card and dialog titles), `body` (UI text), `small` (descriptions,
-tooltips, chips), `micro` (badges, counts). The feed sizes in `em` from the
-user's chat text size, so everything in a row scales with it.
+A floating layer wears a material: a translucent `material` fill with a
+backdrop blur, a 1px `line` and its elevation. Bigger layers read thicker:
 
-Space is the 4px scale. Radius grows with the thing: `xs` (nested in `sm`, and thin
-things: meters, the live tag), `sm` (controls), `md` (popovers, cards, composer), `lg` (dialogs, big cards),
-`round` (avatars, presence dots, badges, toggles, buttons floating over
-content). Control heights are `control-sm/md/lg`;
-icon-only controls are square with a hit target of at least 32px. Motion is
-`snap` (colour changes), `quick` (small moves, popovers), `settle` (panes,
-pages), always `ease-out`.
+- `material-thin`: tooltips, hover toolbars, transient readouts.
+- `material-regular`: menus, popovers, dropdown lists, toasts.
+- `material-thick`: command palettes, large floating cards.
+
+Never stack one material on another.
+
+A solid element lifted off what is under it takes an elevation alone:
+`elevation-1` (a segment thumb, a toggle knob), `elevation-2` (a pill floating
+over content), `elevation-3` (a dialog, which also dims what is behind it). In
+dark themes, elevation adds a faint light edge along the top.
+
+Materials turn solid (`overlay`, no blur) when the system asks for reduced
+transparency or more contrast.
+
+### Type
+
+One readable sans for everything read; a mono only for IDs, code and payloads.
+The scale is `hero` (greetings, empty landing pages), `heading` (page titles),
+`title` (names, card and dialog titles), `body` (UI text), `small`
+(descriptions, tooltips, chips), `micro` (badges, counts).
+
+Each step carries its own leading and tracking: large type is tight, with
+negative tracking; small type opens up. Never add `tracking-*` on top.
+Emphasise with weight, not size. Content that follows a user's text-size
+setting is sized in `em`, so everything in it scales together.
+
+### Space and shape
+
+Space is the 4px scale. Radius grows with the element: `xs` (nested inside
+`sm`, thin things like meters), `sm` (controls), `md` (popovers, cards,
+inputs), `lg` (dialogs, big cards), `round` (avatars, dots, badges, toggles,
+pills floating over content). Control heights are `control-sm/md/lg`.
+Icon-only controls are square, with a hit target of at least 32px.
+
+### Motion
+
+Durations are `snap` (colour changes, press feedback), `quick` (small moves,
+floating layers arriving) and `settle` (panes, toasts). Curves are `ease-out`
+for anything arriving or answering a press, and `ease-drawer` for panes sliding
+across the window. Never use `ease-in`.
+
+- Pressable controls scale to 97% while held.
+- A floating layer arrives with `enter-pop`, growing from 97% out of the corner
+  nearest whatever opened it (`origin-*`). Dialogs grow from their centre.
+- Nothing animates on the way out, and nothing animates from scale 0.
+- Keyboard-driven changes (moving a selection, switching views) never animate.
+- Under reduced motion, transitions and idle animation are off.
 
 ### Pictures and icons
 
-People and channels are `Avatar`: round for chatters in the feed, square (`xs`)
-in the rail, inbox channel line, and beside a multi-line block. Pictures of
-content are `Artwork` and keep their native shape, never cropped to another one:
-`boxart` 3:4, `video` 16:9, `native` for kinds with no fixed shape (chat GIFs);
-a new kind of picture is a new shape there. Artwork sits on `raised` while
-loading, and its radius follows where it sits (`xs` inline in a row, `md` on its
-own, none when it bleeds to a card's edge). Anything laid over it uses
-`media-scrim`.
+People are avatars: round by default, square (`xs`) in dense lists and beside
+multi-line blocks. Content images keep their native aspect ratio and are never
+cropped to a different one; a new kind of picture is a new shape. Images sit on
+`raised` while loading, and their radius follows where they sit (`xs` inline,
+`md` on their own, none when they bleed to a card's edge). Anything laid over
+an image uses `media-scrim`.
 
-Icons are Lucide and inherit text colour: 16 on every control and menu item, 20
-in headers and rail tiles, 24 in empty states; a glyph inside a chip or badge
-sizes with its text; window controls follow Windows at 12.
+Icons come from one set and inherit text colour. Sizes are 16 on controls and
+menu items, 20 in headers and navigation, and 24 in empty states. A glyph
+inside a chip or badge sizes with its text, and window controls follow the
+platform.
 
 ## Building
 
-Tokens and Tailwind only: no raw hex, shadows, gradients, arbitrary values, or
-new `@utility` rules. Values that must follow runtime state (chat text size) are
-CSS variables set once where that state lives. One component per file;
-primitives live in `src/components/ui/` and feature code composes them without
-restyling. A missing look is a new variant on the primitive.
+- Tokens and Tailwind only: no raw hex, shadows, blur, gradients or arbitrary
+  values. Depth is only ever `material-*` or `elevation-*`; Tailwind's own
+  `shadow-*` inlines its value and would ignore a theme switch.
+- A custom `@utility` is for a recipe several primitives share, not a one-off.
+- Values that must follow runtime state (a user's text size) are CSS variables,
+  set once where that state lives.
+- One component per file. Primitives own their look, and feature code composes
+  them without restyling. A missing look is a new variant on the primitive.
+- Layout is intrinsic: no breakpoints; flex wraps and grids auto-fill, and
+  everything is usable at the minimum window size.
 
-Tooltips are the app's own, never the native `title`: an element carries
-`data-tip` and one host shows it after a short delay, above the element, or
-below it when above would reach the title bar; tips never cover the title bar. A
-tip only says what is not already on screen: the name of an icon or image, a
-full date, hidden detail. Visible labels and usage hints get none. Icon-only
-controls also carry an `aria-label`.
+### Patterns
 
-Overlays are `overlay` with a 1px `line`, open 4px below what opened them (8px
-when beside it or above it, as tooltips and rail popovers are), stay inside an
-8px viewport margin, and close on Escape or outside click. The opener toggles.
-One menu, one popover, and one dialog at a time; Escape closes the topmost and
-focus returns where it came from. Choosing a menu item closes the menu, except
-an item that opens a submenu or steps back out of one.
+**Tooltips** are the app's own, never the native `title`. They appear after a
+short delay, above the element or below it when there is no room, and never
+cover window chrome. A tooltip only says what is not already on screen: the
+name of an icon, a full date, hidden detail. Icon-only controls also carry an
+`aria-label`.
 
-Choosing from a long list is a `Combobox`. The field always shows the current
-value (or its placeholder when none, with × to clear); focus opens the list
-attached below and selects the text so typing filters it; one row is always
-highlighted, arrows and hover move it, Enter picks it; focus never leaves the
-field; Escape, Tab, or clicking away close it unchanged.
+**Floating layers** open 4px below what opened them (8px when beside or above
+it), stay inside an 8px viewport margin, and close on Escape or an outside
+click. The opener toggles them. Only one menu, one popover and one dialog are
+open at a time; Escape closes the topmost and focus returns to where it came
+from. Choosing a menu item closes the menu, unless the item opens a submenu or
+steps back out of one.
 
-A value on a range is a `StopSlider` when it snaps to a few labelled choices
-(text size, zoom), or a `Slider` when it is continuous and changes live while
-dragging (a volume); a `Slider`'s value shows next to it, where it fits.
+**Picking from a long list** uses a combobox. The field always shows the
+current value (or a placeholder, with × to clear). Focus opens the list below
+and selects the text, so typing filters it. One row is always highlighted;
+arrows and hover move the highlight and Enter picks the row. Focus never leaves
+the field, and Escape, Tab or clicking away close the list unchanged.
 
-The selected row in a list or nav is marked by `EdgeMark`, a 3px `accent` bar on
-its leading edge over a `raised` row; the row itself stays neutral. Feed rows
-use that edge for their tone, so a selected feed row takes an `accent` outline
-instead.
+**A value on a range** uses a stepped slider when it snaps to a few labelled
+choices, or a continuous slider that applies live while dragging. A continuous
+slider shows its value next to it.
 
-Fading means unusable: 40% for anything that can't be used or is finished
-(disabled controls, resolved AutoMod holds, a dragged rail row). Something
-switched off but still editable is not faded; its state shows in its own
-control. Pressed filled buttons dip to 90%; artwork fades to 80% on hover.
+**Selection** in a list or nav is a 3px `accent` bar on the row's leading edge
+over a `raised` row; the row itself stays neutral. When that edge already
+carries meaning, selection becomes an `accent` outline.
 
-Feedback happens where the action happened. A toast only when the result is out
-of view; errors sit next to what failed. Layout is intrinsic: no breakpoints or
-media queries, flex wraps and grids auto-fill, usable at the window's minimum
-size.
+**Fading means unusable.** Anything that can't be used or is finished fades to
+40%. Something switched off but still editable is not faded; its state shows in
+its own control. Pressed filled buttons dip to 90%, and interactive images
+fade to 80% on hover.
 
-## The feed
-
-Every entry is one `FeedItem`, which owns all row layout: the tone stripe, the
-tile or timestamp on the left, and four parts on the right. Context sits above,
-the title names who or what, the content says it, and the detail adds anything
-quieter. Messages and events fill the same parts and add no layout of their own.
-
-Each row has one tone, in precedence: held by AutoMod (`caution`), mentions you
-(`accent`), cheer or Power-up (`event-bits`), reward or channel points perk
-(`event-channel-points`), first message (`line` on `surface`), event (its
-colour), plain. Whatever bought the look sets the colour: bits are `event-bits`,
-channel points are `event-channel-points`. Selected adds an `accent` outline.
-Hover lifts the row one tone.
-
-In shared chat, a message sent in a partner channel shows that channel's avatar
-at badge size, named in its tooltip: square before the badges by default, round
-on the bottom-right corner of the chatter tile when spacious.
-
-A message's context sits above it, never beside the name: AutoMod reason, why a
-suspicious chatter is flagged (`caution`, shown to mods), "Cheered N bits", the
-Power-up or channel points perk, reward, "First message", then the reply line
-with a hook pointing down at the message, clear of the avatar and the text.
-Context starts where the message text starts. Its title is the name, badges, and
-time; its content is the words; it has no detail.
-
-An event's title is its type in the event's colour, then the time. Its content
-is one sentence saying what happened, in `ink`, with every person it names as a
-name link and nothing else emphasised. Its detail, in `ink-soft`, holds the
-chatter's own words as chat writes them, without the name the sentence already
-gives, and anything else: a reason, a description, results, recipients.
-
-There are two layouts. Default (compact in code) is one line per message with an
-optional timestamp column and no title: a message's badges and name lead its
-words, an event's icon leads its sentence. Spacious (comfortable in code) groups
-a chatter's messages (same chatter, within seven minutes of the group's first
-message, same day, same shared chat channel, nothing between) under one header
-with a tile in a gutter; the tile sits centred on the first two lines of every
-row. Replies, holds, cheers, Power-ups, rewards, perks, and first messages
-always start a group. The gap before each group is the user's group spacing.
-Every feed and the settings preview follow the user's text size, group spacing,
-zoom, and density.
-
-The chatter tile shows the chatter's Twitch avatar, fading in once it has loaded
-(at once when the browser already has it). While the chatter is being looked up
-it is only the tinted tile, like loading artwork. A chatter without an avatar, a
-failed image, or real avatars off shows a blobatar drawn locally from the user
-ID, in the hue of their name colour (grey without one), tinted behind with the
-same colour; the blobatar moves only while its row is hovered or selected.
-
-Cheermotes render inline at emote size with the amount after them in the tier's
-colour, clamped like a chatter colour; under reduced motion they show their
-still image. Deleted messages stay quiet: muted text and "(deleted)", nothing
-added that would paint the feed or move it during a mass cleanup. Times show
-clock time today, "Yesterday at" then the date for older; hovering any time
-shows the full date. Day dividers mark where the date changes.
+**Feedback happens where the action happened.** Use a toast only when the
+result is out of view. Errors sit next to what failed.
 
 ## Keyboard and focus
 
-Everything reachable by mouse has a key; bindings live in
-`src/default-keymap.json` and show in tooltips and Settings → Keyboard. Ctrl
-acts on channels and their browser tabs, like a browser's tab keys; Alt toggles
-app-wide modes. Never Ctrl+Alt: on many layouts it is AltGr and types a
-character instead. `:focus-visible` draws a 2px `accent` outline; text fields
-show focus through their border; mouse clicks never show the outline. Focus
-returns to the composer when an overlay closes.
+Everything reachable by mouse has a key, and bindings show in tooltips.
+Ctrl acts on documents or tabs, as a browser's tab keys do, and Alt toggles
+app-wide modes. Never bind Ctrl+Alt: on many layouts it is AltGr and types a
+character instead.
+
+`:focus-visible` draws a 2px `accent` outline, and text fields show focus as an
+`accent` border with a 3px `accent-soft` halo. Mouse clicks never show the
+outline. When a floating layer closes, focus returns to the primary input.
 
 ## Voice
 
-Sentence case. Buttons say what happens ("Pin channel", never "OK"), and the
-result keeps the word ("Pinned"). Errors are direct and say what to do, without
-apology. Empty states invite in one line. Fixed vocabulary: channel, chatter,
-pin, live, Link, Inbox, Explore, AutoMod, raid, bits, shoutout.
+Sentence case. Buttons say what happens ("Save draft", never "OK"), and the
+result keeps the word ("Saved"). Errors are direct and say what to do, without
+apology. Empty states invite the user in, in one line. Keep a fixed vocabulary:
+one word per concept, everywhere.
 
 ## Accessibility
 
-`ink` and `ink-soft` keep at least 4.5:1 contrast; `ink-faint` only for
-information also available another way. Colour is never the only signal. Every
-image has `alt`. Reduced motion turns transitions and idle animation off.
-Everything works from the keyboard.
+- `ink` and `ink-soft` keep at least 4.5:1 contrast; `ink-faint` is only for
+  information also available another way.
+- Colour is never the only signal.
+- Every image has `alt`.
+- Reduced motion turns transitions and idle animation off; reduced transparency
+  and more contrast turn materials solid.
+- Everything works from the keyboard.

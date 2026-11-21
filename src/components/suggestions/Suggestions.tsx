@@ -61,7 +61,7 @@ export default function Suggestions<T>(props: Props<T>) {
   return (
     <div
       {...listbox.list}
-      class="absolute bottom-full inset-x-0 mb-2 z-30 p-1.5 bg-overlay border border-line rounded-md overflow-y-auto max-h-60 transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+      class="absolute bottom-full inset-x-0 mb-2 z-30 p-1.5 material-regular rounded-md overflow-y-auto max-h-60 enter-pop origin-bottom"
     >
       <For each={props.suggestions()}>
         {(s, i) => (

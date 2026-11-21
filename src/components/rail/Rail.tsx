@@ -246,7 +246,7 @@ export default function Rail(props: Props) {
   return (
     <nav
       aria-label={t("RAIL_CHANNELS")}
-      class={`flex flex-col h-full shrink-0 bg-surface border-r border-line-soft overflow-hidden transition-all duration-settle ease-out ${
+      class={`flex flex-col h-full shrink-0 bg-surface border-r border-line-soft overflow-hidden transition-all duration-settle ease-drawer ${
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
     >

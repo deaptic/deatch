@@ -20,6 +20,7 @@ import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
 import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
 import TitleBarButton from "../ui/TitleBarButton.tsx";
+import ToolbarDivider from "../ui/ToolbarDivider.tsx";
 import { OVERLAY_GAP } from "../ui/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
@@ -95,7 +96,7 @@ export default function TitleBar(props: Props) {
               </span>
             </Show>
           </TitleBarButton>
-          <div class="w-px h-5 self-center mx-1 bg-line-soft" />
+          <ToolbarDivider />
           <TitleBarButton
             label={t("TITLE_BAR_MINIMIZE")}
             onClick={() => minimizeWindow().catch(() => {})}

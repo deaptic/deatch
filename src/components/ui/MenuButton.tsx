@@ -4,10 +4,10 @@ import Button, { type ButtonVariant } from "./Button.tsx";
 import Menu from "./Menu.tsx";
 import { OVERLAY_GAP } from "./Popover.tsx";
 
+/// An icon with a chevron that opens a menu; the label is its tooltip.
 type Props = {
   label: string;
-  icon?: JSX.Element;
-  title?: string;
+  icon: JSX.Element;
   variant?: Extract<ButtonVariant, "neutral" | "ghost">;
   pressed?: boolean;
   children: JSX.Element;
@@ -34,15 +34,15 @@ export default function MenuButton(props: Props) {
         variant={props.variant ?? "neutral"}
         size="sm"
         icon={props.icon}
-        data-tip={props.title}
+        aria-label={props.label}
+        data-tip={props.label}
         pressed={props.pressed}
         aria-haspopup="menu"
         aria-expanded={anchor() !== null}
         onMouseDown={(e) => e.preventDefault()}
         onClick={toggle}
       >
-        {props.label}
-        <ChevronDown class="size-3.5 -mr-1" />
+        <ChevronDown class="size-3.5 -ml-1 -mr-1 text-ink-faint" />
       </Button>
       <Show when={anchor()}>
         {(a) => (

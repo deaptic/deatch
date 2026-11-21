@@ -56,23 +56,30 @@
   --font-sans: "Atkinson Hyperlegible Next", system-ui, sans-serif;
   --font-mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
 
+  /* Tracking tightens as type grows and opens as it shrinks; leading does the
+     reverse. */
   --text-hero: 2.25rem;
-  --text-hero--line-height: 2.75rem;
+  --text-hero--line-height: 2.625rem;
   --text-hero--font-weight: 800;
+  --text-hero--letter-spacing: -0.022em;
   --text-heading: 1.375rem;
-  --text-heading--line-height: 1.875rem;
+  --text-heading--line-height: 1.75rem;
   --text-heading--font-weight: 700;
+  --text-heading--letter-spacing: -0.014em;
   --text-title: 1rem;
-  --text-title--line-height: 1.5rem;
+  --text-title--line-height: 1.375rem;
   --text-title--font-weight: 600;
+  --text-title--letter-spacing: -0.006em;
   --text-body: 0.9375rem;
   --text-body--line-height: 1.375rem;
   --text-small: 0.8125rem;
   --text-small--line-height: 1.125rem;
   --text-small--font-weight: 500;
+  --text-small--letter-spacing: 0.004em;
   --text-micro: 0.6875rem;
   --text-micro--line-height: 1rem;
   --text-micro--font-weight: 600;
+  --text-micro--letter-spacing: 0.02em;
 
   /* Feed rows scale with the user's chat text size, so their parts are sized
      in em. These are the only em-based sizes in the app. */
@@ -119,10 +126,31 @@
   --text-card-name: 1.45rem;
   --text-card-meta: 0.95rem;
 
-  --ease-out: cubic-bezier(0.2, 0, 0, 1);
-  --duration-snap: 90ms;
+  /* `ease-out` for anything entering or answering a press; `ease-drawer` for
+     panes that slide across the window. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-snap: 100ms;
   --duration-quick: 160ms;
   --duration-settle: 240ms;
+
+  /* Materials: what floats over content. Bigger layers blur more and cast a
+     deeper shadow. Worn through the material-* and elevation-* utilities
+     below, never as raw values. */
+  --color-material: oklch(0.27 0.008 250 / 0.84);
+  --blur-thin: 12px;
+  --blur-regular: 20px;
+  --blur-thick: 32px;
+  /* The inset top edge is light catching the layer, so it reads on dark. */
+  --elevation-1:
+    inset 0 1px 0 oklch(1 0 0 / 0.05), 0 1px 2px oklch(0 0 0 / 0.3),
+    0 4px 12px oklch(0 0 0 / 0.24);
+  --elevation-2:
+    inset 0 1px 0 oklch(1 0 0 / 0.06), 0 2px 6px oklch(0 0 0 / 0.3),
+    0 12px 32px oklch(0 0 0 / 0.4);
+  --elevation-3:
+    inset 0 1px 0 oklch(1 0 0 / 0.06), 0 4px 12px oklch(0 0 0 / 0.36),
+    0 24px 64px oklch(0 0 0 / 0.52);
 
   /* Tones */
   --color-canvas: oklch(0.16 0.006 250);
@@ -182,6 +210,14 @@
   --color-raised: oklch(0.925 0.005 250);
   --color-overlay: oklch(0.995 0.002 250);
   --color-scrim: oklch(0.25 0.01 250 / 0.4);
+  --color-material: oklch(0.995 0.002 250 / 0.82);
+  --elevation-1:
+    0 1px 2px oklch(0.2 0.01 250 / 0.06), 0 4px 12px oklch(0.2 0.01 250 / 0.08);
+  --elevation-2:
+    0 2px 6px oklch(0.2 0.01 250 / 0.06), 0 12px 32px oklch(0.2 0.01 250 / 0.12);
+  --elevation-3:
+    0 4px 12px oklch(0.2 0.01 250 / 0.08),
+    0 24px 64px oklch(0.2 0.01 250 / 0.18);
 
   --color-ink: oklch(0.2 0.012 250);
   --color-ink-soft: oklch(0.46 0.012 250);
@@ -226,6 +262,56 @@
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 }
 
+/* A solid layer lifted off what is under it: a segment thumb, a floating
+   pill, a dialog. */
+@utility elevation-1 {
+  box-shadow: var(--elevation-1);
+}
+
+@utility elevation-2 {
+  box-shadow: var(--elevation-2);
+}
+
+@utility elevation-3 {
+  box-shadow: var(--elevation-3);
+}
+
+/* A translucent layer floating over content: tooltips and toolbars (thin),
+   menus, popovers, lists, and toasts (regular), the palette and user card
+   (thick). */
+@utility material-thin {
+  background-color: var(--color-material);
+  backdrop-filter: blur(var(--blur-thin)) saturate(1.5);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--elevation-1);
+}
+
+@utility material-regular {
+  background-color: var(--color-material);
+  backdrop-filter: blur(var(--blur-regular)) saturate(1.5);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--elevation-2);
+}
+
+@utility material-thick {
+  background-color: var(--color-material);
+  backdrop-filter: blur(var(--blur-thick)) saturate(1.5);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--elevation-3);
+}
+
+/* A floating layer arriving: it grows out of its `origin-*` (the control
+   that opened it) rather than appearing from nothing. Leaving is instant. */
+@utility enter-pop {
+  transition-property: opacity, scale;
+  transition-duration: var(--duration-quick);
+  transition-timing-function: var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+
 @utility duration-snap {
   transition-duration: var(--duration-snap);
 }
@@ -266,6 +352,18 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-line) transparent;
+  }
+}
+
+/* Materials turn solid when the system asks for less transparency or more
+   contrast. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root,
+  [data-theme="light"] {
+    --color-material: var(--color-overlay);
+    --blur-thin: 0px;
+    --blur-regular: 0px;
+    --blur-thick: 0px;
   }
 }
 

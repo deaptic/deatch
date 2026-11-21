@@ -12,8 +12,11 @@ import {
 import { createCopyable } from "../ui/copyable.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
+import Card from "../ui/Card.tsx";
 import Stat from "../ui/Stat.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
+import { canModerate, user } from "../../lib/stores/users.ts";
+import ModBar from "./ModBar.tsx";
 
 type Props = {
   channel: User;
@@ -34,55 +37,69 @@ export default function ChannelHeader(props: Props) {
   };
 
   return (
-    <header
-      class="h-28 shrink-0 flex items-center gap-4 pl-4 pr-6 border-b border-line-soft"
-      {...link.handlers}
-    >
-      <Avatar
-        src={props.channel.profileImageUrl}
-        alt={props.channel.displayName}
-        size={80}
-        square
-        presence={stream() ? "live" : "offline"}
-      />
-      <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
-        <h1
-          class={`self-start max-w-full text-title truncate ${name.class()}`}
-          data-tip={name.tip()}
-          {...name.handlers(() => props.channel.displayName)}
-        >
-          {props.channel.displayName}
-        </h1>
-        <Show when={title()}>
-          {(streamTitle) => (
-            <p
-              class={`self-start max-w-full text-body truncate ${titleCopy.class()}`}
-              data-tip={titleCopy.tip(streamTitle())}
-              {...titleCopy.handlers(streamTitle)}
-            >
-              {streamTitle()}
-            </p>
-          )}
-        </Show>
-        <div class="flex items-center gap-5 min-w-0 text-small">
-          <Stat icon={<Gamepad2 />} value={game()} copy={game()} truncate />
-          <Show
-            when={stream()}
-            fallback={<Stat icon={<Moon />} value={t("CHAT_OFFLINE")} />}
-          >
-            {(s) => (
-              <>
+    <header class="shrink-0 flex flex-col gap-2 p-2">
+      <Card>
+        <div class="flex items-center gap-3 px-2 py-1.5" {...link.handlers}>
+          <Avatar
+            src={props.channel.profileImageUrl}
+            alt={props.channel.displayName}
+            size={40}
+            square
+            presence={stream() ? "live" : "offline"}
+          />
+          <div class="flex-1 min-w-0 flex flex-col">
+            <div class="flex items-center gap-4 min-w-0">
+              <h1
+                class={`shrink-0 max-w-1/2 text-title truncate ${name.class()}`}
+                data-tip={name.tip()}
+                {...name.handlers(() => props.channel.displayName)}
+              >
+                {props.channel.displayName}
+              </h1>
+              <div class="ml-auto min-w-0 flex items-center gap-4 text-small">
                 <Stat
-                  icon={<Users />}
-                  value={formatViewers(s().viewerCount)}
-                  copy={String(s().viewerCount)}
+                  icon={<Gamepad2 />}
+                  value={game()}
+                  copy={game()}
+                  truncate
                 />
-                <Stat icon={<Clock />} value={uptime()} copy={uptime()} />
-              </>
-            )}
-          </Show>
+                <Show
+                  when={stream()}
+                  fallback={<Stat icon={<Moon />} value={t("CHAT_OFFLINE")} />}
+                >
+                  {(s) => (
+                    <>
+                      <Stat
+                        icon={<Users />}
+                        value={formatViewers(s().viewerCount)}
+                        copy={String(s().viewerCount)}
+                      />
+                      <Stat icon={<Clock />} value={uptime()} copy={uptime()} />
+                    </>
+                  )}
+                </Show>
+              </div>
+            </div>
+            <Show when={title()}>
+              {(streamTitle) => (
+                <p
+                  class={`self-start max-w-full text-small truncate ${titleCopy.class()}`}
+                  data-tip={titleCopy.tip(streamTitle())}
+                  {...titleCopy.handlers(streamTitle)}
+                >
+                  {streamTitle()}
+                </p>
+              )}
+            </Show>
+          </div>
         </div>
-      </div>
+      </Card>
+      <Show when={canModerate(props.channel.id)}>
+        <ModBar
+          broadcasterId={props.channel.id}
+          isBroadcaster={props.channel.id === user()?.id}
+        />
+      </Show>
       {link.menu()}
     </header>
   );

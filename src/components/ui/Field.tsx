@@ -23,7 +23,7 @@ export default function Field(props: Props) {
   ]);
   return (
     <label
-      class={`inline-flex items-center gap-2.5 bg-surface border border-line text-ink transition-colors duration-snap hover:border-ink-faint focus-within:border-accent! has-[:disabled]:opacity-40 ${
+      class={`inline-flex items-center gap-2.5 bg-surface border border-line text-ink transition duration-snap hover:border-ink-faint focus-within:border-accent! focus-within:ring-3 focus-within:ring-accent-soft has-[:disabled]:opacity-40 ${
         SIZES[local.size ?? "md"]
       } ${local.class ?? ""}`}
     >

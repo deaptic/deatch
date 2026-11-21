@@ -111,7 +111,7 @@ export default function Combobox(props: Props) {
       <Show when={open()}>
         <div
           {...listbox.list}
-          class="absolute right-0 top-full mt-1 z-30 w-full min-w-55 max-h-80 overflow-y-auto p-1.5 flex flex-col bg-overlay border border-line rounded-md transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+          class="absolute right-0 top-full mt-1 z-30 w-full min-w-55 max-h-80 overflow-y-auto p-1.5 flex flex-col material-regular rounded-md enter-pop origin-top"
         >
           <For
             each={shown()}

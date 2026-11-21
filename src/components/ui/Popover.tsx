@@ -6,6 +6,13 @@ import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import { trapFocus } from "../../lib/reactive/trapFocus.ts";
 
 const MARGIN = 8;
+
+/// The corner the popover grows out of, matching how it is aligned to x.
+const ORIGIN = {
+  start: "origin-top-left",
+  center: "origin-top",
+  end: "origin-top-right",
+};
 /// Distance between an overlay and the control that opened it: below it, or
 /// beside/above it (tooltips, rail popovers).
 export const OVERLAY_GAP = 4;
@@ -69,7 +76,7 @@ export default function Popover(props: Props) {
           "--max-h": `${window.innerHeight - MARGIN * 2}px`,
           "--max-w": `${maxWidth()}px`,
         }}
-        class="fixed left-(--x) top-(--y) max-h-(--max-h) max-w-(--max-w) z-50 flex flex-col bg-overlay border border-line rounded-md overflow-hidden transition duration-quick ease-out starting:opacity-0 starting:translate-y-1"
+        class={`fixed left-(--x) top-(--y) max-h-(--max-h) max-w-(--max-w) z-50 flex flex-col material-regular rounded-md overflow-hidden enter-pop ${ORIGIN[props.align ?? "start"]}`}
         onClick={(e) => e.stopPropagation()}
         onContextMenu={(e) => e.stopPropagation()}
       >

@@ -14,8 +14,8 @@ const SCRIM: Record<ModalLook, string> = {
 };
 
 const PANEL: Record<ModalLook, string> = {
-  dialog: "w-110 bg-surface p-6 gap-4",
-  palette: "w-140 max-h-3/5 bg-overlay p-2.5",
+  dialog: "w-110 bg-surface border border-line elevation-3 p-6 gap-4",
+  palette: "w-140 max-h-3/5 material-thick p-2.5",
 };
 
 type Props = {
@@ -34,7 +34,7 @@ export default function Modal(props: Props) {
   return (
     <Portal>
       <div
-        class={`fixed inset-0 z-50 flex justify-center bg-scrim ${SCRIM[props.look]}`}
+        class={`fixed inset-0 z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 ${SCRIM[props.look]}`}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget) props.onClose();
         }}
@@ -45,7 +45,7 @@ export default function Modal(props: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={props.label}
-          class={`max-w-full flex flex-col border border-line rounded-lg transition duration-quick ease-out starting:opacity-0 starting:translate-y-1 ${PANEL[props.look]}`}
+          class={`max-w-full flex flex-col rounded-lg enter-pop ${PANEL[props.look]}`}
         >
           {props.children}
         </div>

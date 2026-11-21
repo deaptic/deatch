@@ -19,7 +19,7 @@ export default function Toggle(props: Props) {
       }`}
     >
       <span
-        class={`absolute top-0.5 left-0.5 size-4.5 rounded-full transition duration-quick ease-out ${
+        class={`absolute top-0.5 left-0.5 size-4.5 rounded-full elevation-1 transition duration-quick ease-out ${
           props.checked ? "translate-x-4.5 bg-on-accent" : "bg-ink-soft"
         }`}
       />

@@ -69,7 +69,7 @@ export default function Segmented<T extends string>(props: Props<T>) {
               props.fill ? "flex-1" : ""
             } ${
               props.value === o.value
-                ? "bg-overlay text-ink"
+                ? "bg-overlay text-ink elevation-1"
                 : "text-ink-soft hover:text-ink hover:bg-raised"
             }`}
           >

@@ -19,7 +19,6 @@ import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
 import RaidBanner from "./RaidBanner.tsx";
-import ModBar from "./ModBar.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
 import { pendingRaid } from "../../lib/stores/raid.ts";
@@ -255,12 +254,6 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex-1 min-h-0 flex flex-col">
-      <Show when={isMod()}>
-        <ModBar
-          broadcasterId={props.broadcasterId}
-          isBroadcaster={props.broadcasterLogin === props.userLogin}
-        />
-      </Show>
       <Show
         when={pendingRaid()}
         fallback={

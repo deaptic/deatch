@@ -47,7 +47,7 @@ export default function Tooltip(props: Props) {
         ref={ref}
         role="tooltip"
         style={{ "--x": `${pos()?.x ?? 0}px`, "--y": `${pos()?.y ?? 0}px` }}
-        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 w-max max-w-75 whitespace-pre-line rounded-sm border border-line bg-overlay px-2.5 py-2 text-small text-ink ${
+        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 w-max max-w-75 whitespace-pre-line rounded-sm material-thin px-2.5 py-2 text-small text-ink ${
           props.side === "over" ? "text-center" : ""
         } ${pos() ? "" : "invisible"}`}
       >

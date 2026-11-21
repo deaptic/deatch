@@ -4,7 +4,9 @@ import { t } from "../../lib/i18n/index.ts";
 import { startCommercial } from "../../lib/api/twitch/channels.ts";
 import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
 import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
-import Button from "../ui/Button.tsx";
+import Card from "../ui/Card.tsx";
+import IconButton from "../ui/IconButton.tsx";
+import ToolbarDivider from "../ui/ToolbarDivider.tsx";
 import MenuButton from "../ui/MenuButton.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
@@ -17,60 +19,62 @@ type Props = {
 
 export default function ModBar(props: Props) {
   return (
-    <div class="shrink-0 flex flex-wrap items-center gap-1.5 px-4 py-2 border-b border-line-soft">
-      <Show when={props.isBroadcaster}>
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={<Bookmark class="size-4" />}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => createStreamMarker().catch(() => {})}
-        >
-          {t("CHAT_MOD_BAR_ADD_MARKER")}
-        </Button>
+    <Card>
+      <div class="flex items-center gap-0.5 p-0.5">
         <MenuButton
           variant="ghost"
-          label={t("CHAT_MOD_BAR_RUN_AD")}
-          icon={<Tv class="size-4" />}
+          label={t("CHAT_MOD_BAR_CHAT_MODES")}
+          icon={<SlidersHorizontal class="size-4" />}
         >
-          <For each={AD_LENGTHS}>
-            {(length) => (
-              <MenuItem
-                label={t("CHAT_MOD_BAR_AD_SECONDS", { count: length })}
-                onClick={() =>
-                  startCommercial({
-                    broadcasterId: props.broadcasterId,
-                    length,
-                  }).catch(() => {})
-                }
-              />
-            )}
-          </For>
+          <ChatModesList broadcasterId={props.broadcasterId} />
         </MenuButton>
-      </Show>
-      <MenuButton
-        variant="ghost"
-        label={t("CHAT_MOD_BAR_CHAT_MODES")}
-        icon={<SlidersHorizontal class="size-4" />}
-      >
-        <ChatModesList broadcasterId={props.broadcasterId} />
-      </MenuButton>
-      <MenuButton
-        variant="ghost"
-        label={t("CHAT_MOD_BAR_CLEAR_CHAT")}
-        icon={<Eraser class="size-4" />}
-      >
-        <MenuItem
-          label={t("CHAT_MOD_BAR_CLEAR_EVERY_MESSAGE")}
-          tone="negative"
-          onClick={() =>
-            deleteChatMessages({
-              broadcasterId: props.broadcasterId,
-              messageId: null,
-            }).catch(() => {})
-          }
-        />
-      </MenuButton>
-    </div>
+        <Show when={props.isBroadcaster}>
+          <ToolbarDivider />
+          <IconButton
+            label={t("CHAT_MOD_BAR_ADD_MARKER")}
+            size="sm"
+            onClick={() => createStreamMarker().catch(() => {})}
+          >
+            <Bookmark class="size-4" />
+          </IconButton>
+          <MenuButton
+            variant="ghost"
+            label={t("CHAT_MOD_BAR_RUN_AD")}
+            icon={<Tv class="size-4" />}
+          >
+            <For each={AD_LENGTHS}>
+              {(length) => (
+                <MenuItem
+                  label={t("CHAT_MOD_BAR_AD_SECONDS", { count: length })}
+                  onClick={() =>
+                    startCommercial({
+                      broadcasterId: props.broadcasterId,
+                      length,
+                    }).catch(() => {})
+                  }
+                />
+              )}
+            </For>
+          </MenuButton>
+        </Show>
+        <span class="flex-1" />
+        <MenuButton
+          variant="ghost"
+          label={t("CHAT_MOD_BAR_CLEAR_CHAT")}
+          icon={<Eraser class="size-4" />}
+        >
+          <MenuItem
+            label={t("CHAT_MOD_BAR_CLEAR_EVERY_MESSAGE")}
+            tone="negative"
+            onClick={() =>
+              deleteChatMessages({
+                broadcasterId: props.broadcasterId,
+                messageId: null,
+              }).catch(() => {})
+            }
+          />
+        </MenuButton>
+      </div>
+    </Card>
   );
 }

@@ -7,7 +7,7 @@ export default function Readout() {
       {(text) => (
         <div
           role="status"
-          class="absolute top-3 right-4 z-20 bg-overlay border border-line text-ink text-title px-3 py-1.5 rounded-md pointer-events-none"
+          class="absolute top-3 right-4 z-20 material-thin text-ink text-title px-3 py-1.5 rounded-md pointer-events-none"
         >
           {text()}
         </div>
