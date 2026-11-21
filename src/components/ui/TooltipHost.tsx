@@ -3,26 +3,30 @@ import Tooltip, { type TooltipPlace } from "./Tooltip.tsx";
 import { SIDE_GAP } from "./Popover.tsx";
 
 const DELAY_MS = 300;
+const STAYS_WARM_MS = 400;
 
-type Tip = TooltipPlace & { text: string };
+type Tip = TooltipPlace & { text: string; instant: boolean };
 
 export default function TooltipHost() {
   const [tip, setTip] = createSignal<Tip | null>(null);
   let anchor: HTMLElement | null = null;
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let warmUntil = 0;
 
   function hide() {
+    if (tip()) warmUntil = performance.now() + STAYS_WARM_MS;
     clearTimeout(timer);
     anchor = null;
     setTip(null);
   }
 
-  function show(el: HTMLElement) {
+  function show(el: HTMLElement, instant: boolean) {
     const text = el.dataset.tip;
     if (!text || !el.isConnected) return;
     const r = el.getBoundingClientRect();
     setTip({
       text,
+      instant,
       side: "over",
       x: r.left + r.width / 2,
       above: r.top - SIDE_GAP,
@@ -40,7 +44,8 @@ export default function TooltipHost() {
     hide();
     if (!el) return;
     anchor = el;
-    timer = setTimeout(() => show(el), DELAY_MS);
+    if (performance.now() < warmUntil) return show(el, true);
+    timer = setTimeout(() => show(el, false), DELAY_MS);
   }
 
   const onOver = (e: MouseEvent) => arm(e.target as Element);

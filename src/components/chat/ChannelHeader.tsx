@@ -47,7 +47,7 @@ export default function ChannelHeader(props: Props) {
             alt={props.channel.displayName}
             size={40}
             square
-            presence={stream() ? "live" : "offline"}
+            presence={stream() ? "on-air" : "offline"}
           />
           <div class="flex-1 min-w-0 flex flex-col">
             <div class="flex items-center gap-4 min-w-0">

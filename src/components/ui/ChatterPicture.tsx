@@ -8,9 +8,9 @@ import { avatarZoom, sizedAvatarUrl } from "../../lib/utils/avatar.ts";
 import type { Palette } from "blobatar";
 import * as appearance from "../../lib/services/appearance.ts";
 import { hueOf } from "../../lib/utils/color.ts";
+import { createImageReveal } from "../../lib/reactive/createImageReveal.ts";
 
 const IMAGE_PX = 70;
-const INSTANT_MS = 50;
 const VIVID_TONE = 0.7;
 
 type ChatterLook = {
@@ -42,17 +42,14 @@ type Props = {
 export default function ChatterPicture(props: Props) {
   const look = () => chatterLook(props.color);
   const [lookedUp, setLookedUp] = createSignal(false);
-  const [loaded, setLoaded] = createSignal(false);
-  const [instant, setInstant] = createSignal(false);
   const [failed, setFailed] = createSignal(false);
   const url = createMemo(
     () =>
       (feedShowAvatars() && knownUser(props.userId)?.profileImageUrl) || null,
   );
-  const showingImage = () => !!url() && loaded() && !failed();
+  const reveal = createImageReveal(url);
   const noImage = () =>
     !feedShowAvatars() || failed() || (lookedUp() && !url());
-  let shownAt = 0;
 
   createEffect(
     on([() => props.userId, feedShowAvatars], ([id, show]) => {
@@ -65,22 +62,7 @@ export default function ChatterPicture(props: Props) {
     }),
   );
 
-  createEffect(
-    on(
-      url,
-      () => {
-        setLoaded(false);
-        setInstant(false);
-        setFailed(false);
-      },
-      { defer: true },
-    ),
-  );
-
-  function onLoad() {
-    setInstant(performance.now() - shownAt < INSTANT_MS);
-    setLoaded(true);
-  }
+  createEffect(on(url, () => setFailed(false), { defer: true }));
 
   return (
     <>
@@ -98,18 +80,14 @@ export default function ChatterPicture(props: Props) {
       <Show when={!failed() && url()}>
         {(src) => (
           <img
-            ref={() => {
-              shownAt = performance.now();
-            }}
+            ref={reveal.mount}
             src={sizedAvatarUrl(src(), IMAGE_PX)}
             {...avatarZoom(src())}
             alt=""
             decoding="async"
-            onLoad={onLoad}
+            onLoad={reveal.load}
             onError={() => setFailed(true)}
-            class={`size-full object-cover col-start-1 row-start-1 ${
-              instant() ? "" : "transition-opacity duration-quick ease-out"
-            } ${showingImage() ? "opacity-100" : "opacity-0"}`}
+            class={`size-full object-cover col-start-1 row-start-1 ${reveal.fade()}`}
           />
         )}
       </Show>

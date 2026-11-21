@@ -274,14 +274,16 @@ export default function Chat(props: Props) {
         footer={
           <Show when={feedApi()?.isPaused()}>
             <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
-              <Button
-                size="sm"
-                shape="pill"
-                icon={<ChevronDown class="size-4" />}
-                onClick={jumpToLatest}
-              >
-                {t("CHAT_NEW_MESSAGES")}
-              </Button>
+              <div class="enter-rise">
+                <Button
+                  size="sm"
+                  shape="pill"
+                  icon={<ChevronDown class="size-4" />}
+                  onClick={jumpToLatest}
+                >
+                  {t("CHAT_NEW_MESSAGES")}
+                </Button>
+              </div>
             </div>
           </Show>
         }

@@ -1,9 +1,10 @@
 import { createEffect, createSignal, type JSX, on, Show } from "solid-js";
 import { avatarZoom } from "../../lib/utils/avatar.ts";
+import { createImageReveal } from "../../lib/reactive/createImageReveal.ts";
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
 type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
-type Presence = "live" | "online" | "offline";
+type Presence = "on-air" | "live" | "online" | "offline";
 
 type Props = {
   src?: string;
@@ -15,10 +16,14 @@ type Props = {
   children?: JSX.Element;
 };
 
-const PRESENCE: Record<Presence, { dot: string; label: MessageKey }> = {
-  live: { dot: "bg-live", label: "UI_LIVE" },
-  online: { dot: "bg-positive", label: "UI_ONLINE" },
-  offline: { dot: "bg-ink-faint", label: "UI_OFFLINE" },
+const PRESENCE: Record<
+  Presence,
+  { dot: string; label: MessageKey; breathes: boolean }
+> = {
+  "on-air": { dot: "bg-live", label: "UI_LIVE", breathes: true },
+  live: { dot: "bg-live", label: "UI_LIVE", breathes: false },
+  online: { dot: "bg-positive", label: "UI_ONLINE", breathes: false },
+  offline: { dot: "bg-ink-faint", label: "UI_OFFLINE", breathes: false },
 };
 
 const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
@@ -35,6 +40,7 @@ export default function Avatar(props: Props) {
   const [failed, setFailed] = createSignal(false);
   const initial = () => (props.alt?.trim()[0] ?? "?").toUpperCase();
   const shape = () => (props.square ? "rounded-xs" : "rounded-full");
+  const reveal = createImageReveal(() => props.src);
 
   createEffect(
     on(
@@ -61,8 +67,10 @@ export default function Avatar(props: Props) {
             alt={props.alt ?? ""}
             loading="lazy"
             decoding="async"
+            ref={reveal.mount}
+            onLoad={reveal.load}
             onError={() => setFailed(true)}
-            class={`absolute inset-0 size-full object-cover ${shape()}`}
+            class={`absolute inset-0 size-full object-cover ${shape()} ${reveal.fade()}`}
           />
         )}
       </Show>
@@ -73,7 +81,14 @@ export default function Avatar(props: Props) {
             class={`absolute -bottom-px -right-px rounded-full ring-2 ring-surface ${
               PRESENCE[presence()].dot
             } ${SIZES[props.size].dot}`}
-          />
+          >
+            <Show when={PRESENCE[presence()].breathes}>
+              <span
+                aria-hidden
+                class={`absolute inset-0 rounded-full animate-breathe ${PRESENCE[presence()].dot}`}
+              />
+            </Show>
+          </span>
         )}
       </Show>
       {props.children}

@@ -7,7 +7,9 @@ export type TooltipPlace =
   | { side: "right"; x: number; y: number }
   | { side: "over"; x: number; above: number; below: number };
 
-type Props = TooltipPlace & { children: JSX.Element };
+type Props = TooltipPlace & { instant?: boolean; children: JSX.Element };
+
+type Placed = { x: number; y: number; origin: string };
 
 const titleBarBottom = () =>
   parseFloat(
@@ -17,7 +19,7 @@ const titleBarBottom = () =>
   ) || 0;
 
 export default function Tooltip(props: Props) {
-  const [pos, setPos] = createSignal<{ x: number; y: number } | null>(null);
+  const [pos, setPos] = createSignal<Placed | null>(null);
   let ref: HTMLDivElement | undefined;
 
   createEffect(() => {
@@ -27,12 +29,18 @@ export default function Tooltip(props: Props) {
     const maxY = globalThis.innerHeight - height - MARGIN;
     if (props.side === "right") {
       const centred = props.y - height / 2;
-      return setPos({ x: props.x, y: Math.max(top, Math.min(centred, maxY)) });
+      return setPos({
+        x: props.x,
+        y: Math.max(top, Math.min(centred, maxY)),
+        origin: "origin-left",
+      });
     }
     const maxX = globalThis.innerWidth - width - MARGIN;
+    const fitsAbove = props.above - height >= top;
     setPos({
       x: Math.max(MARGIN, Math.min(props.x - width / 2, maxX)),
-      y: props.above - height >= top ? props.above - height : props.below,
+      y: fitsAbove ? props.above - height : props.below,
+      origin: fitsAbove ? "origin-bottom" : "origin-top",
     });
   });
 
@@ -44,7 +52,7 @@ export default function Tooltip(props: Props) {
         style={{ "--x": `${pos()?.x ?? 0}px`, "--y": `${pos()?.y ?? 0}px` }}
         class={`pointer-events-none fixed left-(--x) top-(--y) z-50 w-max max-w-75 whitespace-pre-line rounded-sm material-thin px-2.5 py-2 text-small text-ink ${
           props.side === "over" ? "text-center" : ""
-        } ${pos() ? "" : "invisible"}`}
+        } ${props.instant ? "" : "enter-pop"} ${pos()?.origin ?? "invisible"}`}
       >
         {props.children}
       </div>

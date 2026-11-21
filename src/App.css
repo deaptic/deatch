@@ -124,6 +124,18 @@
   --duration-snap: 100ms;
   --duration-quick: 160ms;
   --duration-settle: 240ms;
+  --animate-breathe: breathe 2.4s var(--ease-out) infinite;
+
+  @keyframes breathe {
+    from {
+      scale: 1;
+      opacity: 0.6;
+    }
+    to {
+      scale: 2.6;
+      opacity: 0;
+    }
+  }
 
   --color-material: oklch(0.27 0 0 / 0.84);
   --blur-thin: 12px;
@@ -263,6 +275,16 @@
   @starting-style {
     opacity: 0;
     scale: 0.97;
+  }
+}
+
+@utility enter-rise {
+  transition-property: opacity, translate;
+  transition-duration: var(--duration-quick);
+  transition-timing-function: var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    translate: 0 calc(var(--spacing) * 1.5);
   }
 }
 

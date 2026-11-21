@@ -1,4 +1,5 @@
 import type { JSX } from "solid-js";
+import { createImageReveal } from "../../lib/reactive/createImageReveal.ts";
 
 type ArtworkShape = "boxart" | "video" | "native";
 type ArtworkFit = "inline" | "fill" | "bleed" | "feed";
@@ -28,6 +29,7 @@ type Props = {
 
 export default function Artwork(props: Props) {
   const native = () => props.shape === "native";
+  const reveal = createImageReveal(() => props.src);
   return (
     <div
       class={`relative overflow-hidden bg-raised ${SHAPES[props.shape]} ${
@@ -40,14 +42,14 @@ export default function Artwork(props: Props) {
         alt={props.alt ?? ""}
         loading="lazy"
         decoding="async"
+        ref={reveal.mount}
+        onLoad={reveal.load}
         class={`${
           native()
             ? "block h-full w-auto object-contain"
             : "absolute inset-0 size-full object-cover"
-        } ${
-          props.interactive
-            ? "transition-opacity duration-snap group-hover:opacity-80"
-            : ""
+        } ${reveal.fade()} ${
+          props.interactive ? "transition-opacity group-hover:opacity-80" : ""
         }`}
       />
       {props.children}

@@ -101,6 +101,11 @@ across the window. Never use `ease-in`.
 - Pressable controls scale to 97% while held.
 - A floating layer arrives with `enter-pop`, growing from 97% out of the corner
   nearest whatever opened it (`origin-*`). Dialogs grow from their centre.
+- Something appearing in place arrives with `enter-rise`, fading up into it.
+- Images fade in once loaded, instantly when cached.
+- Tooltips skip delay and motion while the user moves between neighbours.
+- Idle motion is reserved for one live status indicator, the one in focus;
+  repeated ones in lists stay still, and so does content being read.
 - Nothing animates on the way out, and nothing animates from scale 0.
 - Keyboard-driven changes (moving a selection, switching views) never animate.
 - Under reduced motion, transitions and idle animation are off.
