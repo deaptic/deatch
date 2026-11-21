@@ -1,8 +1,10 @@
 import { type MessageKey, t } from "../../../lib/i18n/index.ts";
-import { For } from "solid-js";
+import { For, Show, useContext } from "solid-js";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
 import Kbd from "../../ui/Kbd.tsx";
+import { SettingsQuery } from "../../ui/settingsQuery.ts";
+import { matchesQuery } from "../../../lib/utils/textQuery.ts";
 import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
 import {
   ACTION_LABELS,
@@ -42,6 +44,8 @@ function rowsFor(prefixes: string[]): Row[] {
 }
 
 export default function KeyboardSection() {
+  const query = useContext(SettingsQuery);
+
   return (
     <PageBody title={t("SETTINGS_KEYBOARD")} lede={t("SETTINGS_KEYBOARD_LEDE")}>
       <For each={GROUPS}>
@@ -52,10 +56,15 @@ export default function KeyboardSection() {
             </div>
             <For each={rowsFor(g.prefix)}>
               {(row) => (
-                <div class="flex items-center justify-between gap-6 px-5 h-11 border-t border-line-soft">
-                  <span class="text-body text-ink">{row.label}</span>
-                  <Kbd combo={row.combo} />
-                </div>
+                <Show when={matchesQuery(query(), row.label, row.combo)}>
+                  <div
+                    data-match
+                    class="flex items-center justify-between gap-6 px-5 h-11 border-t border-line-soft"
+                  >
+                    <span class="text-body text-ink">{row.label}</span>
+                    <Kbd combo={row.combo} />
+                  </div>
+                </Show>
               )}
             </For>
           </Card>

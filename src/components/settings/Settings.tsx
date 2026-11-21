@@ -25,7 +25,6 @@ import IconButton from "../ui/IconButton.tsx";
 import { SettingsQuery } from "../ui/settingsQuery.ts";
 import InputPopover from "../ui/InputPopover.tsx";
 import { SIDE_GAP } from "../ui/Popover.tsx";
-import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
 import {
   setSettingsSection,
   type SettingsSection,
@@ -147,7 +146,6 @@ export default function Settings() {
                 label={t("SETTINGS_SEARCH")}
                 size="sm"
                 pressed={searching()}
-                {...{ [POPOVER_TOGGLE]: "" }}
                 onClick={toggleSearchPopover}
               >
                 <Search class="size-4" />
@@ -221,6 +219,7 @@ export default function Settings() {
             y={at().y}
             value={query()}
             placeholder={t("SETTINGS_SEARCH")}
+            opener={() => searchButton}
             onInput={setQuery}
             onSubmit={() => setSearchAt(undefined)}
             onClose={() => setSearchAt(undefined)}

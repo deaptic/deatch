@@ -214,7 +214,8 @@ export default function Rail(props: Props) {
   let endDrag: (() => void) | undefined;
   onCleanup(() => endDrag?.());
 
-  function openAdd() {
+  function toggleAdd() {
+    if (addPop.state()) return closeAdd();
     if (!addBtn) return;
     const rect = addBtn.getBoundingClientRect();
     setAddInput("");
@@ -304,7 +305,7 @@ export default function Rail(props: Props) {
             <RailRow
               ref={(el) => (addBtn = el)}
               label={t("RAIL_PIN_CHANNEL")}
-              onClick={openAdd}
+              onClick={toggleAdd}
             >
               <RailTile>
                 <Plus />
@@ -524,6 +525,7 @@ export default function Rail(props: Props) {
             value={addInput()}
             loading={addLoading()}
             placeholder={t("RAIL_CHANNEL_NAME")}
+            opener={() => addBtn}
             onInput={setAddInput}
             onSubmit={submitAdd}
             onClose={closeAdd}

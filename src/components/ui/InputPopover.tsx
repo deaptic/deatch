@@ -11,6 +11,7 @@ type Props = {
   value: string;
   loading?: boolean;
   placeholder: string;
+  opener?: () => HTMLElement | undefined;
   onInput: (v: string) => void;
   onSubmit: () => void;
   onClose: () => void;
@@ -18,7 +19,12 @@ type Props = {
 
 export default function InputPopover(props: Props) {
   return (
-    <Popover x={props.x} y={props.y} onClose={props.onClose}>
+    <Popover
+      x={props.x}
+      y={props.y}
+      opener={props.opener}
+      onClose={props.onClose}
+    >
       <div class="w-72 p-2 flex gap-2 items-center">
         <Field
           class="flex-1 min-w-0"
