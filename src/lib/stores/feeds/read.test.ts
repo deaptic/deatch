@@ -5,7 +5,13 @@ import { commitSelectedChannel } from "../view.ts";
 import { setFeedEvent, setFeedShowEvents } from "../preferences/feed.ts";
 import { ensureFeed, setFeeds } from "./core.ts";
 import { appendItem } from "./write.ts";
-import { hasUnread, isFeedEntryVisible, markSeen } from "./read.ts";
+import {
+  hasUnread,
+  unseenCount,
+  isFeedEntryVisible,
+  markSeen,
+} from "./read.ts";
+import { setPaused } from "./mutate.ts";
 
 const message = (id: string): FeedEntry =>
   ({ kind: "message", message_id: id, timestamp: 1 }) as unknown as FeedEntry;
@@ -70,4 +76,20 @@ test("hidden event types and messages drop out, AutoMod holds stay", () => {
   expect(isFeedEntryVisible(message("m"))).toBe(false);
   const held = { ...message("h"), automod_hold: {} } as unknown as FeedEntry;
   expect(isFeedEntryVisible(held)).toBe(true);
+});
+
+test("the open channel counts only visible messages that arrived while paused", () => {
+  commitSelectedChannel(channel("u9"));
+  ensureFeed("u9");
+  appendItem("u9", message("a"));
+  expect(unseenCount("u9")).toBe(0);
+  setPaused("u9", true);
+  expect(unseenCount("u9")).toBe(0);
+  appendItem("u9", event("e", "raid", true));
+  expect(unseenCount("u9")).toBe(0);
+  appendItem("u9", message("b"));
+  appendItem("u9", message("c"));
+  expect(unseenCount("u9")).toBe(2);
+  markSeen("u9");
+  expect(unseenCount("u9")).toBe(0);
 });

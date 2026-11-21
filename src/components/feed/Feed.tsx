@@ -80,7 +80,6 @@ type Props = UserActions & {
   onOpenChannel?: (broadcasterId: string) => void;
   onEventContextMenu?: (x: number, y: number, item: Event) => void;
   header?: JSX.Element;
-  footer?: JSX.Element;
   class?: string;
   style?: JSX.CSSProperties;
   scrollClass?: string;
@@ -398,7 +397,6 @@ export default function Feed(props: Props) {
           />
         </div>
       </div>
-      {props.footer}
     </div>
   );
 }

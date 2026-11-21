@@ -1,6 +1,4 @@
 import { createMeasuredHeight } from "../../lib/reactive/createMeasuredHeight.ts";
-import { ChevronDown } from "lucide-solid";
-import { t } from "../../lib/i18n/index.ts";
 import {
   createEffect,
   createMemo,
@@ -18,6 +16,7 @@ import * as clipboard from "../../lib/services/clipboard.ts";
 import { mentionsIn } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
+import ScrollStatusBar from "./ScrollStatusBar.tsx";
 import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu, {
@@ -38,6 +37,7 @@ import type {
 import {
   clearDivider,
   feeds,
+  unseenCount,
   markSeen,
   setPaused as setFeedPaused,
   trimToLatest,
@@ -50,7 +50,6 @@ import {
   feedShowCopypasta,
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "../ui/createPopover.ts";
-import Button from "../ui/Button.tsx";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 
 type Props = {
@@ -271,26 +270,18 @@ export default function Chat(props: Props) {
         onShowUserCard={openUserCard}
         onUserContextMenu={openUserContextMenu}
         onEventContextMenu={(x, y, item) => eventMenu.open(x, y, { item })}
-        footer={
-          <Show when={feedApi()?.isPaused()}>
-            <div class="absolute bottom-(--composer-height) left-1/2 -translate-x-1/2 z-20 mb-2">
-              <div class="enter-rise">
-                <Button
-                  size="sm"
-                  shape="pill"
-                  icon={<ChevronDown class="size-4" />}
-                  onClick={jumpToLatest}
-                >
-                  {t("CHAT_NEW_MESSAGES")}
-                </Button>
-              </div>
-            </div>
-          </Show>
-        }
         ref={setFeedApi}
       />
 
       <div ref={composer.measure} class="absolute inset-x-0 bottom-0 z-20">
+        <Show when={feedApi()?.isPaused()}>
+          <div class="absolute inset-x-0 bottom-full px-2">
+            <ScrollStatusBar
+              unseen={unseenCount(props.broadcasterId)}
+              onJump={jumpToLatest}
+            />
+          </div>
+        </Show>
         <ChatInput
           broadcasterId={props.broadcasterId}
           broadcasterName={props.broadcasterName}

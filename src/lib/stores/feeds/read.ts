@@ -1,4 +1,4 @@
-import { feeds, lastVisible, setFeeds } from "./core.ts";
+import { feeds, isSilent, lastVisible, setFeeds } from "./core.ts";
 import { getEntryId } from "../../utils/entryId.ts";
 import { selectedChannel } from "../view.ts";
 import { feedEvents, feedShowEvents } from "../preferences.ts";
@@ -22,6 +22,14 @@ export function hasUnread(broadcasterId: string): boolean {
   const marker = feed.dividerAtEntryId ?? feed.lastSeenEntryId;
   if (!marker) return true;
   return getEntryId(last) !== marker;
+}
+
+export function unseenCount(broadcasterId: string): number {
+  const feed = feeds[broadcasterId];
+  const seen = feed?.lastSeenEntryId;
+  if (!feed || !seen) return 0;
+  const from = feed.messages.findLastIndex((e) => getEntryId(e) === seen);
+  return feed.messages.slice(from + 1).filter((e) => !isSilent(e)).length;
 }
 
 export function markSeen(broadcasterId: string) {
