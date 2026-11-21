@@ -8,7 +8,7 @@ import type { Category } from "../../lib/types/index.ts";
 import Artwork from "../ui/Artwork.tsx";
 import Field from "../ui/Field.tsx";
 import FormField from "./FormField.tsx";
-import SearchPicker from "./SearchPicker.tsx";
+import SearchPicker from "../ui/SearchPicker.tsx";
 import ToolForm from "./ToolForm.tsx";
 
 const TITLE_LENGTH = 140;

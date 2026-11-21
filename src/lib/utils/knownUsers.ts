@@ -1,8 +1,15 @@
-import type { User, UserRef } from "../types/index.ts";
+import type { SearchChannel, User, UserRef } from "../types/index.ts";
 
 export type KnownUser = { user: User; fetchedAt: number | null };
 
 const USER_ID = /^\d+$/;
+
+export function userFromSearch(channel: SearchChannel): User {
+  return {
+    ...userFromRef(channel.user),
+    profileImageUrl: channel.profileImageUrl,
+  };
+}
 
 export function userFromRef(ref: UserRef): User {
   return {

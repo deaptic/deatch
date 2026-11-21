@@ -25,7 +25,6 @@ import {
 import LinkMenu from "./LinkMenu.tsx";
 import * as link from "../../lib/services/link.ts";
 import * as pins from "../../lib/services/pins.ts";
-import { addToast } from "../../lib/stores/toasts.ts";
 import {
   activeView,
   isSettingsOpen,
@@ -35,7 +34,6 @@ import {
   showExplore,
   toggleSettings,
 } from "../../lib/stores/view.ts";
-import * as users from "../../lib/services/users.ts";
 import { user } from "../../lib/stores/users.ts";
 import { createScrollAffordance } from "./createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
@@ -49,7 +47,7 @@ import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
 import { railGap } from "../ui/rowHeight.ts";
 import TabMuteBadge from "./TabMuteBadge.tsx";
-import InputPopover from "../ui/InputPopover.tsx";
+import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../ui/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import { createPopover } from "../ui/createPopover.ts";
@@ -131,8 +129,6 @@ export default function Rail(props: Props) {
 
   const chMenu = createPopover<{ ch: User }>();
   const addPop = createPopover();
-  const [addInput, setAddInput] = createSignal("");
-  const [addLoading, setAddLoading] = createSignal(false);
   const [dragIdx, setDragIdx] = createSignal<number | null>(null);
   const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
@@ -215,29 +211,10 @@ export default function Rail(props: Props) {
   onCleanup(() => endDrag?.());
 
   function toggleAdd() {
-    if (addPop.state()) return closeAdd();
+    if (addPop.state()) return addPop.close();
     if (!addBtn) return;
     const rect = addBtn.getBoundingClientRect();
-    setAddInput("");
     addPop.open(rect.right + SIDE_GAP, rect.top, {});
-  }
-
-  function closeAdd() {
-    addPop.close();
-    setAddInput("");
-  }
-
-  async function submitAdd() {
-    const login = addInput().trim().toLowerCase();
-    if (!login) return;
-    setAddLoading(true);
-    const found = await users.lookUp(login, t("RAIL_USER_NOT_FOUND"));
-    setAddLoading(false);
-    if (!found) return;
-    if (pins.add(found) === "alreadyPinned") {
-      addToast(t("RAIL_ALREADY_PINNED"), "error");
-    }
-    closeAdd();
   }
 
   return (
@@ -519,16 +496,11 @@ export default function Rail(props: Props) {
 
       <Show when={addPop.state()}>
         {(p) => (
-          <InputPopover
+          <PinChannelPopover
             x={p().x}
             y={p().y}
-            value={addInput()}
-            loading={addLoading()}
-            placeholder={t("RAIL_CHANNEL_NAME")}
             opener={() => addBtn}
-            onInput={setAddInput}
-            onSubmit={submitAdd}
-            onClose={closeAdd}
+            onClose={addPop.close}
           />
         )}
       </Show>

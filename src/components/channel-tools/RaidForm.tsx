@@ -5,7 +5,7 @@ import * as raid from "../../lib/services/raid.ts";
 import type { SearchChannel } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import FormField from "./FormField.tsx";
-import SearchPicker from "./SearchPicker.tsx";
+import SearchPicker from "../ui/SearchPicker.tsx";
 import ToolForm from "./ToolForm.tsx";
 
 type Props = {

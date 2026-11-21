@@ -2,7 +2,7 @@ import { Search } from "lucide-solid";
 import { createSignal, For, type JSX, onCleanup, Show } from "solid-js";
 import { createListbox } from "../../lib/reactive/createListbox.ts";
 import { autofocus } from "../../lib/reactive/focus.ts";
-import Field from "../ui/Field.tsx";
+import Field from "./Field.tsx";
 
 const SEARCH_DELAY_MS = 250;
 

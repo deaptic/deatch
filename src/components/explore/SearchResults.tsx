@@ -18,7 +18,8 @@ import {
   createListbox,
   type ListboxField,
 } from "../../lib/reactive/createListbox.ts";
-import { userFromRef } from "../../lib/utils/knownUsers.ts";
+import { userFromSearch } from "../../lib/utils/knownUsers.ts";
+import { rankChannels } from "../../lib/utils/channelRank.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { liveLine } from "../../lib/format/stream.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
@@ -51,15 +52,10 @@ export default function SearchResults(props: Props) {
     q ? searchCategories({ query: q, first: 8 }).catch(() => []) : [],
   );
 
-  const ranked = () => results() ?? [];
-
-  const toUser = (channel: SearchChannel): User => ({
-    ...userFromRef(channel.user),
-    profileImageUrl: channel.profileImageUrl,
-  });
+  const ranked = () => rankChannels(debounced(), results() ?? []);
 
   function open(channel: SearchChannel) {
-    const user = toUser(channel);
+    const user = userFromSearch(channel);
     users.note([user]);
     props.onSelect(user);
   }
@@ -125,7 +121,7 @@ export default function SearchResults(props: Props) {
             <For each={ranked()}>
               {(channel, index) => {
                 const link = createChannelLink(
-                  () => toUser(channel),
+                  () => userFromSearch(channel),
                   () => open(channel),
                 );
                 return (
