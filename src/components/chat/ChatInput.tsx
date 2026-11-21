@@ -1,4 +1,4 @@
-import { SendHorizontal, SlidersHorizontal, Smile, X } from "lucide-solid";
+import { SlidersHorizontal, Smile, X } from "lucide-solid";
 import { t, tRich } from "../../lib/i18n/index.ts";
 import {
   createEffect,
@@ -29,7 +29,6 @@ import {
   toggleOverlay,
 } from "../../lib/stores/ui.ts";
 import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
-import Button from "../ui/Button.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import AppearancePanel from "./AppearancePanel.tsx";
@@ -337,20 +336,6 @@ export default function ChatInput(props: Props) {
                 >
                   <Smile class="size-5" />
                 </IconButton>
-                <Button
-                  variant={outgoing() && !tooLong() ? "accent" : "ghost"}
-                  icon={<SendHorizontal class="size-4" />}
-                  aria-label={t("CHAT_INPUT_SEND")}
-                  data-tip={
-                    tooLong()
-                      ? t("CHAT_INPUT_TOO_LONG", { max: MAX_LEN })
-                      : t("CHAT_INPUT_SEND")
-                  }
-                  disabled={tooLong()}
-                  loading={sending()}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => void sendMessage()}
-                />
               </div>
             }
           >

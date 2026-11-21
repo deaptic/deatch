@@ -12,7 +12,7 @@ export default function CharCounter(props: Props) {
   return (
     <Show when={remaining() <= SHOW_WITHIN}>
       <span
-        class={`absolute right-3 -bottom-2 px-1 bg-surface text-micro tabular-nums pointer-events-none ${
+        class={`absolute right-7 translate-x-1/2 -bottom-2 px-1 bg-surface text-micro tabular-nums pointer-events-none ${
           remaining() <= 0 ? "text-negative" : "text-ink-faint"
         }`}
       >
