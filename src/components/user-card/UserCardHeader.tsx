@@ -64,14 +64,12 @@ export default function UserCardHeader(props: Props) {
   const latestBadges = () => props.messages.at(-1)?.badges ?? [];
 
   return (
-    <div
-      class="relative shrink-0 min-w-card-width cursor-move select-none"
-      onMouseDown={props.onStartDrag}
-      onContextMenu={(e) => openMenuAt(e, props.onContextMenu)}
-    >
+    <div class="relative shrink-0 min-w-card-width">
       <div
-        class="relative aspect-3/1 flex items-end justify-end pl-card-avatar-clear pr-card-gap pb-card-gap bg-(--banner)"
+        class="relative aspect-3/1 flex items-end justify-end pl-card-avatar-clear pr-card-gap pb-card-gap cursor-move select-none bg-(--banner)"
         style={{ "--banner": color() ?? "var(--color-raised)" }}
+        onMouseDown={props.onStartDrag}
+        onContextMenu={(e) => openMenuAt(e, props.onContextMenu)}
       >
         <Show when={bannerImage()}>
           {(src) => (

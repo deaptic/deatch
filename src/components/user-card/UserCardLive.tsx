@@ -14,7 +14,6 @@ export default function UserCardLive(props: Props) {
       {(stream) => (
         <button
           type="button"
-          onMouseDown={(e) => e.stopPropagation()}
           onClick={props.onOpen}
           class="-mx-card-pad px-card-pad py-2 flex flex-col gap-0.5 bg-live text-on-accent text-small text-left cursor-pointer pressable hover:brightness-110 active:opacity-90"
         >
