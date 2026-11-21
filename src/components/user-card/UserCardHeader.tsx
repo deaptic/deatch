@@ -14,6 +14,8 @@ import BadgeBox from "../ui/BadgeBox.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import CopyButton from "./CopyButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
+import UserCardLive from "./UserCardLive.tsx";
+import { streamForUserId } from "../../lib/stores/channels.ts";
 import UserCardMeta from "./UserCardMeta.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
@@ -54,56 +56,56 @@ export default function UserCardHeader(props: Props) {
     const login = user()?.login;
     if (login) browser.openChannel(login);
   };
+  const stream = () => streamForUserId(props.chatterId);
+  const bannerImage = () =>
+    stream()?.thumbnailUrl ?? user()?.offlineImageUrl ?? undefined;
   const channelBadges = () => feeds[props.broadcasterId]?.badges ?? {};
   const latestBadges = () => props.messages.at(-1)?.badges ?? [];
 
   return (
     <div
-      class="relative shrink-0 border-b border-line-soft cursor-move select-none"
+      class="relative shrink-0 min-w-card-width border-b border-line-soft cursor-move select-none"
       onMouseDown={props.onStartDrag}
     >
       <div
-        class="relative aspect-3/1 bg-(--banner)"
+        class="relative aspect-3/1 flex items-end justify-end pl-card-avatar-clear pr-card-gap pb-card-gap bg-(--banner)"
         style={{ "--banner": color() ?? "var(--color-raised)" }}
       >
-        <Show when={user()?.offlineImageUrl}>
+        <Show when={bannerImage()}>
           {(src) => (
             <img
               src={src()}
               alt=""
               draggable={false}
-              class="block size-full object-cover"
+              class="absolute inset-0 size-full object-cover"
             />
           )}
         </Show>
+        <UserCardMeta user={user()} follow={follow()} />
       </div>
-      <div class="absolute top-card-gap right-card-gap flex gap-card-gap">
-        <div class="flex rounded-sm bg-media-scrim">
-          <Show when={user()}>
-            {(u) => (
-              <CopyButton copy={u().login} label={t("USER_CARD_COPY_LOGIN")}>
-                <AtSign class="size-4" />
-              </CopyButton>
-            )}
-          </Show>
-          <CopyButton copy={props.chatterId} label={t("USER_CARD_COPY_ID")}>
-            <Hash class="size-4" />
-          </CopyButton>
-        </div>
-        <div class="rounded-sm bg-media-scrim">
-          <IconButton
-            label={t(props.pinned ? "USER_CARD_UNPIN" : "USER_CARD_PIN")}
-            variant="media"
-            size="sm"
-            pressed={props.pinned}
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={props.onTogglePin}
-          >
-            <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
-          </IconButton>
-        </div>
+      <div class="absolute top-card-gap right-card-gap flex rounded-sm bg-media-scrim">
+        <Show when={user()}>
+          {(u) => (
+            <CopyButton copy={u().login} label={t("USER_CARD_COPY_LOGIN")}>
+              <AtSign class="size-4" />
+            </CopyButton>
+          )}
+        </Show>
+        <CopyButton copy={props.chatterId} label={t("USER_CARD_COPY_ID")}>
+          <Hash class="size-4" />
+        </CopyButton>
+        <IconButton
+          label={t(props.pinned ? "USER_CARD_UNPIN" : "USER_CARD_PIN")}
+          variant="media"
+          size="sm"
+          pressed={props.pinned}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={props.onTogglePin}
+        >
+          <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
+        </IconButton>
       </div>
-      <div class="flex flex-col gap-card-gap px-card-pad pb-card-pad">
+      <div class="flex flex-col gap-card-gap px-card-pad pb-card-pad contain-inline-size">
         <div class="flex gap-card-gap">
           <button
             type="button"
@@ -135,7 +137,20 @@ export default function UserCardHeader(props: Props) {
           user={user()}
           color={color()}
         />
-        <UserCardMeta user={user()} follow={follow()} />
+        <UserCardLive
+          stream={stream()}
+          onOpen={() => props.onOpenChannel(props.chatterId)}
+        />
+        <Show when={user()?.description}>
+          {(bio) => (
+            <p
+              class="text-small text-ink-soft line-clamp-3 wrap-break-word"
+              data-tip={bio()}
+            >
+              {bio()}
+            </p>
+          )}
+        </Show>
       </div>
     </div>
   );

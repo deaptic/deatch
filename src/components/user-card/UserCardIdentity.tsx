@@ -8,9 +8,12 @@ type Props = {
   color: string | undefined;
 };
 
+const distinctLogin = (user: User | null) =>
+  user && user.login !== user.displayName.toLowerCase() ? user.login : null;
+
 export default function UserCardIdentity(props: Props) {
   return (
-    <div class="min-w-0 flex items-center leading-tight">
+    <div class="min-w-0 flex flex-col leading-tight">
       <span class="truncate min-w-0 text-card-name">
         <Show
           when={props.user}
@@ -28,6 +31,11 @@ export default function UserCardIdentity(props: Props) {
           )}
         </Show>
       </span>
+      <Show when={distinctLogin(props.user)}>
+        {(login) => (
+          <span class="truncate text-small text-ink-faint">@{login()}</span>
+        )}
+      </Show>
     </div>
   );
 }

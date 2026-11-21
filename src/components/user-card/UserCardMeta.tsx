@@ -1,8 +1,8 @@
 import type { FollowStatus, User } from "../../lib/types/index.ts";
 import { Calendar, Heart } from "lucide-solid";
-import { Show } from "solid-js";
-import UserCardDateCell from "./UserCardDateCell.tsx";
-import Timestamp from "../ui/Timestamp.tsx";
+import { type JSX, Show } from "solid-js";
+import { createCopied } from "../ui/createCopied.ts";
+import { Time } from "../../lib/utils/time.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -10,47 +10,80 @@ type Props = {
   follow: FollowStatus;
 };
 
+const CHIP =
+  "flex items-center gap-1.5 h-control-sm px-2.5 rounded-sm bg-media-scrim text-small tabular-nums";
+
+const day = (at: string) => new Time(at, "D").toString();
+
+function followTip(follow: FollowStatus): string {
+  switch (follow.kind) {
+    case "since":
+      return `${t("USER_CARD_FOLLOWING_SINCE")}\n${new Time(follow.at, "F").toString()}`;
+    case "none":
+      return t("USER_CARD_NOT_FOLLOWING");
+    case "hidden":
+      return t("USER_CARD_FOLLOW_HIDDEN");
+    case "unknown":
+      return t("USER_CARD_FOLLOW_UNKNOWN");
+  }
+}
+
+function DateChip(props: { at: string; tip: string; icon: JSX.Element }) {
+  const { copied, copy } = createCopied();
+  return (
+    <button
+      type="button"
+      data-tip={props.tip}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={() => void copy(day(props.at))}
+      class={`${CHIP} cursor-pointer transition-colors duration-snap ${
+        copied() ? "text-positive" : "text-on-accent"
+      }`}
+    >
+      {props.icon}
+      {day(props.at)}
+    </button>
+  );
+}
+
 export default function UserCardMeta(props: Props) {
   const followedAt = () =>
     props.follow.kind === "since" ? props.follow.at : undefined;
 
   return (
-    <div class="flex gap-card-pad text-card-meta min-w-0">
+    <div class="relative flex gap-1.5">
       <Show when={props.user?.createdAt}>
         {(createdAt) => (
-          <UserCardDateCell
-            icon={<Calendar />}
-            title={t("USER_CARD_ACCOUNT_CREATED")}
-            copyable
-          >
-            <Timestamp ts={createdAt()} format="D" />
-          </UserCardDateCell>
+          <DateChip
+            at={createdAt()}
+            tip={`${t("USER_CARD_ACCOUNT_CREATED")}\n${new Time(createdAt(), "F").toString()}`}
+            icon={<Calendar class="size-4" />}
+          />
         )}
       </Show>
-      <UserCardDateCell
-        icon={<Heart />}
-        title={followTitle(props.follow)}
-        copyable={!!followedAt()}
+      <Show
+        when={followedAt()}
+        fallback={
+          <span
+            role="img"
+            aria-label={followTip(props.follow)}
+            data-tip={followTip(props.follow)}
+            class={`${CHIP} text-on-accent`}
+          >
+            <Heart
+              class={`size-4 ${props.follow.kind === "unknown" ? "opacity-60" : ""}`}
+            />
+          </span>
+        }
       >
-        <Show
-          when={followedAt()}
-          fallback={t(
-            props.follow.kind === "none"
-              ? "USER_CARD_NOT_FOLLOWING"
-              : "USER_CARD_FOLLOW_UNKNOWN",
-          )}
-        >
-          {(at) => <Timestamp ts={at()} format="D" />}
-        </Show>
-      </UserCardDateCell>
+        {(at) => (
+          <DateChip
+            at={at()}
+            tip={followTip(props.follow)}
+            icon={<Heart class="size-4" fill="currentColor" />}
+          />
+        )}
+      </Show>
     </div>
-  );
-}
-
-function followTitle(follow: FollowStatus): string {
-  return t(
-    follow.kind === "hidden"
-      ? "USER_CARD_FOLLOW_HIDDEN"
-      : "USER_CARD_FOLLOWING_SINCE",
   );
 }

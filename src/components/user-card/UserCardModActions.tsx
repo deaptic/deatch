@@ -28,7 +28,7 @@ export default function UserCardModActions(props: Props) {
 
   return (
     <Show when={canModerateChatter()}>
-      <div class="p-2.5 border-b border-line-soft shrink-0">
+      <div class="p-2.5 border-b border-line-soft shrink-0 contain-inline-size">
         <BanChoiceStrip onChange={apply} />
       </div>
     </Show>

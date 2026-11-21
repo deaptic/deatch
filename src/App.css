@@ -114,6 +114,7 @@
   --spacing-card-pad: 1.25rem;
   --spacing-card-gap: 0.625rem;
   --spacing-card-avatar-lift: 2.5rem;
+  --spacing-card-avatar-clear: 6.75rem;
   --spacing-card-feed-min: calc(3lh + 0.5rem);
   --spacing-card-meta-icon: 1em;
   --text-card-name: 1.45rem;

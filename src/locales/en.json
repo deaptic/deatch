@@ -846,7 +846,7 @@
   "USER_CARD_COPY_LOGIN": "Copy login",
   "USER_CARD_FOLLOWING_SINCE": "Following since",
   "USER_CARD_FOLLOW_HIDDEN": "Mod permission required to view follow status",
-  "USER_CARD_FOLLOW_UNKNOWN": "Unknown",
+  "USER_CARD_FOLLOW_UNKNOWN": "Follow status unknown",
   "USER_CARD_LABEL": "User card",
   "USER_CARD_LOADING_MESSAGES": "Loading their messages…",
   "USER_CARD_NOT_FOLLOWING": "Not following",
