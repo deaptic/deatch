@@ -31,7 +31,7 @@ export default function Source(props: {
           : t("FEED_SENT_IN_SHARED_CHAT")
       }
       {...link.handlers}
-      class={`size-feed-badge grid overflow-hidden bg-ink/15 ${link.cursor} ${
+      class={`size-feed-badge grid overflow-hidden bg-picture ${link.cursor} ${
         props.round ? "rounded-full" : "rounded-xs"
       }`}
     >

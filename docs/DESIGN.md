@@ -33,7 +33,9 @@ Tones step from darkest to lightest: `canvas` (the window and main content),
 `overlay` (the solid top tone, such as a selected segment or a pressed
 control). Hover moves one tone up, pressed two. `scrim` dims everything behind
 a dialog; `media-scrim` is the same dark wash in both themes, behind anything
-laid over images or video.
+laid over images or video. `picture` is the plate behind avatars, a step
+outside every tone, so a transparent image keeps its shape on any row,
+hovered or selected.
 
 Text is `ink` (body, headings), `ink-soft` (secondary text, idle icons) or
 `ink-faint` (placeholders, disabled, information also available another way).

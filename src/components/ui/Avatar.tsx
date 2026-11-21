@@ -45,7 +45,7 @@ export default function Avatar(props: Props) {
 
   return (
     <span
-      class={`relative shrink-0 inline-grid place-items-center bg-raised font-semibold text-ink-soft select-none ${shape()} ${
+      class={`relative shrink-0 inline-grid place-items-center bg-picture font-semibold text-ink-soft select-none ${shape()} ${
         SIZES[props.size].box
       } ${
         props.dashed
