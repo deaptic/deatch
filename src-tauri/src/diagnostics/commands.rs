@@ -9,7 +9,10 @@ use tauri::Manager;
 #[specta::specta]
 pub async fn get_app_stats(app: tauri::AppHandle) -> Result<AppStats> {
     blocking::run(app, |app| {
-        super::stats(&app.state::<Monitor>(), &app.state::<Twitch>())
+        let browser = app
+            .get_webview_window("main")
+            .and_then(|webview| super::browser_process_id(&webview));
+        super::stats(&app.state::<Monitor>(), &app.state::<Twitch>(), browser)
     })
     .await
 }

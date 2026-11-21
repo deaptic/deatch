@@ -5,8 +5,11 @@ use crate::lock::lock;
 use crate::twitch::Twitch;
 use dto::{AppStats, ProcessStats};
 use std::collections::{HashMap, HashSet};
-use std::sync::Mutex;
+use std::sync::{mpsc, Mutex};
+use std::time::Duration;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System};
+
+const BROWSER_PID_TIMEOUT: Duration = Duration::from_secs(1);
 
 pub struct Monitor(Mutex<System>);
 
@@ -16,8 +19,8 @@ impl Default for Monitor {
     }
 }
 
-pub fn stats(monitor: &Monitor, twitch: &Twitch) -> AppStats {
-    let (app, webview) = monitor.sample();
+pub fn stats(monitor: &Monitor, twitch: &Twitch, browser: Option<u32>) -> AppStats {
+    let (app, webview) = monitor.sample(browser);
     AppStats {
         app,
         webview,
@@ -26,7 +29,7 @@ pub fn stats(monitor: &Monitor, twitch: &Twitch) -> AppStats {
 }
 
 impl Monitor {
-    fn sample(&self) -> (ProcessStats, ProcessStats) {
+    fn sample(&self, browser: Option<u32>) -> (ProcessStats, ProcessStats) {
         let mut system = lock(&self.0);
         let refresh = ProcessRefreshKind::nothing().with_memory().with_cpu();
         system.refresh_processes_specifics(ProcessesToUpdate::All, true, refresh);
@@ -41,7 +44,7 @@ impl Monitor {
             })
             .collect();
         let cores = std::thread::available_parallelism().map_or(1, |n| n.get());
-        split(std::process::id(), &samples, cores as f32)
+        split(std::process::id(), browser, &samples, cores as f32)
     }
 }
 
@@ -52,7 +55,47 @@ struct Sample {
     cpu: f32,
 }
 
-fn split(own: u32, samples: &[Sample], cores: f32) -> (ProcessStats, ProcessStats) {
+pub fn browser_process_id(webview: &tauri::WebviewWindow) -> Option<u32> {
+    let (tx, rx) = mpsc::channel();
+    let posted = webview.with_webview(move |platform| {
+        let _ = tx.send(read_browser_process_id(&platform));
+    });
+    if let Err(e) = posted {
+        log::warn!("webview browser process unreadable: {e}");
+        return None;
+    }
+    match rx.recv_timeout(BROWSER_PID_TIMEOUT) {
+        Ok(Ok(pid)) => Some(pid),
+        Ok(Err(e)) => {
+            log::warn!("webview browser process unreadable: {e}");
+            None
+        }
+        Err(e) => {
+            log::warn!("webview browser process not reported: {e}");
+            None
+        }
+    }
+}
+
+fn read_browser_process_id(
+    platform: &tauri::webview::PlatformWebview,
+) -> windows_core::Result<u32> {
+    let mut pid = 0;
+    unsafe {
+        platform
+            .controller()
+            .CoreWebView2()?
+            .BrowserProcessId(&mut pid)?
+    };
+    Ok(pid)
+}
+
+fn split(
+    own: u32,
+    browser: Option<u32>,
+    samples: &[Sample],
+    cores: f32,
+) -> (ProcessStats, ProcessStats) {
     let mut children: HashMap<u32, Vec<&Sample>> = HashMap::new();
     for sample in samples {
         if let Some(parent) = sample.parent {
@@ -60,8 +103,12 @@ fn split(own: u32, samples: &[Sample], cores: f32) -> (ProcessStats, ProcessStat
         }
     }
     let mut webview = ProcessStats::default();
-    let mut stack = vec![own];
-    let mut seen = HashSet::from([own]);
+    let root = browser.unwrap_or(own);
+    if let Some(sample) = browser.and_then(|pid| samples.iter().find(|s| s.pid == pid)) {
+        add(&mut webview, sample, cores);
+    }
+    let mut stack = vec![root];
+    let mut seen = HashSet::from([own, root]);
     while let Some(pid) = stack.pop() {
         for child in children.get(&pid).into_iter().flatten() {
             if !seen.insert(child.pid) {
@@ -106,7 +153,7 @@ mod tests {
             sample(21, Some(10), 300, 0.0),
             sample(30, Some(2), 5000, 90.0),
         ];
-        let (app, webview) = split(1, &samples, 4.0);
+        let (app, webview) = split(1, None, &samples, 4.0);
         assert_eq!((app.private_bytes, app.processes), (999, 1));
         assert_eq!(app.cpu_percent, 12.5);
         assert_eq!((webview.private_bytes, webview.processes), (600, 3));
@@ -121,7 +168,22 @@ mod tests {
             sample(20, Some(10), 200, 0.0),
             sample(10, Some(20), 100, 0.0),
         ];
-        let (_, webview) = split(1, &samples, 1.0);
+        let (_, webview) = split(1, None, &samples, 1.0);
         assert_eq!((webview.private_bytes, webview.processes), (300, 2));
+    }
+
+    #[test]
+    fn counts_a_shared_browser_process_that_is_not_our_child() {
+        let samples = [
+            sample(1, None, 50, 0.0),
+            sample(7, Some(99), 400, 8.0),
+            sample(70, Some(7), 100, 4.0),
+            sample(71, Some(7), 100, 0.0),
+            sample(30, Some(2), 5000, 90.0),
+        ];
+        let (app, webview) = split(1, Some(7), &samples, 4.0);
+        assert_eq!((app.private_bytes, app.processes), (50, 1));
+        assert_eq!((webview.private_bytes, webview.processes), (600, 3));
+        assert_eq!(webview.cpu_percent, 3.0);
     }
 }
