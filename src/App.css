@@ -223,6 +223,25 @@
   --color-event-announce-purple: oklch(0.52 0.18 305);
 }
 
+@utility scrollbar-inset {
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+  &::-webkit-scrollbar {
+    width: calc(var(--spacing) * 2);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin-top: calc(var(--header-height, 0px) + var(--spacing) * 2);
+    margin-bottom: calc(var(--composer-height, 0px) + var(--spacing) * 2);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-line);
+    border: calc(var(--spacing) * 0.5) solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+  }
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
 }

@@ -256,7 +256,7 @@ export default function Chat(props: Props) {
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
-        scrollClass="pr-4 pt-(--header-height) pb-(--composer-height) scroll-pt-(--header-height) scroll-pb-(--composer-height)"
+        scrollClass="pr-4 pt-(--header-height) pb-(--composer-height) scroll-pt-(--header-height) scroll-pb-(--composer-height) scrollbar-inset"
         flush
         density={feedDensity()}
         class="text-(length:--chat-size)"
