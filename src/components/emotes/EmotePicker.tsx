@@ -259,6 +259,7 @@ export default function EmotePicker(props: Props) {
           {(entry) => (
             <NavItem
               orientation="horizontal"
+              fill
               label={t(entry.label)}
               active={tab() === entry.id}
               onClick={() => {
