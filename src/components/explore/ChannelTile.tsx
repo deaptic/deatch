@@ -21,7 +21,7 @@ export default function ChannelTile(props: Props) {
       type="button"
       {...link.handlers}
       data-tip={props.tip}
-      class={`group flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center transition duration-quick ease-out hover:bg-surface active:scale-97 ${link.cursor}`}
+      class={`group flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center pressable hover:bg-surface active:pressed ${link.cursor}`}
     >
       <span
         class="flex rounded-full outline-2 outline-offset-2"

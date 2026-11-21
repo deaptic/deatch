@@ -305,6 +305,16 @@
   }
 }
 
+@utility pressable {
+  transition-property: color, background-color, border-color, opacity, scale;
+  transition-duration: var(--duration-snap);
+  transition-timing-function: var(--ease-out);
+}
+
+@utility pressed {
+  scale: 0.97;
+}
+
 @utility duration-snap {
   transition-duration: var(--duration-snap);
 }

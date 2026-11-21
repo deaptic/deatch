@@ -71,7 +71,7 @@ export default function Button(props: Props) {
       aria-pressed={local.pressed}
       {...others}
       disabled={local.disabled || local.loading}
-      class={`relative shrink-0 inline-flex items-center justify-center gap-1.5 ${SHAPES[local.shape ?? "rect"]} cursor-pointer select-none transition duration-snap ease-out enabled:active:scale-97 disabled:opacity-40 disabled:cursor-not-allowed ${
+      class={`relative shrink-0 inline-flex items-center justify-center gap-1.5 ${SHAPES[local.shape ?? "rect"]} cursor-pointer select-none pressable enabled:active:pressed disabled:opacity-40 disabled:cursor-not-allowed ${
         SIZES[size()].box
       } ${SIZES[size()].text} ${
         iconOnly() ? SQUARE[size()] : SIZES[size()].pad

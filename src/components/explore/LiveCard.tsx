@@ -28,7 +28,7 @@ export default function LiveCard(props: Props) {
     <button
       type="button"
       {...link.handlers}
-      class={`group flex flex-col text-left bg-surface overflow-hidden transition duration-quick ease-out hover:bg-raised active:scale-98 ${CARD_FRAME} ${link.cursor}`}
+      class={`group flex flex-col text-left bg-surface overflow-hidden pressable hover:bg-raised active:pressed ${CARD_FRAME} ${link.cursor}`}
     >
       <Artwork src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">

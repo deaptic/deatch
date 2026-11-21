@@ -59,6 +59,16 @@ restyling, and a missing look is a new variant on the primitive. Colours, type,
 radii, sizes, and motion come from the `@theme` tokens in `App.css`; depth is
 only `material-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
 
+- Surfaces are solid. No glass: no `backdrop-blur`, no translucent chrome.
+  Only media scrims over images (`bg-media-scrim`) may be see-through.
+- Press feedback is `pressable` plus one trigger: `active:pressed`,
+  `enabled:active:pressed`, or `group-active:pressed`. Full-width strips get
+  colour feedback only, never a scale.
+- Highlighted feed rows take a colour from `feed/groups.ts` (or the accent) and
+  show it as a 3px left bar with a tint; plain rows have neither.
+- Changes driven by the keyboard (selection, navigation) never animate.
+- Controls that sit together share one height and icon size.
+
 ## Commands
 
 ```powershell

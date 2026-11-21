@@ -16,7 +16,7 @@ export default function UserCardLive(props: Props) {
           type="button"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={props.onOpen}
-          class="-mx-card-pad px-card-pad py-2 flex flex-col gap-0.5 bg-live text-on-accent text-small text-left cursor-pointer hover:brightness-110 active:opacity-90"
+          class="-mx-card-pad px-card-pad py-2 flex flex-col gap-0.5 bg-live text-on-accent text-small text-left cursor-pointer pressable hover:brightness-110 active:opacity-90"
         >
           <span class="min-w-0 flex items-center gap-2">
             <span class="flex-1 min-w-0 truncate font-semibold">

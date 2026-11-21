@@ -21,7 +21,7 @@ export default function CategoryRow(props: Props) {
             type="button"
             aria-pressed={props.selectedId === category.id}
             onClick={() => props.onSelect(category)}
-            class="group w-24 shrink-0 text-left cursor-pointer transition duration-quick ease-out active:scale-97"
+            class="group w-24 shrink-0 text-left cursor-pointer pressable active:pressed"
           >
             <span
               class="block rounded-md outline-2 outline-offset-2"

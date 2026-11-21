@@ -36,7 +36,7 @@ function DateChip(props: { at: string; tip: string; icon: JSX.Element }) {
       data-tip={props.tip}
       onMouseDown={(e) => e.stopPropagation()}
       onClick={() => void copy(day(props.at))}
-      class={`${CHIP} cursor-pointer transition-colors duration-snap ${
+      class={`${CHIP} cursor-pointer pressable active:pressed ${
         copied() ? "text-positive" : "text-on-accent"
       }`}
     >
