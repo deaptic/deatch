@@ -9,4 +9,5 @@ export type CacheStats = {
 export type Diagnostics = {
   app: AppStats;
   cache: CacheStats;
+  jsHeapBytes: number | null;
 };

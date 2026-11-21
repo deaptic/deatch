@@ -41,6 +41,14 @@ export default function Diagnostics(props: Props) {
                   label={t("DIAGNOSTICS_MEMORY")}
                   value={formatBytes(s().app.app.privateBytes)}
                 />
+                <Show when={s().jsHeapBytes}>
+                  {(bytes) => (
+                    <MetricRow
+                      label={t("DIAGNOSTICS_JS_HEAP")}
+                      value={formatBytes(bytes())}
+                    />
+                  )}
+                </Show>
                 <MetricRow
                   label={t("DIAGNOSTICS_CPU")}
                   value={formatPercent(s().app.app.cpuPercent ?? 0)}

@@ -63,21 +63,23 @@ pub fn set_hardware_acceleration(
 }
 
 pub fn on_window_event(window: &tauri::Window, event: &tauri::WindowEvent) {
-    if !matches!(event, tauri::WindowEvent::Resized(_)) {
+    if !matches!(
+        event,
+        tauri::WindowEvent::Resized(_) | tauri::WindowEvent::Focused(_)
+    ) {
         return;
     }
-    let minimized = match window.is_minimized() {
-        Ok(minimized) => minimized,
+    let state = window
+        .is_minimized()
+        .and_then(|minimized| Ok((minimized, window.is_focused()?)));
+    let (minimized, focused) = match state {
+        Ok(state) => state,
         Err(e) => {
             log::warn!("window state unreadable: {e}");
             return;
         }
     };
-    let level = if minimized {
-        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
-    } else {
-        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
-    };
+    let level = memory_target(minimized, focused);
     let Some(webview) = window.get_webview_window(window.label()) else {
         return;
     };
@@ -88,6 +90,14 @@ pub fn on_window_event(window: &tauri::Window, event: &tauri::WindowEvent) {
     });
     if let Err(e) = applied {
         log::warn!("webview memory target not set: {e}");
+    }
+}
+
+fn memory_target(minimized: bool, focused: bool) -> COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL {
+    if minimized || !focused {
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+    } else {
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
     }
 }
 
@@ -104,6 +114,22 @@ fn set_memory_target(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn saves_memory_unless_the_window_is_in_use() {
+        assert_eq!(
+            memory_target(false, true),
+            COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
+        );
+        assert_eq!(
+            memory_target(false, false),
+            COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+        );
+        assert_eq!(
+            memory_target(true, false),
+            COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+        );
+    }
 
     #[test]
     fn marker_round_trip() {

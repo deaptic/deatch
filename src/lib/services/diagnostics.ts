@@ -11,7 +11,9 @@ export function watch(onSample: (sample: Diagnostics) => void): () => void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const tick = async () => {
     const app = await getAppStats({ silent: true }).catch(() => null);
-    if (app && !stopped) onSample({ app, cache: cacheStats() });
+    if (app && !stopped) {
+      onSample({ app, cache: cacheStats(), jsHeapBytes: jsHeapBytes() });
+    }
     if (!stopped) timer = setTimeout(tick, POLL_MS);
   };
   void tick();
@@ -19,6 +21,14 @@ export function watch(onSample: (sample: Diagnostics) => void): () => void {
     stopped = true;
     clearTimeout(timer);
   };
+}
+
+type ChromiumPerformance = Performance & {
+  memory?: { usedJSHeapSize: number };
+};
+
+function jsHeapBytes(): number | null {
+  return (performance as ChromiumPerformance).memory?.usedJSHeapSize ?? null;
 }
 
 function cacheStats(): CacheStats {

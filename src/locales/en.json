@@ -240,6 +240,7 @@
   "DIAGNOSTICS_CPU": "CPU",
   "DIAGNOSTICS_DISCONNECTED": "Disconnected",
   "DIAGNOSTICS_EVENTSUB": "EventSub connections",
+  "DIAGNOSTICS_JS_HEAP": "JavaScript memory",
   "DIAGNOSTICS_MEMORY": "Memory",
   "DIAGNOSTICS_MESSAGES": "Messages",
   "DIAGNOSTICS_NOT_OPEN": "Not open",

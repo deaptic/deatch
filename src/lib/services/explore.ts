@@ -10,6 +10,7 @@ import { exploreLanguage } from "../stores/preferences.ts";
 import * as users from "./users.ts";
 
 const PAGE_SIZE = 40;
+const MAX_STREAMS = 200;
 
 let generation = 0;
 let watchers = 0;
@@ -47,6 +48,9 @@ export function watch(): () => void {
   void loadPage(true);
   return () => {
     watchers--;
+    if (watchers > 0) return;
+    generation++;
+    setLiveBrowse(emptyLiveBrowse());
   };
 }
 
@@ -70,10 +74,14 @@ async function loadPage(first: boolean): Promise<void> {
     if (mine !== generation) return;
     if (first) loadedAt = Date.now();
     if (data.length) users.get(data.map((s) => s.user.id)).catch(() => {});
+    const streams = first ? data : [...liveBrowse.streams, ...data];
     setLiveBrowse({
-      streams: first ? data : [...liveBrowse.streams, ...data],
+      streams,
       cursor: pagination.cursor,
-      exhausted: !pagination.cursor || data.length === 0,
+      exhausted:
+        !pagination.cursor ||
+        data.length === 0 ||
+        streams.length >= MAX_STREAMS,
     });
   } catch {
     if (mine === generation) setLiveBrowse("exhausted", true);
