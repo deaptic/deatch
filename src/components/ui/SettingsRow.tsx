@@ -16,7 +16,7 @@ export default function SettingsRow(props: Props) {
     <Show when={matchesQuery(query(), props.label, props.description)}>
       <div
         data-match
-        class={`flex gap-x-6 gap-y-3 px-5 py-3 min-h-16 border-t border-line-soft first:border-t-0 ${
+        class={`flex gap-x-6 gap-y-3 px-5 py-3 min-h-16 ${
           props.stacked
             ? "flex-col items-stretch"
             : "flex-wrap items-center justify-between"

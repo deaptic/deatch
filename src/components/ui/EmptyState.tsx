@@ -13,7 +13,7 @@ type Props =
 export default function EmptyState(props: Props) {
   if (props.variant === "inline") {
     return (
-      <p class="rounded-lg border border-dashed border-line px-4 py-10 text-center text-body text-ink-soft">
+      <p class="rounded-lg bg-surface px-4 py-10 text-center text-body text-ink-soft">
         {props.body}
       </p>
     );

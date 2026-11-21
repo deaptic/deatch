@@ -254,7 +254,7 @@ export default function EmotePicker(props: Props) {
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
       </div>
-      <div class="flex px-2.5 border-b border-line-soft shrink-0">
+      <div class="flex px-2.5 shrink-0">
         <For each={TABS}>
           {(entry) => (
             <NavItem
@@ -296,7 +296,7 @@ export default function EmotePicker(props: Props) {
         </For>
       </div>
 
-      <div class="shrink-0 h-11 flex items-center gap-2.5 px-3.5 border-t border-line-soft text-small">
+      <div class="shrink-0 h-11 flex items-center gap-2.5 px-3.5 text-small">
         <Show
           when={activeItem()}
           fallback={<span class="text-ink-faint">{t("EMOTES_KEEP_OPEN")}</span>}

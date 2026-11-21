@@ -78,7 +78,7 @@ export default function SearchPicker<T>(props: Props<T>) {
       <Show when={results().length > 0}>
         <div
           {...listbox.list}
-          class="max-h-60 overflow-y-auto p-1 flex flex-col rounded-sm border border-line-soft"
+          class="max-h-60 overflow-y-auto p-1 flex flex-col rounded-sm"
         >
           <For each={results()}>
             {(item, i) => (

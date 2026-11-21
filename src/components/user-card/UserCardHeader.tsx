@@ -64,7 +64,7 @@ export default function UserCardHeader(props: Props) {
 
   return (
     <div
-      class="relative shrink-0 min-w-card-width border-b border-line-soft cursor-move select-none"
+      class="relative shrink-0 min-w-card-width cursor-move select-none"
       onMouseDown={props.onStartDrag}
     >
       <div

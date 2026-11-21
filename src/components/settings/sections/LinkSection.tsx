@@ -114,7 +114,7 @@ export default function LinkSection() {
               );
             }}
           </For>
-          <div class="px-5 py-3 flex justify-end border-t border-line-soft">
+          <div class="px-5 py-3 flex justify-end">
             <Button
               variant="ghost"
               size="sm"

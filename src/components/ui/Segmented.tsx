@@ -51,7 +51,7 @@ export default function Segmented<T extends string>(props: Props<T>) {
       role="radiogroup"
       aria-label={props.label}
       onKeyDown={step}
-      class={`gap-0.5 p-0.75 bg-canvas border border-line rounded-sm ${
+      class={`gap-0.5 p-0.75 bg-canvas rounded-sm ${
         props.fill ? "flex w-full" : "inline-flex"
       }`}
     >

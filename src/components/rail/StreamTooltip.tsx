@@ -27,7 +27,7 @@ export default function StreamTooltip(props: {
           {title()}
         </p>
       </Show>
-      <div class="pt-2 border-t border-line-soft flex flex-col gap-1">
+      <div class="pt-1 flex flex-col gap-1">
         <Stat icon={<Gamepad2 />} value={game()} truncate />
         <Show
           when={props.stream}

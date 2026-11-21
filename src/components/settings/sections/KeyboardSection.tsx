@@ -59,7 +59,7 @@ export default function KeyboardSection() {
                 <Show when={matchesQuery(query(), row.label, row.combo)}>
                   <div
                     data-match
-                    class="flex items-center justify-between gap-6 px-5 h-11 border-t border-line-soft"
+                    class="flex items-center justify-between gap-6 px-5 h-11"
                   >
                     <span class="text-body text-ink">{row.label}</span>
                     <Kbd combo={row.combo} />

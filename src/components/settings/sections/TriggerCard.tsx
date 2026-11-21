@@ -86,7 +86,7 @@ export default function TriggerCard(props: {
       </div>
 
       <Show when={expanded()}>
-        <div class="flex flex-col gap-4 p-4 border-t border-line-soft">
+        <div class="flex flex-col gap-4 p-4">
           <div class="flex flex-col gap-3">
             <TriggerSectionLabel>
               {t("SETTINGS_TRIGGERS_NAME")}

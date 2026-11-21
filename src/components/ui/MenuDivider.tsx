@@ -1,3 +1,3 @@
 export default function MenuDivider() {
-  return <div class="my-1.5 border-t border-line-soft" />;
+  return <div aria-hidden class="h-1.5" />;
 }

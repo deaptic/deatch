@@ -220,7 +220,7 @@ export default function QuickSwitch(props: Props) {
           </For>
         </Show>
       </div>
-      <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 border-t border-line-soft text-small text-ink-faint">
+      <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 text-small text-ink-faint">
         <span class="flex items-center gap-1.5">
           <Kbd size="sm" combo="up" />
           <Kbd size="sm" combo="down" /> {t("QUICK_SWITCH_MOVE")}

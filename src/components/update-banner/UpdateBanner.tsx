@@ -16,7 +16,7 @@ export default function UpdateBanner() {
           onClick={() => void updater.install()}
           disabled={installing()}
           data-tip={installError() ?? undefined}
-          class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 border-b border-line-soft text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
+          class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
         >
           <span class="size-2 rounded-full bg-accent shrink-0" />
           <span class="text-ink truncate">

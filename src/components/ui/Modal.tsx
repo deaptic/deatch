@@ -12,7 +12,7 @@ const SCRIM: Record<ModalLook, string> = {
 };
 
 const PANEL: Record<ModalLook, string> = {
-  dialog: "w-110 bg-surface border border-line elevation-3 p-6 gap-4",
+  dialog: "w-110 bg-surface elevation-3 p-6 gap-4",
   palette: "w-140 max-h-3/5 material-thick p-2.5",
 };
 

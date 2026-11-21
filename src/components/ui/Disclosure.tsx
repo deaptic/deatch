@@ -15,7 +15,7 @@ export default function Disclosure(props: Props) {
         type="button"
         aria-expanded={open()}
         onClick={() => setOpen(!open())}
-        class="w-full h-11 flex items-center justify-between gap-3 px-5 border-t border-line-soft last:rounded-b-lg text-body font-semibold text-ink cursor-pointer transition-colors duration-snap hover:bg-raised"
+        class="w-full h-11 flex items-center justify-between gap-3 px-5 last:rounded-b-lg text-body font-semibold text-ink cursor-pointer transition-colors duration-snap hover:bg-raised"
       >
         {props.label}
         <ChevronDown

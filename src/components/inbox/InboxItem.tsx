@@ -38,7 +38,7 @@ export default function InboxItem(props: Props) {
 
   return (
     <Card tone={m().unread ? "marked" : "plain"}>
-      <header class="flex items-center gap-2 p-2 border-b border-line-soft text-(length:--chat-size)">
+      <header class="flex items-center gap-2 p-2 text-(length:--chat-size)">
         <span
           class={`shrink-0 size-feed-meta-tile ${link.cursor}`}
           {...link.handlers}
