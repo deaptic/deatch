@@ -55,7 +55,7 @@ export default function AdvancedSection() {
   }
 
   return (
-    <PageBody title={t("SETTINGS_ADVANCED")} lede={t("SETTINGS_ADVANCED_LEDE")}>
+    <PageBody title={t("SETTINGS_ADVANCED")}>
       <Show when={pendingRestart()}>
         {(pending) => (
           <Dialog

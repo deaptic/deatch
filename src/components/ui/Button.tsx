@@ -1,7 +1,13 @@
 import { type JSX, Show, splitProps } from "solid-js";
 import Loading from "./Loading.tsx";
 
-export type ButtonVariant = "accent" | "neutral" | "ghost" | "danger" | "media";
+export type ButtonVariant =
+  | "accent"
+  | "neutral"
+  | "ghost"
+  | "danger"
+  | "media"
+  | "toggle";
 type ButtonShape = "rect" | "pill";
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -20,6 +26,7 @@ const VARIANTS: Record<ButtonVariant, string> = {
   ghost: "text-ink-soft hover:bg-raised hover:text-ink active:bg-overlay",
   danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
   media: "text-on-accent hover:bg-raised active:bg-overlay",
+  toggle: "bg-raised text-ink-soft hover:bg-overlay hover:text-ink",
 };
 
 const SHAPES: Record<ButtonShape, string> = {
@@ -30,6 +37,7 @@ const SHAPES: Record<ButtonShape, string> = {
 const PRESSED: Partial<Record<ButtonVariant, string>> = {
   ghost: "bg-raised text-ink",
   media: "bg-raised text-on-accent",
+  toggle: "bg-positive/15 text-positive hover:bg-positive/20",
   neutral:
     "bg-accent-soft text-accent-ink border border-accent/40 hover:bg-accent/18",
 };

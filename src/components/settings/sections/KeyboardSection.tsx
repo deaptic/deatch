@@ -47,7 +47,7 @@ export default function KeyboardSection() {
   const query = useContext(SettingsQuery);
 
   return (
-    <PageBody title={t("SETTINGS_KEYBOARD")} lede={t("SETTINGS_KEYBOARD_LEDE")}>
+    <PageBody title={t("SETTINGS_KEYBOARD")}>
       <For each={GROUPS}>
         {(g) => (
           <Card>

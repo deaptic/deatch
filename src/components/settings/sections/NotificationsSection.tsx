@@ -16,10 +16,7 @@ import {
 
 export default function NotificationsSection() {
   return (
-    <PageBody
-      title={t("SETTINGS_NOTIFICATIONS")}
-      lede={t("SETTINGS_NOTIFICATIONS_LEDE")}
-    >
+    <PageBody title={t("SETTINGS_NOTIFICATIONS")}>
       <Card>
         <SettingsRow
           label={t("SETTINGS_NOTIFICATIONS_KEYWORDS")}

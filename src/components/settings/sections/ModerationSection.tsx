@@ -12,10 +12,7 @@ import {
 
 export default function ModerationSection() {
   return (
-    <PageBody
-      title={t("SETTINGS_MODERATION")}
-      lede={t("SETTINGS_MODERATION_LEDE")}
-    >
+    <PageBody title={t("SETTINGS_MODERATION")}>
       <Card>
         <SettingsRow
           label={t("SETTINGS_MODERATION_SHOUTOUT_RAIDERS")}

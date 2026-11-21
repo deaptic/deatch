@@ -4,10 +4,8 @@ import CardLabel from "../../ui/CardLabel.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
 import Segmented from "../../ui/Segmented.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
-import {
-  DEFAULT_ACCENT_HEX,
-  type Theme,
-} from "../../../lib/constants/theme.ts";
+import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
+import { themeOptions } from "./options.ts";
 import {
   appearanceAccent,
   appearanceTheme,
@@ -26,13 +24,7 @@ export default function ThemeCard() {
         <Segmented
           label={t("SETTINGS_APPEARANCE_THEME")}
           value={appearanceTheme()}
-          options={
-            [
-              { value: "system", label: t("SETTINGS_APPEARANCE_THEME_SYSTEM") },
-              { value: "dark", label: t("SETTINGS_APPEARANCE_THEME_DARK") },
-              { value: "light", label: t("SETTINGS_APPEARANCE_THEME_LIGHT") },
-            ] satisfies { value: Theme; label: string }[]
-          }
+          options={themeOptions()}
           onChange={setAppearanceTheme}
         />
       </SettingsRow>

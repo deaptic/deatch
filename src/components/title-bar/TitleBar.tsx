@@ -5,6 +5,7 @@ import {
   Minus,
   PanelLeftClose,
   PanelLeftOpen,
+  SlidersHorizontal,
   Square,
   X,
 } from "lucide-solid";
@@ -29,6 +30,7 @@ import TitleBarButton from "../ui/TitleBarButton.tsx";
 import ToolbarDivider from "../ui/ToolbarDivider.tsx";
 import { OVERLAY_GAP } from "../ui/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
+import AppearancePanel from "./AppearancePanel.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
@@ -48,6 +50,7 @@ type Props = {
 export default function TitleBar(props: Props) {
   const [version, setVersion] = createSignal("");
   let inboxBtn: HTMLButtonElement | undefined;
+  let appearanceBtn: HTMLButtonElement | undefined;
   let diagnosticsBtn: HTMLButtonElement | undefined;
 
   onMount(() => {
@@ -109,6 +112,16 @@ export default function TitleBar(props: Props) {
             </TitleBarButton>
           </Show>
           <TitleBarButton
+            ref={appearanceBtn}
+            label={t("CHAT_APPEARANCE")}
+            data-tip={t("CHAT_APPEARANCE")}
+            pressed={isOverlayOpen("appearance")}
+            {...{ [POPOVER_TOGGLE]: "" }}
+            onClick={() => toggleOverlay("appearance")}
+          >
+            <SlidersHorizontal class="size-4" />
+          </TitleBarButton>
+          <TitleBarButton
             ref={inboxBtn}
             label={t("TITLE_BAR_INBOX")}
             data-tip={t("TITLE_BAR_INBOX")}
@@ -147,6 +160,12 @@ export default function TitleBar(props: Props) {
           </TitleBarButton>
         </div>
       </div>
+      <Show when={isOverlayOpen("appearance")}>
+        <AppearancePanel
+          {...below(appearanceBtn)}
+          onClose={() => toggleOverlay("appearance")}
+        />
+      </Show>
       <Show when={isOverlayOpen("inbox")}>
         <Inbox
           {...below(inboxBtn)}

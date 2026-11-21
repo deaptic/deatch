@@ -67,7 +67,7 @@ const isDefault = () =>
 
 export default function LinkSection() {
   return (
-    <PageBody title={t("SETTINGS_LINK")} lede={t("SETTINGS_LINK_LEDE")}>
+    <PageBody title={t("SETTINGS_LINK")}>
       <Card>
         <SettingsRow
           label={t("SETTINGS_LINK_COMPRESSOR")}

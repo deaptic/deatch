@@ -6,10 +6,10 @@ import SettingsRow from "../../ui/SettingsRow.tsx";
 import StopSlider from "../../ui/StopSlider.tsx";
 import {
   GROUP_SPACING_STOPS,
-  type UiDensity,
   ZOOM_STOPS,
 } from "../../../lib/constants/accessibility.ts";
 import type { Density } from "../../../lib/constants/density.ts";
+import { uiDensityOptions } from "./options.ts";
 import {
   appearanceUiDensity,
   appearanceZoom,
@@ -27,19 +27,13 @@ export default function DensityCard() {
     <Card>
       <CardLabel>{t("SETTINGS_APPEARANCE_LAYOUT")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_CHANNEL_SPACING")}
-        description={t("SETTINGS_APPEARANCE_CHANNEL_SPACING_DESCRIPTION")}
+        label={t("SETTINGS_APPEARANCE_DENSITY")}
+        description={t("SETTINGS_APPEARANCE_DENSITY_DESCRIPTION")}
       >
         <Segmented
-          label={t("SETTINGS_APPEARANCE_CHANNEL_SPACING")}
+          label={t("SETTINGS_APPEARANCE_DENSITY")}
           value={appearanceUiDensity()}
-          options={
-            [
-              { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT") },
-              { value: "default", label: t("SETTINGS_APPEARANCE_DEFAULT") },
-              { value: "spacious", label: t("SETTINGS_APPEARANCE_SPACIOUS") },
-            ] satisfies { value: UiDensity; label: string }[]
-          }
+          options={uiDensityOptions()}
           onChange={setAppearanceUiDensity}
         />
       </SettingsRow>

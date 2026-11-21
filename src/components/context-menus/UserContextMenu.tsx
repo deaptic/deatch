@@ -1,13 +1,16 @@
 import {
   AtSign,
   Ban,
+  Copy,
   ExternalLink,
+  Hash,
   Megaphone,
   TriangleAlert,
   User,
 } from "lucide-solid";
 import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
+import * as clipboard from "../../lib/services/clipboard.ts";
 import { t } from "../../lib/i18n/index.ts";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
 import Menu from "../ui/Menu.tsx";
@@ -61,6 +64,17 @@ export default function UserContextMenu(props: Props) {
         label={t("MENU_OPEN_IN_BROWSER")}
         icon={<ExternalLink />}
         onClick={() => browser.openChannel(props.userLogin)}
+      />
+      <MenuDivider />
+      <MenuItem
+        label={t("MENU_COPY_LOGIN")}
+        icon={<Copy />}
+        onClick={() => clipboard.copy(props.userLogin)}
+      />
+      <MenuItem
+        label={t("MENU_COPY_USER_ID")}
+        icon={<Hash />}
+        onClick={() => clipboard.copy(props.userId)}
       />
       <Show when={props.isMod}>
         <MenuDivider />

@@ -36,7 +36,7 @@ export default function TriggersSection() {
   };
 
   return (
-    <PageBody title={t("SETTINGS_TRIGGERS")} lede={t("SETTINGS_TRIGGERS_LEDE")}>
+    <PageBody title={t("SETTINGS_TRIGGERS")}>
       <For each={triggers()}>
         {(trigger) => (
           <TriggerCard

@@ -3,7 +3,7 @@ import { createEffect, createMemo, createResource, on, Show } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { knownUser } from "../../lib/stores/users.ts";
 import * as browser from "../../lib/services/browser.ts";
-import { AtSign, Hash, Pin } from "lucide-solid";
+import { Pin } from "lucide-solid";
 import { feeds } from "../../lib/stores/feeds.ts";
 import {
   onMiddleClick,
@@ -12,12 +12,12 @@ import {
 import Avatar from "../ui/Avatar.tsx";
 import BadgeBox from "../ui/BadgeBox.tsx";
 import IconButton from "../ui/IconButton.tsx";
-import CopyButton from "./CopyButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardLive from "./UserCardLive.tsx";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import UserCardMeta from "./UserCardMeta.tsx";
 import { t } from "../../lib/i18n/index.ts";
+import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
 type Props = {
   chatterId: string;
@@ -26,6 +26,7 @@ type Props = {
   pinned: boolean;
   onTogglePin: () => void;
   onStartDrag: (e: MouseEvent) => void;
+  onContextMenu: (x: number, y: number) => void;
   onOpenChannel: (broadcasterId: string) => void;
 };
 
@@ -66,6 +67,7 @@ export default function UserCardHeader(props: Props) {
     <div
       class="relative shrink-0 min-w-card-width cursor-move select-none"
       onMouseDown={props.onStartDrag}
+      onContextMenu={(e) => openMenuAt(e, props.onContextMenu)}
     >
       <div
         class="relative aspect-3/1 flex items-end justify-end pl-card-avatar-clear pr-card-gap pb-card-gap bg-(--banner)"
@@ -84,16 +86,6 @@ export default function UserCardHeader(props: Props) {
         <UserCardMeta user={user()} follow={follow()} />
       </div>
       <div class="absolute top-card-gap right-card-gap flex rounded-sm bg-media-scrim">
-        <Show when={user()}>
-          {(u) => (
-            <CopyButton copy={u().login} label={t("USER_CARD_COPY_LOGIN")}>
-              <AtSign class="size-4" />
-            </CopyButton>
-          )}
-        </Show>
-        <CopyButton copy={props.chatterId} label={t("USER_CARD_COPY_ID")}>
-          <Hash class="size-4" />
-        </CopyButton>
         <IconButton
           label={t(props.pinned ? "USER_CARD_UNPIN" : "USER_CARD_PIN")}
           variant="media"

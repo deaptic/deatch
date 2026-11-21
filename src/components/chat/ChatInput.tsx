@@ -1,4 +1,4 @@
-import { SlidersHorizontal, Smile, X } from "lucide-solid";
+import { Smile, X } from "lucide-solid";
 import { t, tRich } from "../../lib/i18n/index.ts";
 import {
   createEffect,
@@ -31,7 +31,6 @@ import {
 import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
-import AppearancePanel from "./AppearancePanel.tsx";
 import ComposerCaption from "../ui/ComposerCaption.tsx";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
@@ -342,14 +341,6 @@ export default function ChatInput(props: Props) {
               <ComposerSlot>
                 <CharCounter value={input} max={MAX_LEN} />
                 <IconButton
-                  label={t("CHAT_APPEARANCE")}
-                  pressed={isOverlayOpen("appearance")}
-                  {...{ [POPOVER_TOGGLE]: "" }}
-                  onClick={() => toggleOverlay("appearance")}
-                >
-                  <SlidersHorizontal class="size-5" />
-                </IconButton>
-                <IconButton
                   label={t("CHAT_INPUT_EMOTE_PICKER")}
                   pressed={isOverlayOpen("emotePicker")}
                   {...{ [POPOVER_TOGGLE]: "" }}
@@ -377,12 +368,6 @@ export default function ChatInput(props: Props) {
                   anchorEl={textAreaApi?.anchorEl()}
                 />
               </Suspense>
-            </Show>
-            <Show when={isOverlayOpen("appearance")}>
-              <AppearancePanel
-                onClose={closeOverlay}
-                anchorEl={textAreaApi?.anchorEl()}
-              />
             </Show>
           </ComposerField>
         }

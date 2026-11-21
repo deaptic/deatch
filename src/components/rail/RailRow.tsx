@@ -27,6 +27,7 @@ type Props = {
   unread?: boolean;
   mentions?: number;
   dimmed?: boolean;
+  revealOnHover?: boolean;
   ref?: (el: HTMLButtonElement) => void;
   onClick?: () => void;
   onMiddleClick?: () => void;
@@ -71,6 +72,10 @@ export default function RailRow(props: Props) {
         onMouseLeave={tip.hide}
         class={`group relative w-full ${railRowHeight()} flex items-center px-2 text-left cursor-pointer ${
           props.dimmed ? "opacity-40" : ""
+        } ${
+          props.revealOnHover
+            ? "opacity-0 transition-opacity duration-quick group-hover/rail:opacity-100 focus-visible:opacity-100"
+            : ""
         }`}
       >
         <EdgeMark

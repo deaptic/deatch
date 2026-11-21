@@ -220,7 +220,7 @@ export default function Rail(props: Props) {
   return (
     <nav
       aria-label={t("RAIL_CHANNELS")}
-      class={`flex flex-col h-full shrink-0 bg-surface overflow-hidden transition-all duration-settle ease-drawer ${
+      class={`group/rail flex flex-col h-full shrink-0 bg-surface overflow-hidden transition-all duration-settle ease-drawer ${
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
     >
@@ -282,6 +282,7 @@ export default function Rail(props: Props) {
             <RailRow
               ref={(el) => (addBtn = el)}
               label={t("RAIL_PIN_CHANNEL")}
+              revealOnHover={pinnedChannels().length > 0 && !addPop.state()}
               onClick={toggleAdd}
             >
               <RailTile>
