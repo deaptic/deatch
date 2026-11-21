@@ -19,6 +19,7 @@ import { mergeMessages } from "./mergeMessages.ts";
 import type { UserAction } from "../ui/userLink.ts";
 import { dismissOnOutside } from "../../lib/reactive/dismissOnOutside.ts";
 import { t } from "../../lib/i18n/index.ts";
+import { playExit } from "../ui/playExit.ts";
 
 type Props = {
   x: number;
@@ -40,8 +41,13 @@ type Props = {
 const PAD = 8;
 
 export default function UserCard(props: Props) {
-  captureFocusForRestore();
+  const restoreFocus = captureFocusForRestore();
   let cardRef: HTMLDivElement | undefined;
+
+  function close() {
+    restoreFocus();
+    void playExit(cardRef).then(props.onClose);
+  }
 
   function bounds() {
     const b = props.getBounds();
@@ -91,11 +97,10 @@ export default function UserCard(props: Props) {
 
   dismissOnOutside({
     ref: () => cardRef,
-    onDismiss: props.onClose,
+    onDismiss: close,
     shouldDismiss: () => !props.pinned,
   });
-  const bindEscape = () =>
-    shortcuts.registerLocal("escape", () => props.onClose());
+  const bindEscape = () => shortcuts.registerLocal("escape", close);
   let unbindEscape = bindEscape();
   onCleanup(() => unbindEscape());
 
@@ -151,7 +156,7 @@ export default function UserCard(props: Props) {
         role="dialog"
         aria-label={t("USER_CARD_LABEL")}
         onTransitionEnd={() => setEntered(true)}
-        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay elevation-3 rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-min min-h-min resize origin-top-left transition duration-quick ease-out ${
+        class={`fixed left-(--x) top-(--y) max-w-(--max-w) max-h-(--max-h) z-50 bg-overlay elevation-3 rounded-md overflow-hidden flex flex-col w-card-width h-card-height min-w-min min-h-min resize origin-top-left transition duration-quick ease-out data-closing:opacity-0 data-closing:scale-97 data-closing:duration-snap data-closing:pointer-events-none ${
           entered() ? "" : "starting:opacity-0 starting:scale-97"
         }`}
         style={{
@@ -186,7 +191,7 @@ export default function UserCard(props: Props) {
           loading={history.loading}
           onJumpToMessage={(messageId) => {
             props.onJumpToMessage(messageId);
-            if (!props.pinned) props.onClose();
+            if (!props.pinned) close();
           }}
           onShowUserCard={(_x, _y, identity) => props.onSwitchUser?.(identity)}
           onUserContextMenu={props.onUserContextMenu}

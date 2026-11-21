@@ -23,8 +23,8 @@ export default function TabMuteBadge(props: Props) {
           : "bg-raised text-ink hover:bg-overlay"
       }`}
     >
-      <Show when={props.muted} fallback={<Volume2 class="size-2" />}>
-        <VolumeOff class="size-2" />
+      <Show when={props.muted} fallback={<Volume2 class="size-2 enter-swap" />}>
+        <VolumeOff class="size-2 enter-swap" />
       </Show>
     </span>
   );

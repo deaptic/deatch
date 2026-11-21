@@ -3,6 +3,7 @@ import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import { trapFocus } from "../../lib/reactive/trapFocus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
+import { createExitTarget, ExitScope } from "./Presence.tsx";
 
 type ModalLook = "dialog" | "palette";
 
@@ -24,14 +25,16 @@ type Props = {
 };
 
 export default function Modal(props: Props) {
-  captureFocusForRestore();
+  const restoreFocus = captureFocusForRestore();
+  const exitTarget = createExitTarget(restoreFocus);
   let panel: HTMLDivElement | undefined;
   trapFocus(() => panel);
   onCleanup(shortcuts.registerLocal("escape", () => props.onClose()));
   return (
     <Portal>
       <div
-        class={`fixed inset-0 z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 ${SCRIM[props.look]}`}
+        ref={exitTarget}
+        class={`fixed inset-0 z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 data-closing:opacity-0 data-closing:duration-snap data-closing:pointer-events-none ${SCRIM[props.look]}`}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget) props.onClose();
         }}
@@ -44,7 +47,7 @@ export default function Modal(props: Props) {
           aria-label={props.label}
           class={`max-w-full flex flex-col outline-none rounded-lg enter-pop ${PANEL[props.look]}`}
         >
-          {props.children}
+          <ExitScope>{props.children}</ExitScope>
         </div>
       </div>
     </Portal>

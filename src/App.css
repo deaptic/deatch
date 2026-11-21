@@ -126,6 +126,22 @@
   --duration-quick: 160ms;
   --duration-settle: 240ms;
   --animate-breathe: breathe 2.4s var(--ease-out) infinite;
+  --animate-bump: bump var(--duration-settle) var(--ease-out);
+  --animate-rise: rise var(--duration-quick) var(--ease-out) backwards;
+  --stagger-step: 30ms;
+
+  @keyframes bump {
+    40% {
+      scale: 1.2;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 calc(var(--spacing) * 1.5);
+    }
+  }
 
   @keyframes breathe {
     from {
@@ -307,6 +323,13 @@
     opacity: 0;
     scale: 0.97;
   }
+  &[data-closing],
+  [data-closing] & {
+    opacity: 0;
+    scale: 0.97;
+    pointer-events: none;
+    transition-duration: var(--duration-snap);
+  }
 }
 
 @utility enter-rise {
@@ -316,6 +339,49 @@
   @starting-style {
     opacity: 0;
     translate: 0 calc(var(--spacing) * 1.5);
+  }
+  &[data-closing],
+  [data-closing] & {
+    opacity: 0;
+    translate: 0 calc(var(--spacing) * 1.5);
+    pointer-events: none;
+    transition-duration: var(--duration-snap);
+  }
+}
+
+@utility enter-expand {
+  interpolate-size: allow-keywords;
+  overflow: hidden;
+  transition-property: height, opacity;
+  transition-duration: var(--duration-settle);
+  transition-timing-function: var(--ease-out);
+  @starting-style {
+    height: 0;
+    opacity: 0;
+  }
+  &[data-closing],
+  [data-closing] & {
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition-duration: var(--duration-snap);
+  }
+}
+
+@utility enter-stagger {
+  & > * {
+    animation: var(--animate-rise);
+    animation-delay: calc(min(sibling-index(), 8) * var(--stagger-step));
+  }
+}
+
+@utility enter-swap {
+  transition-property: opacity, scale;
+  transition-duration: var(--duration-quick);
+  transition-timing-function: var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    scale: 0.6;
   }
 }
 

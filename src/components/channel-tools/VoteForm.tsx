@@ -91,13 +91,15 @@ export default function VoteForm(props: Props) {
             {(option, i) => {
               const label = t("CHANNEL_TOOLS_OPTION", { number: i + 1 });
               return (
-                <Field
-                  aria-label={label}
-                  placeholder={label}
-                  maxLength={OPTION_LENGTH}
-                  value={option()}
-                  onInput={(e) => setOption(i, e.currentTarget.value)}
-                />
+                <div class="enter-rise">
+                  <Field
+                    aria-label={label}
+                    placeholder={label}
+                    maxLength={OPTION_LENGTH}
+                    value={option()}
+                    onInput={(e) => setOption(i, e.currentTarget.value)}
+                  />
+                </div>
               );
             }}
           </Index>

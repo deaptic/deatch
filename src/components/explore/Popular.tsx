@@ -101,7 +101,7 @@ export default function Popular(props: Props) {
         >
           <div
             onKeyDown={moveGridFocus}
-            class="grid grid-cards gap-4 enter-rise"
+            class="grid grid-cards gap-4 enter-stagger"
           >
             <For each={sorted()}>
               {(stream) => (

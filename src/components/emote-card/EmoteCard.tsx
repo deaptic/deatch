@@ -21,6 +21,7 @@ import {
 } from "../../lib/utils/emoteSource.ts";
 import { zoomUrls } from "../../lib/utils/emoteZoom.ts";
 import { t } from "../../lib/i18n/index.ts";
+import Presence from "../ui/Presence.tsx";
 
 type Opened = { url: string; name: string; x: number; y: number };
 
@@ -73,7 +74,11 @@ function Details(props: { url: string; name: string; source: EmoteSource }) {
               }
               onClick={() => void copy(props.name)}
             >
-              {copied() ? <Check class="size-4" /> : <Copy class="size-4" />}
+              {copied() ? (
+                <Check class="size-4 enter-swap" />
+              ) : (
+                <Copy class="size-4" />
+              )}
             </IconButton>
           </div>
         </div>
@@ -118,21 +123,25 @@ export default function EmoteCard() {
   });
 
   return (
-    <Show when={opened()} keyed>
-      {(o) => (
-        <Show when={emoteSource(o.url)}>
-          {(source) => (
-            <Popover
-              x={o.x}
-              y={o.y}
-              opener={() => anchor}
-              onClose={() => setOpened(null)}
-            >
-              <Details url={o.url} name={o.name} source={source()} />
-            </Popover>
+    <Presence when={opened()}>
+      {(current) => (
+        <Show when={current()} keyed>
+          {(o) => (
+            <Show when={emoteSource(o.url)}>
+              {(source) => (
+                <Popover
+                  x={o.x}
+                  y={o.y}
+                  opener={() => anchor}
+                  onClose={() => setOpened(null)}
+                >
+                  <Details url={o.url} name={o.name} source={source()} />
+                </Popover>
+              )}
+            </Show>
           )}
         </Show>
       )}
-    </Show>
+    </Presence>
   );
 }

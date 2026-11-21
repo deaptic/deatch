@@ -3,6 +3,7 @@ import { createSignal, type JSX, Show } from "solid-js";
 import Button from "./Button.tsx";
 import Menu from "./Menu.tsx";
 import Popover, { OVERLAY_GAP } from "./Popover.tsx";
+import Presence from "./Presence.tsx";
 
 type Look = "menu" | "panel";
 
@@ -52,7 +53,7 @@ export default function PopoverButton(props: Props) {
         </Show>
         <ChevronDown class="size-3.5 -ml-1 -mr-1 text-ink-faint" />
       </Button>
-      <Show when={anchor()}>
+      <Presence when={anchor()}>
         {(a) =>
           props.look === "menu" ? (
             <Menu x={a().x} y={a().y} opener={() => button} onClose={close}>
@@ -64,7 +65,7 @@ export default function PopoverButton(props: Props) {
             </Popover>
           )
         }
-      </Show>
+      </Presence>
     </>
   );
 }

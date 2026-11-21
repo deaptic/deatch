@@ -4,6 +4,7 @@ import { dismissOnOutside } from "../../lib/reactive/dismissOnOutside.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import { trapFocus } from "../../lib/reactive/trapFocus.ts";
+import { createExitTarget, ExitScope } from "./Presence.tsx";
 
 const MARGIN = 8;
 
@@ -26,13 +27,18 @@ type Props = {
 };
 
 export default function Popover(props: Props) {
-  captureFocusForRestore();
+  const restoreFocus = captureFocusForRestore();
+  const exitTarget = createExitTarget(restoreFocus);
   const [pos, setPos] = createSignal({ x: props.x, y: props.y });
   const [maxWidth, setMaxWidth] = createSignal(window.innerWidth - MARGIN * 2);
   const [maxHeight, setMaxHeight] = createSignal(
     window.innerHeight - MARGIN * 2,
   );
   let ref: HTMLDivElement | undefined;
+  const setRef = (el: HTMLDivElement) => {
+    ref = el;
+    exitTarget(el);
+  };
   trapFocus(() => ref);
 
   function placeInsideWindow(el: HTMLDivElement) {
@@ -81,7 +87,7 @@ export default function Popover(props: Props) {
   return (
     <Portal>
       <div
-        ref={ref}
+        ref={setRef}
         tabIndex={-1}
         style={{
           "--x": `${pos().x}px`,
@@ -93,7 +99,7 @@ export default function Popover(props: Props) {
         onClick={(e) => e.stopPropagation()}
         onContextMenu={(e) => e.stopPropagation()}
       >
-        {props.children}
+        <ExitScope>{props.children}</ExitScope>
       </div>
     </Portal>
   );

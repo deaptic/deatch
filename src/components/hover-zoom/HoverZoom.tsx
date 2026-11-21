@@ -73,8 +73,8 @@ function ZoomImage(props: { anchor: HTMLElement }) {
           if (fallback && src() !== fallback) setSrc(fallback);
         }}
         style={{ "--x": `${pos()?.x ?? 0}px`, "--y": `${pos()?.y ?? 0}px` }}
-        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 max-w-100 max-h-100 rounded-md bg-overlay elevation-2 ${
-          pos() ? "" : "invisible"
+        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 max-w-100 max-h-100 rounded-md bg-overlay elevation-2 transition-opacity duration-snap ease-out ${
+          pos() ? "" : "opacity-0"
         }`}
       />
     </Portal>

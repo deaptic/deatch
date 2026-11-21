@@ -41,6 +41,7 @@ import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 import ComposerActions from "./ComposerActions.tsx";
 import ComposerSlot from "../ui/ComposerSlot.tsx";
 import { commands } from "../command-composer/commands.ts";
+import Presence from "../ui/Presence.tsx";
 
 const MAX_LEN = 500;
 const SEND_ACTION = "chat::send";
@@ -277,7 +278,7 @@ export default function ChatInput(props: Props) {
 
   return (
     <div class="p-2">
-      <Show when={props.replyTo()}>
+      <Presence when={props.replyTo()}>
         {(reply) => (
           <ComposerCaption>
             <span class="shrink-0">
@@ -298,7 +299,7 @@ export default function ChatInput(props: Props) {
             </IconButton>
           </ComposerCaption>
         )}
-      </Show>
+      </Presence>
       <Show
         when={commandMode()}
         fallback={

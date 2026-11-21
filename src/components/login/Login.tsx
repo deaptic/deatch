@@ -93,7 +93,7 @@ export default function Login() {
                         size="sm"
                         icon={
                           codeCopy.copied() ? (
-                            <Check class="size-4 text-positive" />
+                            <Check class="size-4 text-positive enter-swap" />
                           ) : (
                             <Copy class="size-4" />
                           )

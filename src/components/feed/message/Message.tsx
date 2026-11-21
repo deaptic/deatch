@@ -96,7 +96,11 @@ export default function Message(props: Props) {
         <span class="italic text-ink-soft">{t("FEED_MESSAGE_DELETED")}</span>
       }
     >
-      <span class={item.deleted ? "text-ink-faint *:text-ink-faint" : ""}>
+      <span
+        class={`transition-colors duration-settle ${
+          item.deleted ? "text-ink-faint *:text-ink-faint" : ""
+        }`}
+      >
         <Fragments
           fragments={withoutReplyMention(item)}
           emotes={props.emotes}

@@ -34,6 +34,7 @@ import AppearancePanel from "./AppearancePanel.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
+import Presence from "../ui/Presence.tsx";
 
 function below(button: HTMLElement | undefined) {
   const r = button?.getBoundingClientRect();
@@ -149,7 +150,11 @@ export default function TitleBar(props: Props) {
             }
             onClick={() => toggleMaximizeWindow().catch(() => {})}
           >
-            {maximized() ? <Copy class="size-3" /> : <Square class="size-3" />}
+            {maximized() ? (
+              <Copy class="size-3 enter-swap" />
+            ) : (
+              <Square class="size-3 enter-swap" />
+            )}
           </TitleBarButton>
           <TitleBarButton
             variant="close"
@@ -160,12 +165,14 @@ export default function TitleBar(props: Props) {
           </TitleBarButton>
         </div>
       </div>
-      <Show when={isOverlayOpen("appearance")}>
-        <AppearancePanel
-          {...below(appearanceBtn)}
-          onClose={() => toggleOverlay("appearance")}
-        />
-      </Show>
+      <Presence when={isOverlayOpen("appearance")}>
+        {() => (
+          <AppearancePanel
+            {...below(appearanceBtn)}
+            onClose={() => toggleOverlay("appearance")}
+          />
+        )}
+      </Presence>
       <Show when={isOverlayOpen("inbox")}>
         <Inbox
           {...below(inboxBtn)}
@@ -174,12 +181,14 @@ export default function TitleBar(props: Props) {
           onOpenChannel={props.onOpenChannel}
         />
       </Show>
-      <Show when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}>
-        <Diagnostics
-          {...below(diagnosticsBtn)}
-          onClose={() => toggleOverlay("diagnostics")}
-        />
-      </Show>
+      <Presence when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}>
+        {() => (
+          <Diagnostics
+            {...below(diagnosticsBtn)}
+            onClose={() => toggleOverlay("diagnostics")}
+          />
+        )}
+      </Presence>
       {!maximized() && (
         <>
           <ResizeHandle

@@ -22,6 +22,7 @@ import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
 import * as users from "../../lib/services/users.ts";
 import { isCssHex } from "../../lib/utils/color.ts";
+import Presence from "../ui/Presence.tsx";
 
 type Props = {
   ref?: (el: HTMLElement) => void;
@@ -112,9 +113,7 @@ export default function ChannelHeader(props: Props) {
           </div>
         </div>
       </Card>
-      <Show when={!chatConnected()}>
-        <ConnectionBanner />
-      </Show>
+      <Presence when={!chatConnected()}>{() => <ConnectionBanner />}</Presence>
       <Show when={canModerate(props.channel.id)}>
         <ChannelToolbar
           broadcasterId={props.channel.id}

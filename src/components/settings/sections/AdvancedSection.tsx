@@ -1,5 +1,5 @@
 import { t } from "../../../lib/i18n/index.ts";
-import { createSignal, Show } from "solid-js";
+import { createSignal } from "solid-js";
 import PageBody from "../../ui/PageBody.tsx";
 import Card from "../../ui/Card.tsx";
 import SettingsRow from "../../ui/SettingsRow.tsx";
@@ -21,6 +21,7 @@ import {
   setAdvancedDiscordRichPresence,
   setAdvancedShowLogs,
 } from "../../../lib/stores/preferences.ts";
+import Presence from "../../ui/Presence.tsx";
 
 export default function AdvancedSection() {
   const [pendingRestart, setPendingRestart] = createSignal<{
@@ -56,7 +57,7 @@ export default function AdvancedSection() {
 
   return (
     <PageBody title={t("SETTINGS_ADVANCED")}>
-      <Show when={pendingRestart()}>
+      <Presence when={pendingRestart()}>
         {(pending) => (
           <Dialog
             title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
@@ -82,7 +83,7 @@ export default function AdvancedSection() {
             }
           />
         )}
-      </Show>
+      </Presence>
       <Card>
         <SettingsRow
           label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP")}
@@ -127,30 +128,34 @@ export default function AdvancedSection() {
           />
         </SettingsRow>
       </Card>
-      <Show when={confirmingClear()}>
-        <Dialog
-          title={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM")}
-          description={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM_DESCRIPTION")}
-          onClose={() => setConfirmingClear(false)}
-          actions={
-            <>
-              <Button
-                variant="neutral"
-                onClick={() => setConfirmingClear(false)}
-              >
-                {t("SETTINGS_ADVANCED_CANCEL")}
-              </Button>
-              <Button
-                variant="danger"
-                onClick={clearHistory}
-                loading={clearing()}
-              >
-                {t("SETTINGS_ADVANCED_CLEAR_HISTORY")}
-              </Button>
-            </>
-          }
-        />
-      </Show>
+      <Presence when={confirmingClear()}>
+        {() => (
+          <Dialog
+            title={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM")}
+            description={t(
+              "SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM_DESCRIPTION",
+            )}
+            onClose={() => setConfirmingClear(false)}
+            actions={
+              <>
+                <Button
+                  variant="neutral"
+                  onClick={() => setConfirmingClear(false)}
+                >
+                  {t("SETTINGS_ADVANCED_CANCEL")}
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={clearHistory}
+                  loading={clearing()}
+                >
+                  {t("SETTINGS_ADVANCED_CLEAR_HISTORY")}
+                </Button>
+              </>
+            }
+          />
+        )}
+      </Presence>
       <Card>
         <SettingsRow
           label={t("SETTINGS_ADVANCED_FEED_HISTORY")}

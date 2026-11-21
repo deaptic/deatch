@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-solid";
-import { createSignal, type JSX, Show } from "solid-js";
+import { createSignal, type JSX } from "solid-js";
+import Presence from "./Presence.tsx";
 
 type Props = {
   label: string;
@@ -24,7 +25,9 @@ export default function Disclosure(props: Props) {
           }`}
         />
       </button>
-      <Show when={open()}>{props.children}</Show>
+      <Presence when={open()}>
+        {() => <div class="enter-expand">{props.children}</div>}
+      </Presence>
     </>
   );
 }

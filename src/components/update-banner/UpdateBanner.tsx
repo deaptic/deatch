@@ -18,7 +18,12 @@ export default function UpdateBanner() {
           data-tip={installError() ?? undefined}
           class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
         >
-          <span class="size-2 rounded-full bg-accent shrink-0" />
+          <span class="relative size-2 rounded-full bg-accent shrink-0">
+            <span
+              aria-hidden
+              class="absolute inset-0 rounded-full bg-accent animate-breathe"
+            />
+          </span>
           <span class="text-ink truncate">
             <Show when={!installing()} fallback={t("UPDATE_INSTALLING")}>
               <Show

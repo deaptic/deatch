@@ -51,6 +51,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { createPopover } from "../ui/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
+import Presence from "../ui/Presence.tsx";
 
 type Props = {
   broadcasterId: string;
@@ -274,14 +275,16 @@ export default function Chat(props: Props) {
       />
 
       <div ref={composer.measure} class="absolute inset-x-0 bottom-0 z-20">
-        <Show when={feedApi()?.isPaused()}>
-          <div class="absolute inset-x-0 bottom-full px-2">
-            <ScrollStatusBar
-              unseen={unseenCount(props.broadcasterId)}
-              onJump={jumpToLatest}
-            />
-          </div>
-        </Show>
+        <Presence when={feedApi()?.isPaused()}>
+          {() => (
+            <div class="absolute inset-x-0 bottom-full px-2 enter-rise">
+              <ScrollStatusBar
+                unseen={unseenCount(props.broadcasterId)}
+                onJump={jumpToLatest}
+              />
+            </div>
+          )}
+        </Presence>
         <ChatInput
           broadcasterId={props.broadcasterId}
           broadcasterName={props.broadcasterName}
@@ -368,7 +371,7 @@ export default function Chat(props: Props) {
           />
         )}
       </Show>
-      <Show when={modAction()}>
+      <Presence when={modAction()}>
         {(ma) => (
           <Show
             when={ma().action !== "warn"}
@@ -389,7 +392,7 @@ export default function Chat(props: Props) {
             />
           </Show>
         )}
-      </Show>
+      </Presence>
     </div>
   );
 }

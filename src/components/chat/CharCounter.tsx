@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import Presence from "../ui/Presence.tsx";
 
 const SHOW_WITHIN = 99;
 
@@ -10,14 +10,16 @@ type Props = {
 export default function CharCounter(props: Props) {
   const remaining = () => props.max - props.value().length;
   return (
-    <Show when={remaining() <= SHOW_WITHIN}>
-      <span
-        class={`absolute right-7 translate-x-1/2 -bottom-2 px-1 bg-surface text-micro tabular-nums pointer-events-none ${
-          remaining() <= 0 ? "text-negative" : "text-ink-faint"
-        }`}
-      >
-        {remaining()}
-      </span>
-    </Show>
+    <Presence when={remaining() <= SHOW_WITHIN}>
+      {() => (
+        <span
+          class={`absolute right-7 translate-x-1/2 -bottom-2 px-1 bg-surface text-micro tabular-nums pointer-events-none enter-pop ${
+            remaining() <= 0 ? "text-negative" : "text-ink-faint"
+          }`}
+        >
+          {remaining()}
+        </span>
+      )}
+    </Presence>
   );
 }

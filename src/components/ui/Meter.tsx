@@ -27,7 +27,7 @@ export default function Meter(props: Props) {
     >
       <div
         style={{ "--fill": `${percent()}%` }}
-        class={`h-full w-(--fill) rounded-xs ${FILL[props.tone ?? "neutral"]}`}
+        class={`h-full w-full origin-left scale-x-(--fill) transition-transform duration-settle ease-out rounded-xs ${FILL[props.tone ?? "neutral"]}`}
       />
     </div>
   );

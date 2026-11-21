@@ -55,6 +55,7 @@ import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
 import { t } from "../../lib/i18n/index.ts";
 import { scrollBehavior } from "../ui/scrollBehavior.ts";
+import Presence from "../ui/Presence.tsx";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -495,7 +496,7 @@ export default function Rail(props: Props) {
         )}
       </Show>
 
-      <Show when={addPop.state()}>
+      <Presence when={addPop.state()}>
         {(p) => (
           <PinChannelPopover
             x={p().x}
@@ -504,7 +505,7 @@ export default function Rail(props: Props) {
             onClose={addPop.close}
           />
         )}
-      </Show>
+      </Presence>
     </nav>
   );
 }
