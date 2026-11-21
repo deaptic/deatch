@@ -29,27 +29,43 @@ export default function Popover(props: Props) {
   captureFocusForRestore();
   const [pos, setPos] = createSignal({ x: props.x, y: props.y });
   const [maxWidth, setMaxWidth] = createSignal(window.innerWidth - MARGIN * 2);
+  const [maxHeight, setMaxHeight] = createSignal(
+    window.innerHeight - MARGIN * 2,
+  );
   let ref: HTMLDivElement | undefined;
   trapFocus(() => ref);
 
-  onMount(() => {
-    if (!ref) return;
-    const r = ref.getBoundingClientRect();
+  function placeInsideWindow(el: HTMLDivElement) {
     const end = props.align === "end";
     const maxW = end ? props.x - MARGIN : window.innerWidth - MARGIN * 2;
-    const width = Math.min(r.width, maxW);
+    const width = Math.min(el.offsetWidth, maxW);
     const left = end
       ? props.x - width
       : props.align === "center"
         ? props.x - width / 2
         : props.x;
     setMaxWidth(maxW);
+    setMaxHeight(window.innerHeight - MARGIN * 2);
     setPos({
       x: Math.max(MARGIN, Math.min(left, window.innerWidth - width - MARGIN)),
       y: Math.max(
         MARGIN,
-        Math.min(props.y, window.innerHeight - r.height - MARGIN),
+        Math.min(props.y, window.innerHeight - el.offsetHeight - MARGIN),
       ),
+    });
+  }
+
+  onMount(() => {
+    const el = ref;
+    if (!el) return;
+    const place = () => placeInsideWindow(el);
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(el);
+    window.addEventListener("resize", place);
+    onCleanup(() => {
+      observer.disconnect();
+      window.removeEventListener("resize", place);
     });
   });
 
@@ -70,10 +86,10 @@ export default function Popover(props: Props) {
         style={{
           "--x": `${pos().x}px`,
           "--y": `${pos().y}px`,
-          "--max-h": `${window.innerHeight - MARGIN * 2}px`,
+          "--max-h": `${maxHeight()}px`,
           "--max-w": `${maxWidth()}px`,
         }}
-        class={`fixed left-(--x) top-(--y) max-h-(--max-h) max-w-(--max-w) z-50 flex flex-col material-regular rounded-md overflow-hidden enter-pop ${ORIGIN[props.align ?? "start"]}`}
+        class={`fixed left-(--x) top-(--y) max-h-(--max-h) max-w-(--max-w) z-50 flex flex-col outline-none material-regular rounded-md overflow-hidden enter-pop ${ORIGIN[props.align ?? "start"]}`}
         onClick={(e) => e.stopPropagation()}
         onContextMenu={(e) => e.stopPropagation()}
       >

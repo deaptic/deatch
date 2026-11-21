@@ -42,7 +42,7 @@ export default function Modal(props: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={props.label}
-          class={`max-w-full flex flex-col rounded-lg enter-pop ${PANEL[props.look]}`}
+          class={`max-w-full flex flex-col outline-none rounded-lg enter-pop ${PANEL[props.look]}`}
         >
           {props.children}
         </div>
