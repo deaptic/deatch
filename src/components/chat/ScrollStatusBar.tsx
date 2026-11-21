@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
+import { CAPTION_FRAME } from "../ui/ComposerCaption.tsx";
 
 type Props = {
   unseen: number;
@@ -12,7 +13,7 @@ export default function ScrollStatusBar(props: Props) {
     <button
       type="button"
       onClick={props.onJump}
-      class="w-full flex items-center gap-2 px-3.5 py-1.5 material-thin rounded-md text-small cursor-pointer pressable hover:bg-raised"
+      class={`w-full ${CAPTION_FRAME} cursor-pointer pressable hover:bg-raised`}
     >
       <Show
         when={props.unseen > 0}
@@ -27,7 +28,7 @@ export default function ScrollStatusBar(props: Props) {
           {t("CHAT_NEW_MESSAGES", { count: props.unseen })}
         </span>
       </Show>
-      <span class="shrink-0 flex items-center gap-1 font-semibold text-ink">
+      <span class="shrink-0 px-2.5 flex items-center gap-1 font-semibold text-ink">
         {t("CHAT_JUMP_TO_LATEST")}
         <ChevronDown class="size-4" />
       </span>

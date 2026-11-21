@@ -277,7 +277,7 @@ export default function Chat(props: Props) {
       <div ref={composer.measure} class="absolute inset-x-0 bottom-0 z-20">
         <Presence when={feedApi()?.isPaused()}>
           {() => (
-            <div class="absolute inset-x-0 bottom-full px-2 enter-rise">
+            <div class="absolute inset-x-0 bottom-full -mb-0.5 px-2 enter-rise">
               <ScrollStatusBar
                 unseen={unseenCount(props.broadcasterId)}
                 onJump={jumpToLatest}
