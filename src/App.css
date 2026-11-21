@@ -137,7 +137,7 @@
   /* Materials: what floats over content. Bigger layers blur more and cast a
      deeper shadow. Worn through the material-* and elevation-* utilities
      below, never as raw values. */
-  --color-material: oklch(0.27 0.008 250 / 0.84);
+  --color-material: oklch(0.27 0 0 / 0.84);
   --blur-thin: 12px;
   --blur-regular: 20px;
   --blur-thick: 32px;
@@ -152,29 +152,30 @@
     inset 0 1px 0 oklch(1 0 0 / 0.06), 0 4px 12px oklch(0 0 0 / 0.36),
     0 24px 64px oklch(0 0 0 / 0.52);
 
-  /* Tones */
-  --color-canvas: oklch(0.16 0.006 250);
-  --color-surface: oklch(0.2 0.006 250);
-  --color-raised: oklch(0.25 0.007 250);
-  --color-overlay: oklch(0.29 0.008 250);
-  --color-scrim: oklch(0.1 0.01 250 / 0.6);
+  /* Tones: pure greys, so chat colours and the accent carry every hue. */
+  --color-canvas: oklch(0.16 0 0);
+  --color-surface: oklch(0.2 0 0);
+  --color-raised: oklch(0.25 0 0);
+  --color-overlay: oklch(0.29 0 0);
+  --color-scrim: oklch(0.1 0 0 / 0.6);
   --color-media-scrim: oklch(0 0 0 / 0.55);
 
   /* Ink */
-  --color-ink: oklch(0.95 0.004 90);
-  --color-ink-soft: oklch(0.74 0.008 250);
-  --color-ink-faint: oklch(0.57 0.008 250);
+  --color-ink: oklch(0.96 0 0);
+  --color-ink-soft: oklch(0.74 0 0);
+  --color-ink-faint: oklch(0.57 0 0);
 
   /* Lines */
-  --color-line-soft: oklch(0.26 0.007 250);
-  --color-line: oklch(0.34 0.009 250);
+  --color-line-soft: oklch(0.26 0 0);
+  --color-line: oklch(0.34 0 0);
 
-  /* Accent: default is #36b9d6; a user-picked colour replaces these four via
-     services/appearance.ts using the same lightness steps. */
-  --color-accent: oklch(0.52 0.116 216.3);
-  --color-accent-hover: oklch(0.56 0.116 216.3);
-  --color-accent-ink: oklch(0.82 0.116 216.3);
-  --color-accent-soft: oklch(0.52 0.116 216.3 / 0.14);
+  /* Accent: default is #9481ff, which is accent-ink here; fills sit a step
+     deeper so white text on them reads. A user-picked colour replaces these
+     four via services/appearance.ts using the same lightness steps. */
+  --color-accent: oklch(0.58 0.18 287.5);
+  --color-accent-hover: oklch(0.62 0.18 287.5);
+  --color-accent-ink: oklch(0.68 0.18 287.5);
+  --color-accent-soft: oklch(0.58 0.18 287.5 / 0.14);
   --color-on-accent: oklch(0.99 0 0);
 
   /* Status */
@@ -184,20 +185,16 @@
   --color-negative: oklch(0.66 0.19 20);
   --color-info: oklch(0.74 0.12 250);
 
-  /* Events */
-  --color-event-sub: var(--color-accent-ink);
-  --color-event-raid: oklch(0.78 0.16 60);
-  --color-event-announce: oklch(0.8 0.12 180);
-  --color-event-charity: oklch(0.72 0.18 15);
-  --color-event-shoutout: oklch(0.74 0.14 275);
-  --color-event-follow: oklch(0.82 0.16 145);
-  --color-event-bits: oklch(0.85 0.15 90);
-  --color-event-channel-points: oklch(0.74 0.22 340);
-  --color-event-hype-train: oklch(0.72 0.2 320);
-  --color-event-poll: oklch(0.8 0.12 165);
-  --color-event-goal: oklch(0.84 0.16 115);
-  /* The colour a broadcaster picks for an announcement; "primary" uses
-     event-announce. */
+  /* Events, grouped by what they mean to the channel rather than one colour
+     per kind: support (someone paid: subs, bits, charity, hype trains),
+     community (a channel pointed people here: raids, shoutouts), engagement
+     (chat taking part: polls, predictions, goals, channel points). Anything
+     quieter, like a follow, stays neutral. */
+  --color-event-support: oklch(0.84 0.15 85);
+  --color-event-community: oklch(0.76 0.17 350);
+  --color-event-engagement: oklch(0.8 0.12 195);
+  /* The colour a broadcaster picks for an announcement; "primary" uses the
+     accent. */
   --color-event-announce-blue: oklch(0.74 0.13 255);
   --color-event-announce-green: oklch(0.78 0.15 150);
   --color-event-announce-orange: oklch(0.76 0.16 55);
@@ -205,31 +202,28 @@
 }
 
 [data-theme="light"] {
-  --color-canvas: oklch(0.955 0.004 250);
-  --color-surface: oklch(0.995 0.002 250);
-  --color-raised: oklch(0.925 0.005 250);
-  --color-overlay: oklch(0.995 0.002 250);
-  --color-scrim: oklch(0.25 0.01 250 / 0.4);
-  --color-material: oklch(0.995 0.002 250 / 0.82);
-  --elevation-1:
-    0 1px 2px oklch(0.2 0.01 250 / 0.06), 0 4px 12px oklch(0.2 0.01 250 / 0.08);
-  --elevation-2:
-    0 2px 6px oklch(0.2 0.01 250 / 0.06), 0 12px 32px oklch(0.2 0.01 250 / 0.12);
+  --color-canvas: oklch(0.955 0 0);
+  --color-surface: oklch(0.995 0 0);
+  --color-raised: oklch(0.925 0 0);
+  --color-overlay: oklch(0.995 0 0);
+  --color-scrim: oklch(0.25 0 0 / 0.4);
+  --color-material: oklch(0.995 0 0 / 0.82);
+  --elevation-1: 0 1px 2px oklch(0 0 0 / 0.06), 0 4px 12px oklch(0 0 0 / 0.08);
+  --elevation-2: 0 2px 6px oklch(0 0 0 / 0.06), 0 12px 32px oklch(0 0 0 / 0.12);
   --elevation-3:
-    0 4px 12px oklch(0.2 0.01 250 / 0.08),
-    0 24px 64px oklch(0.2 0.01 250 / 0.18);
+    0 4px 12px oklch(0 0 0 / 0.08), 0 24px 64px oklch(0 0 0 / 0.18);
 
-  --color-ink: oklch(0.2 0.012 250);
-  --color-ink-soft: oklch(0.46 0.012 250);
-  --color-ink-faint: oklch(0.62 0.01 250);
+  --color-ink: oklch(0.2 0 0);
+  --color-ink-soft: oklch(0.46 0 0);
+  --color-ink-faint: oklch(0.62 0 0);
 
-  --color-line-soft: oklch(0.9 0.005 250);
-  --color-line: oklch(0.84 0.007 250);
+  --color-line-soft: oklch(0.9 0 0);
+  --color-line: oklch(0.84 0 0);
 
-  --color-accent: oklch(0.54 0.116 216.3);
-  --color-accent-hover: oklch(0.48 0.116 216.3);
-  --color-accent-ink: oklch(0.46 0.116 216.3);
-  --color-accent-soft: oklch(0.54 0.116 216.3 / 0.12);
+  --color-accent: oklch(0.54 0.18 287.5);
+  --color-accent-hover: oklch(0.48 0.18 287.5);
+  --color-accent-ink: oklch(0.46 0.18 287.5);
+  --color-accent-soft: oklch(0.54 0.18 287.5 / 0.12);
 
   --color-live: oklch(0.58 0.21 25);
   --color-positive: oklch(0.52 0.15 150);
@@ -237,16 +231,9 @@
   --color-negative: oklch(0.54 0.2 20);
   --color-info: oklch(0.52 0.13 250);
 
-  --color-event-raid: oklch(0.6 0.16 60);
-  --color-event-announce: oklch(0.55 0.12 180);
-  --color-event-charity: oklch(0.56 0.18 15);
-  --color-event-shoutout: oklch(0.52 0.15 275);
-  --color-event-follow: oklch(0.55 0.16 145);
-  --color-event-bits: oklch(0.62 0.15 85);
-  --color-event-channel-points: oklch(0.56 0.22 340);
-  --color-event-hype-train: oklch(0.54 0.2 320);
-  --color-event-poll: oklch(0.54 0.12 165);
-  --color-event-goal: oklch(0.56 0.15 115);
+  --color-event-support: oklch(0.52 0.12 75);
+  --color-event-community: oklch(0.55 0.2 350);
+  --color-event-engagement: oklch(0.5 0.1 200);
   --color-event-announce-blue: oklch(0.52 0.14 255);
   --color-event-announce-green: oklch(0.54 0.15 150);
   --color-event-announce-orange: oklch(0.58 0.16 55);

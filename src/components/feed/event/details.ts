@@ -43,42 +43,42 @@ type Look = {
 
 const LOOKS: Record<string, Look> & { local: Look } = {
   sub: {
-    color: "var(--color-event-sub)",
+    color: "var(--color-event-support)",
     Icon: Gift,
     title: "EVENT_TITLE_SUB",
   },
   raid: {
-    color: "var(--color-event-raid)",
+    color: "var(--color-event-community)",
     Icon: Swords,
     title: "EVENT_TITLE_RAID",
   },
   announcement: {
-    color: "var(--color-event-announce)",
+    color: "var(--color-accent-ink)",
     Icon: Megaphone,
     title: "EVENT_TITLE_ANNOUNCEMENT",
   },
   charity_donation: {
-    color: "var(--color-event-charity)",
+    color: "var(--color-event-support)",
     Icon: Heart,
     title: "EVENT_TITLE_CHARITY_DONATION",
   },
   shoutout: {
-    color: "var(--color-event-shoutout)",
+    color: "var(--color-event-community)",
     Icon: Radio,
     title: "EVENT_TITLE_SHOUTOUT",
   },
   follow: {
-    color: "var(--color-event-follow)",
+    color: "var(--color-ink-soft)",
     Icon: UserPlus,
     title: "EVENT_TITLE_FOLLOW",
   },
   bits_badge_tier: {
-    color: "var(--color-event-bits)",
+    color: "var(--color-event-support)",
     Icon: Gem,
     title: "EVENT_TITLE_BITS_BADGE_TIER",
   },
   channel_points_redemption: {
-    color: "var(--color-event-channel-points)",
+    color: "var(--color-event-engagement)",
     Icon: Star,
     title: "EVENT_TITLE_CHANNEL_POINTS_REDEMPTION",
   },
@@ -123,17 +123,17 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_CHANNEL_UPDATE",
   },
   poll: {
-    color: "var(--color-event-poll)",
+    color: "var(--color-event-engagement)",
     Icon: Vote,
     title: "EVENT_TITLE_POLL",
   },
   prediction: {
-    color: "var(--color-event-channel-points)",
+    color: "var(--color-event-engagement)",
     Icon: Trophy,
     title: "EVENT_TITLE_PREDICTION",
   },
   bits_use: {
-    color: "var(--color-event-bits)",
+    color: "var(--color-event-support)",
     Icon: Gem,
     title: "EVENT_TITLE_BITS_USE",
   },
@@ -143,12 +143,12 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_AD_BREAK",
   },
   goal: {
-    color: "var(--color-event-goal)",
+    color: "var(--color-event-engagement)",
     Icon: Target,
     title: "EVENT_TITLE_GOAL",
   },
   hype_train: {
-    color: "var(--color-event-hype-train)",
+    color: "var(--color-event-support)",
     Icon: TrainFront,
     title: "EVENT_TITLE_HYPE_TRAIN",
   },
@@ -168,7 +168,7 @@ const LOOKS: Record<string, Look> & { local: Look } = {
     title: "EVENT_TITLE_STREAM_OFFLINE",
   },
   watch_streak: {
-    color: "var(--color-event-channel-points)",
+    color: "var(--color-event-engagement)",
     Icon: Flame,
     title: "EVENT_TITLE_WATCH_STREAK",
   },

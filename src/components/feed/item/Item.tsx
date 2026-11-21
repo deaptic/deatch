@@ -37,9 +37,9 @@ type Props = ItemLayout & {
 const TONES: Record<RowTone, string> = {
   held: "border-caution bg-caution/12 hover:bg-caution/16",
   mention: "border-accent bg-accent-soft hover:bg-accent/18",
-  cheer: "border-event-bits bg-event-bits/10 hover:bg-event-bits/14",
+  cheer: "border-event-support bg-event-support/10 hover:bg-event-support/14",
   redemption:
-    "border-event-channel-points bg-event-channel-points/10 hover:bg-event-channel-points/14",
+    "border-event-engagement bg-event-engagement/10 hover:bg-event-engagement/14",
   first: "border-line bg-surface hover:bg-overlay",
   event: "border-(--tone) bg-(--tone)/10",
   plain: "border-transparent hover:bg-raised",

@@ -222,7 +222,7 @@ export default function Message(props: Props) {
         <Show when={item.cheer}>
           {(cheer) => (
             <FeedItem.Note
-              class="text-event-bits"
+              class="text-event-support"
               label={t("FEED_CHEERED", { bits: cheer().bits })}
             />
           )}
@@ -230,14 +230,14 @@ export default function Message(props: Props) {
         <Show when={item.power_up}>
           {(perk) => (
             <FeedItem.Note
-              class="text-event-bits"
+              class="text-event-support"
               label={t("FEED_MESSAGE_PERK", { perk: perk() })}
             />
           )}
         </Show>
         <Show when={details.pointsLabel(item)}>
           {(label) => (
-            <FeedItem.Note class="text-event-channel-points" label={label()} />
+            <FeedItem.Note class="text-event-engagement" label={label()} />
           )}
         </Show>
         <Show when={item.first_message && !hold()}>
