@@ -2,6 +2,7 @@ import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "../title-bar/TitleBar.tsx";
 import UpdateBanner from "../update-banner/UpdateBanner.tsx";
 import Toaster from "../toaster/Toaster.tsx";
+import EmoteCard from "../emote-card/EmoteCard.tsx";
 import HoverZoom from "../hover-zoom/HoverZoom.tsx";
 import TooltipHost from "../ui/TooltipHost.tsx";
 import Login from "../login/Login.tsx";
@@ -92,6 +93,7 @@ export default function AppLayout(props: AppLayoutProps) {
         </Show>
         <Toaster toasts={toasts} onDismiss={removeToast} />
         <HoverZoom />
+        <EmoteCard />
         <TooltipHost />
       </div>
     </div>

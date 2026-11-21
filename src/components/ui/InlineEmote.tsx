@@ -10,8 +10,9 @@ export default function InlineEmote(props: { url: string; name: string }) {
       {...emoteZoom(props.url)}
       alt={props.name}
       data-tip={props.name}
+      data-emote
       decoding="async"
-      class={INLINE_EMOTE}
+      class={`${INLINE_EMOTE} cursor-pointer`}
     />
   );
 }

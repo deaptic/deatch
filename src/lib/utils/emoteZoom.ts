@@ -7,11 +7,17 @@ const CDN_SIZES: Record<string, CdnSizes> = {
   frankerFaceZ: { small: /\/1$/, large: "/4", fallback: "/2" },
 };
 
-export function emoteZoom(url: string) {
+export function zoomUrls(url: string): { large: string; fallback: string } {
   const sizes = Object.values(CDN_SIZES).find(({ small }) => small.test(url));
-  if (!sizes) return {};
+  if (!sizes) return { large: url, fallback: url };
   return {
-    "data-zoom-src": url.replace(sizes.small, sizes.large),
-    "data-zoom-fallback": url.replace(sizes.small, sizes.fallback),
+    large: url.replace(sizes.small, sizes.large),
+    fallback: url.replace(sizes.small, sizes.fallback),
   };
+}
+
+export function emoteZoom(url: string) {
+  const { large, fallback } = zoomUrls(url);
+  if (large === url) return {};
+  return { "data-zoom-src": large, "data-zoom-fallback": fallback };
 }
