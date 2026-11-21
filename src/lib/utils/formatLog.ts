@@ -15,8 +15,6 @@ function formatValue(value: unknown): string {
   }
 }
 
-/// Makes errors, bigints and cycles printable. Only an object among its own
-/// ancestors is a cycle; the same object twice side by side prints twice.
 function logReplacer() {
   const ancestors: unknown[] = [];
   return function (this: unknown, _key: string, value: unknown): unknown {
@@ -34,7 +32,6 @@ function logReplacer() {
 
 function typeName(value: unknown): string {
   if (value === null || typeof value !== "object") return typeof value;
-  // Objects made with Object.create(null) have no constructor.
   const constructor: unknown = value.constructor;
   return typeof constructor === "function" ? constructor.name : "Object";
 }

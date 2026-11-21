@@ -14,8 +14,6 @@ import {
 
 export default function TriggersSection() {
   const [drafts, setDrafts] = createSignal<Trigger[]>([]);
-  // Lives here, by id: saving replaces the trigger object, which remounts
-  // its card.
   const [open, setOpen] = createSignal<ReadonlySet<string>>(new Set());
   const isOpen = (id: string) => open().has(id);
   const toggle = (id: string) =>

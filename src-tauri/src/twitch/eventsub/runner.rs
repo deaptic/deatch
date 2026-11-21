@@ -19,8 +19,6 @@ use crate::error::{Error, Result};
 use crate::twitch::ids::UserId;
 use crate::twitch::users::dto::UserRef;
 
-/// Twitch has no event for gaining or losing moderator status, so the list
-/// is polled.
 const MODERATED_REFRESH: Duration = Duration::from_secs(10 * 60);
 const TOKEN_RETRY: Duration = Duration::from_secs(30);
 const MODERATED_RETRY: Duration = Duration::from_secs(30);
@@ -147,9 +145,6 @@ impl Coordinator<'_> {
         wake_at(due, self.resume_at)
     }
 
-    /// Twitch closes a connection that gets no subscription within 10s, and
-    /// creates stall while Helix is rate limited, so nothing opens or
-    /// subscribes until requests flow again.
     async fn sync(&mut self) {
         let twitch = self.twitch;
         self.resume_at = twitch.rate_limited_for().map(|wait| Instant::now() + wait);
@@ -163,8 +158,6 @@ impl Coordinator<'_> {
             match twitch.authed().await {
                 Ok(authed) => Some(authed),
                 Err(Error::NotAuthenticated) => None,
-                // A failed refresh is usually a blip; tearing everything down
-                // would silently kill chat, so keep state and try again.
                 Err(e) => {
                     log::warn!("eventsub sync postponed, token refresh failed: {e}");
                     self.resume_at = Some(Instant::now() + TOKEN_RETRY);
@@ -175,8 +168,6 @@ impl Coordinator<'_> {
         };
         match &authed {
             Some(authed) => self.refresh_viewer(authed),
-            // The frontend drops its moderated list on logout, so the next
-            // session must load and send it again even for the same user.
             None => {
                 self.viewer = None;
                 self.moderated_fetch = self.moderated_fetch.without_retry();
@@ -208,15 +199,11 @@ impl Coordinator<'_> {
         }
     }
 
-    /// A new viewer gets their own-channel subscriptions right away; the
-    /// moderator ones follow once the list lands.
     fn refresh_viewer(&mut self, authed: &Authed<'_>) {
         let id = UserId::from(&authed.token);
         if self.viewer.as_ref().is_none_or(|v| v.id != id) {
             let moderated = HashSet::new();
             self.viewer = Some(Viewer { id, moderated });
-            // Stored rather than acted on once, so a fetch still in flight for
-            // the previous viewer can't swallow it.
             self.moderated_stale = true;
             self.moderated_fetch = self.moderated_fetch.without_retry();
         }
@@ -232,8 +219,6 @@ impl Coordinator<'_> {
         );
     }
 
-    /// A failed fetch keeps the last known list, so a blip never drops
-    /// every moderator subscription.
     fn moderated(&mut self, viewer: UserId, result: Result<Vec<UserRef>>) {
         self.moderated_fetch = ModeratedFetch::Idle;
         if self.viewer.as_ref().is_none_or(|v| v.id != viewer) {
@@ -308,7 +293,6 @@ impl Coordinator<'_> {
         }
     }
 
-    /// Revocations also follow lost moderator rights, so the list is reloaded.
     fn revoke(&mut self, sub_id: &str) {
         if let Some(subscription) = self.subs.revoke(sub_id) {
             log::warn!("revoked by Twitch {subscription}");
@@ -395,7 +379,6 @@ async fn sleep_until(at: Option<Instant>) {
     }
 }
 
-/// One fetch at a time; a failed one waits out its retry delay.
 fn refetch_due(stale: bool, fetch: ModeratedFetch, now: Instant) -> bool {
     stale
         && match fetch {
@@ -405,7 +388,6 @@ fn refetch_due(stale: bool, fetch: ModeratedFetch, now: Instant) -> bool {
         }
 }
 
-/// Nothing due can run before sync resumes, so waking earlier would spin.
 fn wake_at(due: Option<Instant>, resume: Option<Instant>) -> Option<Instant> {
     match (due, resume) {
         (Some(due), Some(resume)) => Some(due.max(resume)),

@@ -8,8 +8,6 @@ use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System};
 
-/// CPU usage is measured between two refreshes, so one `System` lives for
-/// the app's lifetime and every sample compares against the previous one.
 pub struct Monitor(Mutex<System>);
 
 impl Default for Monitor {
@@ -54,8 +52,6 @@ struct Sample {
     cpu: f32,
 }
 
-/// WebView2 runs its browser and renderer processes as descendants of the
-/// app, so everything below our own process counts as the WebView.
 fn split(own: u32, samples: &[Sample], cores: f32) -> (ProcessStats, ProcessStats) {
     let mut children: HashMap<u32, Vec<&Sample>> = HashMap::new();
     for sample in samples {
@@ -65,7 +61,6 @@ fn split(own: u32, samples: &[Sample], cores: f32) -> (ProcessStats, ProcessStat
     }
     let mut webview = ProcessStats::default();
     let mut stack = vec![own];
-    // Reused PIDs and stale parents can form a cycle in the snapshot.
     let mut seen = HashSet::from([own]);
     while let Some(pid) = stack.pop() {
         for child in children.get(&pid).into_iter().flatten() {

@@ -1,9 +1,5 @@
 import { escapeRegExp } from "./regExp.ts";
 
-// A term is a whole whitespace-separated word: anything glued to either side
-// makes it a different word in chat (`@name`, `#tag`, `dead!`) unless a `*`
-// allows it there. `\b` would not do, since it needs a word character next to
-// it ("!drop", "gg!").
 const NOT_WORD_BEFORE = "(?<!\\S)";
 const NOT_WORD_AFTER = "(?!\\S)";
 const WILDCARD = "\\S*";
@@ -49,7 +45,6 @@ export function matchedKeyword(
   return keywords.find((k) => matchesTerms(text, [k], "anywhere")) ?? null;
 }
 
-// A term made only of wildcards would match every message.
 function hasLiteral(term: string): boolean {
   return term.replaceAll("*", "") !== "";
 }

@@ -52,7 +52,6 @@ export const commands = {
 	user: UserRef,
 	moderator: UserRef,
 	reason: string | null,
-	/**  None for a permanent ban. */
 	expiresAt: string | null,
 } | null>("get_ban", { params }),
 	getModeratedChannels: () => __TAURI_INVOKE<UserRef[]>("get_moderated_channels"),
@@ -176,7 +175,6 @@ export type BannedUser = {
 	user: UserRef,
 	moderator: UserRef,
 	reason: string | null,
-	/**  None for a permanent ban. */
 	expiresAt: string | null,
 };
 
@@ -252,13 +250,7 @@ export type ChatSettings = {
 	uniqueChatMode: boolean,
 };
 
-export type ChatState = { type: "connected" } | { type: "disconnected" } | 
-/**  Twitch refused the subscription; `message` is its own explanation. */
-{ type: "rejected"; message: string } | 
-/**  A request failed; it is retried. */
-{ type: "failed"; error: Error } | 
-/**  Every connection Twitch allows is full. */
-{ type: "capped"; connections: number; perConnection: number };
+export type ChatState = { type: "connected" } | { type: "disconnected" } | { type: "rejected"; message: string } | { type: "failed"; error: Error } | { type: "capped"; connections: number; perConnection: number };
 
 export type ChatStatus = {
 	broadcasterId: UserId,
@@ -291,18 +283,12 @@ export type CheermoteTier = {
 export type CommunityGiftId = string;
 
 export type CommunitySubGiftNotice = {
-	/**  Shared with each of its subs' `community_gift_id`. */
 	id: CommunityGiftId | null,
 	sub_tier: SubTier,
 	total: number,
 	cumulative_total: number | null,
 };
 
-/**
- *  The compressor's controls as the listener sets them: threshold and gain in
- *  dB, ratio as N:1, attack and release in milliseconds. The extension clamps
- *  each to its range.
- */
 export type Compressor = {
 	threshold: number | null,
 	ratio: number | null,
@@ -362,13 +348,7 @@ export type DeleteChatMessagesParams = {
 	messageId?: MessageId | null,
 };
 
-/**
- *  Why Twitch refused a message; the frontend owns the wording. Unknown codes
- *  keep Twitch's own text so nothing is lost.
- */
-export type DropReason = 
-/**  AutoMod is holding the message for a moderator to approve or deny. */
-{ code: "held" } | { code: "rejected" } | { code: "banned" } | { code: "timedOut" } | { code: "suspended" } | { code: "channelBlocked" } | { code: "channelSuspended" } | { code: "badCharacters" } | { code: "duplicate" } | { code: "uniqueChat" } | { code: "rateLimit" } | { code: "slowMode" } | { code: "emoteOnly" } | { code: "followersOnly" } | { code: "subscribersOnly" } | { code: "phoneRequired" } | { code: "emailRequired" } | { code: "unknown"; message: string };
+export type DropReason = { code: "held" } | { code: "rejected" } | { code: "banned" } | { code: "timedOut" } | { code: "suspended" } | { code: "channelBlocked" } | { code: "channelSuspended" } | { code: "badCharacters" } | { code: "duplicate" } | { code: "uniqueChat" } | { code: "rateLimit" } | { code: "slowMode" } | { code: "emoteOnly" } | { code: "followersOnly" } | { code: "subscribersOnly" } | { code: "phoneRequired" } | { code: "emailRequired" } | { code: "unknown"; message: string };
 
 export type Emote = {
 	id: EmoteId,
@@ -414,9 +394,7 @@ export type EndPredictionParams = {
 	end: PredictionEnd,
 };
 
-export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | 
-/**  The stored token predates a scope the app now needs. */
-{ kind: "missingScope"; message: {
+export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: string } | { kind: "http"; message: string } | { kind: "auth"; message: string } | { kind: "missingScope"; message: {
 	scope: string,
 } } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
@@ -499,14 +477,12 @@ export type LinkDisconnected = null;
 export type LinkState = {
 	channels: LinkChannel[],
 	current: string | null,
-	/**  The extension can process audio (`set_audio`); older ones leave it out. */
 	audio?: boolean,
 };
 
 export type LogEntry = {
 	id: string,
 	timestamp: number,
-	/**  The entry as JSON, kept as-is. */
 	entry: string,
 };
 
@@ -624,20 +600,11 @@ export type RecentMessage = {
 	channel_points_custom_reward_id: RewardId | null,
 	timestamp_ms: number,
 	deleted: boolean,
-	/**
-	 *  Set only for shared chat messages sent in a partner channel, like
-	 *  EventSub's `source_*` fields; IRC carries no login or name for it.
-	 */
 	source_broadcaster_user_id: UserId | null,
 	source_message_id: MessageId | null,
 	source_badges: ChatterBadge[] | null,
 };
 
-/**
- *  A USERNOTICE in the shape of EventSub's `channel.chat.notification`, so
- *  the renderer reads history and live notices alike. Only the detail that
- *  matches `notice_type` is set.
- */
 export type RecentNotice = {
 	broadcaster_user_id: UserId,
 	message_id: MessageId,
@@ -674,7 +641,6 @@ export type Reply = {
 	parent_user_name: string,
 	parent_user_login: string,
 	parent_user_id: UserId,
-	/**  IRC names the thread's first message by id and login only. */
 	thread_message_id: MessageId | null,
 	thread_user_login: string | null,
 };
@@ -719,7 +685,6 @@ export type SendMessageResult = {
 	dropReason: DropReason | null,
 };
 
-/**  Twitch rejected the stored token for good (revoked, password changed). */
 export type SessionEnded = null;
 
 export type SetActivityParams = {
@@ -736,10 +701,6 @@ export type SetActivityParams = {
 	buttons?: Button[],
 };
 
-/**
- *  Audio processing for the Twitch tabs: the compressor, on or off with its
- *  controls, and a gain per channel login (1 is unchanged).
- */
 export type SetAudioParams = {
 	enabled: boolean,
 	compressor: Compressor,

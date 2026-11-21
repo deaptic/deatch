@@ -18,8 +18,6 @@ export type UserActions = {
   onUserContextMenu?: UserAction;
 };
 
-/// The one way a user responds to the mouse: left opens their card, right
-/// their menu, middle their channel in the browser.
 export function userLink(
   identity: () => Partial<UserRef> & { login: string },
   actions: UserActions,

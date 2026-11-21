@@ -10,11 +10,7 @@ use crate::twitch::ids::UserId;
 
 pub(super) const MAX_CONNECTIONS: usize = 3;
 pub(super) const PER_CONNECTION: usize = 300;
-/// Drops shorter than this recover silently; longer ones surface as
-/// disconnect/connect notices in the feed.
 const NOTICE_GRACE: Duration = Duration::from_secs(10);
-/// Retries never stop: a failing subscription is announced once the quick
-/// retries run out, then keeps trying at the slowest pace.
 const RETRY_DELAYS: [Duration; 4] = [
     Duration::from_secs(3),
     Duration::from_secs(10),
@@ -89,29 +85,12 @@ pub(super) enum Outcome {
 
 #[derive(Debug, PartialEq)]
 enum State {
-    Creating {
-        conn: ConnId,
-        attempts: usize,
-    },
-    Live {
-        conn: ConnId,
-        sub_id: String,
-    },
-    Retrying {
-        attempts: usize,
-        at: Instant,
-    },
-    /// Ready to create but waiting for a connection with room; keeps the
-    /// attempt count so backoff survives a connection closing.
-    Waiting {
-        attempts: usize,
-    },
+    Creating { conn: ConnId, attempts: usize },
+    Live { conn: ConnId, sub_id: String },
+    Retrying { attempts: usize, at: Instant },
+    Waiting { attempts: usize },
     Capped,
-    /// Holds its connection so a session change (`down`) clears it and the
-    /// next plan tries again.
-    Rejected {
-        conn: ConnId,
-    },
+    Rejected { conn: ConnId },
 }
 
 impl State {
@@ -124,8 +103,6 @@ impl State {
         }
     }
 
-    /// The connection whose slot this takes; Twitch never created a rejected
-    /// subscription, so it counts against no connection's limit.
     fn slot(&self) -> Option<ConnId> {
         match self {
             State::Rejected { .. } => None,
@@ -142,8 +119,6 @@ enum Link {
     Lost,
 }
 
-/// Ids are never reused, and `generation` moves on every drop, so a late
-/// result can only ever match the session it was created for.
 #[derive(Default)]
 struct Conn {
     link: Link,
@@ -279,9 +254,6 @@ impl Subs {
             .collect()
     }
 
-    /// Without a viewer nothing is wanted, so everything is torn down.
-    /// Subscriptions go to the oldest connection with room; another
-    /// connection opens when every one is full, and idle ones close.
     pub(super) fn plan(&mut self, viewer: Option<&Viewer>, now: Instant) -> Plan {
         self.wanted = viewer.map_or_else(HashSet::new, |v| wanted(&self.channels, v));
         let mut stale = Vec::new();
@@ -445,8 +417,6 @@ impl Subs {
         }
     }
 
-    /// Twitch revoked a live subscription; forgetting it lets the next plan
-    /// recreate it if it is still wanted.
     pub(super) fn revoke(&mut self, sub_id: &str) -> Option<Subscription> {
         let revoked = self
             .states
@@ -479,8 +449,6 @@ fn wanted(channels: &Channels, viewer: &Viewer) -> HashSet<Subscription> {
         .collect()
 }
 
-/// Every channel's chat comes first so a full connection never starves a
-/// chat; then focused channels' other kinds, then background ones.
 fn priority(subscription: &Subscription, channels: &Channels) -> (bool, Focus, EventKind, UserId) {
     let focus = channels
         .get(&subscription.channel)

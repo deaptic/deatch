@@ -3,8 +3,6 @@ import type { UserPreferences } from "./schema.ts";
 type Feed = UserPreferences["feed"];
 type Link = UserPreferences["link"];
 
-/// What a fresh install starts with. Events and badges left out here are
-/// shown, and the compressor starts from its own defaults.
 export type Defaults = Omit<UserPreferences, "feed" | "link"> & {
   feed: Omit<Feed, "events" | "badges"> & {
     events: Partial<Feed["events"]>;

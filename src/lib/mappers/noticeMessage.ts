@@ -1,6 +1,3 @@
-// Our own text for channel.chat.notification, built from the structured
-// fields so it follows the app locale; null leaves Twitch's system_message.
-
 import { formatAmount } from "../format/currency.ts";
 import { t } from "../i18n/index.ts";
 import type { RawNoticeDetails, RawNotification } from "../types/index.ts";

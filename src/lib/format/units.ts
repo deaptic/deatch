@@ -12,7 +12,6 @@ function percent(value: number, digits: number): string {
   }).format(value / 100);
 }
 
-/// A setting kept as a whole percent, like a volume or a zoom.
 export function formatWholePercent(value: number): string {
   return percent(value, 0);
 }

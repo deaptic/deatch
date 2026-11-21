@@ -80,8 +80,10 @@ Name a thing for what it is or does; let success and failure ride the return
 type. Keep names free of their surrounding context, the module already supplies
 it. One word per concept, everywhere.
 
-Make the code explain itself. Comment only the non-obvious _why_, and prefer
-reshaping the code until even that is unnecessary.
+No comments, doc comments included. Code that needs one to be understood is
+not done: rename, extract a function, name the constant, or move the knowledge
+into a type until it reads on its own. Only toolchain directives stay
+(`/// <reference>`, `@refresh`, lint and type-check suppressions).
 
 ## Logging
 

@@ -1,9 +1,3 @@
-// Usage: vp run check:tauri
-//
-// Fails when a @tauri-apps npm package and its Rust crate differ in
-// major.minor, which tauri dev and tauri build refuse, or when the crate is
-// missing, which leaves the package's calls failing at runtime.
-
 import { readFile } from "node:fs/promises";
 import { lockedVersions } from "./cargo-lock.ts";
 import { mismatches } from "./tauri-versions.ts";

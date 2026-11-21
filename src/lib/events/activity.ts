@@ -1,5 +1,3 @@
-// The running poll, prediction and shield mode, kept current from each stage.
-
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   EventKind,

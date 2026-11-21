@@ -13,7 +13,6 @@ type Props = UserActions & {
 };
 
 export default function UserCardFeed(props: Props) {
-  // Out of flow so the card's min-content height sees only its minimum height.
   return (
     <div class="relative flex-1 min-h-card-feed-min text-(length:--chat-size)">
       <div class="absolute inset-0 flex flex-col">

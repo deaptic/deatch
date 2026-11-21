@@ -10,8 +10,6 @@ use std::time::Instant;
 use twitch_api::client::{Bytes, Request, Response};
 use twitch_api::HttpClient;
 
-/// OAuth calls share the transport but answer for a different service, so
-/// only Helix responses speak for the rate-limit bucket or the token.
 const HELIX_HOST: &str = "api.twitch.tv";
 const OAUTH_HOST: &str = "id.twitch.tv";
 
@@ -35,8 +33,6 @@ impl HelixTransport {
         self.rate_limit.paused_for()
     }
 
-    /// True once since the last call if Twitch rejected a token that still
-    /// looked valid by its expiry, so the session can refresh it early.
     pub fn take_unauthorized(&self) -> bool {
         self.unauthorized.swap(false, Ordering::Relaxed)
     }

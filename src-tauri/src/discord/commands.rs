@@ -3,8 +3,6 @@ use crate::blocking;
 use crate::error::Result;
 use tauri::Manager;
 
-// Discord's pipe IO is blocking and can stall while Discord updates.
-
 #[tauri::command]
 #[specta::specta]
 pub async fn discord_connect(app: tauri::AppHandle) -> Result<()> {

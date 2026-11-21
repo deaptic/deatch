@@ -12,13 +12,11 @@ type ThirdParty = {
 
 const EMOJI = /^\p{RGI_Emoji}$/v;
 
-/// Emoji work in every channel; emotes only where these sections offer them.
 export function usableIn(sections: EmoteSection[]): (value: string) => boolean {
   const names = new Set(sections.flatMap((s) => s.emotes.map((e) => e.name)));
   return (value) => names.has(value) || EMOJI.test(value);
 }
 
-/// Twitch's Get User Emotes returns an emote once per set it belongs to.
 export function dedupeById(list: UserEmote[]): UserEmote[] {
   const seen = new Set<string>();
   const out: UserEmote[] = [];
@@ -38,7 +36,6 @@ function byName(entries: Map<string, string>): EmoteEntry[] {
   return sortByName([...entries].map(([name, url]) => ({ name, url })));
 }
 
-/// The 7TV, BTTV and FFZ sets, each a section when it has emotes.
 function thirdPartySections(
   lists: ThirdParty,
   idSuffix: string,
@@ -57,8 +54,6 @@ function thirdPartySections(
     }));
 }
 
-/// The picker's channel tab: the broadcaster's own Twitch emotes, one per
-/// name, then the channel's third-party sets.
 export function channelSections(
   broadcaster: User | null,
   userEmotes: readonly UserEmote[],
@@ -77,9 +72,6 @@ export function channelSections(
   return [...twitch, ...thirdPartySections(channel, "-channel")];
 }
 
-/// The picker's global tab: a section per channel the user subscribes to,
-/// then every other Twitch emote, then the global third-party sets. The
-/// open channel's own emotes are on the channel tab instead.
 export function globalSections(
   broadcaster: User | null,
   userEmotes: readonly UserEmote[],

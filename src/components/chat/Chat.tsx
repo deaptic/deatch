@@ -142,7 +142,6 @@ export default function Chat(props: Props) {
     if (text) inputApi?.replace(text);
   }
 
-  /// The feed finds the message in memory or the feed log, or says it's gone.
   function jumpToMessage(messageId: string) {
     props.onJumpToMessage(props.broadcasterId, messageId);
   }

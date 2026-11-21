@@ -8,7 +8,6 @@ type Props = {
   icon?: JSX.Element;
   active: boolean;
   orientation?: "vertical" | "horizontal";
-  // Icon-only square; the label moves into a tooltip on hover.
   collapsed?: boolean;
   onClick?: () => void;
 };

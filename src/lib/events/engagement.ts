@@ -1,5 +1,3 @@
-// Polls, predictions and goals: each stage of one becomes a feed row.
-
 import { listenFeed, unlistenAll } from "./listen.ts";
 import type {
   EventKind,
@@ -18,7 +16,6 @@ import {
 } from "../mappers/predictionMessage.ts";
 import { goalBegin, goalEnd } from "../mappers/goalMessage.ts";
 
-/// A stage's text, or null when the stage earns no row.
 type Stage<T> = [EventKind, (raw: T) => NoticeText | null];
 
 function listenStages<T>(noticeType: string, stages: Stage<T>[]) {

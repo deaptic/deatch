@@ -49,8 +49,6 @@ type Props = {
   anchorEl?: HTMLElement | null;
 };
 
-/// Chat appearance switches opened from the composer. It stays open so
-/// several can be flipped in a row.
 export default function AppearancePanel(props: Props) {
   return (
     <ComposerPanel

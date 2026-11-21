@@ -19,15 +19,12 @@ pub struct EventSubRecovered {
 pub enum ChatState {
     Connected,
     Disconnected,
-    /// Twitch refused the subscription; `message` is its own explanation.
     Rejected {
         message: String,
     },
-    /// A request failed; it is retried.
     Failed {
         error: Error,
     },
-    /// Every connection Twitch allows is full.
     Capped {
         connections: usize,
         #[serde(rename = "perConnection")]

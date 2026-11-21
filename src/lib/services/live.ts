@@ -20,11 +20,8 @@ import { idsNotIn } from "../utils/idsNotIn.ts";
 
 const POLL_MS = 60_000;
 
-/// Channels whose live state is known, so each is checked once.
 const trackedIds = new Set<string>();
 
-/// While someone is signed in: polls their followed live channels, checks the
-/// ones they keep close, and loads the pinned channels' users.
 export function start(): () => void {
   return createRoot((dispose) => {
     createEffect(
@@ -69,7 +66,6 @@ function reset() {
   setLiveStreams([]);
 }
 
-/// Followed channels plus the ones the user is looking at or keeps close.
 function wantedIds(): (string | undefined)[] {
   return [
     ...pinnedChannels(),
@@ -79,16 +75,12 @@ function wantedIds(): (string | undefined)[] {
   ];
 }
 
-/// A failed request keeps the last known list; a blip must not show
-/// everyone offline or hold back joining the channels that don't depend on
-/// it.
 async function poll(viewerId: string) {
   const data = await loadLive(viewerId);
   if (user()?.id !== viewerId) return;
   setFollowedLive((prev) => data ?? prev ?? []);
 }
 
-/// Null when a request failed or the viewer changed meanwhile.
 async function loadLive(viewerId: string): Promise<User[] | null> {
   const followed = await getFollowedStreams({ silent: true }).catch(() => null);
   if (!followed) return null;

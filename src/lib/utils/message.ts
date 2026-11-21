@@ -4,8 +4,6 @@ export function textOf(msg: Pick<FeedMessage, "fragments">): string {
   return msg.fragments.map((f) => f.text).join("");
 }
 
-/// Twitch prefixes a reply with "@parent ", which is noise next to the
-/// reply line the UI already shows.
 export function withoutReplyMention(msg: FeedMessage): Fragment[] {
   const [first, ...rest] = msg.fragments;
   if (

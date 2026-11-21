@@ -21,7 +21,6 @@ export function createTranslator<K extends string>(
     return format;
   }
   return {
-    // Primitive values always format to a single string.
     plain: (key: K, values?: MessageValues) =>
       formatOf(key).format(values) as string,
     rich: <T>(key: K, values: RichValues<T>): (string | T)[] => {

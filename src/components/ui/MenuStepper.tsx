@@ -14,7 +14,6 @@ type Props = {
   disabled?: boolean;
 };
 
-/// A menu row that steps a value down or up, showing it in between.
 export default function MenuStepper(props: Props) {
   return (
     <div

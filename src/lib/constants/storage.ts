@@ -1,5 +1,3 @@
-/// Every key the app keeps in localStorage; anything else is left over from
-/// an earlier version and is pruned at startup.
 export const STORAGE_KEYS = {
   preferences: "user_preferences",
   mentions: "mentions",

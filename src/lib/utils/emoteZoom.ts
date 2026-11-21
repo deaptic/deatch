@@ -1,19 +1,17 @@
-/// Each provider serves bigger copies of an emote under a size suffix:
-/// [smallest served, largest, fallback when the largest is missing].
-const SIZES: [RegExp, string, string][] = [
-  [/\/1\.0$/, "/3.0", "/2.0"], // Twitch
-  [/\/1x\.webp$/, "/4x.webp", "/2x.webp"], // 7TV
-  [/\/1x$/, "/3x", "/2x"], // BetterTTV
-  [/\/1$/, "/4", "/2"], // FrankerFaceZ
-];
+type CdnSizes = { small: RegExp; large: string; fallback: string };
 
-/// Ctrl+hover zoom attributes for an emote image; none for unknown URLs.
+const CDN_SIZES: Record<string, CdnSizes> = {
+  twitch: { small: /\/1\.0$/, large: "/3.0", fallback: "/2.0" },
+  sevenTv: { small: /\/1x\.webp$/, large: "/4x.webp", fallback: "/2x.webp" },
+  betterTtv: { small: /\/1x$/, large: "/3x", fallback: "/2x" },
+  frankerFaceZ: { small: /\/1$/, large: "/4", fallback: "/2" },
+};
+
 export function emoteZoom(url: string) {
-  const size = SIZES.find(([small]) => small.test(url));
-  if (!size) return {};
-  const [small, large, fallback] = size;
+  const sizes = Object.values(CDN_SIZES).find(({ small }) => small.test(url));
+  if (!sizes) return {};
   return {
-    "data-zoom-src": url.replace(small, large),
-    "data-zoom-fallback": url.replace(small, fallback),
+    "data-zoom-src": url.replace(sizes.small, sizes.large),
+    "data-zoom-fallback": url.replace(sizes.small, sizes.fallback),
   };
 }

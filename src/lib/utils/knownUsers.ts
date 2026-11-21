@@ -1,12 +1,9 @@
 import type { User, UserRef } from "../types/index.ts";
 
-/// `fetchedAt` is when Twitch last returned the whole user; null while only
-/// partial data (names from streams, chat or search) has been seen.
 export type KnownUser = { user: User; fetchedAt: number | null };
 
 const USER_ID = /^\d+$/;
 
-/// A user from just a reference, until Twitch returns the whole of them.
 export function userFromRef(ref: UserRef): User {
   return {
     id: ref.id,
@@ -24,8 +21,6 @@ export function isUserId(id: string): boolean {
   return USER_ID.test(id);
 }
 
-/// A whole user from Twitch replaces the cached one; a partial one only
-/// renames it and fills the fields it lacks.
 export function mergeUser(
   prev: User | undefined,
   next: User,
@@ -45,7 +40,6 @@ export function mergeUser(
   };
 }
 
-// Keys come from both sides so a cached user from an older shape still differs.
 export function sameUser(a: User, b: User): boolean {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]) as Set<
     keyof User
@@ -53,9 +47,6 @@ export function sameUser(a: User, b: User): boolean {
   return [...keys].every((k) => a[k] === b[k]);
 }
 
-/// The entries `users` change, applied in order so a later duplicate builds
-/// on an earlier one. An unchanged user keeps its object, so only
-/// `fetchedAt` moves.
 export function changedEntries(
   table: Record<string, KnownUser>,
   users: User[],
@@ -89,7 +80,6 @@ export function freshEntries(
   max: number,
   keep: ReadonlySet<string> = new Set(),
 ): Record<string, KnownUser> {
-  // Never fetched counts as expired: only kept ids hold on to partial data.
   const age = (e: KnownUser) =>
     e.fetchedAt === null ? Infinity : now - e.fetchedAt;
   const fresh = Object.entries(entries)

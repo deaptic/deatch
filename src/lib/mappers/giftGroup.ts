@@ -1,6 +1,3 @@
-// Pure: how a gift notice belongs to a community gift, so its subs can join
-// one row instead of one row each.
-
 import type { FeedEvent, Person, RawNotification } from "../types/index.ts";
 import { detail } from "./noticeMessage.ts";
 
@@ -28,8 +25,6 @@ export function giftGroup(raw: RawNotification): GiftGroup | null {
 
 type MappedNotice = { raw: RawNotification; item: FeedEvent };
 
-/// For a batch already in hand, like history: each sub of a community gift
-/// in the batch joins that gift's row as a recipient instead of its own row.
 export function groupGifts(notices: MappedNotice[]): FeedEvent[] {
   const groups = notices.map(({ raw }) => giftGroup(raw));
   const recipients = new Map<string, Person[]>();

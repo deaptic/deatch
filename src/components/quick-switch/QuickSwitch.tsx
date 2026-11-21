@@ -54,7 +54,6 @@ export default function QuickSwitch(props: Props) {
     count: () => rows().length,
   });
 
-  // Only typing resets the highlight; the live poll must not move it.
   createEffect(on(query, () => listbox.setActive(0)));
 
   function choose(channel: User, pin: boolean) {

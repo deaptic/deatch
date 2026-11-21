@@ -12,8 +12,6 @@ type Props = {
 };
 
 import { formatWholePercent } from "../../lib/format/units.ts";
-/// The volume of a channel's browser tab, after the compressor, as its own
-/// menu section: the slider across the menu, its value and reset below.
 export default function TabVolume(props: Props) {
   const gain = () => channelGain(props.login);
 

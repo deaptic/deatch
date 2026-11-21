@@ -1,8 +1,3 @@
-// The envelope wrapping every event the backend forwards from Twitch's
-// WebSocket. The `Raw*` types below describe the helix-shaped payloads that
-// arrive as the inner `T` of the envelope; the backend forwards them as-is,
-// so the frontend owns their shape.
-
 import type { EventKind } from "../../bindings.ts";
 
 export type { EventKind };
@@ -12,7 +7,6 @@ export type EventEnvelope<T> = {
   event: T;
 };
 
-// channel.chat.message
 export type RawFragment =
   | { type: "text"; text: string }
   | { type: "emote"; text: string; emote: { id: string } }
@@ -28,15 +22,11 @@ export type RawReply = {
   parent_user_name: string;
   parent_user_login: string;
   parent_user_id: string;
-  /// The thread's first message; Twitch sends no body for it. History has
-  /// no display name, only the login.
   thread_message_id?: string | null;
   thread_user_login?: string | null;
   thread_user_name?: string | null;
 };
 
-/// A chat-message badge tag (`{set_id, id, info}`). Distinct from the
-/// resource-shape `Badge` (which has image URLs).
 export type MessageBadge = {
   set_id: string;
   id: string;
@@ -58,20 +48,14 @@ export type RawChatMessage = {
   reply: RawReply | null;
   channel_points_custom_reward_id: string | null;
   cheer?: { bits: number } | null;
-  /// The partner channel a shared chat message was sent in; null for
-  /// messages sent in this channel.
   source_broadcaster_user_id?: string | null;
   source_broadcaster_user_login?: string | null;
   source_broadcaster_user_name?: string | null;
   source_message_id?: string | null;
   source_badges?: MessageBadge[] | null;
-  /// Synthetic field set by the robotty backlog mapper when a CLEARMSG /
-  /// CLEARCHAT in the same window targets this message. EventSub messages
-  /// never carry this — they use a separate delete event.
   deleted?: boolean;
 };
 
-// channel.chat.notification / shoutout / follow
 type SubTier = "1000" | "2000" | "3000";
 
 type Gifter = {
@@ -91,12 +75,10 @@ export type RawNoticeDetails = {
   };
   sub_gift: {
     sub_tier: SubTier;
-    /// History can lack the id; EventSub always sends it.
     recipient_user_id?: string | null;
     recipient_user_login: string;
     recipient_user_name: string;
     cumulative_total: number | null;
-    /// Set when the gift is one of a community gift's subs.
     community_gift_id?: string | null;
   };
   community_sub_gift: {
@@ -111,7 +93,6 @@ export type RawNoticeDetails = {
   raid: { user_name: string; viewer_count: number };
   bits_badge_tier: { tier: number };
   modiversary: { months: number };
-  /// Twitch doesn't document this one's casing; read it case-blind.
   announcement: { color: string };
   charity_donation: {
     charity_name: string;
@@ -119,7 +100,6 @@ export type RawNoticeDetails = {
   };
 };
 
-/// Money as an integer `value` scaled by `decimal_place`.
 export type RawAmount = {
   value: number;
   decimal_place: number;
@@ -131,7 +111,6 @@ export type RawNotification = {
   message_id: string;
   notice_type: string;
   system_message: string;
-  /// The chatter's own text, e.g. a resub message or an announcement.
   message?: { text: string; fragments: RawFragment[] };
   chatter_is_anonymous?: boolean;
   chatter_user_id?: string;
@@ -154,9 +133,7 @@ export type RawShoutout = {
   moderator_user_name: string;
   viewer_count: number;
   started_at: string;
-  /// When this channel may send its next shoutout, to anyone.
   cooldown_ends_at: string;
-  /// When this channel may shout out the same target again.
   target_cooldown_ends_at: string;
 };
 
@@ -175,7 +152,6 @@ export type RawFollow = {
   user_name: string;
 };
 
-// channel.channel_points_custom_reward_redemption.add
 export type RawChannelPointsRedemption = {
   broadcaster_user_id: string;
   id: string;
@@ -193,7 +169,6 @@ export type RawChannelPointsRedemption = {
   redeemed_at: string;
 };
 
-// channel.channel_points_automatic_reward_redemption.add v2
 export type RawAutomaticRedemption = {
   broadcaster_user_id: string;
   id: string;
@@ -209,7 +184,6 @@ export type RawAutomaticRedemption = {
   redeemed_at: string;
 };
 
-// channel.chat.message_delete / clear / clear_user_messages
 export type RawChatMessageDelete = {
   broadcaster_user_id: string;
   message_id: string;
@@ -229,7 +203,6 @@ export type RawChatClearUserMessages = {
   target_user_name: string;
 };
 
-// channel.chat_settings.update
 export type RawChatSettingsUpdate = {
   broadcaster_user_id: string;
   emote_mode: boolean;
@@ -241,7 +214,6 @@ export type RawChatSettingsUpdate = {
   unique_chat_mode: boolean;
 };
 
-// channel.moderate
 type RawModerateBase = {
   broadcaster_user_id: string;
   broadcaster_user_login: string;
@@ -249,7 +221,6 @@ type RawModerateBase = {
   moderator_user_id: string;
   moderator_user_login: string;
   moderator_user_name: string;
-  /// The shared chat channel the action happened in; null when it was here.
   source_broadcaster_user_id?: string | null;
   source_broadcaster_user_name?: string | null;
 };
@@ -317,7 +288,6 @@ export type RawModerate = RawModerateBase &
       }
   );
 
-// channel.unban_request.create / resolve
 export type RawUnbanRequestCreate = RawModUser & {
   broadcaster_user_id: string;
   id: string;
@@ -330,12 +300,10 @@ export type RawUnbanRequestResolve = RawModUser & {
   status: "approved" | "canceled" | "denied";
 };
 
-// channel.warning.acknowledge
 export type RawWarningAcknowledge = RawModUser & {
   broadcaster_user_id: string;
 };
 
-// channel.suspicious_user.message / update
 export type LowTrustStatus = "none" | "active_monitoring" | "restricted";
 export type BanEvasion = "unknown" | "possible" | "likely";
 
@@ -355,14 +323,12 @@ export type RawSuspiciousUserUpdate = RawModUser & {
   low_trust_status: LowTrustStatus;
 };
 
-// automod.message.hold
 type AutomodHeldReason =
   | {
       reason: "automod";
       automod: { category: string; level: number };
     }
   | {
-      /// A blocked link also arrives in `blocked_term`.
       reason: "blocked_term" | "blocked_link";
       blocked_term: {
         terms_found: {
@@ -389,16 +355,13 @@ export type RawAutomodMessageHold = {
   held_at: string;
 } & AutomodHeldReason;
 
-// automod.message.update
 export type RawAutomodMessageUpdate = {
   broadcaster_user_id: string;
   message_id: string;
-  /// The reference capitalises it ("Approved"), the example does not.
   status: string;
   moderator_user_name: string;
 };
 
-// channel.shared_chat.begin / update / end
 export type RawSharedChatEnd = { broadcaster_user_id: string };
 
 export type RawSharedChatSession = RawSharedChatEnd & {
@@ -409,7 +372,6 @@ export type RawSharedChatSession = RawSharedChatEnd & {
   }[];
 };
 
-// channel.hype_train.begin / progress / end v2
 type RawHypeTrainContribution = {
   user_name: string;
   type: "bits" | "subscription" | "other";
@@ -421,16 +383,13 @@ export type RawHypeTrain = {
   id: string;
   level: number;
   total: number;
-  /// Points toward the next level; absent once the train ends.
   progress?: number;
   goal?: number;
   top_contributions: RawHypeTrainContribution[];
-  /// "regular", "golden_kappa", "treasure", or a kind Twitch adds later.
   type: string;
   is_shared_train: boolean;
 };
 
-// channel.poll.begin / progress / end
 export type RawPoll = {
   broadcaster_user_id: string;
   id: string;
@@ -438,17 +397,14 @@ export type RawPoll = {
   choices: { id: string; title: string; votes?: number }[];
   started_at: string;
   ends_at?: string;
-  /// Only on end.
   status?: "completed" | "terminated" | "archived";
 };
 
-// channel.shield_mode.begin / end
 export type RawShieldMode = {
   broadcaster_user_id: string;
   moderator_user_id: string;
 };
 
-// channel.prediction.begin / progress / lock / end
 export type RawPrediction = {
   broadcaster_user_id: string;
   id: string;
@@ -461,12 +417,10 @@ export type RawPrediction = {
   }[];
   started_at: string;
   locks_at?: string;
-  /// Only on end.
   winning_outcome_id?: string | null;
   status?: "resolved" | "canceled";
 };
 
-// channel.goal.begin / end
 export type RawGoal = {
   broadcaster_user_id: string;
   id: string;
@@ -474,11 +428,9 @@ export type RawGoal = {
   description: string;
   current_amount: number;
   target_amount: number;
-  /// Only on end.
   is_achieved?: boolean;
 };
 
-// channel.ad_break.begin
 export type RawAdBreak = {
   broadcaster_user_id: string;
   duration_seconds: number;
@@ -488,14 +440,12 @@ export type RawAdBreak = {
   requester_user_name: string;
 };
 
-// channel.bits.use
 export type RawBitsUse = {
   broadcaster_user_id: string;
   user_id: string;
   user_login: string;
   user_name: string;
   bits: number;
-  /// "cheer", "power_up", "custom_power_up", or a kind Twitch adds later.
   type: string;
   power_up: {
     type: string;
@@ -505,9 +455,6 @@ export type RawBitsUse = {
   message: { text: string; fragments: RawFragment[] } | null;
 };
 
-// channel.charity_campaign.start / stop
-/// Unlike every other event, these name the channel `broadcaster_id` and
-/// spell the amount's scale `decimal_places`.
 export type RawCharityCampaign = {
   broadcaster_id: string;
   id: string;
@@ -520,7 +467,6 @@ export type RawCampaignAmount = Omit<RawAmount, "decimal_place"> & {
   decimal_places: number;
 };
 
-// stream.online / stream.offline
 export type RawStreamOffline = {
   broadcaster_user_id: string;
   broadcaster_user_name: string;
@@ -528,7 +474,6 @@ export type RawStreamOffline = {
 
 export type RawStreamOnline = RawStreamOffline & { type: string };
 
-// channel.update
 export type RawChannelUpdate = {
   broadcaster_user_id: string;
   broadcaster_user_login: string;

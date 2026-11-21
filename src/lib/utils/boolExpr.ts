@@ -1,13 +1,3 @@
-// A tiny boolean DSL over a named flag map.
-// Grammar:  expr := or
-//           or   := and ("||" and)*
-//           and  := not ("&&" not)*
-//           not  := "!" not | primary
-//           primary := identifier | "(" or ")"
-//
-// Pipeline: tokenize → parse → evaluate. The AST is plain data so it
-// can be inspected, logged, or transformed without re-parsing.
-
 type FlagMap = Map<string, boolean>;
 export type Predicate = (flags: FlagMap) => boolean;
 

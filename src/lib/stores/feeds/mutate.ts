@@ -11,7 +11,6 @@ import type {
   SuspiciousInfo,
 } from "../../types/index.ts";
 
-/// Changes the first entry `find` picks; false when there is none.
 function updateFirst<T extends FeedEntry>(
   broadcasterId: string,
   find: (entry: FeedEntry) => entry is T,
@@ -29,7 +28,6 @@ function updateFirst<T extends FeedEntry>(
   return found;
 }
 
-/// Changes every entry `find` picks.
 function updateEach<T extends FeedEntry>(
   broadcasterId: string,
   find: (entry: FeedEntry) => entry is T,
@@ -52,8 +50,6 @@ const eventWithId =
   (e: FeedEntry): e is FeedEvent =>
     e.kind === "event" && e.id === id;
 
-/// Matches this channel's copy of a message or, in shared chat, the original
-/// it was copied from.
 export function markMessageDeleted(broadcasterId: string, messageId: string) {
   updateFirst(
     broadcasterId,
@@ -66,7 +62,6 @@ export function markMessageDeleted(broadcasterId: string, messageId: string) {
   );
 }
 
-/// With `sourceId`, only the user's messages sent in that shared chat channel.
 export function markUserMessagesDeleted(
   broadcasterId: string,
   userId: string,
@@ -128,7 +123,6 @@ export function setChannelPointsRedemption(
   });
 }
 
-/// False when the message is not in the feed.
 export function setSuspicious(
   broadcasterId: string,
   messageId: string,

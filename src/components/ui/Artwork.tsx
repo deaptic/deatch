@@ -1,6 +1,5 @@
 import type { JSX } from "solid-js";
 
-/// `native` keeps the picture's own proportions, for kinds that have none.
 type ArtworkShape = "boxart" | "video" | "native";
 type ArtworkFit = "inline" | "fill" | "bleed" | "feed";
 

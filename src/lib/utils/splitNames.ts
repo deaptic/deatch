@@ -1,11 +1,8 @@
 import { escapeRegExp } from "./regExp.ts";
 
-/// A notice's text cut into plain runs and the people named in it, so each
-/// name can render as a link. Twitch's text may change a name's case.
 export type Segment = { text: string } | { text: string; person: number };
 
 export function splitNames(text: string, names: string[]): Segment[] {
-  // Longest first, so "Foo_Bar" wins over "Foo" where both would match.
   const wanted = names
     .map((name, person) => ({ name, person }))
     .filter(({ name }) => name)
@@ -19,7 +16,6 @@ export function splitNames(text: string, names: string[]): Segment[] {
     const found = wanted.find(
       ({ name }) => name.toLowerCase() === match[0].toLowerCase(),
     );
-    // A case mapping can change a name's length; such a match stays text.
     if (!found) continue;
     if (match.index > cursor) {
       segments.push({ text: text.slice(cursor, match.index) });

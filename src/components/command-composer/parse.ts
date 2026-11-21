@@ -4,8 +4,6 @@ import { formatDuration, secondsPer } from "../../lib/format/duration.ts";
 import { at } from "../../lib/utils/at.ts";
 import { formatAlternatives } from "../../lib/format/list.ts";
 
-/// A missing required value flashes and clears itself; an invalid one stays
-/// until it is edited.
 type SlotError = { kind: "required" } | { kind: "invalid"; message: string };
 
 export type Slot = {

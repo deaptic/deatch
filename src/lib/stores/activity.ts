@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 import type { Poll, Prediction } from "../types/index.ts";
 
-/// What is running in a channel right now, for the people who can steer it.
 export type Activity = {
   poll: Poll | null;
   prediction: Prediction | null;

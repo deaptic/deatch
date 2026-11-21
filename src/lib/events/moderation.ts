@@ -48,8 +48,6 @@ import {
   WARNING_ACKNOWLEDGED,
 } from "../constants/events.ts";
 
-/// Twitch strikes a message, or a user's messages, from the partner channel
-/// out of the shared feed; local actions arrive as their own delete events.
 function applySharedChatAction(p: RawModerate) {
   const here = p.broadcaster_user_id;
   const source = p.source_broadcaster_user_id ?? undefined;
@@ -134,7 +132,6 @@ export function start(): () => void {
     listenFeed<RawUnbanRequestResolve>(
       "channel.unban_request.resolve",
       (raw, timestamp) =>
-        // A mod's approve or deny already arrives through channel.moderate.
         raw.status === "canceled"
           ? feedEvent(
               UNBAN_REQUEST,
@@ -166,8 +163,6 @@ export function start(): () => void {
         if (!info) return;
         const id = raw.broadcaster_user_id;
         const item = suspiciousMessage(raw, info, serverTime(e));
-        // The chat copy, when Twitch sends one, may come first or just after;
-        // flag it so it keeps its badges, else show this event's copy.
         timeouts.after(CHAT_COPY_WAIT_MS, () => {
           if (!setSuspicious(id, item.message_id, info)) appendItem(id, item);
         });

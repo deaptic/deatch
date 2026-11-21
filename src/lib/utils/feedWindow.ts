@@ -1,5 +1,3 @@
-/// The rows to render, `start` inclusive to `end` exclusive, and the space
-/// the rows outside it would take above and below.
 export type FeedWindow = {
   start: number;
   end: number;
@@ -13,7 +11,6 @@ function sum(heights: readonly number[], from: number, to: number): number {
   return total;
 }
 
-/// The rows overlapping the band from `top` to `bottom`, in list pixels.
 export function windowAt(
   heights: readonly number[],
   top: number,
@@ -34,7 +31,6 @@ export function windowAt(
   return { start, end, before, after: sum(heights, end, heights.length) };
 }
 
-/// The newest rows that fill `span` pixels, for a feed pinned to its end.
 export function windowFromEnd(
   heights: readonly number[],
   span: number,
@@ -53,7 +49,6 @@ export function windowFromEnd(
   };
 }
 
-/// Where row `index` starts, in list pixels.
 export function offsetOf(heights: readonly number[], index: number): number {
   return sum(heights, 0, index);
 }

@@ -7,7 +7,6 @@ import {
 } from "../stores/preferences.ts";
 import type { User } from "../types/index.ts";
 
-/// Pins a channel, noting its user so the rail shows it without a fetch.
 export function add(channel: User): PinOutcome {
   users.note([channel]);
   return pinChannel(channel.id);

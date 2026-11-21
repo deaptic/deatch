@@ -13,7 +13,6 @@ type Props = {
   onBack: () => void;
 };
 
-// Channels that may post the shoutout: the viewer's own plus any they mod.
 export function shoutoutSources(target: User): UserRef[] {
   const self = user();
   const own: UserRef[] = self
@@ -22,7 +21,6 @@ export function shoutoutSources(target: User): UserRef[] {
   return [...own, ...moderatedChannels()].filter((c) => c.id !== target.id);
 }
 
-// Twitch rejects a shoutout from an offline channel, so only live ones show.
 async function liveSources(target: User): Promise<UserRef[]> {
   const sources = shoutoutSources(target);
   const streams = await getStreamsFromIds(

@@ -41,8 +41,6 @@ type Waiter = { resolve: () => void; reject: (error: unknown) => void };
 const waiting = new Map<string, Promise<void>>();
 const waiters = new Map<string, Waiter[]>();
 const queued = new Set<string>();
-// Id → when Twitch last returned nothing for it; retried after TTL_MS so a
-// new or briefly suspended account resolves eventually.
 const notFound = new Map<string, number>();
 let batchTimer: ReturnType<typeof setTimeout> | undefined;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -64,13 +62,10 @@ export function start(): () => void {
   };
 }
 
-/// Whole users as Twitch returned them; each counts as fetched now.
 export function set(users: User[]): void {
   apply(users, Date.now());
 }
 
-/// What a stream, a chat message or a search result says about users: it
-/// renames them and fills gaps, but never counts as a fetch.
 export function note(partials: (UserRef & Partial<User>)[]): void {
   apply(
     partials.map((p) => ({ ...userFromRef(p), ...p })),
@@ -100,14 +95,11 @@ export async function fetchFresh(
   return users;
 }
 
-/// A failed request is already reported by invokeCommand; callers only branch.
 type Lookup =
   | { status: "found"; user: User }
   | { status: "missing" }
   | { status: "failed" };
 
-/// The user with that login, or null once the user has been told why not:
-/// a missing login toasts `notFound`, a failed request was already reported.
 export async function lookUp(
   login: string,
   notFoundMessage: string,
@@ -117,8 +109,6 @@ export async function lookUp(
   return lookup.status === "found" ? lookup.user : null;
 }
 
-/// The full reference for a partly known user, looked up by id or else by
-/// login; null when neither finds one.
 export async function resolve(
   identity: Partial<UserRef>,
 ): Promise<UserRef | null> {
@@ -218,8 +208,6 @@ function enqueue(id: string): Promise<void> {
   return promise;
 }
 
-/// Pacing against Twitch's rate limit lives in the backend transport, so
-/// each batch goes out whole; the backend splits it into 100-id requests.
 async function sendBatch() {
   batchTimer = undefined;
   const ids = [...queued].filter((id) => !isKnown(id));

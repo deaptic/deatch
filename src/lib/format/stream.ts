@@ -25,7 +25,6 @@ export function formatUptime(startedAt: string, now: number): string {
 
 type Described = { title: string; game: { name: string } };
 
-/// The live stream's title, else the one the channel last set.
 export function streamTitle(stream?: Described, info?: Described): string {
   return stream?.title ?? info?.title ?? "";
 }
@@ -34,7 +33,6 @@ export function streamGame(stream?: Described, info?: Described): string {
   return stream?.game.name ?? info?.game.name ?? "";
 }
 
-/// "Live · game · viewers" for a live channel, skipping what is unknown.
 export function liveLine(game?: string, viewers?: number): string {
   const parts = [t("STREAM_LIVE"), game];
   if (viewers !== undefined) parts.push(formatViewers(viewers));

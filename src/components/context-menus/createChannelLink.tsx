@@ -10,9 +10,6 @@ import { onActivateKey } from "../ui/keyActivation.ts";
 import { createPopover } from "../ui/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";
 
-/// The one way a channel responds to the mouse: left opens its chat, right
-/// its channel menu, middle the channel in the browser. Spread `handlers` on
-/// the element and render `menu()` beside it.
 export function createChannelLink(
   channel: () => User | undefined,
   onOpen?: () => void,

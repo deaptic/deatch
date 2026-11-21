@@ -19,8 +19,6 @@ export const SELF_LURK_PHRASES: NonEmpty<MessageKey> = [
   "PRESENCE_LURK_TUMBLEWEEDS",
 ];
 
-// Cutting between the halves of a surrogate pair leaves invalid UTF-16 that
-// the backend's JSON parser rejects, so a dangling high half is dropped.
 const clamp = (s: string, max: number) =>
   s.length > max
     ? s.slice(0, max - 1).replace(/[\uD800-\uDBFF]$/, "") + "…"

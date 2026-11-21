@@ -2,7 +2,6 @@ import type { EmoteGridItem } from "./types.ts";
 import { at } from "../../lib/utils/at.ts";
 
 export const COLUMNS = 8;
-/// Tailwind needs a literal class, so it is written out beside `COLUMNS`.
 export const GRID_COLUMNS = "grid-cols-8";
 
 export type RenderSection = {
@@ -13,7 +12,6 @@ export type RenderSection = {
 };
 
 export function emojiUrl(emoji: string): string {
-  // Twemoji drops U+FE0F from file names only when there is no U+200D joiner.
   const keepSelector = emoji.includes("‍");
   const points: string[] = [];
   for (const char of emoji) {
@@ -48,13 +46,11 @@ export function nextVerticalIndex(
   const col = pos % COLUMNS;
   const targetRow = Math.floor(pos / COLUMNS) + direction;
 
-  // Same section, adjacent row exists.
   if (targetRow >= 0 && targetRow * COLUMNS < sec.items.length) {
     const newPos = Math.min(targetRow * COLUMNS + col, sec.items.length - 1);
     return sec.startIndex + newPos;
   }
 
-  // Jump to nearest non-empty section in that direction.
   for (
     let i = secIdx + direction;
     i >= 0 && i < sections.length;

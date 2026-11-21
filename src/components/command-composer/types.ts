@@ -16,7 +16,6 @@ type OptionBase = {
 
 export type DurationOption = OptionBase & {
   type: "duration";
-  // Inclusive bounds in seconds.
   min?: number;
   max?: number;
 };
@@ -27,8 +26,6 @@ export type CommandOption =
   | (OptionBase & { type: "enum"; values: string[] })
   | (OptionBase & {
       type: "search";
-      /// Rejects on failure, which the composer shows on the slot; call the
-      /// api silently.
       search: (query: string) => Promise<OptionSuggestion[]>;
     });
 
@@ -40,7 +37,6 @@ export type Command = {
   description: MessageKey;
   role: CommandRole;
   options: CommandOption[];
-  /// Rejects only with a failure the api already reported.
   execute: (
     values: Record<string, unknown>,
     ctx: CommandContext,

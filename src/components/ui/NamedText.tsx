@@ -7,7 +7,6 @@ import { at } from "../../lib/utils/at.ts";
 
 type Props = UserActions & { text: string; people: Person[] };
 
-/// A sentence with every person it names shown as a name link.
 export default function NamedText(props: Props) {
   return (
     <For

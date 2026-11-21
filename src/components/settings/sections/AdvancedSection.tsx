@@ -23,7 +23,6 @@ import {
 } from "../../../lib/stores/preferences.ts";
 
 export default function AdvancedSection() {
-  /// The hardware acceleration setting waiting on a confirmed restart.
   const [pendingRestart, setPendingRestart] = createSignal<{
     enabled: boolean;
   } | null>(null);
@@ -49,7 +48,6 @@ export default function AdvancedSection() {
     try {
       await graphics.setHardwareAcceleration(enabled, options);
     } catch {
-      // invokeCommand already toasted; the dialog closes so the user can retry.
     } finally {
       setRestarting(false);
       setPendingRestart(null);

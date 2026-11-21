@@ -3,7 +3,6 @@ import { rankSuggestions } from "./rankSuggestions.ts";
 
 const LIMIT = 10;
 
-/// Chatters matching `query` by login or display name, most recent first.
 export function rankChatters(
   chatters: Iterable<Chatter>,
   query: string,

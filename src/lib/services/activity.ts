@@ -10,8 +10,6 @@ import type { Prediction, PredictionEnd } from "../types/index.ts";
 import { getShieldMode, updateShieldMode } from "../api/twitch/moderation.ts";
 import { updateActivity } from "../stores/activity.ts";
 
-/// What is already running when the channel opens; EventSub keeps it current
-/// from then on. Polls and predictions are the broadcaster's alone.
 export function load(broadcasterId: string, isBroadcaster: boolean): void {
   const params = { broadcasterId };
   const silent = { silent: true };
@@ -33,8 +31,6 @@ export function endPoll(broadcasterId: string, pollId: string): void {
     .catch(() => {});
 }
 
-/// Locking keeps the prediction up to pick a winner; resolving or refunding
-/// ends it.
 export function endPrediction(
   broadcasterId: string,
   prediction: Prediction,

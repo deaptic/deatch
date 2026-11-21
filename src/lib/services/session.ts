@@ -45,11 +45,7 @@ export function abort(): void {
 }
 
 export async function logout(): Promise<void> {
-  // The log is the account's own, so what it saw is written while it still
-  // is signed in.
   await feedLog.flush();
-  // Local logout must win even if Twitch can't be reached; the backend
-  // already clears local credentials on its own.
   await revokeSession().catch(() => {});
   setUser(null);
 }

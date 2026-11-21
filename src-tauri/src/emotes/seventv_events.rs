@@ -21,8 +21,6 @@ const OP_DISPATCH: u8 = 0;
 const OP_SUBSCRIBE: u8 = 35;
 const OP_UNSUBSCRIBE: u8 = 36;
 const RECONNECT_DELAY: Duration = Duration::from_secs(5);
-/// 7TV heartbeats roughly every 30s; silence past this means the TCP
-/// connection died without a close frame (sleep, network switch).
 const READ_TIMEOUT: Duration = Duration::from_secs(90);
 
 type Writer = SplitSink<Socket, Message>;
@@ -191,8 +189,6 @@ struct Actor {
     display_name: Option<String>,
 }
 
-/// Values stay untyped until the key says they are emotes: a frame mixes
-/// emote changes with other keys whose values have different shapes.
 #[derive(Deserialize)]
 struct Change {
     key: String,
@@ -206,7 +202,6 @@ fn emote(value: Value) -> Option<StvEmote> {
     logged(serde_json::from_value(value))
 }
 
-/// 7TV frames are best effort: one that doesn't parse is logged and skipped.
 fn logged<T>(parsed: serde_json::Result<T>) -> Option<T> {
     parsed
         .inspect_err(|e| log::warn!("7tv frame unreadable: {e}"))

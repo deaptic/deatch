@@ -24,7 +24,6 @@ export default function Reply(
     login: props.reply.parent_user_login,
     displayName: props.reply.parent_user_name,
   });
-  // A direct reply to the thread's first message needs no second pointer.
   const threadStart = () => {
     const r = props.reply;
     if (!r.thread_message_id || r.thread_message_id === r.parent_message_id) {

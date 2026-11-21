@@ -89,8 +89,6 @@ async fn login(twitch: &Twitch, mut builder: DeviceUserTokenBuilder) -> Result<U
 }
 
 pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
-    // No stored credentials is first launch or after logout, not an error;
-    // the frontend treats `None` as "show the login screen, no toast".
     let Some(creds) = credentials::load()? else {
         return Ok(None);
     };
@@ -132,8 +130,6 @@ pub async fn revoke_session(twitch: &Twitch) -> Result<()> {
     let token = twitch.session.end().await;
     twitch.eventsub.clear();
     if let Some(token) = token {
-        // Logging out must succeed locally even when Twitch is unreachable;
-        // an unrevoked token just expires on its own.
         if let Err(e) = token.revoke_token(&twitch.helix).await {
             log::warn!("token revoke failed: {e}");
         }

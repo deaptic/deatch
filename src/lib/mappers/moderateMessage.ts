@@ -1,6 +1,3 @@
-// Pure text for channel.moderate notices, kept apart from the listener so it
-// can be tested without Tauri.
-
 import type {
   NoticeText,
   Person,
@@ -12,7 +9,6 @@ import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
 import { noticeText, person } from "../utils/feedEvent.ts";
 
-/// A shared chat action reads like the same action taken here.
 function asLocal(p: RawModerate): RawModerate {
   switch (p.action) {
     case "shared_chat_ban":
@@ -30,8 +26,6 @@ function asLocal(p: RawModerate): RawModerate {
   }
 }
 
-/// Twitch puts the user an action is on in a field named after the action,
-/// except that both unban request decisions share `unban_request`.
 function actedOn(p: RawModerate): Person[] {
   const field = p.action.endsWith("_unban_request")
     ? "unban_request"
@@ -44,7 +38,6 @@ function actedOn(p: RawModerate): Person[] {
   return person(text("user_id"), text("user_login"), text("user_name"));
 }
 
-/// A field whose name is only known at run time.
 function fieldOf(value: unknown, key: string): unknown {
   if (typeof value !== "object" || value === null) return undefined;
   return Object.entries(value).find(([name]) => name === key)?.[1];

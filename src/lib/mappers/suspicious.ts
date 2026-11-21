@@ -1,6 +1,3 @@
-// Pure mapping for suspicious user events, kept apart from the listener so it
-// can be tested without Tauri.
-
 import { t } from "../i18n/index.ts";
 import type {
   FeedMessage,
@@ -12,7 +9,6 @@ import type {
 import { chatterFields, person } from "../utils/feedEvent.ts";
 import { mapFragment } from "./chat.ts";
 
-/// Null once Twitch no longer treats the chatter as suspicious.
 export function suspiciousInfo(
   raw: RawSuspiciousUserMessage,
 ): SuspiciousInfo | null {
@@ -24,7 +20,6 @@ export function suspiciousInfo(
   };
 }
 
-/// The whole message, for when no chat copy of it arrives.
 export function suspiciousMessage(
   raw: RawSuspiciousUserMessage,
   info: SuspiciousInfo,

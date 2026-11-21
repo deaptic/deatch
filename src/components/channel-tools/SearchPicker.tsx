@@ -9,7 +9,6 @@ const SEARCH_DELAY_MS = 250;
 type Props<T> = {
   label: string;
   placeholder: string;
-  /// What the field shows before anything is typed, like the current pick.
   initial?: string;
   search: (query: string) => Promise<T[]>;
   name: (item: T) => string;
@@ -18,8 +17,6 @@ type Props<T> = {
   autofocus?: boolean;
 };
 
-/// A field that searches as you type and lists matches under itself; picking
-/// one fills the field, typing again clears the pick.
 export default function SearchPicker<T>(props: Props<T>) {
   const [query, setQuery] = createSignal(props.initial ?? "");
   const [results, setResults] = createSignal<T[]>([]);

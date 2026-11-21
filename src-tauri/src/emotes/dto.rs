@@ -49,7 +49,6 @@ struct FfzSet {
     emoticons: Vec<FfzEmote>,
 }
 
-/// A missing room comes back as an error body with no sets: no emotes.
 #[derive(Deserialize)]
 pub(super) struct FfzResponse {
     #[serde(default)]

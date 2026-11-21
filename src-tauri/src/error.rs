@@ -18,7 +18,6 @@ pub enum Error {
     Http(String),
     #[error("{0}")]
     Auth(String),
-    /// The stored token predates a scope the app now needs.
     #[error("token missing scope {scope}")]
     MissingScope { scope: String },
     #[error("{0}")]
@@ -31,8 +30,6 @@ pub enum Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-/// Helix rejections carry Twitch's own explanation, which is what the user
-/// should see; anything else is a transport failure.
 impl From<ClientRequestError<reqwest::Error>> for Error {
     fn from(e: ClientRequestError<reqwest::Error>) -> Self {
         match &e {
@@ -91,7 +88,6 @@ from_display!(
     time::error::Format,
 );
 
-/// A background task's channel closed: the task stopped.
 impl<T> From<tokio::sync::mpsc::error::SendError<T>> for Error {
     fn from(e: tokio::sync::mpsc::error::SendError<T>) -> Self {
         Self::Io(e.to_string())

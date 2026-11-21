@@ -7,7 +7,6 @@ type ConnectFailure = Extract<
   { type: "rejected" | "failed" | "capped" }
 >;
 
-/// The notice for a channel whose chat could not be joined.
 export function connectFailure(state: ConnectFailure): string {
   switch (state.type) {
     case "rejected":

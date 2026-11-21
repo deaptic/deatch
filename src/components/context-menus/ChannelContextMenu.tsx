@@ -45,8 +45,6 @@ import * as clipboard from "../../lib/services/clipboard.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import type { User } from "../../lib/types/index.ts";
 
-/// The rail menu also manages the row itself (unread, Link tab, pin order,
-/// logout); anywhere else the menu only acts on the channel.
 type Props = {
   x: number;
   y: number;
@@ -63,7 +61,6 @@ export default function ChannelContextMenu(props: Props) {
   const hasTab = () => linkWarmedChannels().some((c) => c.id === props.ch.id);
   const muted = () => linkMutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);
-  // Shortcuts act on the open channel, so only its menu shows them.
   const selected = () => selectedChannel()?.id === props.ch.id;
   const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
   const movePin = (by: number) => () => pins.move(pinIndex(), pinIndex() + by);

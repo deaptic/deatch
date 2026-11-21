@@ -31,7 +31,6 @@ type Props = {
   getBoundsElement?: () => HTMLElement | null;
   onClose: () => void;
   onTogglePin: () => void;
-  /// Returns whether the jump happened.
   onJumpToMessage: (messageId: string) => void;
   onOpenChannel: (broadcasterId: string) => void;
   onUserContextMenu: UserAction;
@@ -74,7 +73,6 @@ export default function UserCard(props: Props) {
 
   const [pos, setPos] = createSignal({ x: props.x, y: props.y });
   const [room, setRoom] = createSignal(roomIn());
-  // bringToFront re-inserts the node, which would replay the entrance.
   const [entered, setEntered] = createSignal(false);
 
   onMount(() => {
@@ -96,14 +94,11 @@ export default function UserCard(props: Props) {
     onDismiss: props.onClose,
     shouldDismiss: () => !props.pinned,
   });
-  // Local bindings run newest first, so re-registering on focus makes Escape
-  // close the card used most recently.
   const bindEscape = () =>
     shortcuts.registerLocal("escape", () => props.onClose());
   let unbindEscape = bindEscape();
   onCleanup(() => unbindEscape());
 
-  // Overlays share one z-index, so the last body child paints on top.
   function bringToFront() {
     const host = cardRef?.parentElement;
     if (host && host !== document.body.lastElementChild) {
@@ -131,7 +126,6 @@ export default function UserCard(props: Props) {
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
-  // Escape can close the card mid-drag; the listeners must go with it.
   let endDrag: (() => void) | undefined;
   onCleanup(() => endDrag?.());
 
@@ -179,8 +173,6 @@ export default function UserCard(props: Props) {
         <UserCardModActions
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
-          // Live messages strike through via the moderation event; fetched
-          // history is a copy outside the feed store.
           onRemoved={() =>
             setHistory((h) => h?.map((m) => ({ ...m, deleted: true })))
           }

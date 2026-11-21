@@ -11,7 +11,6 @@ function unique(entries: FeedEntry[]): FeedEntry[] {
   });
 }
 
-/// `page` laid before the view; past `max`, the newest end is let go.
 export function withOlder(
   view: HistoryView,
   page: FeedEntry[],
@@ -28,9 +27,6 @@ export function withOlder(
   };
 }
 
-/// `page` laid after the view. A page shorter than `limit` means the log has
-/// nothing newer, so the live entries carry on from it. Past `max`, the
-/// oldest end is let go.
 export function withNewer(
   view: HistoryView,
   page: FeedEntry[],

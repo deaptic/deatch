@@ -102,8 +102,6 @@ export default function Rail(props: Props) {
     return sel && !isListed(sel.id) ? sel : null;
   });
 
-  // The sub line says what Link can do right now; the tile only lights up
-  // once a mode is engaged.
   const linkStatus = (): LinkStatus => {
     if (!linkConnected()) {
       return {
@@ -214,7 +212,6 @@ export default function Rail(props: Props) {
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
-  // Unmounting mid-drag must not leave the cursor or listeners behind.
   let endDrag: (() => void) | undefined;
   onCleanup(() => endDrag?.());
 

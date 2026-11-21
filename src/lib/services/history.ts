@@ -9,12 +9,9 @@ import { cursorAt, cursorBeforeNow } from "../utils/feedLog.ts";
 import { getEntryId } from "../utils/entryId.ts";
 
 const PAGE = 200;
-// A view keeps this many entries; reading on lets go of the far end.
 const MAX_VIEW = 1_000;
 
 const loading = new Set<string>();
-// The oldest live entry a check found nothing logged before, so scrolling at
-// the top of a channel with no history doesn't read the log on every event.
 const nothingBefore = new Map<string, string>();
 const generations = new Map<string, number>();
 
@@ -32,7 +29,6 @@ function live(broadcasterId: string): FeedEntry[] {
   return structuredClone(unwrap(feeds[broadcasterId]?.messages ?? []));
 }
 
-/// One load per channel at a time; a failed read was logged by invokeCommand.
 async function once(
   broadcasterId: string,
   work: (current: () => boolean) => Promise<void>,
@@ -43,14 +39,11 @@ async function once(
   try {
     await work(() => generation(broadcasterId) === started);
   } catch {
-    // Logged by invokeCommand; the next scroll tries again.
   } finally {
     loading.delete(broadcasterId);
   }
 }
 
-/// Reads further back than the feed shows, opening a view on the live feed
-/// the first time.
 export function older(broadcasterId: string): Promise<void> {
   return once(broadcasterId, async (current) => {
     const opened = historyViews[broadcasterId];
@@ -77,7 +70,6 @@ export function older(broadcasterId: string): Promise<void> {
   });
 }
 
-/// Reads forward from the view's newest entry towards the live feed.
 export function newer(broadcasterId: string): Promise<void> {
   return once(broadcasterId, async (current) => {
     const view = historyViews[broadcasterId];
@@ -98,7 +90,6 @@ export function newer(broadcasterId: string): Promise<void> {
 
 export type AroundOutcome = "opened" | "missing" | "superseded";
 
-/// Opens a view on the logged entries around `messageId`.
 export async function around(
   broadcasterId: string,
   messageId: string,

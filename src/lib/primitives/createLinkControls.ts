@@ -38,7 +38,6 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
     link.sendAudio(linkCompressor(), compressorSettings(), linkChannelGains()),
   );
 
-  // With audio linked while synced, only the shown tab plays.
   createEffect(
     on(
       [selectedChannel, linkSynced, linkAudioLink],
@@ -52,7 +51,6 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
   );
 
   function cycleChannel(direction: 1 | -1) {
-    // Synced walks only the browser's tabs; otherwise every channel, tabs first.
     const list = linkSynced()
       ? linkWarmedChannels()
       : [...linkWarmedChannels(), ...channelsInOrder()];
@@ -67,8 +65,6 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
     nav.selectChannel(at(list, nextIdx));
   }
 
-  // Turning on keeps the open channel when it has a tab, and the browser
-  // follows; otherwise it lands on the browser's current tab. Off stays put.
   function toggleLink() {
     if (linkSynced()) {
       setLinkSynced(false);

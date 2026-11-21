@@ -142,12 +142,9 @@ pub struct SendMessageResult {
     pub drop_reason: Option<DropReason>,
 }
 
-/// Why Twitch refused a message; the frontend owns the wording. Unknown codes
-/// keep Twitch's own text so nothing is lost.
 #[derive(Debug, Clone, PartialEq, Serialize, specta::Type)]
 #[serde(tag = "code", content = "message", rename_all = "camelCase")]
 pub enum DropReason {
-    /// AutoMod is holding the message for a moderator to approve or deny.
     Held,
     Rejected,
     Banned,
@@ -260,7 +257,6 @@ mod tests {
         assert_eq!(EmoteType::from("brandnew".to_string()), Unknown);
     }
 
-    // The frontend's Ctrl-zoom and inline emotes expect this exact shape.
     #[test]
     fn emote_url_is_the_small_dark_cdn_image() {
         let id = twitch_api::types::EmoteId::new("25".into());

@@ -6,8 +6,6 @@ type Props = {
   children: JSX.Element;
 };
 
-/// A card row that shows its contents only when opened: for settings most
-/// people never need to change. Starts closed.
 export default function Disclosure(props: Props) {
   const [open, setOpen] = createSignal(false);
 

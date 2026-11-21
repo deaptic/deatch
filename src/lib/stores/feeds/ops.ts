@@ -8,7 +8,6 @@ export function append(
   paused: boolean,
 ): boolean {
   const id = getEntryId(item);
-  // A backlog fetch may overlap with the first EventSub events.
   if (messages.some((m) => getEntryId(m) === id)) return false;
   messages.push(item);
   enforceCaps(messages, paused);
@@ -22,7 +21,6 @@ function missing(messages: FeedEntry[], items: FeedEntry[]): FeedEntry[] {
     .sort((a, b) => a.timestamp - b.timestamp);
 }
 
-/// Merges by timestamp: live entries may already sit after a gap being filled.
 export function insert(
   messages: FeedEntry[],
   items: FeedEntry[],

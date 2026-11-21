@@ -39,8 +39,6 @@ type Props = {
   active?: boolean;
 };
 
-/// Fills a grid parent: the Twitch picture once loaded, a blobatar when there
-/// is none, nothing while the chatter is still being looked up.
 export default function ChatterPicture(props: Props) {
   const look = () => chatterLook(props.color);
   const [lookedUp, setLookedUp] = createSignal(false);

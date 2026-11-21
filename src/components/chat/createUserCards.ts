@@ -8,7 +8,6 @@ type OpenUserCard = {
   pinned: boolean;
 };
 
-/// Pinned cards stay open; opening another card replaces only the unpinned one.
 export function createUserCards() {
   const [cards, setCards] = createStore<OpenUserCard[]>([]);
   let nextKey = 0;

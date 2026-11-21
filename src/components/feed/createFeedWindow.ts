@@ -6,31 +6,22 @@ import {
   windowFromEnd,
 } from "../../lib/utils/feedWindow.ts";
 
-// Rows rendered past each edge of the view, so a scroll or a late image
-// rarely shows the space of a row not yet built.
 const OVERSCAN_PX = 400;
-// The height assumed for rows before any has been measured.
 const FIRST_GUESS_PX = 32;
 
 type Options = {
   ids: () => string[];
   scroller: () => HTMLElement | undefined;
   list: () => HTMLElement | undefined;
-  /// Pinned to the newest row: the window is filled from the end.
   following: () => boolean;
 };
 
-/// Renders only the rows in view. Rows are measured as they render; the rest
-/// are sized from the average, and the anchor in createFeedScroll absorbs the
-/// difference once they are measured.
 export function createFeedWindow(opts: Options) {
   const measured = new Map<string, number>();
   const [version, setVersion] = createSignal(0);
   const [top, setTop] = createSignal(0);
   const [viewport, setViewport] = createSignal(0);
 
-  // Observers only record; the re-render they cause waits for the next frame,
-  // or it would resize what they observe while they are still delivering.
   let frame: number | null = null;
   let remeasured = false;
   function later() {
@@ -88,7 +79,6 @@ export function createFeedWindow(opts: Options) {
     return windowAt(heights(), top() - OVERSCAN_PX, top() + span);
   });
 
-  /// Where the list starts in the scroller's content.
   function listTop(el: HTMLElement, list: HTMLElement): number {
     return (
       list.getBoundingClientRect().top -
@@ -97,7 +87,6 @@ export function createFeedWindow(opts: Options) {
     );
   }
 
-  /// Reads the scroll position and view size; call on every scroll.
   function sync() {
     const el = opts.scroller();
     const list = opts.list();
@@ -106,7 +95,6 @@ export function createFeedWindow(opts: Options) {
     setViewport(el.clientHeight);
   }
 
-  /// Follows the view size. Returns the cleanup.
   function watch(): () => void {
     const el = opts.scroller();
     if (!el) return () => {};
@@ -116,7 +104,6 @@ export function createFeedWindow(opts: Options) {
     return () => observer.disconnect();
   }
 
-  /// Measures a rendered row for as long as it stays rendered.
   function measure(el: HTMLElement) {
     rows.observe(el);
     onCleanup(() => rows.unobserve(el));
@@ -128,8 +115,6 @@ export function createFeedWindow(opts: Options) {
     return i >= from && i < end;
   }
 
-  /// Where row `id` starts in the scroller's content: read from the row when
-  /// it is rendered, else summed from the heights; null for an unknown id.
   function topOf(id: string): number | null {
     const el = opts.scroller();
     const list = opts.list();
@@ -146,7 +131,6 @@ export function createFeedWindow(opts: Options) {
     return i < 0 ? null : listTop(el, list) + offsetOf(heights(), i);
   }
 
-  /// The row at `y` in the scroller's content, rendered or not.
   function idAt(y: number): string | null {
     const el = opts.scroller();
     const list = opts.list();
@@ -155,8 +139,6 @@ export function createFeedWindow(opts: Options) {
     return opts.ids()[start] ?? null;
   }
 
-  /// Scrolls so row `id` is centred and therefore rendered. Only for a feed
-  /// that is not following, whose window follows the scroll position.
   function reveal(id: string) {
     const el = opts.scroller();
     const rowTop = topOf(id);

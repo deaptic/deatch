@@ -1,6 +1,5 @@
 type Id = ReturnType<typeof setTimeout>;
 
-/// Timeouts a cleanup can stop all at once, so none fires after it.
 export function createTimeouts() {
   const pending = new Set<Id>();
   return {

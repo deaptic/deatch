@@ -11,7 +11,6 @@ export type Fragment =
   | { type: "emote"; text: string; id: string }
   | { type: "mention"; text: string; user_login: string }
   | { type: "cheermote"; text: string; prefix: string; bits: number }
-  /// Twitch requires the URL be shown exactly as given.
   | { type: "gif"; text: string; url: string };
 
 export type BadgeMap = Record<string, { url: string; title: string }>;
@@ -27,12 +26,10 @@ export type AutomodHoldStatus =
 export type AutomodHoldInfo = {
   reason: string;
   status: AutomodHoldStatus;
-  /// Who approved or denied it, once Twitch says.
   moderator?: string;
   broadcaster_user_id: string;
 };
 
-/// Why Twitch flags the chatter, shown to mods on their messages.
 export type SuspiciousInfo = {
   status: Exclude<LowTrustStatus, "none">;
   evasion: BanEvasion;
@@ -44,10 +41,8 @@ export type Redemption = {
   input?: string;
 };
 
-/// A look bought with channel points for the whole message.
 export type MessagePerk = "highlight" | "sub_only";
 
-/// A look bought with bits for the whole message.
 export type PowerUp = "message_effect" | "gigantified_emote";
 
 export type FeedMessage = {
@@ -70,18 +65,15 @@ export type FeedMessage = {
   deleted?: boolean;
   automod_hold?: AutomodHoldInfo;
   suspicious?: SuspiciousInfo;
-  /// The channel a shared chat message was sent in.
   source?: {
     id: string;
     login: string;
     name: string;
     messageId: string;
-    /// The chatter's badges in that channel; `badges` holds them here.
     badges: MessageBadge[];
   };
 };
 
-/// Someone a notice names; shown as a name link.
 export type Person = {
   id?: string;
   login: string;
@@ -89,8 +81,6 @@ export type Person = {
   color?: string;
 };
 
-/// A notice's words: the headline, anything else for the quieter line, and
-/// the people the headline names.
 export type NoticeText = { text: string; detail?: string; people?: Person[] };
 
 export type FeedEvent = {
@@ -104,13 +94,9 @@ export type FeedEvent = {
   color: string;
   timestamp: number;
   silent?: boolean;
-  /// Everyone besides the chatter whose name the text links.
   people?: Person[];
-  /// The chatter's own words, shown like their chat message.
   message?: Fragment[];
-  /// Everything else worth knowing, on a quieter line of its own.
   detail?: string;
-  /// Who received a community gift's subs, as they arrive.
   recipients?: Person[];
   announcement_color?: AnnouncementColor;
   clip?: { id: string };

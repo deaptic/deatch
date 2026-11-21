@@ -17,7 +17,6 @@ const LOOKS: Record<
   },
 };
 
-/// A labelled rule across a list.
 export default function Divider(props: {
   label: string;
   variant: DividerVariant;

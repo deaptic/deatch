@@ -26,7 +26,6 @@ export type ChannelNavigation = {
 };
 
 export function createChannelNavigation(): ChannelNavigation {
-  // While synced the browser follows along; leaving the linked tabs ends it.
   function selectChannel(ch: User) {
     if (linkSynced()) {
       const linked = linkWarmedChannels().some((c) => c.id === ch.id);
@@ -54,8 +53,6 @@ export function createChannelNavigation(): ChannelNavigation {
     );
   }
 
-  // The feed scrolls once it holds the message, so this works whether the
-  // channel is already open or still has to mount and load its backlog.
   function jumpToMessage(broadcasterId: string, messageId: string) {
     openChannel(broadcasterId, () =>
       setJumpTarget({ broadcasterId, messageId }),
@@ -67,8 +64,6 @@ export function createChannelNavigation(): ChannelNavigation {
     if (ch) selectChannel(ch);
   }
 
-  // Whatever channel is shown — picked manually or mirrored from the browser
-  // tab in Link mode — gets its feed prepared and marked seen.
   createEffect(
     on(selectedChannel, (ch) => {
       if (!ch) return;

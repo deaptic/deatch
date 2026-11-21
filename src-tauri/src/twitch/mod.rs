@@ -35,13 +35,9 @@ pub struct Twitch {
     helix: Helix,
     session: Arc<Session>,
     eventsub: Arc<eventsub::Handle>,
-    /// The device-code poll in flight, so a new or cancelled sign-in can
-    /// stop it instead of letting it run for its 30 min lifetime.
     login: Arc<Mutex<Login>>,
 }
 
-/// `generation` moves on every start and cancel, so a poll that only gets
-/// attached after a cancel (the code request was still in flight) is dropped.
 #[derive(Default)]
 struct Login {
     generation: u64,
@@ -81,7 +77,6 @@ impl Twitch {
         }
     }
 
-    /// The signed-in user, without touching the network.
     pub async fn viewer(&self) -> Result<UserId> {
         self.session.user_id().await.ok_or(Error::NotAuthenticated)
     }

@@ -1,6 +1,3 @@
-//! Parses recent-messages.robotty.de's raw IRC lines into the shape of our
-//! EventSub `channel.chat.message` events. Pure; the fetch lives in `mod.rs`.
-
 use super::dto::{
     ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, MessageType, RecentHistory,
     RecentMessage, Reply,
@@ -11,7 +8,6 @@ use std::collections::HashMap;
 
 pub(super) type Tags = HashMap<String, String>;
 
-/// Splits an IRC line into its tags, nick, command verb and body.
 pub(super) fn split_irc(line: &str) -> Option<(Tags, &str, &str, &str)> {
     let rest = line.strip_prefix('@')?;
     let (tags, rest) = rest.split_once(' ')?;
@@ -19,9 +15,6 @@ pub(super) fn split_irc(line: &str) -> Option<(Tags, &str, &str, &str)> {
     let (prefix, rest) = rest.split_once(' ')?;
     let (command, rest) = rest.split_once(' ')?;
     let nick = prefix.split('!').next()?;
-    // Trailing-param `:` is optional when the body has no spaces, so
-    // `PRIVMSG #channel Kappa` is valid IRC. Split off the channel first,
-    // then strip an optional leading `:` from what's left.
     let body = rest
         .split_once(' ')
         .map_or("", |(_, b)| b.strip_prefix(':').unwrap_or(b));
@@ -35,7 +28,6 @@ fn parse_tags(s: &str) -> Tags {
         .collect()
 }
 
-/// IRCv3 tag value un-escape: `\:` → `;`, `\s` → ` `, `\\` → `\`, etc.
 fn unescape(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
     let mut chars = s.chars();
@@ -78,7 +70,6 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
         .and_then(|s| s.strip_suffix('\u{0001}'))
         .unwrap_or(body)
         .to_string();
-    // During shared chat every line names a source room, its own included.
     let source_room = nonempty(tags, "source-room-id").filter(|id| *id != tag(tags, "room-id"));
 
     RecentMessage {
@@ -137,8 +128,6 @@ fn parse_reply(tags: &Tags) -> Option<Reply> {
     })
 }
 
-/// Slices the message text into Text / Emote / Mention fragments using the
-/// `emotes` IRC tag for emote positions and a `@\w+` scan for mentions.
 pub(super) fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragment> {
     enum Kind {
         Emote(EmoteId),
@@ -223,8 +212,6 @@ pub(super) fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragme
     out
 }
 
-/// Lines arrive in chat order, so a clear only ever touches messages
-/// already collected.
 pub(super) fn parse_messages(lines: &[String]) -> RecentHistory {
     let mut history = RecentHistory::default();
     for line in lines {

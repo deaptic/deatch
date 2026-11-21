@@ -23,8 +23,6 @@ type Props = {
 
 const until = (iso: string) => formatCountdown(Date.parse(iso) - clock.now());
 
-/// The poll, prediction and raid running in the channel, each with what can
-/// be done about it; hidden while nothing runs.
 export default function ActivityStrip(props: Props) {
   const current = () => activityFor(props.broadcasterId);
   const raiding = () => {

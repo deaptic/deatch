@@ -79,7 +79,6 @@ pub(super) fn spawn_creates(
     });
 }
 
-/// Runs off the coordinator so chat delivery never waits on Helix.
 pub(super) fn spawn_moderated(
     twitch: Twitch,
     token: UserToken,

@@ -32,8 +32,6 @@ pub async fn get_channel_information(
         .await
 }
 
-/// Your own follows are readable for any channel; anyone else's need the
-/// channel's moderator view.
 pub async fn get_followed_at(
     twitch: &Authed<'_>,
     params: BroadcasterUserParams,

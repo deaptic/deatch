@@ -23,8 +23,6 @@ export function createSessionLifecycle(deps: SessionDeps): void {
     on(user, (signedIn, previous) => {
       if (signedIn) {
         emotes.ensureGlobalLoaded();
-        // The backend only announces the list when it changes, so a reloaded
-        // page asks for it instead of waiting for a change that won't come.
         getModeratedChannels({ silent: true })
           .then((channels) => {
             if (user()?.id === signedIn.id) setModeratedChannels(channels);

@@ -10,8 +10,6 @@ use tokio_tungstenite::{
     connect_async_tls_with_config, Connector, MaybeTlsStream, WebSocketStream,
 };
 
-/// Read timeouts only start once a socket is open, so a stalled handshake
-/// needs its own bound to reach the caller's reconnect loop.
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
 pub type Socket = WebSocketStream<MaybeTlsStream<TcpStream>>;

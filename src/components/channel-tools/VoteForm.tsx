@@ -38,7 +38,6 @@ type Props = {
   onDone: () => void;
 };
 
-/// A poll or a prediction: a question, its options, and how long it runs.
 export default function VoteForm(props: Props) {
   const [question, setQuestion] = createSignal("");
   const [options, setOptions] = createSignal<string[]>(

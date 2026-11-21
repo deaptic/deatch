@@ -9,7 +9,6 @@ export function toLogEntry(entry: FeedEntry): LogEntry {
   };
 }
 
-/// A page of the log read next to `entry`.
 export function cursorAt(side: Side, entry: FeedEntry): Cursor {
   return { side, id: getEntryId(entry), timestamp: entry.timestamp };
 }
@@ -32,8 +31,6 @@ function isFeedEntry(value: unknown): value is FeedEntry {
   );
 }
 
-/// Logged entries that still read as feed entries; the log outlives the code
-/// that wrote it, so anything else is dropped.
 export function fromLog(lines: string[]): FeedEntry[] {
   const entries = lines.flatMap((line) => {
     try {

@@ -6,8 +6,6 @@ import type { CacheStats, Diagnostics } from "../types/index.ts";
 
 const POLL_MS = 1000;
 
-/// Polls only while watched, and waits for each sample before scheduling the
-/// next so slow samples never pile up.
 export function watch(onSample: (sample: Diagnostics) => void): () => void {
   let stopped = false;
   let timer: ReturnType<typeof setTimeout> | undefined;

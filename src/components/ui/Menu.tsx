@@ -20,7 +20,6 @@ function moveFocus(e: KeyboardEvent & { currentTarget: HTMLElement }) {
   items[step(from, items.length)]?.focus();
 }
 
-/// Closes the enclosing menu; items call it once they have acted.
 export const MenuClose = createContext<() => void>();
 
 type Props = {

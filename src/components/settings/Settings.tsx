@@ -75,8 +75,6 @@ const SECTIONS: {
   },
 ];
 
-// Below this the labelled nav would squeeze the content column under its
-// minimum, so the nav drops to icons.
 const COLLAPSE_BELOW_PX = 640;
 
 export default function Settings() {

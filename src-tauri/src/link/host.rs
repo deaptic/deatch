@@ -16,9 +16,6 @@ fn log_path() -> std::path::PathBuf {
     std::env::temp_dir().join("deatch-host.log")
 }
 
-/// The host runs without Tauri, so it keeps its own log file. Every browser
-/// runs its own host on it, so it is cleared once it outgrows the cap rather
-/// than on start. A failed log write has nowhere else to go and is dropped.
 fn log(message: impl Display) {
     let path = log_path();
     if std::fs::metadata(&path).is_ok_and(|m| m.len() > MAX_LOG_BYTES) {
@@ -35,8 +32,6 @@ fn log(message: impl Display) {
 }
 
 pub fn launched_by_browser(args: &[String]) -> bool {
-    // Firefox launches the host with the manifest path, Chromium with the
-    // extension origin.
     args.iter().any(|a| a == "--browser-host")
         || args
             .get(1)
@@ -98,8 +93,6 @@ fn write_to_browser(line: &str) -> io::Result<()> {
     out.flush()
 }
 
-/// Each GUI connection gets an id so a stale reader's close notice, arriving
-/// after we already reconnected, can't tear down the new connection.
 fn forward_to_gui(rx: mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) {
     for id in 0.. {
         let mut writer = connect_to_gui(id, &rx, tx.clone());
@@ -120,9 +113,6 @@ fn forward_to_gui(rx: mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) {
     }
 }
 
-/// Every browser message is a full state snapshot, and the browser answers
-/// the `get_state` nudge sent on connect with a fresh one, so whatever queues
-/// while the app is away is stale and dropped.
 fn connect_to_gui(id: u64, rx: &mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) -> Stream {
     let mut reported = false;
     let stream = loop {
@@ -130,7 +120,6 @@ fn connect_to_gui(id: u64, rx: &mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) 
         match super::ipc::connect_to_gui() {
             Ok(stream) => break stream,
             Err(e) => {
-                // The app being closed is the normal case; one line is enough.
                 if !reported {
                     log(format_args!("waiting for app: {e}"));
                     reported = true;
@@ -145,7 +134,6 @@ fn connect_to_gui(id: u64, rx: &mpsc::Receiver<Event>, tx: mpsc::Sender<Event>) 
             std::thread::spawn(move || {
                 pump_to_browser(reader);
                 log("sink closed");
-                // Fails only once the forwarder has exited, which nobody awaits.
                 let _ = tx.send(Event::GuiClosed(id));
             });
         }

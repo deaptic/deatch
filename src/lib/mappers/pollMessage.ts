@@ -1,6 +1,3 @@
-// Pure text for poll events, kept apart from the listener so it can be
-// tested without Tauri.
-
 import { formatSpan } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
@@ -18,7 +15,6 @@ export function pollBegin(raw: RawPoll): NoticeText {
   };
 }
 
-/// Null for the archive notice Twitch sends after a poll already ended.
 export function pollEnd(raw: RawPoll): NoticeText | null {
   if (raw.status === "archived") return null;
   const results = [...raw.choices]

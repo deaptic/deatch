@@ -11,7 +11,6 @@ import { knownUser } from "./users.ts";
 
 export type FavoriteEmote = { value: string; url: string; label: string };
 
-/// The emotes service loads and saves them.
 export const [favorites, setFavorites] = createSignal<FavoriteEmote[]>([]);
 
 export const [globalEmotes, setGlobalEmotes] = createSignal<Emote[]>([]);
@@ -25,7 +24,6 @@ export const [sevenTvChannel, setSevenTvChannel] = createSignal<EmoteEntry[]>(
 export const [bttvChannel, setBttvChannel] = createSignal<EmoteEntry[]>([]);
 export const [ffzChannel, setFfzChannel] = createSignal<EmoteEntry[]>([]);
 
-/// Every third-party emote by name; the emotes service keeps it current.
 export const [thirdPartyEmoteMap, setThirdPartyEmoteMap] =
   createSignal<EmoteMap>(emoteMap([]));
 
@@ -43,7 +41,6 @@ export function clearChannelThirdPartyEmotes() {
   setFfzChannel([]);
 }
 
-/// The picker's channel tab, from the current emote signals.
 export function computeChannelSections(
   broadcaster: User | null,
 ): EmoteSection[] {
@@ -54,7 +51,6 @@ export function computeChannelSections(
   });
 }
 
-/// The picker's global tab, from the current emote signals.
 export function computeGlobalSections(
   broadcaster: User | null,
 ): EmoteSection[] {

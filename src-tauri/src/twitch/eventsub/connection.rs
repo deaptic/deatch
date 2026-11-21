@@ -13,8 +13,6 @@ use crate::twitch::ids::UserId;
 use crate::ws::{self, Socket};
 
 const WS_URL: &str = "wss://eventsub.wss.twitch.tv/ws";
-/// Twitch sends a keepalive every 10s by default; silence beyond this means
-/// the socket is half-open and must be replaced.
 const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(30);
 const MIGRATION_GRACE: Duration = Duration::from_secs(30);
 const RECONNECT_BASE: Duration = Duration::from_secs(1);
@@ -35,7 +33,6 @@ enum Received {
     Other,
 }
 
-/// Serializes as the `{ timestamp, event }` envelope the frontend listens for.
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub(super) struct Notification {
     #[serde(skip)]
@@ -154,8 +151,6 @@ async fn serve(
     }
 }
 
-/// Twitch keeps delivering to the old session until the new one is
-/// welcomed, so it is read until it ends or the migration window closes.
 async fn drain(conn: ConnId, mut socket: Socket, signals: mpsc::UnboundedSender<Signal>) {
     let forward = async {
         while let Some(message) = socket.next().await {
@@ -213,9 +208,6 @@ struct Session {
     reconnect_url: Option<String>,
 }
 
-/// Events are read as raw JSON, not `twitch_api` types: Twitch keeps adding
-/// fields the crate rejects (new chat fragment types, notice types), and the
-/// frontend's hand-written types already describe the raw shape.
 fn classify(text: &str) -> serde_json::Result<Received> {
     let Frame { metadata, payload } = serde_json::from_str(text)?;
     Ok(match metadata.message_type.as_str() {
@@ -241,7 +233,6 @@ fn classify(text: &str) -> serde_json::Result<Received> {
 
 fn notification(metadata: Metadata, event: Option<serde_json::Value>) -> Option<Notification> {
     let event = event?;
-    // Charity campaign events alone name the channel `broadcaster_id`.
     let broadcaster_id = event
         .get("broadcaster_user_id")
         .or_else(|| event.get("broadcaster_id"))?
@@ -261,7 +252,6 @@ fn reconnect_delay(failed_connects: u32) -> Duration {
         .min(RECONNECT_MAX)
 }
 
-/// Adds up to 25% so many clients dropped together don't reconnect in step.
 fn jittered(delay: Duration) -> Duration {
     let spread = crate::clock::since_epoch().subsec_nanos() % 1000;
     delay + delay.mul_f64(f64::from(spread) / 4000.0)
@@ -271,8 +261,6 @@ fn jittered(delay: Duration) -> Duration {
 mod tests {
     use super::*;
 
-    // Trimmed from a real channel.chat.message that twitch_api 0.8 rejects
-    // because of the `gif` fragment type.
     const GIF_MESSAGE: &str = r#"{
         "metadata": {
             "message_id": "QFCMTLyqOT1ZTW-6A9IMEfZuG6KQgRyogpr0kU7zttE=",

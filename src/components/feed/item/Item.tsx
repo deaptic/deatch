@@ -17,7 +17,6 @@ export type ItemLayout = {
   continued?: boolean;
   selected?: boolean;
   flush?: boolean;
-  /// p-2, no tone stripe, tile slot hugging the tile: a row in a card.
   bare?: boolean;
   showTimestamp?: boolean;
 };
@@ -49,8 +48,6 @@ export const DensityContext = createContext<() => Density>(
   (): Density => "compact",
 );
 
-/// One row of the feed. Its parts sit in a two-column grid: the lead (tile
-/// or timestamp) on the left, the text on the right.
 export default function Item(props: Props) {
   const [hovered, setHovered] = createSignal(false);
   const active = () => hovered() || !!props.selected;

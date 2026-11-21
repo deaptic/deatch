@@ -179,7 +179,6 @@ const LOOKS: Record<string, Look> & { local: Look } = {
   },
 };
 
-/// Types that share their family's look but say what they are.
 const TITLES: Record<string, MessageKey> = {
   resub: "EVENT_TITLE_RESUB",
   sub_gift: "EVENT_TITLE_SUB_GIFT",
@@ -190,8 +189,6 @@ const TITLES: Record<string, MessageKey> = {
   unraid: "EVENT_TITLE_UNRAID",
 };
 
-// Spelled out in full: Tailwind only keeps theme colours whose names it finds
-// in the source, so a built-up name would never reach the page.
 const ANNOUNCEMENT_COLORS: Record<
   Exclude<AnnouncementColor, "primary">,
   string
@@ -202,8 +199,6 @@ const ANNOUNCEMENT_COLORS: Record<
   purple: "var(--color-event-announce-purple)",
 };
 
-/// How an event shows: its colour, icon, and title. A picked announcement
-/// colour replaces the type's own.
 export function look(item: Event): Look {
   const type = item.notice_type.replace(/^shared_chat_/, "");
   const event = NOTICE_TO_EVENT[type];
@@ -217,7 +212,6 @@ export function look(item: Event): Look {
   };
 }
 
-/// The chatter behind an event as a person to link. Local notices have none.
 function chatter(item: Event): Person | undefined {
   return item.chatter_user_id
     ? {
@@ -229,11 +223,9 @@ function chatter(item: Event): Person | undefined {
     : undefined;
 }
 
-/// Everyone the event's sentence names, the chatter first.
 export function people(item: Event): Person[] {
   const first = chatter(item);
   return [...(first ? [first] : []), ...(item.people ?? [])];
 }
 
-/// A big gift stays a line until someone asks for the rest.
 export const RECIPIENTS_SHOWN = 8;

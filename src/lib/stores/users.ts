@@ -33,7 +33,6 @@ export function knownUser(id: string): User | undefined {
 
 const chattersByChannel = new Map<string, Map<string, Chatter>>();
 
-/// Who has chatted in the channel lately, as far as this session saw.
 export function chattersIn(broadcasterId: string): Iterable<Chatter> {
   return chattersByChannel.get(broadcasterId)?.values() ?? [];
 }

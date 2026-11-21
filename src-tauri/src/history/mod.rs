@@ -1,7 +1,3 @@
-//! Fetches chat backlog from recent-messages.robotty.de (community IRC mirror)
-//! and maps each PRIVMSG to the shape of our EventSub `channel.chat.message`
-//! events so the renderer can consume both without a separate code path.
-
 pub mod commands;
 pub mod dto;
 mod irc;

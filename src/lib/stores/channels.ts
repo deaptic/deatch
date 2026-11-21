@@ -8,7 +8,6 @@ import { userFromRef } from "../utils/knownUsers.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 
-/// Followed channels that are live; null until the first poll lands.
 export const [followedLive, setFollowedLive] = createSignal<User[] | null>(
   null,
 );

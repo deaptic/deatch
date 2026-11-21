@@ -12,8 +12,6 @@ import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 
-/// Each wanted channel's latest request; a lookup that lands after its
-/// channel was left, or re-requested, is dropped.
 const requests = new Map<string, symbol>();
 const retries = new Map<string, ReturnType<typeof setTimeout>>();
 const RETRY_MS = 60_000;

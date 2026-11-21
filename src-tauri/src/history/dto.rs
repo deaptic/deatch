@@ -22,16 +22,11 @@ pub struct RecentMessage {
     pub channel_points_custom_reward_id: Option<RewardId>,
     pub timestamp_ms: i64,
     pub deleted: bool,
-    /// Set only for shared chat messages sent in a partner channel, like
-    /// EventSub's `source_*` fields; IRC carries no login or name for it.
     pub source_broadcaster_user_id: Option<UserId>,
     pub source_message_id: Option<MessageId>,
     pub source_badges: Option<Vec<ChatterBadge>>,
 }
 
-/// A USERNOTICE in the shape of EventSub's `channel.chat.notification`, so
-/// the renderer reads history and live notices alike. Only the detail that
-/// matches `notice_type` is set.
 #[derive(Serialize, specta::Type)]
 pub struct RecentNotice {
     pub broadcaster_user_id: UserId,
@@ -99,7 +94,6 @@ pub struct SubGiftNotice {
 
 #[derive(Debug, PartialEq, Serialize, specta::Type)]
 pub struct CommunitySubGiftNotice {
-    /// Shared with each of its subs' `community_gift_id`.
     pub id: Option<CommunityGiftId>,
     pub sub_tier: SubTier,
     pub total: u32,
@@ -186,7 +180,6 @@ pub struct Reply {
     pub parent_user_name: String,
     pub parent_user_login: String,
     pub parent_user_id: UserId,
-    /// IRC names the thread's first message by id and login only.
     pub thread_message_id: Option<MessageId>,
     pub thread_user_login: Option<String>,
 }

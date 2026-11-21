@@ -16,8 +16,6 @@ type Props = {
   children: JSX.Element;
 };
 
-/// Also worn by things that act as a card but are not one, like a clickable
-/// stream tile.
 export const CARD_FRAME = `rounded-lg border ${RESTING_BORDER}`;
 
 export default function Card(props: Props) {

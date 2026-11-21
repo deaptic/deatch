@@ -2,8 +2,6 @@ import type { FeedEntry, FeedMessage, MentionReason } from "../types/index.ts";
 import { textOf } from "./message.ts";
 import { matchedKeyword } from "./wordMatch.ts";
 
-/// One rule for "this message is for me": an @mention, a reply to me, or a
-/// keyword hit. Your own messages never count.
 export function mentionReason(
   msg: FeedMessage,
   myLogin: string,

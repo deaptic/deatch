@@ -28,7 +28,6 @@ export default function WarnModal(props: Props) {
       });
       props.onClose();
     } catch {
-      // invokeCommand already toasted; the modal stays open to retry.
     } finally {
       setPending(false);
     }

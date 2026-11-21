@@ -1,6 +1,4 @@
 import { t } from "../i18n/index.ts";
-// Pure mapper from channel.chat.notification, live or from history, to the
-// feed shape. No side effects, so the backlog service can use it too.
 
 import type {
   AnnouncementColor,
@@ -20,7 +18,6 @@ function announcementColor(
   return isAnnouncementColor(color) ? color : undefined;
 }
 
-/// The people a notice names besides its chatter.
 function namedIn(raw: RawNotification): Person[] {
   const gift = detail(raw, "sub_gift");
   if (gift) {
@@ -41,7 +38,6 @@ function namedIn(raw: RawNotification): Person[] {
     : [];
 }
 
-/// Null when the notice has no text to show.
 export function mapNotice(
   raw: RawNotification,
   timestamp: number,
@@ -49,7 +45,6 @@ export function mapNotice(
   const system_message = noticeMessage(raw) ?? raw.system_message;
   if (!system_message.trim()) return null;
   return feedEvent(raw.notice_type, system_message, timestamp, {
-    // Live and history share Twitch's message id, so the feed drops repeats.
     id: raw.message_id,
     chatter_user_id: raw.chatter_is_anonymous ? undefined : raw.chatter_user_id,
     chatter_login: raw.chatter_is_anonymous

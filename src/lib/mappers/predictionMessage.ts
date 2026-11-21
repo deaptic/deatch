@@ -1,6 +1,3 @@
-// Pure text for prediction events, kept apart from the listener so it can be
-// tested without Tauri.
-
 import { formatSpan } from "../format/duration.ts";
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";

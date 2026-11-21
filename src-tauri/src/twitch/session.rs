@@ -11,8 +11,6 @@ use twitch_api::twitch_oauth2::{RequestParseError, TwitchToken, UserToken};
 
 const REFRESH_MARGIN: Duration = Duration::from_secs(60);
 
-/// One lock covers reads and refreshes, so callers never race a refresh or
-/// a logout.
 pub struct Session {
     app: tauri::AppHandle,
     token: Mutex<Option<UserToken>>,
@@ -32,7 +30,6 @@ impl Session {
         *slot = Some(token);
     }
 
-    /// Who is signed in, read without refreshing anything.
     pub async fn user_id(&self) -> Option<UserId> {
         let slot = self.token.lock().await;
         slot.as_ref().map(UserId::from)
@@ -65,8 +62,6 @@ impl Session {
     }
 }
 
-/// Twitch answering 4xx means the refresh token itself is dead; anything
-/// else is a blip worth retrying with the same token.
 pub(super) fn is_final<E: std::error::Error + Send + Sync + 'static>(
     e: &RefreshTokenError<E>,
 ) -> bool {
@@ -80,14 +75,11 @@ pub(super) fn is_final<E: std::error::Error + Send + Sync + 'static>(
 }
 
 fn persist(token: &UserToken) {
-    // Losing persistence only costs a re-login next launch; failing the live
-    // session over it would be worse.
     if let Err(e) = credentials::save(token) {
         log::warn!("credentials not persisted: {e}");
     }
 }
 
-/// Signing out must win locally even when the keyring is unavailable.
 fn forget() {
     if let Err(e) = credentials::delete() {
         log::warn!("credentials not deleted: {e}");

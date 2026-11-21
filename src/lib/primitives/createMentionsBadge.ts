@@ -55,7 +55,6 @@ export function createMentionsBadge(): void {
     last = key;
     renderBadgeBytes(count, look).then(
       (bytes) => {
-        // A newer count may have finished drawing first.
         if (key !== last) return;
         setMentionsBadge({ count, iconBytes: bytes }, { silent: true }).catch(
           () => {},

@@ -3,8 +3,6 @@ import { at } from "./at.ts";
 
 export type Oklch = { l: number; c: number; h: number };
 
-// Twitch colours are chosen for one background; clamp lightness so dark
-// colours stay readable on dark and light colours on light.
 export function readableColor(color: string, theme: ResolvedTheme): string {
   return theme === "dark"
     ? `oklch(from ${color} max(l, 0.64) c h)`

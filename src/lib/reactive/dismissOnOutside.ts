@@ -1,7 +1,5 @@
 import { onCleanup } from "solid-js";
 
-/// Elements that open or close an overlay carry this attribute so the
-/// mousedown that toggles them is not also counted as an outside click.
 export const POPOVER_TOGGLE = "data-popover-toggle";
 
 type DismissOnOutsideOptions = {
@@ -12,9 +10,6 @@ type DismissOnOutsideOptions = {
   shouldDismiss?: () => boolean;
 };
 
-/// Overlays in the order they opened. One opened from inside another (a menu
-/// from a user card) renders elsewhere, so the outer one must not count
-/// clicks in it as outside.
 const stack: (() => HTMLElement | undefined)[] = [];
 
 const insideLater = (ref: () => HTMLElement | undefined, target: Node) =>

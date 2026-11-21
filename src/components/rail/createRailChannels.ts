@@ -13,7 +13,6 @@ type RailChannels = {
   isLive: (id: string) => boolean;
 };
 
-/// What the rail shows of the live service's state.
 export function createRailChannels(): RailChannels {
   const live = () => followedLive() ?? [];
   const liveById = createMemo(() => new Map(live().map((ch) => [ch.id, ch])));

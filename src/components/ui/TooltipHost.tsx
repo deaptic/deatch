@@ -6,8 +6,6 @@ const DELAY_MS = 300;
 
 type Tip = TooltipPlace & { text: string };
 
-/// Shows `data-tip` on any hovered element after a short delay, in place of
-/// the native `title` tooltip. One delegated listener serves the whole app.
 export default function TooltipHost() {
   const [tip, setTip] = createSignal<Tip | null>(null);
   let anchor: HTMLElement | null = null;
@@ -32,8 +30,6 @@ export default function TooltipHost() {
     });
   }
 
-  // Only a scroll that moves the hovered element hides the tip; a feed
-  // scrolling in new messages leaves the header's tip alone.
   const onScroll = (e: Event) => {
     if (anchor && (e.target as Node).contains(anchor)) hide();
   };

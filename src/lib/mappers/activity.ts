@@ -1,6 +1,3 @@
-// A running poll or prediction from its EventSub stage, in the same shape the
-// backend returns for the one already running when a channel opens.
-
 import type {
   Poll,
   Prediction,
@@ -21,7 +18,6 @@ export function pollFrom(raw: RawPoll): Poll {
   };
 }
 
-/// Begin and progress carry when voting locks; the lock stage does not.
 export function predictionFrom(raw: RawPrediction): Prediction {
   return {
     id: raw.id,

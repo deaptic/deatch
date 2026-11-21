@@ -12,8 +12,6 @@ import { fromLog, toLogEntry } from "../utils/feedLog.ts";
 
 const FLUSH_MS = 5_000;
 
-/// Writes every entry the feeds add or change, every few seconds, so the log
-/// is never more than a moment behind the feed.
 export function start(): () => void {
   const flushNow = () => void flush();
   const timer = setInterval(flushNow, FLUSH_MS);
@@ -23,7 +21,6 @@ export function start(): () => void {
   };
 }
 
-/// Never rejects: a failed write is logged by invokeCommand.
 function write(broadcasterId: string, entries: FeedEntry[]): Promise<void> {
   return feedlogAppend(
     { broadcasterId, entries: entries.map(toLogEntry) },
@@ -34,8 +31,6 @@ function write(broadcasterId: string, entries: FeedEntry[]): Promise<void> {
   );
 }
 
-/// Writes what is waiting now; reads wait for it so they see it. Entries are
-/// read at write time, so each carries its latest state.
 export async function flush(): Promise<void> {
   await Promise.all(
     [...takeUnlogged()].map(([id, entries]) =>
@@ -47,8 +42,6 @@ export async function flush(): Promise<void> {
   );
 }
 
-/// Drops what is waiting without writing it: the log belongs to whoever is
-/// signed in, and these entries were seen by someone who no longer is.
 export function discard() {
   takeUnlogged();
 }
@@ -71,7 +64,6 @@ export async function page(
   return fromLog(lines);
 }
 
-/// The logged entries around `id`, or null when the log no longer has it.
 export async function around(
   broadcasterId: string,
   id: string,

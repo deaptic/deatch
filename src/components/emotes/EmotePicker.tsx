@@ -65,9 +65,6 @@ export default function EmotePicker(props: Props) {
   let panelRef: HTMLDivElement | undefined;
   let searchRef: HTMLInputElement | undefined;
 
-  // Hydrate display metadata for any channels the user subs to whose owner
-  // info isn't yet in the user cache. Used by `computeGlobalSections` to
-  // label the per-channel groups.
   createEffect(() => {
     const broadcaster = selectedChannel();
     const ids = new Set<string>();
@@ -162,8 +159,6 @@ export default function EmotePicker(props: Props) {
 
   createEffect(on([tab, search], () => setActiveIndex(0), { defer: true }));
 
-  // Favourites lead the list, so a cursor past them moves by however much
-  // they grew or shrank to stay on the same emote.
   const onToggleFavorite = (item: EmoteGridItem) => {
     const before = favorites().length;
     emotes.toggleFavorite({

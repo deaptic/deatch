@@ -37,7 +37,6 @@ export const linkChannelGains = () => prefs.link.channelGains;
 export const channelGain = (login: string) =>
   prefs.link.channelGains[login] ?? DEFAULT_CHANNEL_GAIN;
 
-/// A channel back at 100% is forgotten rather than stored.
 export function setChannelGain(login: string, percent: number) {
   setPrefs(
     "link",

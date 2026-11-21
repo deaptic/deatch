@@ -66,8 +66,6 @@ export default function AppearancePreview() {
       color: color() ?? "",
     };
   };
-  // FeedRow reads its entry once, so wait for the colour rather than rebuild
-  // every row when it lands.
   const entries = createMemo(() =>
     color.loading ? [] : sampleFeed(me(), Date.now()),
   );

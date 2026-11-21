@@ -65,7 +65,6 @@ export default function Message(props: Props) {
     isMention(item, props.userLogin, props.keywords ?? []),
   );
 
-  // Spacious rows pin the source channel to the avatar instead.
   const badges = (placement: BadgePlacement) => (
     <BadgeBox
       badges={props.showBadges !== false ? details.chatterBadges(item) : []}
@@ -130,7 +129,6 @@ export default function Message(props: Props) {
     />
   );
 
-  /// The toolbar shows only with every action it offers.
   const toolbarActions = () => {
     const { onReply, onReact, onCopypasta, onContextMenu } = props;
     if (hold() || props.showToolbar === false) return null;

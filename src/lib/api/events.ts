@@ -14,7 +14,6 @@ const commands = {
     name: K,
     handler: (payload: AppEventPayload<K>) => void,
   ) => {
-    // Each event's listen takes its own payload type; K picks exactly one.
     const listenTo = events[name].listen as (
       cb: (event: { payload: AppEventPayload<K> }) => void,
     ) => Promise<Unlisten>;

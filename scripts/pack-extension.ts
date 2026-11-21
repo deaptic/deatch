@@ -1,12 +1,3 @@
-// Usage:
-//   vp run pack:extension                 (no version change)
-//   vp run pack:extension patch | minor | major | 1.2.3
-//
-// Bumps the version in extension/manifest.json when asked, then builds
-// extension/dist/deatch-link-{firefox,chrome}-<v>.zip, each with a manifest
-// stripped to what that browser knows, so neither store warns about the
-// other's keys.
-
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -19,8 +10,6 @@ const FILES = ["background.js", "compressor.js", "icons"];
 
 const CHROME_ONLY = ["minimum_chrome_version"];
 const FIREFOX_ONLY = ["browser_specific_settings"];
-// The Web Store assigns the id and rejects uploads that carry `key`; it only
-// serves unpacked loads.
 const UNPACKED_ONLY = ["key"];
 
 type Manifest = Record<string, unknown> & {
@@ -58,7 +47,6 @@ const targets = {
   chrome: strip([...FIREFOX_ONLY, ...UNPACKED_ONLY], "scripts"),
 };
 
-/// Windows' own tar writes zips; a GNU tar earlier on PATH would not.
 function windowsTar(): string {
   const root = process.env.SystemRoot;
   if (!root)

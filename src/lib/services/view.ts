@@ -8,8 +8,6 @@ import {
 
 const CHANNEL_COMMIT_MS = 300;
 
-/// Stepping through channels commits only where it stops, so the ones passed
-/// on the way never load; opening or leaving a page commits at once.
 export function start(): () => void {
   return createRoot((dispose) => {
     const settled = createDebounced(pendingChannel, CHANNEL_COMMIT_MS, {

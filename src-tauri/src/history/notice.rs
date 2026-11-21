@@ -1,6 +1,3 @@
-//! Maps a USERNOTICE to the shape of EventSub's `channel.chat.notification`,
-//! translating IRC `msg-id`s and `msg-param-*` tags to EventSub's names.
-
 use super::dto::{
     AnnouncementNotice, BitsBadgeTierNotice, CharityAmount, CharityDonationNotice,
     CommunitySubGiftNotice, GifterNotice, MessageBody, PrimePaidUpgradeNotice, RaidNotice,
@@ -16,12 +13,10 @@ fn num<T: FromStr>(tags: &Tags, key: &str) -> Option<T> {
     tag(tags, key).parse().ok()
 }
 
-/// Twitch writes zero for counts the chatter chose to hide.
 fn shown_count(tags: &Tags, key: &str) -> Option<u32> {
     num(tags, key).filter(|n| *n > 0)
 }
 
-/// A Prime sub counts as Tier 1, as on EventSub.
 fn plan(tags: &Tags) -> Option<(SubTier, bool)> {
     match tag(tags, "msg-param-sub-plan") {
         "Prime" => Some((SubTier::Tier1, true)),
@@ -32,8 +27,6 @@ fn plan(tags: &Tags) -> Option<(SubTier, bool)> {
     }
 }
 
-/// Links a community gift to each of its subs. Not in Twitch's IRC docs, but
-/// sent on both, and equal to EventSub's `community_gift_id`.
 fn community_gift_id(tags: &Tags) -> Option<CommunityGiftId> {
     nonempty(tags, "msg-param-community-gift-id").map(Into::into)
 }
@@ -82,8 +75,6 @@ pub(super) fn parse_usernotice(tags: &Tags, body: &str) -> RecentNotice {
     notice
 }
 
-/// Fills the detail for `msg_id` and returns its EventSub notice type. An
-/// unknown `msg_id` passes through and renders Twitch's `system-msg`.
 fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'a str {
     match msg_id {
         "sub" => {
@@ -243,7 +234,6 @@ mod tests {
         );
     }
 
-    // Tags as robotty serves them for one sub of a community gift.
     #[test]
     fn links_a_community_gift_and_its_subs() {
         let community = notice(

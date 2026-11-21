@@ -7,14 +7,11 @@ import { trapFocus } from "../../lib/reactive/trapFocus.ts";
 
 const MARGIN = 8;
 
-/// The corner the popover grows out of, matching how it is aligned to x.
 const ORIGIN = {
   start: "origin-top-left",
   center: "origin-top",
   end: "origin-top-right",
 };
-/// Distance between an overlay and the control that opened it: below it, or
-/// beside/above it (tooltips, rail popovers).
 export const OVERLAY_GAP = 4;
 export const SIDE_GAP = 8;
 

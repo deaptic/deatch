@@ -16,7 +16,6 @@ type Props = {
   actions?: NoteAction[];
 };
 
-/// One short line of context, with optional actions pinned to the item.
 export default function Note(props: Props) {
   return (
     <>

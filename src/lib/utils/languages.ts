@@ -2,7 +2,6 @@ import { formatLocale, t } from "../i18n/index.ts";
 
 const OTHER = "other";
 
-// ponytail: built once; rebuild per locale when a language picker lands.
 const names = new Intl.DisplayNames([formatLocale()], { type: "language" });
 
 export function languageName(code: string): string {

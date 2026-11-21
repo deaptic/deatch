@@ -56,8 +56,6 @@
   --font-sans: "Atkinson Hyperlegible Next", system-ui, sans-serif;
   --font-mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
 
-  /* Tracking tightens as type grows and opens as it shrinks; leading does the
-     reverse. */
   --text-hero: 2.25rem;
   --text-hero--line-height: 2.625rem;
   --text-hero--font-weight: 800;
@@ -81,8 +79,6 @@
   --text-micro--font-weight: 600;
   --text-micro--letter-spacing: 0.02em;
 
-  /* Feed rows scale with the user's chat text size, so their parts are sized
-     in em. These are the only em-based sizes in the app. */
   --feed-meta-scale: 0.85;
   --text-feed-meta: calc(var(--feed-meta-scale) * 1em);
   --text-feed-timestamp: 0.8em;
@@ -95,9 +91,7 @@
   --spacing-feed-badge-drop: -0.15em;
   --spacing-feed-icon: 1.1em;
   --spacing-feed-hook: 0.625em;
-  /* A tile beside meta text, shrunk with it. */
   --spacing-feed-meta-tile: calc(var(--chat-tile) * var(--feed-meta-scale));
-  /* Lead (tile or timestamp) beside the text, which may shrink to wrap. */
   --feed-columns: auto minmax(0, 1fr);
 
   --radius-xs: 4px;
@@ -113,7 +107,6 @@
   --spacing-header: 56px;
   --spacing-titlebar: 40px;
 
-  /* User card: resizable between its default and max size. */
   --spacing-card-width: 22.5rem;
   --spacing-card-height: 35rem;
   --spacing-card-max-width: 40rem;
@@ -126,22 +119,16 @@
   --text-card-name: 1.45rem;
   --text-card-meta: 0.95rem;
 
-  /* `ease-out` for anything entering or answering a press; `ease-drawer` for
-     panes that slide across the window. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --duration-snap: 100ms;
   --duration-quick: 160ms;
   --duration-settle: 240ms;
 
-  /* Materials: what floats over content. Bigger layers blur more and cast a
-     deeper shadow. Worn through the material-* and elevation-* utilities
-     below, never as raw values. */
   --color-material: oklch(0.27 0 0 / 0.84);
   --blur-thin: 12px;
   --blur-regular: 20px;
   --blur-thick: 32px;
-  /* The inset top edge is light catching the layer, so it reads on dark. */
   --elevation-1:
     inset 0 1px 0 oklch(1 0 0 / 0.05), 0 1px 2px oklch(0 0 0 / 0.3),
     0 4px 12px oklch(0 0 0 / 0.24);
@@ -152,7 +139,6 @@
     inset 0 1px 0 oklch(1 0 0 / 0.06), 0 4px 12px oklch(0 0 0 / 0.36),
     0 24px 64px oklch(0 0 0 / 0.52);
 
-  /* Tones: pure greys, so chat colours and the accent carry every hue. */
   --color-canvas: oklch(0.16 0 0);
   --color-surface: oklch(0.2 0 0);
   --color-raised: oklch(0.25 0 0);
@@ -160,41 +146,28 @@
   --color-scrim: oklch(0.1 0 0 / 0.6);
   --color-media-scrim: oklch(0 0 0 / 0.55);
 
-  /* Ink */
   --color-ink: oklch(0.96 0 0);
   --color-ink-soft: oklch(0.74 0 0);
   --color-ink-faint: oklch(0.57 0 0);
 
-  /* Lines */
   --color-line-soft: oklch(0.26 0 0);
   --color-line: oklch(0.34 0 0);
 
-  /* Accent: default is #9481ff, which is accent-ink here; fills sit a step
-     deeper so white text on them reads. A user-picked colour replaces these
-     four via services/appearance.ts using the same lightness steps. */
   --color-accent: oklch(0.58 0.18 287.5);
   --color-accent-hover: oklch(0.62 0.18 287.5);
   --color-accent-ink: oklch(0.68 0.18 287.5);
   --color-accent-soft: oklch(0.58 0.18 287.5 / 0.14);
   --color-on-accent: oklch(0.99 0 0);
 
-  /* Status */
   --color-live: oklch(0.68 0.2 25);
   --color-positive: oklch(0.74 0.15 150);
   --color-caution: oklch(0.8 0.15 80);
   --color-negative: oklch(0.66 0.19 20);
   --color-info: oklch(0.74 0.12 250);
 
-  /* Events, grouped by what they mean to the channel rather than one colour
-     per kind: support (someone paid: subs, bits, charity, hype trains),
-     community (a channel pointed people here: raids, shoutouts), engagement
-     (chat taking part: polls, predictions, goals, channel points). Anything
-     quieter, like a follow, stays neutral. */
   --color-event-support: oklch(0.84 0.15 85);
   --color-event-community: oklch(0.76 0.17 350);
   --color-event-engagement: oklch(0.8 0.12 195);
-  /* The colour a broadcaster picks for an announcement; "primary" uses the
-     accent. */
   --color-event-announce-blue: oklch(0.74 0.13 255);
   --color-event-announce-green: oklch(0.78 0.15 150);
   --color-event-announce-orange: oklch(0.76 0.16 55);
@@ -244,13 +217,10 @@
   scrollbar-width: none;
 }
 
-/* Card grids fit as many 18rem columns as the space allows. */
 @utility grid-cards {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 }
 
-/* A solid layer lifted off what is under it: a segment thumb, a floating
-   pill, a dialog. */
 @utility elevation-1 {
   box-shadow: var(--elevation-1);
 }
@@ -263,9 +233,6 @@
   box-shadow: var(--elevation-3);
 }
 
-/* A translucent layer floating over content: tooltips and toolbars (thin),
-   menus, popovers, lists, and toasts (regular), the palette and user card
-   (thick). */
 @utility material-thin {
   background-color: var(--color-material);
   backdrop-filter: blur(var(--blur-thin)) saturate(1.5);
@@ -287,8 +254,6 @@
   box-shadow: var(--elevation-3);
 }
 
-/* A floating layer arriving: it grows out of its `origin-*` (the control
-   that opened it) rather than appearing from nothing. Leaving is instant. */
 @utility enter-pop {
   transition-property: opacity, scale;
   transition-duration: var(--duration-quick);
@@ -342,8 +307,6 @@
   }
 }
 
-/* Materials turn solid when the system asks for less transparency or more
-   contrast. */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root,
   [data-theme="light"] {

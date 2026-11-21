@@ -11,8 +11,6 @@ type Props = {
   broadcasterId: string;
 };
 
-/// One chat mode: a timed one opens its presets and shows its length while
-/// on; a switch flips on click. Both stay pressed while the mode is on.
 export default function ModeButton(props: Props) {
   const mode = props.mode;
   const Icon = mode.icon;

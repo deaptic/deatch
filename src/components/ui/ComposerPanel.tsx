@@ -14,7 +14,6 @@ const SIZES: Record<PanelSize, string> = {
 
 type Props = {
   label: string;
-  /// The composer box the panel floats above; it follows its height.
   anchorEl?: HTMLElement | null;
   onClose: () => void;
   size: PanelSize;
@@ -22,8 +21,6 @@ type Props = {
   children: JSX.Element;
 };
 
-/// A panel opened from the composer's buttons, pinned to the right just
-/// above the composer, closing on a click outside.
 export default function ComposerPanel(props: Props) {
   captureFocusForRestore();
   const [bottom, setBottom] = createSignal(64);

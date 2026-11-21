@@ -21,7 +21,6 @@ import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import type { LinkControls } from "./createLinkControls.ts";
 import { formatWholePercent } from "../format/units.ts";
 
-// The mouse's side buttons.
 const MOUSE_HISTORY_STEPS: Record<number, 1 | -1> = { 3: -1, 4: 1 };
 
 function zoom(change: () => void): void {

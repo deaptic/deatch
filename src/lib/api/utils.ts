@@ -33,8 +33,6 @@ export async function invokeCommand<A extends unknown[], T>(
   }
 }
 
-/// Tauri's unlisten is a backend call too, typed as returning nothing; this
-/// one goes through invokeCommand and never rejects, since nothing awaits it.
 export function wrapUnlisten(unlisten: () => unknown): () => void {
   const commands = {
     unlisten: async () => {
@@ -46,8 +44,6 @@ export function wrapUnlisten(unlisten: () => unknown): () => void {
   };
 }
 
-/// Toasts a failure the way invokeCommand does, for callers that made the
-/// call silently on the user's behalf (a shared batch, say).
 export function reportFailure(
   error: unknown,
   failureMessage = t("API_ACTION_FAILED"),

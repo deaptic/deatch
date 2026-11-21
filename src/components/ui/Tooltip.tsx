@@ -1,19 +1,14 @@
 import { createEffect, createSignal, type JSX } from "solid-js";
 import { Portal } from "solid-js/web";
 
-/// Kept this far inside the window edges.
 const MARGIN = 8;
 
-/// Beside an element (centred on `y`, its middle, within the window), or over
-/// it: above the element when the tip fits between `above` and the title bar,
-/// else below it at `below`.
 export type TooltipPlace =
   | { side: "right"; x: number; y: number }
   | { side: "over"; x: number; above: number; below: number };
 
 type Props = TooltipPlace & { children: JSX.Element };
 
-/// Everything stays under the title bar, so the window chrome stays clear.
 const titleBarBottom = () =>
   parseFloat(
     getComputedStyle(document.documentElement).getPropertyValue(

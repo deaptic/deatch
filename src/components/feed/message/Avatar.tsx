@@ -20,7 +20,6 @@ type Props = UserActions & {
   onOpenSource?: (broadcasterId: string) => void;
 };
 
-/// The chatter's tile, with the shared chat channel pinned to its corner.
 export default function Avatar(props: Props) {
   return (
     <span

@@ -6,10 +6,8 @@ import { knownUser } from "../../../lib/stores/users.ts";
 import { avatarZoom } from "../../../lib/utils/avatar.ts";
 import { createChannelLink } from "../../context-menus/createChannelLink.tsx";
 
-/// The channel a shared chat message was sent in, as a badge tile.
 export default function Source(props: {
   source: NonNullable<Message["source"]>;
-  /// Round on a chatter tile; square among the badges.
   round?: boolean;
   onOpen?: (broadcasterId: string) => void;
 }) {
@@ -18,7 +16,6 @@ export default function Source(props: {
   });
 
   const channel = () => knownUser(props.source.id);
-  // History messages carry only the channel id.
   const name = () =>
     props.source.name || channel()?.displayName || props.source.login;
   const link = createChannelLink(

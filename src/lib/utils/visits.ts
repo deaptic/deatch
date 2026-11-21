@@ -7,8 +7,6 @@ export const emptyVisits = <T extends { id: string }>(): Visits<T> => ({
   index: -1,
 });
 
-// Revisiting the current entry is a no-op, so stepping can reuse the normal
-// select path without truncating what lies ahead.
 export function visit<T extends { id: string }>(
   v: Visits<T>,
   item: T,

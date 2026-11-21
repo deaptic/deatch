@@ -1,7 +1,5 @@
 import type { FeedMessage } from "../../lib/types/index.ts";
 
-/// Fetched history first, then live messages. History may still belong to
-/// the previous chatter after a switch, and overlaps live messages by id.
 export function mergeMessages(
   history: FeedMessage[],
   live: FeedMessage[],

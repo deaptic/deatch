@@ -1,6 +1,3 @@
-// Pure mappers for shoutouts sent and received, kept apart from the listener
-// so they can be tested without Tauri.
-
 import { formatSpan } from "../format/duration.ts";
 import { t } from "../i18n/index.ts";
 import type {

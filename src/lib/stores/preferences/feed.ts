@@ -25,7 +25,6 @@ export function setFeedFontSize(value: number) {
   setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STOPS));
 }
 
-/// One stop smaller or larger, staying on the scale's ends.
 export function stepFeedFontSize(direction: 1 | -1) {
   setFeedFontSize(stepStop(feedFontSize(), FONT_SIZE_STOPS, direction));
 }

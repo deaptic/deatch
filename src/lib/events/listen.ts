@@ -12,8 +12,6 @@ import type {
 } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
 
-/// Listeners run in the background, so a failed registration is logged
-/// rather than toasted.
 export function listenApp<K extends AppEventName>(
   name: K,
   handler: (payload: AppEventPayload<K>) => void,
@@ -28,8 +26,6 @@ export function listenEventSub<T>(
   return onEventSub(kind, handler, { silent: true });
 }
 
-/// One Twitch event, one row in its channel's feed, or none when `toEntry`
-/// says so. Nearly every event names its channel `broadcaster_user_id`.
 export function listenFeed<T>(
   kind: EventKind,
   toEntry: (raw: T, timestamp: number) => FeedEntry | null | undefined,
@@ -43,7 +39,6 @@ export function listenFeed<T>(
 }
 
 export function unlistenAll(listeners: Promise<Unlisten>[]): () => void {
-  // A listener that failed to register was logged by invokeCommand.
   const registered = listeners.map((listener) => listener.catch(() => null));
   return () => {
     for (const stop of registered) void stop.then((unlisten) => unlisten?.());

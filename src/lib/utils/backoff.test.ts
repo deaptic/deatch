@@ -9,7 +9,6 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-/// The delay before the next scheduled retry runs.
 function nextDelay(backoff: Backoff): number {
   const retry = vi.fn();
   const start = Date.now();

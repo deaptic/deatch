@@ -4,7 +4,6 @@ import FragmentPiece, { type FragmentContext } from "./FragmentPiece.tsx";
 
 type Props = FragmentContext & { fragments: Fragment[] };
 
-/// Chat text as Twitch sends it: words, emotes, cheers, mentions and GIFs.
 export default function Fragments(props: Props) {
   return (
     <For each={props.fragments}>

@@ -1,13 +1,9 @@
-// Pure mapper for channel.bits.use, kept apart from the listener so it can be
-// tested without Tauri.
-
 import { t } from "../i18n/index.ts";
 import type { FeedEvent, Fragment, RawBitsUse } from "../types/index.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import { BITS_USE } from "../constants/events.ts";
 import { wordsOf } from "./chat.ts";
 
-// These arrive as a chat message of their own, which already shows them.
 const MESSAGE_POWER_UPS = new Set(["message_effect", "gigantify_an_emote"]);
 
 function shownElsewhere(raw: RawBitsUse): boolean {
@@ -23,7 +19,6 @@ function fragments(raw: RawBitsUse): Fragment[] | undefined {
   return wordsOf(raw.message);
 }
 
-/// Null for bits a chat message already shows.
 export function mapBitsUse(
   raw: RawBitsUse,
   timestamp: number,

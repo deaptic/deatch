@@ -3,9 +3,6 @@ import { DensityContext } from "./Item.tsx";
 
 type Props = { children?: JSX.Element; thread?: JSX.Element };
 
-/// Lines above the item; `thread` is the one the item answers, marked by
-/// a hook that points down at it: at the avatar when spacious, at the first
-/// badge when compact.
 export default function Context(props: Props) {
   const density = useContext(DensityContext);
   return (
@@ -35,8 +32,6 @@ export default function Context(props: Props) {
   );
 }
 
-/// Drops a fixed depth from the middle of its box, so the drop and curve
-/// match in both densities; `class` sets how far right the arm reaches.
 function Hook(props: { class: string }) {
   return (
     <span

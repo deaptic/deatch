@@ -1,9 +1,5 @@
 use std::collections::BTreeMap;
 
-/// Every EventSub kind, once: its Twitch type, the Tauri event the backend
-/// emits it as, and the least role and focus a channel needs for it. Rows are
-/// in subscription priority: chat kinds first, so every channel's chat comes
-/// up before anything else on (re)connect.
 macro_rules! kinds {
     ($($kind:ident = $twitch:literal, $event:literal => ($role:ident, $focus:ident),)*) => {
         #[derive(
@@ -32,8 +28,6 @@ macro_rules! kinds {
                 }
             }
 
-            /// The least role that may subscribe, and the least focus a channel
-            /// needs before it's worth the subscription.
             pub(super) fn requires(self) -> (Role, Focus) {
                 match self {
                     $(Self::$kind => (Role::$role, Focus::$focus),)*
@@ -50,12 +44,9 @@ kinds! {
     ChannelChatClear = "channel.chat.clear", "channel-chat-clear" => (Viewer, Background),
     ChannelChatClearUserMessages = "channel.chat.clear_user_messages", "channel-chat-clear-user-messages" => (Viewer, Background),
     ChannelChatSettingsUpdate = "channel.chat_settings.update", "channel-chat-settings-update" => (Viewer, Focused),
-    // The broadcaster-only kinds marked "no auth" need no authorization, so on
-    // a channel you don't own each costs 1 of the 10 Twitch allows a token's
-    // WebSockets; on your own channel they are free.
-    ChannelSharedChatBegin = "channel.shared_chat.begin", "channel-shared-chat-begin" => (Broadcaster, Focused), // no auth
-    ChannelSharedChatUpdate = "channel.shared_chat.update", "channel-shared-chat-update" => (Broadcaster, Focused), // no auth
-    ChannelSharedChatEnd = "channel.shared_chat.end", "channel-shared-chat-end" => (Broadcaster, Focused), // no auth
+    ChannelSharedChatBegin = "channel.shared_chat.begin", "channel-shared-chat-begin" => (Broadcaster, Focused),
+    ChannelSharedChatUpdate = "channel.shared_chat.update", "channel-shared-chat-update" => (Broadcaster, Focused),
+    ChannelSharedChatEnd = "channel.shared_chat.end", "channel-shared-chat-end" => (Broadcaster, Focused),
     ChannelShoutoutCreate = "channel.shoutout.create", "channel-shoutout-create" => (Moderator, Focused),
     ChannelShoutoutReceive = "channel.shoutout.receive", "channel-shoutout-receive" => (Moderator, Focused),
     ChannelFollow = "channel.follow", "channel-follow" => (Moderator, Focused),
@@ -71,7 +62,7 @@ kinds! {
     AutomodMessageUpdate = "automod.message.update", "automod-message-update" => (Moderator, Background),
     ChannelPointsCustomRewardRedemptionAdd = "channel.channel_points_custom_reward_redemption.add", "channel-points-redemption-add" => (Broadcaster, Focused),
     ChannelPointsAutomaticRewardRedemptionAdd = "channel.channel_points_automatic_reward_redemption.add", "channel-points-automatic-redemption-add" => (Broadcaster, Focused),
-    ChannelUpdate = "channel.update", "channel-update" => (Broadcaster, Focused), // no auth
+    ChannelUpdate = "channel.update", "channel-update" => (Broadcaster, Focused),
     ChannelHypeTrainBegin = "channel.hype_train.begin", "channel-hype-train-begin" => (Broadcaster, Focused),
     ChannelHypeTrainProgress = "channel.hype_train.progress", "channel-hype-train-progress" => (Broadcaster, Focused),
     ChannelHypeTrainEnd = "channel.hype_train.end", "channel-hype-train-end" => (Broadcaster, Focused),
@@ -88,8 +79,8 @@ kinds! {
     ChannelBitsUse = "channel.bits.use", "channel-bits-use" => (Broadcaster, Focused),
     ChannelCharityCampaignStart = "channel.charity_campaign.start", "channel-charity-campaign-start" => (Broadcaster, Focused),
     ChannelCharityCampaignStop = "channel.charity_campaign.stop", "channel-charity-campaign-stop" => (Broadcaster, Focused),
-    StreamOnline = "stream.online", "stream-online" => (Broadcaster, Focused), // no auth
-    StreamOffline = "stream.offline", "stream-offline" => (Broadcaster, Focused), // no auth
+    StreamOnline = "stream.online", "stream-online" => (Broadcaster, Focused),
+    StreamOffline = "stream.offline", "stream-offline" => (Broadcaster, Focused),
 }
 
 impl EventKind {

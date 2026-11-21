@@ -11,7 +11,6 @@ pub struct LinkChannel {
 pub struct LinkState {
     pub channels: Vec<LinkChannel>,
     pub current: Option<String>,
-    /// The extension can process audio (`set_audio`); older ones leave it out.
     #[serde(default)]
     pub audio: bool,
 }

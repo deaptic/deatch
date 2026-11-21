@@ -1,11 +1,3 @@
-// Bridges `channel.chat.message` (carries the reward *id*) and
-// `channel.channel_points_custom_reward_redemption.add` (carries the reward
-// and user_input). When a reward is configured to echo user input into chat,
-// both events fire — we attach the redemption to that chat message and
-// suppress the standalone FeedEvent. Order isn't guaranteed: whichever side
-// arrives first waits ~3s for the other. Rewards without input never echo
-// into chat, so they post straight away.
-
 import type { Redemption } from "../types/index.ts";
 import { setChannelPointsRedemption } from "../stores/feeds.ts";
 import { createTimeouts } from "../utils/timeouts.ts";

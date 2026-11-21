@@ -1,6 +1,5 @@
 import type { JSX } from "solid-js";
 
-/// A caption above a form's input; the input carries its own aria-label.
 export default function FormField(props: {
   label: string;
   children: JSX.Element;

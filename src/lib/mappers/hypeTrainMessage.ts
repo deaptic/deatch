@@ -1,6 +1,3 @@
-// Pure text for hype train events, kept apart from the listener so it can be
-// tested without Tauri.
-
 import { formatList } from "../format/list.ts";
 import { t } from "../i18n/index.ts";
 import type { NoticeText, RawHypeTrain } from "../types/index.ts";
@@ -22,7 +19,6 @@ export function hypeTrainBegin(raw: RawHypeTrain): string {
   return t("HYPE_TRAIN_BEGIN", { type: raw.type, level: raw.level });
 }
 
-/// Null unless the train reached a new level since `lastLevel`.
 export function hypeTrainProgress(
   raw: RawHypeTrain,
   lastLevel: number,

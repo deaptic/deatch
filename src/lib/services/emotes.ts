@@ -89,8 +89,6 @@ export function resetUser() {
   globalRetry.reset();
 }
 
-/// Twitch's global emotes need a signed-in user; a failed load retries
-/// until it lands or the user signs out.
 export function ensureGlobalLoaded(): void {
   if (globalLoadStarted || !user()) return;
   globalLoadStarted = true;
@@ -103,7 +101,6 @@ export function ensureGlobalLoaded(): void {
   );
 }
 
-/// A cached list shows at once and is refreshed behind it.
 async function loadGlobal(): Promise<void> {
   const cached = loadCache<Emote[]>(
     STORAGE_KEYS.globalEmotes,
@@ -123,8 +120,6 @@ async function fetchGlobal(): Promise<void> {
   setGlobalEmotes(fetched);
 }
 
-/// Loads each provider's global emotes, retrying each until it succeeds,
-/// and keeps the third-party emote map in step with every list.
 export function start(): () => void {
   setFavorites(loadFavorites());
   const stops = [

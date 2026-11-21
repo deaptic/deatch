@@ -1,6 +1,3 @@
-// Browser-bridge registration. Idempotent: re-running with unchanged values
-// is a no-op, so calling on every GUI launch is fine.
-
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -10,8 +7,6 @@ use winreg::RegKey;
 
 const HOST_NAME: &str = "com.deaptic.deatch";
 const FIREFOX_EXTENSION_ID: &str = "deatch-link@deaptic.com";
-/// Derived from the `key` in extension/manifest.json; changes only if that
-/// key changes.
 const CHROME_EXTENSION_ID: &str = "dmoblcekdcegdpjbbkhblfnjjefkagpd";
 pub(super) const FIREFOX_MANIFEST: &str = "deatch-host.json";
 pub(super) const CHROME_ORIGIN_SCHEME: &str = "chrome-extension://";

@@ -22,7 +22,6 @@ export function holdOutcome(hold: AutomodHoldInfo): string {
     : t("FEED_AUTOMOD_STATUS", { status: hold.status });
 }
 
-/// The one tone a message wears, in precedence order.
 export function tone(item: Message, highlighted: boolean): RowTone {
   if (item.automod_hold) return "held";
   if (highlighted) return "mention";
@@ -32,7 +31,6 @@ export function tone(item: Message, highlighted: boolean): RowTone {
   return "plain";
 }
 
-/// What channel points bought with the message, if anything.
 export function pointsLabel(item: Message): string | undefined {
   const points = item.channel_points;
   if (!points) return undefined;
@@ -47,8 +45,6 @@ export function pointsLabel(item: Message): string | undefined {
     : t("FEED_REDEEMED_CHANNEL_POINTS");
 }
 
-// A partner chatter wears the badges of the channel they chatted in, which
-// fall back to this channel's map (global badges) until that set loads.
 export function chatterBadges(item: Message) {
   return item.source?.badges ?? item.badges;
 }

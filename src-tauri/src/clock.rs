@@ -13,7 +13,6 @@ pub fn unix_ms() -> u64 {
     since_epoch().as_millis() as u64
 }
 
-/// The RFC 3339 instant `seconds` after the RFC 3339 `start`.
 pub fn rfc3339_after(start: &str, seconds: i64) -> Result<String> {
     let start = OffsetDateTime::parse(start, &Rfc3339)?;
     Ok((start + time::Duration::seconds(seconds)).format(&Rfc3339)?)

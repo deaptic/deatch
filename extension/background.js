@@ -80,7 +80,6 @@ function buildState() {
     : null;
   const current = activeCh ?? tabChannels.get(mostRecentTwitchTab()) ?? null;
 
-  // `audio`: supports set_audio.
   return { type: "state", channels, current, audio: true };
 }
 
@@ -127,8 +126,6 @@ async function applyMute(channel, muted) {
   }
 }
 
-// Activates the tab inside its window without raising the browser, so the
-// desktop app keeps focus.
 async function focusChannel(channel) {
   const tabId =
     tabsOf(channel).sort((a, b) =>
@@ -147,8 +144,6 @@ async function closeChannel(channel) {
   );
 }
 
-// compressor.js in each Twitch tab picks the settings up from storage and
-// checks them itself.
 function setAudio({ enabled, compressor, gains }) {
   return chrome.storage.local.set({ audio: { enabled, compressor, gains } });
 }
@@ -163,7 +158,6 @@ const COMMANDS = {
   focus: (msg) => focusChannel(msg.channel),
   close: (msg) => closeChannel(msg.channel),
 };
-/// Commands for the whole browser; every other one names a channel.
 const BROWSER_COMMANDS = new Set(["get_state", "set_audio"]);
 
 function scheduleReconnect() {

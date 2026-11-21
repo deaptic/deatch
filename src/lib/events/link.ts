@@ -7,7 +7,6 @@ export function start(): () => void {
     listenApp("linkState", link.applyState),
     listenApp("linkDisconnected", link.disconnect),
   ]);
-  // No host connected yet is the normal case at startup.
   linkRequestState({ silent: true }).catch(() => {});
   return () => {
     stop();

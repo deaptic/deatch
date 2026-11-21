@@ -20,13 +20,11 @@ const VARIANTS: Record<ButtonVariant, string> = {
     "bg-raised text-ink border border-line hover:bg-overlay active:bg-surface",
   ghost: "text-ink-soft hover:bg-raised hover:text-ink active:bg-overlay",
   danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
-  /// Over a picture or banner, on its scrim.
   media: "text-on-accent hover:bg-raised active:bg-overlay",
 };
 
 const SHAPES: Record<ButtonShape, string> = {
   rect: "rounded-sm",
-  /// Floats over content, like the jump to new messages.
   pill: "rounded-full elevation-2",
 };
 

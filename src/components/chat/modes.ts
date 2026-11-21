@@ -25,7 +25,6 @@ export type TimedMode = Base & {
   kind: "timed";
   offLabel: MessageKey;
   current: (s: ChatSettings) => number | null;
-  /// The setting in a few characters ("5m"), or "" when it has no length.
   short: (s: ChatSettings) => string;
   presets: Preset[];
   set: (value: number) => ChatSettingsChange;

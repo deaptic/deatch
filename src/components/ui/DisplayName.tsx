@@ -16,7 +16,6 @@ export default function DisplayName(props: Props) {
   const text = () =>
     feedUserShowDisplayName() === false ? props.login : props.displayName;
 
-  // Without a colour of its own, the name wears the one we last saw them use.
   const known = () =>
     props.color || (props.userId ? knownChatterColor(props.userId) : "");
 

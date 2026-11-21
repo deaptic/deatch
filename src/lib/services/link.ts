@@ -34,7 +34,6 @@ import { planLinkState } from "../utils/linkPlan.ts";
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
 
-/// For tab actions the user asked for; failing means the browser is gone.
 function tabAction(): InvokeOptions {
   return { failureMessage: t("LINK_TAB_UNREACHABLE") };
 }
@@ -55,7 +54,6 @@ export function closeAll() {
   closeTabs(linkWarmedChannels());
 }
 
-// Checks live status fresh so a tab that just went live stays open.
 export async function closeOffline() {
   const tabs = linkWarmedChannels();
   if (tabs.length === 0) return;
@@ -74,19 +72,14 @@ function isMuted(login: string): boolean {
   return linkMutedByLogin()[login] === true;
 }
 
-/// The open channel, when it has a browser tab.
 export function selectedLinked() {
   const sel = selectedChannel();
   return sel && linkWarmedChannels().some((c) => c.id === sel.id) ? sel : null;
 }
 
-/// Opening or closing a browser tab can bring the browser to the front; the
-/// app takes focus back if it loses it this soon after. Switching away by
-/// hand within that time is pulled back too, which is the trade-off.
 const REFOCUS_MS = 2000;
 
 async function keepingFocus(action: () => Promise<unknown>) {
-  // Without the listener the action still runs; only the refocus is lost.
   const unlisten = await onWindowFocusChanged(
     (focused) => {
       if (focused) return;
@@ -103,8 +96,6 @@ async function keepingFocus(action: () => Promise<unknown>) {
   await action();
 }
 
-/// Shows the open channel's browser tab, or opens the channel in the browser
-/// when it has none; the extension then links the new tab.
 export function openTab() {
   const tab = selectedLinked();
   if (tab) {
@@ -116,8 +107,6 @@ export function openTab() {
   keepingFocus(() => openUrl(channelUrl(ch.login))).catch(() => {});
 }
 
-/// False when the open channel has no tab, so one key can close a tab and
-/// otherwise open it.
 export function closeTab(): boolean {
   const tab = selectedLinked();
   if (!tab) return false;
@@ -127,13 +116,10 @@ export function closeTab(): boolean {
   return true;
 }
 
-/// A dragged volume slider changes the settings every few milliseconds; they
-/// go out at most this often, the latest ones last.
 const AUDIO_SEND_MS = 50;
 let audioTimer: ReturnType<typeof setTimeout> | undefined;
 let audioPending: SetAudioParams | null = null;
 
-/// Channel gains go out as factors (1 is unchanged), not percent.
 export function sendAudio(
   enabled: boolean,
   compressor: CompressorSettings,
@@ -159,12 +145,10 @@ export function muteOthers() {
   setOthersMuted(tabAction());
 }
 
-/// For following channel switches, which say nothing when a tab is gone.
 export function muteOthersSilently() {
   setOthersMuted({ silent: true });
 }
 
-// Only the shown tab plays; every other tab goes quiet.
 function setOthersMuted(options: InvokeOptions) {
   const focusedLogin = selectedLinked()?.login ?? null;
   for (const ch of linkWarmedChannels()) {
@@ -192,7 +176,6 @@ export function toggleMuteAll() {
   }
 }
 
-// null when the shown chat has no browser tab.
 export function currentMuted(): boolean | null {
   const target = selectedLinked();
   return target?.login ? isMuted(target.login) : null;
@@ -213,10 +196,6 @@ let pendingFetch = new Set<string>();
 let pendingCurrent: string | null = null;
 const retry = createBackoff(RETRY_MIN_MS, RETRY_MAX_MS);
 
-// The tab list lands before `current` so a new tab counts as linked by the
-// time the app follows it.
-/// A failed lookup stays pending and is retried. Lookups need a signed-in
-/// user, so tabs reported before login wait for `start` to drain them.
 async function drainPending() {
   if (!linkConnected() || !user()) return;
   if (pendingFetch.size > 0) await drainWarmed();
@@ -250,8 +229,6 @@ async function drainCurrent(slug: string) {
     .fetchFresh({ logins: [slug] }, { silent: true })
     .catch(() => null);
   if (!found) return;
-  // An unknown login (banned, renamed) resolves to nothing; retrying would
-  // never change that.
   if (pendingCurrent !== slug) return;
   pendingCurrent = null;
   const [ch] = found;

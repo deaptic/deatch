@@ -1,8 +1,3 @@
-//! Feed history, so the feed can page back past what it holds in memory. One
-//! row per entry in the signed-in account's database; entries are the
-//! frontend's own JSON, stored and returned untouched, and writing an entry
-//! again replaces it with its latest state.
-
 pub mod commands;
 
 use crate::clock::unix_ms;
@@ -14,9 +9,7 @@ use serde::Deserialize;
 use std::time::Duration;
 use tauri::Manager;
 
-/// Matches the inbox, so every mention it keeps can still be opened in place.
 const MAX_AGE_MS: u64 = 7 * 24 * 60 * 60 * 1000;
-/// The account's database is kept under this by letting the oldest entries go.
 const MAX_BYTES: u64 = 1 << 30;
 const PRUNE_EVERY: Duration = Duration::from_secs(60 * 60);
 
@@ -38,7 +31,6 @@ pub const SCHEMA: Schema = Schema {
 pub struct LogEntry {
     pub id: String,
     pub timestamp: u64,
-    /// The entry as JSON, kept as-is.
     pub entry: String,
 }
 
@@ -118,8 +110,6 @@ pub fn page(db: &Connection, params: PageParams) -> Result<Vec<String>> {
     }
 }
 
-/// The entries around `id`, oldest first and including it; None when the
-/// log no longer has it.
 pub fn around(db: &Connection, params: AroundParams) -> Result<Option<Vec<String>>> {
     let channel = params.broadcaster_id.as_str();
     let Some(at) = position(db, channel, &params.id)? else {
@@ -156,7 +146,6 @@ fn position(db: &Connection, channel: &str, id: &str) -> Result<Option<Position>
         .optional()?)
 }
 
-/// The newest `limit` entries before `at`, oldest first.
 fn before(db: &Connection, channel: &str, at: Position, limit: usize) -> Result<Vec<String>> {
     let mut query = db.prepare_cached(
         "SELECT entry FROM (
@@ -171,7 +160,6 @@ fn before(db: &Connection, channel: &str, at: Position, limit: usize) -> Result<
     Ok(rows.collect::<rusqlite::Result<_>>()?)
 }
 
-/// The oldest `limit` entries after `at`.
 fn after(db: &Connection, channel: &str, at: Position, limit: usize) -> Result<Vec<String>> {
     let mut query = db.prepare_cached(
         "SELECT entry FROM feed_entries
@@ -190,8 +178,6 @@ pub fn clear(db: &Connection) -> Result<()> {
     Ok(())
 }
 
-/// Lets go of entries past the age limit, then of the oldest tenth at a time
-/// while the database is over its size cap, and gives the space back.
 pub fn prune(db: &Connection, now_ms: u64, max_bytes: u64) -> Result<()> {
     db.execute(
         "DELETE FROM feed_entries WHERE timestamp < ?1",
@@ -213,15 +199,12 @@ pub fn prune(db: &Connection, now_ms: u64, max_bytes: u64) -> Result<()> {
     Ok(())
 }
 
-/// Pages holding data; freed pages wait in the freelist until vacuumed.
 fn used_bytes(db: &Connection) -> Result<u64> {
     let pragma =
         |name: &str| -> Result<u64> { Ok(db.pragma_query_value(None, name, |row| row.get(0))?) };
     Ok((pragma("page_count")? - pragma("freelist_count")?) * pragma("page_size")?)
 }
 
-/// Prunes every account's log now and then every hour, for as long as the app
-/// runs.
 pub fn spawn_pruning(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
         loop {

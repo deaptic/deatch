@@ -59,7 +59,6 @@ export type FeedApi = {
 
 type Props = UserActions & {
   broadcasterId: string;
-  /// Rendered instead of the channel's feed; badges still come from it.
   entries?: FeedEntry[];
   userLogin?: string;
   filter?: (item: FeedEntry) => boolean;
@@ -92,7 +91,6 @@ export default function Feed(props: Props) {
   let rootRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
   let listRef: HTMLDivElement | undefined;
-  // The window is built below; the scroll asks it where rows are only later.
   const scroll = createFeedScroll(() => scrollRef, {
     idAt: (y) => win.idAt(y),
     topOf: (id) => win.topOf(id),
@@ -116,11 +114,8 @@ export default function Feed(props: Props) {
     return entries().slice(start, end);
   });
 
-  /// A feed given its own entries has no history to page through.
   const ownsHistory = () => props.entries === undefined;
 
-  /// Near the top, reads further back; near the bottom of a stretch of
-  /// history, reads forward until it meets the live feed.
   function loadAtEdges(el: HTMLElement) {
     if (!ownsHistory()) return;
     const id = props.broadcasterId;
@@ -141,8 +136,6 @@ export default function Feed(props: Props) {
     if (ownsHistory()) history.close(props.broadcasterId);
   });
 
-  // A jump to a message no longer in memory opens the feed log around it, once
-  // the backlog has had its chance to bring it.
   let lookingUp: string | null = null;
   function lookUp(messageId: string) {
     if (lookingUp === messageId) return;
@@ -155,8 +148,6 @@ export default function Feed(props: Props) {
     });
   }
 
-  /// Brings row `id` into the rendered window, leaving follow mode if the
-  /// view has to move for it.
   function show(id: string) {
     if (win.isRendered(id)) return;
     batch(() => {
@@ -215,7 +206,6 @@ export default function Feed(props: Props) {
     return messageList().find((m) => m.message_id === id) ?? null;
   });
 
-  /// Steps from the selection, or enters at the end being moved towards.
   function moveSelection(direction: 1 | -1) {
     const list = messageList();
     const idx = list.findIndex((m) => m.message_id === selectedId());
@@ -243,8 +233,6 @@ export default function Feed(props: Props) {
   });
   onCleanup(() => shortcuts.setContext("feedSelected", false));
 
-  // Scroll active message into view + give it focus so the chat input loses it
-  // (otherwise chat::send would still fire on Enter).
   createEffect(() => {
     const id = selectedId();
     if (!id) return;
@@ -258,8 +246,6 @@ export default function Feed(props: Props) {
     });
   });
 
-  // A jump glides when the feed was already on screen; a feed that mounted
-  // for the jump has nowhere to glide from.
   let settled = false;
   onMount(() => requestAnimationFrame(() => (settled = true)));
 
@@ -298,8 +284,6 @@ export default function Feed(props: Props) {
     ),
   );
 
-  // The last entry, not the count: at the cap every append evicts one, so
-  // the length never changes.
   createEffect(on(() => entries().at(-1), scroll.keep));
 
   createEffect(

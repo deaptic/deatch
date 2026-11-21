@@ -1,7 +1,6 @@
 import { formatLocale } from "../i18n/index.ts";
 
 type Unit = {
-  /// What users type after a number: `10m`, `1h30m`.
   letter: string;
   seconds: number;
   name: "week" | "day" | "hour" | "minute" | "second";
@@ -9,7 +8,6 @@ type Unit = {
 
 const SECOND: Unit = { letter: "s", seconds: 1, name: "second" };
 
-/// Largest first.
 const UNITS: readonly Unit[] = [
   { letter: "w", seconds: 604800, name: "week" },
   { letter: "d", seconds: 86400, name: "day" },
@@ -18,7 +16,6 @@ const UNITS: readonly Unit[] = [
   SECOND,
 ];
 
-/// Seconds per typed unit letter; a bare number is seconds.
 export function secondsPer(letter: string): number {
   return UNITS.find((u) => u.letter === letter)?.seconds ?? 1;
 }
@@ -31,14 +28,12 @@ function format(value: number, unit: Unit): string {
   }).format(value);
 }
 
-/// Exact, in the largest unit that divides it evenly.
 export function formatDuration(seconds: number): string {
   if (seconds <= 0) return format(0, SECOND);
   const unit = UNITS.find((u) => seconds % u.seconds === 0) ?? SECOND;
   return format(seconds / unit.seconds, unit);
 }
 
-/// Rounded to the nearest whole unit, up to days.
 export function formatApproxDuration(seconds: number): string {
   if (seconds <= 0) return format(0, SECOND);
   const unit =
@@ -46,13 +41,11 @@ export function formatApproxDuration(seconds: number): string {
   return format(Math.round(seconds / unit.seconds), unit);
 }
 
-/// A ticking countdown, `m:ss`, from the milliseconds left; never negative.
 export function formatCountdown(remainingMs: number): string {
   const seconds = Math.max(0, Math.ceil(remainingMs / 1000));
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
-/// Approximate time between two ISO timestamps.
 export function formatSpan(from: string, to: string): string {
   return formatApproxDuration(
     Math.max(0, Math.round((Date.parse(to) - Date.parse(from)) / 1000)),

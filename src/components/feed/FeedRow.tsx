@@ -9,7 +9,6 @@ type Props = ItemLayout &
     entry: FeedEntry;
   };
 
-/// One entry, drawn by the item that fits its kind.
 export default function FeedRow(props: Props) {
   const entry = props.entry;
   return entry.kind === "message" ? (

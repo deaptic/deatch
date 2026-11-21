@@ -12,8 +12,6 @@ fn entry() -> Result<keyring_core::Entry> {
     Ok(keyring_core::Entry::new("deatch", "auth")?)
 }
 
-/// Unreadable credentials can't be restored either way, so they are
-/// forgotten and the user simply signs in again.
 pub fn load() -> Result<Option<StoredCredentials>> {
     let json = match entry()?.get_password() {
         Ok(json) => json,

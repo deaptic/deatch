@@ -6,13 +6,10 @@ import type { UserActions } from "./userLink.ts";
 
 type Props = UserActions & {
   people: Person[];
-  /// How many names show before the rest fold into `more`.
   limit: number;
   more: (count: number) => string;
 };
 
-/// People as the locale lists them ("a, b and 3 more"), each a name link;
-/// the folded rest opens on click.
 export default function NameList(props: Props) {
   const [expanded, setExpanded] = createSignal(false);
   const hidden = () =>

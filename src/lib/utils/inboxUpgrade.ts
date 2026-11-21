@@ -1,6 +1,5 @@
 import type { FeedMessage, Fragment, Mention } from "../types/index.ts";
 
-/// Mentions saved before they kept the whole message.
 type Legacy = {
   messageId: string;
   chatterId: string;
@@ -10,7 +9,6 @@ type Legacy = {
   fragments: Fragment[];
 };
 
-/// Mentions saved before the channel fields were named for the broadcaster.
 type ChannelNamed = {
   channelId: string;
   channelLogin: string;
@@ -19,8 +17,6 @@ type ChannelNamed = {
 
 type Stored = Partial<Mention> & Partial<Legacy> & Partial<ChannelNamed>;
 
-/// Current entries pass through; legacy ones are rebuilt into a message;
-/// anything older than fragments and reason can't be rendered and is dropped.
 function isCurrent(m: Stored): m is Mention {
   return (
     m.message !== undefined &&

@@ -50,9 +50,6 @@ pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: impl Int
     Ok(serde_json::from_slice(&body)?)
 }
 
-/// Emote providers answer 404 with a JSON body that parses as "no emotes",
-/// which is the answer callers want; any other failure must not be mistaken
-/// for an empty result.
 fn check_status(status: StatusCode, path: &str) -> Result<()> {
     if status.is_success() || status == StatusCode::NOT_FOUND {
         Ok(())
@@ -61,8 +58,6 @@ fn check_status(status: StatusCode, path: &str) -> Result<()> {
     }
 }
 
-// Only host and path are logged: OAuth sends tokens and secrets as query params.
-// Bodies are logged for failures only, since successful OAuth bodies carry tokens.
 pub fn log_request<E: Display>(
     method: &Method,
     host: &str,
@@ -73,8 +68,6 @@ pub fn log_request<E: Display>(
 ) {
     let ms = started.elapsed().as_millis();
     match outcome {
-        // Reads are frequent background lookups; writes are user actions
-        // worth keeping in the log.
         Ok((status, _)) if status.is_success() && method == Method::GET => {
             log::debug!("{method} {host}{path} status={} ms={ms}", status.as_u16())
         }

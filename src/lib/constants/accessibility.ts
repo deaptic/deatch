@@ -1,6 +1,5 @@
 import type { NonEmpty } from "../types/index.ts";
 
-/// Ascending.
 export type Stops = NonEmpty<number>;
 
 export const FONT_SIZE_STOPS: Stops = [12, 14, 15, 16, 18, 20, 24];

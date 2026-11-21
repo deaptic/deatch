@@ -23,8 +23,6 @@ type Props = {
 
 const DEFAULT_CHOICE: BanChoice = "10m";
 
-/// Whether Twitch says they are banned. Only the broadcaster may ask, so
-/// for a mod it is always clear.
 type BanStatus =
   | { kind: "loading" }
   | { kind: "clear" }
@@ -61,7 +59,6 @@ export default function BanModal(props: Props) {
       );
       props.onClose();
     } catch {
-      // invokeCommand already toasted; the modal stays open to retry.
     } finally {
       setPending(false);
     }
@@ -69,8 +66,6 @@ export default function BanModal(props: Props) {
 
   onMount(() => {
     if (!isBroadcaster()) {
-      // Twitch's banned-users endpoint is broadcaster-only. Mods can still
-      // unban — they just do it without a status hint.
       setStatus({ kind: "clear" });
       return;
     }

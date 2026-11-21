@@ -62,11 +62,9 @@ function redemptionEvent(
 }
 
 const GIFT_WINDOW_MS = 60_000;
-/// Twitch may send a community gift's subs before the notice they belong to.
 const GIFT_NOTICE_WAIT_MS = 600;
 
 export function start(): () => void {
-  // Community gift id → its feed row, while its subs are still arriving.
   const communityRows = new Map<string, string>();
   const timeouts = createTimeouts();
   const stop = unlistenAll([

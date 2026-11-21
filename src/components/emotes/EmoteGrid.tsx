@@ -28,7 +28,6 @@ export default function EmoteGrid(props: Props) {
             <button
               type="button"
               data-emote-index={idx()}
-              // Not `disabled`: that would also swallow the right-click unfavourite.
               aria-disabled={item.disabled}
               onMouseDown={(e) => e.preventDefault()}
               onMouseMove={() => props.onHover(idx())}

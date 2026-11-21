@@ -1,8 +1,3 @@
-//! Each account's own SQLite database, for the data that belongs to whoever is
-//! signed in (the feed log now, caches later). Features own their tables: each
-//! declares a `Schema`, and this module only opens files and applies the steps
-//! a database has not had yet.
-
 use crate::error::Result;
 use crate::lock::lock;
 use crate::twitch::ids::UserId;
@@ -13,8 +8,6 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use tauri::Manager;
 
-/// A feature's tables: `steps[n]` takes them from version n to n + 1. Steps are
-/// only appended; one that has shipped never changes.
 pub struct Schema {
     pub feature: &'static str,
     pub steps: &'static [&'static str],
@@ -39,8 +32,6 @@ impl Databases {
         })
     }
 
-    /// Runs `work` on `account`'s database, opening and preparing it the first
-    /// time and keeping it open. Blocking: call from a blocking thread.
     pub fn with<R>(
         &self,
         account: &UserId,
@@ -74,8 +65,6 @@ impl Databases {
         result
     }
 
-    /// Closes every open database, which folds its write-ahead log back into
-    /// the file and removes the log; for app exit.
     pub fn close(&self) {
         for (account, conn) in lock(&self.open).drain() {
             match Arc::into_inner(conn) {
@@ -88,7 +77,6 @@ impl Databases {
         }
     }
 
-    /// Every account with a database, signed in or not, for upkeep.
     pub fn accounts(&self) -> Result<Vec<UserId>> {
         let mut accounts = Vec::new();
         for entry in std::fs::read_dir(&self.dir)? {
@@ -128,10 +116,7 @@ fn connect(path: &Path, schemas: &[Schema]) -> Result<Connection> {
     Ok(conn)
 }
 
-/// The settings every database runs with, then each feature's pending steps.
 fn prepare(conn: &mut Connection, schemas: &[Schema]) -> Result<()> {
-    // Takes effect only before the first table exists; without it the file
-    // never shrinks after rows are deleted.
     conn.pragma_update(None, "auto_vacuum", "INCREMENTAL")?;
     conn.pragma_update_and_check(None, "journal_mode", "WAL", |_| Ok(()))?;
     conn.execute_batch(
@@ -151,7 +136,6 @@ fn prepare(conn: &mut Connection, schemas: &[Schema]) -> Result<()> {
             .optional()?
             .unwrap_or(0);
         let done = usize::try_from(version).unwrap_or(0);
-        // A database from a newer build keeps the steps it already has.
         if let Some(pending) = schema.steps.get(done..).filter(|p| !p.is_empty()) {
             for step in pending {
                 tx.execute_batch(step)?;
@@ -167,7 +151,6 @@ fn prepare(conn: &mut Connection, schemas: &[Schema]) -> Result<()> {
     Ok(())
 }
 
-/// A prepared database in memory, for tests of the features that use one.
 #[cfg(test)]
 pub fn in_memory(schemas: &[Schema]) -> Connection {
     let mut conn = Connection::open_in_memory().unwrap();

@@ -1,7 +1,5 @@
 const ENTRY = /\[\[package\]\]\r?\nname = "([^"]+)"\r?\nversion = "([^"]+)"/g;
 
-/// Crate name → locked version. A crate locked at several versions keeps the
-/// last one.
 export function lockedVersions(lock: string): Map<string, string> {
   const versions = new Map<string, string>();
   for (const [, name, version] of lock.matchAll(ENTRY)) {
@@ -10,7 +8,6 @@ export function lockedVersions(lock: string): Map<string, string> {
   return versions;
 }
 
-/// Sets the first locked entry of `name`; throws when it is not locked.
 export function setLockedVersion(
   lock: string,
   name: string,

@@ -13,8 +13,6 @@ function isCached(value: unknown): value is Cached<unknown> {
   );
 }
 
-/// The cached data when younger than `maxAgeMs`. The data's own shape is the
-/// caller's to trust: it wrote it.
 export function loadCache<T>(key: StorageKey, maxAgeMs: number): T | null {
   const cached = storage.read(key);
   if (!isCached(cached) || Date.now() - cached.ts > maxAgeMs) return null;

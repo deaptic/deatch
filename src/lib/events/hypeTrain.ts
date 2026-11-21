@@ -9,7 +9,6 @@ import {
 } from "../mappers/hypeTrainMessage.ts";
 
 export function start(): () => void {
-  // Progress arrives on every contribution; only a new level earns a row.
   const levels = new Map<string, number>();
 
   const stop = unlistenAll([

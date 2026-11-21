@@ -144,7 +144,6 @@ fn bring_to_front(app: &tauri::AppHandle) {
     }
 }
 
-/// Every feature's tables in the per-account databases.
 const SCHEMAS: &[db::Schema] = &[feedlog::SCHEMA];
 
 pub fn run() {
@@ -188,9 +187,6 @@ pub fn run() {
             app.manage(twitch);
             app.manage(http);
 
-            // A dev build must never become the browser's native-messaging
-            // host: Firefox would keep spawning target/debug/deatch.exe and
-            // hold the file lock cargo needs to relink.
             if !cfg!(debug_assertions) {
                 if let Err(e) = link::bridge::register() {
                     log::warn!("browser bridge registration failed: {e}");

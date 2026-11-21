@@ -11,13 +11,10 @@ export type ChannelFeed = {
   backfilled: boolean;
 };
 
-/// A channel left is removed, so its entry can be missing.
 export const [feeds, setFeeds] = createStore<
   Record<string, ChannelFeed | undefined>
 >({});
 
-/// Entries added or changed since the feed log last took them, per channel,
-/// one per id: what is taken is each entry's latest state.
 const unlogged = new Map<string, Map<string, FeedEntry>>();
 
 export function toLog(broadcasterId: string, entries: Iterable<FeedEntry>) {
@@ -48,7 +45,6 @@ const emptyFeed = (): ChannelFeed => ({
   backfilled: false,
 });
 
-/// Changes the channel's feed in place; false when it has none.
 export function updateFeed(
   broadcasterId: string,
   change: (feed: ChannelFeed) => void,

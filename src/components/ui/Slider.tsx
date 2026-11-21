@@ -5,13 +5,10 @@ type Props = {
   max: number;
   step?: number;
   format: (value: number) => string;
-  /// Called on every move, so the change is heard or seen while dragging.
   onChange: (value: number) => void;
   disabled?: boolean;
 };
 
-/// A continuous slider, as wide as its container; the caller shows the
-/// value. For a few named choices, use StopSlider.
 export default function Slider(props: Props) {
   return (
     <input

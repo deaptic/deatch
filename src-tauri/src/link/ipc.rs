@@ -10,13 +10,8 @@ use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, Uid, UpdateKind};
 
 const PIPE_NAME: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
-/// Broadcasting holds the hosts lock while writing, so a browser that stops
-/// reading its pipe must not block every other browser forever.
 const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 
-/// The compressor's controls as the listener sets them: threshold and gain in
-/// dB, ratio as N:1, attack and release in milliseconds. The extension clamps
-/// each to its range.
 #[derive(Clone, Serialize, Deserialize, specta::Type)]
 pub struct Compressor {
     pub threshold: f64,
@@ -64,13 +59,10 @@ pub fn connect_to_gui() -> std::io::Result<interprocess::local_socket::Stream> {
 
 type HostWriter = tokio::io::WriteHalf<interprocess::local_socket::tokio::Stream>;
 
-/// One entry per connected browser. `reported_at` orders the states so the
-/// browser that spoke last decides `current`.
 struct Host {
     writer: HostWriter,
     state: LinkState,
     reported_at: u64,
-    /// Dropped with the host, which ends its reader task and closes the pipe.
     _close: tokio::sync::oneshot::Sender<()>,
 }
 
@@ -79,7 +71,6 @@ struct Connected {
     hosts: BTreeMap<u64, Host>,
     next_id: u64,
     reports: u64,
-    /// The last `set_audio`, replayed to each browser as it connects.
     audio: Option<Vec<u8>>,
 }
 
@@ -105,7 +96,6 @@ async fn write(writer: &mut HostWriter, payload: &[u8]) -> bool {
 }
 
 impl Connected {
-    /// Writes to every browser, dropping any that stopped reading.
     async fn broadcast(&mut self, payload: &[u8]) {
         let mut broken = Vec::new();
         for (id, host) in self.hosts.iter_mut() {
@@ -123,8 +113,6 @@ impl Connected {
 pub struct Hosts(Arc<tokio::sync::Mutex<Connected>>);
 
 impl Hosts {
-    /// Every browser gets every command; the extension ignores channels it has
-    /// no tab for. Fails when no browser is connected.
     pub async fn send(&self, command: &HostCommand) -> std::io::Result<()> {
         if self.send_if_connected(command).await? {
             Ok(())
@@ -136,8 +124,6 @@ impl Hosts {
         }
     }
 
-    /// Like `send`, for commands that need no browser to be there; reports
-    /// whether any was.
     pub async fn send_if_connected(&self, command: &HostCommand) -> std::io::Result<bool> {
         let mut connected = self.0.lock().await;
         if connected.hosts.is_empty() {
@@ -147,8 +133,6 @@ impl Hosts {
         Ok(true)
     }
 
-    /// Audio settings outlive connections: they are kept and replayed to each
-    /// browser as it connects, so one that connects later gets them too.
     pub async fn set_audio(
         &self,
         enabled: bool,
@@ -167,8 +151,6 @@ impl Hosts {
     }
 }
 
-/// A channel open in several browsers is muted only when every tab is, and
-/// audio processing is offered when any browser can do it.
 fn merge<'a>(states: impl Iterator<Item = (u64, &'a LinkState)>) -> LinkState {
     let mut channels: BTreeMap<&str, bool> = BTreeMap::new();
     let mut current: Option<(u64, &str)> = None;

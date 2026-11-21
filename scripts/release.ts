@@ -1,14 +1,3 @@
-// Usage:
-//   vp run release patch          (default)
-//   vp run release minor
-//   vp run release major
-//   vp run release 1.2.3
-//
-// Bumps version in package.json (tauri.conf.json reads it from there),
-// src-tauri/Cargo.toml and src-tauri/Cargo.lock, commits with message
-// "chore: release vX.Y.Z", tags vX.Y.Z, and pushes main + tag. The release
-// GitHub Action takes over from the tag.
-
 import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";

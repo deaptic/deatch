@@ -3,7 +3,6 @@ import Button, { type ButtonSize, type ButtonVariant } from "./Button.tsx";
 
 type Props = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
-  /// Replaces the label as the tooltip, to say why it can't be used.
   tip?: string;
   variant?: ButtonVariant;
   size?: ButtonSize;

@@ -57,9 +57,6 @@ function addEntry(
   };
 }
 
-// Activate a context flag, register a batch of local bindings gated by it,
-// and return one cleanup that undoes both. Intended for `onMount` →
-// `onCleanup` use in components that own a set of non-rebindable shortcuts.
 export function bindScope(
   context: string,
   bindings: Record<string, Handler>,
@@ -74,10 +71,6 @@ export function bindScope(
   };
 }
 
-// Bind a combo directly to a handler without going through the user-rebindable
-// keymap. Use for component-local shortcuts (e.g. an open picker's nav keys)
-// that should never appear in user config. Locals are dispatched before the
-// keymap, so they win when their `when` clause passes.
 export function registerLocal(
   combo: string,
   handler: Handler,

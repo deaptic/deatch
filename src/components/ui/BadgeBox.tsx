@@ -5,7 +5,6 @@ import type { BadgeMap } from "../../lib/types/index.ts";
 
 type Badge = { set_id: string; id: string; info?: string };
 
-/// Beside a name, or on their own with nothing to space from.
 export type BadgePlacement = "before" | "after" | "alone";
 
 const PLACEMENTS: Record<BadgePlacement, string> = {
@@ -18,7 +17,6 @@ type Props = {
   badges: Badge[];
   channelBadges: BadgeMap;
   placement?: BadgePlacement;
-  /// Shown first, inside the same box as the badges.
   children?: JSX.Element;
 };
 

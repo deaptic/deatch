@@ -4,14 +4,10 @@ use std::time::Duration;
 const MAX_RETRIES: u32 = 3;
 const BASE_BACKOFF: Duration = Duration::from_millis(500);
 
-/// On a 429 the rate-limit gate already holds the next attempt until the
-/// bucket resets, so the backoff here only spaces out retries.
 pub fn retry_delay(method: &Method, status: StatusCode, attempt: u32) -> Option<Duration> {
     if attempt >= MAX_RETRIES {
         return None;
     }
-    // A 5xx may have been applied before failing; replaying a POST could send
-    // a chat message or ban twice.
     let retryable = status == StatusCode::TOO_MANY_REQUESTS
         || (status.is_server_error() && is_idempotent(method));
     retryable.then(|| BASE_BACKOFF * 2u32.pow(attempt))

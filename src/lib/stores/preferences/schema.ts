@@ -98,7 +98,6 @@ export type UserPreferences = {
     audioLink: boolean;
     compressor: boolean;
     compressorSettings: CompressorSettings;
-    /// Gain in percent by channel login; channels at 100% are left out.
     channelGains: Record<string, number>;
   };
   menu: {
@@ -115,8 +114,6 @@ export type UserPreferences = {
 const EVENT_KEYS = EVENTS.map((e) => e.key);
 const BADGE_KEYS = BADGE_CATEGORIES.map((c) => c.key);
 
-/// Every key, with its stored `show` when that is a boolean, else the
-/// fallback's, else shown.
 function showPrefs<K extends string>(
   keys: readonly K[],
   raw: unknown,
@@ -136,7 +133,6 @@ function showPrefs<K extends string>(
   });
 }
 
-// The compressor's defaults live with its ranges in constants/audio.ts.
 export const DEFAULT_PREFERENCES: UserPreferences = {
   ...defaults,
   feed: {
@@ -163,7 +159,6 @@ function sanitizeHex(raw: unknown): string | null {
     : null;
 }
 
-/// `raw` when it is one of `values`, else the fallback.
 function oneOf<T extends string>(
   values: readonly T[],
   raw: unknown,
@@ -190,7 +185,6 @@ function sanitizeDensity(raw: unknown): Density {
   return oneOf(DENSITIES, raw, DEFAULT_PREFERENCES.feed.density);
 }
 
-// A hand-edited "false" string is truthy; only real booleans count.
 function bool(raw: unknown, fallback: boolean): boolean {
   return typeof raw === "boolean" ? raw : fallback;
 }
@@ -249,7 +243,6 @@ function sanitizeChannelGains(raw: unknown): Record<string, number> {
   return out;
 }
 
-/// Stored preferences may lack any field at any depth; each is validated.
 type Stored<T> = T extends object ? { [K in keyof T]?: Stored<T[K]> } : T;
 
 export function sanitize(raw: unknown): UserPreferences {

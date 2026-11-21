@@ -12,8 +12,6 @@ use webview2_com::Microsoft::Web::WebView2::Win32::{
 };
 use windows_core::Interface;
 
-/// WebView2 reads GPU flags once at process start, so the choice is a marker
-/// file checked before the window exists; a toggle applies on next launch.
 const DISABLE_GPU_MARKER: &str = "disable-gpu";
 const BROWSER_ARGUMENTS: &str = "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS";
 const DISABLE_GPU_ARGUMENT: &str = "--disable-gpu";

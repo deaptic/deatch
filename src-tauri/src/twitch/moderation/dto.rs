@@ -10,7 +10,6 @@ pub struct BannedUser {
     pub user: UserRef,
     pub moderator: UserRef,
     pub reason: Option<String>,
-    /// None for a permanent ban.
     pub expires_at: Option<String>,
 }
 

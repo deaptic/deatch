@@ -45,7 +45,6 @@ impl From<HelixPollChoice> for PollChoice {
     }
 }
 
-/// Twitch sends counts as optional signed numbers; absent or negative is zero.
 pub(crate) fn count(value: Option<i64>) -> u64 {
     value.and_then(|v| u64::try_from(v).ok()).unwrap_or(0)
 }

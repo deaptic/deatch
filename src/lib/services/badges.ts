@@ -24,7 +24,6 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
     GLOBAL_BADGES_TTL,
   );
   if (cached) {
-    // Stale-while-revalidate: serve cache, refresh in background.
     getGlobalChatBadges({ silent: true })
       .then((fetched) => saveCache(STORAGE_KEYS.globalBadges, fetched))
       .catch(() => {});
@@ -37,8 +36,6 @@ function loadGlobalBadges(): Promise<BadgeSet[]> {
       return fetched;
     })
     .catch((e) => {
-      // Rejecting keeps a failure out of every cached channel map, so both
-      // this and the channel loads retry instead of lacking global badges.
       globalBadgesPromise = null;
       throw e;
     });
@@ -66,7 +63,6 @@ export async function loadGlobal(): Promise<BadgeMap> {
   return toBadgeMap(await loadGlobalBadges().catch(() => []));
 }
 
-/// Global badges show at once; channel badges replace them when they land.
 export function loadChannel(channel: ChannelRef) {
   let channelLanded = false;
   void loadGlobal().then((map) => {
@@ -78,7 +74,6 @@ export function loadChannel(channel: ChannelRef) {
   });
 }
 
-/// A shared chat partner's badges, fetched once and kept while signed in.
 export function loadSource(channel: ChannelRef) {
   if (sourceBadges[channel.id]) return;
   channelBadges.get(channel).then(

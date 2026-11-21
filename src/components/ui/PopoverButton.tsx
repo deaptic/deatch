@@ -4,24 +4,19 @@ import Button from "./Button.tsx";
 import Menu from "./Menu.tsx";
 import Popover, { OVERLAY_GAP } from "./Popover.tsx";
 
-/// A list of actions, or a panel holding a small form.
 type Look = "menu" | "panel";
 
 type Props = {
   label: string;
   icon: JSX.Element;
   look: Look;
-  /// Short state shown beside the icon while it applies, like "5m".
   value?: string;
-  /// Replaces the label as the tooltip, to say why it can't be used.
   tip?: string;
   pressed?: boolean;
   disabled?: boolean;
   children: (close: () => void) => JSX.Element;
 };
 
-/// An icon with a chevron that opens what it holds below itself; the label
-/// names it in the tooltip.
 export default function PopoverButton(props: Props) {
   const [anchor, setAnchor] = createSignal<{ x: number; y: number } | null>(
     null,

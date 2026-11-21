@@ -18,8 +18,6 @@ type Props = {
   onDone: () => void;
 };
 
-/// The stream's title and category; the category changes only when a new one
-/// is picked.
 export default function InfoForm(props: Props) {
   const info = channelInfoFor(props.broadcasterId);
   const [title, setTitle] = createSignal(info?.title ?? "");

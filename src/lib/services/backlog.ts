@@ -49,8 +49,6 @@ function noteChatters(broadcasterId: string, added: FeedEntry[]) {
   }
 }
 
-/// Backfills messages that arrived while the EventSub socket was down.
-/// Pulls from `since` minus a margin; duplicates are dropped on insert.
 export function fillGap(
   broadcasterId: string,
   broadcasterLogin: string,
@@ -63,8 +61,6 @@ export function fillGap(
     (history) => {
       const items = entriesOf(history);
       noteChatters(broadcasterId, insertEntries(broadcasterId, items));
-      // A full page means robotty dropped the oldest messages of the gap;
-      // it keeps the newest `limit`, so the hole sits before the first one.
       const lines = history.messages.length + history.notices.length;
       const first = items[0];
       if (lines >= GAP_LIMIT && first) {
@@ -79,9 +75,6 @@ export function fillGap(
   );
 }
 
-/// One-time hydration of a channel feed with recent history from robotty.
-/// The `backfilled` flag in `ChannelFeed` prevents repeats across remounts;
-/// a failed fetch leaves it unset so the next visit tries again.
 export function load(broadcasterId: string, broadcasterLogin: string) {
   if (feeds[broadcasterId]?.backfilled) return;
   getRecentMessages({ broadcasterLogin, limit: FEED_CAP }, { silent: true })
@@ -103,9 +96,6 @@ export function load(broadcasterId: string, broadcasterLogin: string) {
     });
 }
 
-/// For a user card whose chatter has nothing in the live feed: robotty's
-/// deepest page, narrowed to that chatter, held by the card and not the feed.
-/// Empty when the page is unavailable.
 export function forChatter(
   broadcasterLogin: string,
   chatterId: string,
@@ -119,8 +109,6 @@ export function forChatter(
   );
 }
 
-/// Shared by every card opened on the channel within PAGE_TTL_MS. A failed
-/// fetch is forgotten so the next card retries.
 function deepPage(broadcasterLogin: string): Promise<RecentHistory> {
   const now = Date.now();
   for (const [login, entry] of deepPages) {
@@ -139,8 +127,6 @@ function deepPage(broadcasterLogin: string): Promise<RecentHistory> {
   return page;
 }
 
-/// Newest first, so the newest backlog entry lands just behind anything
-/// already in the sent messages.
 function rememberOwnMessages(broadcasterId: string, added: FeedEntry[]) {
   const me = user();
   if (!me) return;

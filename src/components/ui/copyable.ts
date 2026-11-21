@@ -2,8 +2,6 @@ import { createCopied } from "./createCopied.ts";
 import { t } from "../../lib/i18n/index.ts";
 import { onActivateKey } from "./keyActivation.ts";
 
-/// Click-to-copy text: the same cursor, hover, green flash and hint
-/// everywhere. `idle` is the text colour while nothing is copied.
 export function createCopyable(idle: string) {
   const { copied, copy } = createCopied();
   return {

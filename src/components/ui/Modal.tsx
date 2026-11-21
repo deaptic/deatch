@@ -4,8 +4,6 @@ import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
 import { trapFocus } from "../../lib/reactive/trapFocus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 
-/// A dialog centres a short exchange; a palette drops from the top for
-/// search-as-you-type.
 type ModalLook = "dialog" | "palette";
 
 const SCRIM: Record<ModalLook, string> = {
@@ -25,7 +23,6 @@ type Props = {
   children: JSX.Element;
 };
 
-/// Escape or a click on the scrim closes it; focus returns where it was.
 export default function Modal(props: Props) {
   captureFocusForRestore();
   let panel: HTMLDivElement | undefined;

@@ -10,7 +10,6 @@ type Props = {
   children: JSX.Element;
 };
 
-/// A small form in a channel tool's panel; Enter submits once it can.
 export default function ToolForm(props: Props) {
   return (
     <form

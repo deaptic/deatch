@@ -33,8 +33,6 @@ type Props = {
   isBroadcaster: boolean;
 };
 
-/// A moderator's tools for the channel: chat modes first, then the
-/// broadcaster's stream tools, and the heavy actions pushed to the far end.
 export default function ChannelToolbar(props: Props) {
   onMount(() => activity.load(props.broadcasterId, props.isBroadcaster));
 
