@@ -1,17 +1,15 @@
 import { Show } from "solid-js";
-import { MessageSquare } from "lucide-solid";
+import { Clock, Users } from "lucide-solid";
 import type { Stream, User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
-import * as chatActivity from "../../lib/services/chatActivity.ts";
-import { formatUptime } from "../../lib/format/stream.ts";
+import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import LivePill from "../ui/LivePill.tsx";
+import Stat from "../ui/Stat.tsx";
 import { CARD_FRAME } from "../ui/Card.tsx";
-import Chip from "../ui/Chip.tsx";
-import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
   stream: Stream;
@@ -21,7 +19,6 @@ type Props = {
 
 export default function LiveCard(props: Props) {
   const channel = () => resolveUser(props.stream.user);
-  const rate = () => chatActivity.rate(props.stream.user.id);
   const thumbnail = () =>
     `${props.stream.thumbnailUrl}?v=${props.thumbnailVersion}`;
 
@@ -31,23 +28,22 @@ export default function LiveCard(props: Props) {
     <button
       type="button"
       {...link.handlers}
-      class={`group flex flex-col text-left bg-surface overflow-hidden transition-colors duration-snap hover:bg-raised ${CARD_FRAME} ${link.cursor}`}
+      class={`group flex flex-col text-left bg-surface overflow-hidden transition duration-quick ease-out hover:bg-raised active:scale-98 ${CARD_FRAME} ${link.cursor}`}
     >
       <Artwork src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">
-          <LivePill viewers={props.stream.viewerCount} solid />
+          <LivePill solid />
         </span>
-        <div class="absolute bottom-2.5 right-2.5 flex items-center gap-1">
-          <Show when={rate() > 0}>
-            <Chip
-              variant="media"
-              icon={<MessageSquare class="size-3" />}
-              label={t("EXPLORE_CHAT_RATE", { rate: rate() })}
-            />
-          </Show>
-          <Chip
-            variant="media"
-            label={formatUptime(props.stream.startedAt, clock.now())}
+        <div class="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-1.5 text-small">
+          <Stat
+            tone="media"
+            icon={<Users />}
+            value={formatViewers(props.stream.viewerCount)}
+          />
+          <Stat
+            tone="media"
+            icon={<Clock />}
+            value={formatUptime(props.stream.startedAt, clock.now())}
           />
         </div>
       </Artwork>
@@ -56,19 +52,17 @@ export default function LiveCard(props: Props) {
         <Avatar
           src={channel().profileImageUrl}
           alt={channel().displayName}
-          size={36}
+          size={40}
         />
         <div class="min-w-0 flex-1">
           <p class="truncate text-body font-semibold text-ink">
-            {channel().displayName}
-          </p>
-          <Show when={props.stream.game.name}>
-            <p class="truncate text-small text-ink-soft">
-              {props.stream.game.name}
-            </p>
-          </Show>
-          <p class="mt-0.5 truncate text-small text-ink-faint">
             {props.stream.title}
+          </p>
+          <p class="truncate text-small text-ink-soft">
+            {channel().displayName}
+            <Show when={props.stream.game.name}>
+              {(game) => <span class="text-ink-faint"> · {game()}</span>}
+            </Show>
           </p>
         </div>
       </div>

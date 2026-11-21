@@ -13,25 +13,32 @@ const PAGE_SIZE = 40;
 
 let generation = 0;
 let watchers = 0;
+let loadedAt = 0;
+
+const STALE_MS = 5 * 60_000;
+
+function reload() {
+  generation++;
+  setLiveBrowse(emptyLiveBrowse());
+  if (watchers > 0) void loadPage(true);
+}
+
+function refreshIfStale() {
+  if (watchers > 0 && Date.now() - loadedAt > STALE_MS) void loadPage(true);
+}
 
 export function start(): () => void {
   return createRoot((dispose) => {
     createEffect(
-      on(
-        () => [
-          exploreFilters.followingOnly,
-          exploreLanguage(),
-          exploreFilters.category,
-        ],
-        () => {
-          generation++;
-          setLiveBrowse(emptyLiveBrowse());
-          if (watchers > 0) void loadPage(true);
-        },
-        { defer: true },
-      ),
+      on(() => [exploreLanguage(), exploreFilters.category], reload, {
+        defer: true,
+      }),
     );
-    return dispose;
+    window.addEventListener("focus", refreshIfStale);
+    return () => {
+      window.removeEventListener("focus", refreshIfStale);
+      dispose();
+    };
   });
 }
 
@@ -48,7 +55,6 @@ export function loadMore(): void {
 }
 
 async function loadPage(first: boolean): Promise<void> {
-  if (exploreFilters.followingOnly) return;
   if (!first && (liveBrowse.fetching || liveBrowse.exhausted)) return;
   const mine = ++generation;
   setLiveBrowse("fetching", true);
@@ -62,6 +68,7 @@ async function loadPage(first: boolean): Promise<void> {
       after: first ? undefined : (liveBrowse.cursor ?? undefined),
     });
     if (mine !== generation) return;
+    if (first) loadedAt = Date.now();
     if (data.length) users.get(data.map((s) => s.user.id)).catch(() => {});
     setLiveBrowse({
       streams: first ? data : [...liveBrowse.streams, ...data],

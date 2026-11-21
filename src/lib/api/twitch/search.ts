@@ -19,3 +19,10 @@ export function searchCategories(
 ): Promise<Category[]> {
   return invokeCommand(commands.searchCategories, [params], options);
 }
+
+export function getTopCategories(
+  first: number,
+  options?: InvokeOptions,
+): Promise<Category[]> {
+  return invokeCommand(commands.getTopCategories, [first], options);
+}

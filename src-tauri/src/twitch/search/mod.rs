@@ -5,6 +5,7 @@ use super::Authed;
 use crate::error::Result;
 use dto::{Category, SearchChannel};
 use serde::Deserialize;
+use twitch_api::helix::games::GetTopGamesRequest;
 use twitch_api::helix::search::search_categories::SearchCategoriesRequest;
 use twitch_api::helix::search::search_channels::SearchChannelsRequest;
 
@@ -34,6 +35,12 @@ pub async fn search_categories(twitch: &Authed<'_>, params: SearchParams) -> Res
     }
     let mut request = SearchCategoriesRequest::query(params.query);
     request.first = Some(params.first);
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.into_iter().map(Category::from).collect())
+}
+
+pub async fn top_categories(twitch: &Authed<'_>, first: usize) -> Result<Vec<Category>> {
+    let request = GetTopGamesRequest::default().first(first);
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(response.data.into_iter().map(Category::from).collect())
 }

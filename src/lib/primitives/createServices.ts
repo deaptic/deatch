@@ -3,7 +3,6 @@ import * as backendEvents from "../events/index.ts";
 import * as log from "../services/log.ts";
 import * as users from "../services/users.ts";
 import * as session from "../services/session.ts";
-import * as chatActivity from "../services/chatActivity.ts";
 import * as shortcuts from "../services/shortcuts.ts";
 import * as updater from "../services/updater.ts";
 import * as inbox from "../services/inbox.ts";
@@ -33,7 +32,6 @@ export function createServices(): void {
       backendEvents.start(),
       users.start(),
       session.start(),
-      chatActivity.start(),
       shortcuts.start(),
       updater.start(),
       clock.start(),

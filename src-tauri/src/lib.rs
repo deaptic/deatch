@@ -67,6 +67,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::users::commands::get_users,
             twitch::search::commands::search_channels,
             twitch::search::commands::search_categories,
+            twitch::search::commands::get_top_categories,
             twitch::chat::commands::send_shoutout,
             twitch::chat::commands::send_chat_message,
             twitch::chat::commands::send_chat_announcement,

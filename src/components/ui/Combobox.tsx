@@ -64,7 +64,7 @@ export default function Combobox(props: Props) {
     <div class="relative">
       <Field
         ref={input}
-        size="sm"
+        size="lg"
         icon={props.icon}
         aria-label={props.ariaLabel}
         {...listbox.field}

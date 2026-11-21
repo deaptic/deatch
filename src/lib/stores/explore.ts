@@ -1,14 +1,15 @@
 import type { Category, Stream } from "../types/index.ts";
+import type { StreamSort } from "../utils/liveFilter.ts";
 import { createStore } from "solid-js/store";
 
 type ExploreFilters = {
-  followingOnly: boolean;
   category: Category | null;
+  sort: StreamSort;
 };
 
 export const [exploreFilters, setExploreFilters] = createStore<ExploreFilters>({
-  followingOnly: true,
   category: null,
+  sort: "viewers",
 });
 
 type LiveBrowse = {

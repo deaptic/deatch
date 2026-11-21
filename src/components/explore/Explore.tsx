@@ -2,10 +2,12 @@ import { createSignal, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import type { ListboxField } from "../../lib/reactive/createListbox.ts";
 import { setExploreFilters } from "../../lib/stores/explore.ts";
-import ExploreGreeting from "./ExploreGreeting.tsx";
-import ExploreSearch from "./ExploreSearch.tsx";
+import ExploreBar from "./ExploreBar.tsx";
 import SearchResults from "./SearchResults.tsx";
-import LiveNow from "./LiveNow.tsx";
+import FollowingLive from "./FollowingLive.tsx";
+import Popular from "./Popular.tsx";
+import RecentChannels from "./RecentChannels.tsx";
+import TopCategories from "./TopCategories.tsx";
 
 type Props = {
   onSelectChannel: (channel: User) => void;
@@ -17,12 +19,18 @@ export default function Explore(props: Props) {
 
   return (
     <div class="flex-1 min-h-0 min-w-0 overflow-y-auto">
-      <div class="mx-auto max-w-260 px-6 pt-10 pb-12">
-        <ExploreGreeting />
-        <ExploreSearch value={query()} onInput={setQuery} listbox={results()} />
+      <ExploreBar query={query()} onQuery={setQuery} listbox={results()} />
+      <div class="mx-auto max-w-260 px-6 pt-4 pb-12">
         <Show
           when={query().trim()}
-          fallback={<LiveNow onSelect={props.onSelectChannel} />}
+          fallback={
+            <div class="flex flex-col gap-10">
+              <FollowingLive onSelect={props.onSelectChannel} />
+              <RecentChannels onSelect={props.onSelectChannel} />
+              <TopCategories />
+              <Popular onSelect={props.onSelectChannel} />
+            </div>
+          }
         >
           <SearchResults
             query={query()}

@@ -33,6 +33,7 @@ export const commands = {
 	getUsers: (params: GetUsersParams) => __TAURI_INVOKE<User[]>("get_users", { params }),
 	searchChannels: (params: SearchParams) => __TAURI_INVOKE<SearchChannel[]>("search_channels", { params }),
 	searchCategories: (params: SearchParams) => __TAURI_INVOKE<Category[]>("search_categories", { params }),
+	getTopCategories: (first: number) => __TAURI_INVOKE<Category[]>("get_top_categories", { first }),
 	sendShoutout: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("send_shoutout", { params }),
 	sendChatMessage: (params: SendChatMessageParams) => __TAURI_INVOKE<SendMessageResult>("send_chat_message", { params }),
 	sendChatAnnouncement: (params: SendChatAnnouncementParams) => __TAURI_INVOKE<null>("send_chat_announcement", { params }),

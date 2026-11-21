@@ -80,6 +80,7 @@ export const DEFAULTS: Defaults = {
   },
   explore: {
     language: "",
+    recent: [],
   },
   triggers: [],
 };

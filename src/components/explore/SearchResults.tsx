@@ -22,7 +22,7 @@ import { userFromRef } from "../../lib/utils/knownUsers.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import { liveLine } from "../../lib/format/stream.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
-import Artwork from "../ui/Artwork.tsx";
+import CategoryRow from "./CategoryRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import EmptyState from "../ui/EmptyState.tsx";
 import LivePill from "../ui/LivePill.tsx";
@@ -97,28 +97,10 @@ export default function SearchResults(props: Props) {
       <Show when={categories()?.length}>
         <section>
           <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_CATEGORIES")}</h2>
-          <div class="flex gap-3 overflow-x-auto pb-2">
-            <For each={categories()}>
-              {(category) => (
-                <button
-                  type="button"
-                  onClick={() => props.onSelectGame(category)}
-                  class="group w-24 shrink-0 text-left cursor-pointer"
-                >
-                  <Artwork
-                    src={category.boxArtUrl}
-                    alt={category.name}
-                    shape="boxart"
-                    fit="fill"
-                    interactive
-                  />
-                  <p class="mt-1.5 truncate text-small text-ink">
-                    {category.name}
-                  </p>
-                </button>
-              )}
-            </For>
-          </div>
+          <CategoryRow
+            categories={categories() ?? []}
+            onSelect={props.onSelectGame}
+          />
         </section>
       </Show>
 

@@ -1,3 +1,4 @@
+import { RECENT_LIMIT } from "../../utils/recentChannels.ts";
 import type { Anchor } from "../../utils/wordMatch.ts";
 import {
   BADGE_CATEGORIES,
@@ -107,6 +108,7 @@ export type UserPreferences = {
   };
   explore: {
     language: string;
+    recent: string[];
   };
   triggers: Trigger[];
 };
@@ -243,16 +245,18 @@ function sanitizeChannelGains(raw: unknown): Record<string, number> {
   return out;
 }
 
+function strings(raw: unknown, fallback: string[]): string[] {
+  return Array.isArray(raw)
+    ? raw.filter((s): s is string => typeof s === "string")
+    : fallback;
+}
+
 type Stored<T> = T extends object ? { [K in keyof T]?: Stored<T[K]> } : T;
 
 export function sanitize(raw: unknown): UserPreferences {
   const stored = (
     raw && typeof raw === "object" ? raw : {}
   ) as Stored<UserPreferences>;
-  const rawPinned = stored.menu?.channels?.pinned;
-  const pinned = Array.isArray(rawPinned)
-    ? rawPinned.filter((s): s is string => typeof s === "string")
-    : DEFAULT_PREFERENCES.menu.channels.pinned;
   return structuredClone<UserPreferences>({
     feed: {
       fontSize: sanitizeStop(
@@ -381,13 +385,22 @@ export function sanitize(raw: unknown): UserPreferences {
       channelGains: sanitizeChannelGains(stored.link?.channelGains),
     },
     menu: {
-      channels: { pinned },
+      channels: {
+        pinned: strings(
+          stored.menu?.channels?.pinned,
+          DEFAULT_PREFERENCES.menu.channels.pinned,
+        ),
+      },
     },
     explore: {
       language:
         typeof stored.explore?.language === "string"
           ? stored.explore.language
           : DEFAULT_PREFERENCES.explore.language,
+      recent: strings(
+        stored.explore?.recent,
+        DEFAULT_PREFERENCES.explore.recent,
+      ).slice(0, RECENT_LIMIT),
     },
     triggers: sanitizeTriggers(stored.triggers),
   });

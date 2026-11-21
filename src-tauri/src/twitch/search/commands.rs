@@ -21,3 +21,9 @@ pub async fn search_categories(
 ) -> Result<Vec<Category>> {
     search::search_categories(&twitch.authed().await?, params).await
 }
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_top_categories(twitch: State<'_, Twitch>, first: usize) -> Result<Vec<Category>> {
+    search::top_categories(&twitch.authed().await?, first).await
+}

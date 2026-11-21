@@ -1,0 +1,43 @@
+import { createResource, For, Show } from "solid-js";
+import type { User } from "../../lib/types/index.ts";
+import { streamForUserId } from "../../lib/stores/channels.ts";
+import { recentChannels } from "../../lib/stores/preferences.ts";
+import * as users from "../../lib/services/users.ts";
+import ChannelTile from "./ChannelTile.tsx";
+import { moveGridFocus } from "../ui/gridKeys.ts";
+import { t } from "../../lib/i18n/index.ts";
+
+type Props = {
+  onSelect: (channel: User) => void;
+};
+
+export default function RecentChannels(props: Props) {
+  const [channels] = createResource(
+    () => [...recentChannels()],
+    (ids) => users.get(ids).catch(() => []),
+  );
+
+  return (
+    <Show when={channels()?.length}>
+      <section>
+        <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_RECENT")}</h2>
+        <div onKeyDown={moveGridFocus} class="-mx-2 grid grid-avatars">
+          <For each={channels()}>
+            {(channel) => {
+              const stream = () => streamForUserId(channel.id);
+              return (
+                <ChannelTile
+                  channel={channel}
+                  live={!!stream()}
+                  detail={stream()?.game.name ?? t("EXPLORE_OFFLINE")}
+                  tip={stream()?.title}
+                  onSelect={props.onSelect}
+                />
+              );
+            }}
+          </For>
+        </div>
+      </section>
+    </Show>
+  );
+}

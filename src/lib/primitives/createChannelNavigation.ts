@@ -12,6 +12,7 @@ import {
   setSelectedChannel,
 } from "../stores/view.ts";
 import { linkWarmedChannels } from "../stores/link.ts";
+import { rememberChannel } from "../stores/preferences.ts";
 import { linkFocus } from "../api/link.ts";
 import { reportFailure } from "../api/utils.ts";
 import { ensureFeed } from "../stores/feeds.ts";
@@ -68,6 +69,7 @@ export function createChannelNavigation(): ChannelNavigation {
     on(selectedChannel, (ch) => {
       if (!ch) return;
       recordVisit(ch);
+      rememberChannel(ch.id);
       users.note([ch]);
       ensureFeed(ch.id);
       inbox.markChannelSeen(ch.id);

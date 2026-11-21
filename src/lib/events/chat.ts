@@ -7,7 +7,6 @@ import { feedKeywords } from "../stores/preferences.ts";
 import { mentionReason } from "../utils/mention.ts";
 import { chatterOf, mapChatMessage } from "../mappers/chat.ts";
 import * as channelPoints from "../services/channelPoints.ts";
-import * as chatActivity from "../services/chatActivity.ts";
 import * as users from "../services/users.ts";
 import * as badges from "../services/badges.ts";
 import * as triggers from "../services/triggers.ts";
@@ -38,9 +37,7 @@ export function start(): () => void {
       const msg = mapChatMessage(raw, ts);
       if (msg.source) badges.loadSource(msg.source);
       recordChatter(raw.broadcaster_user_id, chatterOf(msg));
-      if (appendItem(raw.broadcaster_user_id, msg)) {
-        chatActivity.record(raw.broadcaster_user_id, ts);
-      }
+      appendItem(raw.broadcaster_user_id, msg);
       noteRename(raw);
       if (raw.channel_points_custom_reward_id) {
         channelPoints.noteChatMessage(

@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { Category, Stream } from "../types/index.ts";
-import { byViewers, matchingStreams } from "./liveFilter.ts";
+import { byViewers, matchingStreams, sortStreams } from "./liveFilter.ts";
 
 const stream = (id: string, language: string, game: string, viewers: number) =>
   ({
@@ -30,4 +30,20 @@ test("keeps streams in the language and category asked for", () => {
 
 test("orders by viewers, most first", () => {
   expect(byViewers(streams).map((s) => s.id)).toStrictEqual(["b", "c", "a"]);
+});
+
+test("orders by start time, newest first", () => {
+  const timed = [
+    { id: "old", startedAt: "2026-01-01T10:00:00Z" },
+    { id: "new", startedAt: "2026-01-01T12:00:00Z" },
+  ] as unknown as Stream[];
+  expect(sortStreams(timed, "recent").map((s) => s.id)).toStrictEqual([
+    "new",
+    "old",
+  ]);
+  expect(sortStreams(streams, "viewers").map((s) => s.id)).toStrictEqual([
+    "b",
+    "c",
+    "a",
+  ]);
 });

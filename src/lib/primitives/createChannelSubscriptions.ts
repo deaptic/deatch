@@ -7,7 +7,6 @@ import { clearChatters, user } from "../stores/users.ts";
 import { linkWarmedChannels } from "../stores/link.ts";
 import { setEventsubChannels } from "../api/twitch/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
-import * as chatActivity from "../services/chatActivity.ts";
 import * as chatSettings from "../services/chatSettings.ts";
 import * as cheermotes from "../services/cheermotes.ts";
 import * as badges from "../services/badges.ts";
@@ -43,7 +42,6 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     clearChatSettings(broadcasterId);
     clearActivity(broadcasterId);
     clearCheermotes(broadcasterId);
-    chatActivity.clear(broadcasterId);
     badges.forgetChannel(broadcasterId);
     emotes.forgetChannelThirdParty(broadcasterId);
     channelInfo.forget(broadcasterId);
