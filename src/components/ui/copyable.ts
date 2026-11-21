@@ -1,5 +1,4 @@
 import { createCopied } from "./createCopied.ts";
-import { t } from "../../lib/i18n/index.ts";
 import { onActivateKey } from "./keyActivation.ts";
 
 export function createCopyable(idle: string) {
@@ -16,7 +15,5 @@ export function createCopyable(idle: string) {
       `cursor-pointer transition-colors duration-snap ${
         copied() ? "text-positive" : `${idle} hover:text-ink`
       }`,
-    tip: (label?: string) =>
-      label ? `${label}\n${t("UI_CLICK_TO_COPY")}` : t("UI_CLICK_TO_COPY"),
   };
 }

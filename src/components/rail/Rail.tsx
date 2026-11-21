@@ -7,13 +7,12 @@ import {
   onCleanup,
   Show,
 } from "solid-js";
-import { ChevronRight, Eye, Plus, Search, Settings } from "lucide-solid";
+import { Eye, Plus, Search, Settings } from "lucide-solid";
 import * as browser from "../../lib/services/browser.ts";
 import {
   appearanceRailExpanded,
   linkAudioLink,
   pinnedChannels,
-  setAppearanceRailExpanded,
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
@@ -247,30 +246,6 @@ export default function Rail(props: Props) {
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
     >
-      <button
-        type="button"
-        aria-label={t(expanded() ? "RAIL_COLLAPSE_RAIL" : "RAIL_EXPAND_RAIL")}
-        aria-expanded={expanded()}
-        onClick={() => setAppearanceRailExpanded(!expanded())}
-        class="shrink-0 h-9 mx-2 mt-2 mb-0.5 pl-2 flex items-center gap-3 rounded-md text-ink-faint hover:bg-raised hover:text-ink cursor-pointer transition-colors duration-snap overflow-hidden"
-      >
-        <span class="w-10 shrink-0 grid place-items-center">
-          <ChevronRight
-            class={`size-4 transition-transform duration-quick ${
-              expanded() ? "rotate-180" : ""
-            }`}
-          />
-        </span>
-        <span
-          aria-hidden={!expanded()}
-          class={`text-small whitespace-nowrap transition-opacity duration-settle ${
-            expanded() ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          {t("RAIL_COLLAPSE")}
-        </span>
-      </button>
-
       <div class="relative flex-1 min-h-0">
         <Show when={main.canUp()}>
           <ScrollChevron direction="up" onClick={() => main.scrollByOne(-1)} />
@@ -337,7 +312,11 @@ export default function Rail(props: Props) {
             </RailRow>
           </div>
 
-          <RailDivider />
+          <RailDivider
+            label={t("RAIL_SECTION_LIVE", {
+              count: channels.onlineList().length,
+            })}
+          />
 
           <div class={`flex flex-col py-2 ${railGap()}`}>
             <Show
@@ -369,7 +348,7 @@ export default function Rail(props: Props) {
       </div>
 
       <Show when={linkedOthers().length > 0}>
-        <RailDivider />
+        <RailDivider label={t("RAIL_SECTION_TABS")} />
         <div class="flex flex-col py-2 shrink-0">
           <div class="relative">
             <Show when={linkScroll.canUp()}>
@@ -414,7 +393,7 @@ export default function Rail(props: Props) {
       <Show when={nowViewing()}>
         {(nv) => (
           <>
-            <RailDivider />
+            <RailDivider label={t("RAIL_SECTION_VIEWING")} />
             <div class="py-2 shrink-0" data-channel-id={nv().id}>
               <ChannelRow
                 ch={nv()}

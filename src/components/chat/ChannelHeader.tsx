@@ -1,5 +1,5 @@
 import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
-import { Show } from "solid-js";
+import { createResource, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
@@ -18,8 +18,13 @@ import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { canModerate, user } from "../../lib/stores/users.ts";
 import ChannelToolbar from "../channel-tools/ChannelToolbar.tsx";
 import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
+import ConnectionBanner from "./ConnectionBanner.tsx";
+import { chatConnected } from "../../lib/stores/eventsub.ts";
+import * as users from "../../lib/services/users.ts";
+import { isCssHex } from "../../lib/utils/color.ts";
 
 type Props = {
+  ref?: (el: HTMLElement) => void;
   channel: User;
   onOpenChannel: (broadcasterId: string) => void;
 };
@@ -33,32 +38,43 @@ export default function ChannelHeader(props: Props) {
   const name = createCopyable("text-ink");
   const titleCopy = createCopyable("text-ink-soft");
 
+  const [chatColor] = createResource(() => props.channel.id, users.chatColor, {
+    initialValue: users.knownChatColor(props.channel.id),
+  });
+  const tint = () => {
+    const color = chatColor();
+    return color && isCssHex(color) ? color : undefined;
+  };
+
   const uptime = () => {
     const s = stream();
     return s ? formatUptime(s.startedAt, clock.now()) : "";
   };
 
   return (
-    <header class="shrink-0 flex flex-col gap-2 p-2">
-      <Card>
-        <div class="flex items-center gap-3 px-2 py-1.75" {...link.handlers}>
+    <header
+      ref={props.ref}
+      style={{ "--tint": tint() }}
+      class="absolute inset-x-0 top-0 z-20 flex flex-col gap-2 p-2"
+    >
+      <Card tone={chatColor() === undefined ? "floating" : "floating-tint"}>
+        <div class="flex items-center gap-4 p-3" {...link.handlers}>
           <Avatar
             src={props.channel.profileImageUrl}
             alt={props.channel.displayName}
-            size={40}
+            size={64}
             square
             presence={stream() ? "on-air" : "offline"}
           />
           <div class="flex-1 min-w-0 flex flex-col">
             <div class="flex items-center gap-4 min-w-0">
               <h1
-                class={`shrink-0 max-w-1/2 text-title truncate ${name.class()}`}
-                data-tip={name.tip()}
+                class={`shrink-0 max-w-1/2 text-heading truncate ${name.class()}`}
                 {...name.handlers(() => props.channel.displayName)}
               >
                 {props.channel.displayName}
               </h1>
-              <div class="ml-auto min-w-0 flex items-center gap-4 text-small">
+              <div class="ml-auto min-w-0 flex items-center gap-5 text-body">
                 <Stat
                   icon={<Gamepad2 />}
                   value={game()}
@@ -85,8 +101,8 @@ export default function ChannelHeader(props: Props) {
             <Show when={title()}>
               {(streamTitle) => (
                 <p
-                  class={`self-start max-w-full text-small truncate ${titleCopy.class()}`}
-                  data-tip={titleCopy.tip(streamTitle())}
+                  class={`mt-1 self-start max-w-full text-body truncate ${titleCopy.class()}`}
+                  data-tip={streamTitle()}
                   {...titleCopy.handlers(streamTitle)}
                 >
                   {streamTitle()}
@@ -96,6 +112,9 @@ export default function ChannelHeader(props: Props) {
           </div>
         </div>
       </Card>
+      <Show when={!chatConnected()}>
+        <ConnectionBanner />
+      </Show>
       <Show when={canModerate(props.channel.id)}>
         <ChannelToolbar
           broadcasterId={props.channel.id}

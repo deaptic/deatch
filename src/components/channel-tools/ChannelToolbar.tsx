@@ -42,7 +42,7 @@ export default function ChannelToolbar(props: Props) {
   const shield = () => activityFor(props.broadcasterId).shield;
 
   return (
-    <Card>
+    <Card tone="floating">
       <div class="flex flex-wrap items-center gap-0.5 p-0.5">
         <For each={CHAT_MODES}>
           {(mode) => (

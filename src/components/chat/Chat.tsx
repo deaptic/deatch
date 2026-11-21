@@ -18,8 +18,6 @@ import { mentionsIn } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
-import ConnectionBanner from "./ConnectionBanner.tsx";
-import { chatConnected } from "../../lib/stores/eventsub.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu, {
   type ModAction,
@@ -251,13 +249,10 @@ export default function Chat(props: Props) {
 
   return (
     <div class="flex-1 min-h-0 flex flex-col">
-      <Show when={!chatConnected()}>
-        <ConnectionBanner />
-      </Show>
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
-        scrollClass="pr-4 py-2"
+        scrollClass="pr-4 pt-(--header-height) pb-2 scroll-pt-(--header-height)"
         flush
         density={feedDensity()}
         class="text-(length:--chat-size)"

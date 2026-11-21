@@ -3,6 +3,8 @@ import {
   Copy,
   Inbox as InboxIcon,
   Minus,
+  PanelLeftClose,
+  PanelLeftOpen,
   Square,
   X,
 } from "lucide-solid";
@@ -16,7 +18,11 @@ import {
 import { windowMaximized as maximized } from "../../lib/stores/window.ts";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";
-import { advancedDeveloperMode } from "../../lib/stores/preferences.ts";
+import {
+  advancedDeveloperMode,
+  appearanceRailExpanded,
+  setAppearanceRailExpanded,
+} from "../../lib/stores/preferences.ts";
 import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
 import Badge from "../ui/Badge.tsx";
 import TitleBarButton from "../ui/TitleBarButton.tsx";
@@ -56,9 +62,30 @@ export default function TitleBar(props: Props) {
         data-tauri-drag-region
         class="relative h-titlebar shrink-0 flex items-center bg-canvas border-b border-line-soft select-none"
       >
+        <TitleBarButton
+          label={t(
+            appearanceRailExpanded()
+              ? "RAIL_COLLAPSE_RAIL"
+              : "RAIL_EXPAND_RAIL",
+          )}
+          data-tip={t(
+            appearanceRailExpanded()
+              ? "RAIL_COLLAPSE_RAIL"
+              : "RAIL_EXPAND_RAIL",
+          )}
+          aria-expanded={appearanceRailExpanded()}
+          onClick={() => setAppearanceRailExpanded(!appearanceRailExpanded())}
+        >
+          <Show
+            when={appearanceRailExpanded()}
+            fallback={<PanelLeftOpen class="size-4" />}
+          >
+            <PanelLeftClose class="size-4" />
+          </Show>
+        </TitleBarButton>
         <div
           data-tauri-drag-region
-          class="flex items-center gap-2 pl-4 pointer-events-none"
+          class="flex items-center gap-2 pl-1 pointer-events-none"
         >
           <span class="text-body font-semibold text-ink">Deatch</span>
           <Show when={version()}>

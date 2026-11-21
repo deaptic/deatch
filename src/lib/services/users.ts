@@ -42,6 +42,7 @@ const waiting = new Map<string, Promise<void>>();
 const waiters = new Map<string, Waiter[]>();
 const queued = new Set<string>();
 const notFound = new Map<string, number>();
+const chatColors = new Map<string, string | null>();
 let batchTimer: ReturnType<typeof setTimeout> | undefined;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 let saveDeadline = 0;
@@ -132,8 +133,20 @@ export async function resolveId(
   return identity.id ?? (await resolve(identity))?.id ?? null;
 }
 
-export function chatColor(userId: string): Promise<string | null> {
-  return getUserChatColor({ userId }, { silent: true }).catch(() => null);
+export function knownChatColor(userId: string): string | null | undefined {
+  return chatColors.get(userId);
+}
+
+export async function chatColor(userId: string): Promise<string | null> {
+  const known = chatColors.get(userId);
+  if (known !== undefined) return known;
+  try {
+    const color = await getUserChatColor({ userId }, { silent: true });
+    chatColors.set(userId, color);
+    return color;
+  } catch {
+    return null;
+  }
 }
 
 export async function followStatus(

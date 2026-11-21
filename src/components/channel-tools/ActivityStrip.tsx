@@ -32,7 +32,7 @@ export default function ActivityStrip(props: Props) {
 
   return (
     <Show when={current().poll || current().prediction || raiding()}>
-      <Card>
+      <Card tone="floating">
         <div class="flex flex-col py-0.5">
           <Show when={current().poll}>
             {(poll) => (

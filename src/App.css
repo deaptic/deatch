@@ -258,6 +258,15 @@
   box-shadow: var(--elevation-1);
 }
 
+@utility material-tint {
+  @apply material-thin;
+  background-color: color-mix(
+    in oklab,
+    var(--color-material),
+    var(--tint, var(--color-accent)) 14%
+  );
+}
+
 @utility material-regular {
   background-color: var(--color-material);
   backdrop-filter: blur(var(--blur-regular)) saturate(1.5);

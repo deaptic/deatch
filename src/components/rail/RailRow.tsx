@@ -8,20 +8,21 @@ import { railRowHeight } from "../ui/rowHeight.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
-export type SubTone = "soft" | "live" | "positive" | "caution";
+export type SubTone = "soft" | "positive";
 
 const SUB_TONES: Record<SubTone, string> = {
   soft: "text-ink-soft",
-  live: "text-live",
   positive: "text-positive",
-  caution: "text-caution",
 };
 
 type Props = {
   label: string;
+  quiet?: boolean;
   sub?: string;
   subTone?: SubTone;
+  trailing?: JSX.Element;
   tooltip?: JSX.Element;
+  card?: JSX.Element;
   selected?: boolean;
   unread?: boolean;
   mentions?: number;
@@ -36,8 +37,9 @@ type Props = {
 export default function RailRow(props: Props) {
   const expanded = appearanceRailExpanded;
   const tip = createSideTip(
-    () => props.tooltip ?? <TipLabel>{props.label}</TipLabel>,
+    () => props.card ?? props.tooltip ?? <TipLabel>{props.label}</TipLabel>,
   );
+  const hasMentions = () => (props.mentions ?? 0) > 0;
 
   return (
     <>
@@ -64,7 +66,7 @@ export default function RailRow(props: Props) {
           )
         }
         onMouseEnter={(e) => {
-          if (!expanded()) tip.show(e.currentTarget);
+          if (props.card || !expanded()) tip.show(e.currentTarget);
         }}
         onMouseLeave={tip.hide}
         class={`group relative w-full ${railRowHeight()} flex items-center px-2 text-left cursor-pointer ${
@@ -74,10 +76,10 @@ export default function RailRow(props: Props) {
         <EdgeMark
           mark={props.selected ? "selected" : props.unread ? "unread" : "none"}
         />
-        <span class="flex-1 min-w-0 h-full flex items-center gap-3 px-2 overflow-hidden">
+        <span class="flex-1 min-w-0 h-full flex items-center gap-3 px-2 overflow-hidden rounded-md transition duration-snap ease-out group-hover:bg-raised group-active:scale-98">
           <span class="relative shrink-0 flex">
             {props.children}
-            <Show when={(props.mentions ?? 0) > 0 && !expanded()}>
+            <Show when={hasMentions() && !expanded()}>
               <span class="absolute -top-1 -right-1.5 z-10">
                 <Badge count={props.mentions ?? 0} floating />
               </span>
@@ -90,7 +92,11 @@ export default function RailRow(props: Props) {
             }`}
           >
             <span class="flex-1 min-w-0 flex flex-col">
-              <span class="text-body font-semibold text-ink truncate">
+              <span
+                class={`text-body font-semibold truncate ${
+                  props.quiet ? "text-ink-soft" : "text-ink"
+                }`}
+              >
                 {props.label}
               </span>
               <Show when={props.sub}>
@@ -103,8 +109,10 @@ export default function RailRow(props: Props) {
                 </span>
               </Show>
             </span>
-            <Show when={expanded() && (props.mentions ?? 0) > 0}>
-              <Badge count={props.mentions ?? 0} />
+            <Show when={expanded()}>
+              <Show when={hasMentions()} fallback={props.trailing}>
+                <Badge count={props.mentions ?? 0} />
+              </Show>
             </Show>
           </span>
         </span>

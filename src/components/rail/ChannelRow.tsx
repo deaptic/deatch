@@ -25,24 +25,31 @@ type Props = {
 export default function ChannelRow(props: Props) {
   const stream = () => streamForUserId(props.ch.id);
   const info = () => channelInfoFor(props.ch.id);
-  const sub = () => {
-    const s = stream();
-    if (s) {
-      return `${s.game.name || t("RAIL_LIVE")} · ${formatViewers(
-        s.viewerCount,
-      )}`;
-    }
-    return info()?.game.name || t("RAIL_OFFLINE");
-  };
+  const game = () => stream()?.game.name || info()?.game.name;
 
   return (
     <RailRow
       label={props.ch.displayName}
-      sub={sub()}
-      subTone={stream() ? "live" : "soft"}
-      tooltip={
-        <StreamTooltip user={props.ch} stream={stream()} info={info()} />
+      quiet={!stream()}
+      sub={game()}
+      trailing={
+        <Show
+          when={stream()}
+          fallback={
+            <span class="shrink-0 text-small text-ink-faint">
+              {t("RAIL_OFFLINE")}
+            </span>
+          }
+        >
+          {(s) => (
+            <span class="shrink-0 flex items-center gap-1.5 text-small tabular-nums text-ink-soft">
+              <span class="size-1.5 rounded-full bg-live" />
+              {formatViewers(s().viewerCount)}
+            </span>
+          )}
+        </Show>
       }
+      card={<StreamTooltip user={props.ch} stream={stream()} info={info()} />}
       selected={props.selected}
       unread={props.unread}
       mentions={props.mentions}

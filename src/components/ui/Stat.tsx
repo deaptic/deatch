@@ -30,7 +30,7 @@ export default function Stat(props: Props) {
         class={`flex items-center gap-1.5 tabular-nums whitespace-nowrap ${
           props.truncate ? "min-w-0" : "shrink-0"
         } ${props.copy ? copyable.class() : tone().value}`}
-        data-tip={props.copy ? copyable.tip() : undefined}
+        data-tip={props.truncate ? props.value : undefined}
         {...(props.copy && copyable.handlers(() => props.copy ?? ""))}
       >
         <span class={`shrink-0 [&>svg]:size-3.5 ${tone().icon}`}>

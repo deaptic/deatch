@@ -1,6 +1,6 @@
 import type { JSX } from "solid-js";
 
-type Tone = "plain" | "accent" | "edited";
+type Tone = "plain" | "accent" | "edited" | "floating" | "floating-tint";
 
 const RESTING_BORDER =
   "border-transparent [[data-theme=light]_&]:border-line-soft";
@@ -9,6 +9,8 @@ const TONES: Record<Tone, string> = {
   plain: `bg-surface ${RESTING_BORDER}`,
   accent: `bg-accent-soft ${RESTING_BORDER}`,
   edited: "bg-surface border-accent/40",
+  floating: "material-thin transition-colors duration-settle ease-out",
+  "floating-tint": "material-tint transition-colors duration-settle ease-out",
 };
 
 type Props = {

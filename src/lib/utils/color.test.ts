@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { hexToOklch, hueOf, oklchCss } from "./color.ts";
+import { hexToOklch, hueOf, isCssHex, oklchCss } from "./color.ts";
 
 test("maps white and black to the ends of the lightness axis", () => {
   const white = hexToOklch("#ffffff")!;
@@ -42,4 +42,11 @@ test("has no hue for greys, blanks, and junk", () => {
   expect(hueOf("#808080")).toBeUndefined();
   expect(hueOf("")).toBeUndefined();
   expect(hueOf("red")).toBeUndefined();
+});
+
+test("accepts only #rrggbb as a CSS colour", () => {
+  expect(isCssHex("#1E90FF")).toBe(true);
+  expect(isCssHex("1E90FF")).toBe(false);
+  expect(isCssHex("")).toBe(false);
+  expect(isCssHex("#1E90FF; color: red")).toBe(false);
 });
