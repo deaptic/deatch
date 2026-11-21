@@ -5,7 +5,8 @@ type Overlay =
   | "diagnostics"
   | "emotePicker"
   | "appearance"
-  | "quickSwitch";
+  | "quickSwitch"
+  | "composerActions";
 
 const [openOverlay, setOpenOverlay] = createSignal<Overlay | null>(null);
 export { openOverlay };

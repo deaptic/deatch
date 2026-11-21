@@ -14,6 +14,7 @@ type Props = Omit<
 > & {
   value: string;
   onInput: (value: string) => void;
+  leading?: JSX.Element;
   addons?: JSX.Element;
   children?: JSX.Element;
   ref?: (api: ComposerFieldApi) => void;
@@ -23,6 +24,7 @@ export default function ComposerField(props: Props) {
   const [local, textareaProps] = splitProps(props, [
     "value",
     "onInput",
+    "leading",
     "addons",
     "children",
     "ref",
@@ -49,7 +51,7 @@ export default function ComposerField(props: Props) {
   });
 
   return (
-    <ComposerBox ref={(el) => (rowRef = el)}>
+    <ComposerBox ref={(el) => (rowRef = el)} leading={local.leading}>
       {local.children}
       <textarea
         {...textareaProps}

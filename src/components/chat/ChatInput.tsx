@@ -32,7 +32,6 @@ import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../ui/IconButton.tsx";
 import AppearancePanel from "./AppearancePanel.tsx";
-import { composerInnerHeight } from "../ui/rowHeight.ts";
 import ComposerCaption from "../ui/ComposerCaption.tsx";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
@@ -40,7 +39,9 @@ import ChatAutocomplete, {
 } from "./autocomplete/ChatAutocomplete.tsx";
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
-import ChatModes from "./ChatModes.tsx";
+import ComposerActions from "./ComposerActions.tsx";
+import ComposerSlot from "../ui/ComposerSlot.tsx";
+import { commands } from "../command-composer/commands.ts";
 
 const MAX_LEN = 500;
 const SEND_ACTION = "chat::send";
@@ -144,6 +145,19 @@ export default function ChatInput(props: Props) {
     setCommandMode(null);
     setInput("");
     queueMicrotask(focus);
+  }
+
+  function startCommand(name: string) {
+    const command = commands.find((c) => c.name === name);
+    if (command) setCommandMode(command);
+  }
+
+  function openCommandList() {
+    onInputChange(`/${input()}`);
+    queueMicrotask(() => {
+      focus();
+      setCursor(1);
+    });
   }
 
   function onInputChange(value: string) {
@@ -264,7 +278,6 @@ export default function ChatInput(props: Props) {
 
   return (
     <div class="shrink-0 p-2">
-      <ChatModes broadcasterId={props.broadcasterId} />
       <Show when={props.replyTo()}>
         {(reply) => (
           <ComposerCaption>
@@ -315,10 +328,18 @@ export default function ChatInput(props: Props) {
                 },
               });
             }}
+            leading={
+              <ComposerSlot>
+                <ComposerActions
+                  broadcasterId={props.broadcasterId}
+                  anchorEl={() => textAreaApi?.anchorEl()}
+                  onRunCommand={openCommandList}
+                  onStartCommand={startCommand}
+                />
+              </ComposerSlot>
+            }
             addons={
-              <div
-                class={`flex items-center gap-1 shrink-0 self-end ${composerInnerHeight()}`}
-              >
+              <ComposerSlot>
                 <CharCounter value={input} max={MAX_LEN} />
                 <IconButton
                   label={t("CHAT_APPEARANCE")}
@@ -336,7 +357,7 @@ export default function ChatInput(props: Props) {
                 >
                   <Smile class="size-5" />
                 </IconButton>
-              </div>
+              </ComposerSlot>
             }
           >
             <ChatAutocomplete

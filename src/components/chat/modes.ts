@@ -10,7 +10,6 @@ type Preset = { value: number; label: MessageKey; count?: number };
 type Base = {
   icon: Component<{ class?: string }>;
   label: MessageKey;
-  chip: (s: ChatSettings) => string;
   description: (s: ChatSettings) => string;
   off: ChatSettingsChange;
 };
@@ -34,6 +33,10 @@ export type ChatMode = SwitchMode | TimedMode;
 
 export function isOn(mode: ChatMode, s: ChatSettings): boolean {
   return mode.kind === "timed" ? mode.current(s) !== null : mode.isOn(s);
+}
+
+export function activeModes(s: ChatSettings | undefined): ChatMode[] {
+  return s ? CHAT_MODES.filter((mode) => isOn(mode, s)) : [];
 }
 
 export function presetLabel(preset: Preset): string {
@@ -61,10 +64,6 @@ export const CHAT_MODES: ChatMode[] = [
     ],
     set: (seconds) => ({ slowMode: true, slowModeWaitTime: seconds }),
     off: { slowMode: false },
-    chip: (s) =>
-      t("CHAT_MODE_SLOW_CHIP", {
-        duration: formatDuration(s.slowModeSeconds ?? 0),
-      }),
     description: (s) =>
       t("CHAT_MODE_SLOW_DESCRIPTION", {
         duration: formatDuration(s.slowModeSeconds ?? 0),
@@ -90,12 +89,6 @@ export const CHAT_MODES: ChatMode[] = [
     ],
     set: (minutes) => ({ followerMode: true, followerModeDuration: minutes }),
     off: { followerMode: false },
-    chip: (s) =>
-      s.followerModeMinutes
-        ? t("CHAT_MODE_FOLLOWERS_CHIP_AGE", {
-            age: followAge(s.followerModeMinutes),
-          })
-        : t("CHAT_MODE_FOLLOWERS_CHIP"),
     description: (s) =>
       s.followerModeMinutes
         ? t("CHAT_MODE_FOLLOWERS_DESCRIPTION_AGE", {
@@ -110,7 +103,6 @@ export const CHAT_MODES: ChatMode[] = [
     isOn: (s) => s.subscriberMode,
     on: { subscriberMode: true },
     off: { subscriberMode: false },
-    chip: () => t("CHAT_MODE_SUBSCRIBERS_CHIP"),
     description: () => t("CHAT_MODE_SUBSCRIBERS_DESCRIPTION"),
   },
   {
@@ -120,7 +112,6 @@ export const CHAT_MODES: ChatMode[] = [
     isOn: (s) => s.emoteMode,
     on: { emoteMode: true },
     off: { emoteMode: false },
-    chip: () => t("CHAT_MODE_EMOTE_ONLY_CHIP"),
     description: () => t("CHAT_MODE_EMOTE_ONLY_DESCRIPTION"),
   },
   {
@@ -130,7 +121,6 @@ export const CHAT_MODES: ChatMode[] = [
     isOn: (s) => s.uniqueChatMode,
     on: { uniqueChatMode: true },
     off: { uniqueChatMode: false },
-    chip: () => t("CHAT_MODE_UNIQUE"),
     description: () => t("CHAT_MODE_UNIQUE_DESCRIPTION"),
   },
 ];

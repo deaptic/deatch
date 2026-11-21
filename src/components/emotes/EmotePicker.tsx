@@ -233,6 +233,7 @@ export default function EmotePicker(props: Props) {
 
   return (
     <ComposerPanel
+      side="end"
       label={t("EMOTES_LABEL")}
       anchorEl={props.anchorEl}
       onClose={props.onClose}

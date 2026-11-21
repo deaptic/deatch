@@ -12,8 +12,16 @@ const SIZES: Record<PanelSize, string> = {
   menu: "w-72 p-1.5",
 };
 
+type Side = "start" | "end";
+
+const SIDES: Record<Side, string> = {
+  start: "left-(--edge) origin-bottom-left",
+  end: "right-(--edge) origin-bottom-right",
+};
+
 type Props = {
   label: string;
+  side: Side;
   anchorEl?: HTMLElement | null;
   onClose: () => void;
   size: PanelSize;
@@ -24,6 +32,7 @@ type Props = {
 export default function ComposerPanel(props: Props) {
   captureFocusForRestore();
   const [bottom, setBottom] = createSignal(64);
+  const [edge, setEdge] = createSignal(GAP);
   let panel: HTMLDivElement | undefined;
 
   dismissOnOutside({ ref: () => panel, onDismiss: props.onClose });
@@ -31,8 +40,11 @@ export default function ComposerPanel(props: Props) {
   onMount(() => {
     const anchor = props.anchorEl;
     if (!anchor) return;
-    const update = () =>
-      setBottom(window.innerHeight - anchor.getBoundingClientRect().top + GAP);
+    const update = () => {
+      const r = anchor.getBoundingClientRect();
+      setBottom(window.innerHeight - r.top + GAP);
+      setEdge(props.side === "start" ? r.left : window.innerWidth - r.right);
+    };
     update();
     const observer = new ResizeObserver(update);
     observer.observe(anchor);
@@ -52,10 +64,10 @@ export default function ComposerPanel(props: Props) {
         }}
         role="dialog"
         aria-label={props.label}
-        class={`fixed right-2 bottom-(--bottom) z-40 max-w-full material-regular rounded-lg flex flex-col overflow-hidden enter-pop origin-bottom-right ${
-          SIZES[props.size]
-        }`}
-        style={{ "--bottom": `${bottom()}px` }}
+        class={`fixed bottom-(--bottom) z-40 max-w-full material-regular rounded-lg flex flex-col overflow-hidden enter-pop ${
+          SIDES[props.side]
+        } ${SIZES[props.size]}`}
+        style={{ "--bottom": `${bottom()}px`, "--edge": `${edge()}px` }}
       >
         {props.children}
       </div>

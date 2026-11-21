@@ -52,6 +52,7 @@ type Props = {
 export default function AppearancePanel(props: Props) {
   return (
     <ComposerPanel
+      side="end"
       label={t("CHAT_APPEARANCE")}
       anchorEl={props.anchorEl}
       onClose={props.onClose}
