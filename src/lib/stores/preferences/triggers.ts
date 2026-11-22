@@ -1,7 +1,17 @@
 import { prefs, setPrefs } from "./core.ts";
-import { MIN_TRIGGER_COOLDOWN, type Trigger } from "./schema.ts";
+import {
+  type BuiltInTrigger,
+  MIN_TRIGGER_COOLDOWN,
+  type Trigger,
+} from "./schema.ts";
 
-export const triggers = () => prefs.triggers;
+export const customTriggers = () => prefs.triggers.custom;
+export const builtInEnabled = (builtIn: BuiltInTrigger) =>
+  prefs.triggers.builtIn[builtIn];
+
+export function setBuiltInEnabled(builtIn: BuiltInTrigger, on: boolean) {
+  setPrefs("triggers", "builtIn", builtIn, on);
+}
 
 export function blankTrigger(): Trigger {
   return {
@@ -13,19 +23,39 @@ export function blankTrigger(): Trigger {
     caseSensitive: false,
     cooldown: MIN_TRIGGER_COOLDOWN,
     action: "reply",
-    response: "",
+    replies: [],
+    otherwise: "",
+    role: "everyone",
+    count: 0,
   };
 }
 
+const settingsOf = ({ count: _count, ...settings }: Trigger) => settings;
+
+export function sameTriggerSettings(a: Trigger, b: Trigger): boolean {
+  return JSON.stringify(settingsOf(a)) === JSON.stringify(settingsOf(b));
+}
+
 export function saveTrigger(trigger: Trigger) {
-  const value = { ...trigger };
-  if (prefs.triggers.some((t) => t.id === trigger.id)) {
-    setPrefs("triggers", (t) => t.id === trigger.id, value);
+  const stored = prefs.triggers.custom.find((t) => t.id === trigger.id);
+  const value = { ...trigger, count: stored?.count ?? trigger.count };
+  if (stored) {
+    setPrefs("triggers", "custom", (t) => t.id === trigger.id, value);
   } else {
-    setPrefs("triggers", (t) => [...t, value]);
+    setPrefs("triggers", "custom", (t) => [...t, value]);
   }
 }
 
+export function countReply(id: string) {
+  setPrefs(
+    "triggers",
+    "custom",
+    (t) => t.id === id,
+    "count",
+    (n) => n + 1,
+  );
+}
+
 export function removeTrigger(id: string) {
-  setPrefs("triggers", (t) => t.filter((x) => x.id !== id));
+  setPrefs("triggers", "custom", (t) => t.filter((x) => x.id !== id));
 }

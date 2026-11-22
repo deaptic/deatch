@@ -62,8 +62,8 @@ mod tests {
             "https://recent-messages.robotty.de/api/v2/recent-messages/a%3Fb?limit=50"
         );
         assert_eq!(
-            recent_messages_url("x", 50, Some(7)).unwrap().as_str(),
-            "https://recent-messages.robotty.de/api/v2/recent-messages/x?limit=50&after=7"
+            recent_messages_url("broadcaster", 50, Some(7)).unwrap().as_str(),
+            "https://recent-messages.robotty.de/api/v2/recent-messages/broadcaster?limit=50&after=7"
         );
     }
 }

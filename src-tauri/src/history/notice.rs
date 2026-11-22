@@ -183,14 +183,14 @@ mod tests {
     fn maps_a_resub_with_its_message() {
         let n = notice(
             "@msg-id=resub;msg-param-sub-plan=2000;msg-param-cumulative-months=14;\
-             msg-param-streak-months=3;login=foo;display-name=Foo;user-id=2;room-id=1;id=n1;\
-             tmi-sent-ts=500;system-msg=Foo\\ssubscribed;emotes=25:4-8 \
-             :tmi.twitch.tv USERNOTICE #chan :yay Kappa",
+             msg-param-streak-months=3;login=viewer1;display-name=Viewer1;user-id=2;room-id=1;id=n1;\
+             tmi-sent-ts=500;system-msg=Viewer1\\ssubscribed;emotes=25:4-8 \
+             :tmi.twitch.tv USERNOTICE #broadcaster :yay Kappa",
         );
         assert_eq!(n["notice_type"], "resub");
         assert_eq!(n["message_id"], "n1");
-        assert_eq!(n["chatter_user_name"], "Foo");
-        assert_eq!(n["system_message"], "Foo subscribed");
+        assert_eq!(n["chatter_user_name"], "Viewer1");
+        assert_eq!(n["system_message"], "Viewer1 subscribed");
         assert_eq!(n["timestamp_ms"], 500);
         assert_eq!(
             n["resub"],
@@ -205,7 +205,7 @@ mod tests {
     fn hides_zero_counts_and_marks_prime() {
         let n = notice(
             "@msg-id=resub;msg-param-sub-plan=Prime;msg-param-cumulative-months=2;\
-             msg-param-streak-months=0;login=foo;id=n1 :tmi.twitch.tv USERNOTICE #chan",
+             msg-param-streak-months=0;login=viewer1;id=n1 :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(n["resub"]["is_prime"], true);
         assert_eq!(n["resub"]["sub_tier"], "1000");
@@ -215,9 +215,9 @@ mod tests {
     #[test]
     fn maps_an_anonymous_gift() {
         let n = notice(
-            "@msg-id=subgift;msg-param-sub-plan=1000;msg-param-recipient-display-name=Bar;\
-             msg-param-recipient-user-name=bar;msg-param-recipient-id=7;\
-             msg-param-sender-count=0;login=ananonymousgifter;id=n1 :tmi.twitch.tv USERNOTICE #chan",
+            "@msg-id=subgift;msg-param-sub-plan=1000;msg-param-recipient-display-name=Viewer2;\
+             msg-param-recipient-user-name=viewer2;msg-param-recipient-id=7;\
+             msg-param-sender-count=0;login=ananonymousgifter;id=n1 :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(n["notice_type"], "sub_gift");
         assert_eq!(n["chatter_is_anonymous"], true);
@@ -226,8 +226,8 @@ mod tests {
             json!({
                 "sub_tier": "1000",
                 "recipient_user_id": "7",
-                "recipient_user_login": "bar",
-                "recipient_user_name": "Bar",
+                "recipient_user_login": "viewer2",
+                "recipient_user_name": "Viewer2",
                 "cumulative_total": null,
                 "community_gift_id": null,
             })
@@ -238,13 +238,13 @@ mod tests {
     fn links_a_community_gift_and_its_subs() {
         let community = notice(
             "@msg-id=submysterygift;msg-param-community-gift-id=917;msg-param-sub-plan=1000;\
-             msg-param-mass-gift-count=1;msg-param-sender-count=213;login=luka;id=n1 \
-             :tmi.twitch.tv USERNOTICE #chan",
+             msg-param-mass-gift-count=1;msg-param-sender-count=213;login=viewer1;id=n1 \
+             :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         let member = notice(
             "@msg-id=subgift;msg-param-community-gift-id=917;msg-param-sub-plan=1000;\
-             msg-param-recipient-display-name=o7nate_;msg-param-sender-count=0;login=luka;id=n2 \
-             :tmi.twitch.tv USERNOTICE #chan",
+             msg-param-recipient-display-name=Viewer2;msg-param-sender-count=0;login=viewer1;id=n2 \
+             :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(community["community_sub_gift"]["id"], "917");
         assert_eq!(member["sub_gift"]["community_gift_id"], "917");
@@ -254,7 +254,7 @@ mod tests {
     fn maps_a_raid() {
         let n = notice(
             "@msg-id=raid;msg-param-displayName=Raider;msg-param-viewerCount=42;login=raider;id=n1 \
-             :tmi.twitch.tv USERNOTICE #chan",
+             :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(
             n["raid"],
@@ -265,8 +265,8 @@ mod tests {
     #[test]
     fn prefixes_shared_chat_notices() {
         let n = notice(
-            "@msg-id=sharedchatnotice;source-msg-id=announcement;login=foo;id=n1 \
-             :tmi.twitch.tv USERNOTICE #chan :hello",
+            "@msg-id=sharedchatnotice;source-msg-id=announcement;login=viewer1;id=n1 \
+             :tmi.twitch.tv USERNOTICE #broadcaster :hello",
         );
         assert_eq!(n["notice_type"], "shared_chat_announcement");
     }
@@ -274,8 +274,8 @@ mod tests {
     #[test]
     fn keeps_an_announcement_colour() {
         let n = notice(
-            "@msg-id=announcement;msg-param-color=PURPLE;login=foo;id=n1 \
-             :tmi.twitch.tv USERNOTICE #chan :hello",
+            "@msg-id=announcement;msg-param-color=PURPLE;login=viewer1;id=n1 \
+             :tmi.twitch.tv USERNOTICE #broadcaster :hello",
         );
         assert_eq!(n["announcement"], json!({ "color": "PURPLE" }));
     }
@@ -284,20 +284,23 @@ mod tests {
     fn maps_watch_streaks() {
         let n = notice(
             "@msg-id=viewermilestone;msg-param-category=watch-streak;msg-param-value=80;\
-             system-msg=Foo\\swatched\\s80\\sconsecutive\\sstreams;login=foo;id=n1 \
-             :tmi.twitch.tv USERNOTICE #chan",
+             system-msg=Viewer1\\swatched\\s80\\sconsecutive\\sstreams;login=viewer1;id=n1 \
+             :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(n["notice_type"], "watch_streak");
-        assert_eq!(n["system_message"], "Foo watched 80 consecutive streams");
+        assert_eq!(
+            n["system_message"],
+            "Viewer1 watched 80 consecutive streams"
+        );
     }
 
     #[test]
     fn passes_unknown_notices_through() {
         let n = notice(
-            "@msg-id=viewermilestone;system-msg=Foo\\swatched\\s5\\sstreams;login=foo;id=n1 \
-             :tmi.twitch.tv USERNOTICE #chan",
+            "@msg-id=viewermilestone;system-msg=Viewer1\\swatched\\s5\\sstreams;login=viewer1;id=n1 \
+             :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(n["notice_type"], "viewermilestone");
-        assert_eq!(n["system_message"], "Foo watched 5 streams");
+        assert_eq!(n["system_message"], "Viewer1 watched 5 streams");
     }
 }

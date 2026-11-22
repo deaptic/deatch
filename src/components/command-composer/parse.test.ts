@@ -74,9 +74,9 @@ test("typing fills a slot by its option type", () => {
   expect(slotFromInput(seconds, "")).toStrictEqual(emptySlot());
   expect(slotFromInput(mode, "on").resolved).toBe("on");
   expect(slotFromInput(mode, "o").error?.kind).toBe("invalid");
-  expect(slotFromInput(user, "xqc")).toStrictEqual({
-    raw: "xqc",
-    displayLabel: "xqc",
+  expect(slotFromInput(user, "someone")).toStrictEqual({
+    raw: "someone",
+    displayLabel: "someone",
     resolved: null,
     error: null,
   });
@@ -101,10 +101,10 @@ test("a missing required value flags, then clears without touching others", () =
 
 test("values are keyed by option name, null when unset", () => {
   const options = [user, mode];
-  const slots = [chosenSlot("xQc", "71092938"), emptySlot()];
+  const slots = [chosenSlot("Viewer1", "1001"), emptySlot()];
   expect(allSatisfied(options, slots)).toBe(true);
   expect(valuesOf(options, slots)).toStrictEqual({
-    user: "71092938",
+    user: "1001",
     mode: null,
   });
 });

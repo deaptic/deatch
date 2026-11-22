@@ -1,5 +1,5 @@
-import { t } from "../../../lib/i18n/index.ts";
-import { Check, ChevronRight, Trash2 } from "lucide-solid";
+import { t, type MessageKey } from "../../../lib/i18n/index.ts";
+import { CaseSensitive, Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import Card from "../../ui/Card.tsx";
@@ -9,13 +9,27 @@ import Field from "../../ui/Field.tsx";
 import IconButton from "../../ui/IconButton.tsx";
 import Segmented from "../../ui/Segmented.tsx";
 import TriggerField from "./TriggerField.tsx";
-import TriggerSectionLabel from "./TriggerSectionLabel.tsx";
+import TriggerReplies from "./TriggerReplies.tsx";
+import TriggerPreview from "./TriggerPreview.tsx";
+import { autofocus } from "../../../lib/reactive/focus.ts";
+import { isComplete } from "../../../lib/services/triggers.ts";
 import {
   clampCooldown,
   MAX_TRIGGER_COOLDOWN,
   MIN_TRIGGER_COOLDOWN,
+  sameTriggerSettings,
   type Trigger,
+  TRIGGER_ROLES,
+  type TriggerRole,
 } from "../../../lib/stores/preferences.ts";
+
+const ROLE_LABELS: Record<TriggerRole, MessageKey> = {
+  everyone: "SETTINGS_TRIGGERS_ROLE_EVERYONE",
+  subscriber: "SETTINGS_TRIGGERS_ROLE_SUBSCRIBER",
+  vip: "SETTINGS_TRIGGERS_ROLE_VIP",
+  moderator: "SETTINGS_TRIGGERS_ROLE_MODERATOR",
+  broadcaster: "SETTINGS_TRIGGERS_ROLE_BROADCASTER",
+};
 
 export default function TriggerCard(props: {
   source: Trigger;
@@ -28,40 +42,30 @@ export default function TriggerCard(props: {
   const [draft, setDraft] = createStore<Trigger>({ ...props.source });
   const expanded = () => props.expanded;
 
-  const dirty = () => JSON.stringify(draft) !== JSON.stringify(props.source);
-  const valid = () =>
-    !!draft.name.trim() && !!draft.phrase.trim() && !!draft.response.trim();
+  const dirty = () => !sameTriggerSettings(draft, props.source);
+  const valid = () => isComplete(draft);
   const canSave = () => !props.persisted || dirty();
 
   return (
     <Card tone={canSave() ? "edited" : "plain"}>
-      <div class="flex items-center gap-3 p-4">
+      <div class="flex items-center gap-2 py-3 pl-4 pr-3">
         <Toggle
           label={t("SETTINGS_TRIGGERS_ENABLED")}
           checked={draft.enabled}
           onChange={(v) => setDraft("enabled", v)}
         />
-        <button
-          type="button"
-          onClick={props.onToggle}
-          class="flex-1 flex items-center gap-2 min-w-0 cursor-pointer text-left group"
-        >
-          <span
-            class={`flex-1 truncate text-body font-semibold min-w-0 ${
-              draft.enabled ? "text-ink" : "text-ink-soft"
-            }`}
-          >
-            {draft.name.trim() || t("SETTINGS_TRIGGERS_UNTITLED")}
-            <Show when={canSave()}>
-              <span class="text-accent-ink ml-1">*</span>
-            </Show>
-          </span>
-          <ChevronRight
-            class={`size-4 shrink-0 text-ink-soft transition-transform duration-quick group-hover:text-ink ${
-              expanded() ? "rotate-90" : ""
-            }`}
-          />
-        </button>
+        <Field
+          look="inline"
+          class="flex-1 min-w-0"
+          ref={props.persisted ? undefined : autofocus}
+          aria-label={t("SETTINGS_TRIGGERS_NAME")}
+          placeholder={t("SETTINGS_TRIGGERS_UNTITLED")}
+          value={draft.name}
+          onInput={(e) => setDraft("name", e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !expanded()) props.onToggle();
+          }}
+        />
         <Show when={canSave()}>
           <IconButton
             variant="accent"
@@ -83,25 +87,26 @@ export default function TriggerCard(props: {
         >
           <Trash2 class="size-4" />
         </IconButton>
+        <IconButton
+          label={
+            expanded()
+              ? t("SETTINGS_TRIGGERS_COLLAPSE")
+              : t("SETTINGS_TRIGGERS_EXPAND")
+          }
+          aria-expanded={expanded()}
+          onClick={props.onToggle}
+        >
+          <ChevronRight
+            class={`size-4 transition-transform duration-quick ${
+              expanded() ? "rotate-90" : ""
+            }`}
+          />
+        </IconButton>
       </div>
 
       <Show when={expanded()}>
-        <div class="flex flex-col gap-4 p-4">
-          <div class="flex flex-col gap-3">
-            <TriggerSectionLabel>
-              {t("SETTINGS_TRIGGERS_NAME")}
-            </TriggerSectionLabel>
-            <Field
-              placeholder={t("SETTINGS_TRIGGERS_NAME_PLACEHOLDER")}
-              value={draft.name}
-              onInput={(e) => setDraft("name", e.currentTarget.value)}
-            />
-          </div>
-
-          <div class="flex flex-col gap-3">
-            <TriggerSectionLabel>
-              {t("SETTINGS_TRIGGERS_MATCH")}
-            </TriggerSectionLabel>
+        <div class="flex flex-col gap-3 px-4 pb-4 enter-rise">
+          <TriggerField label={t("SETTINGS_TRIGGERS_MATCH")}>
             <Textarea
               rows={2}
               resizable
@@ -109,7 +114,7 @@ export default function TriggerCard(props: {
               value={draft.phrase}
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
             />
-            <TriggerField label={t("SETTINGS_TRIGGERS_LOCATION")}>
+            <div class="flex items-center gap-2">
               <Segmented
                 label={t("SETTINGS_TRIGGERS_LOCATION")}
                 value={draft.location}
@@ -129,26 +134,27 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("location", v)}
               />
-            </TriggerField>
-            <TriggerField label={t("SETTINGS_TRIGGERS_CASE_SENSITIVE")}>
-              <Toggle
+              <IconButton
                 label={t("SETTINGS_TRIGGERS_CASE_SENSITIVE")}
-                checked={draft.caseSensitive}
-                onChange={(v) => setDraft("caseSensitive", v)}
-              />
-            </TriggerField>
-          </div>
+                pressed={draft.caseSensitive}
+                onClick={() => setDraft("caseSensitive", !draft.caseSensitive)}
+              >
+                <CaseSensitive class="size-4" />
+              </IconButton>
+            </div>
+          </TriggerField>
 
-          <div class="flex flex-col gap-3">
-            <TriggerSectionLabel>
-              {t("SETTINGS_TRIGGERS_RESPONSE")}
-            </TriggerSectionLabel>
-            <Field
-              placeholder={t("SETTINGS_TRIGGERS_RESPONSE_PLACEHOLDER")}
-              value={draft.response}
-              onInput={(e) => setDraft("response", e.currentTarget.value)}
+          <TriggerField label={t("SETTINGS_TRIGGERS_RESPONSE")}>
+            <TriggerReplies
+              replies={draft.replies}
+              otherwise={draft.otherwise}
+              onRepliesChange={(replies) => setDraft("replies", replies)}
+              onOtherwiseChange={(v) => setDraft("otherwise", v)}
             />
-            <TriggerField label={t("SETTINGS_TRIGGERS_ACTION")}>
+          </TriggerField>
+
+          <TriggerField label={t("SETTINGS_TRIGGERS_ACTION")}>
+            <div class="flex items-center gap-2">
               <Segmented
                 label={t("SETTINGS_TRIGGERS_ACTION")}
                 value={draft.action}
@@ -161,29 +167,49 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("action", v)}
               />
-            </TriggerField>
-            <TriggerField label={t("SETTINGS_TRIGGERS_COOLDOWN")}>
-              <div class="flex items-center gap-2">
-                <Field
-                  type="number"
-                  min={MIN_TRIGGER_COOLDOWN}
-                  max={MAX_TRIGGER_COOLDOWN}
-                  value={draft.cooldown}
-                  onInput={(e) => {
-                    const n = parseInt(e.currentTarget.value, 10);
-                    setDraft("cooldown", Number.isFinite(n) ? n : 0);
-                  }}
-                  onBlur={() =>
-                    setDraft("cooldown", clampCooldown(draft.cooldown))
-                  }
-                  class="w-20"
-                />
-                <span class="text-small text-ink-soft">
-                  {t("SETTINGS_TRIGGERS_SECONDS")}
-                </span>
-              </div>
-            </TriggerField>
-          </div>
+              <span class="ml-auto text-small text-ink-soft">
+                {t("SETTINGS_TRIGGERS_COOLDOWN")}
+              </span>
+              <Field
+                type="number"
+                aria-label={t("SETTINGS_TRIGGERS_COOLDOWN")}
+                min={MIN_TRIGGER_COOLDOWN}
+                max={MAX_TRIGGER_COOLDOWN}
+                value={draft.cooldown}
+                onInput={(e) => {
+                  const n = parseInt(e.currentTarget.value, 10);
+                  setDraft("cooldown", Number.isFinite(n) ? n : 0);
+                }}
+                onBlur={() =>
+                  setDraft("cooldown", clampCooldown(draft.cooldown))
+                }
+                trailing={
+                  <span class="text-small text-ink-soft">
+                    {t("SETTINGS_TRIGGERS_SECONDS")}
+                  </span>
+                }
+                class="w-28"
+              />
+            </div>
+          </TriggerField>
+
+          <TriggerField label={t("SETTINGS_TRIGGERS_ROLE")}>
+            <div>
+              <Segmented
+                label={t("SETTINGS_TRIGGERS_ROLE")}
+                value={draft.role}
+                options={TRIGGER_ROLES.map((role) => ({
+                  value: role,
+                  label: t(ROLE_LABELS[role]),
+                }))}
+                onChange={(v) => setDraft("role", v)}
+              />
+            </div>
+          </TriggerField>
+
+          <TriggerField label={t("SETTINGS_TRIGGERS_TRY")}>
+            <TriggerPreview trigger={draft} />
+          </TriggerField>
         </div>
       </Show>
     </Card>

@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import type { Trigger } from "../stores/preferences.ts";
-import { firstMatch, isCoolingDown } from "./triggerMatch.ts";
+import { firstMatch, isCoolingDown, roleAllows } from "./triggerMatch.ts";
 
 const trigger = (overrides: Partial<Trigger>): Trigger => ({
   id: "t1",
@@ -11,7 +11,10 @@ const trigger = (overrides: Partial<Trigger>): Trigger => ({
   caseSensitive: false,
   cooldown: 5,
   action: "reply",
-  response: "hi!",
+  replies: [],
+  otherwise: "hi!",
+  role: "everyone",
+  count: 0,
   ...overrides,
 });
 
@@ -75,7 +78,9 @@ test("skips disabled and blank triggers and returns the first match", () => {
   const disabled = trigger({ id: "off", enabled: false });
   const blank = trigger({ id: "blank", phrase: "   " });
   const second = trigger({ id: "second" });
-  expect(firstMatch("hello", [disabled, blank, second])?.id).toBe("second");
+  expect(firstMatch("hello", [disabled, blank, second])?.trigger.id).toBe(
+    "second",
+  );
   expect(firstMatch("   ", [second])).toBeNull();
 });
 
@@ -83,4 +88,20 @@ test("cools down for the configured seconds", () => {
   expect(isCoolingDown(undefined, 10_000, 5)).toBe(false);
   expect(isCoolingDown(10_000, 14_999, 5)).toBe(true);
   expect(isCoolingDown(10_000, 15_000, 5)).toBe(false);
+});
+
+test("hands back what follows the matched phrase as arguments", () => {
+  const fired = firstMatch("!followage  @someone extra", [
+    trigger({ phrase: "!followage", location: "start" }),
+  ]);
+  expect(fired?.args).toBe("@someone extra");
+});
+
+test("a role lets that role and everyone above it through", () => {
+  expect(roleAllows("everyone", [])).toBe(true);
+  expect(roleAllows("vip", ["subscriber"])).toBe(false);
+  expect(roleAllows("vip", ["moderator"])).toBe(true);
+  expect(roleAllows("moderator", ["broadcaster"])).toBe(true);
+  expect(roleAllows("broadcaster", ["moderator"])).toBe(false);
+  expect(roleAllows("subscriber", ["founder"])).toBe(true);
 });

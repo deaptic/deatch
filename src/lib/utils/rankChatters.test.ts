@@ -8,11 +8,11 @@ const chatter = (login: string, displayName: string, lastSeen: number) =>
 test("matches login or display name, most recent first", () => {
   const ranked = rankChatters(
     [
-      chatter("kaz", "Kaz", 1),
-      chatter("kazoo", "Kazoo", 3),
-      chatter("bob", "カズ", 2),
+      chatter("viewer1", "Viewer1", 1),
+      chatter("viewer2", "Viewer2", 3),
+      chatter("broadcaster", "視聴者", 2),
     ],
-    "ka",
+    "view",
   );
-  expect(ranked.map((c) => c.login)).toStrictEqual(["kazoo", "kaz"]);
+  expect(ranked.map((c) => c.login)).toStrictEqual(["viewer2", "viewer1"]);
 });

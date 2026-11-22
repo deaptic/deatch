@@ -42,8 +42,8 @@ import ComposerActions from "./ComposerActions.tsx";
 import ComposerSlot from "../ui/ComposerSlot.tsx";
 import { commands } from "../command-composer/commands.ts";
 import Presence from "../ui/Presence.tsx";
+import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
 
-const MAX_LEN = 500;
 const SEND_ACTION = "chat::send";
 
 export type ReplyTo = { messageId: string; name: string; text: string };
@@ -102,7 +102,7 @@ export default function ChatInput(props: Props) {
     input()
       .replace(/\s*\n\s*/g, " ")
       .trim();
-  const tooLong = () => outgoing().length > MAX_LEN;
+  const tooLong = () => outgoing().length > MAX_MESSAGE_LENGTH;
 
   async function sendMessage() {
     const text = outgoing();
@@ -310,7 +310,7 @@ export default function ChatInput(props: Props) {
             onKeyDown={onKeyDown}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            maxLength={MAX_LEN}
+            maxLength={MAX_MESSAGE_LENGTH}
             placeholder={t("CHAT_INPUT_PLACEHOLDER", {
               channel: props.broadcasterName,
             })}
@@ -340,7 +340,7 @@ export default function ChatInput(props: Props) {
             }
             addons={
               <ComposerSlot>
-                <CharCounter value={input} max={MAX_LEN} />
+                <CharCounter value={input} max={MAX_MESSAGE_LENGTH} />
                 <IconButton
                   label={t("CHAT_INPUT_EMOTE_PICKER")}
                   pressed={isOverlayOpen("emotePicker")}

@@ -9,8 +9,8 @@ import {
 
 const broadcaster: User = {
   id: "100",
-  login: "maya",
-  displayName: "Maya",
+  login: "broadcaster",
+  displayName: "Broadcaster",
   profileImageUrl: "",
   offlineImageUrl: null,
   description: "",
@@ -75,10 +75,10 @@ test("the global tab groups subscriptions, leaving out the open channel", () => 
     [emote("own", "100"), emote("sub", "200"), emote("follow", "", "follower")],
     [{ id: "g", name: "Kappa", url: "" }],
     { ...none, sevenTv: [{ name: "7", url: "" }] },
-    (id) => (id === "200" ? "Bob" : undefined),
+    (id) => (id === "200" ? "Viewer1" : undefined),
   );
   expect(sections.map((s) => s.label)).toStrictEqual([
-    "Bob",
+    "Viewer1",
     "Twitch Global",
     "7TV",
   ]);

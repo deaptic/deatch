@@ -17,11 +17,11 @@ test("ranks prefix matches before substring matches, each sorted", () => {
 });
 
 test("an exact match wins over a better-sorted prefix match", () => {
-  const ranked = rankSuggestions(["bobby", "bob"], "bob", {
+  const ranked = rankSuggestions(["viewer10", "viewer1"], "viewer1", {
     keys: (name) => [name],
     compare: (a, b) => b.length - a.length,
   });
-  expect(ranked).toStrictEqual(["bob", "bobby"]);
+  expect(ranked).toStrictEqual(["viewer1", "viewer10"]);
 });
 
 test("matches the query case-insensitively", () => {
@@ -40,13 +40,13 @@ test("returns everything sorted for an empty query", () => {
 
 test("matches any of an item's keys and respects the limit", () => {
   const users = [
-    { login: "foo", display: "zzz" },
-    { login: "qqq", display: "foobar" },
+    { login: "viewer1", display: "someone" },
+    { login: "viewer2", display: "viewer12" },
   ];
-  const ranked = rankSuggestions(users, "foo", {
+  const ranked = rankSuggestions(users, "viewer1", {
     keys: (u) => [u.login, u.display],
     compare: (a, b) => a.login.localeCompare(b.login),
     limit: 1,
   });
-  expect(ranked.map((u) => u.login)).toStrictEqual(["foo"]);
+  expect(ranked.map((u) => u.login)).toStrictEqual(["viewer1"]);
 });

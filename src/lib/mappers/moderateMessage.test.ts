@@ -16,7 +16,7 @@ const base = {
   moderator_user_login: "mod",
   moderator_user_name: "Mod",
 };
-const user = { user_id: "3", user_login: "foo", user_name: "Foo" };
+const user = { user_id: "3", user_login: "viewer1", user_name: "Viewer1" };
 
 test("describes an action taken here", () => {
   const p: RawModerate = {
@@ -25,7 +25,7 @@ test("describes an action taken here", () => {
     ban: { ...user, reason: "spam" },
   };
   expect(said(p)).toStrictEqual({
-    text: "Mod banned Foo",
+    text: "Mod banned Viewer1",
     detail: "spam",
   });
 });
@@ -38,7 +38,7 @@ test("links the mod and whoever they acted on", () => {
   };
   expect(moderateMessage(p, 0)?.people).toStrictEqual([
     { id: "2", login: "mod", name: "Mod" },
-    { id: "3", login: "foo", name: "Foo" },
+    { id: "3", login: "viewer1", name: "Viewer1" },
   ]);
   const cleared: RawModerate = { ...base, action: "clear" };
   expect(moderateMessage(cleared, 0)?.people).toStrictEqual([
@@ -53,7 +53,7 @@ test("counts the viewers sent on a raid", () => {
     raid: { ...user, viewer_count: 1200 },
   };
   expect(said(p)).toStrictEqual({
-    text: "Mod initiated a raid on Foo with 1,200 viewers",
+    text: "Mod initiated a raid on Viewer1 with 1,200 viewers",
   });
 });
 
@@ -81,12 +81,12 @@ test("describes a resolved unban request with its note", () => {
     unban_request: { ...user, is_approved: false, moderator_message: "no" },
   };
   expect(said(p)).toStrictEqual({
-    text: "Mod denied Foo's unban request",
+    text: "Mod denied Viewer1's unban request",
     detail: "no",
   });
   expect(moderateMessage(p, 0)?.people).toStrictEqual([
     { id: "2", login: "mod", name: "Mod" },
-    { id: "3", login: "foo", name: "Foo" },
+    { id: "3", login: "viewer1", name: "Viewer1" },
   ]);
 });
 
@@ -94,12 +94,12 @@ test("names the partner channel for a shared chat action", () => {
   const p: RawModerate = {
     ...base,
     source_broadcaster_user_id: "9",
-    source_broadcaster_user_name: "Mira",
+    source_broadcaster_user_name: "Broadcaster",
     action: "shared_chat_delete",
     shared_chat_delete: { ...user, message_id: "m1", message_body: "hi" },
   };
   expect(said(p)).toStrictEqual({
-    text: "In Mira's chat, Mod deleted a message from Foo",
+    text: "In Broadcaster's chat, Mod deleted a message from Viewer1",
     detail: "hi",
   });
 });
@@ -107,7 +107,7 @@ test("names the partner channel for a shared chat action", () => {
 test("times shared chat timeouts like local ones", () => {
   const p: RawModerate = {
     ...base,
-    source_broadcaster_user_name: "Mira",
+    source_broadcaster_user_name: "Broadcaster",
     action: "shared_chat_timeout",
     shared_chat_timeout: {
       ...user,
@@ -116,6 +116,6 @@ test("times shared chat timeouts like local ones", () => {
     },
   };
   expect(said(p)).toStrictEqual({
-    text: "In Mira's chat, Mod timed out Foo for 10m",
+    text: "In Broadcaster's chat, Mod timed out Viewer1 for 10m",
   });
 });

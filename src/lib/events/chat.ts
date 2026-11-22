@@ -48,14 +48,20 @@ export function start(): () => void {
         );
       }
 
-      const me = user();
-      if (!me || raw.chatter_user_id === me.id) return;
-
       triggers.handle({
         text: raw.message.text,
         broadcasterId: raw.broadcaster_user_id,
         messageId: raw.message_id,
+        chatter: {
+          id: raw.chatter_user_id,
+          login: raw.chatter_user_login,
+          displayName: raw.chatter_user_name,
+        },
+        badgeSets: raw.badges.map((b) => b.set_id),
       });
+
+      const me = user();
+      if (!me || raw.chatter_user_id === me.id) return;
 
       const reason = mentionReason(msg, me.login, feedKeywords());
       if (!reason) return;

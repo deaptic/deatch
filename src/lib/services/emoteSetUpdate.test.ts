@@ -7,7 +7,7 @@ const emote = (name: string) => ({ name, url: `https://cdn/${name}` });
 
 const update = (overrides: Partial<EmoteSetUpdated>): EmoteSetUpdated => ({
   id: "set1",
-  actor: "Foo",
+  actor: "Viewer1",
   added: [],
   removed: [],
   renamed: [],

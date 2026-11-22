@@ -42,10 +42,10 @@ const continued = (rows: { continued: boolean }[]) =>
 test("groups consecutive messages from one chatter", () => {
   const rows = layoutFeed(
     [
-      msg("1", "maya", T0),
-      msg("2", "maya", T0 + 1000),
+      msg("1", "viewer1", T0),
+      msg("2", "viewer1", T0 + 1000),
       msg("3", "leo", T0 + 2000),
-      msg("4", "maya", T0 + 3000),
+      msg("4", "viewer1", T0 + 3000),
     ],
     true,
   );
@@ -53,13 +53,16 @@ test("groups consecutive messages from one chatter", () => {
 });
 
 test("never groups when grouping is off", () => {
-  const rows = layoutFeed([msg("1", "maya", T0), msg("2", "maya", T0)], false);
+  const rows = layoutFeed(
+    [msg("1", "viewer1", T0), msg("2", "viewer1", T0)],
+    false,
+  );
   expect(continued(rows)).toStrictEqual([false, false]);
 });
 
 test("starts a new group after the time window", () => {
   const rows = layoutFeed(
-    [msg("1", "maya", T0), msg("2", "maya", T0 + GROUP_WINDOW_MS)],
+    [msg("1", "viewer1", T0), msg("2", "viewer1", T0 + GROUP_WINDOW_MS)],
     true,
   );
   expect(continued(rows)).toStrictEqual([false, false]);
@@ -68,8 +71,8 @@ test("starts a new group after the time window", () => {
 test("replies, holds, rewards and first messages stand alone", () => {
   const rows = layoutFeed(
     [
-      msg("1", "maya", T0),
-      msg("2", "maya", T0, {
+      msg("1", "viewer1", T0),
+      msg("2", "viewer1", T0, {
         reply: {
           parent_message_id: "x",
           parent_message_body: "",
@@ -78,17 +81,17 @@ test("replies, holds, rewards and first messages stand alone", () => {
           parent_user_id: "",
         },
       }),
-      msg("3", "maya", T0, { channel_points: { kind: "highlight" } }),
-      msg("4", "maya", T0, {
+      msg("3", "viewer1", T0, { channel_points: { kind: "highlight" } }),
+      msg("4", "viewer1", T0, {
         automod_hold: {
           reason: "",
           status: "pending",
           broadcaster_user_id: "b",
         },
       }),
-      msg("5", "maya", T0),
-      msg("6", "maya", T0),
-      msg("7", "maya", T0, { first_message: true }),
+      msg("5", "viewer1", T0),
+      msg("6", "viewer1", T0),
+      msg("7", "viewer1", T0, { first_message: true }),
     ],
     true,
   );
@@ -107,10 +110,10 @@ test("measures the window from the group's first message", () => {
   const step = GROUP_WINDOW_MS / 2;
   const rows = layoutFeed(
     [
-      msg("1", "maya", T0),
-      msg("2", "maya", T0 + step),
-      msg("3", "maya", T0 + step * 2),
-      msg("4", "maya", T0 + step * 3),
+      msg("1", "viewer1", T0),
+      msg("2", "viewer1", T0 + step),
+      msg("3", "viewer1", T0 + step * 2),
+      msg("4", "viewer1", T0 + step * 3),
     ],
     true,
   );
@@ -120,9 +123,9 @@ test("measures the window from the group's first message", () => {
 test("cheers stand alone", () => {
   const rows = layoutFeed(
     [
-      msg("1", "maya", T0),
-      msg("2", "maya", T0, { cheer: { bits: 100 } }),
-      msg("3", "maya", T0),
+      msg("1", "viewer1", T0),
+      msg("2", "viewer1", T0, { cheer: { bits: 100 } }),
+      msg("3", "viewer1", T0),
     ],
     true,
   );
@@ -130,19 +133,19 @@ test("cheers stand alone", () => {
 });
 
 test("a change of shared chat channel breaks a group", () => {
-  const mira = {
+  const shared = {
     id: "m",
-    login: "mira",
-    name: "Mira",
+    login: "broadcaster",
+    name: "Broadcaster",
     messageId: "x",
     badges: [],
   };
   const rows = layoutFeed(
     [
-      msg("1", "maya", T0),
-      msg("2", "maya", T0, { source: mira }),
-      msg("3", "maya", T0, { source: mira }),
-      msg("4", "maya", T0),
+      msg("1", "viewer1", T0),
+      msg("2", "viewer1", T0, { source: shared }),
+      msg("3", "viewer1", T0, { source: shared }),
+      msg("4", "viewer1", T0),
     ],
     true,
   );
@@ -151,7 +154,7 @@ test("a change of shared chat channel breaks a group", () => {
 
 test("events break a group", () => {
   const rows = layoutFeed(
-    [msg("1", "maya", T0), event("e", T0), msg("2", "maya", T0)],
+    [msg("1", "viewer1", T0), event("e", T0), msg("2", "viewer1", T0)],
     true,
   );
   expect(continued(rows)).toStrictEqual([false, false, false]);
@@ -161,7 +164,11 @@ test("marks the first row of each new day and breaks groups there", () => {
   const late = new Date(2026, 8, 30, 23, 59).getTime();
   const early = new Date(2026, 9, 1, 0, 1).getTime();
   const rows = layoutFeed(
-    [msg("1", "maya", late), msg("2", "maya", early), msg("3", "maya", early)],
+    [
+      msg("1", "viewer1", late),
+      msg("2", "viewer1", early),
+      msg("3", "viewer1", early),
+    ],
     true,
   );
   expect(rows).toStrictEqual([

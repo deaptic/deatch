@@ -448,18 +448,24 @@ mod tests {
 
     #[test]
     fn merge_unions_channels_and_lets_the_latest_browser_pick_current() {
-        let firefox = state(&[("xqc", true), ("pokimane", false)], Some("xqc"));
-        let chrome = state(&[("xqc", false), ("forsen", true)], Some("forsen"));
+        let firefox = state(
+            &[("broadcaster3", true), ("broadcaster2", false)],
+            Some("broadcaster3"),
+        );
+        let chrome = state(
+            &[("broadcaster3", false), ("broadcaster1", true)],
+            Some("broadcaster1"),
+        );
         let merged = merge([(2, &firefox), (1, &chrome)].into_iter());
         assert_eq!(
             serde_json::to_value(&merged).unwrap(),
             json!({
                 "channels": [
-                    { "login": "forsen", "muted": true },
-                    { "login": "pokimane", "muted": false },
-                    { "login": "xqc", "muted": false },
+                    { "login": "broadcaster1", "muted": true },
+                    { "login": "broadcaster2", "muted": false },
+                    { "login": "broadcaster3", "muted": false },
                 ],
-                "current": "xqc",
+                "current": "broadcaster3",
                 "audio": false,
             })
         );
@@ -485,30 +491,30 @@ mod tests {
 
     #[test]
     fn merge_falls_back_to_any_browser_with_a_current_channel() {
-        let idle = state(&[("xqc", false)], None);
-        let linking = state(&[("forsen", false)], Some("forsen"));
+        let idle = state(&[("broadcaster3", false)], None);
+        let linking = state(&[("broadcaster1", false)], Some("broadcaster1"));
         let merged = merge([(5, &idle), (1, &linking)].into_iter());
-        assert_eq!(merged.current.as_deref(), Some("forsen"));
+        assert_eq!(merged.current.as_deref(), Some("broadcaster1"));
     }
 
     #[test]
     fn host_commands_match_the_extension_protocol() {
-        let channel = || "xqc".to_string();
+        let channel = || "broadcaster3".to_string();
         let wire = |c: HostCommand| serde_json::to_value(c).unwrap();
         assert_eq!(
             wire(HostCommand::SetMuted {
                 channel: channel(),
                 muted: true
             }),
-            json!({ "type": "set_muted", "channel": "xqc", "muted": true })
+            json!({ "type": "set_muted", "channel": "broadcaster3", "muted": true })
         );
         assert_eq!(
             wire(HostCommand::Focus { channel: channel() }),
-            json!({ "type": "focus", "channel": "xqc" })
+            json!({ "type": "focus", "channel": "broadcaster3" })
         );
         assert_eq!(
             wire(HostCommand::Close { channel: channel() }),
-            json!({ "type": "close", "channel": "xqc" })
+            json!({ "type": "close", "channel": "broadcaster3" })
         );
         assert_eq!(
             wire(HostCommand::SetAudio {
@@ -520,7 +526,7 @@ mod tests {
                     release: 250.0,
                     gain: 0.0,
                 },
-                gains: [("xqc".to_string(), 1.5)].into(),
+                gains: [("broadcaster3".to_string(), 1.5)].into(),
             }),
             json!({
                 "type": "set_audio",
@@ -529,7 +535,7 @@ mod tests {
                     "threshold": -27.0, "ratio": 3.2, "attack": 10.0,
                     "release": 250.0, "gain": 0.0,
                 },
-                "gains": { "xqc": 1.5 },
+                "gains": { "broadcaster3": 1.5 },
             })
         );
         assert_eq!(wire(HostCommand::GetState), json!({ "type": "get_state" }));

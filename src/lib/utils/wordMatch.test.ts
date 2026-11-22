@@ -72,7 +72,7 @@ test("a symbol glued to the front means a different word", () => {
   expect(matchesAnyKeyword("@dead hi", ["dea*"])).toBe(false);
   expect(matchesAnyKeyword("#dead", ["dead"])).toBe(false);
   expect(matchesAnyKeyword(".dead", ["dead"])).toBe(false);
-  expect(matchesAnyKeyword("hi @deaptic", ["deaptic"])).toBe(false);
+  expect(matchesAnyKeyword("hi @broadcaster", ["broadcaster"])).toBe(false);
 });
 
 test("only whitespace may surround a term, on both sides", () => {

@@ -79,8 +79,8 @@ mod tests {
         let helix: HelixPrediction = serde_json::from_value(json!({
             "id": "pr1",
             "broadcaster_id": "1",
-            "broadcaster_name": "Dev",
-            "broadcaster_login": "dev",
+            "broadcaster_name": "Broadcaster",
+            "broadcaster_login": "broadcaster",
             "title": "Win?",
             "winning_outcome_id": null,
             "outcomes": [{

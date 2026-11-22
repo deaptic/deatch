@@ -5,8 +5,8 @@ import { mapShoutout } from "./shoutout.ts";
 const shoutout: RawShoutout = {
   broadcaster_user_id: "1",
   to_broadcaster_user_id: "9",
-  to_broadcaster_user_login: "mira",
-  to_broadcaster_user_name: "Mira",
+  to_broadcaster_user_login: "viewer1",
+  to_broadcaster_user_name: "Viewer1",
   moderator_user_id: "2",
   moderator_user_login: "mod",
   moderator_user_name: "Mod",
@@ -19,10 +19,10 @@ const shoutout: RawShoutout = {
 test("names who shouted out whom, the reach and the cooldowns", () => {
   const item = mapShoutout(shoutout, 0);
   expect(item.system_message).toBe(
-    "Mod gave Mira a shoutout in front of 120 viewers",
+    "Mod gave Viewer1 a shoutout in front of 120 viewers",
   );
-  expect(item.detail).toBe("Next shoutout in 2m, Mira again in 1h");
+  expect(item.detail).toBe("Next shoutout in 2m, Viewer1 again in 1h");
   expect(item.chatter_user_id).toBe("9");
-  expect(item.chatter_login).toBe("mira");
+  expect(item.chatter_login).toBe("viewer1");
   expect(item.people).toStrictEqual([{ id: "2", login: "mod", name: "Mod" }]);
 });

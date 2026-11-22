@@ -4,12 +4,12 @@ import { upgradeMention } from "./inboxUpgrade.ts";
 const legacy = {
   id: "m1",
   channelId: "c1",
-  channelLogin: "chan",
-  channelName: "Chan",
+  channelLogin: "broadcaster",
+  channelName: "Broadcaster",
   messageId: "m1",
   chatterId: "u1",
-  chatterLogin: "foo",
-  chatterName: "Foo",
+  chatterLogin: "viewer1",
+  chatterName: "Viewer1",
   chatterColor: "#f00",
   fragments: [{ type: "text" as const, text: "hi" }],
   reason: { kind: "mention" as const },
@@ -20,7 +20,7 @@ const legacy = {
 test("rebuilds a legacy mention into a message", () => {
   const m = upgradeMention(legacy)!;
   expect(m.message.message_id).toBe("m1");
-  expect(m.message.chatter_name).toBe("Foo");
+  expect(m.message.chatter_name).toBe("Viewer1");
   expect(m.message.fragments).toStrictEqual(legacy.fragments);
   expect(m.unread).toBe(true);
 });
@@ -43,7 +43,7 @@ test("renames channel fields saved before they were broadcaster fields", () => {
   expect(upgradeMention(saved)).toStrictEqual(upgradeMention(legacy));
   expect(upgradeMention(legacy)).toMatchObject({
     broadcasterId: "c1",
-    broadcasterLogin: "chan",
-    broadcasterName: "Chan",
+    broadcasterLogin: "broadcaster",
+    broadcasterName: "Broadcaster",
   });
 });

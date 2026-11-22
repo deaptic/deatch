@@ -4,12 +4,13 @@ import { createSignal, For } from "solid-js";
 import PageBody from "../../ui/PageBody.tsx";
 import Button from "../../ui/Button.tsx";
 import TriggerCard from "./TriggerCard.tsx";
+import BuiltInTriggers from "./BuiltInTriggers.tsx";
 import {
   blankTrigger,
   removeTrigger,
   saveTrigger,
   type Trigger,
-  triggers,
+  customTriggers,
 } from "../../../lib/stores/preferences.ts";
 
 export default function TriggersSection() {
@@ -37,7 +38,8 @@ export default function TriggersSection() {
 
   return (
     <PageBody title={t("SETTINGS_TRIGGERS")}>
-      <For each={triggers()}>
+      <BuiltInTriggers />
+      <For each={customTriggers()}>
         {(trigger) => (
           <TriggerCard
             source={trigger}

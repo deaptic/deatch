@@ -40,15 +40,15 @@ test("folds a batch's gifted subs into their community gift", () => {
   );
   const rows = groupGifts([
     community,
-    sub("s1", "Bar", "g1"),
-    sub("s2", "Baz", "g1"),
-    sub("s3", "Solo", null),
-    sub("s4", "Orphan", "g9"),
+    sub("s1", "Viewer2", "g1"),
+    sub("s2", "Viewer3", "g1"),
+    sub("s3", "Viewer4", null),
+    sub("s4", "Viewer5", "g9"),
   ]);
   expect(rows.map((r) => r.id)).toStrictEqual(["c1", "s3", "s4"]);
   expect(at(rows, 0).recipients).toStrictEqual([
-    { id: "id-Bar", login: "bar", name: "Bar" },
-    { id: "id-Baz", login: "baz", name: "Baz" },
+    { id: "id-Viewer2", login: "viewer2", name: "Viewer2" },
+    { id: "id-Viewer3", login: "viewer3", name: "Viewer3" },
   ]);
   expect(community.item.recipients).toBeUndefined();
 });
@@ -82,8 +82,8 @@ test("ties a community gift and its subs together", () => {
         shared_chat_sub_gift: {
           sub_tier: "1000",
           recipient_user_id: null,
-          recipient_user_login: "bar",
-          recipient_user_name: "Bar",
+          recipient_user_login: "viewer2",
+          recipient_user_name: "Viewer2",
           cumulative_total: null,
           community_gift_id: "g1",
         },
@@ -92,7 +92,7 @@ test("ties a community gift and its subs together", () => {
   ).toStrictEqual({
     role: "member",
     giftId: "g1",
-    recipient: { id: undefined, login: "bar", name: "Bar" },
+    recipient: { id: undefined, login: "viewer2", name: "Viewer2" },
   });
 });
 
@@ -103,8 +103,8 @@ test("leaves a direct gift on its own", () => {
         notice_type: "sub_gift",
         sub_gift: {
           sub_tier: "1000",
-          recipient_user_login: "bar",
-          recipient_user_name: "Bar",
+          recipient_user_login: "viewer2",
+          recipient_user_name: "Viewer2",
           cumulative_total: null,
           community_gift_id: null,
         },

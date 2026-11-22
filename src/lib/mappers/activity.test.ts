@@ -8,7 +8,7 @@ const poll: RawPoll = {
   title: "Best map?",
   choices: [
     { id: "a", title: "Dust", votes: 4 },
-    { id: "b", title: "Mirage" },
+    { id: "b", title: "Inferno" },
   ],
   started_at: "2026-01-01T00:00:00Z",
   ends_at: "2026-01-01T00:02:00Z",
@@ -20,7 +20,7 @@ test("pollFrom keeps choices in order and counts missing votes as zero", () => {
     title: "Best map?",
     choices: [
       { id: "a", title: "Dust", votes: 4 },
-      { id: "b", title: "Mirage", votes: 0 },
+      { id: "b", title: "Inferno", votes: 0 },
     ],
     endsAt: "2026-01-01T00:02:00Z",
   });

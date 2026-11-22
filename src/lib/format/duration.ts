@@ -46,6 +46,25 @@ export function formatCountdown(remainingMs: number): string {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
+const ELAPSED_UNITS = ["years", "months", "days", "hours", "minutes"] as const;
+
+export function formatElapsed(fromMs: number, nowMs: number): string {
+  const zone = Temporal.Now.timeZoneId();
+  const at = (ms: number) =>
+    Temporal.Instant.fromEpochMilliseconds(ms).toZonedDateTimeISO(zone);
+  const elapsed = at(fromMs).until(at(Math.max(fromMs, nowMs)), {
+    largestUnit: "year",
+  });
+  const parts = Object.fromEntries(
+    ELAPSED_UNITS.filter((unit) => elapsed[unit] > 0)
+      .slice(0, 2)
+      .map((unit) => [unit, elapsed[unit]]),
+  );
+  return new Intl.DurationFormat(formatLocale(), { style: "long" }).format(
+    Object.keys(parts).length ? parts : { minutes: 0 },
+  );
+}
+
 export function formatSpan(from: string, to: string): string {
   return formatApproxDuration(
     Math.max(0, Math.round((Date.parse(to) - Date.parse(from)) / 1000)),

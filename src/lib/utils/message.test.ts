@@ -3,7 +3,7 @@ import type { FeedMessage } from "../types/index.ts";
 import { textOf, withoutReplyMention } from "./message.ts";
 
 const reply = (fragments: FeedMessage["fragments"]): FeedMessage =>
-  ({ fragments, reply: { parent_user_login: "bob" } }) as FeedMessage;
+  ({ fragments, reply: { parent_user_login: "viewer1" } }) as FeedMessage;
 
 test("textOf joins fragments without separators", () => {
   expect(
@@ -18,7 +18,7 @@ test("textOf joins fragments without separators", () => {
 
 test("withoutReplyMention drops the leading @parent and its space", () => {
   const msg = reply([
-    { type: "mention", text: "@bob", user_login: "bob" },
+    { type: "mention", text: "@viewer1", user_login: "viewer1" },
     { type: "text", text: " hi" },
   ]);
   expect(withoutReplyMention(msg)).toStrictEqual([
@@ -27,7 +27,9 @@ test("withoutReplyMention drops the leading @parent and its space", () => {
 });
 
 test("withoutReplyMention keeps mentions of someone else", () => {
-  const msg = reply([{ type: "mention", text: "@eve", user_login: "eve" }]);
+  const msg = reply([
+    { type: "mention", text: "@viewer2", user_login: "viewer2" },
+  ]);
   expect(withoutReplyMention(msg)).toStrictEqual(msg.fragments);
   expect(withoutReplyMention(reply([]))).toStrictEqual([]);
 });

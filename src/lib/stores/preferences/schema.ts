@@ -42,6 +42,35 @@ export function clampCooldown(value: number): number {
 }
 
 export type TriggerAction = "send" | "reply";
+export const TRIGGER_ROLES = [
+  "everyone",
+  "subscriber",
+  "vip",
+  "moderator",
+  "broadcaster",
+] as const;
+export type TriggerRole = (typeof TRIGGER_ROLES)[number];
+export const CONDITION_OPS = [
+  "set",
+  "empty",
+  "is",
+  "isNot",
+  "contains",
+  "notContains",
+  "above",
+  "below",
+] as const;
+export type ConditionOp = (typeof CONDITION_OPS)[number];
+export type Condition = { left: string; op: ConditionOp; right: string };
+export type ConditionalReply = { when: Condition[][]; text: string };
+export const BUILT_IN_TRIGGERS = [
+  "accountage",
+  "followage",
+  "game",
+  "title",
+  "uptime",
+] as const;
+export type BuiltInTrigger = (typeof BUILT_IN_TRIGGERS)[number];
 export type Trigger = {
   id: string;
   enabled: boolean;
@@ -51,7 +80,10 @@ export type Trigger = {
   caseSensitive: boolean;
   cooldown: number;
   action: TriggerAction;
-  response: string;
+  replies: ConditionalReply[];
+  otherwise: string;
+  role: TriggerRole;
+  count: number;
 };
 
 export type UserPreferences = {
@@ -111,7 +143,10 @@ export type UserPreferences = {
     language: string;
     recent: string[];
   };
-  triggers: Trigger[];
+  triggers: {
+    builtIn: Record<BuiltInTrigger, boolean>;
+    custom: Trigger[];
+  };
 };
 
 const EVENT_KEYS = EVENTS.map((e) => e.key);
@@ -192,6 +227,35 @@ function bool(raw: unknown, fallback: boolean): boolean {
   return typeof raw === "boolean" ? raw : fallback;
 }
 
+const text = (raw: unknown) => (typeof raw === "string" ? raw : "");
+
+function sanitizeConditions(raw: unknown): Condition[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item: unknown) => {
+    if (!item || typeof item !== "object") return [];
+    const condition = item as Partial<Condition>;
+    return [
+      {
+        left: text(condition.left),
+        op: CONDITION_OPS.find((op) => op === condition.op) ?? "set",
+        right: text(condition.right),
+      },
+    ];
+  });
+}
+
+function sanitizeReplies(raw: unknown): ConditionalReply[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item: unknown) => {
+    if (!item || typeof item !== "object") return [];
+    const reply = item as Partial<ConditionalReply>;
+    const when = Array.isArray(reply.when)
+      ? reply.when.map(sanitizeConditions).filter((g) => g.length > 0)
+      : [];
+    return when.length ? [{ when, text: text(reply.text) }] : [];
+  });
+}
+
 function sanitizeTriggers(raw: unknown): Trigger[] {
   if (!Array.isArray(raw)) return [];
   const out: Trigger[] = [];
@@ -214,7 +278,13 @@ function sanitizeTriggers(raw: unknown): Trigger[] {
           ? clampCooldown(t.cooldown)
           : MIN_TRIGGER_COOLDOWN,
       action: t.action === "send" ? "send" : "reply",
-      response: typeof t.response === "string" ? t.response : "",
+      replies: sanitizeReplies(t.replies),
+      otherwise: typeof t.otherwise === "string" ? t.otherwise : "",
+      role: TRIGGER_ROLES.find((r) => r === t.role) ?? "everyone",
+      count:
+        typeof t.count === "number" && Number.isFinite(t.count)
+          ? Math.max(0, Math.floor(t.count))
+          : 0,
     });
   }
   return out;
@@ -407,6 +477,14 @@ export function sanitize(raw: unknown): UserPreferences {
         DEFAULT_PREFERENCES.explore.recent,
       ).slice(0, RECENT_LIMIT),
     },
-    triggers: sanitizeTriggers(stored.triggers),
+    triggers: {
+      builtIn: fromKeys(BUILT_IN_TRIGGERS, (key) =>
+        bool(
+          stored.triggers?.builtIn?.[key],
+          DEFAULT_PREFERENCES.triggers.builtIn[key],
+        ),
+      ),
+      custom: sanitizeTriggers(stored.triggers?.custom),
+    },
   });
 }

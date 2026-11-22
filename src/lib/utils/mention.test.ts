@@ -4,7 +4,7 @@ import { isMention, mentionReason, mentionsIn } from "./mention.ts";
 
 const message = (overrides: Partial<FeedMessage>): FeedMessage =>
   ({
-    chatter_login: "bob",
+    chatter_login: "viewer1",
     fragments: [{ type: "text", text: "hello there" }],
     ...overrides,
   }) as FeedMessage;

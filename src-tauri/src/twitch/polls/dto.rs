@@ -60,8 +60,8 @@ mod tests {
         let helix: HelixPoll = serde_json::from_value(json!({
             "id": "p1",
             "broadcaster_id": "1",
-            "broadcaster_name": "Dev",
-            "broadcaster_login": "dev",
+            "broadcaster_name": "Broadcaster",
+            "broadcaster_login": "broadcaster",
             "title": "Heads or Tails?",
             "choices": [
                 { "id": "c1", "title": "Heads", "votes": 3, "channel_points_votes": 0 },

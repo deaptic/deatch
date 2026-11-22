@@ -10,6 +10,6 @@ test("detects commands only at the start", () => {
 test("detects emotes and mentions after whitespace", () => {
   expect(detect("lol :Kap")).toStrictEqual({ kind: "emote", query: "Kap" });
   expect(detect(":")).toBeNull();
-  expect(detect("hey @bo")).toStrictEqual({ kind: "mention", query: "bo" });
-  expect(detect("mail@bo")).toBeNull();
+  expect(detect("hey @vi")).toStrictEqual({ kind: "mention", query: "vi" });
+  expect(detect("mail@vi")).toBeNull();
 });

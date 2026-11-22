@@ -252,8 +252,8 @@ mod tests {
     use serde_json::{json, Value};
 
     const PRIVMSG: &str = "@badge-info=subscriber/12;badges=subscriber/12,premium/1;color=#FF0000;\
-        display-name=Foo;emotes=25:6-10;first-msg=0;id=m1;room-id=111;tmi-sent-ts=1000;user-id=222 \
-        :foo!foo@foo.tmi.twitch.tv PRIVMSG #chan :hello Kappa @Bar";
+        display-name=Viewer1;emotes=25:6-10;first-msg=0;id=m1;room-id=111;tmi-sent-ts=1000;user-id=222 \
+        :viewer1!viewer1@viewer1.tmi.twitch.tv PRIVMSG #broadcaster :hello Kappa @Viewer2";
 
     fn history(lines: &[&str]) -> RecentHistory {
         parse_messages(&lines.iter().map(|l| l.to_string()).collect::<Vec<_>>())
@@ -266,9 +266,9 @@ mod tests {
     #[test]
     fn collects_notices_apart_from_messages() {
         let h = history(&[
-            "@id=m1;user-id=1 :a!a@a PRIVMSG #chan :one",
-            "@msg-id=raid;id=n1;login=b :tmi.twitch.tv USERNOTICE #chan",
-            "@tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #chan",
+            "@id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :one",
+            "@msg-id=raid;id=n1;login=viewer2 :tmi.twitch.tv USERNOTICE #broadcaster",
+            "@tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #broadcaster",
         ]);
         assert_eq!(h.messages.len(), 1);
         assert_eq!(h.notices[0].message_id.as_str(), "n1");
@@ -284,8 +284,8 @@ mod tests {
         assert_eq!(m.message_id.as_str(), "m1");
         assert_eq!(m.broadcaster_user_id.as_str(), "111");
         assert_eq!(m.chatter_user_id.as_str(), "222");
-        assert_eq!(m.chatter_user_login, "foo");
-        assert_eq!(m.chatter_user_name, "Foo");
+        assert_eq!(m.chatter_user_login, "viewer1");
+        assert_eq!(m.chatter_user_name, "Viewer1");
         assert_eq!(m.color, "#FF0000");
         assert_eq!(m.message_type, MessageType::Text);
         assert_eq!(m.timestamp_ms, 1000);
@@ -303,9 +303,9 @@ mod tests {
     fn keeps_shared_chat_source_only_for_partner_messages() {
         let partner = "@badges=;room-id=111;id=m1;user-id=2;source-room-id=999;\
             source-id=orig;source-badges=subscriber/6;source-badge-info=subscriber/7 \
-            :foo!foo@foo PRIVMSG #chan :hi";
+            :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :hi";
         let local = "@room-id=111;id=m2;user-id=2;source-room-id=111;source-id=m2 \
-            :foo!foo@foo PRIVMSG #chan :hi";
+            :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :hi";
         let m = parse(&[partner, local]);
         assert_eq!(
             m[0].source_broadcaster_user_id
@@ -329,26 +329,26 @@ mod tests {
     #[test]
     fn splits_text_emote_and_mention_fragments() {
         let m = &parse(&[PRIVMSG])[0];
-        assert_eq!(m.message.text, "hello Kappa @Bar");
+        assert_eq!(m.message.text, "hello Kappa @Viewer2");
         assert_eq!(
             to_json(&m.message.fragments),
             json!([
                 { "type": "text", "text": "hello " },
                 { "type": "emote", "text": "Kappa", "emote": { "id": "25" } },
                 { "type": "text", "text": " " },
-                { "type": "mention", "text": "@Bar", "mention": { "user_login": "bar" } },
+                { "type": "mention", "text": "@Viewer2", "mention": { "user_login": "viewer2" } },
             ])
         );
     }
 
     #[test]
     fn mentions_start_only_at_a_word_boundary() {
-        let fragments = to_json(&build_fragments("mail@host (@Bar", ""));
+        let fragments = to_json(&build_fragments("mail@host (@Viewer2", ""));
         assert_eq!(
             fragments,
             json!([
                 { "type": "text", "text": "mail@host (" },
-                { "type": "mention", "text": "@Bar", "mention": { "user_login": "bar" } },
+                { "type": "mention", "text": "@Viewer2", "mention": { "user_login": "viewer2" } },
             ])
         );
     }
@@ -362,7 +362,7 @@ mod tests {
 
     #[test]
     fn emote_positions_count_characters_not_bytes() {
-        let line = "@emotes=25:6-10;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :héllo Kappa";
+        let line = "@emotes=25:6-10;id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :héllo Kappa";
         assert_eq!(
             to_json(&parse(&[line])[0].message.fragments),
             json!([
@@ -375,7 +375,7 @@ mod tests {
     #[test]
     fn ignores_emote_ranges_outside_the_text() {
         let line =
-            "@emotes=25:50-54/26:10-5/27:3-99;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :hello";
+            "@emotes=25:50-54/26:10-5/27:3-99;id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :hello";
         assert_eq!(
             to_json(&parse(&[line])[0].message.fragments),
             json!([
@@ -387,56 +387,56 @@ mod tests {
 
     #[test]
     fn strips_action_wrapper() {
-        let line = "@id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :\u{1}ACTION waves\u{1}";
+        let line = "@id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :\u{1}ACTION waves\u{1}";
         assert_eq!(parse(&[line])[0].message.text, "waves");
     }
 
     #[test]
     fn accepts_body_without_trailing_colon() {
-        let line = "@id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan Kappa";
+        let line = "@id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster Kappa";
         assert_eq!(parse(&[line])[0].message.text, "Kappa");
     }
 
     #[test]
     fn marks_first_message_as_intro() {
-        let line = "@first-msg=1;id=m1;user-id=1 :foo!foo@foo PRIVMSG #chan :hi";
+        let line = "@first-msg=1;id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :hi";
         assert_eq!(parse(&[line])[0].message_type, MessageType::UserIntro);
     }
 
     #[test]
     fn falls_back_to_nick_and_unescapes_tags() {
         let line = "@display-name=;reply-parent-msg-id=p1;reply-parent-msg-body=hey\\sthere;\
-            reply-parent-display-name=Bar;reply-parent-user-login=bar;reply-parent-user-id=7;\
-            reply-thread-parent-msg-id=t1;reply-thread-parent-user-login=baz;\
+            reply-parent-display-name=Viewer2;reply-parent-user-login=viewer2;reply-parent-user-id=7;\
+            reply-thread-parent-msg-id=t1;reply-thread-parent-user-login=viewer3;\
             id=m1;user-id=1 \
-            :foo!foo@foo PRIVMSG #chan :@bar yes";
+            :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :@viewer2 yes";
         let m = &parse(&[line])[0];
-        assert_eq!(m.chatter_user_name, "foo");
+        assert_eq!(m.chatter_user_name, "viewer1");
         assert_eq!(
             to_json(&m.reply),
             json!({
                 "parent_message_id": "p1",
                 "parent_message_body": "hey there",
-                "parent_user_name": "Bar",
-                "parent_user_login": "bar",
+                "parent_user_name": "Viewer2",
+                "parent_user_login": "viewer2",
                 "parent_user_id": "7",
                 "thread_message_id": "t1",
-                "thread_user_login": "baz",
+                "thread_user_login": "viewer3",
             })
         );
     }
 
     #[test]
     fn skips_malformed_lines() {
-        assert!(parse(&["not irc", ":no tags PRIVMSG #chan :hi", ""]).is_empty());
+        assert!(parse(&["not irc", ":no tags PRIVMSG #broadcaster :hi", ""]).is_empty());
     }
 
     #[test]
     fn applies_clearmsg_to_target_message() {
         let messages = parse(&[
-            "@id=m1;user-id=1;tmi-sent-ts=100 :a!a@a PRIVMSG #chan :one",
-            "@id=m2;user-id=1;tmi-sent-ts=200 :a!a@a PRIVMSG #chan :two",
-            "@target-msg-id=m1;tmi-sent-ts=300 :tmi.twitch.tv CLEARMSG #chan :one",
+            "@id=m1;user-id=1;tmi-sent-ts=100 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :one",
+            "@id=m2;user-id=1;tmi-sent-ts=200 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :two",
+            "@target-msg-id=m1;tmi-sent-ts=300 :tmi.twitch.tv CLEARMSG #broadcaster :one",
         ]);
         let deleted: Vec<_> = messages.iter().map(|m| m.deleted).collect();
         assert_eq!(deleted, [true, false]);
@@ -445,10 +445,10 @@ mod tests {
     #[test]
     fn applies_user_clearchat_only_to_earlier_messages_of_that_user() {
         let messages = parse(&[
-            "@id=m1;user-id=1;tmi-sent-ts=100 :a!a@a PRIVMSG #chan :before",
-            "@id=m2;user-id=2;tmi-sent-ts=150 :b!b@b PRIVMSG #chan :other user",
-            "@target-user-id=1;tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #chan :a",
-            "@id=m3;user-id=1;tmi-sent-ts=300 :a!a@a PRIVMSG #chan :after",
+            "@id=m1;user-id=1;tmi-sent-ts=100 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :before",
+            "@id=m2;user-id=2;tmi-sent-ts=150 :viewer2!viewer2@viewer2 PRIVMSG #broadcaster :other user",
+            "@target-user-id=1;tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #broadcaster :viewer1",
+            "@id=m3;user-id=1;tmi-sent-ts=300 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :after",
         ]);
         let deleted: Vec<_> = messages.iter().map(|m| m.deleted).collect();
         assert_eq!(deleted, [true, false, false]);
@@ -457,10 +457,10 @@ mod tests {
     #[test]
     fn applies_full_clearchat_to_every_earlier_message() {
         let messages = parse(&[
-            "@id=m1;user-id=1;tmi-sent-ts=100 :a!a@a PRIVMSG #chan :one",
-            "@id=m2;user-id=2;tmi-sent-ts=150 :b!b@b PRIVMSG #chan :two",
-            "@tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #chan",
-            "@id=m3;user-id=1;tmi-sent-ts=300 :a!a@a PRIVMSG #chan :three",
+            "@id=m1;user-id=1;tmi-sent-ts=100 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :one",
+            "@id=m2;user-id=2;tmi-sent-ts=150 :viewer2!viewer2@viewer2 PRIVMSG #broadcaster :two",
+            "@tmi-sent-ts=200 :tmi.twitch.tv CLEARCHAT #broadcaster",
+            "@id=m3;user-id=1;tmi-sent-ts=300 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :three",
         ]);
         let deleted: Vec<_> = messages.iter().map(|m| m.deleted).collect();
         assert_eq!(deleted, [true, true, false]);

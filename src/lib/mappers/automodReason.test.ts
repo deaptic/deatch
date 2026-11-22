@@ -7,8 +7,8 @@ const base = {
   broadcaster_user_login: "here",
   broadcaster_user_name: "Here",
   user_id: "2",
-  user_login: "foo",
-  user_name: "Foo",
+  user_login: "viewer1",
+  user_name: "Viewer1",
   message_id: "m1",
   held_at: "2026-10-01T00:00:00Z",
 };

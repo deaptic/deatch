@@ -272,13 +272,13 @@ mod tests {
         "payload": {
             "subscription": { "id": "0c2f", "type": "channel.chat.message", "version": "1" },
             "event": {
-                "broadcaster_user_id": "79615025",
-                "chatter_user_id": "1071073319",
+                "broadcaster_user_id": "1001",
+                "chatter_user_id": "1002",
                 "message": {
-                    "text": "[Amy Poehler Hello GIF by Team Coco]",
+                    "text": "[Hello GIF]",
                     "fragments": [{
                         "type": "gif",
-                        "text": "[Amy Poehler Hello GIF by Team Coco]",
+                        "text": "[Hello GIF]",
                         "gif": { "id": "WpIPS0DWNpMm4kfMVr" }
                     }]
                 }
@@ -324,7 +324,7 @@ mod tests {
             panic!("expected a notification");
         };
         assert_eq!(n.kind, EventKind::ChannelChatMessage);
-        assert_eq!(n.broadcaster_id, UserId::from("79615025"));
+        assert_eq!(n.broadcaster_id, UserId::from("1001"));
         assert_eq!(n.timestamp, "2026-09-30T20:39:40.240392291Z");
         assert_eq!(n.event["message"]["fragments"][0]["type"], "gif");
     }

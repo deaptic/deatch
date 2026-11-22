@@ -25,17 +25,28 @@ export function wordPattern(terms: string[], anchor: Anchor): string {
   }
 }
 
+export function matchEnd(
+  text: string,
+  terms: string[],
+  anchor: Anchor,
+  caseSensitive = false,
+): number | null {
+  const usable = terms.map((t) => t.trim()).filter(hasLiteral);
+  if (usable.length === 0) return null;
+  const match = regExp(
+    wordPattern(usable, anchor),
+    caseSensitive ? "" : "i",
+  ).exec(text);
+  return match ? match.index + match[0].length : null;
+}
+
 export function matchesTerms(
   text: string,
   terms: string[],
   anchor: Anchor,
   caseSensitive = false,
 ): boolean {
-  const usable = terms.map((t) => t.trim()).filter(hasLiteral);
-  if (usable.length === 0) return false;
-  return regExp(wordPattern(usable, anchor), caseSensitive ? "" : "i").test(
-    text,
-  );
+  return matchEnd(text, terms, anchor, caseSensitive) !== null;
 }
 
 export function matchedKeyword(

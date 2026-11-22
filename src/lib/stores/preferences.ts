@@ -3,12 +3,20 @@ export {
   clampCooldown,
   MAX_TRIGGER_COOLDOWN,
   MIN_TRIGGER_COOLDOWN,
+  BUILT_IN_TRIGGERS,
+  CONDITION_OPS,
+  TRIGGER_ROLES,
 } from "./preferences/schema.ts";
 export type {
   BadgePref,
+  BuiltInTrigger,
+  Condition,
+  ConditionalReply,
+  ConditionOp,
   EventPref,
   Trigger,
   TriggerAction,
+  TriggerRole,
   UserPreferences,
 } from "./preferences/schema.ts";
 export * from "./preferences/feed.ts";

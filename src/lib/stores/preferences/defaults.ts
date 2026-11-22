@@ -83,5 +83,14 @@ export const DEFAULTS: Defaults = {
     language: "",
     recent: [],
   },
-  triggers: [],
+  triggers: {
+    builtIn: {
+      accountage: false,
+      followage: false,
+      game: false,
+      title: false,
+      uptime: false,
+    },
+    custom: [],
+  },
 };

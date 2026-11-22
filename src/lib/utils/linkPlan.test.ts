@@ -9,28 +9,28 @@ const user = (login: string): User =>
 test("keeps open tabs, fetches new ones and lowercases logins", () => {
   const plan = planLinkState(
     {
-      channels: [{ login: "Alice", muted: true }, { login: "bob" }],
+      channels: [{ login: "Viewer1", muted: true }, { login: "viewer2" }],
       current: null,
     },
-    [user("alice"), user("carol")],
+    [user("viewer1"), user("viewer3")],
     null,
   );
-  expect(plan.muted).toStrictEqual({ alice: true, bob: false });
-  expect(plan.keep.map((u) => u.login)).toStrictEqual(["alice"]);
-  expect([...plan.fetch]).toStrictEqual(["bob"]);
+  expect(plan.muted).toStrictEqual({ viewer1: true, viewer2: false });
+  expect(plan.keep.map((u) => u.login)).toStrictEqual(["viewer1"]);
+  expect([...plan.fetch]).toStrictEqual(["viewer2"]);
 });
 
 test("looks up a new current tab but not the one already linked", () => {
-  const state = { channels: [], current: "Bob" };
-  expect(planLinkState(state, [], "alice").lookUp).toBe("bob");
-  expect(planLinkState(state, [], "bob").lookUp).toBeNull();
+  const state = { channels: [], current: "Viewer2" };
+  expect(planLinkState(state, [], "viewer1").lookUp).toBe("viewer2");
+  expect(planLinkState(state, [], "viewer2").lookUp).toBeNull();
 });
 
 test("unlinks only when no tab is current and one was linked", () => {
   const state = { channels: [], current: null };
-  expect(planLinkState(state, [], "alice").unlink).toBe(true);
+  expect(planLinkState(state, [], "viewer1").unlink).toBe(true);
   expect(planLinkState(state, [], null).unlink).toBe(false);
   expect(
-    planLinkState({ channels: [], current: "alice" }, [], "bob").unlink,
+    planLinkState({ channels: [], current: "viewer1" }, [], "viewer2").unlink,
   ).toBe(false);
 });

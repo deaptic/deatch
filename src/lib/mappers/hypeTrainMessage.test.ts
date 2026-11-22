@@ -33,14 +33,15 @@ test("credits the top contributors at the end", () => {
     hypeTrainEnd(
       train({
         top_contributions: [
-          { user_name: "Foo", type: "bits", total: 500 },
-          { user_name: "Bar", type: "subscription", total: 1000 },
+          { user_name: "Viewer1", type: "bits", total: 500 },
+          { user_name: "Viewer2", type: "subscription", total: 1000 },
         ],
       }),
     ),
   ).toStrictEqual({
     text: "The Hype Train ended at level 2 with 1,500 points",
-    detail: "Top contributors: Foo (500 bits) and Bar (1,000 sub points)",
+    detail:
+      "Top contributors: Viewer1 (500 bits) and Viewer2 (1,000 sub points)",
   });
   expect(hypeTrainEnd(train())).toStrictEqual({
     text: "The Hype Train ended at level 2 with 1,500 points",

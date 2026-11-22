@@ -6,8 +6,8 @@ const raw = (overrides: Partial<RawChatMessage> = {}): RawChatMessage => ({
   broadcaster_user_id: "111",
   message_id: "m1",
   chatter_user_id: "222",
-  chatter_user_login: "foo",
-  chatter_user_name: "Foo",
+  chatter_user_login: "viewer1",
+  chatter_user_name: "Viewer1",
   color: "#FF0000",
   message: { text: "", fragments: [] },
   message_type: "text",
@@ -21,8 +21,8 @@ test("maps chatter fields and timestamp", () => {
   const msg = mapChatMessage(raw(), 42);
   expect(msg.kind).toBe("message");
   expect(msg.message_id).toBe("m1");
-  expect(msg.chatter_login).toBe("foo");
-  expect(msg.chatter_name).toBe("Foo");
+  expect(msg.chatter_login).toBe("viewer1");
+  expect(msg.chatter_name).toBe("Viewer1");
   expect(msg.timestamp).toBe(42);
   expect(msg.reply).toBeUndefined();
   expect(msg.first_message).toBe(false);
@@ -32,11 +32,15 @@ test("flattens every fragment kind", () => {
   const msg = mapChatMessage(
     raw({
       message: {
-        text: "hi Kappa @bar Cheer100",
+        text: "hi Kappa @viewer2 Cheer100",
         fragments: [
           { type: "text", text: "hi " },
           { type: "emote", text: "Kappa", emote: { id: "25" } },
-          { type: "mention", text: "@bar", mention: { user_login: "bar" } },
+          {
+            type: "mention",
+            text: "@viewer2",
+            mention: { user_login: "viewer2" },
+          },
           {
             type: "cheermote",
             text: "Cheer100",
@@ -50,7 +54,7 @@ test("flattens every fragment kind", () => {
   expect(msg.fragments).toStrictEqual([
     { type: "text", text: "hi " },
     { type: "emote", text: "Kappa", id: "25" },
-    { type: "mention", text: "@bar", user_login: "bar" },
+    { type: "mention", text: "@viewer2", user_login: "viewer2" },
     { type: "cheermote", text: "Cheer100", prefix: "Cheer", bits: 100 },
   ]);
 });
@@ -132,8 +136,8 @@ test("marks only shared chat messages with their source channel", () => {
   const shared = mapChatMessage(
     raw({
       source_broadcaster_user_id: "333",
-      source_broadcaster_user_login: "mira",
-      source_broadcaster_user_name: "Mira",
+      source_broadcaster_user_login: "broadcaster",
+      source_broadcaster_user_name: "Broadcaster",
       source_message_id: "orig",
       source_badges: [{ set_id: "subscriber", id: "12", info: "12" }],
     }),
@@ -142,8 +146,8 @@ test("marks only shared chat messages with their source channel", () => {
   const unshared = mapChatMessage(raw({ source_broadcaster_user_id: null }), 0);
   expect(shared.source).toStrictEqual({
     id: "333",
-    login: "mira",
-    name: "Mira",
+    login: "broadcaster",
+    name: "Broadcaster",
     messageId: "orig",
     badges: [{ set_id: "subscriber", id: "12", info: "12" }],
   });

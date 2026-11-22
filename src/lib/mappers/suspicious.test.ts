@@ -6,7 +6,7 @@ import type {
 import { formatSuspicious } from "../format/suspicious.ts";
 import { suspiciousInfo, suspiciousUpdate } from "./suspicious.ts";
 
-const user = { user_id: "2", user_login: "foo", user_name: "Foo" };
+const user = { user_id: "2", user_login: "viewer1", user_name: "Viewer1" };
 
 const message = (
   m: Partial<RawSuspiciousUserMessage>,
@@ -43,10 +43,10 @@ test("describes a mod changing a chatter's status", () => {
     low_trust_status: "active_monitoring",
   };
   expect(suspiciousUpdate(raw)).toStrictEqual({
-    text: "Mod started monitoring Foo",
+    text: "Mod started monitoring Viewer1",
     people: [
       { id: "9", login: "mod", name: "Mod" },
-      { id: "2", login: "foo", name: "Foo" },
+      { id: "2", login: "viewer1", name: "Viewer1" },
     ],
   });
 });

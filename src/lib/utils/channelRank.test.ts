@@ -9,33 +9,33 @@ const logins = (list: SearchChannel[]) => list.map((c) => c.user.login);
 
 test("puts the exact match first, then prefixes, then other matches", () => {
   const found = [
-    channel("formatica_a"),
-    channel("xforsuticx"),
-    channel("forsutic_fan"),
-    channel("forsutic", "Forsutic"),
+    channel("viewing_all"),
+    channel("xviewerx"),
+    channel("viewer_fan"),
+    channel("viewer", "Viewer"),
     channel("unrelated"),
   ];
-  expect(logins(rankChannels(" ForSutic ", found))).toStrictEqual([
-    "forsutic",
-    "forsutic_fan",
-    "xforsuticx",
+  expect(logins(rankChannels(" ViEwer ", found))).toStrictEqual([
+    "viewer",
+    "viewer_fan",
+    "xviewerx",
     "unrelated",
-    "formatica_a",
+    "viewing_all",
   ]);
 });
 
 test("matches display names; within a rank, shorter then A to Z", () => {
   const found = [
-    channel("forsutinus"),
-    channel("zz", "Teo"),
-    channel("forsutic"),
-    channel("forsutia"),
+    channel("viewer_long"),
+    channel("zz", "Broadcaster"),
+    channel("viewer_b"),
+    channel("viewer_a"),
   ];
-  expect(logins(rankChannels("forsuti", found))).toStrictEqual([
-    "forsutia",
-    "forsutic",
-    "forsutinus",
+  expect(logins(rankChannels("viewer", found))).toStrictEqual([
+    "viewer_a",
+    "viewer_b",
+    "viewer_long",
     "zz",
   ]);
-  expect(logins(rankChannels("teo", found))[0]).toBe("zz");
+  expect(logins(rankChannels("broadcaster", found))[0]).toBe("zz");
 });

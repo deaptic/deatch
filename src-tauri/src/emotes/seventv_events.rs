@@ -270,7 +270,7 @@ mod tests {
     fn collects_added_removed_and_renamed_emotes() {
         let text = frame(json!({
             "id": "set1",
-            "actor": { "username": "foo", "display_name": "Foo" },
+            "actor": { "username": "viewer1", "display_name": "Viewer1" },
             "pushed": [{ "key": "emotes", "value": { "id": "e1", "name": "Pog" } }],
             "pulled": [{ "key": "emotes", "old_value": { "id": "e2", "name": "Kek" } }],
             "updated": [{
@@ -283,7 +283,7 @@ mod tests {
             update_json(&text),
             Some(json!({
                 "id": "set1",
-                "actor": "Foo",
+                "actor": "Viewer1",
                 "added": [{ "name": "Pog", "url": "https://cdn.7tv.app/emote/e1/1x.webp" }],
                 "removed": ["Kek"],
                 "renamed": [{ "from": "Old", "to": "New" }],
@@ -295,10 +295,10 @@ mod tests {
     fn falls_back_to_username_for_actor() {
         let text = frame(json!({
             "id": "set1",
-            "actor": { "username": "foo" },
+            "actor": { "username": "viewer1" },
             "pushed": [{ "key": "emotes", "value": { "id": "e1", "name": "Pog" } }],
         }));
-        assert_eq!(update_json(&text).unwrap()["actor"], json!("foo"));
+        assert_eq!(update_json(&text).unwrap()["actor"], json!("viewer1"));
     }
 
     #[test]

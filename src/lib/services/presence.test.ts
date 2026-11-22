@@ -9,10 +9,10 @@ import {
 
 const channel: User = {
   id: "1",
-  login: "maya",
-  displayName: "Maya",
+  login: "broadcaster",
+  displayName: "Broadcaster",
   description: "",
-  profileImageUrl: "https://cdn/maya.png",
+  profileImageUrl: "https://cdn/broadcaster.png",
   offlineImageUrl: null,
   broadcasterType: "partner",
   createdAt: "2020-01-01T00:00:00Z",
@@ -20,7 +20,7 @@ const channel: User = {
 
 const stream = (extra: Partial<Stream> = {}): Stream => ({
   id: "s1",
-  user: { id: "1", login: "maya", displayName: "Maya" },
+  user: { id: "1", login: "broadcaster", displayName: "Broadcaster" },
   game: { id: "g1", name: "Chess" },
   title: "Chess with chat",
   viewerCount: 1234,

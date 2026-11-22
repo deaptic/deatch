@@ -145,13 +145,13 @@ mod tests {
     #[test]
     fn empty_fields_are_left_out() {
         let input = SetActivityParams {
-            details: Some("Watching xqc".into()),
+            details: Some("Watching broadcaster".into()),
             state_text: Some(String::new()),
             large_text: Some(String::new()),
             ..SetActivityParams::default()
         };
         let value = serde_json::to_value(build_activity(&input)).unwrap();
-        assert_eq!(value["details"], "Watching xqc");
+        assert_eq!(value["details"], "Watching broadcaster");
         assert!(value.get("state").is_none());
         assert!(value.get("assets").is_none());
     }

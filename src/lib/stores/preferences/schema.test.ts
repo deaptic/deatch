@@ -77,27 +77,44 @@ test("event and badge settings keep only known keys with a boolean show", () => 
 
 test("triggers without an id or phrase are dropped, the rest repaired", () => {
   const prefs = sanitize({
-    triggers: [
-      {
-        id: "a",
-        phrase: "hi",
-        location: "nowhere",
-        cooldown: 99999,
-        action: "shout",
-      },
-      { id: "b", phrase: "yo", cooldown: "soon" },
-      { phrase: "no id" },
-      { id: "c" },
-      null,
-    ],
+    triggers: {
+      custom: [
+        {
+          id: "a",
+          phrase: "hi",
+          location: "nowhere",
+          cooldown: 99999,
+          action: "shout",
+          role: "god",
+          replies: [
+            {
+              when: [[{ left: "{args}", op: "weird" }, null], [], "x"],
+              text: 3,
+            },
+            { when: [[]], text: "dropped" },
+            "x",
+          ],
+          count: -3,
+        },
+        { id: "b", phrase: "yo", cooldown: "soon" },
+        { phrase: "no id" },
+        { id: "c" },
+        null,
+      ],
+    },
   });
-  expect(prefs.triggers.map((t) => t.id)).toStrictEqual(["a", "b"]);
-  const a = at(prefs.triggers, 0);
-  const b = at(prefs.triggers, 1);
+  expect(prefs.triggers.custom.map((t) => t.id)).toStrictEqual(["a", "b"]);
+  const a = at(prefs.triggers.custom, 0);
+  const b = at(prefs.triggers.custom, 1);
   expect(a.location).toBe("anywhere");
   expect(a.cooldown).toStrictEqual(MAX_TRIGGER_COOLDOWN);
   expect(a.action).toBe("reply");
   expect(a.enabled).toBe(true);
+  expect(a.role).toBe("everyone");
+  expect(a.count).toBe(0);
+  expect(a.replies).toStrictEqual([
+    { when: [[{ left: "{args}", op: "set", right: "" }]], text: "" },
+  ]);
   expect(b.cooldown).toStrictEqual(MIN_TRIGGER_COOLDOWN);
 });
 

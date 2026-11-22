@@ -15,16 +15,18 @@ test("returns plain messages as written", () => {
 });
 
 test("fills values and picks the plural form", () => {
-  expect(t("RAID", { name: "xqc", count: 1 })).toBe("xqc raided with 1 viewer");
-  expect(t("RAID", { name: "xqc", count: 1500 })).toBe(
-    "xqc raided with 1,500 viewers",
+  expect(t("RAID", { name: "viewer1", count: 1 })).toBe(
+    "viewer1 raided with 1 viewer",
+  );
+  expect(t("RAID", { name: "viewer1", count: 1500 })).toBe(
+    "viewer1 raided with 1,500 viewers",
   );
 });
 
 test("hands each tagged part to its formatter, in message order", () => {
   const parts = rich<{ bold: string[] }>("REPLY", {
-    user: "xqc",
+    user: "viewer1",
     b: (chunks) => ({ bold: chunks.map(String) }),
   });
-  expect(parts).toStrictEqual(["Replying to ", { bold: ["xqc"] }]);
+  expect(parts).toStrictEqual(["Replying to ", { bold: ["viewer1"] }]);
 });

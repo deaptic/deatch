@@ -12,25 +12,24 @@ test("splits a leading name", () => {
 
 test("links every person, ignoring case", () => {
   expect(
-    splitNames("Mod banned foo_bar: spam", ["Foo_Bar", "Mod"]),
+    splitNames("Mod banned viewer_one: spam", ["Viewer_One", "Mod"]),
   ).toStrictEqual([
     { text: "Mod", person: 1 },
     { text: " banned " },
-    { text: "foo_bar", person: 0 },
+    { text: "viewer_one", person: 0 },
     { text: ": spam" },
   ]);
 });
 
 test("prefers the longer of two overlapping names", () => {
-  expect(splitNames("Foo_Bar raided", ["Foo", "Foo_Bar"])).toStrictEqual([
-    { text: "Foo_Bar", person: 1 },
-    { text: " raided" },
-  ]);
+  expect(
+    splitNames("Viewer_One raided", ["Viewer", "Viewer_One"]),
+  ).toStrictEqual([{ text: "Viewer_One", person: 1 }, { text: " raided" }]);
 });
 
 test("matches whole words only", () => {
-  expect(splitNames("Annabel gifted a sub", ["Anna"])).toStrictEqual([
-    { text: "Annabel gifted a sub" },
+  expect(splitNames("Viewer12 gifted a sub", ["Viewer1"])).toStrictEqual([
+    { text: "Viewer12 gifted a sub" },
   ]);
 });
 

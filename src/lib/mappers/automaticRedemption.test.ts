@@ -8,8 +8,8 @@ const raw = (
   broadcaster_user_id: "1",
   id: "r1",
   user_id: "2",
-  user_login: "foo",
-  user_name: "Foo",
+  user_login: "viewer1",
+  user_name: "Viewer1",
   reward: {
     type: "chosen_sub_emote_unlock",
     channel_points: 300,
@@ -26,7 +26,7 @@ test("names the reward, its cost and the unlocked emote", () => {
     0,
   );
   expect(item?.system_message).toBe(
-    "Foo redeemed Choose an Emote to Unlock for 300 points",
+    "Viewer1 redeemed Choose an Emote to Unlock for 300 points",
   );
   expect(item?.message).toStrictEqual([
     { type: "emote", text: "Kappa", id: "e1" },
@@ -45,5 +45,5 @@ test("leaves message rewards to their chat message", () => {
 test("names an On-Screen Celebration", () => {
   expect(
     mapAutomaticRedemption(raw({ type: "celebration" }), 0)?.system_message,
-  ).toBe("Foo redeemed an On-Screen Celebration for 300 points");
+  ).toBe("Viewer1 redeemed an On-Screen Celebration for 300 points");
 });

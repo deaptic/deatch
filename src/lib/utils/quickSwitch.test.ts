@@ -6,32 +6,31 @@ import { quickSwitchRows, uniqueUsers } from "./quickSwitch.ts";
 const user = (id: string, login: string, displayName = login): User =>
   userFromRef({ id, login, displayName });
 
-const maya = user("1", "maya", "Maya");
-const zed = user("2", "zed_plays", "ZedPlays");
+const viewer1 = user("1", "viewer1", "Viewer1");
+const viewer2 = user("2", "viewer2_plays", "Viewer2Plays");
 
 test("uniqueUsers keeps the first of each id and skips gaps", () => {
-  expect(uniqueUsers([maya, null, zed, { ...maya }, undefined])).toStrictEqual([
-    maya,
-    zed,
-  ]);
+  expect(
+    uniqueUsers([viewer1, null, viewer2, { ...viewer1 }, undefined]),
+  ).toStrictEqual([viewer1, viewer2]);
 });
 
 test("an empty query lists every candidate without a search row", () => {
-  expect(quickSwitchRows([maya, zed], "  ")).toStrictEqual([
-    { kind: "channel", user: maya },
-    { kind: "channel", user: zed },
+  expect(quickSwitchRows([viewer1, viewer2], "  ")).toStrictEqual([
+    { kind: "channel", user: viewer1 },
+    { kind: "channel", user: viewer2 },
   ]);
 });
 
 test("a query matches login or display name and offers a search", () => {
-  expect(quickSwitchRows([maya, zed], " ZedP ")).toStrictEqual([
-    { kind: "channel", user: zed },
-    { kind: "search", query: "zedp" },
+  expect(quickSwitchRows([viewer1, viewer2], " Viewer2P ")).toStrictEqual([
+    { kind: "channel", user: viewer2 },
+    { kind: "search", query: "viewer2p" },
   ]);
 });
 
 test("an exact login match needs no search row", () => {
-  expect(quickSwitchRows([maya, zed], "Maya")).toStrictEqual([
-    { kind: "channel", user: maya },
+  expect(quickSwitchRows([viewer1, viewer2], "Viewer1")).toStrictEqual([
+    { kind: "channel", user: viewer1 },
   ]);
 });

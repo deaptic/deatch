@@ -11,9 +11,9 @@ import {
 
 const full: User = {
   id: "1",
-  login: "maya",
-  displayName: "Maya",
-  profileImageUrl: "https://cdn/maya-300x300.png",
+  login: "viewer1",
+  displayName: "Viewer1",
+  profileImageUrl: "https://cdn/viewer1-300x300.png",
   offlineImageUrl: null,
   description: "hi",
   broadcasterType: "affiliate",
@@ -23,7 +23,7 @@ const full: User = {
 test("mergeUser lets a partial user only rename and fill gaps", () => {
   const partial: User = {
     ...full,
-    displayName: "MAYA",
+    displayName: "VIEWER1",
     profileImageUrl: "",
     description: "",
     broadcasterType: "normal",
@@ -31,7 +31,7 @@ test("mergeUser lets a partial user only rename and fill gaps", () => {
   };
   expect(mergeUser(full, partial, false)).toStrictEqual({
     ...full,
-    displayName: "MAYA",
+    displayName: "VIEWER1",
   });
   expect(
     mergeUser(
@@ -46,7 +46,7 @@ test("mergeUser lets a partial user only rename and fill gaps", () => {
 });
 
 test("mergeUser takes a whole user from Twitch as is", () => {
-  const renamed = { ...full, login: "maya2", description: "" };
+  const renamed = { ...full, login: "viewer2", description: "" };
   expect(mergeUser(full, renamed, true)).toStrictEqual(renamed);
 });
 
@@ -63,8 +63,8 @@ test("sameUser sees fields the cached user never had", () => {
 });
 
 test("isUserId accepts Twitch numeric ids only", () => {
-  expect(isUserId("52679773")).toBe(true);
-  expect(isUserId("maya")).toBe(false);
+  expect(isUserId("1001")).toBe(true);
+  expect(isUserId("viewer1")).toBe(false);
   expect(isUserId("")).toBe(false);
 });
 
@@ -104,7 +104,7 @@ test("changedEntries skips unchanged users and builds on earlier duplicates", ()
   const table = { "1": { user: full, fetchedAt: 5 } };
   expect(changedEntries(table, [{ ...full }], null).size).toBe(0);
 
-  const renamed = { ...full, displayName: "MAYA" };
+  const renamed = { ...full, displayName: "VIEWER1" };
   const changed = changedEntries(table, [renamed, { ...renamed }], null);
   expect(changed.get("1")).toStrictEqual({ user: renamed, fetchedAt: 5 });
 });
