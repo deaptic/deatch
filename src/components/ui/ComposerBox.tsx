@@ -1,4 +1,4 @@
-import type { JSX } from "solid-js";
+import { children, type JSX } from "solid-js";
 import { minRowHeight } from "./rowHeight.ts";
 
 type Props = {
@@ -8,12 +8,13 @@ type Props = {
 };
 
 export default function ComposerBox(props: Props) {
+  const leading = children(() => props.leading);
   return (
     <div
       ref={props.ref}
-      class={`relative flex items-end gap-1 ${minRowHeight()} ${props.leading ? "pl-2.5" : "pl-3.5"} pr-2.5 py-1 bg-canvas border border-line rounded-lg transition duration-snap hover:border-ink-faint focus-within:border-accent! focus-within:ring-3 focus-within:ring-accent-soft`}
+      class={`relative flex items-end gap-1 ${minRowHeight()} ${leading() ? "pl-2.5" : "pl-3.5"} pr-2.5 py-1 bg-canvas border border-line rounded-lg transition duration-snap hover:border-ink-faint focus-within:border-accent! focus-within:ring-3 focus-within:ring-accent-soft`}
     >
-      {props.leading}
+      {leading()}
       {props.children}
     </div>
   );

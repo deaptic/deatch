@@ -1,7 +1,7 @@
 import { ChevronRight } from "lucide-solid";
 import { type JSX, Show, useContext } from "solid-js";
 import Kbd from "./Kbd.tsx";
-import { MenuClose } from "./Menu.tsx";
+import { MenuClose } from "./menuClose.ts";
 
 type Props = {
   label: string;
@@ -9,9 +9,11 @@ type Props = {
   hint?: JSX.Element | string;
   shortcut?: string;
   submenu?: boolean;
-  keepOpen?: boolean;
   active?: boolean;
   tone?: "negative" | "caution";
+  keepOpen?: boolean;
+  ref?: (el: HTMLButtonElement) => void;
+  onKeyDown?: (e: KeyboardEvent) => void;
 } & (
   | { disabled: true; onClick?: undefined }
   | { disabled?: boolean; onClick: () => void }
@@ -29,10 +31,13 @@ export default function MenuItem(props: Props) {
 
   return (
     <button
+      ref={props.ref}
       type="button"
       role="menuitem"
+      aria-haspopup={props.submenu ? "menu" : undefined}
       disabled={props.disabled}
       onClick={select}
+      onKeyDown={(e) => props.onKeyDown?.(e)}
       class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-body text-left transition-colors duration-snap ${
         props.disabled
           ? "opacity-40 cursor-default"

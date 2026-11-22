@@ -38,6 +38,7 @@ export default function InfoForm(props: Props) {
 
   return (
     <ToolForm
+      title={t("CHANNEL_TOOLS_EDIT_INFO")}
       submitLabel={t("CHANNEL_TOOLS_SAVE_INFO")}
       canSubmit={title().trim().length > 0}
       onSubmit={submit}

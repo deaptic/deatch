@@ -14,12 +14,13 @@ import {
   VolumeX,
   X,
 } from "lucide-solid";
-import { createSignal, Show } from "solid-js";
+import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
 import { t } from "../../lib/i18n/index.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
+import SubMenu from "../ui/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import TabVolume from "./TabVolume.tsx";
 import {
@@ -69,162 +70,145 @@ export default function ChannelContextMenu(props: Props) {
   const self = () => user();
   const other = () => self() && props.ch.id !== self()?.id;
   const canShoutout = () => shoutoutSources(props.ch).length > 0;
-  const [pickingShoutout, setPickingShoutout] = createSignal(false);
 
   return (
     <Menu x={props.x} y={props.y} align={props.align} onClose={props.onClose}>
+      <Show when={props.place === "link" && props.onOpen}>
+        {(open) => (
+          <>
+            <MenuItem
+              label={t("MENU_OPEN_CHAT")}
+              icon={<MessageSquare />}
+              onClick={open()}
+            />
+            <MenuDivider />
+          </>
+        )}
+      </Show>
+      <Show when={props.place === "rail"}>
+        <MenuItem
+          label={t("MENU_MARK_AS_READ")}
+          icon={<CheckCheck />}
+          disabled={!unread()}
+          onClick={() => {
+            inbox.markChannelSeen(props.ch.id);
+          }}
+        />
+        <MenuDivider />
+      </Show>
       <Show
-        when={!pickingShoutout()}
+        when={props.place === "rail" && hasTab()}
         fallback={
-          <ShoutoutSources
-            target={props.ch}
-            onBack={() => setPickingShoutout(false)}
+          <MenuItem
+            label={t("MENU_OPEN_IN_BROWSER")}
+            icon={<ExternalLink />}
+            shortcut={
+              selected() ? shortcuts.keyFor("link::openTab") : undefined
+            }
+            onClick={() => browser.open(url())}
           />
         }
       >
-        <Show when={props.place === "link" && props.onOpen}>
-          {(open) => (
-            <>
-              <MenuItem
-                label={t("MENU_OPEN_CHAT")}
-                icon={<MessageSquare />}
-                onClick={open()}
-              />
-              <MenuDivider />
-            </>
-          )}
-        </Show>
-        <Show when={props.place === "rail"}>
-          <MenuItem
-            label={t("MENU_MARK_AS_READ")}
-            icon={<CheckCheck />}
-            disabled={!unread()}
-            onClick={() => {
-              inbox.markChannelSeen(props.ch.id);
-            }}
-          />
+        <MenuItem
+          label={t("MENU_SHOW_BROWSER_TAB")}
+          icon={<ExternalLink />}
+          onClick={() => link.focus(props.ch.login)}
+        />
+        <MenuItem
+          label={muted() ? t("MENU_UNMUTE_TAB") : t("MENU_MUTE_TAB")}
+          icon={muted() ? <Volume2 /> : <VolumeX />}
+          shortcut={
+            selected() ? shortcuts.keyFor("link::toggleMute") : undefined
+          }
+          onClick={() => link.toggleMuted(props.ch.login)}
+        />
+        <MenuItem
+          label={t("MENU_CLOSE_BROWSER_TAB")}
+          icon={<X />}
+          shortcut={selected() ? shortcuts.keyFor("link::closeTab") : undefined}
+          onClick={() => link.close(props.ch.login)}
+        />
+        <Show when={linkHasAudio()}>
           <MenuDivider />
+          <TabVolume login={props.ch.login} />
         </Show>
+      </Show>
+
+      <MenuDivider />
+      <Show when={other()}>
         <Show
-          when={props.place === "rail" && hasTab()}
+          when={pinned()}
           fallback={
             <MenuItem
-              label={t("MENU_OPEN_IN_BROWSER")}
-              icon={<ExternalLink />}
-              shortcut={
-                selected() ? shortcuts.keyFor("link::openTab") : undefined
-              }
-              onClick={() => browser.open(url())}
+              label={t("MENU_PIN")}
+              icon={<Pin />}
+              onClick={() => pins.add(props.ch)}
             />
           }
         >
           <MenuItem
-            label={t("MENU_SHOW_BROWSER_TAB")}
-            icon={<ExternalLink />}
-            onClick={() => link.focus(props.ch.login)}
+            label={t("MENU_UNPIN")}
+            icon={<PinOff />}
+            onClick={() => pins.remove(props.ch.id)}
           />
-          <MenuItem
-            label={muted() ? t("MENU_UNMUTE_TAB") : t("MENU_MUTE_TAB")}
-            icon={muted() ? <Volume2 /> : <VolumeX />}
-            shortcut={
-              selected() ? shortcuts.keyFor("link::toggleMute") : undefined
-            }
-            onClick={() => link.toggleMuted(props.ch.login)}
-          />
-          <MenuItem
-            label={t("MENU_CLOSE_BROWSER_TAB")}
-            icon={<X />}
-            shortcut={
-              selected() ? shortcuts.keyFor("link::closeTab") : undefined
-            }
-            onClick={() => link.close(props.ch.login)}
-          />
-          <Show when={linkHasAudio()}>
-            <MenuDivider />
-            <TabVolume login={props.ch.login} />
+          <Show when={props.place === "rail" && pinIndex() > 0}>
+            <MenuItem
+              label={t("MENU_MOVE_UP")}
+              icon={<ArrowUp />}
+              onClick={movePin(-1)}
+            />
           </Show>
-        </Show>
-
-        <MenuDivider />
-        <Show when={other()}>
           <Show
-            when={pinned()}
-            fallback={
-              <MenuItem
-                label={t("MENU_PIN")}
-                icon={<Pin />}
-                onClick={() => pins.add(props.ch)}
-              />
+            when={
+              props.place === "rail" && pinIndex() < pinnedChannels().length - 1
             }
           >
             <MenuItem
-              label={t("MENU_UNPIN")}
-              icon={<PinOff />}
-              onClick={() => pins.remove(props.ch.id)}
+              label={t("MENU_MOVE_DOWN")}
+              icon={<ArrowDown />}
+              onClick={movePin(1)}
             />
-            <Show when={props.place === "rail" && pinIndex() > 0}>
-              <MenuItem
-                label={t("MENU_MOVE_UP")}
-                icon={<ArrowUp />}
-                onClick={movePin(-1)}
-              />
-            </Show>
-            <Show
-              when={
-                props.place === "rail" &&
-                pinIndex() < pinnedChannels().length - 1
-              }
-            >
-              <MenuItem
-                label={t("MENU_MOVE_DOWN")}
-                icon={<ArrowDown />}
-                onClick={movePin(1)}
-              />
-            </Show>
           </Show>
         </Show>
-        <MenuItem
-          label={t("MENU_COPY_LINK")}
-          icon={<Link2 />}
-          onClick={() => clipboard.copy(url())}
-        />
+      </Show>
+      <MenuItem
+        label={t("MENU_COPY_LINK")}
+        icon={<Link2 />}
+        onClick={() => clipboard.copy(url())}
+      />
 
-        <Show when={other() || canShoutout()}>
-          <MenuDivider />
-          <Show when={other()}>
-            <MenuItem
-              label={t("MENU_RAID")}
-              icon={<Radio />}
-              onClick={() => {
-                const me = self();
-                if (me) raid.begin(me.id, props.ch).catch(() => {});
-              }}
-            />
-          </Show>
-          <Show when={canShoutout()}>
-            <MenuItem
-              label={t("MENU_SHOUTOUT")}
-              icon={<Megaphone />}
-              submenu
-              onClick={() => setPickingShoutout(true)}
-            />
-          </Show>
+      <Show when={other() || canShoutout()}>
+        <MenuDivider />
+        <Show when={other()}>
+          <MenuItem
+            label={t("MENU_RAID")}
+            icon={<Radio />}
+            onClick={() => {
+              const me = self();
+              if (me) raid.begin(me.id, props.ch).catch(() => {});
+            }}
+          />
         </Show>
+        <Show when={canShoutout()}>
+          <SubMenu label={t("MENU_SHOUTOUT")} icon={<Megaphone />}>
+            <ShoutoutSources target={props.ch} />
+          </SubMenu>
+        </Show>
+      </Show>
 
-        <CopyPayloadItem show={advancedDeveloperMode()} data={props.ch} />
-        <Show when={props.place === "rail" && props.onLogout}>
-          {(logout) => (
-            <>
-              <MenuDivider />
-              <MenuItem
-                label={t("MENU_LOG_OUT")}
-                icon={<LogOut />}
-                tone="negative"
-                onClick={logout()}
-              />
-            </>
-          )}
-        </Show>
+      <CopyPayloadItem show={advancedDeveloperMode()} data={props.ch} />
+      <Show when={props.place === "rail" && props.onLogout}>
+        {(logout) => (
+          <>
+            <MenuDivider />
+            <MenuItem
+              label={t("MENU_LOG_OUT")}
+              icon={<LogOut />}
+              tone="negative"
+              onClick={logout()}
+            />
+          </>
+        )}
       </Show>
     </Menu>
   );

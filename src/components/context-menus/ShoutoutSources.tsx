@@ -1,7 +1,5 @@
-import { ChevronLeft } from "lucide-solid";
 import { createResource, For, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import { moderatedChannels, user } from "../../lib/stores/users.ts";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
@@ -10,7 +8,6 @@ import type { User, UserRef } from "../../lib/types/index.ts";
 
 type Props = {
   target: User;
-  onBack: () => void;
 };
 
 export function shoutoutSources(target: User): UserRef[] {
@@ -38,13 +35,6 @@ export default function ShoutoutSources(props: Props) {
   );
   return (
     <>
-      <MenuItem
-        label={t("MENU_SHOUTOUT_TO")}
-        icon={<ChevronLeft />}
-        keepOpen
-        onClick={props.onBack}
-      />
-      <MenuDivider />
       <Show
         when={!sources.loading}
         fallback={<MenuItem label={t("MENU_CHECKING")} disabled />}

@@ -40,7 +40,6 @@ import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 import ComposerActions from "./ComposerActions.tsx";
 import ComposerSlot from "../ui/ComposerSlot.tsx";
-import { commands } from "../command-composer/commands.ts";
 import Presence from "../ui/Presence.tsx";
 import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
 
@@ -145,19 +144,6 @@ export default function ChatInput(props: Props) {
     setCommandMode(null);
     setInput("");
     queueMicrotask(focus);
-  }
-
-  function startCommand(name: string) {
-    const command = commands.find((c) => c.name === name);
-    if (command) setCommandMode(command);
-  }
-
-  function openCommandList() {
-    onInputChange(`/${input()}`);
-    queueMicrotask(() => {
-      focus();
-      setCursor(1);
-    });
   }
 
   function onInputChange(value: string) {
@@ -333,8 +319,6 @@ export default function ChatInput(props: Props) {
                 <ComposerActions
                   broadcasterId={props.broadcasterId}
                   anchorEl={() => textAreaApi?.anchorEl()}
-                  onRunCommand={openCommandList}
-                  onStartCommand={startCommand}
                 />
               </ComposerSlot>
             }

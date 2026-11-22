@@ -23,10 +23,12 @@ import {
 
 const COPY = {
   poll: {
+    title: "CHANNEL_TOOLS_START_POLL",
     submit: "CHANNEL_TOOLS_SUBMIT_POLL",
     time: "CHANNEL_TOOLS_VOTING_TIME",
   },
   prediction: {
+    title: "CHANNEL_TOOLS_START_PREDICTION",
     submit: "CHANNEL_TOOLS_SUBMIT_PREDICTION",
     time: "CHANNEL_TOOLS_PREDICTION_WINDOW",
   },
@@ -66,6 +68,7 @@ export default function VoteForm(props: Props) {
 
   return (
     <ToolForm
+      title={t(COPY[props.kind].title)}
       submitLabel={t(COPY[props.kind].submit)}
       canSubmit={canStartVote(question(), options())}
       onSubmit={() =>

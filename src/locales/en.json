@@ -44,7 +44,6 @@
   "CHANNEL_TOOLS_EDIT_INFO": "Edit stream info",
   "CHANNEL_TOOLS_ENDS_IN": "Ends in {time}",
   "CHANNEL_TOOLS_END_POLL": "End poll",
-  "CHANNEL_TOOLS_LIVE_ONLY": "{action}\nAvailable while live",
   "CHANNEL_TOOLS_LOCK": "Lock",
   "CHANNEL_TOOLS_LOCKS_IN": "Locks in {time}",
   "CHANNEL_TOOLS_OPTION": "Option {number}",
@@ -471,7 +470,6 @@
   "MENU_REPLY": "Reply",
   "MENU_RESET": "Reset",
   "MENU_SHOUTOUT": "Shoutout",
-  "MENU_SHOUTOUT_TO": "Shoutout to",
   "MENU_SHOW_BROWSER_TAB": "Show browser tab",
   "MENU_TAB_VOLUME": "Tab volume",
   "MENU_UNMUTE_TAB": "Unmute tab",
@@ -910,9 +908,6 @@
   "CHAT_ACTIONS": "Chat modes and actions",
   "CHAT_ACTIONS_NO_MODES": "No chat modes on. Everyone can chat.",
   "CHAT_ACTIONS_CHANGE_MODES": "Change chat modes",
-  "CHAT_ACTIONS_RUN_COMMAND": "Run a command",
-  "CHAT_ACTIONS_SEND_ACTION": "Send as action",
-  "CHAT_ACTIONS_ANNOUNCE": "Announcement",
   "SETTINGS_TRIGGERS_TRY_SILENT": "Nothing would be sent: the reply is empty",
   "SETTINGS_TRIGGERS_TRY_EMPTY": "empty",
   "TRIGGER_USER_NOT_FOUND": "There's no Twitch user called {name}",
@@ -929,5 +924,9 @@
   "SETTINGS_TRIGGERS_MOVE_UP": "Move up",
   "SETTINGS_TRIGGERS_MOVE_DOWN": "Move down",
   "SETTINGS_TRIGGERS_REMOVE_REPLY": "Remove this reply",
-  "SETTINGS_TRIGGERS_TRY_PLACEHOLDER_EMPTY": "Add a phrase first, then type a chat message to test it"
+  "SETTINGS_TRIGGERS_TRY_PLACEHOLDER_EMPTY": "Add a phrase first, then type a chat message to test it",
+  "CHANNEL_TOOLS_LIVE_ONLY_HINT": "While live",
+  "CHANNEL_TOOLS_SHIELD_ACTIVE": "Shield mode is on",
+  "CHANNEL_TOOLS_RAID_DESCRIPTION": "Send your viewers to another live channel.",
+  "CHAT_ACTIONS_TURN_OFF": "Turn off {mode}"
 }

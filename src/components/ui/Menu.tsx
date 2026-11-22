@@ -1,5 +1,7 @@
-import { createContext, type JSX } from "solid-js";
+import type { JSX } from "solid-js";
 import Popover from "./Popover.tsx";
+import { MenuClose } from "./menuClose.ts";
+import MenuHost from "./MenuHost.tsx";
 import { focusables } from "../../lib/reactive/trapFocus.ts";
 import { wrapIndex } from "../../lib/reactive/createListNavigation.ts";
 
@@ -20,7 +22,7 @@ function moveFocus(e: KeyboardEvent & { currentTarget: HTMLElement }) {
   items[step(from, items.length)]?.focus();
 }
 
-export const MenuClose = createContext<() => void>();
+export { MenuClose } from "./menuClose.ts";
 
 type Props = {
   x: number;
@@ -47,7 +49,7 @@ export default function Menu(props: Props) {
           class="min-w-55 max-w-full p-1.5 flex flex-col"
           onKeyDown={moveFocus}
         >
-          {props.children}
+          <MenuHost>{props.children}</MenuHost>
         </div>
       </MenuClose.Provider>
     </Popover>

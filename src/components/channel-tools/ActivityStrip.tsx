@@ -1,9 +1,9 @@
-import { ChartColumn, Swords, Trophy } from "lucide-solid";
-import { For, Match, Switch } from "solid-js";
+import { ChartColumn, Shield, Swords, Trophy } from "lucide-solid";
+import { For, Match, onMount, Switch } from "solid-js";
 import { t, tRich } from "../../lib/i18n/index.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
 import { pendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { knownUser, user } from "../../lib/stores/users.ts";
 import * as activity from "../../lib/services/activity.ts";
 import * as clock from "../../lib/services/clock.ts";
 import * as raid from "../../lib/services/raid.ts";
@@ -30,11 +30,37 @@ export default function ActivityStrip(props: Props) {
     return r?.fromId === props.broadcasterId ? r : null;
   };
 
+  onMount(() =>
+    activity.load(props.broadcasterId, props.broadcasterId === user()?.id),
+  );
+
   return (
-    <Presence when={current().poll || current().prediction || raiding()}>
+    <Presence
+      when={
+        current().shield || current().poll || current().prediction || raiding()
+      }
+    >
       {() => (
         <div class="enter-expand">
           <div class="flex flex-col py-0.5">
+            <Presence when={current().shield}>
+              {() => (
+                <ActivityRow
+                  icon={<Shield />}
+                  title={t("CHANNEL_TOOLS_SHIELD_ACTIVE")}
+                >
+                  <Button
+                    variant="neutral"
+                    size="sm"
+                    onClick={() =>
+                      activity.setShield(props.broadcasterId, false)
+                    }
+                  >
+                    {t("CHANNEL_TOOLS_SHIELD_OFF")}
+                  </Button>
+                </ActivityRow>
+              )}
+            </Presence>
             <Presence when={current().poll}>
               {(poll) => (
                 <PollRow broadcasterId={props.broadcasterId} poll={poll()} />

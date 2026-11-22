@@ -1,5 +1,5 @@
-import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
-import { Show } from "solid-js";
+import { Clock, Gamepad2, Moon, Pencil, Users } from "lucide-solid";
+import { createSignal, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
@@ -15,7 +15,8 @@ import Avatar from "../ui/Avatar.tsx";
 import Stat from "../ui/Stat.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { canModerate, user } from "../../lib/stores/users.ts";
-import ChannelToolbar from "../channel-tools/ChannelToolbar.tsx";
+import InfoForm from "../channel-tools/InfoForm.tsx";
+import IconButton from "../ui/IconButton.tsx";
 import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
@@ -35,6 +36,8 @@ export default function ChannelHeader(props: Props) {
   const name = createCopyable("text-ink");
   const titleCopy = createCopyable("text-ink-soft");
 
+  const isBroadcaster = () => props.channel.id === user()?.id;
+  const [editing, setEditing] = createSignal(false);
   const uptime = () => {
     const s = stream();
     return s ? formatUptime(s.startedAt, clock.now()) : "";
@@ -77,31 +80,44 @@ export default function ChannelHeader(props: Props) {
               </Show>
             </div>
           </div>
-          <Show when={title()}>
-            {(streamTitle) => (
+          <Show when={title() || isBroadcaster()}>
+            <div class="mt-1 flex items-center gap-2 min-w-0">
               <p
-                class={`mt-1 self-start max-w-full text-body truncate ${titleCopy.class()}`}
-                data-tip={streamTitle()}
-                {...titleCopy.handlers(streamTitle)}
+                class={`min-w-0 text-body truncate ${titleCopy.class()}`}
+                data-tip={title()}
+                {...titleCopy.handlers(title)}
               >
-                {streamTitle()}
+                {title()}
               </p>
-            )}
+              <Show when={isBroadcaster()}>
+                <span class="ml-auto shrink-0 -my-1">
+                  <IconButton
+                    label={t("CHANNEL_TOOLS_EDIT_INFO")}
+                    size="sm"
+                    onClick={() => setEditing(true)}
+                  >
+                    <Pencil class="size-4" />
+                  </IconButton>
+                </span>
+              </Show>
+            </div>
           </Show>
         </div>
       </div>
       <Presence when={!chatConnected()}>{() => <ConnectionBanner />}</Presence>
       <Show when={canModerate(props.channel.id)}>
-        <ChannelToolbar
-          broadcasterId={props.channel.id}
-          isBroadcaster={props.channel.id === user()?.id}
-        />
         <ActivityStrip
           broadcasterId={props.channel.id}
           onOpenChannel={props.onOpenChannel}
         />
       </Show>
       {link.menu()}
+      <Show when={editing()}>
+        <InfoForm
+          broadcasterId={props.channel.id}
+          onDone={() => setEditing(false)}
+        />
+      </Show>
     </header>
   );
 }

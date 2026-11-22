@@ -1,8 +1,11 @@
 import type { JSX } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import Button from "../ui/Button.tsx";
+import Dialog from "../ui/Dialog.tsx";
 
 type Props = {
+  title: string;
+  description?: string;
   submitLabel: string;
   canSubmit: boolean;
   onSubmit: () => void;
@@ -12,22 +15,25 @@ type Props = {
 
 export default function ToolForm(props: Props) {
   return (
-    <form
-      class="w-90 max-w-full p-3 flex flex-col gap-3"
-      onSubmit={(e) => {
-        e.preventDefault();
+    <Dialog
+      title={props.title}
+      description={props.description}
+      onClose={props.onCancel}
+      onSubmit={() => {
         if (props.canSubmit) props.onSubmit();
       }}
+      actions={
+        <>
+          <Button variant="neutral" onClick={() => props.onCancel()}>
+            {t("CHANNEL_TOOLS_CANCEL")}
+          </Button>
+          <Button type="submit" disabled={!props.canSubmit}>
+            {props.submitLabel}
+          </Button>
+        </>
+      }
     >
-      {props.children}
-      <div class="flex justify-end gap-2 pt-1">
-        <Button variant="ghost" size="sm" onClick={() => props.onCancel()}>
-          {t("CHANNEL_TOOLS_CANCEL")}
-        </Button>
-        <Button type="submit" size="sm" disabled={!props.canSubmit}>
-          {props.submitLabel}
-        </Button>
-      </div>
-    </form>
+      <div class="flex flex-col gap-4">{props.children}</div>
+    </Dialog>
   );
 }
