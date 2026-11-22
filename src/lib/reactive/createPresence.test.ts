@@ -31,3 +31,13 @@ test("reopening during the exit keeps it mounted", async () => {
   expect(presence.value()).toBe("b");
   expect(presence.closing()).toBe(false);
 });
+
+test("a value that appears before the first check still shows", () => {
+  const [source, setSource] = createSignal<string | null>(null);
+  const presence = createRoot(() => {
+    const created = createPresence(source, () => Promise.resolve());
+    setSource("a");
+    return created;
+  });
+  expect(presence.value()).toBe("a");
+});

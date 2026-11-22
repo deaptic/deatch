@@ -22,3 +22,12 @@ export function centeredScrollTop(
   const wanted = itemTop + itemHeight / 2 - m.clientHeight / 2;
   return Math.min(maxScrollTop(m), Math.max(0, wanted));
 }
+
+export type FeedMode = "follow" | "reading";
+
+export function modeAfterUserScroll(
+  m: ScrollMetrics,
+  showingLive: boolean,
+): FeedMode {
+  return showingLive && isAtBottom(m) ? "follow" : "reading";
+}

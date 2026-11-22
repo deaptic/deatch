@@ -52,6 +52,8 @@ import type { UserActions } from "../ui/userLink.ts";
 import { at } from "../../lib/utils/at.ts";
 import { scrollBehavior } from "../ui/scrollBehavior.ts";
 
+const JUMP_ATTEMPTS = 30;
+
 export type FeedApi = {
   scrollToBottom: () => void;
   isPaused: () => boolean;
@@ -95,10 +97,17 @@ export default function Feed(props: Props) {
   let rootRef: HTMLDivElement | undefined;
   let scrollRef: HTMLDivElement | undefined;
   let listRef: HTMLDivElement | undefined;
-  const scroll = createFeedScroll(() => scrollRef, {
-    idAt: (y) => win.idAt(y),
-    topOf: (id) => win.topOf(id),
-  });
+  const ownsHistory = () => props.entries === undefined;
+  const showingLive = () =>
+    !ownsHistory() || historyViews[props.broadcasterId]?.atLive !== false;
+  const scroll = createFeedScroll(
+    () => scrollRef,
+    {
+      idAt: (y) => win.idAt(y),
+      topOf: (id) => win.topOf(id),
+    },
+    showingLive,
+  );
 
   const entries = createMemo<FeedEntry[]>(() => {
     const all = props.entries ?? channelEntries(props.broadcasterId);
@@ -115,8 +124,6 @@ export default function Feed(props: Props) {
     const { start, end } = win.range();
     return entries().slice(start, end);
   });
-
-  const ownsHistory = () => props.entries === undefined;
 
   function loadAtEdges(el: HTMLElement) {
     if (!ownsHistory()) return;
@@ -145,7 +152,9 @@ export default function Feed(props: Props) {
     void history.around(props.broadcasterId, messageId).then((outcome) => {
       lookingUp = null;
       if (outcome === "opened") return;
-      if (jumpTarget()?.messageId === messageId) setJumpTarget(null);
+      if (jumpTarget()?.messageId !== messageId) return;
+      setJumpTarget(null);
+      toPresent();
       if (outcome === "missing") addToast(t("FEED_MESSAGE_GONE"));
     });
   }
@@ -153,7 +162,7 @@ export default function Feed(props: Props) {
   function show(id: string) {
     if (win.isRendered(id)) return;
     batch(() => {
-      scroll.pause();
+      scroll.read();
       win.reveal(id);
     });
   }
@@ -256,28 +265,45 @@ export default function Feed(props: Props) {
   let settled = false;
   onMount(() => requestAnimationFrame(() => (settled = true)));
 
+  const itemEl = (id: string) =>
+    rootRef?.querySelector<HTMLElement>(`[data-item-id="${CSS.escape(id)}"]`);
+
+  let jumping: string | null = null;
+  onCleanup(() => (jumping = null));
+
+  function jumpWhenRendered(
+    id: string,
+    behavior: "smooth" | "instant",
+    attempt: number,
+  ) {
+    if (jumping !== id) return;
+    show(id);
+    const el = itemEl(id);
+    if (el) {
+      jumping = null;
+      scroll.jumpTo(id, el, behavior, () => setSelectedId(id));
+    } else if (attempt < JUMP_ATTEMPTS) {
+      requestAnimationFrame(() => jumpWhenRendered(id, behavior, attempt + 1));
+    } else {
+      jumping = null;
+    }
+  }
+
   createEffect(() => {
     const target = jumpTarget();
     if (!target || target.broadcasterId !== props.broadcasterId) return;
-    if (!messageList().some((m) => m.message_id === target.messageId)) {
+    untrack(scroll.read);
+    const loaded = messageList().some((m) => m.message_id === target.messageId);
+    if (!loaded) {
       if (ownsHistory() && feeds[props.broadcasterId]?.backfilled) {
         untrack(() => lookUp(target.messageId));
       }
       return;
     }
+    jumping = target.messageId;
+    setJumpTarget(null);
     const behavior = settled ? scrollBehavior() : "instant";
-    queueMicrotask(() => {
-      show(target.messageId);
-      const el = rootRef?.querySelector<HTMLElement>(
-        `[data-item-id="${CSS.escape(target.messageId)}"]`,
-      );
-      if (el) {
-        scroll.jumpTo(target.messageId, el, behavior, () =>
-          setSelectedId(target.messageId),
-        );
-      }
-      setJumpTarget(null);
-    });
+    untrack(() => jumpWhenRendered(target.messageId, behavior, 0));
   });
 
   createEffect(

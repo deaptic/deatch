@@ -1,11 +1,10 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 import {
   centeredScrollTop,
-  isAtBottom,
+  type FeedMode,
   maxScrollTop,
+  modeAfterUserScroll,
 } from "../../lib/utils/feedScroll.ts";
-
-type Mode = "follow" | "paused" | "jumping";
 
 type JumpBehavior = "smooth" | "instant";
 
@@ -14,14 +13,25 @@ type Rows = {
   topOf: (id: string) => number | null;
 };
 
+type Anchor = { id: string; offset: number };
+
+const USER_SCROLL_MS = 600;
+const USER_INPUT = ["wheel", "touchstart", "keydown"] as const;
+
 export function createFeedScroll(
   scroller: () => HTMLElement | undefined,
   rows: Rows,
+  showingLive: () => boolean,
 ) {
-  const [mode, setMode] = createSignal<Mode>("follow");
-  let echo = false;
-  let anchor: { id: string; offset: number } | null = null;
-  let height = 0;
+  const [mode, setMode] = createSignal<FeedMode>("follow");
+  let anchor: Anchor | null = null;
+  let pointerHeld = false;
+  let userUntil = 0;
+  let cancelJump: (() => void) | null = null;
+  onCleanup(() => cancelJump?.());
+
+  const userScrolling = () => pointerHeld || performance.now() < userUntil;
+  const markUser = () => (userUntil = performance.now() + USER_SCROLL_MS);
 
   function remember(el: HTMLElement) {
     const id = rows.idAt(el.scrollTop + 1);
@@ -30,10 +40,10 @@ export function createFeedScroll(
       id !== null && top !== null ? { id, offset: top - el.scrollTop } : null;
   }
 
-  function settle(el: HTMLElement) {
-    remember(el);
-    setMode(isAtBottom(el) ? "follow" : "paused");
-    height = el.scrollHeight;
+  function pin(id: string) {
+    const el = scroller();
+    const top = rows.topOf(id);
+    anchor = el && top !== null ? { id, offset: top - el.scrollTop } : null;
   }
 
   function restore() {
@@ -42,38 +52,34 @@ export function createFeedScroll(
     const top = rows.topOf(anchor.id);
     if (top === null) return;
     const shift = top - el.scrollTop - anchor.offset;
-    if (Math.abs(shift) < 1) return;
-    const before = el.scrollTop;
-    el.scrollTop += shift;
-    echo = el.scrollTop !== before;
+    if (Math.abs(shift) >= 1) el.scrollTop += shift;
   }
 
   function onScroll(e: Event & { currentTarget: HTMLElement }) {
-    if (echo) {
-      echo = false;
-      return;
-    }
-    if (mode() === "jumping") return;
+    if (!userScrolling()) return;
+    cancelJump?.();
     const el = e.currentTarget;
-    if (el.scrollHeight !== height) keep();
-    else settle(el);
+    remember(el);
+    setMode(modeAfterUserScroll(el, showingLive()));
   }
 
   function toBottom() {
     const el = scroller();
-    if (!el) return;
-    const top = maxScrollTop(el);
-    if (top !== el.scrollTop) {
-      echo = true;
-      el.scrollTo({ top, behavior: "instant" });
-    }
+    anchor = null;
     setMode("follow");
+    if (el) el.scrollTop = maxScrollTop(el);
   }
 
   function keep() {
     if (mode() === "follow") toBottom();
-    else if (mode() === "paused") restore();
-    height = scroller()?.scrollHeight ?? 0;
+    else restore();
+  }
+
+  function read() {
+    if (mode() === "reading") return;
+    const el = scroller();
+    if (el) remember(el);
+    setMode("reading");
   }
 
   function watch(list: HTMLElement): () => void {
@@ -83,7 +89,21 @@ export function createFeedScroll(
     const observer = new ResizeObserver(keep);
     observer.observe(el);
     observer.observe(list);
-    return () => observer.disconnect();
+    const press = () => (pointerHeld = true);
+    const release = () => {
+      if (!pointerHeld) return;
+      pointerHeld = false;
+      markUser();
+    };
+    for (const type of USER_INPUT) el.addEventListener(type, markUser);
+    el.addEventListener("pointerdown", press);
+    window.addEventListener("pointerup", release);
+    return () => {
+      observer.disconnect();
+      for (const type of USER_INPUT) el.removeEventListener(type, markUser);
+      el.removeEventListener("pointerdown", press);
+      window.removeEventListener("pointerup", release);
+    };
   }
 
   function jumpTo(
@@ -94,6 +114,9 @@ export function createFeedScroll(
   ) {
     const el = scroller();
     if (!el) return;
+    cancelJump?.();
+    anchor = null;
+    setMode("reading");
     const centred = () =>
       centeredScrollTop(
         el,
@@ -102,42 +125,25 @@ export function createFeedScroll(
           el.scrollTop,
         item.offsetHeight,
       );
-    const top = centred();
     const arrive = () => {
-      if (item.isConnected) {
-        const before = el.scrollTop;
-        el.scrollTop = centred();
-        if (el.scrollTop !== before) echo = true;
-      }
-      settle(el);
-      const at = rows.topOf(id);
-      if (mode() === "paused" && at !== null) {
-        anchor = { id, offset: at - el.scrollTop };
-      }
+      cancelJump = null;
+      if (item.isConnected) el.scrollTop = centred();
+      pin(id);
       onArrive();
     };
-    if (Math.abs(top - el.scrollTop) < 1) {
+    if (behavior === "instant" || Math.abs(centred() - el.scrollTop) < 1) {
+      el.scrollTop = centred();
       arrive();
       return;
     }
-    if (behavior === "instant") {
-      echo = true;
-      el.scrollTo({ top, behavior });
-      arrive();
-      return;
-    }
-    setMode("jumping");
     el.addEventListener("scrollend", arrive, { once: true });
-    el.scrollTo({ top, behavior });
-  }
-
-  function pause() {
-    if (mode() === "follow") setMode("paused");
+    cancelJump = () => el.removeEventListener("scrollend", arrive);
+    el.scrollTo({ top: centred(), behavior });
   }
 
   return {
-    isPaused: () => mode() !== "follow",
-    pause,
+    isPaused: () => mode() === "reading",
+    read,
     onScroll,
     toBottom,
     keep,

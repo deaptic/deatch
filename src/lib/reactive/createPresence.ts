@@ -19,19 +19,15 @@ export function createPresence<T>(
   }
 
   createEffect(
-    on(
-      source,
-      (next) => {
-        const current = ++generation;
-        if (next) {
-          setClosing(false);
-          setValue(() => next);
-        } else if (value()) {
-          void close(current);
-        }
-      },
-      { defer: true },
-    ),
+    on(source, (next) => {
+      const current = ++generation;
+      if (next) {
+        setClosing(false);
+        setValue(() => next);
+      } else if (value()) {
+        void close(current);
+      }
+    }),
   );
 
   return { value, closing };
