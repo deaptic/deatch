@@ -19,6 +19,7 @@ import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../lib/stores/toasts.ts";
 import { liveLine } from "../../lib/format/stream.ts";
+import type { JSX } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import {
   type QuickSwitchRow,
@@ -32,6 +33,8 @@ import Loading from "../ui/Loading.tsx";
 import Modal from "../ui/Modal.tsx";
 import { autofocus } from "../../lib/reactive/focus.ts";
 import Kbd from "../ui/Kbd.tsx";
+import { Dynamic } from "solid-js/web";
+import { type PaletteAction, paletteActions } from "./paletteActions.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -43,9 +46,11 @@ export default function QuickSwitch(props: Props) {
   const [query, setQuery] = createSignal("");
   const [searching, setSearching] = createSignal(false);
 
+  const actions = createMemo(paletteActions);
   const rows = createMemo(() =>
     quickSwitchRows(
       uniqueUsers([...channelsInOrder(), ...linkWarmedChannels(), user()]),
+      actions(),
       query(),
     ),
   );
@@ -67,9 +72,14 @@ export default function QuickSwitch(props: Props) {
     props.onClose();
   }
 
-  async function open(row: QuickSwitchRow, pin: boolean) {
+  async function open(row: QuickSwitchRow<PaletteAction>, pin: boolean) {
     if (row.kind === "channel") {
       choose(row.user, pin);
+      return;
+    }
+    if (row.kind === "action") {
+      props.onClose();
+      row.action.run();
       return;
     }
     setSearching(true);
@@ -147,31 +157,41 @@ export default function QuickSwitch(props: Props) {
                     listbox.active() === i() ? "bg-raised" : "hover:bg-raised"
                   }`}
                 >
-                  <Show
-                    when={row.kind === "channel" ? row : null}
-                    fallback={
+                  <Show when={row.kind === "action" ? row.action : null}>
+                    {(action) => (
                       <>
-                        <span class="size-8 rounded-full bg-raised grid place-items-center text-ink-soft">
-                          <Show
-                            when={!searching()}
-                            fallback={<Loading size={16} />}
-                          >
-                            <Search class="size-4" />
-                          </Show>
-                        </span>
-                        <span class="flex-1 min-w-0 flex flex-col">
-                          <span class="text-body font-semibold text-ink truncate">
-                            {t("QUICK_SWITCH_SEARCH_TWITCH", {
-                              query: query().trim(),
-                            })}
-                          </span>
-                          <span class="text-small text-ink-soft">
-                            {t("QUICK_SWITCH_NOT_IN_RAIL")}
-                          </span>
+                        <RowIcon>
+                          <Dynamic component={action().icon} class="size-4" />
+                        </RowIcon>
+                        <span class="flex-1 min-w-0 text-body font-semibold text-ink truncate">
+                          {action().label}
                         </span>
                       </>
-                    }
-                  >
+                    )}
+                  </Show>
+                  <Show when={row.kind === "search"}>
+                    <>
+                      <RowIcon>
+                        <Show
+                          when={!searching()}
+                          fallback={<Loading size={16} />}
+                        >
+                          <Search class="size-4" />
+                        </Show>
+                      </RowIcon>
+                      <span class="flex-1 min-w-0 flex flex-col">
+                        <span class="text-body font-semibold text-ink truncate">
+                          {t("QUICK_SWITCH_SEARCH_TWITCH", {
+                            query: query().trim(),
+                          })}
+                        </span>
+                        <span class="text-small text-ink-soft">
+                          {t("QUICK_SWITCH_NOT_IN_RAIL")}
+                        </span>
+                      </span>
+                    </>
+                  </Show>
+                  <Show when={row.kind === "channel" ? row : null}>
                     {(r) => {
                       const stream = () => streamForUserId(r().user.id);
                       return (
@@ -233,5 +253,13 @@ export default function QuickSwitch(props: Props) {
         </span>
       </div>
     </Modal>
+  );
+}
+
+function RowIcon(props: { children: JSX.Element }) {
+  return (
+    <span class="size-8 shrink-0 rounded-full bg-raised grid place-items-center text-ink-soft">
+      {props.children}
+    </span>
   );
 }

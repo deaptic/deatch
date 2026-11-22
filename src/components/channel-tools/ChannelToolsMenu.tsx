@@ -16,18 +16,17 @@ import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
 import { user } from "../../lib/stores/users.ts";
+import { type ChannelForm, setChannelForm } from "../../lib/stores/ui.ts";
 import * as activity from "../../lib/services/activity.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import SubMenu from "../ui/SubMenu.tsx";
+import InfoForm from "./InfoForm.tsx";
 import RaidForm from "./RaidForm.tsx";
 import VoteForm from "./VoteForm.tsx";
 
-export type ToolForm = "poll" | "prediction" | "raid";
-
 type ItemsProps = {
   broadcasterId: string;
-  onOpen: (form: ToolForm) => void;
 };
 
 export function ChannelToolItems(props: ItemsProps) {
@@ -44,17 +43,17 @@ export function ChannelToolItems(props: ItemsProps) {
         <MenuItem
           label={t("CHANNEL_TOOLS_START_POLL")}
           icon={<ChartColumn />}
-          onClick={() => props.onOpen("poll")}
+          onClick={() => setChannelForm("poll")}
         />
         <MenuItem
           label={t("CHANNEL_TOOLS_START_PREDICTION")}
           icon={<Trophy />}
-          onClick={() => props.onOpen("prediction")}
+          onClick={() => setChannelForm("prediction")}
         />
         <MenuItem
           label={t("CHANNEL_TOOLS_RAID")}
           icon={<Swords />}
-          onClick={() => props.onOpen("raid")}
+          onClick={() => setChannelForm("raid")}
         />
         <SubMenu
           label={t("CHANNEL_TOOLS_RUN_AD")}
@@ -109,7 +108,7 @@ export function ChannelToolItems(props: ItemsProps) {
 }
 
 type FormProps = {
-  form: ToolForm;
+  form: ChannelForm;
   broadcasterId: string;
   onDone: () => void;
 };
@@ -117,10 +116,13 @@ type FormProps = {
 export function ChannelToolForm(props: FormProps) {
   return (
     <Switch>
+      <Match when={props.form === "info"}>
+        <InfoForm broadcasterId={props.broadcasterId} onDone={props.onDone} />
+      </Match>
       <Match when={props.form === "raid"}>
         <RaidForm broadcasterId={props.broadcasterId} onDone={props.onDone} />
       </Match>
-      <Match when={props.form !== "raid"}>
+      <Match when={props.form === "poll" || props.form === "prediction"}>
         <VoteForm
           kind={props.form === "poll" ? "poll" : "prediction"}
           broadcasterId={props.broadcasterId}

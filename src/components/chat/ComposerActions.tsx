@@ -1,5 +1,5 @@
 import { Plus, X } from "lucide-solid";
-import { createSignal, For, Show } from "solid-js";
+import { For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { t } from "../../lib/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
@@ -18,11 +18,7 @@ import { MenuClose } from "../ui/Menu.tsx";
 import MenuHost from "../ui/MenuHost.tsx";
 import SubMenu from "../ui/SubMenu.tsx";
 import ChatModesList from "./ChatModesList.tsx";
-import {
-  ChannelToolForm,
-  ChannelToolItems,
-  type ToolForm,
-} from "../channel-tools/ChannelToolsMenu.tsx";
+import { ChannelToolItems } from "../channel-tools/ChannelToolsMenu.tsx";
 import { activeModes, type ChatMode } from "./modes.ts";
 
 type Props = {
@@ -31,7 +27,6 @@ type Props = {
 };
 
 export default function ComposerActions(props: Props) {
-  const [form, setForm] = createSignal<ToolForm | null>(null);
   const settings = () => chatSettingsFor(props.broadcasterId);
   const active = () => activeModes(settings());
   const isMod = () => canModerate(props.broadcasterId);
@@ -75,24 +70,12 @@ export default function ComposerActions(props: Props) {
                   broadcasterId={props.broadcasterId}
                 />
                 <Show when={isMod()}>
-                  <ChannelToolItems
-                    broadcasterId={props.broadcasterId}
-                    onOpen={setForm}
-                  />
+                  <ChannelToolItems broadcasterId={props.broadcasterId} />
                 </Show>
               </MenuHost>
             </div>
           </MenuClose.Provider>
         </ComposerPanel>
-      </Show>
-      <Show when={form()}>
-        {(current) => (
-          <ChannelToolForm
-            form={current()}
-            broadcasterId={props.broadcasterId}
-            onDone={() => setForm(null)}
-          />
-        )}
       </Show>
     </>
   );

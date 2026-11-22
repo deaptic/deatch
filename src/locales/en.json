@@ -537,11 +537,11 @@
   "QUICK_SWITCH_NOT_FOUND": "No channel with that name",
   "QUICK_SWITCH_NOT_IN_RAIL": "Not in your rail yet",
   "QUICK_SWITCH_OFFLINE": "Offline",
-  "QUICK_SWITCH_OPEN": "open",
+  "QUICK_SWITCH_OPEN": "open or run",
   "QUICK_SWITCH_OPEN_PIN": "open and pin",
   "QUICK_SWITCH_PINNED": "Pinned {name}",
   "QUICK_SWITCH_PINNED_TAG": "pinned",
-  "QUICK_SWITCH_PLACEHOLDER": "Jump to a channel…",
+  "QUICK_SWITCH_PLACEHOLDER": "Go to a channel or run an action…",
   "QUICK_SWITCH_SEARCH_TWITCH": "Search Twitch for “{query}”",
   "RAIL_CHANNELS": "Channels",
   "RAIL_COLLAPSE_RAIL": "Collapse rail",
@@ -928,5 +928,12 @@
   "CHANNEL_TOOLS_LIVE_ONLY_HINT": "While live",
   "CHANNEL_TOOLS_SHIELD_ACTIVE": "Shield mode is on",
   "CHANNEL_TOOLS_RAID_DESCRIPTION": "Send your viewers to another live channel.",
-  "CHAT_ACTIONS_TURN_OFF": "Turn off {mode}"
+  "CHAT_ACTIONS_TURN_OFF": "Turn off {mode}",
+  "PALETTE_OPEN_EXPLORE": "Open Explore",
+  "PALETTE_OPEN_SETTINGS": "Open Settings",
+  "PALETTE_OPEN_INBOX": "Open Inbox",
+  "PALETTE_TURN_ON": "Turn on {mode}",
+  "PALETTE_TURN_OFF": "Turn off {mode}",
+  "PALETTE_MODE_PRESET": "{mode}: {preset}",
+  "PALETTE_RUN_AD": "Run an ad: {length}"
 }
