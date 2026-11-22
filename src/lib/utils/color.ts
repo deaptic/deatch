@@ -11,9 +11,6 @@ export function readableColor(color: string, theme: ResolvedTheme): string {
 
 const HEX = /^#?([0-9a-f]{6})$/i;
 
-export const isCssHex = (color: string): boolean =>
-  color.startsWith("#") && HEX.test(color);
-
 export function hexToOklch(hex: string): Oklch | null {
   const m = HEX.exec(hex.trim());
   if (!m) return null;

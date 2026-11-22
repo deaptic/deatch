@@ -1,4 +1,3 @@
-import { createMeasuredHeight } from "../../lib/reactive/createMeasuredHeight.ts";
 import {
   createEffect,
   createMemo,
@@ -83,7 +82,6 @@ export default function Chat(props: Props) {
   let inputApi: ChatInputApi | undefined;
 
   const isMod = createMemo(() => canModerate(props.broadcasterId));
-  const composer = createMeasuredHeight();
 
   onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
 
@@ -250,14 +248,11 @@ export default function Chat(props: Props) {
   });
 
   return (
-    <div
-      class="relative flex-1 min-h-0 flex flex-col"
-      style={{ "--composer-height": `${composer.height()}px` }}
-    >
+    <div class="relative flex-1 min-h-0 flex flex-col">
       <Feed
         broadcasterId={props.broadcasterId}
         userLogin={props.userLogin}
-        scrollClass="pr-4 pt-(--header-height) pb-(--composer-height) scroll-pt-(--header-height) scroll-pb-(--composer-height) scrollbar-inset"
+        scrollClass="pr-4 py-1 scrollbar-inset"
         flush
         density={feedDensity()}
         class="text-(length:--chat-size)"
@@ -274,10 +269,10 @@ export default function Chat(props: Props) {
         ref={setFeedApi}
       />
 
-      <div ref={composer.measure} class="absolute inset-x-0 bottom-0 z-20">
+      <div class="relative z-20 shrink-0 bg-surface border-t border-line-soft">
         <Presence when={feedApi()?.isPaused()}>
           {() => (
-            <div class="absolute inset-x-0 bottom-full px-2 enter-rise">
+            <div class="absolute inset-x-0 bottom-full enter-rise">
               <ScrollStatusBar
                 unseen={unseenCount(props.broadcasterId)}
                 onJump={jumpToLatest}

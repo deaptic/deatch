@@ -1,7 +1,6 @@
 import { ChevronDown } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import { CAPTION_FRAME } from "../ui/ComposerCaption.tsx";
 
 type Props = {
   unseen: number;
@@ -13,7 +12,7 @@ export default function ScrollStatusBar(props: Props) {
     <button
       type="button"
       onClick={props.onJump}
-      class={`w-full ${CAPTION_FRAME} cursor-pointer pressable hover:bg-raised`}
+      class="w-full flex items-center gap-2 pl-4 pr-1.5 py-1 min-h-strip min-w-0 text-small bg-surface cursor-pointer transition-colors duration-snap hover:bg-raised"
     >
       <Show
         when={props.unseen > 0}

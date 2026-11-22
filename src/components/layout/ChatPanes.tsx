@@ -1,7 +1,6 @@
 import { MessagesSquare } from "lucide-solid";
 import { Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
-import { createMeasuredHeight } from "../../lib/reactive/createMeasuredHeight.ts";
 import { selectedChannel, showExplore } from "../../lib/stores/view.ts";
 import Chat from "../chat/Chat.tsx";
 import ChannelHeader from "../chat/ChannelHeader.tsx";
@@ -17,15 +16,9 @@ type ChatPanesProps = {
 };
 
 function ChannelPane(props: ChatPanesProps & { channel: User }) {
-  const header = createMeasuredHeight();
-
   return (
-    <div
-      class="absolute inset-0 flex flex-col"
-      style={{ "--header-height": `${header.height()}px` }}
-    >
+    <div class="absolute inset-0 flex flex-col">
       <ChannelHeader
-        ref={header.measure}
         channel={props.channel}
         onOpenChannel={props.onOpenChannel}
       />

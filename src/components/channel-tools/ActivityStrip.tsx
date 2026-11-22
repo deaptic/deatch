@@ -11,7 +11,6 @@ import { formatCountdown } from "../../lib/format/duration.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
 import type { Poll, Prediction } from "../../lib/types/index.ts";
 import Button from "../ui/Button.tsx";
-import Card from "../ui/Card.tsx";
 import Chip from "../ui/Chip.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import ActivityRow from "./ActivityRow.tsx";
@@ -34,71 +33,66 @@ export default function ActivityStrip(props: Props) {
   return (
     <Presence when={current().poll || current().prediction || raiding()}>
       {() => (
-        <div class="enter-pop">
-          <Card tone="floating">
-            <div class="flex flex-col py-0.5">
-              <Presence when={current().poll}>
-                {(poll) => (
-                  <PollRow broadcasterId={props.broadcasterId} poll={poll()} />
-                )}
-              </Presence>
-              <Presence when={current().prediction}>
-                {(prediction) => (
-                  <PredictionRow
-                    broadcasterId={props.broadcasterId}
-                    prediction={prediction()}
-                  />
-                )}
-              </Presence>
-              <Presence when={raiding()}>
-                {(r) => {
-                  const link = createChannelLink(
-                    () => knownUser(r().target.id),
-                    () => props.onOpenChannel(r().target.id),
+        <div class="enter-expand">
+          <div class="flex flex-col py-0.5">
+            <Presence when={current().poll}>
+              {(poll) => (
+                <PollRow broadcasterId={props.broadcasterId} poll={poll()} />
+              )}
+            </Presence>
+            <Presence when={current().prediction}>
+              {(prediction) => (
+                <PredictionRow
+                  broadcasterId={props.broadcasterId}
+                  prediction={prediction()}
+                />
+              )}
+            </Presence>
+            <Presence when={raiding()}>
+              {(r) => {
+                const link = createChannelLink(
+                  () => knownUser(r().target.id),
+                  () => props.onOpenChannel(r().target.id),
+                );
+                const seconds = () =>
+                  Math.max(
+                    0,
+                    Math.ceil(
+                      (RAID_DURATION_MS - (clock.now() - r().startedAt)) / 1000,
+                    ),
                   );
-                  const seconds = () =>
-                    Math.max(
-                      0,
-                      Math.ceil(
-                        (RAID_DURATION_MS - (clock.now() - r().startedAt)) /
-                          1000,
+                return (
+                  <ActivityRow
+                    icon={<Swords />}
+                    title={tRich("CHAT_RAID_STATUS", {
+                      name: r().target.displayName,
+                      seconds: seconds(),
+                      target: (chunks) => (
+                        <b
+                          class={`font-semibold hover:underline ${link.cursor}`}
+                          {...link.handlers}
+                        >
+                          {chunks}
+                        </b>
                       ),
-                    );
-                  return (
-                    <ActivityRow
-                      icon={<Swords />}
-                      title={tRich("CHAT_RAID_STATUS", {
-                        name: r().target.displayName,
-                        seconds: seconds(),
-                        target: (chunks) => (
-                          <b
-                            class={`font-semibold hover:underline ${link.cursor}`}
-                            {...link.handlers}
-                          >
-                            {chunks}
-                          </b>
-                        ),
-                        time: (chunks) => (
-                          <span class="font-semibold tabular-nums">
-                            {chunks}
-                          </span>
-                        ),
-                      })}
+                      time: (chunks) => (
+                        <span class="font-semibold tabular-nums">{chunks}</span>
+                      ),
+                    })}
+                  >
+                    <Button
+                      variant="neutral"
+                      size="sm"
+                      onClick={() => raid.cancel().catch(() => {})}
                     >
-                      <Button
-                        variant="neutral"
-                        size="sm"
-                        onClick={() => raid.cancel().catch(() => {})}
-                      >
-                        {t("CHAT_RAID_CANCEL")}
-                      </Button>
-                      {link.menu()}
-                    </ActivityRow>
-                  );
-                }}
-              </Presence>
-            </div>
-          </Card>
+                      {t("CHAT_RAID_CANCEL")}
+                    </Button>
+                    {link.menu()}
+                  </ActivityRow>
+                );
+              }}
+            </Presence>
+          </div>
         </div>
       )}
     </Presence>

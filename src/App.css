@@ -248,8 +248,7 @@
   }
   &::-webkit-scrollbar-track {
     background: transparent;
-    margin-top: calc(var(--header-height, 0px) + var(--spacing) * 2);
-    margin-bottom: calc(var(--composer-height, 0px) + var(--spacing) * 2);
+    margin-block: calc(var(--spacing) * 2);
   }
   &::-webkit-scrollbar-thumb {
     background-color: var(--color-line);
@@ -286,15 +285,6 @@
 @utility material-thin {
   background-color: var(--color-overlay);
   box-shadow: var(--elevation-1);
-}
-
-@utility material-tint {
-  @apply material-thin;
-  background-color: color-mix(
-    in oklab,
-    var(--color-overlay),
-    var(--tint, var(--color-accent)) 14%
-  );
 }
 
 @utility material-regular {

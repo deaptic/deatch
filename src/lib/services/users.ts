@@ -133,10 +133,6 @@ export async function resolveId(
   return identity.id ?? (await resolve(identity))?.id ?? null;
 }
 
-export function knownChatColor(userId: string): string | null | undefined {
-  return chatColors.get(userId);
-}
-
 export async function chatColor(userId: string): Promise<string | null> {
   const known = chatColors.get(userId);
   if (known !== undefined) return known;
