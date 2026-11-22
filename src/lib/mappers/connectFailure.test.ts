@@ -4,7 +4,7 @@ import { connectFailure } from "./connectFailure.ts";
 test("a rejection shows Twitch's own reason", () => {
   expect(
     connectFailure({ type: "rejected", message: "subscription limit" }),
-  ).toBe("Failed to connect to chat: subscription limit");
+  ).toBe("Couldn't connect to chat: subscription limit");
 });
 
 test("an app error shows its translated message, not its detail", () => {
@@ -13,13 +13,13 @@ test("an app error shows its translated message, not its detail", () => {
       type: "failed",
       error: { kind: "http", message: "tcp reset by peer" },
     }),
-  ).toBe("Failed to connect to chat: Network request failed");
+  ).toBe("Couldn't connect to chat: Network error. Check your connection.");
 });
 
 test("full connections name Twitch's limits", () => {
   expect(
     connectFailure({ type: "capped", connections: 3, perConnection: 300 }),
   ).toBe(
-    "Failed to connect to chat: Twitch allows 3 connections of 300 subscriptions",
+    "Couldn't connect to chat: Twitch allows 3 connections with 300 subscriptions each",
   );
 });

@@ -53,7 +53,7 @@ test("counts the viewers sent on a raid", () => {
     raid: { ...user, viewer_count: 1200 },
   };
   expect(said(p)).toStrictEqual({
-    text: "Mod initiated a raid on Viewer1 with 1,200 viewers",
+    text: "Mod started a raid to Viewer1 with 1,200 viewers",
   });
 });
 

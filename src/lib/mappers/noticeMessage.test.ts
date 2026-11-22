@@ -47,13 +47,13 @@ test("credits an anonymous gifter", () => {
         cumulative_total: null,
       },
     }),
-  ).toBe("An anonymous gifter is gifting 5 Tier 1 Subs to the community!");
+  ).toBe("An anonymous gifter is gifting 5 Tier 1 subs to the community!");
   expect(
     notice({
       notice_type: "gift_paid_upgrade",
       gift_paid_upgrade: { gifter_is_anonymous: true, gifter_user_name: null },
     }),
-  ).toBe("Viewer is continuing the Gift Sub they got from an anonymous user!");
+  ).toBe("Viewer is continuing the gift sub they got from an anonymous user!");
 });
 
 test("reads the shared chat variant", () => {

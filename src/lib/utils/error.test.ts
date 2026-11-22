@@ -10,7 +10,7 @@ test("translates other backend error kinds", () => {
     "Not signed in to Twitch",
   );
   expect(errorMessage({ kind: "http", message: "timed out" })).toBe(
-    "Network request failed",
+    "Network error. Check your connection.",
   );
 });
 

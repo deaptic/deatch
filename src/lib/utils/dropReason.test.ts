@@ -3,7 +3,7 @@ import { dropMessage } from "./dropReason.ts";
 
 test("explains a known drop code", () => {
   expect(dropMessage({ code: "duplicate" })).toBe(
-    "Your message is identical to the one you just sent",
+    "You just sent this same message",
   );
 });
 
