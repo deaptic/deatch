@@ -1,11 +1,10 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { banUser } from "../../../lib/api/twitch/moderation.ts";
-import { createClip } from "../../../lib/api/twitch/clips.ts";
+import * as clips from "../../../lib/services/clips.ts";
 import { getStreamsFromIds } from "../../../lib/api/twitch/streams.ts";
 import { getFollowedAt } from "../../../lib/api/twitch/channels.ts";
 import { user } from "../../../lib/stores/users.ts";
-import { appendItem, appendLocalNotice } from "../../../lib/stores/feeds.ts";
-import { feedEvent } from "../../../lib/utils/feedEvent.ts";
+import { appendLocalNotice } from "../../../lib/stores/feeds.ts";
 import { formatClock } from "../../../lib/format/stream.ts";
 import { Time } from "../../../lib/utils/time.ts";
 import type { Command } from "../types.ts";
@@ -63,27 +62,11 @@ export const deatchCommands: Command[] = [
         hint: "COMMAND_CLIP_DURATION_HINT",
       },
     ],
-    execute: async ({ title, duration }, ctx) => {
-      try {
-        const clip = await createClip(
-          {
-            broadcasterId: ctx.broadcasterId,
-            title: (title as string | null) ?? undefined,
-            duration: (duration as number | null) ?? undefined,
-          },
-          { silent: true },
-        );
-        appendItem(
-          ctx.broadcasterId,
-          feedEvent("clip_created", t("COMMAND_CLIP_CREATED"), Date.now(), {
-            id: clip.id,
-            clip: { id: clip.id },
-          }),
-        );
-      } catch {
-        appendLocalNotice(ctx.broadcasterId, t("COMMAND_CLIP_FAILED"));
-      }
-    },
+    execute: ({ title, duration }, ctx) =>
+      clips.create(ctx.broadcasterId, {
+        title: (title as string | null) ?? undefined,
+        duration: (duration as number | null) ?? undefined,
+      }),
   },
   {
     name: "uptime",

@@ -935,5 +935,6 @@
   "PALETTE_TURN_ON": "Turn on {mode}",
   "PALETTE_TURN_OFF": "Turn off {mode}",
   "PALETTE_MODE_PRESET": "{mode}: {preset}",
-  "PALETTE_RUN_AD": "Run an ad: {length}"
+  "PALETTE_RUN_AD": "Run an ad: {length}",
+  "CHAT_ACTIONS_CLIP": "Create a clip"
 }

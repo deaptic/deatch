@@ -1,8 +1,13 @@
-import { Plus, X } from "lucide-solid";
+import { Clapperboard, Plus, X } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { t } from "../../lib/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
+import { streamForUserId } from "../../lib/stores/channels.ts";
+import * as clips from "../../lib/services/clips.ts";
+import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
+import MenuDivider from "../ui/MenuDivider.tsx";
+import MenuItem from "../ui/MenuItem.tsx";
 import * as chatSettings from "../../lib/services/chatSettings.ts";
 import { canModerate } from "../../lib/stores/users.ts";
 import {
@@ -31,6 +36,7 @@ export default function ComposerActions(props: Props) {
   const active = () => activeModes(settings());
   const isMod = () => canModerate(props.broadcasterId);
   const open = () => isOverlayOpen("composerActions");
+  const live = () => streamForUserId(props.broadcasterId) !== undefined;
 
   return (
     <>
@@ -69,6 +75,24 @@ export default function ComposerActions(props: Props) {
                   isMod={isMod()}
                   broadcasterId={props.broadcasterId}
                 />
+                <MenuDivider />
+                <SubMenu
+                  label={t("CHAT_ACTIONS_CLIP")}
+                  icon={<Clapperboard />}
+                  hint={live() ? undefined : t("CHANNEL_TOOLS_LIVE_ONLY_HINT")}
+                  disabled={!live()}
+                >
+                  <For each={CLIP_LENGTHS}>
+                    {(duration) => (
+                      <MenuItem
+                        label={t("CHAT_MODE_SECONDS", { count: duration })}
+                        onClick={() =>
+                          void clips.create(props.broadcasterId, { duration })
+                        }
+                      />
+                    )}
+                  </For>
+                </SubMenu>
                 <Show when={isMod()}>
                   <ChannelToolItems broadcasterId={props.broadcasterId} />
                 </Show>

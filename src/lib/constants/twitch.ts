@@ -15,3 +15,4 @@ export function isAnnouncementColor(value: string): value is AnnouncementColor {
 export const MAX_MESSAGE_LENGTH = 500;
 
 export const AD_LENGTHS = [30, 60, 90, 120, 150, 180] as const;
+export const CLIP_LENGTHS = [15, 30, 60] as const;
