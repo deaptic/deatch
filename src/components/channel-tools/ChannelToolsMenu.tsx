@@ -3,6 +3,7 @@ import {
   ChartColumn,
   Eraser,
   ListChecks,
+  ListX,
   Shield,
   Swords,
   Trophy,
@@ -25,6 +26,7 @@ import MenuItem from "../ui/MenuItem.tsx";
 import SubMenu from "../ui/SubMenu.tsx";
 import InfoForm from "./InfoForm.tsx";
 import RaidForm from "./RaidForm.tsx";
+import BlockedTermsForm from "./BlockedTermsForm.tsx";
 import UnbanRequestsForm from "./UnbanRequestsForm.tsx";
 import VoteForm from "./VoteForm.tsx";
 
@@ -93,6 +95,11 @@ export function ChannelToolItems(props: ItemsProps) {
         )}
       </Show>
       <MenuItem
+        label={t("HEADER_BLOCKED_TERMS_LABEL")}
+        icon={<ListX />}
+        onClick={() => setChannelForm("blockedTerms")}
+      />
+      <MenuItem
         label={t(
           shield() ? "HEADER_SHIELD_OFF_LABEL" : "HEADER_SHIELD_ON_LABEL",
         )}
@@ -126,6 +133,12 @@ export function ChannelToolForm(props: FormProps) {
     <Switch>
       <Match when={props.form === "info"}>
         <InfoForm broadcasterId={props.broadcasterId} onDone={props.onDone} />
+      </Match>
+      <Match when={props.form === "blockedTerms"}>
+        <BlockedTermsForm
+          broadcasterId={props.broadcasterId}
+          onDone={props.onDone}
+        />
       </Match>
       <Match when={props.form === "unbans"}>
         <UnbanRequestsForm

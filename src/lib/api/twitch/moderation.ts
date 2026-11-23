@@ -1,11 +1,14 @@
 import { commands } from "../../bindings.ts";
 import type {
+  AddBlockedTermParams,
   BannedUser,
   BanUserParams,
+  BlockedTerm,
   BroadcasterParams,
   BroadcasterUserParams,
   DeleteChatMessagesParams,
   ManageHeldAutomodMessageParams,
+  RemoveBlockedTermParams,
   ResolveUnbanRequestParams,
   SetSuspiciousStatusParams,
   UnbanRequest,
@@ -135,6 +138,33 @@ export async function setSuspiciousStatus(
 ): Promise<void> {
   await invokeCommand(commands.setSuspiciousStatus, [params], {
     successMessage: t("SUSPICIOUS_UPDATED_TOAST", { status: params.status }),
+    ...options,
+  });
+}
+
+export function getBlockedTerms(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<BlockedTerm[]> {
+  return invokeCommand(commands.getBlockedTerms, [params], options);
+}
+
+export function addBlockedTerm(
+  params: AddBlockedTermParams,
+  options?: InvokeOptions,
+): Promise<BlockedTerm | null> {
+  return invokeCommand(commands.addBlockedTerm, [params], {
+    successMessage: t("BLOCKED_TERMS_ADDED_TOAST"),
+    ...options,
+  });
+}
+
+export async function removeBlockedTerm(
+  params: RemoveBlockedTermParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.removeBlockedTerm, [params], {
+    successMessage: t("BLOCKED_TERMS_REMOVED_TOAST"),
     ...options,
   });
 }

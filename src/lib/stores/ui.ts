@@ -18,7 +18,13 @@ export const toggleOverlay = (o: Overlay): void => {
   setOpenOverlay(openOverlay() === o ? null : o);
 };
 
-export type ChannelForm = "poll" | "prediction" | "raid" | "info" | "unbans";
+export type ChannelForm =
+  | "poll"
+  | "prediction"
+  | "raid"
+  | "info"
+  | "unbans"
+  | "blockedTerms";
 
 export const [channelForm, setChannelForm] = createSignal<ChannelForm | null>(
   null,

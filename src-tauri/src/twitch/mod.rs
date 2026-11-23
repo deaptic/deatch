@@ -19,6 +19,7 @@ pub mod raids;
 pub mod search;
 pub mod session;
 pub mod streams;
+pub mod subscriptions;
 pub mod template;
 mod transport;
 pub mod users;

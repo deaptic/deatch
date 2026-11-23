@@ -7,15 +7,17 @@ use crate::error::Result;
 use crate::twitch::ids::{MessageId, UnbanRequestId, UserId};
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
-use dto::{BannedUser, UnbanRequest};
+use dto::{BannedUser, BlockedTerm, UnbanRequest};
 use serde::Deserialize;
 use twitch_api::helix::moderation::{
+    add_blocked_term::{AddBlockedTermBody, AddBlockedTermRequest},
+    get_blocked_terms::GetBlockedTermsRequest,
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
     update_shield_mode_status::{UpdateShieldModeStatusBody, UpdateShieldModeStatusRequest},
     AddedSuspiciousUserStatus, GetBannedUsersRequest, GetShieldModeStatusRequest,
-    GetUnbanRequestsRequest, ResolveUnbanRequest, UnbanRequestStatus,
+    GetUnbanRequestsRequest, RemoveBlockedTermRequest, ResolveUnbanRequest, UnbanRequestStatus,
 };
 use twitch_api::types;
 
@@ -218,6 +220,65 @@ pub async fn set_suspicious_status(
                 .await?;
         }
     }
+    Ok(())
+}
+
+const BLOCKED_TERMS_PAGE: u32 = 100;
+
+pub async fn get_blocked_terms(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<Vec<BlockedTerm>> {
+    let mut terms = Vec::new();
+    let mut cursor: Option<twitch_api::helix::Cursor> = None;
+    loop {
+        let mut request =
+            GetBlockedTermsRequest::new(params.broadcaster_id.as_str(), &twitch.token.user_id)
+                .first(BLOCKED_TERMS_PAGE);
+        request.after = cursor.take().map(Into::into);
+        let response = twitch.helix.req_get(request, &twitch.token).await?;
+        terms.extend(response.data.into_iter().map(BlockedTerm::from));
+        match response.pagination_data.cursor {
+            Some(next) => cursor = Some(next),
+            None => return Ok(terms),
+        }
+    }
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AddBlockedTermParams {
+    pub broadcaster_id: UserId,
+    pub text: String,
+}
+
+pub async fn add_blocked_term(
+    twitch: &Authed<'_>,
+    params: AddBlockedTermParams,
+) -> Result<Option<BlockedTerm>> {
+    let request = AddBlockedTermRequest::new(params.broadcaster_id.as_str(), &twitch.token.user_id);
+    let body = AddBlockedTermBody::new(params.text.trim().to_string());
+    let response = twitch.helix.req_post(request, body, &twitch.token).await?;
+    Ok(response.data.into_iter().next().map(BlockedTerm::from))
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveBlockedTermParams {
+    pub broadcaster_id: UserId,
+    pub term_id: String,
+}
+
+pub async fn remove_blocked_term(
+    twitch: &Authed<'_>,
+    params: RemoveBlockedTermParams,
+) -> Result<()> {
+    let request = RemoveBlockedTermRequest::new(
+        params.broadcaster_id.as_str(),
+        &twitch.token.user_id,
+        params.term_id.as_str(),
+    );
+    twitch.helix.req_delete(request, &twitch.token).await?;
     Ok(())
 }
 

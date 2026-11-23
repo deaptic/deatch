@@ -1,7 +1,8 @@
 import type { FeedMessage, FollowStatus, User } from "../../lib/types/index.ts";
 import { createEffect, createMemo, createResource, on, Show } from "solid-js";
 import * as users from "../../lib/services/users.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { knownUser, user as currentUser } from "../../lib/stores/users.ts";
+import { getSubscription } from "../../lib/api/twitch/subscriptions.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { Pin } from "lucide-solid";
 import { feeds } from "../../lib/stores/feeds.ts";
@@ -46,6 +47,15 @@ export default function UserCardHeader(props: Props) {
   );
   const follow = (): FollowStatus =>
     (!followed.loading && followed()) || { kind: "unknown" };
+
+  const [subscription] = createResource(
+    () =>
+      props.broadcasterId === currentUser()?.id && {
+        broadcasterId: props.broadcasterId,
+        userId: props.chatterId,
+      },
+    (params) => getSubscription(params, { silent: true }).catch(() => null),
+  );
 
   const [chatColor] = createResource(() => props.chatterId, users.chatColor);
   const color = createMemo(
@@ -128,6 +138,7 @@ export default function UserCardHeader(props: Props) {
           chatterId={props.chatterId}
           user={user()}
           color={color()}
+          subscription={subscription() ?? null}
         />
         <UserCardLive
           stream={stream()}

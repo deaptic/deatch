@@ -60,6 +60,12 @@ export const commands = {
 	getUnbanRequests: (params: BroadcasterParams) => __TAURI_INVOKE<UnbanRequest[]>("get_unban_requests", { params }),
 	resolveUnbanRequest: (params: ResolveUnbanRequestParams) => __TAURI_INVOKE<null>("resolve_unban_request", { params }),
 	setSuspiciousStatus: (params: SetSuspiciousStatusParams) => __TAURI_INVOKE<null>("set_suspicious_status", { params }),
+	getBlockedTerms: (params: BroadcasterParams) => __TAURI_INVOKE<BlockedTerm[]>("get_blocked_terms", { params }),
+	addBlockedTerm: (params: AddBlockedTermParams) => __TAURI_INVOKE<{
+	id: string,
+	text: string,
+} | null>("add_blocked_term", { params }),
+	removeBlockedTerm: (params: RemoveBlockedTermParams) => __TAURI_INVOKE<null>("remove_blocked_term", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
@@ -80,6 +86,10 @@ export const commands = {
 	getChannelModerators: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_moderators", { params }),
 	getChannelVips: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_vips", { params }),
 	getGoals: (params: BroadcasterParams) => __TAURI_INVOKE<Goal[]>("get_goals", { params }),
+	getSubscription: (params: BroadcasterUserParams) => __TAURI_INVOKE<{
+	tier: number,
+	gifterName: string | null,
+} | null>("get_subscription", { params }),
 	getActivePoll: (params: BroadcasterParams) => __TAURI_INVOKE<{
 	id: PollId,
 	title: string,
@@ -151,6 +161,11 @@ export type AdSchedule = {
 	snoozeRefreshMs: number | null,
 };
 
+export type AddBlockedTermParams = {
+	broadcasterId: UserId,
+	text: string,
+};
+
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
 
 export type AnnouncementNotice = {
@@ -210,6 +225,11 @@ export type BannedUser = {
 
 export type BitsBadgeTierNotice = {
 	tier: number,
+};
+
+export type BlockedTerm = {
+	id: string,
+	text: string,
 };
 
 export type BroadcasterLoginParams = {
@@ -697,6 +717,11 @@ export type RecentNotice = {
 	watch_streak: WatchStreakNotice | null,
 };
 
+export type RemoveBlockedTermParams = {
+	broadcasterId: UserId,
+	termId: string,
+};
+
 export type Rename = {
 	from: string,
 	to: string,
@@ -844,6 +869,11 @@ export type SubNotice = {
 };
 
 export type SubTier = "1000" | "2000" | "3000";
+
+export type Subscription = {
+	tier: number,
+	gifterName: string | null,
+};
 
 export type SuspiciousStatus = "none" | "active_monitoring" | "restricted";
 

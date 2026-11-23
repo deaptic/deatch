@@ -1,8 +1,9 @@
-use super::dto::{BannedUser, UnbanRequest};
+use super::dto::{BannedUser, BlockedTerm, UnbanRequest};
 use crate::error::Result;
 use crate::twitch::moderation::{
-    self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams,
-    ResolveUnbanRequestParams, SetSuspiciousStatusParams, UpdateShieldModeParams, WarnUserParams,
+    self, AddBlockedTermParams, BanUserParams, DeleteChatMessagesParams,
+    ManageHeldAutomodMessageParams, RemoveBlockedTermParams, ResolveUnbanRequestParams,
+    SetSuspiciousStatusParams, UpdateShieldModeParams, WarnUserParams,
 };
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
@@ -64,6 +65,33 @@ pub async fn set_suspicious_status(
     params: SetSuspiciousStatusParams,
 ) -> Result<()> {
     moderation::set_suspicious_status(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_blocked_terms(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<Vec<BlockedTerm>> {
+    moderation::get_blocked_terms(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn add_blocked_term(
+    twitch: State<'_, Twitch>,
+    params: AddBlockedTermParams,
+) -> Result<Option<BlockedTerm>> {
+    moderation::add_blocked_term(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn remove_blocked_term(
+    twitch: State<'_, Twitch>,
+    params: RemoveBlockedTermParams,
+) -> Result<()> {
+    moderation::remove_blocked_term(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]

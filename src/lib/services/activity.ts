@@ -20,13 +20,7 @@ import {
   resolveUnbanRequest,
   updateShieldMode,
 } from "../api/twitch/moderation.ts";
-import {
-  activityFor,
-  clearActivity,
-  updateActivity,
-} from "../stores/activity.ts";
-import { sampleActivity } from "../utils/sampleActivity.ts";
-import * as clock from "./clock.ts";
+import { activityFor, updateActivity } from "../stores/activity.ts";
 import { withoutUnbanRequest } from "../mappers/activity.ts";
 
 export function load(broadcasterId: string, isBroadcaster: boolean): void {
@@ -96,15 +90,6 @@ export async function resolveUnban(
       requestId,
     ),
   });
-}
-
-export function showSample(broadcasterId: string): void {
-  updateActivity(broadcasterId, sampleActivity(clock.now()));
-}
-
-export function reset(broadcasterId: string, isBroadcaster: boolean): void {
-  clearActivity(broadcasterId);
-  load(broadcasterId, isBroadcaster);
 }
 
 export function refreshAds(broadcasterId: string): void {

@@ -1,11 +1,13 @@
 import { Show } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { Subscription, User } from "../../lib/types/index.ts";
+import { t } from "../../lib/i18n/index.ts";
 import DisplayName from "../ui/DisplayName.tsx";
 
 type Props = {
   chatterId: string;
   user: User | null;
   color: string | undefined;
+  subscription: Subscription | null;
 };
 
 const distinctLogin = (user: User | null) =>
@@ -34,6 +36,17 @@ export default function UserCardIdentity(props: Props) {
       <Show when={distinctLogin(props.user)}>
         {(login) => (
           <span class="truncate text-small text-ink-faint">@{login()}</span>
+        )}
+      </Show>
+      <Show when={props.subscription}>
+        {(sub) => (
+          <span class="truncate text-small text-ink-soft">
+            {t("USER_CARD_SUBSCRIBER_STATUS", {
+              tier: sub().tier,
+              gifter: sub().gifterName ?? "",
+              gifted: String(sub().gifterName !== null),
+            })}
+          </span>
         )}
       </Show>
     </div>
