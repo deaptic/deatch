@@ -1,16 +1,16 @@
-import { t } from "../../../shared/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { For } from "solid-js";
-import Card from "../../../kit/Card.tsx";
-import CardLabel from "../../../kit/CardLabel.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
-import Toggle from "../../../kit/Toggle.tsx";
-import { BADGE_CATEGORIES } from "../../../lib/constants/badges.ts";
+import Card from "../../kit/Card.tsx";
+import CardLabel from "../../kit/CardLabel.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
+import Toggle from "../../kit/Toggle.tsx";
+import { BADGE_CATEGORIES } from "../../lib/constants/badges.ts";
 import {
   feedBadges,
   feedShowBadges,
   setFeedBadge,
   setFeedShowBadges,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
 
 export default function BadgesCard() {
   return (

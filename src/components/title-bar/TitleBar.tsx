@@ -30,7 +30,7 @@ import TitleBarButton from "../../kit/TitleBarButton.tsx";
 import ToolbarDivider from "../../kit/ToolbarDivider.tsx";
 import { OVERLAY_GAP } from "../../kit/Popover.tsx";
 import { Inbox } from "../../features/inbox/index.ts";
-import AppearancePanel from "./AppearancePanel.tsx";
+import { AppearancePanel } from "../../features/appearance/index.ts";
 import { Diagnostics } from "../../features/diagnostics/index.ts";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../shared/i18n/index.ts";

@@ -1,14 +1,11 @@
-import { t } from "../../../shared/i18n/index.ts";
-import Card from "../../../kit/Card.tsx";
-import CardLabel from "../../../kit/CardLabel.tsx";
-import Segmented from "../../../kit/Segmented.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
-import StepSlider from "../../../kit/StepSlider.tsx";
-import Toggle from "../../../kit/Toggle.tsx";
-import {
-  GROUP_SPACING_STEPS,
-  ZOOM_STEPS,
-} from "../../../shared/accessibility.ts";
+import { t } from "../../shared/i18n/index.ts";
+import Card from "../../kit/Card.tsx";
+import CardLabel from "../../kit/CardLabel.tsx";
+import Segmented from "../../kit/Segmented.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
+import StepSlider from "../../kit/StepSlider.tsx";
+import Toggle from "../../kit/Toggle.tsx";
+import { GROUP_SPACING_STEPS, ZOOM_STEPS } from "../../shared/accessibility.ts";
 import { messageLayoutOptions, uiDensityOptions } from "./options.ts";
 import {
   appearanceUiDensity,
@@ -22,9 +19,9 @@ import {
   setFeedDensity,
   setFeedGroupMessages,
   setFeedGroupSpacing,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
 
-import { formatPx, formatWholePercent } from "../../../shared/format/units.ts";
+import { formatPx, formatWholePercent } from "../../shared/format/units.ts";
 export default function DensityCard() {
   return (
     <Card>

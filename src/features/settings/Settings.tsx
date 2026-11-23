@@ -31,14 +31,14 @@ import {
   type SettingsSection,
   settingsSection,
 } from "../../lib/stores/view.ts";
-import NotificationsSection from "./sections/NotificationsSection.tsx";
-import ModerationSection from "./sections/ModerationSection.tsx";
-import AppearanceSection from "./sections/AppearanceSection.tsx";
-import KeyboardSection from "./sections/KeyboardSection.tsx";
-import AdvancedSection from "./sections/AdvancedSection.tsx";
-import { TriggerSettings } from "../../features/triggers/index.ts";
-import { LinkSettings } from "../../features/link/index.ts";
-import BlockedUsersSection from "./sections/BlockedUsersSection.tsx";
+import NotificationsSettings from "./sections/NotificationsSettings.tsx";
+import ModerationSettings from "./sections/ModerationSettings.tsx";
+import { AppearanceSettings } from "../appearance/index.ts";
+import KeyboardSettings from "./sections/KeyboardSettings.tsx";
+import AdvancedSettings from "./sections/AdvancedSettings.tsx";
+import { TriggerSettings } from "../triggers/index.ts";
+import { LinkSettings } from "../link/index.ts";
+import BlockedUsersSettings from "./sections/BlockedUsersSettings.tsx";
 
 const SECTIONS: {
   key: SettingsSection;
@@ -50,13 +50,13 @@ const SECTIONS: {
     key: "notifications",
     label: "SETTINGS_NOTIFICATIONS_TITLE",
     Icon: Megaphone,
-    Section: NotificationsSection,
+    Section: NotificationsSettings,
   },
   {
     key: "appearance",
     label: "SETTINGS_APPEARANCE_TITLE",
     Icon: Palette,
-    Section: AppearanceSection,
+    Section: AppearanceSettings,
   },
   {
     key: "link",
@@ -68,13 +68,13 @@ const SECTIONS: {
     key: "moderation",
     label: "SETTINGS_MODERATION_TITLE",
     Icon: Ban,
-    Section: ModerationSection,
+    Section: ModerationSettings,
   },
   {
     key: "blocked",
     label: "SETTINGS_BLOCKED_TITLE",
     Icon: UserX,
-    Section: BlockedUsersSection,
+    Section: BlockedUsersSettings,
   },
   {
     key: "triggers",
@@ -86,13 +86,13 @@ const SECTIONS: {
     key: "keyboard",
     label: "SETTINGS_KEYBOARD_TITLE",
     Icon: Keyboard,
-    Section: KeyboardSection,
+    Section: KeyboardSettings,
   },
   {
     key: "advanced",
     label: "SETTINGS_ADVANCED_TITLE",
     Icon: SettingsIcon,
-    Section: AdvancedSection,
+    Section: AdvancedSettings,
   },
 ];
 

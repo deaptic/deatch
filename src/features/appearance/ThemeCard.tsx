@@ -1,10 +1,10 @@
-import { LANGUAGE_NAMES, LANGUAGES, t } from "../../../shared/i18n/index.ts";
-import Card from "../../../kit/Card.tsx";
-import CardLabel from "../../../kit/CardLabel.tsx";
-import ColorPicker from "../../../kit/ColorPicker.tsx";
-import Segmented from "../../../kit/Segmented.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
-import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
+import { LANGUAGE_NAMES, LANGUAGES, t } from "../../shared/i18n/index.ts";
+import Card from "../../kit/Card.tsx";
+import CardLabel from "../../kit/CardLabel.tsx";
+import ColorPicker from "../../kit/ColorPicker.tsx";
+import Segmented from "../../kit/Segmented.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
+import { DEFAULT_ACCENT_HEX } from "../../lib/constants/theme.ts";
 import { themeOptions } from "./options.ts";
 import {
   appearanceAccent,
@@ -13,7 +13,7 @@ import {
   setAppearanceAccent,
   setAppearanceLanguage,
   setAppearanceTheme,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
 
 export default function ThemeCard() {
   return (

@@ -43,7 +43,7 @@ function rowsFor(prefixes: string[]): Row[] {
   );
 }
 
-export default function KeyboardSection() {
+export default function KeyboardSettings() {
   const query = useContext(SettingsQuery);
 
   return (

@@ -55,7 +55,7 @@ import {
   messageLayoutOptions,
   themeOptions,
   uiDensityOptions,
-} from "../settings/appearance/options.ts";
+} from "./options.ts";
 import { type Component, For, type JSX } from "solid-js";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";

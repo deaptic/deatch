@@ -1,16 +1,16 @@
-import { t } from "../../../shared/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { For } from "solid-js";
-import Card from "../../../kit/Card.tsx";
-import CardLabel from "../../../kit/CardLabel.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
-import Toggle from "../../../kit/Toggle.tsx";
-import { EVENTS } from "../../../lib/constants/events.ts";
+import Card from "../../kit/Card.tsx";
+import CardLabel from "../../kit/CardLabel.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
+import Toggle from "../../kit/Toggle.tsx";
+import { EVENTS } from "../../lib/constants/events.ts";
 import {
   feedEvents,
   feedShowEvents,
   setFeedEvent,
   setFeedShowEvents,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
 
 export default function ShownInChatCard() {
   return (

@@ -10,7 +10,7 @@ import {
   setModerationAutoShoutoutOnRaid,
 } from "../../../lib/stores/preferences.ts";
 
-export default function ModerationSection() {
+export default function ModerationSettings() {
   return (
     <PageBody title={t("SETTINGS_MODERATION_TITLE")}>
       <Card>

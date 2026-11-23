@@ -21,7 +21,11 @@ import { removeToast, toasts } from "../../kit/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
 import { t } from "../../shared/i18n/index.ts";
 
-const Settings = lazy(() => import("../settings/Settings.tsx"));
+const Settings = lazy(() =>
+  import("../../features/settings/index.ts").then((m) => ({
+    default: m.Settings,
+  })),
+);
 const QuickSwitch = lazy(() => import("../quick-switch/QuickSwitch.tsx"));
 
 type AppLayoutProps = {

@@ -1,17 +1,17 @@
-import { t } from "../../../shared/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { createMemo, createResource, For } from "solid-js";
-import type { FeedEntry, FeedMessage } from "../../../lib/types/index.ts";
-import * as badges from "../../../lib/services/badges.ts";
+import type { FeedEntry, FeedMessage } from "../../lib/types/index.ts";
+import * as badges from "../../lib/services/badges.ts";
 import {
   feedDensity,
   feedShowDeletedContent,
   feedShowTimestamp,
-} from "../../../lib/stores/preferences.ts";
-import * as users from "../../../lib/services/users.ts";
-import { user } from "../../../lib/stores/users.ts";
-import { feedEvent } from "../../../lib/utils/feedEvent.ts";
-import { layoutFeed } from "../../../lib/utils/feedLayout.ts";
-import FeedRow from "../../feed/FeedRow.tsx";
+} from "../../lib/stores/preferences.ts";
+import * as users from "../../lib/services/users.ts";
+import { user } from "../../lib/stores/users.ts";
+import { feedEvent } from "../../lib/utils/feedEvent.ts";
+import { layoutFeed } from "../../lib/utils/feedLayout.ts";
+import FeedRow from "../../components/feed/FeedRow.tsx";
 
 type Me = { id: string; login: string; name: string; color: string };
 

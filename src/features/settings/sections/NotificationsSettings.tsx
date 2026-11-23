@@ -14,7 +14,7 @@ import {
   setNotificationsMentionSound,
 } from "../../../lib/stores/preferences.ts";
 
-export default function NotificationsSection() {
+export default function NotificationsSettings() {
   return (
     <PageBody title={t("SETTINGS_NOTIFICATIONS_TITLE")}>
       <Card>

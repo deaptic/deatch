@@ -1,8 +1,8 @@
-import { t } from "../../../shared/i18n/index.ts";
-import Card from "../../../kit/Card.tsx";
-import CardLabel from "../../../kit/CardLabel.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
-import Toggle from "../../../kit/Toggle.tsx";
+import { t } from "../../shared/i18n/index.ts";
+import Card from "../../kit/Card.tsx";
+import CardLabel from "../../kit/CardLabel.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
+import Toggle from "../../kit/Toggle.tsx";
 import {
   feedDensity,
   feedShowAvatars,
@@ -13,7 +13,7 @@ import {
   setFeedShowCopypasta,
   setFeedShowDeletedContent,
   setFeedShowTimestamp,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
 
 export default function MessagesCard() {
   return (

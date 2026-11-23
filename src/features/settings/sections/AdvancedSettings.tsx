@@ -23,7 +23,7 @@ import {
 } from "../../../lib/stores/preferences.ts";
 import Transition from "../../../kit/Transition.tsx";
 
-export default function AdvancedSection() {
+export default function AdvancedSettings() {
   const [pendingRestart, setPendingRestart] = createSignal<{
     enabled: boolean;
   } | null>(null);
