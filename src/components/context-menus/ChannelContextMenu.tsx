@@ -30,8 +30,7 @@ import {
 import * as link from "../../features/link/index.ts";
 import * as pins from "../../lib/services/pins.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
-import { channelMentionCount } from "../../lib/stores/inbox.ts";
-import * as inbox from "../../lib/services/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import { user } from "../../lib/stores/users.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import * as raid from "../../lib/services/raid.ts";
@@ -61,7 +60,7 @@ export default function ChannelContextMenu(props: Props) {
   const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
   const movePin = (by: number) => () => pins.move(pinIndex(), pinIndex() + by);
   const unread = () =>
-    hasUnread(props.ch.id) || channelMentionCount(props.ch.id) > 0;
+    hasUnread(props.ch.id) || inbox.unreadCountIn(props.ch.id) > 0;
   const self = () => user();
   const other = () => self() && props.ch.id !== self()?.id;
   const canShoutout = () => shoutoutSources(props.ch).length > 0;

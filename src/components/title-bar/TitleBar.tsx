@@ -18,7 +18,7 @@ import {
 } from "../../platform/window.ts";
 import { windowMaximized as maximized } from "../../lib/stores/window.ts";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
-import { unreadMentionCount } from "../../lib/stores/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import {
   advancedDeveloperMode,
   appearanceRailExpanded,
@@ -29,7 +29,7 @@ import Badge from "../../kit/Badge.tsx";
 import TitleBarButton from "../../kit/TitleBarButton.tsx";
 import ToolbarDivider from "../../kit/ToolbarDivider.tsx";
 import { OVERLAY_GAP } from "../../kit/Popover.tsx";
-import Inbox from "../inbox/Inbox.tsx";
+import { Inbox } from "../../features/inbox/index.ts";
 import AppearancePanel from "./AppearancePanel.tsx";
 import { Diagnostics } from "../../features/diagnostics/index.ts";
 import ResizeHandle from "./ResizeHandle.tsx";
@@ -131,9 +131,9 @@ export default function TitleBar(props: Props) {
             onClick={() => toggleOverlay("inbox")}
           >
             <InboxIcon class="size-4" />
-            <Show when={unreadMentionCount() > 0}>
+            <Show when={inbox.unreadCount() > 0}>
               <span class="absolute top-1 right-1.5">
-                <Badge count={unreadMentionCount()} />
+                <Badge count={inbox.unreadCount()} />
               </span>
             </Show>
           </TitleBarButton>

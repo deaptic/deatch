@@ -1,6 +1,6 @@
 import { For, Show } from "solid-js";
 import type { Mention } from "../../lib/types/index.ts";
-import InboxItem from "./InboxItem.tsx";
+import Item from "./Item.tsx";
 
 type Props = {
   label: string;
@@ -10,7 +10,7 @@ type Props = {
   onClear: (m: Mention) => void;
 };
 
-export default function InboxGroup(props: Props) {
+export default function Group(props: Props) {
   return (
     <Show when={props.mentions.length > 0}>
       <section class="flex flex-col gap-2">
@@ -19,7 +19,7 @@ export default function InboxGroup(props: Props) {
         </h3>
         <For each={props.mentions}>
           {(m) => (
-            <InboxItem
+            <Item
               mention={m}
               onJump={() => props.onJump(m)}
               onOpenChannel={() => props.onOpenChannel(m)}

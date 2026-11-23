@@ -2,7 +2,7 @@ import { listenEventSub, serverTime, unlistenAll } from "./listen.ts";
 import type { RawChatMessage } from "../types/index.ts";
 import { appendItem } from "../stores/feeds.ts";
 import { knownUser, recordChatter, user } from "../stores/users.ts";
-import * as inbox from "../services/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import { feedKeywords } from "../stores/preferences.ts";
 import { mentionReason } from "../utils/mention.ts";
 import { chatterOf, mapChatMessage } from "../mappers/chat.ts";

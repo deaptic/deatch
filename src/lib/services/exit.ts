@@ -2,7 +2,7 @@ import { relaunchApp } from "../../platform/app.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
 import { onWindowCloseRequested } from "../../platform/window.ts";
 import * as feedLog from "./feedLog.ts";
-import * as inbox from "./inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import * as users from "./users.ts";
 
 export function start(): () => void {

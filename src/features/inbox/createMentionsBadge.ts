@@ -1,8 +1,8 @@
 import { t } from "../../shared/i18n/index.ts";
 import { createEffect } from "solid-js";
 import { setMentionsBadge } from "../../platform/notifications.ts";
-import * as appearance from "../services/appearance.ts";
-import { unreadMentionCount } from "../stores/inbox.ts";
+import * as appearance from "../../lib/services/appearance.ts";
+import { unreadCount } from "./store.ts";
 
 type BadgeLook = { fill: string; text: string; font: string };
 
@@ -44,7 +44,7 @@ async function renderBadgeBytes(
 export function createMentionsBadge(): void {
   let last = "";
   createEffect(() => {
-    const count = unreadMentionCount();
+    const count = unreadCount();
     const look: BadgeLook = {
       fill: appearance.token("color-negative"),
       text: appearance.token("color-on-accent"),

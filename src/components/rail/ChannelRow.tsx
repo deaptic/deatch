@@ -9,7 +9,7 @@ import { TabMuteBadge } from "../../features/link/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
-import { channelMentionCount } from "../../lib/stores/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import { pendingChannel } from "../../lib/stores/view.ts";
 
 type Props = {
@@ -55,7 +55,7 @@ export default function ChannelRow(props: Props) {
       )}
       selected={pendingChannel()?.id === props.ch.id}
       unread={hasUnread(props.ch.id)}
-      mentions={channelMentionCount(props.ch.id)}
+      mentions={inbox.unreadCountIn(props.ch.id)}
       dimmed={props.dimmed}
       onClick={() => props.onSelect(props.ch)}
       onMiddleClick={() =>

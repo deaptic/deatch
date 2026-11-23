@@ -1,14 +1,20 @@
-import { STORAGE_KEYS } from "../constants/storage.ts";
-import { createEffect, createRoot } from "solid-js";
+import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
+import { createEffect, createRoot, createSignal } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
-import { mentions, setMentions } from "../stores/inbox.ts";
-import { markSeen } from "../stores/feeds.ts";
-import { fresh, msUntilNextExpiry } from "../utils/inboxRetention.ts";
-import { upgradeMention } from "../utils/inboxUpgrade.ts";
-import { notificationsMentionSound } from "../stores/preferences.ts";
-import { selectedChannel } from "../stores/view.ts";
-import type { Mention } from "../types/index.ts";
-import * as storage from "../utils/storage.ts";
+import { markSeen } from "../../lib/stores/feeds.ts";
+import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
+import { upgradeMention } from "./upgrade.ts";
+import { notificationsMentionSound } from "../../lib/stores/preferences.ts";
+import { selectedChannel } from "../../lib/stores/view.ts";
+import type { Mention } from "../../lib/types/index.ts";
+import * as storage from "../../lib/utils/storage.ts";
+
+const [mentions, setMentions] = createSignal<Mention[]>([]);
+export { mentions };
+
+export const unreadCount = () => countUnread(mentions());
+export const unreadCountIn = (broadcasterId: string) =>
+  countUnread(mentions(), broadcasterId);
 
 const MAX = 100;
 const SAVE_DELAY_MS = 1000;

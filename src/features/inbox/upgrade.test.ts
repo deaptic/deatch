@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { upgradeMention } from "./inboxUpgrade.ts";
+import { upgradeMention } from "./upgrade.ts";
 
 const legacy = {
   id: "m1",

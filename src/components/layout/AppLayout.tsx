@@ -16,7 +16,7 @@ import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 import { activeView } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
-import * as inbox from "../../lib/services/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import { removeToast, toasts } from "../../kit/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
 import { t } from "../../shared/i18n/index.ts";

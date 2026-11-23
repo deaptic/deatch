@@ -6,7 +6,7 @@ import {
   pinnedChannels,
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
-import { channelMentionCount } from "../../lib/stores/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import * as link from "../../features/link/index.ts";
 import {
   activeView,
@@ -299,7 +299,7 @@ export default function Rail(props: Props) {
               sub={t("RAIL_YOUR_CHANNEL_LABEL")}
               selected={pendingChannel()?.id === u().id}
               unread={hasUnread(u().id)}
-              mentions={channelMentionCount(u().id)}
+              mentions={inbox.unreadCountIn(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() => {
                 if (ownTab()) link.close(u().login);

@@ -3,7 +3,7 @@ import { createChannelNavigation } from "./createChannelNavigation.ts";
 import { createLinkControls } from "../../features/link/index.ts";
 import { createChannelSubscriptions } from "./createChannelSubscriptions.ts";
 import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
-import { createMentionsBadge } from "./createMentionsBadge.ts";
+import { createMentionsBadge } from "../../features/inbox/index.ts";
 import { createSystemIntegration } from "./createSystemIntegration.ts";
 import { createSessionLifecycle } from "./createSessionLifecycle.ts";
 import { createAppShortcuts } from "./createAppShortcuts.ts";

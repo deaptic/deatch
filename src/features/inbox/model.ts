@@ -11,3 +11,12 @@ export function msUntilNextExpiry(list: Dated[], now: number): number | null {
   const oldest = Math.min(...list.map((m) => m.timestamp));
   return Math.max(0, oldest + MAX_AGE_MS - now);
 }
+
+export function countUnread(
+  list: { unread: boolean; broadcasterId: string }[],
+  broadcasterId?: string,
+): number {
+  return list.filter(
+    (m) => m.unread && (!broadcasterId || m.broadcasterId === broadcasterId),
+  ).length;
+}

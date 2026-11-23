@@ -5,7 +5,7 @@ import * as users from "../services/users.ts";
 import * as session from "../services/session.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import * as updater from "../../features/updater/index.ts";
-import * as inbox from "../services/inbox.ts";
+import * as inbox from "../../features/inbox/index.ts";
 import * as clock from "../services/clock.ts";
 import * as theme from "../services/theme.ts";
 import * as emotes from "../services/emotes.ts";
