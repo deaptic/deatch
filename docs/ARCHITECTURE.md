@@ -1,96 +1,83 @@
 # Architecture
 
-The app is Tauri 2: a Rust backend in `src-tauri/src` owns every connection to
-the outside world, and a Solid.js frontend in `src` renders. Windows only.
-
-## Processes
-
-`main.rs` picks a mode from argv. By default it runs the GUI (`lib.rs::run`),
-which starts the EventSub runner, the 7TV socket, the Link pipe server, and in
-release builds registers itself as the browser's native-messaging host. When a
-browser launches the exe for the Link extension it runs as a host instead: no
-Tauri, it only relays frames between browser stdio and the GUI pipe.
-`--export-bindings` writes `src/lib/bindings.ts` and
-exits.
-
-## Backend and frontend
-
-The two sides meet only through tauri-specta. `lib.rs::bindings()` lists every
-command, event, and shared type, and `bindings.ts` is generated from it
-(`vp run bindings`, or automatically on every debug launch). A test fails
-when the committed file is stale.
-
-Commands go frontend to backend: one `#[tauri::command]` per operation, taking a
-single `params` struct and returning `crate::error::Result<T>`. The frontend
-calls them only from `src/lib/api/`. Events go the other way: typed ones live in
-each feature's `events.rs` and are emitted with `crate::emit::emit`; EventSub
-notifications pass through as raw JSON, one Tauri event per `EventKind`, with
-hand-written TS types in `src/lib/types/twitch/eventsub.ts`.
-
-## Backend
-
-Each feature is a folder with `mod.rs` for the service, `commands.rs`, `dto.rs`
-for outgoing shapes, and `events.rs`. Upstream crate types never leave `dto.rs`.
-Crate-wide pieces sit at the root: `error.rs`, `http.rs` (the one
-`reqwest::Client`), `ws.rs` (WebSocket connects), `blocking.rs` (blocking work off the async
-workers), `emit.rs`, `keyring.rs`, `clock.rs`, `lock.rs`, `local_dir.rs`
-(`%LOCALAPPDATA%\Deatch`).
-
-`twitch/` is the bulk of it. `Twitch` is cloneable managed state holding the
-Helix client, the session, and the EventSub handle. Sign-in is OAuth device
-code; tokens sit in `Session` behind one mutex, `twitch.authed().await?` hands
-out a fresh one, and credentials persist in the Windows credential store via
-`keyring.rs`. Every request goes through `transport/HelixTransport`, which
-retries 429s and idempotent 5xxs and pauses while rate-limited, so call sites
-never retry themselves. For EventSub the frontend only says which channels it
-wants and which is focused (`set_eventsub_channels`); the runner picks
-subscription kinds, spreads them over connections under Twitch's 3 × 300 cap,
-and reconnects.
-
-The rest is smaller. `emotes/` talks to BTTV, FFZ, and 7TV, plus a 7TV WebSocket
-for live set updates. `history/` fetches backlog from recent-messages.robotty.de
-and maps it to the EventSub chat message shape so the feed has one code path.
-`db.rs` opens each signed-in account's own SQLite database and applies the
-schema steps each feature declares. `feedlog/` keeps every feed entry there, for
-seven days or up to 1 GB, reads pages of them back, and clears them from
-Settings → Advanced.
-`link/` registers the host manifests (`bridge.rs`), merges every connected
-browser into one state (`ipc.rs`), and is the host process (`host.rs`).
-`discord/`, `notifications/`, and `diagnostics/` do rich presence, the taskbar
-badge, and stats. `graphics/` turns off the WebView's GPU at startup when
-hardware acceleration is disabled and lowers its memory target while the window
-is minimized.
+Tauri 2, Windows only. Rust owns every connection to the outside world and
+emits one typed event stream. The UI is feature folders built from a pure
+model, one store, and pure views on a shared kit.
 
 ## Frontend
 
-Everything outside components lives in `src/lib/`, in layers that only import
-downward. `events/` maps backend events into stores, one file per family; the
-mapping itself is pure and lives in `mappers/`, which backlog replay shares.
-`services/` holds one module per feature with its logic, state, and lifecycle.
-`api/` is a thin typed wrapper per command and the only caller of `bindings.ts`.
-`stores/` is signals and state and never calls the backend. `primitives/` wires
-app lifecycle: `App.tsx` → `createAppController` → `createServices`, which calls
-every `start()` once and runs the cleanups on unmount. Generic Solid helpers
-sit apart in `reactive/`, a leaf every layer may use. Nothing runs on import.
+```
+src/
+  app/         boot, shell, navigation, error boundaries
+  platform/    the only code that imports @tauri-apps
+  kit/         design system: props in, no stores, no i18n
+  shared/      domain used by many features: channel, user, permissions, format, i18n
+  features/    one folder per feature
+  locales/
+```
 
-A chat message arrives as an EventSub notification, becomes a Tauri event, is
-mapped in `events/chat.ts` (where AutoMod and redemptions are correlated,
-mentions recorded into the inbox, and triggers run), lands in `stores/feeds/` as
-a capped per-channel buffer, and renders through `FeedItem`. Backlog from
-`history/` takes the same path. The feed renders only the rows in view. Every
-entry added or changed is also written to the feed log within seconds, and
-`services/exit.ts` flushes pending writes when the window closes and before a
-relaunch or update. Scrolling past the oldest in memory, or jumping to a message no longer there,
-opens a stretch of history read back from it (`services/history.ts`) until the
-view returns to live.
+A feature:
+
+```
+features/activity/
+  index.ts           the only import path into the feature
+  model.ts           types and pure logic, apply(state, event)
+  model.test.ts
+  store.ts           state keyed by channel id, actions
+  ActivityStrip.tsx  container: reads the store, passes data down
+  ui/                pure views: data and callbacks in
+```
+
+Rules:
+
+1. Imports flow `app → features → shared, kit, platform`. Features import each
+   other only through `index.ts`.
+2. Views in `ui/` never read stores. Only the container does.
+3. State changes only through store actions. Event handling is a pure
+   `apply(state, event)`.
+4. Only `platform/` touches Tauri. The UI never fetches.
+5. Each event kind has one owning feature.
+6. Per-channel state starts on `join(id)` and ends on `leave(id)`, never on
+   mount.
+7. kit owns visuals. Features use layout utilities only.
+8. Permissions are asked one way: `can(channelId, capability)`.
+9. Every screen region sits in an error boundary.
+
+## Backend
+
+```
+src-tauri/src/
+  main.rs lib.rs   wiring only
+  core/            error, http, ws, db, keyring, clock, events
+  twitch/
+    client/        Helix endpoints, pagination, auth, scopes
+    transport/     EventSub and IRC to events
+    chat/ channel/ activity/ people/ moderation/ explore/ users/
+  emotes/ history/ feedlog/ link/ discord/ notifications/ diagnostics/ graphics/
+```
+
+A feature: `model.rs` (its types, exported to TS), `api.rs` (outside calls),
+`events.rs` (outside events to app events), `commands.rs` (thin commands taking
+one `params` struct, returning `Result<T>`).
+
+`bindings.ts` is generated by `vp run bindings` and is the whole contract. A
+test fails when it is stale. Helix requests retry and rate-limit in the
+transport, never at call sites. The frontend only says which channels it wants;
+the EventSub runner picks subscriptions and reconnects.
+
+## Processes
+
+By default `main.rs` runs the GUI. When a browser launches the exe for the Link
+extension it runs as a native-messaging host instead and only relays frames to
+the GUI pipe. `--export-bindings` writes the bindings and exits.
 
 ## Where things live
 
-Twitch tokens are in the Windows credential store under `deatch` / `auth`.
-Preferences, the inbox, and caches are in the WebView's `localStorage`, under
-the keys in `constants/storage.ts`; any other key is removed at startup. App logs
-go to `%LOCALAPPDATA%\com.deaptic.deatch\logs`, the host's to
-`%TEMP%\deatch-host.log`. Each account's database, feed history included, is
-`%LOCALAPPDATA%\Deatch\data\<account id>.sqlite`.
-Native-host manifests sit in `%LOCALAPPDATA%\Deatch\` with their `HKCU`
-registry keys.
+| What                       | Where                                              |
+| -------------------------- | -------------------------------------------------- |
+| Tokens                     | Windows credential store, `deatch` / `auth`        |
+| Preferences, inbox, caches | WebView `localStorage`, keys in one constants file |
+| Feed log, per account      | `%LOCALAPPDATA%\Deatch\data\<account id>.sqlite`   |
+| App logs                   | `%LOCALAPPDATA%\com.deaptic.deatch\logs`           |
+| Host logs                  | `%TEMP%\deatch-host.log`                           |
+| Host manifests             | `%LOCALAPPDATA%\Deatch\` and their `HKCU` keys     |

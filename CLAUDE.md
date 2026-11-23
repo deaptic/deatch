@@ -43,10 +43,8 @@ accumulates unrelated groups, split it along those seams into a folder with a
 barrel so import sites stay stable. Private helpers live with their only caller.
 Many entries serving one concern is fine; split by concern, not by count.
 
-Dependencies flow one way: entry points call services, services call clients,
-clients talk to the outside world. Lower layers never reach back up. Handlers
-and components stay thin; logic and long-lived state live in services. State
-lives independently of what is mounted on screen.
+The folder layout and its import rules live in `docs/ARCHITECTURE.md`. Code
+outside that layout is not yet migrated; new code goes in the new layout.
 
 ## Boundaries
 
@@ -62,7 +60,9 @@ commit both.
 
 Name a thing for what it is or does; let success and failure ride the return
 type. Keep names free of their surrounding context, the module already supplies
-it. One word per concept, everywhere.
+it. One word per concept, everywhere. Use the plain word a newcomer would guess
+first: `Transition`, not `Presence`; `tabs`, not `warmedChannels`. A name that
+needs explaining gets renamed when its file is next touched.
 
 No comments, doc comments included. Code that needs one to be understood is
 not done: rename, extract a function, name the constant, or move the knowledge
