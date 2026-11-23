@@ -1,5 +1,5 @@
 import { Unplug } from "lucide-solid";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 export default function ConnectionBanner() {
   return (

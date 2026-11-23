@@ -1,11 +1,11 @@
 import { createEffect, createSignal, For, onMount, Show } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import {
   getBannedUsers,
   unbanUser,
 } from "../../../platform/twitch/moderation.ts";
 import * as clock from "../../../lib/services/clock.ts";
-import { formatElapsed } from "../../../lib/format/duration.ts";
+import { formatElapsed } from "../../../shared/format/duration.ts";
 import { matchesPerson } from "../../../lib/utils/chatterGroups.ts";
 import type { BannedUser, UserRef } from "../../../lib/types/index.ts";
 import Button from "../../../kit/Button.tsx";

@@ -4,7 +4,7 @@ import Button from "../../kit/Button.tsx";
 import Dialog from "../../kit/Dialog.tsx";
 import Textarea from "../../kit/Textarea.tsx";
 import { autofocus } from "../../shared/solid/focus.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   userId: string;

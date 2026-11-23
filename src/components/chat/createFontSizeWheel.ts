@@ -1,4 +1,4 @@
-import { formatPx } from "../../lib/format/units.ts";
+import { formatPx } from "../../shared/format/units.ts";
 import {
   feedFontSize,
   stepFeedFontSize,

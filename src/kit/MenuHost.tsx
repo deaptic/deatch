@@ -8,7 +8,7 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import * as shortcuts from "../lib/services/shortcuts.ts";
+import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { focusables } from "../shared/solid/trapFocus.ts";
 import MenuDivider from "./MenuDivider.tsx";
 import MenuItem from "./MenuItem.tsx";

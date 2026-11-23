@@ -13,7 +13,7 @@ import {
   CONDITION_OPS,
   type ConditionOp,
 } from "../../../lib/stores/preferences.ts";
-import { type MessageKey, t } from "../../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 
 const OP_LABELS: Record<ConditionOp, MessageKey> = {
   set: "SETTINGS_TRIGGERS_OP_SET_LABEL",

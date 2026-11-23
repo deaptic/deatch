@@ -1,10 +1,10 @@
 import type { JSX } from "solid-js";
-import { composerInnerHeight } from "./rowHeight.ts";
+import { COMPOSER_INNER_HEIGHT } from "./density.ts";
 
 export default function ComposerSlot(props: { children: JSX.Element }) {
   return (
     <div
-      class={`flex items-center gap-1 shrink-0 self-end ${composerInnerHeight()}`}
+      class={`flex items-center gap-1 shrink-0 self-end ${COMPOSER_INNER_HEIGHT}`}
     >
       {props.children}
     </div>

@@ -1,9 +1,9 @@
 import defaultKeymap from "../../default-keymap.json" with { type: "json" };
-import { comboFor, MODIFIER_KEYS } from "../utils/keyboard.ts";
+import { comboFor, MODIFIER_KEYS } from "./keys.ts";
 import {
   compile as compileWhen,
   type Predicate as WhenFn,
-} from "../utils/boolExpr.ts";
+} from "./boolExpr.ts";
 
 export const PASS = Symbol("pass");
 

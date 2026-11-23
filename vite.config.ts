@@ -49,6 +49,23 @@ export default defineConfig({
         rules: { "no-restricted-imports": "off" },
       },
       {
+        files: ["src/kit/**", "src/shared/**"],
+        rules: {
+          "no-restricted-imports": [
+            "error",
+            {
+              patterns: [
+                {
+                  regex:
+                    "^(../)+(lib|components|features|platform|app)/|^@tauri-apps/",
+                  message: "kit and shared import only kit and shared.",
+                },
+              ],
+            },
+          ],
+        },
+      },
+      {
         // Solid assigns `let` refs through JSX `ref={...}`, which the rule
         // cannot see.
         files: ["**/*.tsx"],

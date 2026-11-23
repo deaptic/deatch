@@ -1,5 +1,5 @@
 import type { ChannelRole } from "../../lib/utils/roles.ts";
-import type { MessageKey } from "../../lib/i18n/index.ts";
+import type { MessageKey } from "../../shared/i18n/index.ts";
 
 export type CommandContext = {
   broadcasterId: string;

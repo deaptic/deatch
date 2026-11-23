@@ -1,4 +1,4 @@
-import type { MessageKey } from "../../i18n/index.ts";
+import type { MessageKey } from "../../../shared/i18n/index.ts";
 import type { BuiltInTrigger } from "../../stores/preferences.ts";
 import type { BuiltInContext } from "./context.ts";
 import { accountage } from "./accountage.ts";

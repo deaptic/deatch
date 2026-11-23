@@ -1,6 +1,6 @@
-import { t } from "../../i18n/index.ts";
-import { formatElapsed } from "../../format/duration.ts";
-import { Time } from "../../utils/time.ts";
+import { t } from "../../../shared/i18n/index.ts";
+import { formatElapsed } from "../../../shared/format/duration.ts";
+import { Time } from "../../../shared/time.ts";
 import { type BuiltInContext, forTarget } from "./context.ts";
 
 export function accountage(ctx: BuiltInContext): Promise<string> {

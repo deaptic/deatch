@@ -1,8 +1,8 @@
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type { CommandOption, DurationOption } from "./types.ts";
-import { formatDuration, secondsPer } from "../../lib/format/duration.ts";
+import { formatDuration, secondsPer } from "../../shared/format/duration.ts";
 import { at } from "../../lib/utils/at.ts";
-import { formatAlternatives } from "../../lib/format/list.ts";
+import { formatAlternatives } from "../../shared/format/list.ts";
 
 type SlotError = { kind: "required" } | { kind: "invalid"; message: string };
 

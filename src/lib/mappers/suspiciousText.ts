@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type { SuspiciousInfo } from "../types/index.ts";
 
 export function formatSuspicious(info: SuspiciousInfo): string {

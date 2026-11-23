@@ -1,10 +1,10 @@
-import { type MessageKey, t } from "../../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 import { For, Show, useContext } from "solid-js";
 import PageBody from "../../../kit/PageBody.tsx";
 import Card from "../../../kit/Card.tsx";
 import Kbd from "../../../kit/Kbd.tsx";
 import { SettingsQuery } from "../../../kit/settingsQuery.ts";
-import { matchesQuery } from "../../../lib/utils/textQuery.ts";
+import { matchesQuery } from "../../../shared/textQuery.ts";
 import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
 import {
   ACTION_LABELS,

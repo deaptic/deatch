@@ -8,7 +8,7 @@ import {
   UsersRound,
 } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
 import {
@@ -17,7 +17,7 @@ import {
   streamDetails,
   streamGame,
   streamTitle,
-} from "../../lib/format/stream.ts";
+} from "../../shared/format/stream.ts";
 import { createCopyable } from "../../kit/copyable.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";

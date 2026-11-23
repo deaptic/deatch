@@ -16,7 +16,7 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
@@ -40,9 +40,9 @@ import * as inbox from "../../lib/services/inbox.ts";
 import { user } from "../../lib/stores/users.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import * as raid from "../../lib/services/raid.ts";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
-import * as clipboard from "../../lib/services/clipboard.ts";
+import * as clipboard from "../../kit/clipboard.ts";
 import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import type { User } from "../../lib/types/index.ts";
 

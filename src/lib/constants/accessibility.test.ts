@@ -6,7 +6,7 @@ import {
   nearestStep,
   stepStop,
   ZOOM_STEPS,
-} from "./accessibility.ts";
+} from "../../shared/accessibility.ts";
 
 test("clampToStops keeps values inside the first and last stop", () => {
   expect(clampToStops(10, [12, 16, 24])).toBe(12);

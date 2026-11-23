@@ -20,7 +20,7 @@ import {
   PROVIDER_NAMES,
 } from "../../lib/utils/emoteSource.ts";
 import { zoomUrls } from "../../lib/utils/emoteZoom.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import Transition from "../../kit/Transition.tsx";
 
 type Opened = { url: string; name: string; x: number; y: number };

@@ -18,7 +18,7 @@ import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardLive from "./UserCardLive.tsx";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import UserCardMeta from "./UserCardMeta.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
 type Props = {

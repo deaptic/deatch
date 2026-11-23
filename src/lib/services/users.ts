@@ -20,7 +20,7 @@ import type {
   UserRef,
 } from "../types/index.ts";
 import * as storage from "../utils/storage.ts";
-import { addToast } from "../stores/toasts.ts";
+import { addToast } from "../../kit/toasts.ts";
 import {
   changedEntries,
   freshEntries,

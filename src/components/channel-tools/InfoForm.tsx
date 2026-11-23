@@ -1,5 +1,5 @@
 import { createSignal, For, onMount, Show } from "solid-js";
-import { type Language, locale, t } from "../../lib/i18n/index.ts";
+import { type Language, locale, t } from "../../shared/i18n/index.ts";
 import {
   getChannelDetails,
   getContentLabels,

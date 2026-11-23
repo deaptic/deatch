@@ -4,7 +4,7 @@ import * as browser from "../../../lib/services/browser.ts";
 import { setChannelForm } from "../../../lib/stores/ui.ts";
 import type { FeedEvent } from "../../../lib/types/index.ts";
 import { clipUrl } from "../../../lib/utils/twitchUrl.ts";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import Toolbar from "../../../kit/Toolbar.tsx";
 import ToolbarItem from "../../../kit/ToolbarItem.tsx";
 

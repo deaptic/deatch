@@ -4,9 +4,9 @@ import type {
   Stream,
   User,
 } from "../types/index.ts";
-import { formatViewers } from "../format/stream.ts";
+import { formatViewers } from "../../shared/format/stream.ts";
 import { categoryUrl, channelUrl } from "../utils/twitchUrl.ts";
-import { type MessageKey, t } from "../i18n/index.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 
 export const SELF_LURK_PHRASES: NonEmpty<MessageKey> = [
   "PRESENCE_LURK_TALKING_TO_THEMSELVES_STATUS",

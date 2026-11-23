@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import * as channelSearch from "../../lib/services/channelSearch.ts";
 import * as raid from "../../lib/services/raid.ts";
 import type { SearchChannel } from "../../lib/types/index.ts";

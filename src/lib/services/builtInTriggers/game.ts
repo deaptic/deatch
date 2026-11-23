@@ -1,9 +1,9 @@
 import * as channelInfo from "../channelInfo.ts";
 import { modifyChannelInformation } from "../../../platform/twitch/channels.ts";
 import { searchCategories } from "../../../platform/twitch/search.ts";
-import { t } from "../../i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../stores/channels.ts";
-import { streamGame } from "../../format/stream.ts";
+import { streamGame } from "../../../shared/format/stream.ts";
 import type { Category } from "../../types/index.ts";
 import type { BuiltInContext } from "./context.ts";
 

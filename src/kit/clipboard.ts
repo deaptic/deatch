@@ -1,5 +1,5 @@
-import { addToast } from "../stores/toasts.ts";
-import { t } from "../i18n/index.ts";
+import { addToast } from "./toasts.ts";
+import { t } from "../shared/i18n/index.ts";
 
 export function write(text: string): Promise<boolean> {
   return navigator.clipboard.writeText(text).then(

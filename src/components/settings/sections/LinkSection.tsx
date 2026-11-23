@@ -1,4 +1,4 @@
-import { type MessageKey, t } from "../../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 import { For, Show } from "solid-js";
 import Button from "../../../kit/Button.tsx";
 import Card from "../../../kit/Card.tsx";

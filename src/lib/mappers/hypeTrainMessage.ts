@@ -1,5 +1,5 @@
-import { formatList } from "../format/list.ts";
-import { t } from "../i18n/index.ts";
+import { formatList } from "../../shared/format/list.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type { NoticeText, RawHypeTrain } from "../types/index.ts";
 import { noticeText } from "../utils/feedEvent.ts";
 

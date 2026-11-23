@@ -1,14 +1,14 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import * as diagnostics from "../../lib/services/diagnostics.ts";
 import type { Diagnostics as Sample } from "../../lib/types/index.ts";
-import { formatBytes } from "../../lib/format/size.ts";
-import { formatPercent } from "../../lib/format/units.ts";
+import { formatBytes } from "../../shared/format/size.ts";
+import { formatPercent } from "../../shared/format/units.ts";
 import Loading from "../../kit/Loading.tsx";
 import Popover from "../../kit/Popover.tsx";
 import ConnectionSlot from "./ConnectionSlot.tsx";
 import DiagnosticsSection from "./DiagnosticsSection.tsx";
 import MetricRow from "./MetricRow.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   x: number;

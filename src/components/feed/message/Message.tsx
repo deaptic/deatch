@@ -1,6 +1,6 @@
 import { Check, X } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import type {
@@ -14,7 +14,7 @@ import { isMention } from "../../../lib/utils/mention.ts";
 import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
-import { formatSuspicious } from "../../../lib/format/suspicious.ts";
+import { formatSuspicious } from "../../../lib/mappers/suspiciousText.ts";
 import Badges, {
   type BadgePlacement,
 } from "../../../features/message/Badges.tsx";

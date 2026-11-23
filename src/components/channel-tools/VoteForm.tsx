@@ -1,9 +1,9 @@
 import { Plus } from "lucide-solid";
 import { createSignal, Index, Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { createPoll } from "../../platform/twitch/polls.ts";
 import { createPrediction } from "../../platform/twitch/predictions.ts";
-import { formatDuration } from "../../lib/format/duration.ts";
+import { formatDuration } from "../../shared/format/duration.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
 import Button from "../../kit/Button.tsx";
 import Field from "../../kit/Field.tsx";

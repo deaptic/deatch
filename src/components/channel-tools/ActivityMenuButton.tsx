@@ -1,7 +1,7 @@
 import { Layers } from "lucide-solid";
 import { For, Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
-import { formatList } from "../../lib/format/list.ts";
+import { t } from "../../shared/i18n/index.ts";
+import { formatList } from "../../shared/format/list.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
 import { pendingRaid } from "../../lib/stores/raid.ts";
 import { runningActivities } from "../../lib/utils/runningActivities.ts";

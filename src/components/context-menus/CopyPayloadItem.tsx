@@ -1,9 +1,9 @@
 import { Copy } from "lucide-solid";
 import { Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
-import * as clipboard from "../../lib/services/clipboard.ts";
+import * as clipboard from "../../kit/clipboard.ts";
 
 type Props = {
   show: boolean;

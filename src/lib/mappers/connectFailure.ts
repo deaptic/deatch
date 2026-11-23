@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type { ChatState } from "../types/index.ts";
 import { errorMessage } from "../utils/error.ts";
 

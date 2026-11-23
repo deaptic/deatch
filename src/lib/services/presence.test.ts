@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { formatViewers } from "../format/stream.ts";
+import { formatViewers } from "../../shared/format/stream.ts";
 import type { Stream, User } from "../types/index.ts";
 import {
   buildPresence,

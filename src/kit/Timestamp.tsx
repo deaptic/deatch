@@ -1,4 +1,4 @@
-import { Time, type TimeFormat } from "../lib/utils/time.ts";
+import { Time, type TimeFormat } from "../shared/time.ts";
 
 type Variant = "plain" | "column" | "gutter" | "inline";
 

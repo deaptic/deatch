@@ -16,7 +16,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { orderLanguages } from "../../lib/utils/languages.ts";
 import { at } from "../../lib/utils/at.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   query: string;

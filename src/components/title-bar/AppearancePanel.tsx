@@ -1,4 +1,4 @@
-import { formatPx, formatWholePercent } from "../../lib/format/units.ts";
+import { formatPx, formatWholePercent } from "../../shared/format/units.ts";
 import {
   AtSign,
   BadgeCheck,
@@ -12,13 +12,13 @@ import {
   Type,
   ZoomIn,
 } from "lucide-solid";
-import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import {
   canStep,
   FONT_SIZE_STEPS,
   GROUP_SPACING_STEPS,
   ZOOM_STEPS,
-} from "../../lib/constants/accessibility.ts";
+} from "../../shared/accessibility.ts";
 import {
   appearanceTheme,
   appearanceUiDensity,

@@ -1,6 +1,6 @@
-import { t } from "../../i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { streamForUserId } from "../../stores/channels.ts";
-import { formatElapsed } from "../../format/duration.ts";
+import { formatElapsed } from "../../../shared/format/duration.ts";
 import type { BuiltInContext } from "./context.ts";
 
 export function uptime(ctx: BuiltInContext): Promise<string> {

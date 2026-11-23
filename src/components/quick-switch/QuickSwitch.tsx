@@ -9,7 +9,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../../shared/solid/createListbox.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
@@ -17,8 +17,8 @@ import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import * as pins from "../../lib/services/pins.ts";
 import { linkWarmedChannels } from "../../lib/stores/link.ts";
 import { user } from "../../lib/stores/users.ts";
-import { addToast } from "../../lib/stores/toasts.ts";
-import { liveLine } from "../../lib/format/stream.ts";
+import { addToast } from "../../kit/toasts.ts";
+import { liveLine } from "../../shared/format/stream.ts";
 import type { JSX } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import {
@@ -35,7 +35,7 @@ import { autofocus } from "../../shared/solid/focus.ts";
 import Kbd from "../../kit/Kbd.tsx";
 import { Dynamic } from "solid-js/web";
 import { type PaletteAction, paletteActions } from "./paletteActions.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   onSelect: (ch: User) => void;

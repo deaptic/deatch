@@ -1,6 +1,6 @@
 import { ACTIVITIES } from "../../constants/activities.ts";
 import { fromKeys } from "../../utils/fromKeys.ts";
-import { systemLanguage } from "../../i18n/index.ts";
+import { systemLanguage } from "../../../shared/i18n/index.ts";
 import type { UserPreferences } from "./schema.ts";
 
 type Feed = UserPreferences["feed"];

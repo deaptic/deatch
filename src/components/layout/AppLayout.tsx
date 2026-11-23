@@ -1,7 +1,7 @@
 import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "../title-bar/TitleBar.tsx";
 import UpdateBanner from "../update-banner/UpdateBanner.tsx";
-import Toaster from "../toaster/Toaster.tsx";
+import Toaster from "../../kit/Toaster.tsx";
 import EmoteCard from "../emote-card/EmoteCard.tsx";
 import HoverZoom from "../hover-zoom/HoverZoom.tsx";
 import TooltipHost from "../../kit/TooltipHost.tsx";
@@ -17,9 +17,9 @@ import { activeView } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
 import { authChecked } from "../../lib/stores/auth.ts";
 import * as inbox from "../../lib/services/inbox.ts";
-import { removeToast, toasts } from "../../lib/stores/toasts.ts";
+import { removeToast, toasts } from "../../kit/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 const Settings = lazy(() => import("../settings/Settings.tsx"));
 const QuickSwitch = lazy(() => import("../quick-switch/QuickSwitch.tsx"));

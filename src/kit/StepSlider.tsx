@@ -1,5 +1,5 @@
 import { createSignal, For } from "solid-js";
-import { nearestStep, type Steps } from "../lib/constants/accessibility.ts";
+import { nearestStep, type Steps } from "../shared/accessibility.ts";
 
 type Props = {
   label: string;

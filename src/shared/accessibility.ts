@@ -1,4 +1,4 @@
-import type { NonEmpty } from "../types/index.ts";
+import type { NonEmpty } from "./nonEmpty.ts";
 
 export type Steps = NonEmpty<number>;
 

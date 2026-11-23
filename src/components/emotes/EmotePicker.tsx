@@ -36,13 +36,13 @@ import {
 } from "./sections.ts";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import ComposerPanel from "../../kit/ComposerPanel.tsx";
 import { createListNavigation } from "../../shared/solid/createListNavigation.ts";
 import type { EmoteGridItem } from "./types.ts";
 import { COLUMNS, emojiUrl, nextVerticalIndex, toItem } from "./helpers.ts";
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
 import { isUserId } from "../../lib/utils/knownUsers.ts";
 import { knownUser } from "../../lib/stores/users.ts";

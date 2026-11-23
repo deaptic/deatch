@@ -1,6 +1,6 @@
 import { ClipboardPaste, Ellipsis, Reply } from "lucide-solid";
 import { For, Show } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import type {
   FeedMessage as Message,
   Reaction,

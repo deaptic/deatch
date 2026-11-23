@@ -15,9 +15,9 @@ import {
   Show,
 } from "solid-js";
 import type { Component } from "solid-js";
-import type { Toast, ToastType } from "../../lib/stores/toasts.ts";
-import { t } from "../../lib/i18n/index.ts";
-import IconButton from "../../kit/IconButton.tsx";
+import type { Toast, ToastType } from "./toasts.ts";
+import { t } from "../shared/i18n/index.ts";
+import IconButton from "./IconButton.tsx";
 
 const TONE: Record<ToastType, string> = {
   error: "text-negative",

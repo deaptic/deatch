@@ -15,8 +15,8 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
-import * as clipboard from "../../lib/services/clipboard.ts";
-import { t } from "../../lib/i18n/index.ts";
+import * as clipboard from "../../kit/clipboard.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { setSuspiciousStatus } from "../../platform/twitch/moderation.ts";
 import type { SuspiciousStatus } from "../../lib/types/index.ts";

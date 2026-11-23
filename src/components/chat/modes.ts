@@ -1,8 +1,8 @@
 import type { Component } from "solid-js";
 import { CopyX, Hourglass, Smile, Star, UserCheck } from "lucide-solid";
 import type { ChatSettingsChange } from "../../lib/services/chatSettings.ts";
-import { formatDuration } from "../../lib/format/duration.ts";
-import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { formatDuration } from "../../shared/format/duration.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import type { ChatSettings } from "../../lib/types/index.ts";
 
 type Preset = { value: number; label: MessageKey; count?: number };

@@ -1,7 +1,7 @@
 import { Languages } from "lucide-solid";
 import { languageName, searchLanguages } from "../../lib/utils/languages.ts";
 import Combobox from "../../kit/Combobox.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   value: string;

@@ -1,4 +1,4 @@
-import { formatLocale, t } from "../i18n/index.ts";
+import { formatLocale, t } from "../../shared/i18n/index.ts";
 
 const OTHER = "other";
 

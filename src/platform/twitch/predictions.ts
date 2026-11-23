@@ -7,7 +7,7 @@ import type {
   PredictionEnd,
 } from "../../lib/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
-import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 
 const ENDED: Record<PredictionEnd["kind"], MessageKey> = {
   lock: "HEADER_PREDICTION_LOCKED_TOAST",

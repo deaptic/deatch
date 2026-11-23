@@ -11,7 +11,7 @@ import { BLANK_CONDITION } from "../../../lib/services/conditionGroups.ts";
 import { moved } from "../../../lib/utils/moved.ts";
 import { removedAt, replacedAt } from "../../../lib/utils/listEdit.ts";
 import type { ConditionalReply } from "../../../lib/stores/preferences.ts";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 
 const BLANK_REPLY: ConditionalReply = { when: [[BLANK_CONDITION]], text: "" };
 

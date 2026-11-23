@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { goalProgress, goalsTitle, goalTitle } from "./goals.ts";
+import { goalProgress, goalsTitle, goalTitle } from "./goalText.ts";
 
 const goal = (description: string) => ({
   id: "g1",

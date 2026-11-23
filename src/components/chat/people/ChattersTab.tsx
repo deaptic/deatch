@@ -1,5 +1,5 @@
 import { createMemo, For, Show } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import * as chatters from "../../../lib/services/chatters.ts";
 import { chatterListFor } from "../../../lib/stores/chatters.ts";
 import { groupChatters } from "../../../lib/utils/chatterGroups.ts";

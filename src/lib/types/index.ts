@@ -7,7 +7,7 @@ export * from "./feed.ts";
 export * from "./history.ts";
 export * from "./inbox.ts";
 export * from "./log.ts";
-export * from "./nonEmpty.ts";
+export * from "../../shared/nonEmpty.ts";
 export * from "./unlisten.ts";
 export * from "./updater.ts";
 export * from "./window.ts";

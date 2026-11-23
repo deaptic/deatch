@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import type { Subscription, User } from "../../lib/types/index.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import DisplayName from "../../features/message/DisplayName.tsx";
 
 type Props = {

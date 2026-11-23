@@ -1,5 +1,5 @@
-import { formatViewers } from "../lib/format/stream.ts";
-import { t } from "../lib/i18n/index.ts";
+import { formatViewers } from "../shared/format/stream.ts";
+import { t } from "../shared/i18n/index.ts";
 
 type Props = {
   viewers?: number;

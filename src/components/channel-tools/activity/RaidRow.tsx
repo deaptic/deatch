@@ -1,4 +1,4 @@
-import { t, tRich } from "../../../lib/i18n/index.ts";
+import { t, tRich } from "../../../shared/i18n/index.ts";
 import * as clock from "../../../lib/services/clock.ts";
 import * as raid from "../../../lib/services/raid.ts";
 import {

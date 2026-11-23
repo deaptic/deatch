@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import * as activity from "../../../lib/services/activity.ts";
 import Button from "../../../kit/Button.tsx";
 import ActivityRow from "../ActivityRow.tsx";

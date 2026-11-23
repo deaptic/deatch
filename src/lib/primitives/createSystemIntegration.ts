@@ -6,6 +6,7 @@ import {
   advancedAutostart,
   advancedDiscordRichPresence,
   appearanceAccent,
+  appearanceUiDensity,
   appearanceZoom,
   feedFontSize,
   feedGroupSpacing,
@@ -16,11 +17,15 @@ import * as discord from "../services/discord.ts";
 import { user } from "../stores/users.ts";
 import { liveStreams } from "../stores/channels.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 export function createSystemIntegration(): void {
   createEffect(() => {
-    appearance.apply({ theme: resolvedTheme(), accent: appearanceAccent() });
+    appearance.apply({
+      theme: resolvedTheme(),
+      accent: appearanceAccent(),
+      density: appearanceUiDensity(),
+    });
   });
 
   createEffect(() => {

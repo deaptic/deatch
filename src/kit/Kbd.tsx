@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import { keyLabels } from "../lib/utils/keyboard.ts";
+import { keyLabels } from "../shared/keyboard/keys.ts";
 
 const SIZE = {
   md: "min-w-6.5 h-6 text-small text-ink-soft",

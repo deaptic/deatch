@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { DEFAULT_ACCENT_HEX, type ResolvedTheme } from "../constants/theme.ts";
+import type { UiDensity } from "../../shared/accessibility.ts";
 import { hexToOklch, type Oklch, oklchCss } from "../utils/color.ts";
 
 const [applied, setApplied] = createSignal(0);
@@ -37,11 +38,13 @@ function deriveAccent(hex: string, theme: ResolvedTheme): AccentShades {
 type Appearance = {
   theme: ResolvedTheme;
   accent: string | null;
+  density: UiDensity;
 };
 
-export function apply({ theme, accent }: Appearance): void {
+export function apply({ theme, accent, density }: Appearance): void {
   const root = document.documentElement;
   root.dataset.theme = theme;
+  root.dataset.density = density;
 
   const shades = accent ? deriveAccent(accent, theme) : null;
   setOrClear(root, "--color-accent", shades?.accent);

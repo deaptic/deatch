@@ -2,8 +2,8 @@ import { writeLog } from "../../platform/log.ts";
 import type { LogLevel } from "../types/index.ts";
 import { formatLog } from "../utils/formatLog.ts";
 import { createErrorThrottle } from "../utils/errorThrottle.ts";
-import { addToast } from "../stores/toasts.ts";
-import { t } from "../i18n/index.ts";
+import { addToast } from "../../kit/toasts.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 const SAME_ERROR_QUIET_MS = 60_000;
 

@@ -1,4 +1,4 @@
-import { t, type MessageKey } from "../../../lib/i18n/index.ts";
+import { t, type MessageKey } from "../../../shared/i18n/index.ts";
 import { CaseSensitive, Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";

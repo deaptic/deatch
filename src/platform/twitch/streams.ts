@@ -7,7 +7,7 @@ import type {
   Stream,
 } from "../../lib/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 export function getStreams(
   params: GetStreamsParams = {},

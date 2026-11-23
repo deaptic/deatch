@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../suggestions/Suggestions.tsx";
 import { commands } from "../../command-composer/commands.ts";

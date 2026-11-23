@@ -1,6 +1,6 @@
 import * as users from "../users.ts";
 import { typedTarget } from "../triggerMethods.ts";
-import { t } from "../../i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import type { User, UserRef } from "../../types/index.ts";
 
 export type BuiltInContext = {

@@ -7,7 +7,7 @@ import ChannelHeader from "../chat/ChannelHeader.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
 import Button from "../../kit/Button.tsx";
 import Boundary from "../../kit/Boundary.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type ChatPanesProps = {
   userLogin: string;

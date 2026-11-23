@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { Plus } from "lucide-solid";
 import { createSignal, For } from "solid-js";
 import PageBody from "../../../kit/PageBody.tsx";

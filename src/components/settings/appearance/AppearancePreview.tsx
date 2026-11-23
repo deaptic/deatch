@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { createMemo, createResource, For } from "solid-js";
 import type { FeedEntry, FeedMessage } from "../../../lib/types/index.ts";
 import * as badges from "../../../lib/services/badges.ts";

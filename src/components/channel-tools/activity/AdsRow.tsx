@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import * as activity from "../../../lib/services/activity.ts";
 import type { AdSchedule } from "../../../lib/types/index.ts";
 import Button from "../../../kit/Button.tsx";

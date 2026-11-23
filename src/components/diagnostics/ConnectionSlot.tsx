@@ -4,7 +4,7 @@ import type {
   ConnectionStats,
 } from "../../lib/types/index.ts";
 import Meter from "../../kit/Meter.tsx";
-import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 
 type Props = {
   number: number;

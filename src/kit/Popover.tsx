@@ -1,7 +1,7 @@
 import { createSignal, type JSX, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { dismissOnOutside } from "../shared/solid/dismissOnOutside.ts";
-import * as shortcuts from "../lib/services/shortcuts.ts";
+import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { captureFocusForRestore } from "../shared/solid/focus.ts";
 import { trapFocus } from "../shared/solid/trapFocus.ts";
 import { createExitTarget, ExitScope } from "./Transition.tsx";

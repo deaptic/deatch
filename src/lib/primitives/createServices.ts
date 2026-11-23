@@ -3,7 +3,7 @@ import * as backendEvents from "../events/index.ts";
 import * as log from "../services/log.ts";
 import * as users from "../services/users.ts";
 import * as session from "../services/session.ts";
-import * as shortcuts from "../services/shortcuts.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import * as updater from "../services/updater.ts";
 import * as inbox from "../services/inbox.ts";
 import * as clock from "../services/clock.ts";

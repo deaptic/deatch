@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
 
 export function apply(

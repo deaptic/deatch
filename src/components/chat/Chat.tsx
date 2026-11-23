@@ -10,8 +10,8 @@ import {
 } from "solid-js";
 import * as chat from "../../lib/services/chat.ts";
 import * as backlog from "../../lib/services/backlog.ts";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
-import * as clipboard from "../../lib/services/clipboard.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
+import * as clipboard from "../../kit/clipboard.ts";
 import { mentionsIn } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";

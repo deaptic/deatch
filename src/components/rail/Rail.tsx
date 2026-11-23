@@ -33,7 +33,7 @@ import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../../kit/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
-import { railGap } from "../../kit/rowHeight.ts";
+import { RAIL_GAP } from "../../kit/density.ts";
 import TabMuteBadge from "./TabMuteBadge.tsx";
 import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
@@ -41,7 +41,7 @@ import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import { createPopover } from "../../kit/createPopover.ts";
 import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 import Transition from "../../kit/Transition.tsx";
 
@@ -140,7 +140,7 @@ export default function Rail(props: Props) {
           onScroll={main.update}
           class="flex flex-col h-full overflow-y-auto scrollbar-none"
         >
-          <div class={`flex flex-col py-2 ${railGap()}`}>
+          <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
             <Show
               when={!channels.loadingPinned()}
               fallback={
@@ -192,7 +192,7 @@ export default function Rail(props: Props) {
             })}
           />
 
-          <div class={`flex flex-col py-2 ${railGap()}`}>
+          <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
             <Show
               when={!channels.loadingLive()}
               fallback={
@@ -236,7 +236,7 @@ export default function Rail(props: Props) {
             <div
               ref={linkScroll.setRef}
               onScroll={linkScroll.update}
-              class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none ${railGap()}`}
+              class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none ${RAIL_GAP}`}
             >
               <For each={linkedOthers()}>
                 {(ch) => (
@@ -274,7 +274,7 @@ export default function Rail(props: Props) {
       </Show>
 
       <RailDivider />
-      <div class={`flex flex-col py-2 shrink-0 ${railGap()}`}>
+      <div class={`flex flex-col py-2 shrink-0 ${RAIL_GAP}`}>
         <RailLinkRow onToggleLink={props.onToggleLink} />
         <RailRow
           label={t("RAIL_EXPLORE_LABEL")}

@@ -1,12 +1,12 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { banUser } from "../../../platform/twitch/moderation.ts";
 import * as clips from "../../../lib/services/clips.ts";
 import { getStreamsFromIds } from "../../../platform/twitch/streams.ts";
 import { getFollowedAt } from "../../../platform/twitch/channels.ts";
 import { user } from "../../../lib/stores/users.ts";
 import { appendLocalNotice } from "../../../lib/stores/feeds.ts";
-import { formatClock } from "../../../lib/format/stream.ts";
-import { Time } from "../../../lib/utils/time.ts";
+import { formatClock } from "../../../shared/format/stream.ts";
+import { Time } from "../../../shared/time.ts";
 import type { Command } from "../types.ts";
 
 export const deatchCommands: Command[] = [

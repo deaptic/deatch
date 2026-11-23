@@ -2,7 +2,7 @@ import { type JSX, onCleanup } from "solid-js";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../shared/solid/focus.ts";
 import { trapFocus } from "../shared/solid/trapFocus.ts";
-import * as shortcuts from "../lib/services/shortcuts.ts";
+import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { createExitTarget, ExitScope } from "./Transition.tsx";
 
 type ModalLook = "dialog" | "palette";

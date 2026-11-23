@@ -2,7 +2,7 @@ import { createResource, Show } from "solid-js";
 import { getTopCategories } from "../../platform/twitch/search.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import CategoryRow from "./CategoryRow.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 const TOP_CATEGORY_COUNT = 20;
 

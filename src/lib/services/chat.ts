@@ -1,7 +1,7 @@
 import { sendChatMessage } from "../../platform/twitch/chat.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
-import { addToast } from "../stores/toasts.ts";
+import { addToast } from "../../kit/toasts.ts";
 import type { SendChatMessageParams } from "../types/index.ts";
 import { dropMessage } from "../utils/dropReason.ts";
 

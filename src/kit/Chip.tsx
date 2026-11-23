@@ -1,6 +1,6 @@
 import { X } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
-import { t } from "../lib/i18n/index.ts";
+import { t } from "../shared/i18n/index.ts";
 
 type Variant = "tag" | "command" | "media" | "label";
 

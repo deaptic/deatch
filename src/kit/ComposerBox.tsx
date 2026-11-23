@@ -1,5 +1,5 @@
 import { children, type JSX } from "solid-js";
-import { minRowHeight } from "./rowHeight.ts";
+import { MIN_ROW_HEIGHT } from "./density.ts";
 
 type Props = {
   ref?: (el: HTMLDivElement) => void;
@@ -12,7 +12,7 @@ export default function ComposerBox(props: Props) {
   return (
     <div
       ref={props.ref}
-      class={`relative flex items-end gap-1 ${minRowHeight()} ${leading() ? "pl-2.5" : "pl-3.5"} pr-2.5 py-1 bg-canvas border border-line rounded-lg transition duration-snap hover:border-ink-faint focus-within:border-accent! focus-within:ring-3 focus-within:ring-accent-soft`}
+      class={`relative flex items-end gap-1 ${MIN_ROW_HEIGHT} ${leading() ? "pl-2.5" : "pl-3.5"} pr-2.5 py-1 bg-canvas border border-line rounded-lg transition duration-snap hover:border-ink-faint focus-within:border-accent! focus-within:ring-3 focus-within:ring-accent-soft`}
     >
       {leading()}
       {props.children}

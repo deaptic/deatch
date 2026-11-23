@@ -7,12 +7,12 @@ import {
   Show,
   Switch,
 } from "solid-js";
-import { type MessageKey, t } from "../../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 import * as chatters from "../../../lib/services/chatters.ts";
 import { chatterListFor } from "../../../lib/stores/chatters.ts";
 import { hasPermission } from "../../../lib/stores/roles.ts";
 import type { Capability } from "../../../lib/utils/roles.ts";
-import { formatViewers } from "../../../lib/format/stream.ts";
+import { formatViewers } from "../../../shared/format/stream.ts";
 import { autofocus } from "../../../shared/solid/focus.ts";
 import type { UserRef } from "../../../lib/types/index.ts";
 import Field from "../../../kit/Field.tsx";

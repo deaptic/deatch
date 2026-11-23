@@ -13,8 +13,8 @@ import {
 import * as session from "../../lib/services/session.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { createCopied } from "../../kit/createCopied.ts";
-import { t, tRich } from "../../lib/i18n/index.ts";
-import { formatUrl } from "../../lib/format/url.ts";
+import { t, tRich } from "../../shared/i18n/index.ts";
+import { formatUrl } from "../../shared/format/url.ts";
 
 const RESTORE_FAILURE_TEXT = {
   missingScope: "LOGIN_MISSING_SCOPE_ERROR",

@@ -8,7 +8,7 @@ import * as users from "../../lib/services/users.ts";
 import Button from "../../kit/Button.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
 import Popover from "../../kit/Popover.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   x: number;

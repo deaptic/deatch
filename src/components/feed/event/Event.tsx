@@ -3,7 +3,7 @@ import { Dynamic } from "solid-js/web";
 import type { FeedEvent } from "../../../lib/types/index.ts";
 import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
-import { t, tRich } from "../../../lib/i18n/index.ts";
+import { t, tRich } from "../../../shared/i18n/index.ts";
 import MessageText from "../../../features/message/MessageText.tsx";
 import TextWithMentions from "../../../features/message/TextWithMentions.tsx";
 import NameList from "../../../features/message/NameList.tsx";

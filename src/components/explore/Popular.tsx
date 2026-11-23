@@ -13,7 +13,7 @@ import EmptyState from "../../kit/EmptyState.tsx";
 import Skeleton from "../../kit/Skeleton.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   onSelect: (channel: User) => void;

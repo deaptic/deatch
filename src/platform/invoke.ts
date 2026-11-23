@@ -1,8 +1,8 @@
 import { advancedShowLogs } from "../lib/stores/preferences.ts";
-import { addToast } from "../lib/stores/toasts.ts";
+import { addToast } from "../kit/toasts.ts";
 import { errorMessage } from "../lib/utils/error.ts";
 import { listSize } from "../lib/utils/listSize.ts";
-import { t } from "../lib/i18n/index.ts";
+import { t } from "../shared/i18n/index.ts";
 
 export type InvokeOptions = {
   silent?: boolean;

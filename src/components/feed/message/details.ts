@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { sourceBadges } from "../../../lib/stores/sourceBadges.ts";
 import type {
   AutomodHoldInfo,

@@ -10,8 +10,8 @@ model, one store, and pure views on a shared kit.
 src/
   app/         boot, shell, navigation, error boundaries
   platform/    the only code that imports @tauri-apps
-  kit/         design system: props in, no stores, no i18n
-  shared/      domain used by many features: channel, user, permissions, format, i18n
+  kit/         design system, toasts, clipboard; imports only kit and shared
+  shared/      pure helpers used everywhere: i18n, format, keyboard, time
   features/    one folder per feature
   locales/
 ```

@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";

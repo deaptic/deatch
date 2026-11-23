@@ -4,9 +4,9 @@ import type {
   RawModerate,
   RawModUser,
 } from "../types/index.ts";
-import { formatApproxDuration } from "../format/duration.ts";
-import { formatList } from "../format/list.ts";
-import { t } from "../i18n/index.ts";
+import { formatApproxDuration } from "../../shared/format/duration.ts";
+import { formatList } from "../../shared/format/list.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { noticeText, person } from "../utils/feedEvent.ts";
 
 function asLocal(p: RawModerate): RawModerate {

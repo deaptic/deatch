@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { comboFor, keyLabels } from "./keyboard.ts";
+import { comboFor, keyLabels } from "./keys.ts";
 
 const key = (init: Partial<KeyboardEvent>) =>
   ({

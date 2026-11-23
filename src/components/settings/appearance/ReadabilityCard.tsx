@@ -1,11 +1,11 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
 import ColorPicker from "../../../kit/ColorPicker.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";
 import StepSlider from "../../../kit/StepSlider.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
-import { FONT_SIZE_STEPS } from "../../../lib/constants/accessibility.ts";
+import { FONT_SIZE_STEPS } from "../../../shared/accessibility.ts";
 import {
   feedFontSize,
   feedUserOverrideNameColor,
@@ -15,7 +15,7 @@ import {
   setFeedUserShowDisplayName,
 } from "../../../lib/stores/preferences.ts";
 
-import { formatPx } from "../../../lib/format/units.ts";
+import { formatPx } from "../../../shared/format/units.ts";
 import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
 export default function ReadabilityCard() {
   return (

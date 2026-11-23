@@ -1,12 +1,12 @@
 import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
-import { formatViewers } from "../../lib/format/stream.ts";
+import { formatViewers } from "../../shared/format/stream.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
 import TabMuteBadge from "./TabMuteBadge.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";

@@ -14,7 +14,7 @@ import Card from "../../kit/Card.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Message from "../feed/message/Message.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   mention: Mention;

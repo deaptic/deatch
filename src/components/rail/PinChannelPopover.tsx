@@ -7,7 +7,7 @@ import { userFromSearch } from "../../lib/utils/knownUsers.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import Popover from "../../kit/Popover.tsx";
 import SearchPicker from "../../kit/SearchPicker.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   x: number;

@@ -1,20 +1,20 @@
 import { Show } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
-import { formatDonation } from "../../../lib/format/currency.ts";
+import { t } from "../../../shared/i18n/index.ts";
+import { formatMoney } from "../../../shared/format/currency.ts";
 import type { CharityCampaign } from "../../../lib/types/index.ts";
 import Meter from "../../../kit/Meter.tsx";
 import ActivityRow from "../ActivityRow.tsx";
 import { ActivityIcon } from "../activityIcons.tsx";
 
 export default function CharityRow(props: { charity: CharityCampaign }) {
-  const raised = () => formatDonation(props.charity.current);
+  const raised = () => formatMoney(props.charity.current);
   const target = () => props.charity.target;
   const meta = () => {
     const goal = target();
     return goal
       ? t("HEADER_CHARITY_PROGRESS_STATUS", {
           current: raised(),
-          target: formatDonation(goal),
+          target: formatMoney(goal),
         })
       : t("HEADER_CHARITY_RAISED_STATUS", { current: raised() });
   };

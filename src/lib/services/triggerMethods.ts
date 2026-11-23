@@ -1,6 +1,6 @@
 import { type MethodSpec, parse, problems } from "./triggerTemplate.ts";
 import type { UserRef } from "../types/index.ts";
-import type { MessageKey } from "../i18n/index.ts";
+import type { MessageKey } from "../../shared/i18n/index.ts";
 import { knownUser } from "../stores/users.ts";
 
 export type TriggerContext = {

@@ -1,7 +1,7 @@
 import { Clapperboard, Plus, X } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import * as clips from "../../lib/services/clips.ts";

@@ -6,7 +6,7 @@ import {
   Trash2,
 } from "lucide-solid";
 import { Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
@@ -14,7 +14,7 @@ import MenuItem from "../../kit/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import { textOf } from "../../lib/utils/message.ts";
-import * as clipboard from "../../lib/services/clipboard.ts";
+import * as clipboard from "../../kit/clipboard.ts";
 
 type Props = {
   x: number;

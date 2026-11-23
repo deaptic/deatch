@@ -17,7 +17,7 @@ import type {
   Condition,
   ConditionalReply,
 } from "../../../lib/stores/preferences.ts";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 
 type Props = Targeting & {
   reply: ConditionalReply;

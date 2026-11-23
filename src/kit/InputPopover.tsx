@@ -3,7 +3,7 @@ import Field from "./Field.tsx";
 import IconButton from "./IconButton.tsx";
 import Popover from "./Popover.tsx";
 import { autofocus } from "../shared/solid/focus.ts";
-import { t } from "../lib/i18n/index.ts";
+import { t } from "../shared/i18n/index.ts";
 
 type Props = {
   x: number;

@@ -1,10 +1,10 @@
 import { createSignal, For, onMount, Show } from "solid-js";
-import { t, tRich } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../shared/i18n/index.ts";
 import { getBan } from "../../platform/twitch/moderation.ts";
 import * as activity from "../../lib/services/activity.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
-import { formatElapsed } from "../../lib/format/duration.ts";
+import { formatElapsed } from "../../shared/format/duration.ts";
 import type {
   BannedUser,
   UnbanDecision,

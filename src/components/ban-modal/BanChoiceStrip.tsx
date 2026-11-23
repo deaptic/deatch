@@ -4,8 +4,8 @@ import {
   type BanChoice,
   TIMEOUT_PRESETS,
 } from "../../lib/constants/timeouts.ts";
-import { t } from "../../lib/i18n/index.ts";
-import { formatDuration } from "../../lib/format/duration.ts";
+import { t } from "../../shared/i18n/index.ts";
+import { formatDuration } from "../../shared/format/duration.ts";
 
 type Props = {
   value?: BanChoice;

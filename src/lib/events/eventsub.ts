@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { listenApp, unlistenAll } from "./listen.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
 import { setChatConnected } from "../stores/eventsub.ts";

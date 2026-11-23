@@ -1,4 +1,4 @@
-import { formatCountdown } from "../../../lib/format/duration.ts";
+import { formatCountdown } from "../../../shared/format/duration.ts";
 import * as clock from "../../../lib/services/clock.ts";
 
 export function untilIso(iso: string): string {

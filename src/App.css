@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@custom-variant compact (&:where([data-density="compact"] *));
+@custom-variant spacious (&:where([data-density="spacious"] *));
+
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
   font-style: normal;

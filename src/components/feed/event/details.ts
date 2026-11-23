@@ -29,7 +29,7 @@ import {
 import type { Component } from "solid-js";
 import { NOTICE_TO_EVENT } from "../../../lib/constants/events.ts";
 import { GROUP_COLORS } from "../groups.ts";
-import type { MessageKey } from "../../../lib/i18n/index.ts";
+import type { MessageKey } from "../../../shared/i18n/index.ts";
 import type {
   AnnouncementColor,
   FeedEvent as Event,

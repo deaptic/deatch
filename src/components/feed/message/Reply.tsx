@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import type { FeedMessage as Message } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import ChatterPicture, {
   chatterTint,
 } from "../../../features/message/ChatterPicture.tsx";

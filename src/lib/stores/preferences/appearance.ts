@@ -6,9 +6,9 @@ import {
   stepStop,
   type UiDensity,
   ZOOM_STEPS,
-} from "../../constants/accessibility.ts";
+} from "../../../shared/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
-import type { Language } from "../../i18n/index.ts";
+import type { Language } from "../../../shared/i18n/index.ts";
 
 export const appearanceTheme = () => prefs.appearance.theme;
 export const appearanceLanguage = () => prefs.appearance.language;

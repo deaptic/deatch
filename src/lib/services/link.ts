@@ -23,11 +23,11 @@ import { focusWindow, onWindowFocusChanged } from "../../platform/window.ts";
 import { channelUrl } from "../utils/twitchUrl.ts";
 import type { CompressorSettings } from "../constants/audio.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
-import { addToast } from "../stores/toasts.ts";
+import { addToast } from "../../kit/toasts.ts";
 import * as users from "./users.ts";
 import type { LinkState, SetAudioParams, User } from "../types/index.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
 import { planLinkState } from "../utils/linkPlan.ts";
 

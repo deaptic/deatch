@@ -7,10 +7,10 @@ import {
   Show,
 } from "solid-js";
 import { Check, ChevronDown, X } from "lucide-solid";
-import * as shortcuts from "../lib/services/shortcuts.ts";
+import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../shared/solid/createListbox.ts";
 import Field from "./Field.tsx";
-import { t } from "../lib/i18n/index.ts";
+import { t } from "../shared/i18n/index.ts";
 
 type Props = {
   value: string;

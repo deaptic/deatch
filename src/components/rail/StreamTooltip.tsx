@@ -5,11 +5,11 @@ import {
   formatViewers,
   streamGame,
   streamTitle,
-} from "../../lib/format/stream.ts";
+} from "../../shared/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
 import type { ChannelInfo, Stream, User } from "../../lib/types/index.ts";
 import Stat from "../../kit/Stat.tsx";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 export default function StreamTooltip(props: {
   user: User;

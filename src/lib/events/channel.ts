@@ -1,9 +1,9 @@
-import { t } from "../i18n/index.ts";
-import { formatList } from "../format/list.ts";
+import { t } from "../../shared/i18n/index.ts";
+import { formatList } from "../../shared/format/list.ts";
 import { listenEventSub, listenFeed, unlistenAll } from "./listen.ts";
-import { formatApproxDuration } from "../format/duration.ts";
+import { formatApproxDuration } from "../../shared/format/duration.ts";
 import { feedEvent, person } from "../utils/feedEvent.ts";
-import { formatAmount } from "../format/currency.ts";
+import { formatMoney } from "../../shared/format/currency.ts";
 import {
   AD_BREAK,
   CHANNEL_UPDATE,
@@ -53,7 +53,11 @@ function appendSharedChat(
 }
 
 function campaignAmount(amount: RawCampaignAmount): string {
-  return formatAmount({ ...amount, decimal_place: amount.decimal_places });
+  return formatMoney({
+    value: amount.value,
+    decimalPlaces: amount.decimal_places,
+    currency: amount.currency,
+  });
 }
 
 function listenCharity(

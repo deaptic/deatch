@@ -3,7 +3,7 @@ import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
 } from "../types/index.ts";
-import { formatSuspicious } from "../format/suspicious.ts";
+import { formatSuspicious } from "./suspiciousText.ts";
 import { suspiciousInfo, suspiciousUpdate } from "./suspicious.ts";
 
 const user = { user_id: "2", user_login: "viewer1", user_name: "Viewer1" };

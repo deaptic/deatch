@@ -1,5 +1,5 @@
 import { For, type JSX } from "solid-js";
-import { formatWholePercent } from "../../lib/format/units.ts";
+import { formatWholePercent } from "../../shared/format/units.ts";
 import LabeledBar from "./LabeledBar.tsx";
 
 export type BarOption = {

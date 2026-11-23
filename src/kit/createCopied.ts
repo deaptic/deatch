@@ -1,5 +1,5 @@
 import { createSignal, onCleanup } from "solid-js";
-import * as clipboard from "../lib/services/clipboard.ts";
+import * as clipboard from "./clipboard.ts";
 
 const SHOW_MS = 1200;
 

@@ -1,6 +1,6 @@
 import type { FeedEntry, FeedMessage } from "../types/index.ts";
-import { formatLocale, t } from "../i18n/index.ts";
-import { daysBetween } from "./time.ts";
+import { formatLocale, t } from "../../shared/i18n/index.ts";
+import { daysBetween } from "../../shared/time.ts";
 
 export const GROUP_WINDOW_MS = 7 * 60 * 1000;
 

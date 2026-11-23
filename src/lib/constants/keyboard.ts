@@ -1,4 +1,4 @@
-import type { MessageKey } from "../i18n/index.ts";
+import type { MessageKey } from "../../shared/i18n/index.ts";
 
 export const CHANNEL_SELECT = /^channel::select(\d)$/;
 

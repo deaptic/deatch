@@ -1,7 +1,7 @@
 import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { knownUser } from "../../lib/stores/users.ts";
-import { avatarZoom, sizedAvatarUrl } from "../../lib/utils/avatar.ts";
+import { avatarZoom, sizedAvatarUrl } from "../../shared/avatar.ts";
 import { hueOf } from "../../lib/utils/color.ts";
 import { createImageReveal } from "../../shared/solid/createImageReveal.ts";
 

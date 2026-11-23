@@ -3,8 +3,8 @@ import { createSignal, onMount, Show } from "solid-js";
 import { getBan } from "../../platform/twitch/moderation.ts";
 import * as bans from "../../lib/services/bans.ts";
 import { type BanChoice, secondsFor } from "../../lib/constants/timeouts.ts";
-import { formatDuration } from "../../lib/format/duration.ts";
-import { Time } from "../../lib/utils/time.ts";
+import { formatDuration } from "../../shared/format/duration.ts";
+import { Time } from "../../shared/time.ts";
 import Button from "../../kit/Button.tsx";
 import Callout from "../../kit/Callout.tsx";
 import Dialog from "../../kit/Dialog.tsx";
@@ -12,7 +12,7 @@ import { autofocus } from "../../shared/solid/focus.ts";
 import Textarea from "../../kit/Textarea.tsx";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";
 import { hasPermission } from "../../lib/stores/roles.ts";
-import { t, tRich } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../shared/i18n/index.ts";
 
 type Props = {
   userId: string;

@@ -1,4 +1,4 @@
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { createEffect } from "solid-js";
 import { setMentionsBadge } from "../../platform/notifications.ts";
 import * as appearance from "../services/appearance.ts";

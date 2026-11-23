@@ -1,4 +1,4 @@
-import { type MessageKey, t } from "../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import {
   Ban,
   Eye,

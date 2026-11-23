@@ -1,4 +1,4 @@
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
 import Slider from "../../kit/Slider.tsx";
 import {
@@ -11,7 +11,7 @@ type Props = {
   login: string;
 };
 
-import { formatWholePercent } from "../../lib/format/units.ts";
+import { formatWholePercent } from "../../shared/format/units.ts";
 export default function TabVolume(props: Props) {
   const gain = () => channelGain(props.login);
 

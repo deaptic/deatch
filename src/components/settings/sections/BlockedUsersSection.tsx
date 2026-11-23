@@ -1,5 +1,5 @@
 import { For, Show } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import * as blocks from "../../../lib/services/blocks.ts";
 import { blockedUsers } from "../../../lib/stores/blocks.ts";
 import Button from "../../../kit/Button.tsx";

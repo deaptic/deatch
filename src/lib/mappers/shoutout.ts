@@ -1,5 +1,5 @@
-import { formatSpan } from "../format/duration.ts";
-import { t } from "../i18n/index.ts";
+import { formatSpan } from "../../shared/format/duration.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type {
   FeedEvent,
   RawShoutout,

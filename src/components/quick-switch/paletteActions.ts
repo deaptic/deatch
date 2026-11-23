@@ -12,7 +12,7 @@ import {
   Trophy,
   Tv,
 } from "lucide-solid";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { startCommercial } from "../../platform/twitch/channels.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import { createStreamMarker } from "../../platform/twitch/streams.ts";

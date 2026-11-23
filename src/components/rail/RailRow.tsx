@@ -4,7 +4,7 @@ import RowIndicator from "../../kit/RowIndicator.tsx";
 import { createSideTip } from "../../kit/createSideTip.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
-import { railRowHeight } from "../../kit/rowHeight.ts";
+import { RAIL_ROW_HEIGHT } from "../../kit/density.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
@@ -69,7 +69,7 @@ export default function RailRow(props: Props) {
           if (props.card || !expanded()) tip.show(e.currentTarget);
         }}
         onMouseLeave={tip.hide}
-        class={`group relative w-full ${railRowHeight()} flex items-center px-2 text-left cursor-pointer ${
+        class={`group relative w-full ${RAIL_ROW_HEIGHT} flex items-center px-2 text-left cursor-pointer ${
           props.dimmed ? "opacity-40" : ""
         }`}
       >

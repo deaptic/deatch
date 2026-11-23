@@ -1,5 +1,5 @@
 import { Smile, X } from "lucide-solid";
-import { t, tRich } from "../../lib/i18n/index.ts";
+import { t, tRich } from "../../shared/i18n/index.ts";
 import {
   createEffect,
   createSignal,
@@ -10,7 +10,7 @@ import {
   Show,
   Suspense,
 } from "solid-js";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import { fieldFrom } from "../../shared/solid/createListbox.ts";
 import * as chat from "../../lib/services/chat.ts";

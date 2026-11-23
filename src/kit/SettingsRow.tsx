@@ -1,5 +1,5 @@
 import { type JSX, Show, useContext } from "solid-js";
-import { matchesQuery } from "../lib/utils/textQuery.ts";
+import { matchesQuery } from "../shared/textQuery.ts";
 import { SettingsQuery } from "./settingsQuery.ts";
 
 type Props = {

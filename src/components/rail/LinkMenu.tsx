@@ -26,8 +26,8 @@ import {
   setLinkCompressor,
 } from "../../lib/stores/preferences.ts";
 import * as link from "../../lib/services/link.ts";
-import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { t } from "../../lib/i18n/index.ts";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   x: number;

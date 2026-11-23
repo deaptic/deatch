@@ -1,4 +1,4 @@
-import { formatLocale, t } from "../i18n/index.ts";
+import { formatLocale, t } from "./i18n/index.ts";
 
 export type TimeFormat = "t" | "T" | "d" | "D" | "f" | "F" | "r" | "R" | "c";
 

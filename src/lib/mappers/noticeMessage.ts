@@ -1,5 +1,5 @@
-import { formatAmount } from "../format/currency.ts";
-import { t } from "../i18n/index.ts";
+import { formatMoney } from "../../shared/format/currency.ts";
+import { t } from "../../shared/i18n/index.ts";
 import type { RawNoticeDetails, RawNotification } from "../types/index.ts";
 
 type Plan = { sub_tier: string; is_prime?: boolean | null };
@@ -107,7 +107,11 @@ export function noticeMessage(raw: RawNotification): string | null {
       return d
         ? t("FEED_CHARITY_DONATED_LINE", {
             name,
-            amount: formatAmount(d.amount),
+            amount: formatMoney({
+              value: d.amount.value,
+              decimalPlaces: d.amount.decimal_place,
+              currency: d.amount.currency,
+            }),
             charity: d.charity_name,
           })
         : null;

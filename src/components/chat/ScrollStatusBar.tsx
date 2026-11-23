@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-solid";
 import { Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
   unseen: number;

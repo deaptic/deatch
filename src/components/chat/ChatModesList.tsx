@@ -1,6 +1,6 @@
 import { Check } from "lucide-solid";
 import { For } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";

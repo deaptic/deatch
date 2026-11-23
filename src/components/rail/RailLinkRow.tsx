@@ -1,6 +1,6 @@
 import { Eye } from "lucide-solid";
 import { Show } from "solid-js";
-import { t } from "../../lib/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { linkAudioLink } from "../../lib/stores/preferences.ts";
 import { linkConnected, linkWarmedChannels } from "../../lib/stores/link.ts";
 import { linkSynced } from "../../lib/stores/view.ts";

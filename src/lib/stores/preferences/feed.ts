@@ -6,7 +6,7 @@ import {
   FONT_SIZE_STEPS,
   GROUP_SPACING_STEPS,
   stepStop,
-} from "../../constants/accessibility.ts";
+} from "../../../shared/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
 
 export const feedFontSize = () => prefs.feed.fontSize;

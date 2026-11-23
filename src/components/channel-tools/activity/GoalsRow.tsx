@@ -1,9 +1,5 @@
 import { For, Show } from "solid-js";
-import {
-  goalProgress,
-  goalsTitle,
-  goalTitle,
-} from "../../../lib/format/goals.ts";
+import { goalProgress, goalsTitle, goalTitle } from "./goalText.ts";
 import type { Goal } from "../../../lib/types/index.ts";
 import Meter from "../../../kit/Meter.tsx";
 import ActivityRow from "../ActivityRow.tsx";

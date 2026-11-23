@@ -1,6 +1,6 @@
 import { createEffect } from "solid-js";
 import { setWindowTitle } from "../../platform/window.ts";
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { selectedChannel } from "../stores/view.ts";
 import * as sevenTv from "../services/sevenTv.ts";
 import { clearChannelEmotes } from "../stores/emotes.ts";

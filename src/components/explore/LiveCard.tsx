@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import { Clock, Users } from "lucide-solid";
 import type { Stream, User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
-import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
+import { formatUptime, formatViewers } from "../../shared/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Thumbnail from "../../kit/Thumbnail.tsx";

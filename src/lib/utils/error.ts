@@ -1,4 +1,4 @@
-import { type MessageKey, t } from "../i18n/index.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import type { AppError } from "../types/index.ts";
 
 type GenericKind = Exclude<AppError["kind"], "helix">;

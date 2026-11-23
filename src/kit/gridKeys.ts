@@ -1,4 +1,4 @@
-import { gridStep } from "../lib/utils/gridStep.ts";
+import { gridStep } from "./gridStep.ts";
 
 const columnsOf = (items: HTMLElement[]) =>
   items.filter((el) => el.offsetTop === items[0]?.offsetTop).length;

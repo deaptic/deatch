@@ -1,8 +1,8 @@
 import * as channelInfo from "../channelInfo.ts";
 import { modifyChannelInformation } from "../../../platform/twitch/channels.ts";
-import { t } from "../../i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../stores/channels.ts";
-import { streamTitle } from "../../format/stream.ts";
+import { streamTitle } from "../../../shared/format/stream.ts";
 import type { BuiltInContext } from "./context.ts";
 
 export async function title(ctx: BuiltInContext): Promise<string | null> {

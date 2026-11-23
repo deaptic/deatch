@@ -1,6 +1,6 @@
 import { Gem, Plus, Sword } from "lucide-solid";
 import { createSignal, For, type JSX, Show } from "solid-js";
-import { type MessageKey, t } from "../../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 import * as channelSearch from "../../../lib/services/channelSearch.ts";
 import * as chatters from "../../../lib/services/chatters.ts";
 import type { Role } from "../../../lib/services/chatters.ts";

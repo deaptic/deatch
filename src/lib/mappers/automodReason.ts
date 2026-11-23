@@ -1,5 +1,5 @@
 import type { RawAutomodMessageHold } from "../types/index.ts";
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 function blockedTerms(
   p: Exclude<RawAutomodMessageHold, { reason: "automod" }>,

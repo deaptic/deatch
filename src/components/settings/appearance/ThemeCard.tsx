@@ -1,4 +1,4 @@
-import { LANGUAGE_NAMES, LANGUAGES, t } from "../../../lib/i18n/index.ts";
+import { LANGUAGE_NAMES, LANGUAGES, t } from "../../../shared/i18n/index.ts";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
 import ColorPicker from "../../../kit/ColorPicker.tsx";

@@ -1,6 +1,6 @@
 import { createEffect, on } from "solid-js";
 import type { User } from "../types/index.ts";
-import { addToast } from "../stores/toasts.ts";
+import { addToast } from "../../kit/toasts.ts";
 import * as users from "../services/users.ts";
 import {
   stepVisits,
@@ -17,7 +17,7 @@ import { linkFocus } from "../../platform/link.ts";
 import { reportFailure } from "../../platform/invoke.ts";
 import { ensureFeed } from "../stores/feeds.ts";
 import * as inbox from "../services/inbox.ts";
-import { t } from "../i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 export type ChannelNavigation = {
   selectChannel: (ch: User) => void;

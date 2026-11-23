@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
 import Segmented from "../../../kit/Segmented.tsx";
@@ -8,7 +8,7 @@ import Toggle from "../../../kit/Toggle.tsx";
 import {
   GROUP_SPACING_STEPS,
   ZOOM_STEPS,
-} from "../../../lib/constants/accessibility.ts";
+} from "../../../shared/accessibility.ts";
 import { messageLayoutOptions, uiDensityOptions } from "./options.ts";
 import {
   appearanceUiDensity,
@@ -24,7 +24,7 @@ import {
   setFeedGroupSpacing,
 } from "../../../lib/stores/preferences.ts";
 
-import { formatPx, formatWholePercent } from "../../../lib/format/units.ts";
+import { formatPx, formatWholePercent } from "../../../shared/format/units.ts";
 export default function DensityCard() {
   return (
     <Card>

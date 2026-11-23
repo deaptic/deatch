@@ -7,7 +7,11 @@ import {
 import { EVENTS, type EventKey } from "../../constants/events.ts";
 import { DENSITIES, type Density } from "../../constants/density.ts";
 import { type Theme, THEMES } from "../../constants/theme.ts";
-import { type Language, LANGUAGES, systemLanguage } from "../../i18n/index.ts";
+import {
+  type Language,
+  LANGUAGES,
+  systemLanguage,
+} from "../../../shared/i18n/index.ts";
 import {
   clampToStops,
   FONT_SIZE_STEPS,
@@ -16,7 +20,7 @@ import {
   UI_DENSITIES,
   type UiDensity,
   ZOOM_STEPS,
-} from "../../constants/accessibility.ts";
+} from "../../../shared/accessibility.ts";
 import {
   clampControl,
   COMPRESSOR_CONTROLS,
