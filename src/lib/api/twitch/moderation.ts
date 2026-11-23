@@ -2,11 +2,13 @@ import { commands } from "../../bindings.ts";
 import type {
   AddBlockedTermParams,
   BannedUser,
+  BannedPage,
   BanUserParams,
   BlockedTerm,
   BroadcasterParams,
   BroadcasterUserParams,
   DeleteChatMessagesParams,
+  GetBannedUsersParams,
   ManageHeldAutomodMessageParams,
   RemoveBlockedTermParams,
   ResolveUnbanRequestParams,
@@ -167,4 +169,11 @@ export async function removeBlockedTerm(
     successMessage: t("BLOCKED_TERMS_REMOVED_TOAST"),
     ...options,
   });
+}
+
+export function getBannedUsers(
+  params: GetBannedUsersParams,
+  options?: InvokeOptions,
+): Promise<BannedPage> {
+  return invokeCommand(commands.getBannedUsers, [params], options);
 }

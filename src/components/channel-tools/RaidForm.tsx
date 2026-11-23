@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import { searchChannels } from "../../lib/api/twitch/search.ts";
+import * as channelSearch from "../../lib/services/channelSearch.ts";
 import * as raid from "../../lib/services/raid.ts";
 import type { SearchChannel } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
@@ -37,11 +37,7 @@ export default function RaidForm(props: Props) {
         autofocus
         label={t("HEADER_RAID_CHANNEL_LABEL")}
         placeholder={t("HEADER_RAID_CHANNEL_PLACEHOLDER")}
-        search={(query) =>
-          searchChannels({ query, first: 8 }, { silent: true }).then((found) =>
-            found.filter((c) => c.isLive),
-          )
-        }
+        search={(query) => channelSearch.find(query, (c) => c.isLive)}
         name={(c) => c.user.displayName}
         picture={(c) => (
           <Avatar src={c.profileImageUrl} alt={c.user.displayName} size={24} />

@@ -15,6 +15,7 @@ type Props<T> = {
   picture: (item: T) => JSX.Element;
   onPick: (item: T | null) => void;
   autofocus?: boolean;
+  floating?: boolean;
 };
 
 export default function SearchPicker<T>(props: Props<T>) {
@@ -54,7 +55,7 @@ export default function SearchPicker<T>(props: Props<T>) {
   }
 
   return (
-    <div class="flex flex-col gap-1">
+    <div class="relative flex flex-col gap-1">
       <Field
         ref={props.autofocus ? autofocus : undefined}
         icon={<Search />}
@@ -78,7 +79,11 @@ export default function SearchPicker<T>(props: Props<T>) {
       <Show when={results().length > 0}>
         <div
           {...listbox.list}
-          class="max-h-60 overflow-y-auto p-1 flex flex-col rounded-sm"
+          class={`max-h-60 overflow-y-auto p-1 flex flex-col ${
+            props.floating
+              ? "absolute top-full inset-x-0 mt-1 z-30 material-regular rounded-md enter-pop origin-top"
+              : "rounded-sm"
+          }`}
         >
           <For each={results()}>
             {(item, i) => (

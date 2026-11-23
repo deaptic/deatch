@@ -7,7 +7,7 @@ use crate::error::Result;
 use crate::twitch::ids::{MessageId, UnbanRequestId, UserId};
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
-use dto::{BannedUser, BlockedTerm, UnbanRequest};
+use dto::{BannedPage, BannedUser, BlockedTerm, UnbanRequest};
 use serde::Deserialize;
 use twitch_api::helix::moderation::{
     add_blocked_term::{AddBlockedTermBody, AddBlockedTermRequest},
@@ -104,6 +104,32 @@ pub async fn get_ban(
     request.user_id = vec![types::UserId::from(params.user_id)].into();
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(response.data.into_iter().next().map(BannedUser::from))
+}
+
+const BANNED_PAGE: usize = 100;
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct GetBannedUsersParams {
+    pub broadcaster_id: UserId,
+    #[serde(default)]
+    pub cursor: Option<String>,
+}
+
+pub async fn get_banned_users(
+    twitch: &Authed<'_>,
+    params: GetBannedUsersParams,
+) -> Result<BannedPage> {
+    let mut request = GetBannedUsersRequest::broadcaster_id(params.broadcaster_id.as_str());
+    request.first = Some(BANNED_PAGE);
+    request.after = params
+        .cursor
+        .map(|c| twitch_api::helix::Cursor::from(c).into());
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(BannedPage {
+        banned: response.data.into_iter().map(BannedUser::from).collect(),
+        cursor: response.pagination_data.cursor.map(|c| c.to_string()),
+    })
 }
 
 const UNBAN_REQUESTS_PAGE: usize = 100;

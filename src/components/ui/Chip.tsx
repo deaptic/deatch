@@ -45,7 +45,6 @@ export default function Chip(props: Props) {
       <button
         type="button"
         onClick={() => props.onRemove?.()}
-        data-tip={t("UI_REMOVE_LABEL")}
         aria-label={t("UI_CHIP_REMOVE_LABEL", { label: props.label })}
         class={`${base()} pr-2 cursor-pointer hover:text-ink hover:bg-overlay transition-colors duration-snap`}
       >

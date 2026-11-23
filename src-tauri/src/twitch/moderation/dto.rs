@@ -67,3 +67,10 @@ impl From<HelixBlockedTerm> for BlockedTerm {
         }
     }
 }
+
+#[derive(Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BannedPage {
+    pub banned: Vec<BannedUser>,
+    pub cursor: Option<String>,
+}

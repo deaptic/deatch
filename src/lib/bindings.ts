@@ -66,6 +66,7 @@ export const commands = {
 	text: string,
 } | null>("add_blocked_term", { params }),
 	removeBlockedTerm: (params: RemoveBlockedTermParams) => __TAURI_INVOKE<null>("remove_blocked_term", { params }),
+	getBannedUsers: (params: GetBannedUsersParams) => __TAURI_INVOKE<BannedPage>("get_banned_users", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
@@ -217,6 +218,11 @@ export type BanUserParams = {
 	userId: UserId,
 	duration?: number | null,
 	reason?: string | null,
+};
+
+export type BannedPage = {
+	banned: BannedUser[],
+	cursor: string | null,
 };
 
 export type BannedUser = {
@@ -501,6 +507,11 @@ export type GameId = string;
 export type GameRef = {
 	id: GameId,
 	name: string,
+};
+
+export type GetBannedUsersParams = {
+	broadcasterId: UserId,
+	cursor?: string | null,
 };
 
 export type GetChannelInformationParams = {

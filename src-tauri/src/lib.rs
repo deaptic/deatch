@@ -92,6 +92,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::moderation::commands::get_blocked_terms,
             twitch::moderation::commands::add_blocked_term,
             twitch::moderation::commands::remove_blocked_term,
+            twitch::moderation::commands::get_banned_users,
             twitch::moderation::commands::warn_user,
             twitch::moderation::commands::manage_held_automod_message,
             twitch::moderation::commands::get_shield_mode,

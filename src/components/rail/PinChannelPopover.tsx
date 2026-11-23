@@ -1,10 +1,9 @@
-import { searchChannels } from "../../lib/api/twitch/search.ts";
+import * as channelSearch from "../../lib/services/channelSearch.ts";
 import type { SearchChannel } from "../../lib/types/index.ts";
 import * as pins from "../../lib/services/pins.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { user } from "../../lib/stores/users.ts";
 import { userFromSearch } from "../../lib/utils/knownUsers.ts";
-import { rankChannels } from "../../lib/utils/channelRank.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Popover from "../ui/Popover.tsx";
 import SearchPicker from "../ui/SearchPicker.tsx";
@@ -16,9 +15,6 @@ type Props = {
   opener: () => HTMLElement | undefined;
   onClose: () => void;
 };
-
-const FETCHED = 20;
-const SHOWN = 8;
 
 export default function PinChannelPopover(props: Props) {
   const pinnable = (channel: SearchChannel) =>
@@ -43,12 +39,7 @@ export default function PinChannelPopover(props: Props) {
           autofocus
           label={t("RAIL_PIN_CHANNEL_LABEL")}
           placeholder={t("RAIL_PIN_CHANNEL_PLACEHOLDER")}
-          search={(query) =>
-            searchChannels({ query, first: FETCHED }, { silent: true }).then(
-              (found) =>
-                rankChannels(query, found.filter(pinnable)).slice(0, SHOWN),
-            )
-          }
+          search={(query) => channelSearch.find(query, pinnable)}
           name={(channel) => channel.user.displayName}
           picture={(channel) => (
             <Avatar

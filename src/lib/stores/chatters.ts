@@ -5,8 +5,8 @@ export type ChatterList = {
   chatters: UserRef[];
   total: number;
   cursor: string | null;
-  moderators: string[];
-  vips: string[];
+  moderators: UserRef[];
+  vips: UserRef[];
 };
 
 const EMPTY: ChatterList = {

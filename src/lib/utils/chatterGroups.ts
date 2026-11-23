@@ -28,9 +28,10 @@ function kindOf(user: UserRef, roles: Roles): ChatterGroupKind {
   return "viewers";
 }
 
-function matches(user: UserRef, query: string): boolean {
+export function matchesPerson(user: UserRef, query: string): boolean {
+  const q = query.trim().toLowerCase();
   return (
-    user.login.includes(query) || user.displayName.toLowerCase().includes(query)
+    !q || user.login.includes(q) || user.displayName.toLowerCase().includes(q)
   );
 }
 
@@ -39,10 +40,9 @@ export function groupChatters(
   roles: Roles,
   query: string,
 ): ChatterGroup[] {
-  const q = query.trim().toLowerCase();
   const byKind = new Map<ChatterGroupKind, UserRef[]>();
   for (const user of chatters) {
-    if (q && !matches(user, q)) continue;
+    if (!matchesPerson(user, query)) continue;
     const kind = kindOf(user, roles);
     byKind.set(kind, [...(byKind.get(kind) ?? []), user]);
   }

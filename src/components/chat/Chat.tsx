@@ -51,7 +51,7 @@ import {
 import { createPopover } from "../ui/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import Presence from "../ui/Presence.tsx";
-import ChatterDialog from "./ChatterDialog.tsx";
+import PeopleDialog from "./people/PeopleDialog.tsx";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 
 type Props = {
@@ -299,7 +299,7 @@ export default function Chat(props: Props) {
 
       <Presence when={isMod() && isOverlayOpen("chatters")}>
         {() => (
-          <ChatterDialog
+          <PeopleDialog
             broadcasterId={props.broadcasterId}
             onClose={closeOverlay}
             onShowUserCard={openUserCard}

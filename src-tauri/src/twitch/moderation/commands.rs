@@ -1,7 +1,7 @@
-use super::dto::{BannedUser, BlockedTerm, UnbanRequest};
+use super::dto::{BannedPage, BannedUser, BlockedTerm, UnbanRequest};
 use crate::error::Result;
 use crate::twitch::moderation::{
-    self, AddBlockedTermParams, BanUserParams, DeleteChatMessagesParams,
+    self, AddBlockedTermParams, BanUserParams, DeleteChatMessagesParams, GetBannedUsersParams,
     ManageHeldAutomodMessageParams, RemoveBlockedTermParams, ResolveUnbanRequestParams,
     SetSuspiciousStatusParams, UpdateShieldModeParams, WarnUserParams,
 };
@@ -92,6 +92,15 @@ pub async fn remove_blocked_term(
     params: RemoveBlockedTermParams,
 ) -> Result<()> {
     moderation::remove_blocked_term(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_banned_users(
+    twitch: State<'_, Twitch>,
+    params: GetBannedUsersParams,
+) -> Result<BannedPage> {
+    moderation::get_banned_users(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]

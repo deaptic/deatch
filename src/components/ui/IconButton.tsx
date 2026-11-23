@@ -3,7 +3,7 @@ import Button, { type ButtonSize, type ButtonVariant } from "./Button.tsx";
 
 type Props = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   label: string;
-  tip?: string;
+  tip?: string | false;
   variant?: ButtonVariant;
   size?: ButtonSize;
   pressed?: boolean;
@@ -25,7 +25,7 @@ export default function IconButton(props: Props) {
       variant={local.variant ?? "ghost"}
       icon={local.children}
       aria-label={local.label}
-      data-tip={local.tip ?? local.label}
+      data-tip={local.tip === false ? undefined : (local.tip ?? local.label)}
     />
   );
 }
