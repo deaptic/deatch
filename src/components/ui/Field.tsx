@@ -1,4 +1,4 @@
-import { type JSX, Show, splitProps } from "solid-js";
+import { children, type JSX, Show, splitProps } from "solid-js";
 
 type Size = "sm" | "md" | "lg";
 type Look = "boxed" | "inline";
@@ -31,14 +31,15 @@ export default function Field(props: Props) {
     "icon",
     "trailing",
   ]);
+  const icon = children(() => local.icon);
   return (
     <label
       class={`inline-flex items-center gap-2.5 text-ink transition duration-snap focus-within:ring-3 focus-within:ring-accent-soft has-[:disabled]:opacity-40 ${
         LOOKS[local.look ?? "boxed"]
       } ${SIZES[local.size ?? "md"]} ${local.class ?? ""}`}
     >
-      <Show when={local.icon}>
-        <span class="shrink-0 text-ink-soft [&>svg]:size-4">{local.icon}</span>
+      <Show when={icon.toArray().length}>
+        <span class="shrink-0 text-ink-soft [&>svg]:size-4">{icon()}</span>
       </Show>
       <input
         type="text"

@@ -6,7 +6,7 @@ import { MenuClose } from "./menuClose.ts";
 type Props = {
   label: string;
   icon?: JSX.Element;
-  hint?: JSX.Element | string;
+  hint?: string;
   shortcut?: string;
   submenu?: boolean;
   active?: boolean;

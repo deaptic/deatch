@@ -1,4 +1,4 @@
-import { type JSX, Show, splitProps } from "solid-js";
+import { children, type JSX, Show, splitProps } from "solid-js";
 import Loading from "./Loading.tsx";
 
 export type ButtonVariant =
@@ -68,7 +68,10 @@ export default function Button(props: Props) {
   ]);
   const size = () => local.size ?? "md";
   const variant = () => local.variant ?? "accent";
-  const iconOnly = () => local.icon !== undefined && local.children == null;
+  const icon = children(() => local.icon);
+  const content = children(() => local.children);
+  const iconOnly = () =>
+    icon.toArray().length > 0 && content.toArray().length === 0;
   const style = () =>
     (local.pressed && PRESSED[variant()]) || VARIANTS[variant()];
 
@@ -90,8 +93,8 @@ export default function Button(props: Props) {
         </span>
       </Show>
       <span class={`contents ${local.loading ? "invisible" : ""}`}>
-        {local.icon}
-        {local.children}
+        {icon()}
+        {content()}
       </span>
     </button>
   );

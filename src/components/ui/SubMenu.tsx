@@ -5,7 +5,7 @@ import { MenuPages } from "./MenuHost.tsx";
 type Props = {
   label: string;
   icon?: JSX.Element;
-  hint?: JSX.Element | string;
+  hint?: string;
   disabled?: boolean;
   children: JSX.Element;
 };

@@ -229,6 +229,7 @@
   "ERROR_MISSING_SCOPE_ERROR": "Käyttöoikeuksia puuttuu. Kirjaudu uudelleen.",
   "ERROR_NETWORK_ERROR": "Verkkovirhe. Tarkista yhteytesi.",
   "ERROR_NOT_AUTHENTICATED_ERROR": "Et ole kirjautunut Twitchiin",
+  "ERROR_UNEXPECTED_TOAST": "Jokin meni pieleen",
   "EXPLORE_CATEGORIES_TITLE": "Kategoriat",
   "EXPLORE_CHANNELS_TITLE": "Kanavat",
   "EXPLORE_CHANNEL_NOT_FOUND_ERROR": "Kanavaa ei löytynyt",

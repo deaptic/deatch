@@ -1,6 +1,15 @@
 import { writeLog } from "../api/log.ts";
 import type { LogLevel } from "../types/index.ts";
 import { formatLog } from "../utils/formatLog.ts";
+import { createErrorThrottle } from "../utils/errorThrottle.ts";
+import { addToast } from "../stores/toasts.ts";
+import { t } from "../i18n/index.ts";
+
+const SAME_ERROR_QUIET_MS = 60_000;
+
+function messageOf(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 export function start(): () => void {
   const original = { warn: console.warn, error: console.error };
@@ -10,10 +19,22 @@ export function start(): () => void {
       original.error("log forwarding failed", e),
     );
 
-  const onError = (event: ErrorEvent) =>
-    forward("error", ["uncaught", event.error ?? event.message]);
-  const onRejection = (event: PromiseRejectionEvent) =>
-    forward("error", ["unhandled rejection", event.reason]);
+  const shouldShow = createErrorThrottle(SAME_ERROR_QUIET_MS);
+  const notify = (error: unknown) => {
+    const message = messageOf(error);
+    if (shouldShow(message, Date.now())) {
+      addToast(t("ERROR_UNEXPECTED_TOAST"), "error", message);
+    }
+  };
+
+  const onError = (event: ErrorEvent) => {
+    void forward("error", ["uncaught", event.error ?? event.message]);
+    notify(event.error ?? event.message);
+  };
+  const onRejection = (event: PromiseRejectionEvent) => {
+    void forward("error", ["unhandled rejection", event.reason]);
+    notify(event.reason);
+  };
 
   console.warn = (...args: unknown[]) => {
     original.warn(...args);
