@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from "vite-plus/test";
+import { beforeEach, expect, test, vi } from "vite-plus/test";
 import type { FeedEntry, User } from "../../types/index.ts";
 import { userFromRef } from "../../utils/knownUsers.ts";
 import { commitSelectedChannel } from "../view.ts";
@@ -12,7 +12,13 @@ import {
   markSeen,
 } from "./read.ts";
 import { setPaused } from "./mutate.ts";
-import { setBlockedUsers } from "../blocks.ts";
+import * as blocks from "../../../features/blocks/index.ts";
+
+vi.mock("../../../platform/twitch/blocks.ts", () => ({
+  blockUser: () => Promise.resolve(),
+  unblockUser: () => Promise.resolve(),
+  getBlockedUsers: () => Promise.resolve([]),
+}));
 
 const message = (id: string, chatter = "c1"): FeedEntry =>
   ({
@@ -84,11 +90,11 @@ test("hidden event types and messages drop out, AutoMod holds stay", () => {
   expect(isFeedEntryVisible(held)).toBe(true);
 });
 
-test("messages from blocked users are hidden until they are unblocked", () => {
-  setBlockedUsers([{ id: "c2", login: "viewer2", displayName: "viewer2" }]);
+test("messages from blocked users are hidden until they are unblocked", async () => {
+  await blocks.block({ id: "c2", login: "viewer2", displayName: "viewer2" });
   expect(isFeedEntryVisible(message("m", "c2"))).toBe(false);
   expect(isFeedEntryVisible(message("m", "c1"))).toBe(true);
-  setBlockedUsers([]);
+  await blocks.unblock("c2");
   expect(isFeedEntryVisible(message("m", "c2"))).toBe(true);
 });
 

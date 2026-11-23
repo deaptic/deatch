@@ -3,12 +3,10 @@ import { selectedChannel } from "../stores/view.ts";
 import { clearChatters } from "../stores/users.ts";
 import * as channels from "../../features/channels/index.ts";
 import * as sevenTv from "../services/sevenTv.ts";
-import * as chatSettings from "../services/chatSettings.ts";
 import * as cheermotes from "../services/cheermotes.ts";
 import * as badges from "../services/badges.ts";
 import * as emotes from "../services/emotes.ts";
 import * as channelInfo from "../services/channelInfo.ts";
-import { clearChatSettings } from "../stores/chatSettings.ts";
 import { clearCheermotes } from "../stores/cheermotes.ts";
 import { clearDraft } from "../stores/drafts.ts";
 import { clearSentMessages } from "../stores/sentMessages.ts";
@@ -27,11 +25,6 @@ export function createChannelHooks(): void {
     channels.onChannel({
       join: (id) => void sevenTv.subscribe(id),
       leave: sevenTv.unsubscribe,
-    }),
-    channels.onChannel({
-      join: (id) => void chatSettings.load(id),
-      focus: (id) => void chatSettings.load(id),
-      leave: clearChatSettings,
     }),
     channels.onChannel({
       join: (id) => void cheermotes.load(id),

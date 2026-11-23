@@ -1,19 +1,19 @@
 import { Check } from "lucide-solid";
 import { For } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
+import { forChannel } from "./store.ts";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
 import { CHAT_MODES, type ChatMode, isOn, presetLabel } from "./modes.ts";
 import ChatModePresets from "./ChatModePresets.tsx";
-import * as chatSettings from "../../lib/services/chatSettings.ts";
+import * as chatSettings from "./store.ts";
 
 type Props = {
   broadcasterId: string;
 };
 
 export default function ChatModesList(props: Props) {
-  const settings = () => chatSettingsFor(props.broadcasterId);
+  const settings = () => forChannel(props.broadcasterId);
   const on = (mode: ChatMode) => {
     const s = settings();
     return s ? isOn(mode, s) : false;

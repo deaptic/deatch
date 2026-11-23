@@ -1,15 +1,15 @@
 import { For, Show } from "solid-js";
-import { t } from "../../../shared/i18n/index.ts";
-import * as blocks from "../../../lib/services/blocks.ts";
-import { blockedUsers } from "../../../lib/stores/blocks.ts";
-import Button from "../../../kit/Button.tsx";
-import Card from "../../../kit/Card.tsx";
-import PageBody from "../../../kit/PageBody.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
+import { t } from "../../shared/i18n/index.ts";
+import * as blocks from "./store.ts";
+import { blocked } from "./store.ts";
+import Button from "../../kit/Button.tsx";
+import Card from "../../kit/Card.tsx";
+import PageBody from "../../kit/PageBody.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
 
 export default function BlockedUsersSettings() {
   const sorted = () =>
-    blockedUsers().toSorted((a, b) => a.login.localeCompare(b.login));
+    blocked().toSorted((a, b) => a.login.localeCompare(b.login));
   return (
     <PageBody title={t("SETTINGS_BLOCKED_TITLE")}>
       <Card>

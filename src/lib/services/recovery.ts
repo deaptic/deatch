@@ -1,5 +1,5 @@
 import * as backlog from "./backlog.ts";
-import * as chatSettings from "./chatSettings.ts";
+import * as chatSettings from "../../features/chat-modes/index.ts";
 import { knownUser } from "../stores/users.ts";
 import { selectedChannel } from "../stores/view.ts";
 import { createLimiter } from "../utils/limiter.ts";

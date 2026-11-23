@@ -1,10 +1,10 @@
 import { Check } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
+import { forChannel } from "./store.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
-import * as chatSettings from "../../lib/services/chatSettings.ts";
+import * as chatSettings from "./store.ts";
 import { presetLabel, type TimedMode } from "./modes.ts";
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 
 export default function ChatModePresets(props: Props) {
   const current = () => {
-    const s = chatSettingsFor(props.broadcasterId);
+    const s = forChannel(props.broadcasterId);
     return s ? props.mode.current(s) : null;
   };
 

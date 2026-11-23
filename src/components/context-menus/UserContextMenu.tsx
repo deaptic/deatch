@@ -21,7 +21,7 @@ import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { setSuspiciousStatus } from "../../platform/twitch/moderation.ts";
 import type { SuspiciousStatus } from "../../lib/types/index.ts";
 import Menu from "../../kit/Menu.tsx";
-import * as blocks from "../../lib/services/blocks.ts";
+import * as blocks from "../../features/blocks/index.ts";
 import { user as currentUser } from "../../lib/stores/users.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";

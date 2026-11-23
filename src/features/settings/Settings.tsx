@@ -38,7 +38,7 @@ import KeyboardSettings from "./sections/KeyboardSettings.tsx";
 import AdvancedSettings from "./sections/AdvancedSettings.tsx";
 import { TriggerSettings } from "../triggers/index.ts";
 import { LinkSettings } from "../link/index.ts";
-import BlockedUsersSettings from "./sections/BlockedUsersSettings.tsx";
+import { BlockedUsersSettings } from "../blocks/index.ts";
 
 const SECTIONS: {
   key: SettingsSection;

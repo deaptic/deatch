@@ -1,12 +1,19 @@
-import { createEffect, createRoot, on } from "solid-js";
+import { createEffect, createRoot, createSignal, on } from "solid-js";
 import {
   blockUser,
   getBlockedUsers,
   unblockUser,
 } from "../../platform/twitch/blocks.ts";
-import { blockedUsers, setBlockedUsers } from "../stores/blocks.ts";
-import { user } from "../stores/users.ts";
-import type { UserRef } from "../types/index.ts";
+import { user } from "../../lib/stores/users.ts";
+import type { UserRef } from "../../lib/types/index.ts";
+
+const [blocked, setBlocked] = createSignal<UserRef[]>([]);
+const blockedIds = () => new Set(blocked().map((u) => u.id));
+export { blocked };
+
+export function isBlocked(userId: string): boolean {
+  return blockedIds().has(userId);
+}
 
 export function start(): () => void {
   return createRoot((dispose) => {
@@ -14,10 +21,10 @@ export function start(): () => void {
       on(
         () => user()?.id,
         (id) => {
-          setBlockedUsers([]);
+          setBlocked([]);
           if (!id) return;
           getBlockedUsers({ silent: true })
-            .then(setBlockedUsers)
+            .then(setBlocked)
             .catch(() => {});
         },
       ),
@@ -28,13 +35,10 @@ export function start(): () => void {
 
 export async function block(target: UserRef): Promise<void> {
   await blockUser({ userId: target.id });
-  setBlockedUsers([
-    ...blockedUsers().filter((u) => u.id !== target.id),
-    target,
-  ]);
+  setBlocked([...blocked().filter((u) => u.id !== target.id), target]);
 }
 
 export async function unblock(userId: string): Promise<void> {
   await unblockUser({ userId });
-  setBlockedUsers(blockedUsers().filter((u) => u.id !== userId));
+  setBlocked(blocked().filter((u) => u.id !== userId));
 }

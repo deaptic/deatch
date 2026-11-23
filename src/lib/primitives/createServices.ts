@@ -20,7 +20,7 @@ import * as windowState from "../services/windowState.ts";
 import * as explore from "../../features/explore/index.ts";
 import * as channels from "../../features/channels/index.ts";
 import * as people from "../../features/people/index.ts";
-import * as blocks from "../services/blocks.ts";
+import * as blocks from "../../features/blocks/index.ts";
 
 export function createServices(): void {
   onMount(() => {

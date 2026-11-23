@@ -6,7 +6,7 @@ import { NOTICE_TO_EVENT } from "../../constants/events.ts";
 import type { FeedEntry } from "../../types/index.ts";
 import { historyViews } from "../history.ts";
 import { withLive } from "../../utils/historyView.ts";
-import { isBlocked } from "../blocks.ts";
+import { isBlocked } from "../../../features/blocks/index.ts";
 
 export function channelEntries(broadcasterId: string): FeedEntry[] {
   const live = feeds[broadcasterId]?.messages ?? [];

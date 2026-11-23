@@ -1,4 +1,7 @@
-import type { ChatSettings, RawChatSettingsUpdate } from "../types/index.ts";
+import type {
+  ChatSettings,
+  RawChatSettingsUpdate,
+} from "../../lib/types/index.ts";
 
 export function mapChatSettingsUpdate(
   raw: RawChatSettingsUpdate,

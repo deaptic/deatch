@@ -18,9 +18,8 @@ import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import * as activity from "../../features/activity/index.ts";
-import * as chatSettings from "../../lib/services/chatSettings.ts";
+import * as chatModes from "../../features/chat-modes/index.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
-import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import {
   type ChannelForm,
   setChannelForm,
@@ -33,7 +32,11 @@ import {
   showExplore,
   toggleSettings,
 } from "../../lib/stores/view.ts";
-import { CHAT_MODES, isOn, presetLabel } from "../chat/modes.ts";
+import {
+  CHAT_MODES,
+  isOn,
+  presetLabel,
+} from "../../features/chat-modes/index.ts";
 
 export type PaletteAction = {
   id: string;
@@ -68,10 +71,10 @@ function appActions(): PaletteAction[] {
 }
 
 function chatModeActions(broadcasterId: string): PaletteAction[] {
-  const settings = chatSettingsFor(broadcasterId);
+  const settings = chatModes.forChannel(broadcasterId);
   if (!settings) return [];
-  const apply = (change: chatSettings.ChatSettingsChange) => () =>
-    chatSettings.update(broadcasterId, change);
+  const apply = (change: chatModes.ChatSettingsChange) => () =>
+    chatModes.update(broadcasterId, change);
   return CHAT_MODES.flatMap((mode): PaletteAction[] => {
     const name = t(mode.label);
     const on = isOn(mode, settings);

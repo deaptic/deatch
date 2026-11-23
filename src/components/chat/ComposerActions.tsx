@@ -2,13 +2,12 @@ import { Clapperboard, Plus, X } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { t } from "../../shared/i18n/index.ts";
-import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import * as clips from "../../lib/services/clips.ts";
 import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
-import * as chatSettings from "../../lib/services/chatSettings.ts";
+import * as chatModes from "../../features/chat-modes/index.ts";
 import { showsControls } from "../../lib/stores/roles.ts";
 import {
   closeOverlay,
@@ -22,9 +21,9 @@ import IconButton from "../../kit/IconButton.tsx";
 import { MenuClose } from "../../kit/Menu.tsx";
 import MenuHost from "../../kit/MenuHost.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
-import ChatModesList from "./ChatModesList.tsx";
+import { ChatModesList } from "../../features/chat-modes/index.ts";
 import { ChannelToolItems } from "../../features/channel-tools/index.ts";
-import { activeModes, type ChatMode } from "./modes.ts";
+import { activeModes, type ChatMode } from "../../features/chat-modes/index.ts";
 
 type Props = {
   broadcasterId: string;
@@ -32,7 +31,7 @@ type Props = {
 };
 
 export default function ComposerActions(props: Props) {
-  const settings = () => chatSettingsFor(props.broadcasterId);
+  const settings = () => chatModes.forChannel(props.broadcasterId);
   const active = () => activeModes(settings());
   const isMod = () => showsControls(props.broadcasterId, "moderate");
   const open = () => isOverlayOpen("composerActions");
@@ -144,7 +143,7 @@ function ModeDetail(props: {
   broadcasterId: string;
   canTurnOff: boolean;
 }) {
-  const settings = () => chatSettingsFor(props.broadcasterId);
+  const settings = () => chatModes.forChannel(props.broadcasterId);
   const Icon = props.mode.icon;
   const turnOff = () =>
     t("COMPOSER_MODE_OFF_LABEL", { mode: t(props.mode.label) });
@@ -155,9 +154,7 @@ function ModeDetail(props: {
           type="button"
           disabled={!props.canTurnOff}
           aria-label={props.canTurnOff ? turnOff() : undefined}
-          onClick={() =>
-            chatSettings.update(props.broadcasterId, props.mode.off)
-          }
+          onClick={() => chatModes.update(props.broadcasterId, props.mode.off)}
           class="group w-full flex items-start gap-2.5 px-2.5 py-2 rounded-sm text-left transition-colors duration-snap enabled:cursor-pointer enabled:hover:bg-negative/10"
         >
           <Icon class="size-4 mt-0.5 shrink-0 text-accent-ink group-enabled:group-hover:hidden" />
