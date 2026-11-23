@@ -3,7 +3,7 @@ import { createEffect, createMemo, createResource, on, Show } from "solid-js";
 import * as users from "../../lib/services/users.ts";
 import { knownUser } from "../../lib/stores/users.ts";
 import { hasPermission } from "../../lib/stores/roles.ts";
-import { getSubscription } from "../../lib/api/twitch/subscriptions.ts";
+import { getSubscription } from "../../platform/twitch/subscriptions.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { Pin } from "lucide-solid";
 import { feeds } from "../../lib/stores/feeds.ts";

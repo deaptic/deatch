@@ -1,5 +1,5 @@
 import { createEffect, createRoot, createSignal, on } from "solid-js";
-import { isWindowMaximized, onWindowResized } from "../api/window.ts";
+import { isWindowMaximized, onWindowResized } from "../../platform/window.ts";
 import { createDebounced } from "../reactive/createDebounced.ts";
 import { setWindowMaximized } from "../stores/window.ts";
 

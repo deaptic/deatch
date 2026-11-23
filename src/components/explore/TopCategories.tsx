@@ -1,5 +1,5 @@
 import { createResource, Show } from "solid-js";
-import { getTopCategories } from "../../lib/api/twitch/search.ts";
+import { getTopCategories } from "../../platform/twitch/search.ts";
 import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
 import CategoryRow from "./CategoryRow.tsx";
 import { t } from "../../lib/i18n/index.ts";

@@ -1,4 +1,4 @@
-import { banUser, unbanUser } from "../api/twitch/moderation.ts";
+import { banUser, unbanUser } from "../../platform/twitch/moderation.ts";
 import { type BanChoice, secondsFor } from "../constants/timeouts.ts";
 import type { BroadcasterUserParams } from "../types/index.ts";
 

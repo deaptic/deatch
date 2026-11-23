@@ -1,5 +1,5 @@
-import { setHardwareAcceleration as save } from "../api/graphics.ts";
-import type { InvokeOptions } from "../api/utils.ts";
+import { setHardwareAcceleration as save } from "../../platform/graphics.ts";
+import type { InvokeOptions } from "../../platform/invoke.ts";
 import { setAdvancedHardwareAcceleration } from "../stores/preferences.ts";
 import * as exit from "./exit.ts";
 

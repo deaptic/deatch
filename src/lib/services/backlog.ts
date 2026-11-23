@@ -1,5 +1,5 @@
 import { t } from "../i18n/index.ts";
-import { getRecentMessages } from "../api/twitch/chat.ts";
+import { getRecentMessages } from "../../platform/twitch/chat.ts";
 import { chatterOf, mapChatMessage } from "../mappers/chat.ts";
 import { errorMessage } from "../utils/error.ts";
 import { textOf } from "../utils/message.ts";

@@ -8,18 +8,18 @@ import { type EmoteUse, withUse } from "../utils/emoteUsage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
-} from "../api/external/bttv.ts";
+} from "../../platform/external/bttv.ts";
 import {
   ffzGetChannelEmotes,
   ffzGetGlobalEmotes,
-} from "../api/external/ffz.ts";
-import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
+} from "../../platform/external/ffz.ts";
+import { seventvGetGlobalEmotes } from "../../platform/external/seventv.ts";
 import {
   getFollowerEmotes,
   getGlobalEmotes,
   getUserEmotes,
-} from "../api/twitch/chat.ts";
-import type { InvokeOptions } from "../api/utils.ts";
+} from "../../platform/twitch/chat.ts";
+import type { InvokeOptions } from "../../platform/invoke.ts";
 import { createEffect, createRoot } from "solid-js";
 import {
   bttvChannel,

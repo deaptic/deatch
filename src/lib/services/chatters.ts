@@ -3,13 +3,13 @@ import {
   getChannelModerators,
   getChannelVips,
   getChatters,
-} from "../api/twitch/chatters.ts";
+} from "../../platform/twitch/chatters.ts";
 import {
   addChannelModerator,
   addChannelVip,
   removeChannelModerator,
   removeChannelVip,
-} from "../api/twitch/channels.ts";
+} from "../../platform/twitch/channels.ts";
 import { chatterListFor, updateChatterList } from "../stores/chatters.ts";
 
 export type Role = "moderator" | "vip";

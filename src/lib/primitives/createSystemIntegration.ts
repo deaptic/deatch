@@ -1,6 +1,6 @@
 import { createEffect } from "solid-js";
-import { isAutostartEnabled, setAutostart } from "../api/autostart.ts";
-import { setAlwaysOnTop, setZoom } from "../api/window.ts";
+import { isAutostartEnabled, setAutostart } from "../../platform/autostart.ts";
+import { setAlwaysOnTop, setZoom } from "../../platform/window.ts";
 import {
   advancedAlwaysOnTop,
   advancedAutostart,

@@ -1,4 +1,4 @@
-import type { AppStats } from "../bindings.ts";
+import type { AppStats } from "../../platform/bindings.ts";
 
 export type CacheStats = {
   users: number;

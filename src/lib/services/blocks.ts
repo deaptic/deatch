@@ -3,7 +3,7 @@ import {
   blockUser,
   getBlockedUsers,
   unblockUser,
-} from "../api/twitch/blocks.ts";
+} from "../../platform/twitch/blocks.ts";
 import { blockedUsers, setBlockedUsers } from "../stores/blocks.ts";
 import { user } from "../stores/users.ts";
 import type { UserRef } from "../types/index.ts";

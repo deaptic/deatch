@@ -2,25 +2,25 @@ import { hasPermission } from "../stores/roles.ts";
 import {
   endPoll as endPollRequest,
   getActivePoll,
-} from "../api/twitch/polls.ts";
+} from "../../platform/twitch/polls.ts";
 import {
   endPrediction as endPredictionRequest,
   getActivePrediction,
-} from "../api/twitch/predictions.ts";
+} from "../../platform/twitch/predictions.ts";
 import type {
   Prediction,
   PredictionEnd,
   UnbanDecision,
 } from "../types/index.ts";
-import { getCharityCampaign } from "../api/twitch/charity.ts";
-import { getGoals } from "../api/twitch/goals.ts";
-import { getAdSchedule, snoozeNextAd } from "../api/twitch/ads.ts";
+import { getCharityCampaign } from "../../platform/twitch/charity.ts";
+import { getGoals } from "../../platform/twitch/goals.ts";
+import { getAdSchedule, snoozeNextAd } from "../../platform/twitch/ads.ts";
 import {
   getShieldMode,
   getUnbanRequests,
   resolveUnbanRequest,
   updateShieldMode,
-} from "../api/twitch/moderation.ts";
+} from "../../platform/twitch/moderation.ts";
 import {
   type Activity,
   activityFor,

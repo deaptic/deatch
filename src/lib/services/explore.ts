@@ -1,5 +1,5 @@
 import { createEffect, createRoot, on } from "solid-js";
-import { getStreams } from "../api/twitch/streams.ts";
+import { getStreams } from "../../platform/twitch/streams.ts";
 import {
   emptyLiveBrowse,
   exploreFilters,

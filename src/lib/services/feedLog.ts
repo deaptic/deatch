@@ -4,8 +4,8 @@ import {
   feedlogAround,
   feedlogClear,
   feedlogPage,
-} from "../api/feedLog.ts";
-import type { InvokeOptions } from "../api/utils.ts";
+} from "../../platform/feedLog.ts";
+import type { InvokeOptions } from "../../platform/invoke.ts";
 import { takeUnlogged } from "../stores/feeds.ts";
 import type { Cursor, FeedEntry } from "../types/index.ts";
 import { fromLog, toLogEntry } from "../utils/feedLog.ts";

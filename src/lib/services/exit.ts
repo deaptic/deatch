@@ -1,6 +1,6 @@
-import { relaunchApp } from "../api/app.ts";
-import type { InvokeOptions } from "../api/utils.ts";
-import { onWindowCloseRequested } from "../api/window.ts";
+import { relaunchApp } from "../../platform/app.ts";
+import type { InvokeOptions } from "../../platform/invoke.ts";
+import { onWindowCloseRequested } from "../../platform/window.ts";
 import * as feedLog from "./feedLog.ts";
 import * as inbox from "./inbox.ts";
 import * as users from "./users.ts";

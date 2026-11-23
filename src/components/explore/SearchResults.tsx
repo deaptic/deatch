@@ -12,7 +12,7 @@ import type { Category, SearchChannel, User } from "../../lib/types/index.ts";
 import {
   searchCategories,
   searchChannels,
-} from "../../lib/api/twitch/search.ts";
+} from "../../platform/twitch/search.ts";
 import * as users from "../../lib/services/users.ts";
 import {
   createListbox,

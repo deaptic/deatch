@@ -147,7 +147,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
         ])
 }
 
-const BINDINGS_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib/bindings.ts");
+const BINDINGS_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/platform/bindings.ts");
 
 pub fn export_bindings() {
     export_to(&bindings(), std::path::Path::new(BINDINGS_PATH));
@@ -250,7 +250,7 @@ mod tests {
         super::export_to(&super::bindings(), &fresh);
         assert!(
             normalized(&fresh) == normalized(std::path::Path::new(super::BINDINGS_PATH)),
-            "src/lib/bindings.ts is stale; run `vp run bindings` and commit the result"
+            "src/platform/bindings.ts is stale; run `vp run bindings` and commit the result"
         );
     }
 }

@@ -1,5 +1,5 @@
 import { createEffect } from "solid-js";
-import { setWindowTitle } from "../api/window.ts";
+import { setWindowTitle } from "../../platform/window.ts";
 import { t } from "../i18n/index.ts";
 import { selectedChannel } from "../stores/view.ts";
 import * as sevenTv from "../services/sevenTv.ts";

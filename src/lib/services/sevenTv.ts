@@ -1,8 +1,8 @@
-import { seventvGetChannelEmotes } from "../api/external/seventv.ts";
+import { seventvGetChannelEmotes } from "../../platform/external/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
   seventvUnsubscribeEmoteSet,
-} from "../api/external/seventvEvents.ts";
+} from "../../platform/external/seventvEvents.ts";
 import * as emoteSetUpdate from "./emoteSetUpdate.ts";
 import { setSevenTvChannel } from "../stores/emotes.ts";
 import { appendItem } from "../stores/feeds.ts";

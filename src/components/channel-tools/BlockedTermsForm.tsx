@@ -5,7 +5,7 @@ import {
   addBlockedTerm,
   getBlockedTerms,
   removeBlockedTerm,
-} from "../../lib/api/twitch/moderation.ts";
+} from "../../platform/twitch/moderation.ts";
 import { autofocus } from "../../lib/reactive/focus.ts";
 import type { BlockedTerm } from "../../lib/types/index.ts";
 import Button from "../ui/Button.tsx";

@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { warnUser } from "../../lib/api/twitch/moderation.ts";
+import { warnUser } from "../../platform/twitch/moderation.ts";
 import Button from "../ui/Button.tsx";
 import Dialog from "../ui/Dialog.tsx";
 import Textarea from "../ui/Textarea.tsx";

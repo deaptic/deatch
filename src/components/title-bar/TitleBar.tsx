@@ -10,12 +10,12 @@ import {
   X,
 } from "lucide-solid";
 import { createSignal, onMount, Show } from "solid-js";
-import { appVersion } from "../../lib/api/app.ts";
+import { appVersion } from "../../platform/app.ts";
 import {
   closeWindow,
   minimizeWindow,
   toggleMaximizeWindow,
-} from "../../lib/api/window.ts";
+} from "../../platform/window.ts";
 import { windowMaximized as maximized } from "../../lib/stores/window.ts";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import { unreadMentionCount } from "../../lib/stores/inbox.ts";

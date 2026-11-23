@@ -5,7 +5,7 @@ import {
   setSuspiciousStatus,
   unbanUser,
   warnUser,
-} from "../../../lib/api/twitch/moderation.ts";
+} from "../../../platform/twitch/moderation.ts";
 import * as users from "../../../lib/services/users.ts";
 import * as raid from "../../../lib/services/raid.ts";
 import {
@@ -13,10 +13,10 @@ import {
   sendShoutout,
   updateChatSettings,
   updateUserChatColor,
-} from "../../../lib/api/twitch/chat.ts";
+} from "../../../platform/twitch/chat.ts";
 import * as chat from "../../../lib/services/chat.ts";
-import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
-import { searchCategories } from "../../../lib/api/twitch/search.ts";
+import { createStreamMarker } from "../../../platform/twitch/streams.ts";
+import { searchCategories } from "../../../platform/twitch/search.ts";
 import {
   addChannelModerator,
   addChannelVip,
@@ -24,7 +24,7 @@ import {
   removeChannelModerator,
   removeChannelVip,
   startCommercial,
-} from "../../../lib/api/twitch/channels.ts";
+} from "../../../platform/twitch/channels.ts";
 import type { Command, OptionSuggestion } from "../types.ts";
 import {
   AD_LENGTHS,

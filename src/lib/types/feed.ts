@@ -1,4 +1,4 @@
-import type { AnnouncementColor } from "../bindings.ts";
+import type { AnnouncementColor } from "../../platform/bindings.ts";
 import type {
   BanEvasion,
   LowTrustStatus,

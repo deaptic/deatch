@@ -1,4 +1,4 @@
-import { openUrl } from "../api/opener.ts";
+import { openUrl } from "../../platform/opener.ts";
 import { channelUrl, rewardQueueUrl } from "../utils/twitchUrl.ts";
 
 export function open(url: string): void {

@@ -3,7 +3,7 @@ import * as feedLog from "./feedLog.ts";
 import { feeds } from "../stores/feeds.ts";
 import { historyViews, setHistoryViews } from "../stores/history.ts";
 import type { FeedEntry } from "../types/index.ts";
-import type { InvokeOptions } from "../api/utils.ts";
+import type { InvokeOptions } from "../../platform/invoke.ts";
 import { withNewer, withOlder } from "../utils/historyView.ts";
 import { cursorAt, cursorBeforeNow } from "../utils/feedLog.ts";
 import { getEntryId } from "../utils/entryId.ts";

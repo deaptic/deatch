@@ -3,7 +3,7 @@ import {
   type AppEventPayload,
   onAppEvent,
   onEventSub,
-} from "../api/events.ts";
+} from "../../platform/events.ts";
 import type {
   EventEnvelope,
   EventKind,

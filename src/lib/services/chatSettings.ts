@@ -1,4 +1,7 @@
-import { getChatSettings, updateChatSettings } from "../api/twitch/chat.ts";
+import {
+  getChatSettings,
+  updateChatSettings,
+} from "../../platform/twitch/chat.ts";
 import { setChatSettings } from "../stores/chatSettings.ts";
 import type { UpdateChatSettingsParams } from "../types/index.ts";
 

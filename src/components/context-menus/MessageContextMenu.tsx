@@ -7,7 +7,7 @@ import {
 } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
+import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";

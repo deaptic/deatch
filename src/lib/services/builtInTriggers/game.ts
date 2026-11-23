@@ -1,6 +1,6 @@
 import * as channelInfo from "../channelInfo.ts";
-import { modifyChannelInformation } from "../../api/twitch/channels.ts";
-import { searchCategories } from "../../api/twitch/search.ts";
+import { modifyChannelInformation } from "../../../platform/twitch/channels.ts";
+import { searchCategories } from "../../../platform/twitch/search.ts";
 import { t } from "../../i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../stores/channels.ts";
 import { streamGame } from "../../format/stream.ts";

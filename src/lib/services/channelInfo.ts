@@ -1,4 +1,4 @@
-import { getChannelInformation } from "../api/twitch/channels.ts";
+import { getChannelInformation } from "../../platform/twitch/channels.ts";
 import { forgetChannelInfo, rememberChannelInfo } from "../stores/channels.ts";
 
 const FRESH_MS = 10 * 60_000;

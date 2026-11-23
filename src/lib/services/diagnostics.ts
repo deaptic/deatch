@@ -1,5 +1,5 @@
 import { unwrap } from "solid-js/store";
-import { getAppStats } from "../api/diagnostics.ts";
+import { getAppStats } from "../../platform/diagnostics.ts";
 import { feeds } from "../stores/feeds.ts";
 import { knownUsers } from "../stores/users.ts";
 import type { CacheStats, Diagnostics } from "../types/index.ts";

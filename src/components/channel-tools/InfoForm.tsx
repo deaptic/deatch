@@ -4,8 +4,8 @@ import {
   getChannelDetails,
   getContentLabels,
   modifyChannelInformation,
-} from "../../lib/api/twitch/channels.ts";
-import { searchCategories } from "../../lib/api/twitch/search.ts";
+} from "../../platform/twitch/channels.ts";
+import { searchCategories } from "../../platform/twitch/search.ts";
 import { channelInfoFor } from "../../lib/stores/channels.ts";
 import { autofocus } from "../../lib/reactive/focus.ts";
 import { checkTag, type TagCheck } from "../../lib/utils/streamTags.ts";

@@ -14,7 +14,7 @@ import {
   getDeviceCode,
   restoreSession,
   revokeSession,
-} from "../api/twitch/auth.ts";
+} from "../../platform/twitch/auth.ts";
 
 const RESTORE_RETRY_MIN_MS = 2_000;
 const RESTORE_RETRY_MAX_MS = 60_000;

@@ -1,0 +1,21 @@
+import { commands } from "../bindings.ts";
+import type { DcfAuthResponse, User } from "../../lib/types/index.ts";
+import { invokeCommand, type InvokeOptions } from "../invoke.ts";
+
+export function getDeviceCode(
+  options?: InvokeOptions,
+): Promise<DcfAuthResponse> {
+  return invokeCommand(commands.getDeviceCode, [], options);
+}
+
+export async function cancelLogin(options?: InvokeOptions): Promise<void> {
+  await invokeCommand(commands.cancelLogin, [], options);
+}
+
+export async function revokeSession(options?: InvokeOptions): Promise<void> {
+  await invokeCommand(commands.revokeSession, [], options);
+}
+
+export function restoreSession(options?: InvokeOptions): Promise<User | null> {
+  return invokeCommand(commands.restoreSession, [], options);
+}

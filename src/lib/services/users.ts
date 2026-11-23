@@ -1,10 +1,10 @@
 import { STORAGE_KEYS } from "../constants/storage.ts";
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
-import { getUsers } from "../api/twitch/users.ts";
-import { getFollowedAt } from "../api/twitch/channels.ts";
-import { getUserChatColor } from "../api/twitch/chat.ts";
-import { type InvokeOptions, reportFailure } from "../api/utils.ts";
+import { getUsers } from "../../platform/twitch/users.ts";
+import { getFollowedAt } from "../../platform/twitch/channels.ts";
+import { getUserChatColor } from "../../platform/twitch/chat.ts";
+import { type InvokeOptions, reportFailure } from "../../platform/invoke.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import {
   knownUser,

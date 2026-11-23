@@ -1,4 +1,4 @@
-import { searchChannels } from "../api/twitch/search.ts";
+import { searchChannels } from "../../platform/twitch/search.ts";
 import type { SearchChannel } from "../types/index.ts";
 import { rankChannels } from "../utils/channelRank.ts";
 

@@ -1,6 +1,6 @@
-import { relaunchApp } from "../api/app.ts";
-import { checkForUpdate } from "../api/updater.ts";
-import { onWindowFocusChanged } from "../api/window.ts";
+import { relaunchApp } from "../../platform/app.ts";
+import { checkForUpdate } from "../../platform/updater.ts";
+import { onWindowFocusChanged } from "../../platform/window.ts";
 import * as exit from "./exit.ts";
 import {
   installing,

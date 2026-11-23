@@ -1,4 +1,4 @@
-import { writeLog } from "../api/log.ts";
+import { writeLog } from "../../platform/log.ts";
 import type { LogLevel } from "../types/index.ts";
 import { formatLog } from "../utils/formatLog.ts";
 import { createErrorThrottle } from "../utils/errorThrottle.ts";

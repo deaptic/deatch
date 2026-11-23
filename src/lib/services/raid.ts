@@ -1,5 +1,5 @@
-import { cancelRaid, startRaid } from "../api/twitch/raids.ts";
-import { sendShoutout } from "../api/twitch/chat.ts";
+import { cancelRaid, startRaid } from "../../platform/twitch/raids.ts";
+import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { hasPermission } from "../stores/roles.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import type { UserRef } from "../types/index.ts";

@@ -2,7 +2,7 @@ import { STORAGE_KEYS } from "../constants/storage.ts";
 import {
   getChannelChatBadges,
   getGlobalChatBadges,
-} from "../api/twitch/chat.ts";
+} from "../../platform/twitch/chat.ts";
 import { loadCache, saveCache } from "../utils/cache.ts";
 import { setBadges } from "../stores/feeds.ts";
 import {

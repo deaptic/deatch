@@ -2,7 +2,7 @@ import { createEffect, createRoot, on, onCleanup } from "solid-js";
 import {
   getFollowedStreams,
   getStreamsFromIds,
-} from "../api/twitch/streams.ts";
+} from "../../platform/twitch/streams.ts";
 import * as users from "./users.ts";
 import * as channelInfo from "./channelInfo.ts";
 import { user } from "../stores/users.ts";

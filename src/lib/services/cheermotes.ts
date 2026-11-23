@@ -1,4 +1,4 @@
-import { getCheermotes } from "../api/twitch/bits.ts";
+import { getCheermotes } from "../../platform/twitch/bits.ts";
 import { hasCheermotes, setCheermotes } from "../stores/cheermotes.ts";
 import { buildCheermoteMap } from "../utils/cheermote.ts";
 

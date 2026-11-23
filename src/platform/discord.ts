@@ -1,0 +1,20 @@
+import { commands } from "./bindings.ts";
+import type { SetActivityParams } from "../lib/types/index.ts";
+import { invokeCommand, type InvokeOptions } from "./invoke.ts";
+
+export async function discordConnect(options?: InvokeOptions): Promise<void> {
+  await invokeCommand(commands.discordConnect, [], options);
+}
+
+export async function discordDisconnect(
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.discordDisconnect, [], options);
+}
+
+export async function discordSetActivity(
+  params: SetActivityParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.discordSetActivity, [params], options);
+}

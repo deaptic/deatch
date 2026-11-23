@@ -1,4 +1,4 @@
-import { createClip } from "../api/twitch/clips.ts";
+import { createClip } from "../../platform/twitch/clips.ts";
 import { t } from "../i18n/index.ts";
 import { appendItem, appendLocalNotice } from "../stores/feeds.ts";
 import { feedEvent } from "../utils/feedEvent.ts";

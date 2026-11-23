@@ -17,16 +17,16 @@ import {
   linkFocus,
   linkSetAudio,
   linkSetMuted,
-} from "../api/link.ts";
-import { openUrl } from "../api/opener.ts";
-import { focusWindow, onWindowFocusChanged } from "../api/window.ts";
+} from "../../platform/link.ts";
+import { openUrl } from "../../platform/opener.ts";
+import { focusWindow, onWindowFocusChanged } from "../../platform/window.ts";
 import { channelUrl } from "../utils/twitchUrl.ts";
 import type { CompressorSettings } from "../constants/audio.ts";
-import { getStreamsFromIds } from "../api/twitch/streams.ts";
+import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
 import { addToast } from "../stores/toasts.ts";
 import * as users from "./users.ts";
 import type { LinkState, SetAudioParams, User } from "../types/index.ts";
-import type { InvokeOptions } from "../api/utils.ts";
+import type { InvokeOptions } from "../../platform/invoke.ts";
 import { t } from "../i18n/index.ts";
 import { createBackoff } from "../utils/backoff.ts";
 import { planLinkState } from "../utils/linkPlan.ts";

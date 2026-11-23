@@ -1,5 +1,5 @@
 import { setAutomodHoldStatus } from "../stores/feeds.ts";
-import { manageHeldAutomodMessage } from "../api/twitch/moderation.ts";
+import { manageHeldAutomodMessage } from "../../platform/twitch/moderation.ts";
 import type { AutomodAction } from "../types/index.ts";
 
 export async function resolve(

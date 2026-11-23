@@ -4,7 +4,7 @@ import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
 import * as feedLog from "../services/feedLog.ts";
 import { resetView } from "../stores/view.ts";
-import { getModeratedChannels } from "../api/twitch/moderation.ts";
+import { getModeratedChannels } from "../../platform/twitch/moderation.ts";
 
 function resetUserScopedCaches() {
   setModeratedChannels([]);

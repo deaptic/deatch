@@ -13,9 +13,9 @@ import {
   Tv,
 } from "lucide-solid";
 import { t } from "../../lib/i18n/index.ts";
-import { startCommercial } from "../../lib/api/twitch/channels.ts";
-import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
-import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
+import { startCommercial } from "../../platform/twitch/channels.ts";
+import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
+import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import * as activity from "../../lib/services/activity.ts";
 import * as chatSettings from "../../lib/services/chatSettings.ts";

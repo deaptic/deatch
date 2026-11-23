@@ -1,5 +1,5 @@
-export type * from "../bindings.ts";
-export type { Error as AppError } from "../bindings.ts";
+export type * from "../../platform/bindings.ts";
+export type { Error as AppError } from "../../platform/bindings.ts";
 export * from "./twitch/index.ts";
 export * from "./chatter.ts";
 export * from "./diagnostics.ts";

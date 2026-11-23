@@ -3,7 +3,7 @@ import { t } from "../../../lib/i18n/index.ts";
 import {
   getBannedUsers,
   unbanUser,
-} from "../../../lib/api/twitch/moderation.ts";
+} from "../../../platform/twitch/moderation.ts";
 import * as clock from "../../../lib/services/clock.ts";
 import { formatElapsed } from "../../../lib/format/duration.ts";
 import { matchesPerson } from "../../../lib/utils/chatterGroups.ts";

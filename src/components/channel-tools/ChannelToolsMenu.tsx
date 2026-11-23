@@ -11,9 +11,9 @@ import {
 } from "lucide-solid";
 import { For, Match, Show, Switch } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import { startCommercial } from "../../lib/api/twitch/channels.ts";
-import { deleteChatMessages } from "../../lib/api/twitch/moderation.ts";
-import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
+import { startCommercial } from "../../platform/twitch/channels.ts";
+import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
+import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import { activityFor } from "../../lib/stores/activity.ts";

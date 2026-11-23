@@ -13,8 +13,8 @@ import {
 } from "../stores/view.ts";
 import { linkWarmedChannels } from "../stores/link.ts";
 import { rememberChannel } from "../stores/preferences.ts";
-import { linkFocus } from "../api/link.ts";
-import { reportFailure } from "../api/utils.ts";
+import { linkFocus } from "../../platform/link.ts";
+import { reportFailure } from "../../platform/invoke.ts";
 import { ensureFeed } from "../stores/feeds.ts";
 import * as inbox from "../services/inbox.ts";
 import { t } from "../i18n/index.ts";

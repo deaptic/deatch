@@ -2,7 +2,7 @@ import {
   discordConnect,
   discordDisconnect,
   discordSetActivity,
-} from "../api/discord.ts";
+} from "../../platform/discord.ts";
 import type { SetActivityParams } from "../types/index.ts";
 import {
   buildPresence,

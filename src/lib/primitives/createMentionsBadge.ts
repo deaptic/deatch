@@ -1,6 +1,6 @@
 import { t } from "../i18n/index.ts";
 import { createEffect } from "solid-js";
-import { setMentionsBadge } from "../api/notifications.ts";
+import { setMentionsBadge } from "../../platform/notifications.ts";
 import * as appearance from "../services/appearance.ts";
 import { unreadMentionCount } from "../stores/inbox.ts";
 

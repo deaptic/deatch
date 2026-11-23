@@ -2,7 +2,7 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
-const ignored = ["extension/**", "src-tauri/**", "src/lib/bindings.ts"];
+const ignored = ["extension/**", "src-tauri/**", "src/platform/bindings.ts"];
 
 export default defineConfig({
   plugins: lazyPlugins(() => [
@@ -31,8 +31,23 @@ export default defineConfig({
       "shadcn/no-restyle": ["error", { allow: ["layout"] }],
       "shadcn/no-inline-styles": "error",
       "shadcn/require-static-classes": "error",
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: "^@tauri-apps/",
+              message: "Only src/platform imports Tauri.",
+            },
+          ],
+        },
+      ],
     },
     overrides: [
+      {
+        files: ["src/platform/**"],
+        rules: { "no-restricted-imports": "off" },
+      },
       {
         // Solid assigns `let` refs through JSX `ref={...}`, which the rule
         // cannot see.

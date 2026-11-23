@@ -5,7 +5,7 @@ import { lastChannel, selectedChannel } from "../stores/view.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import { clearChatters, user } from "../stores/users.ts";
 import { linkWarmedChannels } from "../stores/link.ts";
-import { setEventsubChannels } from "../api/twitch/eventsub.ts";
+import { setEventsubChannels } from "../../platform/twitch/eventsub.ts";
 import * as sevenTv from "../services/sevenTv.ts";
 import * as chatSettings from "../services/chatSettings.ts";
 import * as cheermotes from "../services/cheermotes.ts";
