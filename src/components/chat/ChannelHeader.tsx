@@ -1,4 +1,12 @@
-import { Clock, Gamepad2, Info, Moon, Pencil, Users } from "lucide-solid";
+import {
+  Clock,
+  Gamepad2,
+  Info,
+  Moon,
+  Pencil,
+  Users,
+  UsersRound,
+} from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
@@ -23,6 +31,7 @@ import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
 import ActivityMenuButton from "../channel-tools/ActivityMenuButton.tsx";
+import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import Presence from "../ui/Presence.tsx";
 
 type Props = {
@@ -125,6 +134,14 @@ export default function ChannelHeader(props: Props) {
                 </Show>
                 <Show when={canModerate(props.channel.id)}>
                   <ActivityMenuButton broadcasterId={props.channel.id} />
+                  <IconButton
+                    label={t("HEADER_CHATTERS_LABEL")}
+                    size="sm"
+                    pressed={isOverlayOpen("chatters")}
+                    onClick={() => toggleOverlay("chatters")}
+                  >
+                    <UsersRound class="size-4" />
+                  </IconButton>
                 </Show>
               </span>
             </div>

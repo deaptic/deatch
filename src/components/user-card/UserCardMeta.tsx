@@ -11,7 +11,7 @@ type Props = {
 };
 
 const CHIP =
-  "flex items-center gap-1.5 h-control-sm px-2.5 rounded-sm bg-media-scrim text-small tabular-nums";
+  "shrink-0 flex items-center gap-1.5 h-control-sm px-2.5 rounded-sm bg-media-scrim text-small tabular-nums whitespace-nowrap";
 
 const day = (at: string) => new Time(at, "D").toString();
 
@@ -51,7 +51,7 @@ export default function UserCardMeta(props: Props) {
     props.follow.kind === "since" ? props.follow.at : undefined;
 
   return (
-    <div class="relative flex gap-1.5">
+    <div class="relative shrink-0 flex gap-1.5">
       <Show when={props.user?.createdAt}>
         {(createdAt) => (
           <DateChip

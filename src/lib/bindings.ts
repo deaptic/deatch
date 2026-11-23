@@ -76,6 +76,9 @@ export const commands = {
 	current: DonationAmount,
 	target: DonationAmount | null,
 } | null>("get_charity_campaign", { params }),
+	getChatters: (params: GetChattersParams) => __TAURI_INVOKE<ChattersPage>("get_chatters", { params }),
+	getChannelModerators: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_moderators", { params }),
+	getChannelVips: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_vips", { params }),
 	getGoals: (params: BroadcasterParams) => __TAURI_INVOKE<Goal[]>("get_goals", { params }),
 	getActivePoll: (params: BroadcasterParams) => __TAURI_INVOKE<{
 	id: PollId,
@@ -296,6 +299,12 @@ export type ChatterBadge = {
 	info: string,
 };
 
+export type ChattersPage = {
+	chatters: UserRef[],
+	total: number,
+	cursor: string | null,
+};
+
 export type Cheermote = {
 	prefix: string,
 	tiers: CheermoteTier[],
@@ -469,6 +478,11 @@ export type GameRef = {
 
 export type GetChannelInformationParams = {
 	broadcasterIds: UserId[],
+};
+
+export type GetChattersParams = {
+	broadcasterId: UserId,
+	cursor?: string | null,
 };
 
 export type GetRecentMessagesParams = {

@@ -4,6 +4,7 @@ pub mod bits;
 pub mod channels;
 pub mod charity;
 pub mod chat;
+pub mod chatters;
 pub mod clips;
 pub mod eventsub;
 pub mod game;
