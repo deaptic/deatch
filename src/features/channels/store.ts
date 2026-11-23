@@ -4,9 +4,11 @@ import { setEventsubChannels } from "../../platform/twitch/eventsub.ts";
 import { lastChannel, selectedChannel } from "../../lib/stores/view.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { user } from "../../lib/stores/users.ts";
-import { followedLive } from "../../lib/stores/channels.ts";
+import { followedLive } from "./streams.ts";
 import * as link from "../link/index.ts";
 import { channelFocus, diffFocus } from "./model.ts";
+import * as info from "./info.ts";
+import * as livePolling from "./livePolling.ts";
 import { type ChannelHooks, createHooks } from "./hooks.ts";
 
 const hooks = createHooks();
@@ -25,7 +27,9 @@ function syncEventsub() {
 }
 
 export function start(): () => void {
-  return createRoot((dispose) => {
+  const stopPolling = livePolling.start();
+  const stopInfo = onChannel({ leave: info.forget });
+  const stopJoining = createRoot((dispose) => {
     createEffect(() => {
       const u = user();
       if (!u) return;
@@ -47,6 +51,11 @@ export function start(): () => void {
     });
     return dispose;
   });
+  return () => {
+    stopJoining();
+    stopInfo();
+    stopPolling();
+  };
 }
 
 export function leaveAll() {

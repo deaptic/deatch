@@ -13,7 +13,6 @@ import * as badges from "../../features/badges/index.ts";
 import * as composer from "../../features/composer/index.ts";
 import * as view from "../services/view.ts";
 import * as channelPoints from "../services/channelPoints.ts";
-import * as live from "../services/live.ts";
 import * as preferences from "../services/preferences.ts";
 import * as feedLog from "../services/feedLog.ts";
 import * as exit from "../services/exit.ts";
@@ -42,7 +41,6 @@ export function createServices(): void {
       emotes.start(),
       badges.start(),
       composer.start(),
-      live.start(),
       feedLog.start(),
       exit.start(),
       discord.start(),

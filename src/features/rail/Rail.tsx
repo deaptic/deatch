@@ -6,8 +6,8 @@ import {
   pinnedChannels,
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
-import * as inbox from "../../features/inbox/index.ts";
-import * as link from "../../features/link/index.ts";
+import * as inbox from "../inbox/index.ts";
+import * as link from "../link/index.ts";
 import {
   activeView,
   isSettingsOpen,
@@ -23,18 +23,18 @@ import { createPinDrag } from "./createPinDrag.ts";
 import RailRow from "./RailRow.tsx";
 import RailTile from "./RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
-import { RailLinkRow } from "../../features/link/index.ts";
+import RailLinkRow from "./RailLinkRow.tsx";
 import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../../kit/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
 import { RAIL_GAP } from "../../kit/density.ts";
-import { TabMuteBadge } from "../../features/link/index.ts";
+import { TabMuteBadge } from "../link/index.ts";
 import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
-import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
+import { ChannelContextMenu } from "../menus/index.ts";
 import { createPopover } from "../../kit/createPopover.ts";
-import * as session from "../../features/login/index.ts";
+import * as session from "../login/index.ts";
 import type { User } from "../../lib/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";

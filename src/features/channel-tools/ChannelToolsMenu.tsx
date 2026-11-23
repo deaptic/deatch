@@ -15,7 +15,7 @@ import { startCommercial } from "../../platform/twitch/channels.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
-import { streamForUserId } from "../../lib/stores/channels.ts";
+import { streamForUserId } from "../channels/index.ts";
 import { knownUser } from "../../lib/stores/users.ts";
 import { showsControls } from "../../lib/stores/roles.ts";
 import * as browser from "../../lib/services/browser.ts";

@@ -4,7 +4,7 @@ import * as raid from "../raid.ts";
 import { type PendingRaid, RAID_DURATION_MS } from "../raid.ts";
 import { knownUser } from "../../../lib/stores/users.ts";
 import Button from "../../../kit/Button.tsx";
-import { createChannelLink } from "../../../components/context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../../menus/index.ts";
 import ActivityRow from "../ui/ActivityRow.tsx";
 import { ActivityIcon } from "../ui/ActivityIcon.tsx";
 

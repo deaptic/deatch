@@ -1,11 +1,11 @@
-import * as users from "./users.ts";
+import * as users from "../../lib/services/users.ts";
 import {
   type PinOutcome,
   pinChannel,
   reorderPinnedChannels,
   unpinChannel,
-} from "../stores/preferences.ts";
-import type { User } from "../types/index.ts";
+} from "../../lib/stores/preferences.ts";
+import type { User } from "../../lib/types/index.ts";
 
 export function add(channel: User): PinOutcome {
   users.note([channel]);

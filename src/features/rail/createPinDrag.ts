@@ -1,5 +1,5 @@
 import { createSignal, onCleanup } from "solid-js";
-import * as pins from "../../lib/services/pins.ts";
+import * as pins from "./pins.ts";
 
 const PINNED_INDEX = "[data-pinned-index]";
 

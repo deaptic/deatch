@@ -6,7 +6,7 @@ import {
   modifyChannelInformation,
 } from "../../platform/twitch/channels.ts";
 import { searchCategories } from "../../platform/twitch/search.ts";
-import { channelInfoFor } from "../../lib/stores/channels.ts";
+import { channelInfoFor } from "../channels/index.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
 import { checkTag, type TagCheck } from "../../lib/utils/streamTags.ts";
 import type { Category, ContentLabel } from "../../lib/types/index.ts";

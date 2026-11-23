@@ -1,5 +1,5 @@
-import type { Stream, User } from "../types/index.ts";
-import { userFromRef } from "./knownUsers.ts";
+import type { Stream, User } from "../../lib/types/index.ts";
+import { userFromRef } from "../../lib/utils/knownUsers.ts";
 
 type Sources = {
   pinnedIds: readonly string[];

@@ -19,7 +19,7 @@ import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import * as activity from "../activity/index.ts";
 import * as chatModes from "../chat-modes/index.ts";
-import { streamForUserId } from "../../lib/stores/channels.ts";
+import { streamForUserId } from "../channels/index.ts";
 import {
   type ChannelForm,
   setChannelForm,

@@ -13,7 +13,7 @@ import Avatar from "../../kit/Avatar.tsx";
 import Card from "../../kit/Card.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Message from "../../components/feed/message/Message.tsx";
-import { createChannelLink } from "../../components/context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../menus/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 type Props = {

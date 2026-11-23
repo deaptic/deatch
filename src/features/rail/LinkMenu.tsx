@@ -1,4 +1,3 @@
-import { connected, hasAudio, tabs } from "./store.ts";
 import {
   AudioLines,
   AudioWaveform,
@@ -21,7 +20,7 @@ import {
   setLinkAudioLink,
   setLinkCompressor,
 } from "../../lib/stores/preferences.ts";
-import * as link from "./store.ts";
+import * as link from "../link/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { t } from "../../shared/i18n/index.ts";
 
@@ -34,12 +33,12 @@ type Props = {
 };
 
 export default function LinkMenu(props: Props) {
-  const hasTabs = () => tabs().length > 0;
+  const hasTabs = () => link.tabs().length > 0;
 
   return (
     <Menu x={props.x} y={props.y} opener={props.opener} onClose={props.onClose}>
       <Show
-        when={connected()}
+        when={link.connected()}
         fallback={
           <>
             <MenuItem
@@ -72,7 +71,7 @@ export default function LinkMenu(props: Props) {
           shortcut={shortcuts.keyFor("link::toggleAudioLink")}
           onClick={() => setLinkAudioLink(!linkAudioLink())}
         />
-        <Show when={hasAudio()}>
+        <Show when={link.hasAudio()}>
           <MenuItem
             label={t("RAIL_LINK_COMPRESSOR_LABEL")}
             icon={<AudioWaveform />}

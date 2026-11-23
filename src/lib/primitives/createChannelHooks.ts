@@ -2,7 +2,6 @@ import { createEffect, on, onCleanup } from "solid-js";
 import { selectedChannel } from "../stores/view.ts";
 import { clearChatters } from "../stores/users.ts";
 import * as channels from "../../features/channels/index.ts";
-import * as channelInfo from "../services/channelInfo.ts";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
 export function createChannelHooks(): void {
@@ -16,7 +15,6 @@ export function createChannelHooks(): void {
     channels.onChannel({
       leave: (id) => {
         clearChatters(id);
-        channelInfo.forget(id);
       },
     }),
   ];

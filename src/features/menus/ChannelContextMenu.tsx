@@ -22,18 +22,18 @@ import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
-import { TabVolume } from "../../features/link/index.ts";
+import { TabVolume } from "../link/index.ts";
 import {
   advancedDeveloperMode,
   pinnedChannels,
 } from "../../lib/stores/preferences.ts";
-import * as link from "../../features/link/index.ts";
-import * as pins from "../../lib/services/pins.ts";
+import * as link from "../link/index.ts";
+import { pins } from "../rail/index.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
-import * as inbox from "../../features/inbox/index.ts";
+import * as inbox from "../inbox/index.ts";
 import { user } from "../../lib/stores/users.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import { raid } from "../../features/activity/index.ts";
+import { raid } from "../activity/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
 import * as clipboard from "../../kit/clipboard.ts";

@@ -19,10 +19,10 @@ import {
   type ListboxField,
 } from "../../shared/solid/createListbox.ts";
 import { userFromSearch } from "../../lib/utils/knownUsers.ts";
-import { rankChannels } from "../../lib/utils/channelRank.ts";
+import { rankChannels } from "../channels/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { liveLine } from "../../shared/format/stream.ts";
-import { createChannelLink } from "../../components/context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../menus/index.ts";
 import CategoryRow from "./ui/CategoryRow.tsx";
 import Avatar from "../../kit/Avatar.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";

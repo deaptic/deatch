@@ -6,7 +6,7 @@ import { EmoteCard, HoverZoom } from "../../features/emotes/index.ts";
 import TooltipHost from "../../kit/TooltipHost.tsx";
 import Loading from "../../kit/Loading.tsx";
 import Boundary from "../../kit/Boundary.tsx";
-import Rail from "../rail/Rail.tsx";
+import { Rail } from "../../features/rail/index.ts";
 import { Explore } from "../../features/explore/index.ts";
 import ChatPanes from "./ChatPanes.tsx";
 import Readout from "./Readout.tsx";

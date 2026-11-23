@@ -1,8 +1,8 @@
 import { createMemo } from "solid-js";
-import { followedLive, pinsLoaded } from "../../lib/stores/channels.ts";
+import { followedLive, pinsLoaded } from "../channels/index.ts";
 import { knownUser } from "../../lib/stores/users.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
-import * as link from "../../features/link/index.ts";
+import * as link from "../link/index.ts";
 import type { User } from "../../lib/types/index.ts";
 
 type RailChannels = {

@@ -9,7 +9,10 @@ import {
 } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
+import {
+  channelInfoFor,
+  streamForUserId,
+} from "../../features/channels/index.ts";
 import * as clock from "../../lib/services/clock.ts";
 import {
   formatUptime,
@@ -22,7 +25,7 @@ import { createCopyable } from "../../kit/copyable.ts";
 import type { User } from "../../lib/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import Stat from "../../kit/Stat.tsx";
-import { createChannelLink } from "../context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../../features/menus/index.ts";
 import { hasPermission, showsControls } from "../../lib/stores/roles.ts";
 import { ChannelToolForm } from "../../features/channel-tools/index.ts";
 import { channelForm, setChannelForm } from "../../lib/stores/ui.ts";

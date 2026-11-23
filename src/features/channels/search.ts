@@ -1,6 +1,6 @@
 import { searchChannels } from "../../platform/twitch/search.ts";
-import type { SearchChannel } from "../types/index.ts";
-import { rankChannels } from "../utils/channelRank.ts";
+import type { SearchChannel } from "../../lib/types/index.ts";
+import { rankChannels } from "./rank.ts";
 
 const FETCHED = 20;
 const SHOWN = 8;

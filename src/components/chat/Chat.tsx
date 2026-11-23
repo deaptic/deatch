@@ -21,10 +21,12 @@ import {
   type ComposerApi,
   type ReplyTo,
 } from "../../features/composer/index.ts";
-import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
-import UserContextMenu, {
+import {
+  MessageContextMenu,
+  UserContextMenu,
   type ModAction,
-} from "../context-menus/UserContextMenu.tsx";
+  EventContextMenu,
+} from "../../features/menus/index.ts";
 import {
   BanModal,
   UserCard,
@@ -32,7 +34,6 @@ import {
 } from "../../features/user-card/index.ts";
 import { createUserCards } from "./createUserCards.ts";
 import * as users from "../../lib/services/users.ts";
-import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import { showsControls } from "../../lib/stores/roles.ts";
 import type {
   FeedEvent as EventItem,

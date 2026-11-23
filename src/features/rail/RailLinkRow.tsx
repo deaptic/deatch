@@ -1,4 +1,4 @@
-import { connected, tabs } from "./store.ts";
+import * as link from "../link/index.ts";
 import { Eye } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
@@ -8,8 +8,8 @@ import { createPopover } from "../../kit/createPopover.ts";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";
 import LinkMenu from "./LinkMenu.tsx";
-import RailRow, { type SubTone } from "../../components/rail/RailRow.tsx";
-import RailTile, { type TileTone } from "../../components/rail/RailTile.tsx";
+import RailRow, { type SubTone } from "./RailRow.tsx";
+import RailTile, { type TileTone } from "./RailTile.tsx";
 
 type LinkStatus = {
   sub: string;
@@ -29,7 +29,7 @@ export default function RailLinkRow(props: { onToggleLink: () => void }) {
   }
 
   const status = (): LinkStatus => {
-    if (!connected()) {
+    if (!link.connected()) {
       return {
         sub: t("RAIL_LINK_ADD_FIREFOX_LABEL"),
         tone: "soft",
@@ -37,7 +37,7 @@ export default function RailLinkRow(props: { onToggleLink: () => void }) {
         onClick: openMenu,
       };
     }
-    if (tabs().length === 0) {
+    if (link.tabs().length === 0) {
       return { sub: t("RAIL_LINK_NO_TABS_EMPTY"), tone: "soft", tile: false };
     }
     if (linkSynced()) {

@@ -1,5 +1,5 @@
 import type { User } from "../../../lib/types/index.ts";
-import { createChannelLink } from "../../../components/context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../../menus/index.ts";
 import Avatar from "../../../kit/Avatar.tsx";
 
 type Props = {

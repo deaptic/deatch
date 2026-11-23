@@ -8,7 +8,7 @@ import {
   comboboxFrom,
   type ListboxField,
 } from "../../shared/solid/createListbox.ts";
-import { liveStreams } from "../../lib/stores/channels.ts";
+import { liveStreams } from "../channels/index.ts";
 import { popular } from "./store.ts";
 import {
   exploreLanguage,

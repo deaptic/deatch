@@ -26,7 +26,7 @@ import {
   applyChannelInfo,
   channelInfoFor,
   streamForUserId,
-} from "../stores/channels.ts";
+} from "../../features/channels/index.ts";
 import { appendLocalNotice } from "../stores/feeds.ts";
 
 function appendSharedChat(

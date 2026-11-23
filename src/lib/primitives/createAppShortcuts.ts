@@ -16,7 +16,7 @@ import {
   stepAppearanceZoom,
   toggleFeedDensity,
 } from "../stores/preferences.ts";
-import { channelsInOrder } from "../stores/channels.ts";
+import { channelsInOrder } from "../../features/channels/index.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import type { LinkControls } from "../../features/link/index.ts";
 import { formatWholePercent } from "../../shared/format/units.ts";

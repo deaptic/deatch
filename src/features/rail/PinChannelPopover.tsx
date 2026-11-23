@@ -1,6 +1,6 @@
-import * as channelSearch from "../../lib/services/channelSearch.ts";
+import { channelSearch } from "../channels/index.ts";
 import type { SearchChannel } from "../../lib/types/index.ts";
-import * as pins from "../../lib/services/pins.ts";
+import * as pins from "./pins.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { user } from "../../lib/stores/users.ts";
 import { userFromSearch } from "../../lib/utils/knownUsers.ts";

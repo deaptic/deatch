@@ -1,10 +1,15 @@
 import { createSignal } from "solid-js";
-import type { ChannelInfo, Stream, User, UserRef } from "../types/index.ts";
-import { pinnedChannels } from "./preferences.ts";
-import * as link from "../../features/link/index.ts";
-import { knownUser } from "./users.ts";
-import { orderChannels } from "../utils/channelOrder.ts";
-import { userFromRef } from "../utils/knownUsers.ts";
+import type {
+  ChannelInfo,
+  Stream,
+  User,
+  UserRef,
+} from "../../lib/types/index.ts";
+import { pinnedChannels } from "../../lib/stores/preferences.ts";
+import * as link from "../link/index.ts";
+import { knownUser } from "../../lib/stores/users.ts";
+import { orderChannels } from "./order.ts";
+import { userFromRef } from "../../lib/utils/knownUsers.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 

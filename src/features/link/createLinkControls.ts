@@ -1,7 +1,7 @@
 import { activeTab, tabs } from "./store.ts";
 import { createEffect, on } from "solid-js";
 import type { ChannelNavigation } from "../../lib/primitives/createChannelNavigation.ts";
-import { channelsInOrder } from "../../lib/stores/channels.ts";
+import { channelsInOrder } from "../channels/index.ts";
 import {
   linkSynced,
   pendingChannel,

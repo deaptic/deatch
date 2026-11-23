@@ -16,7 +16,7 @@ import { Badges } from "../message/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
 import Identity from "./Identity.tsx";
 import Live from "./Live.tsx";
-import { streamForUserId } from "../../lib/stores/channels.ts";
+import { streamForUserId } from "../channels/index.ts";
 import Meta from "./Meta.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";

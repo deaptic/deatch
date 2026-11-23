@@ -4,7 +4,7 @@ import type { FeedMessage as Message } from "../../../lib/types/index.ts";
 import * as users from "../../../lib/services/users.ts";
 import { knownUser } from "../../../lib/stores/users.ts";
 import { avatarZoom } from "../../../shared/avatar.ts";
-import { createChannelLink } from "../../context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../../../features/menus/index.ts";
 
 export default function Source(props: {
   source: NonNullable<Message["source"]>;

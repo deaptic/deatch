@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import type { SearchChannel } from "../types/index.ts";
-import { rankChannels } from "./channelRank.ts";
+import type { SearchChannel } from "../../lib/types/index.ts";
+import { rankChannels } from "./rank.ts";
 
 const channel = (login: string, displayName = login) =>
   ({ user: { id: login, login, displayName } }) as SearchChannel;
