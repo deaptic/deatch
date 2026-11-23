@@ -86,6 +86,9 @@ export const commands = {
 	getChannelModerators: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_moderators", { params }),
 	getChannelVips: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_vips", { params }),
 	getGoals: (params: BroadcasterParams) => __TAURI_INVOKE<Goal[]>("get_goals", { params }),
+	getBlockedUsers: () => __TAURI_INVOKE<UserRef[]>("get_blocked_users"),
+	blockUser: (params: BlockParams) => __TAURI_INVOKE<null>("block_user", { params }),
+	unblockUser: (params: BlockParams) => __TAURI_INVOKE<null>("unblock_user", { params }),
 	getSubscription: (params: BroadcasterUserParams) => __TAURI_INVOKE<{
 	tier: number,
 	gifterName: string | null,
@@ -225,6 +228,10 @@ export type BannedUser = {
 
 export type BitsBadgeTierNotice = {
 	tier: number,
+};
+
+export type BlockParams = {
+	userId: UserId,
 };
 
 export type BlockedTerm = {

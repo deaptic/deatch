@@ -7,6 +7,7 @@ import {
   Palette,
   Search,
   Settings as SettingsIcon,
+  UserX,
   X,
   Zap,
 } from "lucide-solid";
@@ -37,6 +38,7 @@ import KeyboardSection from "./sections/KeyboardSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
 import TriggersSection from "./sections/TriggersSection.tsx";
 import LinkSection from "./sections/LinkSection.tsx";
+import BlockedUsersSection from "./sections/BlockedUsersSection.tsx";
 
 const SECTIONS: {
   key: SettingsSection;
@@ -67,6 +69,12 @@ const SECTIONS: {
     label: "SETTINGS_MODERATION_TITLE",
     Icon: Ban,
     Section: ModerationSection,
+  },
+  {
+    key: "blocked",
+    label: "SETTINGS_BLOCKED_TITLE",
+    Icon: UserX,
+    Section: BlockedUsersSection,
   },
   {
     key: "triggers",

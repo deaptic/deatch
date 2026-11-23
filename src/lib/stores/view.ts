@@ -31,7 +31,8 @@ export type SettingsSection =
   | "appearance"
   | "link"
   | "keyboard"
-  | "advanced";
+  | "advanced"
+  | "blocked";
 
 const [settingsSection, setSettingsSection] =
   createSignal<SettingsSection>("notifications");

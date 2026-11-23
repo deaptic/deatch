@@ -11,6 +11,7 @@ import {
   TriangleAlert,
   User,
   UserCheck,
+  UserX,
 } from "lucide-solid";
 import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
@@ -20,6 +21,8 @@ import { sendShoutout } from "../../lib/api/twitch/chat.ts";
 import { setSuspiciousStatus } from "../../lib/api/twitch/moderation.ts";
 import type { SuspiciousStatus } from "../../lib/types/index.ts";
 import Menu from "../ui/Menu.tsx";
+import * as blocks from "../../lib/services/blocks.ts";
+import { user as currentUser } from "../../lib/stores/users.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import SubMenu from "../ui/SubMenu.tsx";
@@ -131,6 +134,23 @@ export default function UserContextMenu(props: Props) {
           tone="negative"
           icon={<Ban />}
           onClick={moderate("ban")}
+        />
+      </Show>
+      <Show when={props.userId !== currentUser()?.id}>
+        <MenuDivider />
+        <MenuItem
+          label={t("MENU_BLOCK_LABEL")}
+          icon={<UserX />}
+          tone="negative"
+          onClick={() =>
+            blocks
+              .block({
+                id: props.userId,
+                login: props.userLogin,
+                displayName: props.userDisplayName,
+              })
+              .catch(() => {})
+          }
         />
       </Show>
       <CopyPayloadItem

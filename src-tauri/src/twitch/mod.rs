@@ -1,6 +1,7 @@
 pub mod ads;
 pub mod auth;
 pub mod bits;
+pub mod blocks;
 pub mod channels;
 pub mod charity;
 pub mod chat;

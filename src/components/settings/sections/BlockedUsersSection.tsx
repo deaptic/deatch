@@ -1,0 +1,41 @@
+import { For, Show } from "solid-js";
+import { t } from "../../../lib/i18n/index.ts";
+import * as blocks from "../../../lib/services/blocks.ts";
+import { blockedUsers } from "../../../lib/stores/blocks.ts";
+import Button from "../../ui/Button.tsx";
+import Card from "../../ui/Card.tsx";
+import PageBody from "../../ui/PageBody.tsx";
+import SettingsRow from "../../ui/SettingsRow.tsx";
+
+export default function BlockedUsersSection() {
+  const sorted = () =>
+    blockedUsers().toSorted((a, b) => a.login.localeCompare(b.login));
+  return (
+    <PageBody title={t("SETTINGS_BLOCKED_TITLE")}>
+      <Card>
+        <Show
+          when={sorted().length}
+          fallback={
+            <p class="px-5 py-4 text-body text-ink-soft">
+              {t("SETTINGS_BLOCKED_EMPTY")}
+            </p>
+          }
+        >
+          <For each={sorted()}>
+            {(blocked) => (
+              <SettingsRow label={blocked.displayName}>
+                <Button
+                  variant="neutral"
+                  size="sm"
+                  onClick={() => blocks.unblock(blocked.id).catch(() => {})}
+                >
+                  {t("SETTINGS_BLOCKED_UNBLOCK_LABEL")}
+                </Button>
+              </SettingsRow>
+            )}
+          </For>
+        </Show>
+      </Card>
+    </PageBody>
+  );
+}

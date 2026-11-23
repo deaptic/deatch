@@ -12,9 +12,15 @@ import {
   markSeen,
 } from "./read.ts";
 import { setPaused } from "./mutate.ts";
+import { setBlockedUsers } from "../blocks.ts";
 
-const message = (id: string): FeedEntry =>
-  ({ kind: "message", message_id: id, timestamp: 1 }) as unknown as FeedEntry;
+const message = (id: string, chatter = "c1"): FeedEntry =>
+  ({
+    kind: "message",
+    message_id: id,
+    chatter_user_id: chatter,
+    timestamp: 1,
+  }) as unknown as FeedEntry;
 
 const event = (id: string, notice_type: string, silent = false): FeedEntry =>
   ({
@@ -76,6 +82,14 @@ test("hidden event types and messages drop out, AutoMod holds stay", () => {
   expect(isFeedEntryVisible(message("m"))).toBe(false);
   const held = { ...message("h"), automod_hold: {} } as unknown as FeedEntry;
   expect(isFeedEntryVisible(held)).toBe(true);
+});
+
+test("messages from blocked users are hidden until they are unblocked", () => {
+  setBlockedUsers([{ id: "c2", login: "viewer2", displayName: "viewer2" }]);
+  expect(isFeedEntryVisible(message("m", "c2"))).toBe(false);
+  expect(isFeedEntryVisible(message("m", "c1"))).toBe(true);
+  setBlockedUsers([]);
+  expect(isFeedEntryVisible(message("m", "c2"))).toBe(true);
 });
 
 test("the open channel counts only visible messages that arrived while paused", () => {

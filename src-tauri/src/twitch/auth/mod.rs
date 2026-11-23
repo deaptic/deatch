@@ -16,7 +16,7 @@ use twitch_api::twitch_oauth2::{
 
 const CLIENT_ID: &str = "9zz5nm0knwecx9icd0xbkmkpnrdhjr";
 
-const SCOPES: [Scope; 40] = [
+const SCOPES: [Scope; 42] = [
     Scope::ChannelReadRedemptions,
     Scope::ChannelReadHypeTrain,
     Scope::ChannelReadPolls,
@@ -31,6 +31,8 @@ const SCOPES: [Scope; 40] = [
     Scope::UserReadChat,
     Scope::UserReadEmotes,
     Scope::UserReadFollows,
+    Scope::UserReadBlockedUsers,
+    Scope::UserManageBlockedUsers,
     Scope::UserWriteChat,
     Scope::ModeratorManageChatMessages,
     Scope::ModeratorManageShoutouts,

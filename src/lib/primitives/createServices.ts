@@ -19,6 +19,7 @@ import * as exit from "../services/exit.ts";
 import * as discord from "../services/discord.ts";
 import * as windowState from "../services/windowState.ts";
 import * as explore from "../services/explore.ts";
+import * as blocks from "../services/blocks.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -43,6 +44,7 @@ export function createServices(): void {
       windowState.start(),
       explore.start(),
       link.start(),
+      blocks.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

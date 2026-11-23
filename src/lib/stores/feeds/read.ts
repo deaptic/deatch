@@ -6,6 +6,7 @@ import { NOTICE_TO_EVENT } from "../../constants/events.ts";
 import type { FeedEntry } from "../../types/index.ts";
 import { historyViews } from "../history.ts";
 import { withLive } from "../../utils/historyView.ts";
+import { isBlocked } from "../blocks.ts";
 
 export function channelEntries(broadcasterId: string): FeedEntry[] {
   const live = feeds[broadcasterId]?.messages ?? [];
@@ -60,5 +61,6 @@ export function isFeedEntryVisible(item: FeedEntry): boolean {
     const k = NOTICE_TO_EVENT[item.notice_type];
     return !k || (feedShowEvents() && feedEvents()[k].show !== false);
   }
+  if (isBlocked(item.chatter_user_id)) return false;
   return !!item.automod_hold || feedEvents().message.show !== false;
 }
