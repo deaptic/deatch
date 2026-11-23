@@ -79,7 +79,6 @@ export default function ComposerActions(props: Props) {
                 <SubMenu
                   label={t("COMPOSER_ACTIONS_CLIP_LABEL")}
                   icon={<Clapperboard />}
-                  hint={live() ? undefined : t("HEADER_LIVE_ONLY_HINT")}
                   disabled={!live()}
                 >
                   <For each={CLIP_LENGTHS}>

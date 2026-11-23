@@ -32,7 +32,6 @@ type ItemsProps = {
 export function ChannelToolItems(props: ItemsProps) {
   const isBroadcaster = () => props.broadcasterId === user()?.id;
   const live = () => streamForUserId(props.broadcasterId) !== undefined;
-  const liveHint = () => (live() ? undefined : t("HEADER_LIVE_ONLY_HINT"));
   const shield = () => activityFor(props.broadcasterId).shield;
 
   return (
@@ -57,7 +56,6 @@ export function ChannelToolItems(props: ItemsProps) {
         <SubMenu
           label={t("HEADER_RUN_AD_LABEL")}
           icon={<Tv />}
-          hint={liveHint()}
           disabled={!live()}
         >
           <For each={AD_LENGTHS}>
@@ -77,7 +75,6 @@ export function ChannelToolItems(props: ItemsProps) {
         <MenuItem
           label={t("HEADER_ADD_MARKER_LABEL")}
           icon={<Bookmark />}
-          hint={liveHint()}
           disabled={!live()}
           onClick={() => createStreamMarker().catch(() => {})}
         />
