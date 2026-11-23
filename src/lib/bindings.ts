@@ -459,6 +459,11 @@ export type GetUsersParams = {
 	logins?: string[],
 };
 
+export type GifRef = {
+	id: string,
+	url: string,
+};
+
 export type GifterNotice = {
 	gifter_is_anonymous: boolean,
 	gifter_user_name: string | null,
@@ -501,7 +506,7 @@ export type MessageBody = {
 	fragments: MessageFragment[],
 };
 
-export type MessageFragment = { type: "text"; text: string } | { type: "emote"; text: string; emote: EmoteRef } | { type: "mention"; text: string; mention: MentionRef };
+export type MessageFragment = { type: "text"; text: string } | { type: "emote"; text: string; emote: EmoteRef } | { type: "mention"; text: string; mention: MentionRef } | { type: "gif"; text: string; gif: GifRef };
 
 export type MessageId = string;
 

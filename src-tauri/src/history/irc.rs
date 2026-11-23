@@ -1,6 +1,6 @@
 use super::dto::{
-    ChatterBadge, EmoteRef, MentionRef, MessageBody, MessageFragment, MessageType, RecentHistory,
-    RecentMessage, Reply,
+    ChatterBadge, EmoteRef, GifRef, MentionRef, MessageBody, MessageFragment, MessageType,
+    RecentHistory, RecentMessage, Reply,
 };
 use super::notice;
 use crate::twitch::ids::EmoteId;
@@ -80,7 +80,7 @@ fn parse_privmsg(tags: &Tags, nick: &str, body: &str) -> RecentMessage {
         chatter_user_name: nonempty(tags, "display-name").unwrap_or(nick).into(),
         color: tag(tags, "color").into(),
         message: MessageBody {
-            fragments: build_fragments(&text, tag(tags, "emotes")),
+            fragments: build_fragments(&text, tag(tags, "emotes"), tag(tags, "gifs")),
             text,
         },
         message_type: if tag(tags, "first-msg") == "1" {
@@ -128,13 +128,49 @@ fn parse_reply(tags: &Tags) -> Option<Reply> {
     })
 }
 
-pub(super) fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragment> {
+fn parse_gifs(gifs_tag: &str) -> Vec<(usize, usize, GifRef)> {
+    let mut gifs: Vec<(usize, usize, GifRef)> = Vec::new();
+    for piece in gifs_tag.split(',').filter(|s| !s.is_empty()) {
+        match parse_gif(piece) {
+            Some(gif) => gifs.push(gif),
+            None => {
+                if let Some((_, _, last)) = gifs.last_mut() {
+                    last.url.push(',');
+                    last.url.push_str(piece);
+                }
+            }
+        }
+    }
+    gifs
+}
+
+fn parse_gif(entry: &str) -> Option<(usize, usize, GifRef)> {
+    let mut parts = entry.splitn(3, '|');
+    let (s, e) = parts.next()?.split_once('-')?;
+    let (s, e) = (s.parse().ok()?, e.parse().ok()?);
+    let id = parts.next()?.to_string();
+    let url = parts.next()?.to_string();
+    Some((s, e, GifRef { id, url }))
+}
+
+pub(super) fn build_fragments(
+    text: &str,
+    emotes_tag: &str,
+    gifs_tag: &str,
+) -> Vec<MessageFragment> {
     enum Kind {
         Emote(EmoteId),
         Mention(String),
+        Gif(GifRef),
     }
     let chars: Vec<char> = text.chars().collect();
     let mut spans: Vec<(usize, usize, Kind)> = Vec::new();
+
+    for (s, e, gif) in parse_gifs(gifs_tag) {
+        if s <= e && s < chars.len() {
+            spans.push((s, e.saturating_add(1), Kind::Gif(gif)));
+        }
+    }
 
     for emote in emotes_tag.split('/').filter(|s| !s.is_empty()) {
         let Some((id, ranges)) = emote.split_once(':') else {
@@ -196,6 +232,7 @@ pub(super) fn build_fragments(text: &str, emotes_tag: &str) -> Vec<MessageFragme
                 text,
                 mention: MentionRef { user_login },
             },
+            Kind::Gif(gif) => MessageFragment::Gif { text, gif },
         });
         cursor = e;
     }
@@ -343,7 +380,7 @@ mod tests {
 
     #[test]
     fn mentions_start_only_at_a_word_boundary() {
-        let fragments = to_json(&build_fragments("mail@host (@Viewer2", ""));
+        let fragments = to_json(&build_fragments("mail@host (@Viewer2", "", ""));
         assert_eq!(
             fragments,
             json!([
@@ -381,6 +418,19 @@ mod tests {
             json!([
                 { "type": "text", "text": "hel" },
                 { "type": "emote", "text": "lo", "emote": { "id": "27" } },
+            ])
+        );
+    }
+
+    #[test]
+    fn reads_gifs_with_commas_in_their_urls() {
+        let line = "@gifs=0-10|g1|https://media.giphy.com/g1.gif?cid=a,b&ct=g;id=m1;user-id=1 :viewer1!viewer1@viewer1 PRIVMSG #broadcaster :[Hello GIF] @Viewer2";
+        assert_eq!(
+            to_json(&parse(&[line])[0].message.fragments),
+            json!([
+                { "type": "gif", "text": "[Hello GIF]", "gif": { "id": "g1", "url": "https://media.giphy.com/g1.gif?cid=a,b&ct=g" } },
+                { "type": "text", "text": " " },
+                { "type": "mention", "text": "@Viewer2", "mention": { "user_login": "viewer2" } },
             ])
         );
     }

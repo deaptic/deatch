@@ -50,7 +50,7 @@ pub(super) fn parse_usernotice(tags: &Tags, body: &str) -> RecentNotice {
         chatter_user_name: nonempty(tags, "display-name").unwrap_or(login).into(),
         color: tag(tags, "color").into(),
         message: MessageBody {
-            fragments: build_fragments(body, tag(tags, "emotes")),
+            fragments: build_fragments(body, tag(tags, "emotes"), ""),
             text: body.into(),
         },
         timestamp_ms: sent_at_ms(tags),

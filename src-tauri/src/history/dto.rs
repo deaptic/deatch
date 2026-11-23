@@ -154,6 +154,13 @@ pub enum MessageFragment {
     Text { text: String },
     Emote { text: String, emote: EmoteRef },
     Mention { text: String, mention: MentionRef },
+    Gif { text: String, gif: GifRef },
+}
+
+#[derive(Serialize, specta::Type)]
+pub struct GifRef {
+    pub id: String,
+    pub url: String,
 }
 
 #[derive(Serialize, specta::Type)]
