@@ -27,14 +27,14 @@ import {
   Vote,
 } from "lucide-solid";
 import type { Component } from "solid-js";
-import { NOTICE_TO_EVENT } from "../../../lib/constants/events.ts";
+import { NOTICE_TO_EVENT } from "../../../shared/moderateActions.ts";
 import { GROUP_COLORS } from "../groups.ts";
 import type { MessageKey } from "../../../shared/i18n/index.ts";
 import type {
   AnnouncementColor,
   FeedEvent as Event,
   Person,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 
 type Look = {
   color: string;

@@ -1,5 +1,8 @@
 import { commands } from "../bindings.ts";
-import type { CreateClipParams, CreatedClip } from "../../lib/types/index.ts";
+import type {
+  CreateClipParams,
+  CreatedClip,
+} from "../../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
 
 export function createClip(

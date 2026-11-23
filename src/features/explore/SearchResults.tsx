@@ -8,7 +8,11 @@ import {
   Show,
 } from "solid-js";
 import { createDebounced } from "../../shared/solid/createDebounced.ts";
-import type { Category, SearchChannel, User } from "../../lib/types/index.ts";
+import type {
+  Category,
+  SearchChannel,
+  User,
+} from "../../shared/types/index.ts";
 import {
   searchCategories,
   searchChannels,

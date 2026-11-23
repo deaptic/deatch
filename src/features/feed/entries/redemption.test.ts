@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawChannelPointsRedemption } from "../../../lib/types/index.ts";
+import type { RawChannelPointsRedemption } from "../../../shared/types/index.ts";
 import { mapRedemption } from "./redemption.ts";
 
 const raw = (

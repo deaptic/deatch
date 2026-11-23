@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawNotification } from "../../../lib/types/index.ts";
+import type { RawNotification } from "../../../shared/types/index.ts";
 import { mapNotice } from "./notice.ts";
 
 const raw = (n: Partial<RawNotification>): RawNotification => ({

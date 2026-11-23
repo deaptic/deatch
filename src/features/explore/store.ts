@@ -1,7 +1,7 @@
 import { createEffect, createRoot, on } from "solid-js";
 import { getStreams } from "../../platform/twitch/streams.ts";
 import { createStore } from "solid-js/store";
-import type { Category, Stream } from "../../lib/types/index.ts";
+import type { Category, Stream } from "../../shared/types/index.ts";
 import type { StreamSort } from "./model.ts";
 import { exploreLanguage } from "../preferences/index.ts";
 import { users } from "../users/index.ts";

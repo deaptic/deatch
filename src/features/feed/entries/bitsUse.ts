@@ -3,9 +3,9 @@ import type {
   FeedEvent,
   Fragment,
   RawBitsUse,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { chatterFields, feedEvent } from "./feedEvent.ts";
-import { BITS_USE } from "../../../lib/constants/events.ts";
+import { BITS_USE } from "../../../shared/moderateActions.ts";
 import { wordsOf } from "./chat.ts";
 
 const MESSAGE_POWER_UPS = new Set(["message_effect", "gigantify_an_emote"]);

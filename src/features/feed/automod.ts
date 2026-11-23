@@ -1,6 +1,6 @@
 import { setAutomodHoldStatus } from "./store/index.ts";
 import { manageHeldAutomodMessage } from "../../platform/twitch/moderation.ts";
-import type { AutomodAction } from "../../lib/types/index.ts";
+import type { AutomodAction } from "../../shared/types/index.ts";
 
 export async function resolve(
   broadcasterId: string,

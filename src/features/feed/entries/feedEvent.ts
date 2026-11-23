@@ -2,7 +2,7 @@ import type {
   FeedEvent,
   NoticeText,
   Person,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 
 export function noticeText(text: string, detail?: string | null): NoticeText {
   return detail ? { text, detail } : { text };

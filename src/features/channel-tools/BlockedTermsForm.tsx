@@ -7,7 +7,7 @@ import {
   removeBlockedTerm,
 } from "../../platform/twitch/moderation.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
-import type { BlockedTerm } from "../../lib/types/index.ts";
+import type { BlockedTerm } from "../../shared/types/index.ts";
 import Button from "../../kit/Button.tsx";
 import Dialog from "../../kit/Dialog.tsx";
 import Field from "../../kit/Field.tsx";

@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawHypeTrain } from "../../../lib/types/index.ts";
+import type { RawHypeTrain } from "../../../shared/types/index.ts";
 import {
   hypeTrainBegin,
   hypeTrainEnd,

@@ -1,10 +1,7 @@
-import * as browser from "../../lib/services/browser.ts";
-import type { UserRef } from "../../lib/types/index.ts";
-import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../lib/utils/middleClick.ts";
-import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import * as browser from "../../platform/browser.ts";
+import type { UserRef } from "../../shared/types/index.ts";
+import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
+import { openMenuAt } from "../../kit/contextMenu.ts";
 import { onActivateKey } from "../../kit/keyActivation.ts";
 
 export type UserAction = (

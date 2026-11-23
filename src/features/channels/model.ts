@@ -1,4 +1,4 @@
-import type { Focus } from "../../lib/types/index.ts";
+import type { Focus } from "../../shared/types/index.ts";
 
 type FocusSources = {
   ownId: string;

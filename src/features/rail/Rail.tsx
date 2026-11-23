@@ -1,6 +1,6 @@
 import { createEffect, createMemo, For, on, Show } from "solid-js";
 import { Plus, Search, Settings } from "lucide-solid";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import {
   appearanceRailExpanded,
   pinnedChannels,
@@ -14,7 +14,7 @@ import {
   pendingChannel,
   showExplore,
   toggleSettings,
-} from "../../lib/stores/view.ts";
+} from "../navigation/index.ts";
 import { user } from "../users/index.ts";
 import { isOwnChannel } from "../permissions/index.ts";
 import { createScrollAffordance } from "./createScrollAffordance.ts";
@@ -35,7 +35,7 @@ import { SIDE_GAP } from "../../kit/Popover.tsx";
 import { ChannelContextMenu } from "../menus/index.ts";
 import { createPopover } from "../../kit/createPopover.ts";
 import * as session from "../login/index.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 import Transition from "../../kit/Transition.tsx";

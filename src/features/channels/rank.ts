@@ -1,4 +1,4 @@
-import type { SearchChannel } from "../../lib/types/index.ts";
+import type { SearchChannel } from "../../shared/types/index.ts";
 
 function closeness(query: string, login: string, displayName: string): number {
   const names = [login, displayName];

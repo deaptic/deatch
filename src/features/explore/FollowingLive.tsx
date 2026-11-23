@@ -1,5 +1,5 @@
 import { For, Show } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import { liveStreams, resolveUser } from "../channels/index.ts";
 import { filters } from "./store.ts";
 import { exploreLanguage } from "../preferences/index.ts";

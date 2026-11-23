@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-solid";
 import { Show } from "solid-js";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import { t } from "../../shared/i18n/index.ts";
 import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
@@ -29,13 +29,13 @@ import { pins } from "../rail/index.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import { user } from "../users/index.ts";
-import { selectedChannel } from "../../lib/stores/view.ts";
+import { selectedChannel } from "../navigation/index.ts";
 import { raid } from "../activity/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
 import * as clipboard from "../../kit/clipboard.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
-import type { User } from "../../lib/types/index.ts";
+import { channelUrl } from "../../shared/twitchUrl.ts";
+import type { User } from "../../shared/types/index.ts";
 
 type Props = {
   x: number;

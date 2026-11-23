@@ -1,5 +1,5 @@
 import { commands } from "../bindings.ts";
-import type { SetChannelsParams } from "../../lib/types/index.ts";
+import type { SetChannelsParams } from "../../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
 
 export async function setEventsubChannels(

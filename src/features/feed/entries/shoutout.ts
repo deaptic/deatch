@@ -4,7 +4,7 @@ import type {
   FeedEvent,
   RawShoutout,
   RawShoutoutReceive,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { chatterFields, feedEvent, noticeText, person } from "./feedEvent.ts";
 
 const SHOUTOUT = "shoutout";

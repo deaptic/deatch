@@ -2,7 +2,7 @@ import type {
   FeedEntry,
   FeedMessage,
   MentionReason,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { textOf } from "./message.ts";
 import { matchedKeyword } from "../../../shared/wordMatch.ts";
 

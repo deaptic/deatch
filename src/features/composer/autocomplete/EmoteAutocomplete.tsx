@@ -6,7 +6,7 @@ import {
   emoteZoom,
   typeableEmotes,
 } from "../../emotes/index.ts";
-import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
+import { rankSuggestions } from "../../../shared/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
 type EmoteSuggestion = { name: string; url: string; source: EmoteProvider };

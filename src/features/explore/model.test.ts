@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { Category, Stream } from "../../lib/types/index.ts";
+import type { Category, Stream } from "../../shared/types/index.ts";
 import { byViewers, matchingStreams, sortStreams } from "./model.ts";
 
 const stream = (id: string, language: string, game: string, viewers: number) =>

@@ -16,7 +16,7 @@ import type {
   FeedEntry,
   FeedEvent as Event,
   FeedMessage as Message,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import { channelEntries, feeds, isFeedEntryVisible } from "./store/index.ts";
 import { getEntryId } from "./store/entryId.ts";
 import { historyViews } from "./history/views.ts";
@@ -25,7 +25,7 @@ import { addToast } from "../../kit/toasts.ts";
 import { thirdPartyEmoteMap, usableFavorites } from "../emotes/index.ts";
 import { knownUser } from "../users/index.ts";
 import { cheermotes } from "../emotes/index.ts";
-import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
+import { jumpTarget, setJumpTarget } from "../navigation/index.ts";
 import { createFeedScroll } from "./createFeedScroll.ts";
 import { createFeedWindow } from "./createFeedWindow.ts";
 import {
@@ -39,10 +39,10 @@ import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import FeedRow from "./FeedRow.tsx";
 import Divider from "../../kit/Divider.tsx";
 import { t } from "../../shared/i18n/index.ts";
-import type { Density } from "../../lib/constants/density.ts";
+import type { Density } from "../../shared/density.ts";
 import { dayLabel, layoutFeed } from "./layout.ts";
 import { type UserActions } from "../message/index.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 
 const JUMP_ATTEMPTS = 30;

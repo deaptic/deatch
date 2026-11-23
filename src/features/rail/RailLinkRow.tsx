@@ -3,7 +3,7 @@ import { Eye } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { linkAudioLink } from "../preferences/index.ts";
-import { linkSynced } from "../../lib/stores/view.ts";
+import { linkSynced } from "../navigation/index.ts";
 import { createPopover } from "../../kit/createPopover.ts";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";

@@ -1,4 +1,4 @@
-import type { FeedEntry } from "../../../lib/types/index.ts";
+import type { FeedEntry } from "../../../shared/types/index.ts";
 import { enforceCaps } from "./caps.ts";
 import { getEntryId } from "./entryId.ts";
 

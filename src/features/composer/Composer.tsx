@@ -15,7 +15,7 @@ import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import { fieldFrom } from "../../shared/solid/createListbox.ts";
 import { chat } from "../chat/index.ts";
 import { type Command, CommandComposer } from "../commands/index.ts";
-import type { FeedMessage as Message } from "../../lib/types/index.ts";
+import type { FeedMessage as Message } from "../../shared/types/index.ts";
 import * as emotes from "../emotes/index.ts";
 import { pushSentMessage, sentMessages } from "./sentMessages.ts";
 import { getDraft, setDraft } from "./drafts.ts";
@@ -23,7 +23,7 @@ import {
   closeOverlay,
   isOverlayOpen,
   toggleOverlay,
-} from "../../lib/stores/ui.ts";
+} from "../navigation/index.ts";
 import InputField, { type ComposerFieldApi } from "./InputField.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../../kit/IconButton.tsx";
@@ -37,7 +37,7 @@ import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 import Actions from "./Actions.tsx";
 import ComposerSlot from "../../kit/ComposerSlot.tsx";
 import Transition from "../../kit/Transition.tsx";
-import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
+import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
 
 const SEND_ACTION = "chat::send";
 

@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
 import { beforeEach, expect, test, vi } from "vite-plus/test";
-import type { FeedEntry, User } from "../../../lib/types/index.ts";
+import type { FeedEntry, User } from "../../../shared/types/index.ts";
 import { userFromRef } from "../../../shared/user.ts";
-import { commitSelectedChannel } from "../../../lib/stores/view.ts";
+import { commitSelectedChannel } from "../../navigation/index.ts";
 import { setFeedEvent, setFeedShowEvents } from "../../preferences/index.ts";
 import { ensureFeed, setFeeds } from "./core.ts";
 import { appendItem } from "./write.ts";

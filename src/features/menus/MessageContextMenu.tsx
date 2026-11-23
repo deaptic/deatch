@@ -12,7 +12,7 @@ import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
-import type { FeedMessage } from "../../lib/types/index.ts";
+import type { FeedMessage } from "../../shared/types/index.ts";
 import { textOf } from "../feed/index.ts";
 import * as clipboard from "../../kit/clipboard.ts";
 

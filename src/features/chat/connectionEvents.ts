@@ -6,7 +6,7 @@ import {
   CHAT_CONNECT_FAILED,
   CHAT_CONNECTED,
   CHAT_DISCONNECTED,
-} from "../../lib/constants/events.ts";
+} from "../../shared/moderateActions.ts";
 
 export function start(): () => void {
   return unlistenAll([

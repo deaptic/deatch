@@ -11,7 +11,7 @@ import {
   waiting,
 } from "./auth.ts";
 import * as session from "./store.ts";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import { createCopied } from "../../kit/createCopied.ts";
 import { t, tRich } from "../../shared/i18n/index.ts";
 import { formatUrl } from "../../shared/format/url.ts";

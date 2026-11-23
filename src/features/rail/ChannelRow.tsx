@@ -1,16 +1,16 @@
 import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../channels/index.ts";
 import { formatViewers } from "../../shared/format/stream.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
 import { TabMuteBadge } from "../link/index.ts";
 import { t } from "../../shared/i18n/index.ts";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
-import { pendingChannel } from "../../lib/stores/view.ts";
+import { pendingChannel } from "../navigation/index.ts";
 
 type Props = {
   ch: User;

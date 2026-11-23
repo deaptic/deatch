@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 import { createUserCards } from "./createUserCards.ts";
 
 const ids = (cards: { chatterId: string }[]) => cards.map((c) => c.chatterId);

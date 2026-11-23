@@ -1,6 +1,6 @@
 import { t } from "../../../shared/i18n/index.ts";
 import * as activity from "../store.ts";
-import type { AdSchedule } from "../../../lib/types/index.ts";
+import type { AdSchedule } from "../../../shared/types/index.ts";
 import Button from "../../../kit/Button.tsx";
 import ActivityRow from "../ui/ActivityRow.tsx";
 import { ActivityIcon } from "../ui/ActivityIcon.tsx";

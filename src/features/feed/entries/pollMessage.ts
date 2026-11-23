@@ -1,7 +1,7 @@
 import { formatSpan } from "../../../shared/format/duration.ts";
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { NoticeText, RawPoll } from "../../../lib/types/index.ts";
+import type { NoticeText, RawPoll } from "../../../shared/types/index.ts";
 
 export function pollBegin(raw: RawPoll): NoticeText {
   return {

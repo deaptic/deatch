@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawShoutout } from "../../../lib/types/index.ts";
+import type { RawShoutout } from "../../../shared/types/index.ts";
 import { mapShoutout } from "./shoutout.ts";
 
 const shoutout: RawShoutout = {

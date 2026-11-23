@@ -1,11 +1,8 @@
 import { Show } from "solid-js";
-import * as browser from "../../lib/services/browser.ts";
-import type { User } from "../../lib/types/index.ts";
-import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../lib/utils/middleClick.ts";
-import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import * as browser from "../../platform/browser.ts";
+import type { User } from "../../shared/types/index.ts";
+import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
+import { openMenuAt } from "../../kit/contextMenu.ts";
 import { onActivateKey } from "../../kit/keyActivation.ts";
 import { createPopover } from "../../kit/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";

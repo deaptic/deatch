@@ -20,7 +20,7 @@ import { user } from "../users/index.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { liveLine } from "../../shared/format/stream.ts";
 import type { JSX } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import { type QuickSwitchRow, quickSwitchRows, uniqueUsers } from "./model.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import { createChannelLink } from "../menus/index.ts";

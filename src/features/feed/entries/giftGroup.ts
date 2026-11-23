@@ -2,7 +2,7 @@ import type {
   FeedEvent,
   Person,
   RawNotification,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { detail } from "./noticeMessage.ts";
 
 type GiftGroup =

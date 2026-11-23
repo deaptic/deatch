@@ -4,7 +4,7 @@ import type {
   Stream,
   User,
   UserRef,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import { pinnedChannels } from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import { knownUser } from "../users/index.ts";

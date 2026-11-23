@@ -1,6 +1,6 @@
 import type { UiDensity } from "../../shared/accessibility.ts";
-import type { Theme } from "../../lib/constants/theme.ts";
-import type { Density } from "../../lib/constants/density.ts";
+import type { Theme } from "../../shared/theme.ts";
+import type { Density } from "../../shared/density.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 export const themeOptions = (): { value: Theme; label: string }[] => [

@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import type { FeedEvent } from "../../../lib/types/index.ts";
+import type { FeedEvent } from "../../../shared/types/index.ts";
 import { type EmoteMap, type CheermoteMap } from "../../emotes/index.ts";
 import { t, tRich } from "../../../shared/i18n/index.ts";
 import {

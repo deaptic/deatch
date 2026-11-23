@@ -2,7 +2,7 @@ import type {
   EventKind,
   FeedEntry,
   Unlisten,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { listenEventSub, serverTime } from "../../../platform/listen.ts";
 import { appendItem } from "../store/index.ts";
 

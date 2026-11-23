@@ -19,7 +19,7 @@ import {
 } from "../store.ts";
 import { usableIn } from "../emoteSections.ts";
 import { mostUsed } from "../emoteUsage.ts";
-import { selectedChannel } from "../../../lib/stores/view.ts";
+import { selectedChannel } from "../../navigation/index.ts";
 import { users } from "../../users/index.ts";
 import { isUserId } from "../../../shared/user.ts";
 import * as emotes from "../load.ts";

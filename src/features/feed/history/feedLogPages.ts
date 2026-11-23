@@ -3,13 +3,13 @@ import type {
   FeedEntry,
   LogEntry,
   Side,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { getEntryId } from "../store/entryId.ts";
 import {
   CHAT_CONNECT_FAILED,
   CHAT_CONNECTED,
   CHAT_DISCONNECTED,
-} from "../../../lib/constants/events.ts";
+} from "../../../shared/moderateActions.ts";
 
 const CONNECTION_NOTICES: ReadonlySet<string> = new Set([
   CHAT_CONNECTED,

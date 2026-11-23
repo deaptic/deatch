@@ -4,7 +4,7 @@ import CardLabel from "../../kit/CardLabel.tsx";
 import ColorPicker from "../../kit/ColorPicker.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import SettingsRow from "../../kit/SettingsRow.tsx";
-import { DEFAULT_ACCENT_HEX } from "../../lib/constants/theme.ts";
+import { DEFAULT_ACCENT_HEX } from "../../shared/theme.ts";
 import { themeOptions } from "./options.ts";
 import {
   appearanceAccent,

@@ -1,5 +1,5 @@
 import { createSignal, Show } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import type { ListboxField } from "../../shared/solid/createListbox.ts";
 import { setCategory } from "./store.ts";
 import ExploreBar from "./ExploreBar.tsx";

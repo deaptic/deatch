@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawAutomodMessageHold } from "../../../lib/types/index.ts";
+import type { RawAutomodMessageHold } from "../../../shared/types/index.ts";
 import { automodReason } from "./automodReason.ts";
 
 const base = {

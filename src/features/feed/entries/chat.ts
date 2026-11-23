@@ -6,7 +6,7 @@ import type {
   PowerUp,
   RawChatMessage,
   RawFragment,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 
 const PERKS: Record<string, MessagePerk> = {
   channel_points_highlighted: "highlight",

@@ -1,6 +1,6 @@
 import { Users } from "lucide-solid";
 import { Show } from "solid-js";
-import type { Stream } from "../../lib/types/index.ts";
+import type { Stream } from "../../shared/types/index.ts";
 import { formatViewers } from "../../shared/format/stream.ts";
 
 type Props = {

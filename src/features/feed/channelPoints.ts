@@ -1,6 +1,6 @@
-import type { Redemption } from "../../lib/types/index.ts";
+import type { Redemption } from "../../shared/types/index.ts";
 import { setChannelPointsRedemption } from "./store/index.ts";
-import { createTimeouts } from "../../lib/utils/timeouts.ts";
+import { createTimeouts } from "../../shared/timeouts.ts";
 
 const WINDOW_MS = 3000;
 

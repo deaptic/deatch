@@ -1,10 +1,7 @@
 import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
 import Slider from "../../kit/Slider.tsx";
-import {
-  DEFAULT_CHANNEL_GAIN,
-  MAX_CHANNEL_GAIN,
-} from "../../lib/constants/audio.ts";
+import { DEFAULT_CHANNEL_GAIN, MAX_CHANNEL_GAIN } from "../../shared/audio.ts";
 import { channelGain, setChannelGain } from "../preferences/index.ts";
 
 type Props = {

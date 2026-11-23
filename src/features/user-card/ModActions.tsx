@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import * as bans from "./bans.ts";
-import type { BanChoice } from "../../lib/constants/timeouts.ts";
+import type { BanChoice } from "./banDurations.ts";
 import { user as currentUser } from "../users/index.ts";
 import { showsControls } from "../permissions/index.ts";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";

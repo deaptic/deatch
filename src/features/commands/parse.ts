@@ -1,7 +1,7 @@
 import { t } from "../../shared/i18n/index.ts";
 import type { CommandOption, DurationOption } from "./types.ts";
 import { formatDuration, secondsPer } from "../../shared/format/duration.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 import { formatAlternatives } from "../../shared/format/list.ts";
 
 type SlotError = { kind: "required" } | { kind: "invalid"; message: string };

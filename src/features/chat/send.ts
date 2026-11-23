@@ -2,7 +2,7 @@ import { sendChatMessage } from "../../platform/twitch/chat.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
 import { appendLocalNotice } from "../feed/index.ts";
 import { addToast } from "../../kit/toasts.ts";
-import type { SendChatMessageParams } from "../../lib/types/index.ts";
+import type { SendChatMessageParams } from "../../shared/types/index.ts";
 import { dropMessage } from "./dropReason.ts";
 
 export type SendOutcome = "sent" | "held" | "failed";

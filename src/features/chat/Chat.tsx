@@ -41,7 +41,7 @@ import type {
   FeedEvent as EventItem,
   FeedMessage as Message,
   UserRef,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import {
   advancedDeveloperMode,
   feedDensity,
@@ -53,7 +53,7 @@ import { createPopover } from "../../kit/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import Transition from "../../kit/Transition.tsx";
 import { PeopleDialog } from "../people/index.ts";
-import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
+import { closeOverlay, isOverlayOpen } from "../navigation/index.ts";
 
 type Props = {
   broadcasterId: string;

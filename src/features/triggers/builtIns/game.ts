@@ -4,7 +4,7 @@ import { searchCategories } from "../../../platform/twitch/search.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../channels/index.ts";
 import { streamGame } from "../../../shared/format/stream.ts";
-import type { Category } from "../../../lib/types/index.ts";
+import type { Category } from "../../../shared/types/index.ts";
 import type { BuiltInContext } from "./context.ts";
 
 const CANDIDATES = 8;

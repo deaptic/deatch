@@ -1,5 +1,5 @@
 import { channelSearch } from "../channels/index.ts";
-import type { SearchChannel } from "../../lib/types/index.ts";
+import type { SearchChannel } from "../../shared/types/index.ts";
 import * as pins from "./pins.ts";
 import { pinnedChannels } from "../preferences/index.ts";
 import { user } from "../users/index.ts";

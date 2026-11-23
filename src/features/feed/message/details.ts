@@ -4,7 +4,7 @@ import type {
   AutomodHoldInfo,
   BadgeMap,
   FeedMessage as Message,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { GROUP_COLORS } from "../groups.ts";
 
 export function isHoldPending(item: Message): boolean {

@@ -5,7 +5,7 @@ import {
   MIN_TRIGGER_COOLDOWN,
   sanitize,
 } from "./schema.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 
 test("anything that is not an object falls back to the defaults", () => {
   for (const raw of [null, undefined, "x", 42, []]) {

@@ -1,6 +1,7 @@
+// @vitest-environment happy-dom
 import { expect, test } from "vite-plus/test";
 import { unwrap } from "solid-js/store";
-import type { FeedEntry, FeedMessage } from "../../../lib/types/index.ts";
+import type { FeedEntry, FeedMessage } from "../../../shared/types/index.ts";
 import { ensureFeed, takeUnlogged } from "./core.ts";
 import { appendItem } from "./write.ts";
 import { markMessageDeleted } from "./mutate.ts";

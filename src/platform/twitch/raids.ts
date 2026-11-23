@@ -2,7 +2,7 @@ import { commands } from "../bindings.ts";
 import type {
   BroadcasterPairParams,
   BroadcasterParams,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
 import { t } from "../../shared/i18n/index.ts";
 

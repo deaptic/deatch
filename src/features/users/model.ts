@@ -1,4 +1,4 @@
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 
 export type KnownUser = { user: User; fetchedAt: number | null };
 

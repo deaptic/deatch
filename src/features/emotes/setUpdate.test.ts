@@ -1,7 +1,7 @@
 import { expect, test } from "vite-plus/test";
-import type { EmoteSetUpdated } from "../../lib/types/index.ts";
+import type { EmoteSetUpdated } from "../../shared/types/index.ts";
 import * as emoteSetUpdate from "./setUpdate.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 
 const emote = (name: string) => ({ name, url: `https://cdn/${name}` });
 

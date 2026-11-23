@@ -1,5 +1,5 @@
 import { t } from "../../../shared/i18n/index.ts";
-import { createTimeouts } from "../../../lib/utils/timeouts.ts";
+import { createTimeouts } from "../../../shared/timeouts.ts";
 import {
   listenApp,
   listenEventSub,
@@ -23,7 +23,7 @@ import type {
   RawUserMessageHold,
   RawUserMessageUpdate,
   RawWarningAcknowledge,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import {
   appendItem,
   markAllMessagesDeleted,
@@ -50,7 +50,7 @@ import {
   SUSPICIOUS_USER,
   UNBAN_REQUEST,
   WARNING_ACKNOWLEDGED,
-} from "../../../lib/constants/events.ts";
+} from "../../../shared/moderateActions.ts";
 
 function applySharedChatAction(p: RawModerate) {
   const here = p.broadcaster_user_id;

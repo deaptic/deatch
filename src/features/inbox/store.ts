@@ -5,8 +5,8 @@ import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
 import { notificationsMentionSound } from "../preferences/index.ts";
-import { selectedChannel } from "../../lib/stores/view.ts";
-import type { Mention } from "../../lib/types/index.ts";
+import { selectedChannel } from "../navigation/index.ts";
+import type { Mention } from "../../shared/types/index.ts";
 import * as storage from "../../platform/storage.ts";
 
 const [mentions, setMentions] = createSignal<Mention[]>([]);

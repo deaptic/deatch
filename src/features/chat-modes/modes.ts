@@ -3,7 +3,7 @@ import { CopyX, Hourglass, Smile, Star, UserCheck } from "lucide-solid";
 import type { ChatSettingsChange } from "./store.ts";
 import { formatDuration } from "../../shared/format/duration.ts";
 import { type MessageKey, t } from "../../shared/i18n/index.ts";
-import type { ChatSettings } from "../../lib/types/index.ts";
+import type { ChatSettings } from "../../shared/types/index.ts";
 
 type Preset = { value: number; label: MessageKey; count?: number };
 

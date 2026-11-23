@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawChatMessage } from "../../../lib/types/index.ts";
+import type { RawChatMessage } from "../../../shared/types/index.ts";
 import { mapChatMessage, wordsOf } from "./chat.ts";
 
 const raw = (overrides: Partial<RawChatMessage> = {}): RawChatMessage => ({

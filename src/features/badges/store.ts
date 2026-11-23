@@ -3,18 +3,19 @@ import {
   getChannelChatBadges,
   getGlobalChatBadges,
 } from "../../platform/twitch/chat.ts";
-import { loadCache, saveCache } from "../../lib/utils/cache.ts";
+import { loadCache, saveCache } from "../../platform/cache.ts";
 import { setBadges } from "../feed/index.ts";
 import {
   clearSharedChatBadges,
   setSharedChatBadges,
   sharedChatBadges,
 } from "./sharedChatBadges.ts";
-import type { BadgeMap, BadgeSet } from "../../lib/types/index.ts";
+import type { BadgeMap, BadgeSet } from "../../shared/types/index.ts";
 import {
   type ChannelRef,
   channelResource,
-} from "../../lib/services/channelResource.ts";
+} from "../../shared/channelResource.ts";
+import { selectedChannel } from "../navigation/index.ts";
 
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;
 
@@ -55,11 +56,15 @@ function toBadgeMap(sets: BadgeSet[]): BadgeMap {
   return map;
 }
 
-const channelBadges = channelResource((c) =>
-  Promise.all([
-    loadGlobalBadges(),
-    getChannelChatBadges({ broadcasterId: c.id }, { silent: true }),
-  ]).then(([global, channel]) => toBadgeMap([...global, ...channel])),
+const isSelected = (id: string) => selectedChannel()?.id === id;
+
+const channelBadges = channelResource(
+  (c) =>
+    Promise.all([
+      loadGlobalBadges(),
+      getChannelChatBadges({ broadcasterId: c.id }, { silent: true }),
+    ]).then(([global, channel]) => toBadgeMap([...global, ...channel])),
+  isSelected,
 );
 
 export async function loadGlobal(): Promise<BadgeMap> {

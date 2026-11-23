@@ -4,7 +4,7 @@ import type {
   CreatePollParams,
   EndPollParams,
   Poll,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
 import { t } from "../../shared/i18n/index.ts";
 

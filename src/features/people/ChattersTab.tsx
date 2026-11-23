@@ -2,7 +2,7 @@ import { createMemo, For, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import * as chatters from "./store.ts";
 import { groupChatters } from "./model.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { UserRef } from "../../shared/types/index.ts";
 import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./ui/PersonRow.tsx";
 

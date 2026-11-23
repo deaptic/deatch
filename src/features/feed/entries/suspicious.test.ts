@@ -2,7 +2,7 @@ import { expect, test } from "vite-plus/test";
 import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { formatSuspicious } from "./suspiciousText.ts";
 import { suspiciousInfo, suspiciousUpdate } from "./suspicious.ts";
 

@@ -1,5 +1,5 @@
 import { type MessageKey, t } from "../../shared/i18n/index.ts";
-import type { DropReason } from "../../lib/types/index.ts";
+import type { DropReason } from "../../shared/types/index.ts";
 
 type KnownCode = Exclude<DropReason["code"], "unknown">;
 

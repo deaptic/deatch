@@ -5,7 +5,7 @@ import {
   reorderPinnedChannels,
   unpinChannel,
 } from "../preferences/index.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 
 export function add(channel: User): PinOutcome {
   users.note([channel]);

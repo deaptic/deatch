@@ -1,7 +1,7 @@
 import { users } from "../../users/index.ts";
 import { typedTarget } from "../methods.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { User, UserRef } from "../../../lib/types/index.ts";
+import type { User, UserRef } from "../../../shared/types/index.ts";
 
 export type BuiltInContext = {
   broadcasterId: string;

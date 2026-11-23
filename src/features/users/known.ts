@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import type { KnownUser } from "./model.ts";
 
 export const [knownUsers, setKnownUsers] = createStore<

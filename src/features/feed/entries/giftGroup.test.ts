@@ -1,8 +1,8 @@
 import { expect, test } from "vite-plus/test";
-import type { RawNotification } from "../../../lib/types/index.ts";
+import type { RawNotification } from "../../../shared/types/index.ts";
 import { giftGroup, groupGifts } from "./giftGroup.ts";
 import { feedEvent } from "./feedEvent.ts";
-import { at } from "../../../lib/utils/at.ts";
+import { at } from "../../../shared/at.ts";
 
 const mapped = (raw: RawNotification) => ({
   raw,

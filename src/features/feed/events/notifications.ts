@@ -15,12 +15,12 @@ import type {
   RawShoutout,
   RawShoutoutReceive,
   Redemption,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { addGiftRecipient, appendItem } from "../store/index.ts";
 import { chatterFields, feedEvent } from "../entries/feedEvent.ts";
 import * as channelPoints from "../channelPoints.ts";
 import { raid } from "../../activity/index.ts";
-import { createTimeouts } from "../../../lib/utils/timeouts.ts";
+import { createTimeouts } from "../../../shared/timeouts.ts";
 import { mapRedemption } from "../entries/redemption.ts";
 import { mapNotice } from "../entries/notice.ts";
 import { mapAutomaticRedemption } from "../entries/automaticRedemption.ts";
@@ -30,7 +30,7 @@ import { mapShoutout, mapShoutoutReceive } from "../entries/shoutout.ts";
 import {
   CHANNEL_POINTS_REDEMPTION,
   FOLLOW,
-} from "../../../lib/constants/events.ts";
+} from "../../../shared/moderateActions.ts";
 
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   return feedEvent(

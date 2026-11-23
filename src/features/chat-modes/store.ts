@@ -6,7 +6,7 @@ import {
 import type {
   ChatSettings,
   UpdateChatSettingsParams,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 
 export type ChatSettingsChange = Omit<
   UpdateChatSettingsParams,

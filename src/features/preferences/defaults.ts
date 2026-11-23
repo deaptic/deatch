@@ -1,5 +1,5 @@
-import { ACTIVITIES } from "../../lib/constants/activities.ts";
-import { fromKeys } from "../../lib/utils/fromKeys.ts";
+import { ACTIVITIES } from "../../shared/activities.ts";
+import { fromKeys } from "../../shared/fromKeys.ts";
 import { systemLanguage } from "../../shared/i18n/index.ts";
 import type { UserPreferences } from "./schema.ts";
 

@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { channelSearch } from "../channels/index.ts";
 import * as raid from "./raid.ts";
-import type { SearchChannel } from "../../lib/types/index.ts";
+import type { SearchChannel } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import SearchPicker from "../../kit/SearchPicker.tsx";
 import FormDialog from "../../kit/FormDialog.tsx";

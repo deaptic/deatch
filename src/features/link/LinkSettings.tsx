@@ -13,7 +13,7 @@ import {
   COMPRESSOR_CONTROLS,
   type CompressorControl,
   DEFAULT_COMPRESSOR,
-} from "../../lib/constants/audio.ts";
+} from "../../shared/audio.ts";
 import {
   compressorSettings,
   linkCompressor,

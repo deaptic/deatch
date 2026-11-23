@@ -1,5 +1,5 @@
 import { commands } from "../bindings.ts";
-import type { GetUsersParams, User } from "../../lib/types/index.ts";
+import type { GetUsersParams, User } from "../../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
 
 export function getUsers(

@@ -1,8 +1,8 @@
 import * as backlog from "./backlog.ts";
 import * as chatSettings from "../../chat-modes/index.ts";
 import { knownUser } from "../../users/index.ts";
-import { selectedChannel } from "../../../lib/stores/view.ts";
-import { createLimiter } from "../../../lib/utils/limiter.ts";
+import { selectedChannel } from "../../navigation/index.ts";
+import { createLimiter } from "../limiter.ts";
 
 const CONCURRENCY = 3;
 

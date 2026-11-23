@@ -6,9 +6,9 @@ import type {
   RawGoal,
   RawPoll,
   RawPrediction,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { feedEvent } from "../entries/feedEvent.ts";
-import { GOAL, POLL, PREDICTION } from "../../../lib/constants/events.ts";
+import { GOAL, POLL, PREDICTION } from "../../../shared/moderateActions.ts";
 import { pollBegin, pollEnd } from "../entries/pollMessage.ts";
 import {
   predictionBegin,

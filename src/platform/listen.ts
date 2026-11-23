@@ -4,7 +4,11 @@ import {
   onAppEvent,
   onEventSub,
 } from "./events.ts";
-import type { EventEnvelope, EventKind, Unlisten } from "../lib/types/index.ts";
+import type {
+  EventEnvelope,
+  EventKind,
+  Unlisten,
+} from "../shared/types/index.ts";
 
 export function listenApp<K extends AppEventName>(
   name: K,

@@ -1,5 +1,5 @@
 import { t } from "../../../shared/i18n/index.ts";
-import type { Goal } from "../../../lib/types/index.ts";
+import type { Goal } from "../../../shared/types/index.ts";
 
 export function goalProgress(goal: Goal): string {
   return t("HEADER_GOAL_PROGRESS_STATUS", {

@@ -7,8 +7,8 @@ import type {
   BadgeMap,
   FeedMessage,
   Reaction,
-} from "../../../lib/types/index.ts";
-import type { Density } from "../../../lib/constants/density.ts";
+} from "../../../shared/types/index.ts";
+import type { Density } from "../../../shared/density.ts";
 import { isMention } from "../entries/mention.ts";
 import { feedShowAvatars } from "../../preferences/index.ts";
 import { withoutReplyMention } from "../entries/message.ts";

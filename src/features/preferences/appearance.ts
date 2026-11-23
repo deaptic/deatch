@@ -1,5 +1,5 @@
-import type { ActivityKind } from "../../lib/constants/activities.ts";
-import type { Theme } from "../../lib/constants/theme.ts";
+import type { ActivityKind } from "../../shared/activities.ts";
+import type { Theme } from "../../shared/theme.ts";
 import {
   clampToStops,
   DEFAULT_ZOOM,

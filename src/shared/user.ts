@@ -1,4 +1,4 @@
-import type { SearchChannel, User, UserRef } from "../lib/types/index.ts";
+import type { SearchChannel, User, UserRef } from "./types/index.ts";
 
 const USER_ID = /^\d+$/;
 

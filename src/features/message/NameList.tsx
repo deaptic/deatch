@@ -1,5 +1,5 @@
 import { createSignal, For, Match, Switch } from "solid-js";
-import type { Person } from "../../lib/types/index.ts";
+import type { Person } from "../../shared/types/index.ts";
 import { formatLocale } from "../../shared/i18n/index.ts";
 import DisplayName from "./DisplayName.tsx";
 import type { UserActions } from "./userLink.ts";

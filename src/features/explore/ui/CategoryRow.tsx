@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import type { Category } from "../../../lib/types/index.ts";
+import type { Category } from "../../../shared/types/index.ts";
 import Thumbnail from "../../../kit/Thumbnail.tsx";
 import { moveGridFocus } from "../../../kit/gridKeys.ts";
 

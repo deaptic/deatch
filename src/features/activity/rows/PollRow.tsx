@@ -1,7 +1,7 @@
 import { t } from "../../../shared/i18n/index.ts";
 import * as activity from "../store.ts";
 import { formatViewers } from "../../../shared/format/stream.ts";
-import type { Poll } from "../../../lib/types/index.ts";
+import type { Poll } from "../../../shared/types/index.ts";
 import Button from "../../../kit/Button.tsx";
 import ActivityRow from "../ui/ActivityRow.tsx";
 import { ActivityIcon } from "../ui/ActivityIcon.tsx";

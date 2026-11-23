@@ -5,7 +5,7 @@ import type {
   EmoteEntry,
   User,
   UserEmote,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import { type EmoteMap, emoteMap } from "./emoteMap.ts";
 import {
   channelSections,

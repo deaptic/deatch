@@ -10,7 +10,7 @@ import {
 } from "lucide-solid";
 import type { JSX } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import type { ActivityKind } from "../../../lib/constants/activities.ts";
+import type { ActivityKind } from "../../../shared/activities.ts";
 
 const ICONS = {
   shield: Shield,

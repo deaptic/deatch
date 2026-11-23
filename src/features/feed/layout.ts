@@ -1,4 +1,4 @@
-import type { FeedEntry, FeedMessage } from "../../lib/types/index.ts";
+import type { FeedEntry, FeedMessage } from "../../shared/types/index.ts";
 import { formatLocale, t } from "../../shared/i18n/index.ts";
 import { daysBetween } from "../../shared/time.ts";
 

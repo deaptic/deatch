@@ -1,5 +1,5 @@
 import { commands } from "./bindings.ts";
-import type { SetMentionsBadgeParams } from "../lib/types/index.ts";
+import type { SetMentionsBadgeParams } from "../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "./invoke.ts";
 
 export async function setMentionsBadge(

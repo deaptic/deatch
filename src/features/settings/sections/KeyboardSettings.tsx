@@ -6,10 +6,7 @@ import Kbd from "../../../kit/Kbd.tsx";
 import { SettingsQuery } from "../../../kit/settingsQuery.ts";
 import { matchesQuery } from "../../../shared/textQuery.ts";
 import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
-import {
-  ACTION_LABELS,
-  CHANNEL_SELECT,
-} from "../../../lib/constants/keyboard.ts";
+import { ACTION_LABELS, CHANNEL_SELECT } from "../keyboard.ts";
 
 const GROUPS: { title: MessageKey; prefix: string[] }[] = [
   {

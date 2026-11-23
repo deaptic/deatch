@@ -1,5 +1,5 @@
 import { listenEventSub, unlistenAll } from "../../platform/listen.ts";
-import type { RawChatSettingsUpdate } from "../../lib/types/index.ts";
+import type { RawChatSettingsUpdate } from "../../shared/types/index.ts";
 import * as channels from "../channels/index.ts";
 import { mapChatSettingsUpdate } from "./model.ts";
 import { clear, load, set } from "./store.ts";

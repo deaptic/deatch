@@ -1,7 +1,7 @@
 import { advancedShowLogs } from "../features/preferences/index.ts";
 import { addToast } from "../kit/toasts.ts";
-import { errorMessage } from "../lib/utils/error.ts";
-import { listSize } from "../lib/utils/listSize.ts";
+import { errorMessage } from "../shared/error.ts";
+import { listSize } from "../shared/listSize.ts";
 import { t } from "../shared/i18n/index.ts";
 
 export type InvokeOptions = {

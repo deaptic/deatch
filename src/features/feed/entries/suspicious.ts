@@ -5,7 +5,7 @@ import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
   SuspiciousInfo,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { chatterFields, person } from "./feedEvent.ts";
 import { mapFragment } from "./chat.ts";
 

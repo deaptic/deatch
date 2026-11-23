@@ -9,7 +9,7 @@ import type {
   Person,
   Redemption,
   SuspiciousInfo,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 
 function updateFirst<T extends FeedEntry>(
   broadcasterId: string,

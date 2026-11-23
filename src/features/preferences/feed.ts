@@ -1,6 +1,6 @@
-import type { BadgeCategoryKey } from "../../lib/constants/badges.ts";
-import type { EventKey } from "../../lib/constants/events.ts";
-import type { Density } from "../../lib/constants/density.ts";
+import type { BadgeCategoryKey } from "../../shared/badges.ts";
+import type { EventKey } from "../../shared/moderateActions.ts";
+import type { Density } from "../../shared/density.ts";
 import {
   clampToStops,
   FONT_SIZE_STEPS,

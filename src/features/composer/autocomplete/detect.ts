@@ -1,4 +1,4 @@
-import { at } from "../../../lib/utils/at.ts";
+import { at } from "../../../shared/at.ts";
 export type Kind = "emote" | "mention" | "command";
 export type Active = { kind: Kind; query: string };
 

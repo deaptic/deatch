@@ -39,11 +39,19 @@ Rules:
 5. Each event kind has one owning feature, which listens in its `events.ts`.
    App events are typed in Rust. EventSub payloads pass through as JSON and are
    typed once on the TS side.
-6. Per-channel state starts on `join(id)` and ends on `leave(id)`, never on
-   mount.
+6. Per-channel state starts and ends through `channels.onChannel({ join,
+   focus, leave })`, registered in the feature's own `start()`, never on mount.
+   `app/createServices.ts` calls each feature's `start()` once.
 7. kit owns visuals. Features use layout utilities only.
-8. Permissions are asked one way: `can(channelId, capability)`.
+8. Permissions are asked one way: `hasPermission(channelId, capability)`.
 9. Every screen region sits in an error boundary.
+10. Pure modules import `shared/`, never a feature index: an index also loads
+    that feature's UI.
+
+Two tests guard the layout: `features/boundaries.test.ts` fails when a feature
+imports another feature past its `index.ts`, and `app/modules.test.ts` loads
+every feature index as the first module, so an import cycle that reads a value
+too early fails there instead of at startup.
 
 ## Backend
 

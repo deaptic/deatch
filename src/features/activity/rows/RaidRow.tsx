@@ -1,5 +1,5 @@
 import { t, tRich } from "../../../shared/i18n/index.ts";
-import * as clock from "../../../lib/services/clock.ts";
+import * as clock from "../../../shared/clock.ts";
 import * as raid from "../raid.ts";
 import { type PendingRaid, RAID_DURATION_MS } from "../raid.ts";
 import { knownUser } from "../../users/index.ts";

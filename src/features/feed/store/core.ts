@@ -1,5 +1,5 @@
 import { createStore, produce } from "solid-js/store";
-import type { BadgeMap, FeedEntry } from "../../../lib/types/index.ts";
+import type { BadgeMap, FeedEntry } from "../../../shared/types/index.ts";
 import { getEntryId } from "./entryId.ts";
 import { isLogged } from "../history/feedLogPages.ts";
 

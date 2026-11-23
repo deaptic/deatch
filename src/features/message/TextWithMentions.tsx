@@ -1,9 +1,9 @@
 import { For } from "solid-js";
-import type { Person } from "../../lib/types/index.ts";
+import type { Person } from "../../shared/types/index.ts";
 import { splitNames } from "./splitNames.ts";
 import DisplayName from "./DisplayName.tsx";
 import type { UserActions } from "./userLink.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 
 type Props = UserActions & { text: string; people: Person[] };
 

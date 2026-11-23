@@ -5,7 +5,7 @@ import { channelSearch } from "../channels/index.ts";
 import * as chatters from "./store.ts";
 import type { Role } from "./store.ts";
 import { feeds } from "../feed/index.ts";
-import type { SearchChannel, UserRef } from "../../lib/types/index.ts";
+import type { SearchChannel, UserRef } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import Chip from "../../kit/Chip.tsx";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";

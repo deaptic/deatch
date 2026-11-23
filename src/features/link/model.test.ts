@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import { planState } from "./model.ts";
 import { userFromRef } from "../../shared/user.ts";
 

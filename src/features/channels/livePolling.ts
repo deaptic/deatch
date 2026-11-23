@@ -14,8 +14,8 @@ import {
 } from "./streams.ts";
 import { pinnedChannels } from "../preferences/index.ts";
 import * as link from "../link/index.ts";
-import { selectedChannel } from "../../lib/stores/view.ts";
-import type { Stream, User } from "../../lib/types/index.ts";
+import { selectedChannel } from "../navigation/index.ts";
+import type { Stream, User } from "../../shared/types/index.ts";
 import { idsNotIn } from "./idsNotIn.ts";
 
 const POLL_MS = 60_000;

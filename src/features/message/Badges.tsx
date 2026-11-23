@@ -1,7 +1,7 @@
 import { children, For, type JSX, Show } from "solid-js";
-import { badgeCategoryFor } from "../../lib/constants/badges.ts";
+import { badgeCategoryFor } from "../../shared/badges.ts";
 import { feedBadges, feedShowBadges } from "../preferences/index.ts";
-import type { BadgeMap } from "../../lib/types/index.ts";
+import type { BadgeMap } from "../../shared/types/index.ts";
 
 type Badge = { set_id: string; id: string; info?: string };
 

@@ -8,8 +8,8 @@ import {
 import { searchCategories } from "../../platform/twitch/search.ts";
 import { channelInfoFor } from "../channels/index.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
-import { checkTag, type TagCheck } from "../../lib/utils/streamTags.ts";
-import type { Category, ContentLabel } from "../../lib/types/index.ts";
+import { checkTag, type TagCheck } from "./streamTags.ts";
+import type { Category, ContentLabel } from "../../shared/types/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Chip from "../../kit/Chip.tsx";
 import ChipInput from "../../kit/ChipInput.tsx";

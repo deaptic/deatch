@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import { t } from "../../../shared/i18n/index.ts";
 import { formatMoney } from "../../../shared/format/currency.ts";
-import type { CharityCampaign } from "../../../lib/types/index.ts";
+import type { CharityCampaign } from "../../../shared/types/index.ts";
 import Meter from "../../../kit/Meter.tsx";
 import ActivityRow from "../ui/ActivityRow.tsx";
 import { ActivityIcon } from "../ui/ActivityIcon.tsx";

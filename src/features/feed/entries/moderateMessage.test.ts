@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawModerate } from "../../../lib/types/index.ts";
+import type { RawModerate } from "../../../shared/types/index.ts";
 import { moderateMessage } from "./moderateMessage.ts";
 import { noticeText } from "./feedEvent.ts";
 

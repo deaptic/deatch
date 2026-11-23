@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedEntry } from "../../../lib/types/index.ts";
+import type { FeedEntry } from "../../../shared/types/index.ts";
 import { cursorAt, fromLog, isLogged, toLogEntry } from "./feedLogPages.ts";
 
 const message = {

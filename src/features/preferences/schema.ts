@@ -3,10 +3,10 @@ import type { Anchor } from "../../shared/wordMatch.ts";
 import {
   BADGE_CATEGORIES,
   type BadgeCategoryKey,
-} from "../../lib/constants/badges.ts";
-import { EVENTS, type EventKey } from "../../lib/constants/events.ts";
-import { DENSITIES, type Density } from "../../lib/constants/density.ts";
-import { type Theme, THEMES } from "../../lib/constants/theme.ts";
+} from "../../shared/badges.ts";
+import { EVENTS, type EventKey } from "../../shared/moderateActions.ts";
+import { DENSITIES, type Density } from "../../shared/density.ts";
+import { type Theme, THEMES } from "../../shared/theme.ts";
 import {
   type Language,
   LANGUAGES,
@@ -27,12 +27,9 @@ import {
   type CompressorSettings,
   DEFAULT_COMPRESSOR,
   MAX_CHANNEL_GAIN,
-} from "../../lib/constants/audio.ts";
-import { fromKeys } from "../../lib/utils/fromKeys.ts";
-import {
-  ACTIVITIES,
-  type ActivityKind,
-} from "../../lib/constants/activities.ts";
+} from "../../shared/audio.ts";
+import { fromKeys } from "../../shared/fromKeys.ts";
+import { ACTIVITIES, type ActivityKind } from "../../shared/activities.ts";
 import { DEFAULTS as defaults } from "./defaults.ts";
 
 type ShowPref = { show: boolean };

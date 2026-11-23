@@ -1,4 +1,4 @@
-import type { FeedMessage } from "../../lib/types/index.ts";
+import type { FeedMessage } from "../../shared/types/index.ts";
 
 export function mergeMessages(
   history: FeedMessage[],

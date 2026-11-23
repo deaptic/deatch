@@ -1,5 +1,5 @@
 import { createResource, For, Show } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import { streamForUserId } from "../channels/index.ts";
 import { recentChannels } from "../preferences/index.ts";
 import { users } from "../users/index.ts";

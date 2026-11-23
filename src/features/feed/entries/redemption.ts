@@ -1,7 +1,7 @@
 import type {
   RawChannelPointsRedemption,
   Redemption,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 
 export function mapRedemption(raw: RawChannelPointsRedemption): Redemption {
   const input = raw.user_input.trim();

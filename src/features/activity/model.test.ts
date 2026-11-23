@@ -13,7 +13,7 @@ import type {
   RawCharityCampaign,
   RawPoll,
   RawPrediction,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 
 const poll: RawPoll = {
   broadcaster_user_id: "1",

@@ -1,7 +1,7 @@
 import { t } from "../../shared/i18n/index.ts";
 import { createEffect } from "solid-js";
 import { setMentionsBadge } from "../../platform/notifications.ts";
-import * as appearance from "../../lib/services/appearance.ts";
+import { appearance } from "../appearance/index.ts";
 import { unreadCount } from "./store.ts";
 
 type BadgeLook = { fill: string; text: string; font: string };

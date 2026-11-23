@@ -1,16 +1,17 @@
-import type { FeedMessage, FollowStatus, User } from "../../lib/types/index.ts";
+import type {
+  FeedMessage,
+  FollowStatus,
+  User,
+} from "../../shared/types/index.ts";
 import { createEffect, createMemo, createResource, on, Show } from "solid-js";
 import { users } from "../users/index.ts";
 import { knownUser } from "../users/index.ts";
 import { hasPermission } from "../permissions/index.ts";
 import { getSubscription } from "../../platform/twitch/subscriptions.ts";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import { Pin } from "lucide-solid";
 import { feeds } from "../feed/index.ts";
-import {
-  onMiddleClick,
-  preventAutoscroll,
-} from "../../lib/utils/middleClick.ts";
+import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import { Badges } from "../message/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
@@ -19,7 +20,7 @@ import Live from "./Live.tsx";
 import { streamForUserId } from "../channels/index.ts";
 import Meta from "./Meta.tsx";
 import { t } from "../../shared/i18n/index.ts";
-import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import { openMenuAt } from "../../kit/contextMenu.ts";
 
 type Props = {
   chatterId: string;

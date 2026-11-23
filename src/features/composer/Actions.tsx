@@ -4,7 +4,7 @@ import { Dynamic } from "solid-js/web";
 import { t } from "../../shared/i18n/index.ts";
 import { streamForUserId } from "../channels/index.ts";
 import { clips } from "../chat/index.ts";
-import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
+import { CLIP_LENGTHS } from "../../shared/twitch.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import * as chatModes from "../chat-modes/index.ts";
@@ -13,7 +13,7 @@ import {
   closeOverlay,
   isOverlayOpen,
   toggleOverlay,
-} from "../../lib/stores/ui.ts";
+} from "../navigation/index.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import Badge from "../../kit/Badge.tsx";
 import ComposerPanel from "../../kit/ComposerPanel.tsx";

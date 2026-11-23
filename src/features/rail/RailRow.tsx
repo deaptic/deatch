@@ -5,8 +5,8 @@ import { createSideTip } from "../../kit/createSideTip.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";
 import { appearanceRailExpanded } from "../preferences/index.ts";
 import { RAIL_ROW_HEIGHT } from "../../kit/density.ts";
-import { onMiddleClick } from "../../lib/utils/middleClick.ts";
-import { openMenuAt } from "../../lib/utils/contextMenu.ts";
+import { onMiddleClick } from "../../kit/middleClick.ts";
+import { openMenuAt } from "../../kit/contextMenu.ts";
 
 export type SubTone = "soft" | "positive";
 

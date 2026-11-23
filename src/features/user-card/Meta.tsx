@@ -1,4 +1,4 @@
-import type { FollowStatus, User } from "../../lib/types/index.ts";
+import type { FollowStatus, User } from "../../shared/types/index.ts";
 import { Calendar, Heart } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { createCopied } from "../../kit/createCopied.ts";

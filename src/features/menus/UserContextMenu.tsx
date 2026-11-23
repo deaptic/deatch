@@ -14,12 +14,12 @@ import {
   UserX,
 } from "lucide-solid";
 import { Show } from "solid-js";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import * as clipboard from "../../kit/clipboard.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { setSuspiciousStatus } from "../../platform/twitch/moderation.ts";
-import type { SuspiciousStatus } from "../../lib/types/index.ts";
+import type { SuspiciousStatus } from "../../shared/types/index.ts";
 import Menu from "../../kit/Menu.tsx";
 import * as blocks from "../blocks/index.ts";
 import { user as currentUser } from "../users/index.ts";

@@ -1,8 +1,8 @@
 import { unlistenAll } from "../../../platform/listen.ts";
 import { listenFeed } from "./listenFeed.ts";
-import type { RawHypeTrain } from "../../../lib/types/index.ts";
+import type { RawHypeTrain } from "../../../shared/types/index.ts";
 import { feedEvent } from "../entries/feedEvent.ts";
-import { HYPE_TRAIN } from "../../../lib/constants/events.ts";
+import { HYPE_TRAIN } from "../../../shared/moderateActions.ts";
 import {
   hypeTrainBegin,
   hypeTrainEnd,

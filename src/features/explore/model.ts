@@ -1,4 +1,4 @@
-import type { Category, Stream } from "../../lib/types/index.ts";
+import type { Category, Stream } from "../../shared/types/index.ts";
 
 export function matchingStreams(
   streams: readonly Stream[],

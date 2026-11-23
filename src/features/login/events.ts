@@ -2,7 +2,7 @@ import { listenApp, unlistenAll } from "../../platform/listen.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { setUser } from "../users/index.ts";
 import { setDeviceCode, setWaiting } from "./auth.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
+import { errorMessage } from "../../shared/error.ts";
 import { users } from "../users/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 

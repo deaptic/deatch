@@ -1,4 +1,4 @@
-import type { FeedEntry } from "../../../lib/types/index.ts";
+import type { FeedEntry } from "../../../shared/types/index.ts";
 
 export const FEED_CAP = 400;
 const PAUSED_FACTOR = 5;

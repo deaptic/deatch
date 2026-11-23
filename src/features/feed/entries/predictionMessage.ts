@@ -1,7 +1,7 @@
 import { formatSpan } from "../../../shared/format/duration.ts";
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { NoticeText, RawPrediction } from "../../../lib/types/index.ts";
+import type { NoticeText, RawPrediction } from "../../../shared/types/index.ts";
 
 type Outcome = RawPrediction["outcomes"][number];
 

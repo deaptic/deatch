@@ -4,7 +4,7 @@ import { t } from "../../../shared/i18n/index.ts";
 import type {
   FeedMessage as Message,
   Reaction,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { feedShowCopypasta } from "../../preferences/index.ts";
 import { OVERLAY_GAP } from "../../../kit/Popover.tsx";
 import Toolbar from "../../../kit/Toolbar.tsx";

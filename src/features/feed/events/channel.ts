@@ -12,7 +12,7 @@ import {
   SHARED_CHAT_SESSION,
   STREAM_OFFLINE,
   STREAM_ONLINE,
-} from "../../../lib/constants/events.ts";
+} from "../../../shared/moderateActions.ts";
 import type {
   RawAdBreak,
   RawCampaignAmount,
@@ -22,7 +22,7 @@ import type {
   RawSharedChatSession,
   RawStreamOffline,
   RawStreamOnline,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import {
   applyChannelInfo,
   channelInfoFor,

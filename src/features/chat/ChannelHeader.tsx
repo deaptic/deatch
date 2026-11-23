@@ -10,7 +10,7 @@ import {
 import { type JSX, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../channels/index.ts";
-import * as clock from "../../lib/services/clock.ts";
+import * as clock from "../../shared/clock.ts";
 import {
   formatUptime,
   formatViewers,
@@ -19,18 +19,22 @@ import {
   streamTitle,
 } from "../../shared/format/stream.ts";
 import { createCopyable } from "../../kit/copyable.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import Stat from "../../kit/Stat.tsx";
 import { createChannelLink } from "../menus/index.ts";
 import { hasPermission, showsControls } from "../permissions/index.ts";
 import { ChannelToolForm } from "../channel-tools/index.ts";
-import { channelForm, setChannelForm } from "../../lib/stores/ui.ts";
+import {
+  channelForm,
+  setChannelForm,
+  isOverlayOpen,
+  toggleOverlay,
+} from "../navigation/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
 import { ActivityMenuButton, ActivityStrip } from "../activity/index.ts";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "./connection.ts";
-import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import Transition from "../../kit/Transition.tsx";
 
 type Props = {

@@ -3,7 +3,7 @@ import { followedLive, pinsLoaded } from "../channels/index.ts";
 import { knownUser } from "../users/index.ts";
 import { pinnedChannels } from "../preferences/index.ts";
 import * as link from "../link/index.ts";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 
 type RailChannels = {
   loadingPinned: () => boolean;

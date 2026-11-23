@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import type {
   FeedMessage as Message,
   UserRef,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import {
   ChatterPicture,
   chatterTint,

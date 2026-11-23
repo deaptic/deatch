@@ -2,13 +2,13 @@ import { createSignal, For, onMount, Show } from "solid-js";
 import { t, tRich } from "../../shared/i18n/index.ts";
 import { getBan } from "../../platform/twitch/moderation.ts";
 import * as activity from "../activity/index.ts";
-import * as clock from "../../lib/services/clock.ts";
+import * as clock from "../../shared/clock.ts";
 import { formatElapsed } from "../../shared/format/duration.ts";
 import type {
   BannedUser,
   UnbanDecision,
   UnbanRequest,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import Button from "../../kit/Button.tsx";
 import { ChatterPicture } from "../message/index.ts";
 import Dialog from "../../kit/Dialog.tsx";

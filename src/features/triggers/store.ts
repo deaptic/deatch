@@ -6,9 +6,9 @@ import { matchEnd } from "../../shared/wordMatch.ts";
 import { parse, render } from "./template.ts";
 import { type Resolve, resolverFor, templateProblems } from "./methods.ts";
 import { holds, needsValue, satisfied } from "./conditions.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { UserRef } from "../../shared/types/index.ts";
 import { knownUser, user } from "../users/index.ts";
-import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
+import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
 import {
   clampCooldown,
   type Condition,

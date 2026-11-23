@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedEntry } from "../../../lib/types/index.ts";
+import type { FeedEntry } from "../../../shared/types/index.ts";
 import { enforceCaps, FEED_CAP } from "./caps.ts";
 
 const message = (n: number): FeedEntry =>

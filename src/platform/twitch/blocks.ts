@@ -1,5 +1,5 @@
 import { commands } from "../bindings.ts";
-import type { BlockParams, UserRef } from "../../lib/types/index.ts";
+import type { BlockParams, UserRef } from "../../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "../invoke.ts";
 import { t } from "../../shared/i18n/index.ts";
 

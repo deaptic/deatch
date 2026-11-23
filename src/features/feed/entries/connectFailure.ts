@@ -1,6 +1,6 @@
 import { t } from "../../../shared/i18n/index.ts";
-import type { ChatState } from "../../../lib/types/index.ts";
-import { errorMessage } from "../../../lib/utils/error.ts";
+import type { ChatState } from "../../../shared/types/index.ts";
+import { errorMessage } from "../../../shared/error.ts";
 
 type ConnectFailure = Extract<
   ChatState,

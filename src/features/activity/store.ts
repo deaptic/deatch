@@ -17,7 +17,7 @@ import type {
   PredictionEnd,
   UnbanDecision,
   UnbanRequest,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import { getCharityCampaign } from "../../platform/twitch/charity.ts";
 import { getGoals } from "../../platform/twitch/goals.ts";
 import { getAdSchedule, snoozeNextAd } from "../../platform/twitch/ads.ts";

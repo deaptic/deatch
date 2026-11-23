@@ -47,10 +47,11 @@ import { user } from "../users/index.ts";
 import {
   type ChannelRef,
   channelResource,
-} from "../../lib/services/channelResource.ts";
-import type { Emote, EmoteEntry, UserEmote } from "../../lib/types/index.ts";
-import { createBackoff } from "../../lib/utils/backoff.ts";
-import { loadCache, saveCache } from "../../lib/utils/cache.ts";
+} from "../../shared/channelResource.ts";
+import { selectedChannel } from "../navigation/index.ts";
+import type { Emote, EmoteEntry, UserEmote } from "../../shared/types/index.ts";
+import { createBackoff } from "../../shared/backoff.ts";
+import { loadCache, saveCache } from "../../platform/cache.ts";
 import { emoteMap } from "./emoteMap.ts";
 import { dedupeById } from "./emoteSections.ts";
 import * as storage from "../../platform/storage.ts";
@@ -60,14 +61,19 @@ const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;
 const GLOBALS_RETRY_MIN_MS = 30_000;
 const GLOBALS_RETRY_MAX_MS = 300_000;
 
-const bttv = channelResource((c) =>
-  bttvGetChannelEmotes({ broadcasterId: c.id }, { silent: true }),
+const isSelected = (id: string) => selectedChannel()?.id === id;
+
+const bttv = channelResource(
+  (c) => bttvGetChannelEmotes({ broadcasterId: c.id }, { silent: true }),
+  isSelected,
 );
-const ffz = channelResource((c) =>
-  ffzGetChannelEmotes({ broadcasterLogin: c.login }, { silent: true }),
+const ffz = channelResource(
+  (c) => ffzGetChannelEmotes({ broadcasterLogin: c.login }, { silent: true }),
+  isSelected,
 );
-const follower = channelResource((c) =>
-  getFollowerEmotes({ broadcasterId: c.id }, { silent: true }),
+const follower = channelResource(
+  (c) => getFollowerEmotes({ broadcasterId: c.id }, { silent: true }),
+  isSelected,
 );
 
 let userEmotesLoadStarted = false;

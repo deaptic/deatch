@@ -1,5 +1,5 @@
 import { formatCountdown } from "../../../shared/format/duration.ts";
-import * as clock from "../../../lib/services/clock.ts";
+import * as clock from "../../../shared/clock.ts";
 
 export function untilIso(iso: string): string {
   return formatCountdown(Date.parse(iso) - clock.now());

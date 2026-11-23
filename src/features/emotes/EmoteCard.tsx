@@ -3,7 +3,7 @@ import { createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
 import Popover, { OVERLAY_GAP } from "../../kit/Popover.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { createCopied } from "../../kit/createCopied.ts";
-import * as browser from "../../lib/services/browser.ts";
+import * as browser from "../../platform/browser.ts";
 import {
   bttvChannel,
   bttvGlobal,

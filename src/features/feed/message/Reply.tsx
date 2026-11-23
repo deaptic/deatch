@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import type { FeedMessage as Message } from "../../../lib/types/index.ts";
+import type { FeedMessage as Message } from "../../../shared/types/index.ts";
 import { knownChatterColor } from "../../users/index.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import {

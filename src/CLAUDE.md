@@ -1,8 +1,6 @@
 # Frontend
 
-The target layout is in `docs/ARCHITECTURE.md`. Code still under `lib/` and
-`components/` is not migrated yet; it keeps the old layers (`events/`,
-`services/`, `stores/`, `primitives/`) until its feature moves.
+The layout and its rules are in `docs/ARCHITECTURE.md`.
 
 All user-facing text goes through `t()` from `i18n/`, keyed in
 `src/locales/<language>.json`; `en-US.json` is the source and every file has the same keys. Names of things (Deatch, Link, Twitch, Discord, 7TV, BetterTTV,
@@ -20,8 +18,8 @@ inserted into other text), `_STATUS`. Completed events are past tense
 (`FEED_RAID_CANCELED_LINE`).
 
 A component may call a `platform/` wrapper directly for a plain one-shot call; once
-caching, state, or outcome logic is involved, it belongs in a service. Types
-come from `types/`, never re-exported through `platform/`.
+caching, state, or outcome logic is involved, it belongs in the feature's store. Shared types
+come from `shared/types/`, never re-exported through `platform/`.
 
 Every Tauri call, commands and plugins alike, goes through `invokeCommand`,
 which logs each failure and toasts it unless `silent`; callers never report it
@@ -29,20 +27,20 @@ again. Toasts are for what the user did: background work (polling, preloading,
 startup sync) calls silently. Await the call when the outcome matters, otherwise end it with
 `.catch(() => {})`. `void` marks only promises that cannot reject.
 
-## Services
+## Stores
 
-A service is a plain ES module, never a class; the module is the singleton.
+A store is a plain ES module, never a class; the module is the singleton.
 
 - Exports are named for what they do within the feature: `raid.begin`,
   `users.get`. The namespace supplies the feature, so don't repeat it.
 - Callers import a service as a namespace named after the file
-  (`import * as raid from ".../services/raid.ts"`). Types may be imported by
+  (`import { raid } from ".../features/activity/index.ts"`). Types may be imported by
   name alongside. `platform/` wrappers keep named imports.
 - State is module-level and never exported; expose reads through functions or
   keep them in a store.
-- Nothing runs on import, in services and `events/` alike. Listeners, timers,
+- Nothing runs on import. Listeners, timers,
   and subscriptions start in an exported `start(): () => void` that returns its
-  cleanup, registered once in `primitives/createServices.ts`. Collect Tauri
+  cleanup, registered once in `app/createServices.ts`. Collect Tauri
   unlisten promises with `unlistenAll`.
 - Pure logic with no state goes in its own file so it can be tested without
   Tauri. Tests are `*.test.ts` next to the module they cover, using Vitest

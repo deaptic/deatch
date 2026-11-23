@@ -1,5 +1,5 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import type { User } from "../../lib/types/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import * as explore from "./store.ts";
 import { sortStreams } from "./model.ts";
 import LiveCard from "./LiveCard.tsx";

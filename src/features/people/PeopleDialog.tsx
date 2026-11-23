@@ -12,7 +12,7 @@ import * as chatters from "./store.ts";
 import { hasPermission, type Capability } from "../permissions/index.ts";
 import { formatViewers } from "../../shared/format/stream.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { UserRef } from "../../shared/types/index.ts";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Modal from "../../kit/Modal.tsx";

@@ -6,7 +6,7 @@ import SettingsRow from "../../../kit/SettingsRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import Dialog from "../../../kit/Dialog.tsx";
 import Button from "../../../kit/Button.tsx";
-import * as graphics from "../../../lib/services/graphics.ts";
+import * as graphics from "../graphics.ts";
 import { history } from "../../feed/index.ts";
 import {
   advancedAlwaysOnTop,

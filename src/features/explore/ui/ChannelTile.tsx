@@ -1,4 +1,4 @@
-import type { User } from "../../../lib/types/index.ts";
+import type { User } from "../../../shared/types/index.ts";
 import { createChannelLink } from "../../menus/index.ts";
 import Avatar from "../../../kit/Avatar.tsx";
 

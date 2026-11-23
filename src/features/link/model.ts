@@ -1,4 +1,4 @@
-import type { LinkState, User } from "../../lib/types/index.ts";
+import type { LinkState, User } from "../../shared/types/index.ts";
 
 export type Plan = {
   muted: Record<string, boolean>;

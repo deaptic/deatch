@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { EmoteType, User, UserEmote } from "../../lib/types/index.ts";
+import type { EmoteType, User, UserEmote } from "../../shared/types/index.ts";
 import {
   channelSections,
   dedupeById,

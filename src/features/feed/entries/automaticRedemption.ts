@@ -2,9 +2,9 @@ import { t } from "../../../shared/i18n/index.ts";
 import type {
   FeedEvent,
   RawAutomaticRedemption,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { chatterFields, feedEvent } from "./feedEvent.ts";
-import { CHANNEL_POINTS_REDEMPTION } from "../../../lib/constants/events.ts";
+import { CHANNEL_POINTS_REDEMPTION } from "../../../shared/moderateActions.ts";
 
 const MESSAGE_REWARDS = new Set([
   "send_highlighted_message",

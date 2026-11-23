@@ -1,4 +1,7 @@
-import type { AnnouncementColor, ChatColor } from "../../../lib/types/index.ts";
+import type {
+  AnnouncementColor,
+  ChatColor,
+} from "../../../shared/types/index.ts";
 import {
   banUser,
   deleteChatMessages,
@@ -26,10 +29,7 @@ import {
   startCommercial,
 } from "../../../platform/twitch/channels.ts";
 import type { Command, OptionSuggestion } from "../types.ts";
-import {
-  AD_LENGTHS,
-  ANNOUNCEMENT_COLORS,
-} from "../../../lib/constants/twitch.ts";
+import { AD_LENGTHS, ANNOUNCEMENT_COLORS } from "../../../shared/twitch.ts";
 
 export const twitchCommands: Command[] = [
   {

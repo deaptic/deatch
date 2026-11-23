@@ -3,7 +3,7 @@ import { t } from "../../../shared/i18n/index.ts";
 import type {
   RawNoticeDetails,
   RawNotification,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 
 type Plan = { sub_tier: string; is_prime?: boolean | null };
 

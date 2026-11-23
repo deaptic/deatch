@@ -8,8 +8,8 @@ import ResponseField, {
   type Targeting,
 } from "./ResponseField.tsx";
 import { BLANK_CONDITION } from "./conditionGroups.ts";
-import { moved } from "../../lib/utils/moved.ts";
-import { removedAt, replacedAt } from "../../lib/utils/listEdit.ts";
+import { moved } from "../../shared/moved.ts";
+import { removedAt, replacedAt } from "./listEdit.ts";
 import type { ConditionalReply } from "../preferences/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 

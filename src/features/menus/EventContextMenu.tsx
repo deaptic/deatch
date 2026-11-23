@@ -4,7 +4,7 @@ import Menu from "../../kit/Menu.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import * as clipboard from "../../kit/clipboard.ts";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
-import type { FeedEvent } from "../../lib/types/index.ts";
+import type { FeedEvent } from "../../shared/types/index.ts";
 
 type Props = {
   x: number;

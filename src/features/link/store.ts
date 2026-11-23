@@ -1,5 +1,5 @@
 import { createEffect, createRoot, createSignal, on } from "solid-js";
-import { selectedChannel } from "../../lib/stores/view.ts";
+import { selectedChannel } from "../navigation/index.ts";
 import { user } from "../users/index.ts";
 import {
   linkClose,
@@ -9,15 +9,19 @@ import {
 } from "../../platform/link.ts";
 import { openUrl } from "../../platform/opener.ts";
 import { focusWindow, onWindowFocusChanged } from "../../platform/window.ts";
-import { channelUrl } from "../../lib/utils/twitchUrl.ts";
-import type { CompressorSettings } from "../../lib/constants/audio.ts";
+import { channelUrl } from "../../shared/twitchUrl.ts";
+import type { CompressorSettings } from "../../shared/audio.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { users } from "../users/index.ts";
-import type { LinkState, SetAudioParams, User } from "../../lib/types/index.ts";
+import type {
+  LinkState,
+  SetAudioParams,
+  User,
+} from "../../shared/types/index.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
 import { t } from "../../shared/i18n/index.ts";
-import { createBackoff } from "../../lib/utils/backoff.ts";
+import { createBackoff } from "../../shared/backoff.ts";
 import { planState } from "./model.ts";
 
 const [connected, setConnected] = createSignal(false);

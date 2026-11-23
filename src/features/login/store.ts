@@ -7,8 +7,8 @@ import {
   setRestoreFailure,
   setWaiting,
 } from "./auth.ts";
-import { isAppError } from "../../lib/utils/error.ts";
-import { createBackoff } from "../../lib/utils/backoff.ts";
+import { isAppError } from "../../shared/error.ts";
+import { createBackoff } from "../../shared/backoff.ts";
 import {
   cancelLogin,
   getDeviceCode,

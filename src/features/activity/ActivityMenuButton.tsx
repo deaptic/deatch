@@ -5,7 +5,7 @@ import { formatList } from "../../shared/format/list.ts";
 import * as activity from "./store.ts";
 import * as raid from "./raid.ts";
 import { runningActivities } from "./running.ts";
-import { ACTIVITIES, ACTIVITY_LABELS } from "../../lib/constants/activities.ts";
+import { ACTIVITIES, ACTIVITY_LABELS } from "../../shared/activities.ts";
 import { activityShown, setActivityShown } from "../preferences/index.ts";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";

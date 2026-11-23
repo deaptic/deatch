@@ -2,7 +2,7 @@ import { users } from "../../users/index.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import { formatElapsed } from "../../../shared/format/duration.ts";
 import { Time } from "../../../shared/time.ts";
-import type { User } from "../../../lib/types/index.ts";
+import type { User } from "../../../shared/types/index.ts";
 import { type BuiltInContext, failed, forTarget } from "./context.ts";
 
 async function followage(

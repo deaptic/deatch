@@ -6,8 +6,8 @@ import {
   streamGame,
   streamTitle,
 } from "../../shared/format/stream.ts";
-import * as clock from "../../lib/services/clock.ts";
-import type { ChannelInfo, Stream, User } from "../../lib/types/index.ts";
+import * as clock from "../../shared/clock.ts";
+import type { ChannelInfo, Stream, User } from "../../shared/types/index.ts";
 import Stat from "../../kit/Stat.tsx";
 import { t } from "../../shared/i18n/index.ts";
 

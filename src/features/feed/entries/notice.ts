@@ -5,9 +5,9 @@ import type {
   FeedEvent,
   Person,
   RawNotification,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { feedEvent, person } from "./feedEvent.ts";
-import { isAnnouncementColor } from "../../../lib/constants/twitch.ts";
+import { isAnnouncementColor } from "../../../shared/twitch.ts";
 import { wordsOf } from "./chat.ts";
 import { detail, noticeMessage } from "./noticeMessage.ts";
 

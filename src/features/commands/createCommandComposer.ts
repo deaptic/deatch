@@ -2,9 +2,9 @@ import { createMemo, createResource, createSignal, onCleanup } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { chattersIn } from "../users/index.ts";
 import { users, rankChatters } from "../users/index.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 import { createDebounced } from "../../shared/solid/createDebounced.ts";
-import type { Chatter } from "../../lib/types/index.ts";
+import type { Chatter } from "../../shared/types/index.ts";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import {
   allSatisfied,

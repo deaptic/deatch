@@ -2,7 +2,7 @@ import { onMount } from "solid-js";
 import * as raid from "./raid.ts";
 import { activityShown } from "../preferences/index.ts";
 import * as activity from "./store.ts";
-import * as clock from "../../lib/services/clock.ts";
+import * as clock from "../../shared/clock.ts";
 import Transition from "../../kit/Transition.tsx";
 import AdsRow from "./rows/AdsRow.tsx";
 import CharityRow from "./rows/CharityRow.tsx";

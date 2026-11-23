@@ -16,7 +16,7 @@ import {
 } from "../preferences/index.ts";
 
 import { formatPx } from "../../shared/format/units.ts";
-import { DEFAULT_ACCENT_HEX } from "../../lib/constants/theme.ts";
+import { DEFAULT_ACCENT_HEX } from "../../shared/theme.ts";
 export default function ReadabilityCard() {
   return (
     <Card>

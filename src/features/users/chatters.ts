@@ -1,4 +1,4 @@
-import type { Chatter } from "../../lib/types/index.ts";
+import type { Chatter } from "../../shared/types/index.ts";
 import * as channels from "../channels/index.ts";
 import { recordIn } from "./chatterBucket.ts";
 

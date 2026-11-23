@@ -2,7 +2,7 @@ import { createEffect, createMemo, createSignal, on, Show } from "solid-js";
 import { users } from "../users/index.ts";
 import { knownUser } from "../users/index.ts";
 import { avatarZoom, sizedAvatarUrl } from "../../shared/avatar.ts";
-import { hueOf } from "../../lib/utils/color.ts";
+import { hueOf } from "../../shared/color.ts";
 import { createImageReveal } from "../../shared/solid/createImageReveal.ts";
 
 const IMAGE_PX = 70;

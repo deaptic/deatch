@@ -1,13 +1,13 @@
 import { activeTab, tabs } from "./store.ts";
 import { createEffect, on } from "solid-js";
-import type { ChannelNavigation } from "../../lib/primitives/createChannelNavigation.ts";
-import { channelsInOrder } from "../channels/index.ts";
 import {
+  type ChannelNavigation,
   linkSynced,
   pendingChannel,
   selectedChannel,
   setLinkSynced,
-} from "../../lib/stores/view.ts";
+} from "../navigation/index.ts";
+import { channelsInOrder } from "../channels/index.ts";
 import {
   compressorSettings,
   linkAudioLink,
@@ -15,7 +15,7 @@ import {
   linkCompressor,
 } from "../preferences/index.ts";
 import * as link from "./store.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 import { wrapIndex } from "../../shared/solid/createListNavigation.ts";
 
 export type LinkControls = {

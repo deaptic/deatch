@@ -15,7 +15,7 @@ import type {
   GetUsersParams,
   User,
   UserRef,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 import * as storage from "../../platform/storage.ts";
 import { addToast } from "../../kit/toasts.ts";
 import {

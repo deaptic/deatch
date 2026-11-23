@@ -15,8 +15,10 @@ Vitest from `vite-plus/test`. `vp check` type-checks them with the rest of the
 code. Tests run in plain Node with no Tauri and no DOM: importing any module
 works, but a call that reaches Tauri fails, or comes back as the failure
 outcome of a service that handles it. So pure logic goes in its own file and
-that is what gets tested (`services/emoteSetUpdate.ts` and
-`mappers/chat.ts` are the pattern).
+that is what gets tested (`features/emotes/setUpdate.ts` and
+`features/feed/entries/chat.ts` are the pattern). Tests of store code that
+reach a feature index opt into `// @vitest-environment happy-dom`, because an
+index also loads that feature's UI.
 
 Rust tests are a `#[cfg(test)] mod tests` at the bottom of the file. They cover
 parsers, mappings, and params, asserting wire shapes with

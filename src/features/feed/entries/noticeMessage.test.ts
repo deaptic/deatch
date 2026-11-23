@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawNotification } from "../../../lib/types/index.ts";
+import type { RawNotification } from "../../../shared/types/index.ts";
 import { noticeMessage } from "./noticeMessage.ts";
 
 const base = {

@@ -1,6 +1,6 @@
 import type { JSX } from "solid-js";
 import type { EmoteGridItem } from "./types.ts";
-import { at } from "../../../lib/utils/at.ts";
+import { at } from "../../../shared/at.ts";
 
 export const COLUMNS = 8;
 export const GRID_COLUMNS = "grid-cols-8";

@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import type {
   ConnectionState,
   ConnectionStats,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import Meter from "../../../kit/Meter.tsx";
 import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 

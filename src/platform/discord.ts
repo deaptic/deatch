@@ -1,5 +1,5 @@
 import { commands } from "./bindings.ts";
-import type { SetActivityParams } from "../lib/types/index.ts";
+import type { SetActivityParams } from "../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "./invoke.ts";
 
 export async function discordConnect(options?: InvokeOptions): Promise<void> {

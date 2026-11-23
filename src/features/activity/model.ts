@@ -11,7 +11,7 @@ import type {
   RawPrediction,
   RawUnbanRequestCreate,
   UnbanRequest,
-} from "../../lib/types/index.ts";
+} from "../../shared/types/index.ts";
 
 export function pollFrom(raw: RawPoll): Poll {
   return {

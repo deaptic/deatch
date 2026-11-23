@@ -5,7 +5,7 @@ import {
   unblockUser,
 } from "../../platform/twitch/blocks.ts";
 import { user } from "../users/index.ts";
-import type { UserRef } from "../../lib/types/index.ts";
+import type { UserRef } from "../../shared/types/index.ts";
 
 const [blocked, setBlocked] = createSignal<UserRef[]>([]);
 const blockedIds = () => new Set(blocked().map((u) => u.id));

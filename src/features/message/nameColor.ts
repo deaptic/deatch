@@ -1,6 +1,6 @@
 import { feedUserOverrideNameColor } from "../preferences/index.ts";
-import { resolvedTheme } from "../../lib/stores/theme.ts";
-import { readableColor } from "../../lib/utils/color.ts";
+import { resolvedTheme } from "../appearance/index.ts";
+import { readableColor } from "../../shared/color.ts";
 
 export function nameColor(color: string | undefined): string {
   const override = feedUserOverrideNameColor();

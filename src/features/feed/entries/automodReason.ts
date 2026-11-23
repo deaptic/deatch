@@ -1,4 +1,4 @@
-import type { RawAutomodMessageHold } from "../../../lib/types/index.ts";
+import type { RawAutomodMessageHold } from "../../../shared/types/index.ts";
 import { t } from "../../../shared/i18n/index.ts";
 
 function blockedTerms(

@@ -1,7 +1,7 @@
 import { t } from "../../../shared/i18n/index.ts";
 import { getRecentMessages } from "../../../platform/twitch/chat.ts";
 import { chatterOf, mapChatMessage } from "../entries/chat.ts";
-import { errorMessage } from "../../../lib/utils/error.ts";
+import { errorMessage } from "../../../shared/error.ts";
 import { textOf } from "../entries/message.ts";
 import {
   appendItem,
@@ -11,14 +11,14 @@ import {
   prependEntries,
 } from "../store/index.ts";
 import { feedEvent } from "../entries/feedEvent.ts";
-import { LOCAL } from "../../../lib/constants/events.ts";
+import { LOCAL } from "../../../shared/moderateActions.ts";
 import { mapNotice } from "../entries/notice.ts";
 import { groupGifts } from "../entries/giftGroup.ts";
 import type {
   FeedEntry,
   FeedMessage,
   RecentHistory,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { recordChatter, user } from "../../users/index.ts";
 import { appendOlderSentMessage } from "../../composer/index.ts";
 import * as badges from "../../badges/index.ts";

@@ -30,7 +30,7 @@ import {
   setSettingsSection,
   type SettingsSection,
   settingsSection,
-} from "../../lib/stores/view.ts";
+} from "../navigation/index.ts";
 import NotificationsSettings from "./sections/NotificationsSettings.tsx";
 import ModerationSettings from "./sections/ModerationSettings.tsx";
 import { AppearanceSettings } from "../appearance/index.ts";

@@ -1,7 +1,7 @@
 import { For } from "solid-js";
 import type { EmoteGridItem } from "./types.ts";
 import { GRID_COLUMNS } from "./helpers.ts";
-import { openMenuAt } from "../../../lib/utils/contextMenu.ts";
+import { openMenuAt } from "../../../kit/contextMenu.ts";
 import { emoteZoom } from "../emoteZoom.ts";
 
 type Props = {

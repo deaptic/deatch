@@ -47,7 +47,7 @@ import {
   stepFeedGroupSpacing,
   setFeedDensity,
 } from "../preferences/index.ts";
-import { openSettings } from "../../lib/stores/view.ts";
+import { openSettings } from "../navigation/index.ts";
 import Popover from "../../kit/Popover.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Segmented from "../../kit/Segmented.tsx";

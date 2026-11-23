@@ -1,5 +1,5 @@
 import { t } from "../../../shared/i18n/index.ts";
-import type { NoticeText, RawGoal } from "../../../lib/types/index.ts";
+import type { NoticeText, RawGoal } from "../../../shared/types/index.ts";
 import { noticeText } from "./feedEvent.ts";
 
 function amounts(raw: RawGoal) {

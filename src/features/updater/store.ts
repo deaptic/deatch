@@ -2,8 +2,8 @@ import { createSignal } from "solid-js";
 import { relaunchApp } from "../../platform/app.ts";
 import { checkForUpdate } from "../../platform/updater.ts";
 import { onWindowFocusChanged } from "../../platform/window.ts";
-import * as exit from "../../lib/services/exit.ts";
-import { errorMessage } from "../../lib/utils/error.ts";
+import { exit } from "../exit/index.ts";
+import { errorMessage } from "../../shared/error.ts";
 import { shouldCheck, type UpdateState } from "./model.ts";
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;

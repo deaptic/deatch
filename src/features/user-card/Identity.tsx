@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import type { Subscription, User } from "../../lib/types/index.ts";
+import type { Subscription, User } from "../../shared/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { DisplayName } from "../message/index.ts";
 

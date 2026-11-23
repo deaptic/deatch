@@ -3,7 +3,7 @@ import type {
   Person,
   RawModerate,
   RawModUser,
-} from "../../../lib/types/index.ts";
+} from "../../../shared/types/index.ts";
 import { formatApproxDuration } from "../../../shared/format/duration.ts";
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";

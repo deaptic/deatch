@@ -4,7 +4,7 @@ import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import SettingsRow from "../../kit/SettingsRow.tsx";
 import Toggle from "../../kit/Toggle.tsx";
-import { BADGE_CATEGORIES } from "../../lib/constants/badges.ts";
+import { BADGE_CATEGORIES } from "../../shared/badges.ts";
 import {
   feedBadges,
   feedShowBadges,

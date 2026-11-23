@@ -1,4 +1,4 @@
-import type { Stream, User } from "../../lib/types/index.ts";
+import type { Stream, User } from "../../shared/types/index.ts";
 import { userFromRef } from "../../shared/user.ts";
 
 type Sources = {

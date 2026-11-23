@@ -1,5 +1,5 @@
 import { createEffect, createRoot, on } from "solid-js";
-import { selectedChannel } from "../../lib/stores/view.ts";
+import { selectedChannel } from "../navigation/index.ts";
 import * as channels from "../channels/index.ts";
 import * as channelPoints from "./channelPoints.ts";
 import * as channel from "./events/channel.ts";

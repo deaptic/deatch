@@ -5,7 +5,7 @@ import { moderatedChannels } from "../permissions/index.ts";
 import { user } from "../users/index.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
-import type { User, UserRef } from "../../lib/types/index.ts";
+import type { User, UserRef } from "../../shared/types/index.ts";
 
 type Props = {
   target: User;

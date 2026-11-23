@@ -1,7 +1,4 @@
-import {
-  ACTIVITIES,
-  type ActivityKind,
-} from "../../lib/constants/activities.ts";
+import { ACTIVITIES, type ActivityKind } from "../../shared/activities.ts";
 import type { Activity } from "./store.ts";
 
 export function runningActivities(

@@ -12,7 +12,7 @@ import { liveStreams } from "../channels/index.ts";
 import { popular } from "./store.ts";
 import { exploreLanguage, setExploreLanguage } from "../preferences/index.ts";
 import { orderLanguages } from "./languages.ts";
-import { at } from "../../lib/utils/at.ts";
+import { at } from "../../shared/at.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 type Props = {

@@ -1,5 +1,5 @@
 import { t } from "../../../shared/i18n/index.ts";
-import { setChannelForm } from "../../../lib/stores/ui.ts";
+import { setChannelForm } from "../../navigation/index.ts";
 import Button from "../../../kit/Button.tsx";
 import ActivityRow from "../ui/ActivityRow.tsx";
 import { ActivityIcon } from "../ui/ActivityIcon.tsx";

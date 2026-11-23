@@ -1,6 +1,6 @@
 import { prefs, setPrefs } from "./core.ts";
 import { isOwnChannel as isOwn } from "../permissions/index.ts";
-import { moved } from "../../lib/utils/moved.ts";
+import { moved } from "../../shared/moved.ts";
 
 export const pinnedChannels = () =>
   prefs.menu.channels.pinned.filter((id) => !isOwn(id));
