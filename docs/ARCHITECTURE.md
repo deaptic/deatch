@@ -1,8 +1,8 @@
 # Architecture
 
-Tauri 2, Windows only. Rust owns every connection to the outside world and
-emits one typed event stream. The UI is feature folders built from a pure
-model, one store, and pure views on a shared kit.
+Tauri 2, Windows only. Rust owns every connection to the outside world. The UI
+is feature folders built from a pure model, one store, and pure views on a
+shared kit.
 
 ## Frontend
 
@@ -36,7 +36,9 @@ Rules:
 3. State changes only through store actions. Event handling is a pure
    `apply(state, event)`.
 4. Only `platform/` touches Tauri. The UI never fetches.
-5. Each event kind has one owning feature.
+5. Each event kind has one owning feature, which listens in its `events.ts`.
+   App events are typed in Rust. EventSub payloads pass through as JSON and are
+   typed once on the TS side.
 6. Per-channel state starts on `join(id)` and ends on `leave(id)`, never on
    mount.
 7. kit owns visuals. Features use layout utilities only.

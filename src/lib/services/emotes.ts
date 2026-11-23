@@ -8,12 +8,12 @@ import { type EmoteUse, withUse } from "../utils/emoteUsage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
-} from "../../platform/external/bttv.ts";
+} from "../../platform/emotes/bttv.ts";
 import {
   ffzGetChannelEmotes,
   ffzGetGlobalEmotes,
-} from "../../platform/external/ffz.ts";
-import { seventvGetGlobalEmotes } from "../../platform/external/seventv.ts";
+} from "../../platform/emotes/ffz.ts";
+import { seventvGetGlobalEmotes } from "../../platform/emotes/seventv.ts";
 import {
   getFollowerEmotes,
   getGlobalEmotes,
