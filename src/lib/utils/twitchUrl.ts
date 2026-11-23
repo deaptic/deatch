@@ -2,6 +2,10 @@ export function channelUrl(login: string): string {
   return `https://twitch.tv/${login}`;
 }
 
+export function rewardQueueUrl(login: string): string {
+  return `https://www.twitch.tv/popout/${login}/reward-queue`;
+}
+
 export function clipUrl(id: string): string {
   return `https://clips.twitch.tv/${id}`;
 }

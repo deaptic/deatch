@@ -2,6 +2,7 @@ import {
   Bookmark,
   ChartColumn,
   Eraser,
+  ListChecks,
   Shield,
   Swords,
   Trophy,
@@ -15,7 +16,8 @@ import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
-import { user } from "../../lib/stores/users.ts";
+import { knownUser, user } from "../../lib/stores/users.ts";
+import * as browser from "../../lib/services/browser.ts";
 import { type ChannelForm, setChannelForm } from "../../lib/stores/ui.ts";
 import * as activity from "../../lib/services/activity.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
@@ -81,6 +83,15 @@ export function ChannelToolItems(props: ItemsProps) {
         />
       </Show>
       <MenuDivider />
+      <Show when={knownUser(props.broadcasterId)}>
+        {(channel) => (
+          <MenuItem
+            label={t("HEADER_REWARD_QUEUE_LABEL")}
+            icon={<ListChecks />}
+            onClick={() => browser.openRewardQueue(channel().login)}
+          />
+        )}
+      </Show>
       <MenuItem
         label={t(
           shield() ? "HEADER_SHIELD_OFF_LABEL" : "HEADER_SHIELD_ON_LABEL",
