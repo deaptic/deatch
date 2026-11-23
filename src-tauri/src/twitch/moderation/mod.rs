@@ -14,8 +14,8 @@ use twitch_api::helix::moderation::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
     update_shield_mode_status::{UpdateShieldModeStatusBody, UpdateShieldModeStatusRequest},
-    GetBannedUsersRequest, GetShieldModeStatusRequest, GetUnbanRequestsRequest,
-    ResolveUnbanRequest, UnbanRequestStatus,
+    AddedSuspiciousUserStatus, GetBannedUsersRequest, GetShieldModeStatusRequest,
+    GetUnbanRequestsRequest, ResolveUnbanRequest, UnbanRequestStatus,
 };
 use twitch_api::types;
 
@@ -165,6 +165,62 @@ pub async fn resolve_unban_request(
     Ok(())
 }
 
+#[derive(Clone, Copy, Deserialize, specta::Type)]
+#[serde(rename_all = "snake_case")]
+pub enum SuspiciousStatus {
+    None,
+    ActiveMonitoring,
+    Restricted,
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct SetSuspiciousStatusParams {
+    pub broadcaster_id: UserId,
+    pub user_id: UserId,
+    pub status: SuspiciousStatus,
+}
+
+pub async fn set_suspicious_status(
+    twitch: &Authed<'_>,
+    params: SetSuspiciousStatusParams,
+) -> Result<()> {
+    let user_id = params.user_id.as_str();
+    let broadcaster_id = params.broadcaster_id.as_str();
+    let moderator_id = &twitch.token.user_id;
+    let added = match params.status {
+        SuspiciousStatus::None => None,
+        SuspiciousStatus::ActiveMonitoring => Some(AddedSuspiciousUserStatus::ActiveMonitoring),
+        SuspiciousStatus::Restricted => Some(AddedSuspiciousUserStatus::Restricted),
+    };
+    match added {
+        Some(status) => {
+            twitch
+                .helix
+                .add_suspicious_status_to_chat_user(
+                    user_id,
+                    status,
+                    broadcaster_id,
+                    moderator_id,
+                    &twitch.token,
+                )
+                .await?;
+        }
+        None => {
+            twitch
+                .helix
+                .remove_suspicious_status_from_chat_user(
+                    user_id,
+                    broadcaster_id,
+                    moderator_id,
+                    &twitch.token,
+                )
+                .await?;
+        }
+    }
+    Ok(())
+}
+
 pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {
     crate::twitch::pagination::collect(
         twitch
@@ -254,8 +310,8 @@ pub async fn update_shield_mode(
 #[cfg(test)]
 mod tests {
     use super::{
-        AutomodAction, ManageHeldAutomodMessageParams, ResolveUnbanRequestParams, UnbanDecision,
-        UpdateShieldModeParams,
+        AutomodAction, ManageHeldAutomodMessageParams, ResolveUnbanRequestParams,
+        SetSuspiciousStatusParams, SuspiciousStatus, UnbanDecision, UpdateShieldModeParams,
     };
     use serde_json::json;
 
@@ -265,6 +321,23 @@ mod tests {
             serde_json::from_value(json!({ "broadcasterId": "1", "active": true })).unwrap();
         assert_eq!(params.broadcaster_id.as_str(), "1");
         assert!(params.active);
+    }
+
+    #[test]
+    fn suspicious_status_uses_twitch_names() {
+        let params: SetSuspiciousStatusParams = serde_json::from_value(json!({
+            "broadcasterId": "1",
+            "userId": "2",
+            "status": "active_monitoring",
+        }))
+        .unwrap();
+        assert!(matches!(params.status, SuspiciousStatus::ActiveMonitoring));
+        assert!(serde_json::from_value::<SetSuspiciousStatusParams>(json!({
+            "broadcasterId": "1",
+            "userId": "2",
+            "status": "monitor",
+        }))
+        .is_err());
     }
 
     #[test]

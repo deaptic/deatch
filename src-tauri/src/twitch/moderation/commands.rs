@@ -2,7 +2,7 @@ use super::dto::{BannedUser, UnbanRequest};
 use crate::error::Result;
 use crate::twitch::moderation::{
     self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams,
-    ResolveUnbanRequestParams, UpdateShieldModeParams, WarnUserParams,
+    ResolveUnbanRequestParams, SetSuspiciousStatusParams, UpdateShieldModeParams, WarnUserParams,
 };
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
@@ -55,6 +55,15 @@ pub async fn resolve_unban_request(
     params: ResolveUnbanRequestParams,
 ) -> Result<()> {
     moderation::resolve_unban_request(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn set_suspicious_status(
+    twitch: State<'_, Twitch>,
+    params: SetSuspiciousStatusParams,
+) -> Result<()> {
+    moderation::set_suspicious_status(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]

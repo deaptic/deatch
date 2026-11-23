@@ -2,6 +2,7 @@ import type { AnnouncementColor, ChatColor } from "../../../lib/types/index.ts";
 import {
   banUser,
   deleteChatMessages,
+  setSuspiciousStatus,
   unbanUser,
   warnUser,
 } from "../../../lib/api/twitch/moderation.ts";
@@ -452,6 +453,86 @@ export const twitchCommands: Command[] = [
       await chat.send({
         broadcasterId: ctx.broadcasterId,
         message: `/me ${message as string}`,
+      });
+    },
+  },
+  {
+    name: "monitor",
+    description: "COMMAND_MONITOR_DESCRIPTION",
+    role: "mod",
+    options: [
+      {
+        name: "username",
+        description: "COMMAND_SUSPICIOUS_USERNAME_LABEL",
+        type: "user",
+        required: true,
+      },
+    ],
+    execute: async ({ username }, ctx) => {
+      await setSuspiciousStatus({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+        status: "active_monitoring",
+      });
+    },
+  },
+  {
+    name: "unmonitor",
+    description: "COMMAND_UNMONITOR_DESCRIPTION",
+    role: "mod",
+    options: [
+      {
+        name: "username",
+        description: "COMMAND_SUSPICIOUS_USERNAME_LABEL",
+        type: "user",
+        required: true,
+      },
+    ],
+    execute: async ({ username }, ctx) => {
+      await setSuspiciousStatus({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+        status: "none",
+      });
+    },
+  },
+  {
+    name: "restrict",
+    description: "COMMAND_RESTRICT_DESCRIPTION",
+    role: "mod",
+    options: [
+      {
+        name: "username",
+        description: "COMMAND_SUSPICIOUS_USERNAME_LABEL",
+        type: "user",
+        required: true,
+      },
+    ],
+    execute: async ({ username }, ctx) => {
+      await setSuspiciousStatus({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+        status: "restricted",
+      });
+    },
+  },
+  {
+    name: "unrestrict",
+    description: "COMMAND_UNRESTRICT_DESCRIPTION",
+    role: "mod",
+    options: [
+      {
+        name: "username",
+        description: "COMMAND_SUSPICIOUS_USERNAME_LABEL",
+        type: "user",
+        required: true,
+      },
+    ],
+    execute: async ({ username }, ctx) => {
+      await setSuspiciousStatus({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+        status: "none",
       });
     },
   },

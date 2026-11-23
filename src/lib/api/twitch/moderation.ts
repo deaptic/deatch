@@ -7,6 +7,7 @@ import type {
   DeleteChatMessagesParams,
   ManageHeldAutomodMessageParams,
   ResolveUnbanRequestParams,
+  SetSuspiciousStatusParams,
   UnbanRequest,
   UpdateShieldModeParams,
   UserRef,
@@ -124,6 +125,16 @@ export async function resolveUnbanRequest(
         ? "UNBAN_REQUESTS_APPROVED_TOAST"
         : "UNBAN_REQUESTS_DENIED_TOAST",
     ),
+    ...options,
+  });
+}
+
+export async function setSuspiciousStatus(
+  params: SetSuspiciousStatusParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.setSuspiciousStatus, [params], {
+    successMessage: t("SUSPICIOUS_UPDATED_TOAST", { status: params.status }),
     ...options,
   });
 }

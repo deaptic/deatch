@@ -58,6 +58,7 @@ export const commands = {
 	getModeratedChannels: () => __TAURI_INVOKE<UserRef[]>("get_moderated_channels"),
 	getUnbanRequests: (params: BroadcasterParams) => __TAURI_INVOKE<UnbanRequest[]>("get_unban_requests", { params }),
 	resolveUnbanRequest: (params: ResolveUnbanRequestParams) => __TAURI_INVOKE<null>("resolve_unban_request", { params }),
+	setSuspiciousStatus: (params: SetSuspiciousStatusParams) => __TAURI_INVOKE<null>("set_suspicious_status", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
@@ -760,6 +761,12 @@ export type SetMutedParams = {
 	muted: boolean,
 };
 
+export type SetSuspiciousStatusParams = {
+	broadcasterId: UserId,
+	userId: UserId,
+	status: SuspiciousStatus,
+};
+
 export type SevenTvEmoteSetId = string;
 
 export type Side = "before" | "after";
@@ -799,6 +806,8 @@ export type SubNotice = {
 };
 
 export type SubTier = "1000" | "2000" | "3000";
+
+export type SuspiciousStatus = "none" | "active_monitoring" | "restricted";
 
 export type UnbanDecision = "approve" | "deny";
 

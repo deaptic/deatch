@@ -3,19 +3,26 @@ import {
   Ban,
   Copy,
   ExternalLink,
+  Eye,
+  EyeOff,
   Hash,
   Megaphone,
+  ShieldAlert,
   TriangleAlert,
   User,
+  UserCheck,
 } from "lucide-solid";
 import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
 import * as clipboard from "../../lib/services/clipboard.ts";
 import { t } from "../../lib/i18n/index.ts";
 import { sendShoutout } from "../../lib/api/twitch/chat.ts";
+import { setSuspiciousStatus } from "../../lib/api/twitch/moderation.ts";
+import type { SuspiciousStatus } from "../../lib/types/index.ts";
 import Menu from "../ui/Menu.tsx";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
+import SubMenu from "../ui/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 
 type UserContextTarget = {
@@ -47,6 +54,13 @@ export default function UserContextMenu(props: Props) {
       userId: props.userId,
       userName: props.userDisplayName,
     });
+
+  const suspicious = (status: SuspiciousStatus) => () =>
+    setSuspiciousStatus({
+      broadcasterId: props.broadcasterId,
+      userId: props.userId,
+      status,
+    }).catch(() => {});
 
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
@@ -88,6 +102,24 @@ export default function UserContextMenu(props: Props) {
             }).catch(() => {})
           }
         />
+        <SubMenu label={t("SUSPICIOUS_MENU_LABEL")} icon={<ShieldAlert />}>
+          <MenuItem
+            label={t("SUSPICIOUS_MONITOR_LABEL")}
+            icon={<Eye />}
+            onClick={suspicious("active_monitoring")}
+          />
+          <MenuItem
+            label={t("SUSPICIOUS_RESTRICT_LABEL")}
+            icon={<EyeOff />}
+            tone="caution"
+            onClick={suspicious("restricted")}
+          />
+          <MenuItem
+            label={t("SUSPICIOUS_CLEAR_LABEL")}
+            icon={<UserCheck />}
+            onClick={suspicious("none")}
+          />
+        </SubMenu>
         <MenuItem
           label={t("MENU_WARN_LABEL")}
           icon={<TriangleAlert />}
