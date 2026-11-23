@@ -68,7 +68,7 @@ export default function TriggerReplies(props: Props) {
           placeholder={
             hasReplies()
               ? t("SETTINGS_TRIGGERS_OTHERWISE_PLACEHOLDER")
-              : t("SETTINGS_TRIGGERS_RESPONSE_PLACEHOLDER")
+              : t("SETTINGS_TRIGGERS_REPLY_PLACEHOLDER")
           }
           onChange={props.onOtherwiseChange}
           onActivate={(insert) => {
@@ -88,7 +88,7 @@ export default function TriggerReplies(props: Props) {
           icon={<Plus class="size-4" />}
           onClick={() => props.onRepliesChange([...props.replies, BLANK_REPLY])}
         >
-          {t("SETTINGS_TRIGGERS_ADD_CONDITION")}
+          {t("SETTINGS_TRIGGERS_ADD_REPLY")}
         </Button>
       </div>
     </div>

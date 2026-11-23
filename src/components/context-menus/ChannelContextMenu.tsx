@@ -153,7 +153,7 @@ export default function ChannelContextMenu(props: Props) {
           />
           <Show when={props.place === "rail" && pinIndex() > 0}>
             <MenuItem
-              label={t("MENU_MOVE_UP")}
+              label={t("UI_MOVE_UP")}
               icon={<ArrowUp />}
               onClick={movePin(-1)}
             />
@@ -164,7 +164,7 @@ export default function ChannelContextMenu(props: Props) {
             }
           >
             <MenuItem
-              label={t("MENU_MOVE_DOWN")}
+              label={t("UI_MOVE_DOWN")}
               icon={<ArrowDown />}
               onClick={movePin(1)}
             />

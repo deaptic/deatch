@@ -106,11 +106,11 @@ export default function TriggerCard(props: {
 
       <Show when={expanded()}>
         <div class="flex flex-col gap-3 px-4 pb-4 enter-rise">
-          <TriggerField label={t("SETTINGS_TRIGGERS_MATCH")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_PHRASE")}>
             <Textarea
               rows={2}
               resizable
-              placeholder={t("SETTINGS_TRIGGERS_MATCH_PLACEHOLDER")}
+              placeholder={t("SETTINGS_TRIGGERS_PHRASE_PLACEHOLDER")}
               value={draft.phrase}
               onInput={(e) => setDraft("phrase", e.currentTarget.value)}
             />
@@ -144,7 +144,7 @@ export default function TriggerCard(props: {
             </div>
           </TriggerField>
 
-          <TriggerField label={t("SETTINGS_TRIGGERS_RESPONSE")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_REPLY")}>
             <TriggerReplies
               replies={draft.replies}
               otherwise={draft.otherwise}

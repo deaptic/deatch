@@ -147,8 +147,7 @@ function ModeDetail(props: {
 }) {
   const settings = () => chatSettingsFor(props.broadcasterId);
   const Icon = props.mode.icon;
-  const turnOff = () =>
-    t("CHAT_ACTIONS_TURN_OFF", { mode: t(props.mode.label) });
+  const turnOff = () => t("CHAT_MODE_TURN_OFF", { mode: t(props.mode.label) });
   return (
     <Show when={settings()}>
       {(s) => (

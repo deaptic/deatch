@@ -80,7 +80,7 @@ export default function TriggerConditionRow(props: Props) {
       </Show>
       <Show when={props.removable}>
         <IconButton
-          label={t("SETTINGS_TRIGGERS_REMOVE_CHECK")}
+          label={t("SETTINGS_TRIGGERS_REMOVE_CONDITION")}
           onClick={props.onRemove}
         >
           <X class="size-4" />

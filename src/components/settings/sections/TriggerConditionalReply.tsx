@@ -51,14 +51,14 @@ export default function TriggerConditionalReply(props: Props) {
           {t("SETTINGS_TRIGGERS_REPLY_NUMBER", { number: props.number })}
         </span>
         <IconButton
-          label={t("SETTINGS_TRIGGERS_MOVE_UP")}
+          label={t("UI_MOVE_UP")}
           disabled={props.first}
           onClick={() => props.onMove(-1)}
         >
           <ArrowUp class="size-4" />
         </IconButton>
         <IconButton
-          label={t("SETTINGS_TRIGGERS_MOVE_DOWN")}
+          label={t("UI_MOVE_DOWN")}
           disabled={props.last}
           onClick={() => props.onMove(1)}
         >
@@ -123,7 +123,7 @@ export default function TriggerConditionalReply(props: Props) {
         <TriggerLead>{t("SETTINGS_TRIGGERS_THEN")}</TriggerLead>
         <TriggerResponseField
           value={props.reply.text}
-          placeholder={t("SETTINGS_TRIGGERS_RESPONSE_PLACEHOLDER")}
+          placeholder={t("SETTINGS_TRIGGERS_REPLY_PLACEHOLDER")}
           onChange={(text) => props.onChange({ ...props.reply, text })}
           onActivate={props.onActivate}
           onRelease={props.onRelease}

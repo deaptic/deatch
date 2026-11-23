@@ -47,13 +47,13 @@ function appActions(): PaletteAction[] {
   return [
     {
       id: "explore",
-      label: t("PALETTE_OPEN_EXPLORE"),
+      label: t("QUICK_SWITCH_OPEN_EXPLORE"),
       icon: Compass,
       run: showExplore,
     },
     {
       id: "settings",
-      label: t("PALETTE_OPEN_SETTINGS"),
+      label: t("QUICK_SWITCH_OPEN_SETTINGS"),
       icon: Settings,
       run: () => {
         if (!isSettingsOpen()) toggleSettings();
@@ -61,7 +61,7 @@ function appActions(): PaletteAction[] {
     },
     {
       id: "inbox",
-      label: t("PALETTE_OPEN_INBOX"),
+      label: t("QUICK_SWITCH_OPEN_INBOX"),
       icon: Inbox,
       run: () => toggleOverlay("inbox"),
     },
@@ -78,7 +78,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
     const on = isOn(mode, settings);
     const turnOff: PaletteAction = {
       id: `mode-off-${mode.label}`,
-      label: t("PALETTE_TURN_OFF", { mode: name }),
+      label: t("CHAT_MODE_TURN_OFF", { mode: name }),
       icon: mode.icon,
       run: apply(mode.off),
     };
@@ -88,7 +88,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
         : [
             {
               id: `mode-on-${mode.label}`,
-              label: t("PALETTE_TURN_ON", { mode: name }),
+              label: t("CHAT_MODE_TURN_ON", { mode: name }),
               icon: mode.icon,
               run: apply(mode.on),
             },
@@ -96,7 +96,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
     }
     const presets = mode.presets.map((preset) => ({
       id: `mode-${mode.label}-${preset.value}`,
-      label: t("PALETTE_MODE_PRESET", {
+      label: t("QUICK_SWITCH_MODE_PRESET", {
         mode: name,
         preset: presetLabel(preset),
       }),
@@ -154,7 +154,7 @@ function broadcasterActions(broadcasterId: string): PaletteAction[] {
     },
     ...AD_LENGTHS.map((length) => ({
       id: `ad-${length}`,
-      label: t("PALETTE_RUN_AD", {
+      label: t("QUICK_SWITCH_RUN_AD", {
         length: t("CHANNEL_TOOLS_AD_SECONDS", { count: length }),
       }),
       icon: Tv,
