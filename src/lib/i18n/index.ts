@@ -1,26 +1,38 @@
 import { createSignal, type JSX } from "solid-js";
-import en from "../../locales/en.json" with { type: "json" };
+import enUS from "../../locales/en-US.json" with { type: "json" };
+import enGB from "../../locales/en-GB.json" with { type: "json" };
 import {
   createTranslator,
   type MessageValues,
   type RichValues,
 } from "./translate.ts";
 
-export type MessageKey = keyof typeof en;
+export type MessageKey = keyof typeof enUS;
 
 type Messages = Record<MessageKey, string>;
 
-function load(messages: Messages, format: string) {
+export const LANGUAGES = ["en-US", "en-GB"] as const;
+export type Language = (typeof LANGUAGES)[number];
+
+export const LANGUAGE_NAMES: Record<Language, string> = {
+  "en-US": "English (US)",
+  "en-GB": "English (UK)",
+};
+
+function load(messages: Messages, format: Language) {
   return { format, ...createTranslator(messages, format) };
 }
 
-const LOCALES = {
-  en: load(en, "en-GB"),
+const LOCALES: Record<Language, ReturnType<typeof load>> = {
+  "en-US": load(enUS, "en-US"),
+  "en-GB": load(enGB, "en-GB"),
 };
 
-type Locale = keyof typeof LOCALES;
+export function systemLanguage(): Language {
+  return navigator.language === "en-US" ? "en-US" : "en-GB";
+}
 
-export const [locale] = createSignal<Locale>("en");
+export const [locale, setLocale] = createSignal<Language>("en-GB");
 
 export function formatLocale(): string {
   return LOCALES[locale()].format;

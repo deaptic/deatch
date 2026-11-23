@@ -38,6 +38,6 @@ test("names the winner and the pot, or the refund", () => {
     detail: "1,500 points split between 4 viewers",
   });
   expect(predictionEnd(prediction({ status: "canceled" }))).toStrictEqual({
-    text: "Prediction “Win?” was canceled and points were refunded",
+    text: "Prediction “Win?” was cancelled and points were refunded",
   });
 });

@@ -7,8 +7,14 @@ import {
   ZOOM_STOPS,
 } from "../../constants/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
+import type { Language } from "../../i18n/index.ts";
 
 export const appearanceTheme = () => prefs.appearance.theme;
+export const appearanceLanguage = () => prefs.appearance.language;
+
+export function setAppearanceLanguage(language: Language) {
+  setPrefs("appearance", "language", language);
+}
 export const appearanceAccent = () => prefs.appearance.accent;
 export const appearanceRailExpanded = () => prefs.appearance.railExpanded;
 export const appearanceUiDensity = () => prefs.appearance.uiDensity;

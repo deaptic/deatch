@@ -7,6 +7,7 @@ import {
 import { EVENTS, type EventKey } from "../../constants/events.ts";
 import { DENSITIES, type Density } from "../../constants/density.ts";
 import { type Theme, THEMES } from "../../constants/theme.ts";
+import { type Language, LANGUAGES, systemLanguage } from "../../i18n/index.ts";
 import {
   clampToStops,
   FONT_SIZE_STOPS,
@@ -122,6 +123,7 @@ export type UserPreferences = {
     hardwareAcceleration: boolean;
   };
   appearance: {
+    language: Language;
     theme: Theme;
     accent: string | null;
     railExpanded: boolean;
@@ -434,6 +436,7 @@ export function sanitize(raw: unknown): UserPreferences {
       ),
     },
     appearance: {
+      language: oneOf(LANGUAGES, stored.appearance?.language, systemLanguage()),
       theme: sanitizeTheme(stored.appearance?.theme),
       accent: sanitizeHex(stored.appearance?.accent),
       railExpanded: bool(

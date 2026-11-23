@@ -1,3 +1,4 @@
+import { systemLanguage } from "../../i18n/index.ts";
 import type { UserPreferences } from "./schema.ts";
 
 type Feed = UserPreferences["feed"];
@@ -63,6 +64,7 @@ export const DEFAULTS: Defaults = {
     hardwareAcceleration: true,
   },
   appearance: {
+    language: systemLanguage(),
     theme: "system",
     accent: null,
     railExpanded: false,

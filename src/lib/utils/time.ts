@@ -22,19 +22,14 @@ export class Time {
   }
 
   private timeShort(date: Date): string {
-    return new Intl.DateTimeFormat(this.locale, {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(date);
+    return new Intl.DateTimeFormat(this.locale, { timeStyle: "short" }).format(
+      date,
+    );
   }
 
   private timeLong(date: Date): string {
     return new Intl.DateTimeFormat(this.locale, {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
+      timeStyle: "medium",
     }).format(date);
   }
 

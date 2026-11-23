@@ -1,4 +1,4 @@
-import { t } from "../../../lib/i18n/index.ts";
+import { LANGUAGE_NAMES, LANGUAGES, t } from "../../../lib/i18n/index.ts";
 import Card from "../../ui/Card.tsx";
 import CardLabel from "../../ui/CardLabel.tsx";
 import ColorPicker from "../../ui/ColorPicker.tsx";
@@ -8,8 +8,10 @@ import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
 import { themeOptions } from "./options.ts";
 import {
   appearanceAccent,
+  appearanceLanguage,
   appearanceTheme,
   setAppearanceAccent,
+  setAppearanceLanguage,
   setAppearanceTheme,
 } from "../../../lib/stores/preferences.ts";
 
@@ -17,6 +19,20 @@ export default function ThemeCard() {
   return (
     <Card>
       <CardLabel>{t("SETTINGS_APPEARANCE_THEME")}</CardLabel>
+      <SettingsRow
+        label={t("SETTINGS_APPEARANCE_LANGUAGE")}
+        description={t("SETTINGS_APPEARANCE_LANGUAGE_DESCRIPTION")}
+      >
+        <Segmented
+          label={t("SETTINGS_APPEARANCE_LANGUAGE")}
+          value={appearanceLanguage()}
+          options={LANGUAGES.map((language) => ({
+            value: language,
+            label: LANGUAGE_NAMES[language],
+          }))}
+          onChange={setAppearanceLanguage}
+        />
+      </SettingsRow>
       <SettingsRow
         label={t("SETTINGS_APPEARANCE_THEME")}
         description={t("SETTINGS_APPEARANCE_THEME_DESCRIPTION")}

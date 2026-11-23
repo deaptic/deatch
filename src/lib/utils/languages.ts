@@ -2,12 +2,13 @@ import { formatLocale, t } from "../i18n/index.ts";
 
 const OTHER = "other";
 
-const names = new Intl.DisplayNames([formatLocale()], { type: "language" });
-
 export function languageName(code: string): string {
   if (code === OTHER) return t("LANGUAGE_OTHER");
   try {
-    return names.of(code) ?? code;
+    return (
+      new Intl.DisplayNames([formatLocale()], { type: "language" }).of(code) ??
+      code
+    );
   } catch {
     return code;
   }

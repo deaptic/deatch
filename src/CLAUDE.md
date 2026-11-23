@@ -19,7 +19,7 @@ import downward:
   nothing but `solid-js`.
 
 All user-facing text goes through `t()` from `i18n/`, keyed in
-`src/locales/en.json`. Names of things (Deatch, Link, Twitch, badges) stay as
+`src/locales/en-US.json` and `src/locales/en-GB.json` (same keys in both). Names of things (Deatch, Link, Twitch, badges) stay as
 plain text inside messages.
 
 A component may call an `api/` wrapper directly for a plain one-shot call; once
