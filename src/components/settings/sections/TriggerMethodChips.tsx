@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import Chip from "../../ui/Chip.tsx";
+import Chip from "../../../kit/Chip.tsx";
 import {
   METHODS,
   methodSyntax,

@@ -1,12 +1,12 @@
 import { type MessageKey, t } from "../../../lib/i18n/index.ts";
 import { For, Show } from "solid-js";
-import Button from "../../ui/Button.tsx";
-import Card from "../../ui/Card.tsx";
-import Disclosure from "../../ui/Disclosure.tsx";
-import PageBody from "../../ui/PageBody.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
-import Slider from "../../ui/Slider.tsx";
-import Toggle from "../../ui/Toggle.tsx";
+import Button from "../../../kit/Button.tsx";
+import Card from "../../../kit/Card.tsx";
+import Disclosure from "../../../kit/Disclosure.tsx";
+import PageBody from "../../../kit/PageBody.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
+import Slider from "../../../kit/Slider.tsx";
+import Toggle from "../../../kit/Toggle.tsx";
 import {
   COMPRESSOR,
   COMPRESSOR_CONTROLS,

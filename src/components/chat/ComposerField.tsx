@@ -1,5 +1,5 @@
 import { type JSX, onMount, splitProps } from "solid-js";
-import ComposerBox from "../ui/ComposerBox.tsx";
+import ComposerBox from "../../kit/ComposerBox.tsx";
 
 export type ComposerFieldApi = {
   focus: () => void;

@@ -1,5 +1,5 @@
 import { createEffect, createRoot } from "solid-js";
-import { createDebounced } from "../reactive/createDebounced.ts";
+import { createDebounced } from "../../shared/solid/createDebounced.ts";
 import {
   commitSelectedChannel,
   pendingChannel,

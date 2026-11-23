@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import { t } from "../../../lib/i18n/index.ts";
 import { formatDonation } from "../../../lib/format/currency.ts";
 import type { CharityCampaign } from "../../../lib/types/index.ts";
-import Meter from "../../ui/Meter.tsx";
+import Meter from "../../../kit/Meter.tsx";
 import ActivityRow from "../ActivityRow.tsx";
 import { ActivityIcon } from "../activityIcons.tsx";
 

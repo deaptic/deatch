@@ -10,10 +10,10 @@ import type {
   UnbanDecision,
   UnbanRequest,
 } from "../../lib/types/index.ts";
-import Button from "../ui/Button.tsx";
-import ChatterPicture from "../ui/ChatterPicture.tsx";
-import Dialog from "../ui/Dialog.tsx";
-import Field from "../ui/Field.tsx";
+import Button from "../../kit/Button.tsx";
+import ChatterPicture from "../../features/message/ChatterPicture.tsx";
+import Dialog from "../../kit/Dialog.tsx";
+import Field from "../../kit/Field.tsx";
 
 type Props = {
   broadcasterId: string;

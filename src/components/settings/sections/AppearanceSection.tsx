@@ -1,7 +1,7 @@
 import { t } from "../../../lib/i18n/index.ts";
-import PageBody from "../../ui/PageBody.tsx";
-import Card from "../../ui/Card.tsx";
-import CardLabel from "../../ui/CardLabel.tsx";
+import PageBody from "../../../kit/PageBody.tsx";
+import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
 import AppearancePreview from "../appearance/AppearancePreview.tsx";
 import ThemeCard from "../appearance/ThemeCard.tsx";
 import ReadabilityCard from "../appearance/ReadabilityCard.tsx";

@@ -15,9 +15,9 @@ import {
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 import {
   canStep,
-  FONT_SIZE_STOPS,
-  GROUP_SPACING_STOPS,
-  ZOOM_STOPS,
+  FONT_SIZE_STEPS,
+  GROUP_SPACING_STEPS,
+  ZOOM_STEPS,
 } from "../../lib/constants/accessibility.ts";
 import {
   appearanceTheme,
@@ -48,18 +48,18 @@ import {
   setFeedDensity,
 } from "../../lib/stores/preferences.ts";
 import { openSettings } from "../../lib/stores/view.ts";
-import Popover from "../ui/Popover.tsx";
-import IconButton from "../ui/IconButton.tsx";
-import Segmented from "../ui/Segmented.tsx";
+import Popover from "../../kit/Popover.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import Segmented from "../../kit/Segmented.tsx";
 import {
   messageLayoutOptions,
   themeOptions,
   uiDensityOptions,
 } from "../settings/appearance/options.ts";
 import { type Component, For, type JSX } from "solid-js";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
-import MenuStepper from "../ui/MenuStepper.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
+import MenuStepper from "../../kit/MenuStepper.tsx";
 
 type Props = {
   x: number;
@@ -156,8 +156,8 @@ export default function AppearancePanel(props: Props) {
             value={formatWholePercent(appearanceZoom())}
             lessLabel={t("SETTINGS_KEYBOARD_ZOOM_OUT_LABEL")}
             moreLabel={t("SETTINGS_KEYBOARD_ZOOM_IN_LABEL")}
-            canLess={canStep(appearanceZoom(), ZOOM_STOPS, -1)}
-            canMore={canStep(appearanceZoom(), ZOOM_STOPS, 1)}
+            canLess={canStep(appearanceZoom(), ZOOM_STEPS, -1)}
+            canMore={canStep(appearanceZoom(), ZOOM_STEPS, 1)}
             onStep={stepAppearanceZoom}
           />
           <div class="px-1 pt-1">
@@ -201,8 +201,8 @@ export default function AppearancePanel(props: Props) {
             value={formatPx(feedFontSize())}
             lessLabel={t("TITLE_BAR_APPEARANCE_TEXT_SMALLER_LABEL")}
             moreLabel={t("TITLE_BAR_APPEARANCE_TEXT_LARGER_LABEL")}
-            canLess={canStep(feedFontSize(), FONT_SIZE_STOPS, -1)}
-            canMore={canStep(feedFontSize(), FONT_SIZE_STOPS, 1)}
+            canLess={canStep(feedFontSize(), FONT_SIZE_STEPS, -1)}
+            canMore={canStep(feedFontSize(), FONT_SIZE_STEPS, 1)}
             onStep={stepFeedFontSize}
           />
           <MenuStepper
@@ -211,8 +211,8 @@ export default function AppearancePanel(props: Props) {
             value={formatPx(feedGroupSpacing())}
             lessLabel={t("TITLE_BAR_APPEARANCE_GROUP_SPACING_LESS_LABEL")}
             moreLabel={t("TITLE_BAR_APPEARANCE_GROUP_SPACING_MORE_LABEL")}
-            canLess={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, -1)}
-            canMore={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, 1)}
+            canLess={canStep(feedGroupSpacing(), GROUP_SPACING_STEPS, -1)}
+            canMore={canStep(feedGroupSpacing(), GROUP_SPACING_STEPS, 1)}
             onStep={stepFeedGroupSpacing}
             disabled={feedDensity() !== "comfortable"}
           />

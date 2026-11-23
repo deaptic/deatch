@@ -1,9 +1,9 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { For } from "solid-js";
-import Card from "../../ui/Card.tsx";
-import CardLabel from "../../ui/CardLabel.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
-import Toggle from "../../ui/Toggle.tsx";
+import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
+import Toggle from "../../../kit/Toggle.tsx";
 import { EVENTS } from "../../../lib/constants/events.ts";
 import {
   feedEvents,

@@ -1,5 +1,5 @@
 import { children, type JSX } from "solid-js";
-import Meter from "../ui/Meter.tsx";
+import Meter from "../../kit/Meter.tsx";
 
 type Props = {
   label: string;

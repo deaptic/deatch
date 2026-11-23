@@ -1,6 +1,6 @@
 import { For, type JSX, Show } from "solid-js";
-import Toolbar from "../../ui/Toolbar.tsx";
-import ToolbarItem, { type ToolbarTone } from "../../ui/ToolbarItem.tsx";
+import Toolbar from "../../../kit/Toolbar.tsx";
+import ToolbarItem, { type ToolbarTone } from "../../../kit/ToolbarItem.tsx";
 
 export type NoteAction = {
   title: string;

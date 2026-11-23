@@ -1,7 +1,7 @@
 import { t } from "../../../lib/i18n/index.ts";
 import * as activity from "../../../lib/services/activity.ts";
 import type { AdSchedule } from "../../../lib/types/index.ts";
-import Button from "../../ui/Button.tsx";
+import Button from "../../../kit/Button.tsx";
 import ActivityRow from "../ActivityRow.tsx";
 import { ActivityIcon } from "../activityIcons.tsx";
 import { untilMs } from "./countdown.ts";

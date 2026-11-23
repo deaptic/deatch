@@ -1,9 +1,9 @@
 import { createSignal } from "solid-js";
 import { warnUser } from "../../platform/twitch/moderation.ts";
-import Button from "../ui/Button.tsx";
-import Dialog from "../ui/Dialog.tsx";
-import Textarea from "../ui/Textarea.tsx";
-import { autofocus } from "../../lib/reactive/focus.ts";
+import Button from "../../kit/Button.tsx";
+import Dialog from "../../kit/Dialog.tsx";
+import Textarea from "../../kit/Textarea.tsx";
+import { autofocus } from "../../shared/solid/focus.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {

@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import type { CommandOption } from "./types.ts";
 import { optionLabel } from "./usage.ts";
-import type { ListboxCombobox } from "../../lib/reactive/createListbox.ts";
+import type { ListboxCombobox } from "../../shared/solid/createListbox.ts";
 
 type Props = {
   option: CommandOption;

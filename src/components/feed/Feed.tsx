@@ -44,13 +44,13 @@ import {
 } from "../../lib/stores/preferences.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import FeedRow from "./FeedRow.tsx";
-import Divider from "../ui/Divider.tsx";
+import Divider from "../../kit/Divider.tsx";
 import { t } from "../../lib/i18n/index.ts";
 import type { Density } from "../../lib/constants/density.ts";
 import { dayLabel, layoutFeed } from "../../lib/utils/feedLayout.ts";
-import type { UserActions } from "../ui/userLink.ts";
+import type { UserActions } from "../../features/message/userLink.ts";
 import { at } from "../../lib/utils/at.ts";
-import { scrollBehavior } from "../ui/scrollBehavior.ts";
+import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 
 const JUMP_ATTEMPTS = 30;
 

@@ -1,8 +1,8 @@
 import { Copy } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import * as clipboard from "../../lib/services/clipboard.ts";
 
 type Props = {

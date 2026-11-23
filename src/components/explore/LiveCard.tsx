@@ -5,12 +5,12 @@ import { resolveUser } from "../../lib/stores/channels.ts";
 import { formatUptime, formatViewers } from "../../lib/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
-import Artwork from "../ui/Artwork.tsx";
-import Avatar from "../ui/Avatar.tsx";
-import Chip from "../ui/Chip.tsx";
-import LivePill from "../ui/LivePill.tsx";
-import Stat from "../ui/Stat.tsx";
-import { CARD_FRAME } from "../ui/Card.tsx";
+import Thumbnail from "../../kit/Thumbnail.tsx";
+import Avatar from "../../kit/Avatar.tsx";
+import Chip from "../../kit/Chip.tsx";
+import LivePill from "../../kit/LivePill.tsx";
+import Stat from "../../kit/Stat.tsx";
+import { CARD_FRAME } from "../../kit/Card.tsx";
 
 const SHOWN_TAGS = 3;
 
@@ -33,7 +33,7 @@ export default function LiveCard(props: Props) {
       {...link.handlers}
       class={`group flex flex-col text-left bg-surface overflow-hidden pressable hover:bg-raised active:pressed ${CARD_FRAME} ${link.cursor}`}
     >
-      <Artwork src={thumbnail()} shape="video" fit="bleed">
+      <Thumbnail src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">
           <LivePill solid />
         </span>
@@ -49,7 +49,7 @@ export default function LiveCard(props: Props) {
             value={formatUptime(props.stream.startedAt, clock.now())}
           />
         </div>
-      </Artwork>
+      </Thumbnail>
 
       <div class="flex gap-3 px-3.5 pt-3 pb-3.5 items-start">
         <Avatar

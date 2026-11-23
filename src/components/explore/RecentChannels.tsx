@@ -4,7 +4,7 @@ import { streamForUserId } from "../../lib/stores/channels.ts";
 import { recentChannels } from "../../lib/stores/preferences.ts";
 import * as users from "../../lib/services/users.ts";
 import ChannelTile from "./ChannelTile.tsx";
-import { moveGridFocus } from "../ui/gridKeys.ts";
+import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {

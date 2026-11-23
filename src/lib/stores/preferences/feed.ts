@@ -3,8 +3,8 @@ import type { EventKey } from "../../constants/events.ts";
 import type { Density } from "../../constants/density.ts";
 import {
   clampToStops,
-  FONT_SIZE_STOPS,
-  GROUP_SPACING_STOPS,
+  FONT_SIZE_STEPS,
+  GROUP_SPACING_STEPS,
   stepStop,
 } from "../../constants/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
@@ -23,20 +23,20 @@ export const feedBadges = () => prefs.feed.badges;
 export const feedEvents = () => prefs.feed.events;
 
 export function setFeedFontSize(value: number) {
-  setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STOPS));
+  setPrefs("feed", "fontSize", clampToStops(value, FONT_SIZE_STEPS));
 }
 
 export function stepFeedFontSize(direction: 1 | -1) {
-  setFeedFontSize(stepStop(feedFontSize(), FONT_SIZE_STOPS, direction));
+  setFeedFontSize(stepStop(feedFontSize(), FONT_SIZE_STEPS, direction));
 }
 
 export function setFeedGroupSpacing(value: number) {
-  setPrefs("feed", "groupSpacing", clampToStops(value, GROUP_SPACING_STOPS));
+  setPrefs("feed", "groupSpacing", clampToStops(value, GROUP_SPACING_STEPS));
 }
 
 export function stepFeedGroupSpacing(direction: 1 | -1) {
   setFeedGroupSpacing(
-    stepStop(feedGroupSpacing(), GROUP_SPACING_STOPS, direction),
+    stepStop(feedGroupSpacing(), GROUP_SPACING_STEPS, direction),
   );
 }
 

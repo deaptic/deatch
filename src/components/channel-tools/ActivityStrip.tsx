@@ -4,7 +4,7 @@ import { pendingRaid } from "../../lib/stores/raid.ts";
 import { activityShown } from "../../lib/stores/preferences/appearance.ts";
 import * as activity from "../../lib/services/activity.ts";
 import * as clock from "../../lib/services/clock.ts";
-import Presence from "../ui/Presence.tsx";
+import Transition from "../../kit/Transition.tsx";
 import AdsRow from "./activity/AdsRow.tsx";
 import CharityRow from "./activity/CharityRow.tsx";
 import GoalsRow from "./activity/GoalsRow.tsx";
@@ -44,7 +44,7 @@ export default function ActivityStrip(props: Props) {
   onMount(() => activity.load(props.broadcasterId));
 
   return (
-    <Presence
+    <Transition
       when={
         shield() ||
         goals().length ||
@@ -59,47 +59,47 @@ export default function ActivityStrip(props: Props) {
       {() => (
         <div class="enter-expand">
           <div class="flex flex-col border-t border-line-soft divide-y divide-line-soft">
-            <Presence when={shield()}>
+            <Transition when={shield()}>
               {() => <ShieldRow broadcasterId={props.broadcasterId} />}
-            </Presence>
-            <Presence when={unbans()}>
+            </Transition>
+            <Transition when={unbans()}>
               {(count) => <UnbansRow count={count()} />}
-            </Presence>
-            <Presence when={ads()}>
+            </Transition>
+            <Transition when={ads()}>
               {(schedule) => (
                 <AdsRow
                   broadcasterId={props.broadcasterId}
                   schedule={schedule()}
                 />
               )}
-            </Presence>
-            <Presence when={goals().length}>
+            </Transition>
+            <Transition when={goals().length}>
               {() => <GoalsRow goals={goals()} />}
-            </Presence>
-            <Presence when={charity()}>
+            </Transition>
+            <Transition when={charity()}>
               {(c) => <CharityRow charity={c()} />}
-            </Presence>
-            <Presence when={poll()}>
+            </Transition>
+            <Transition when={poll()}>
               {(p) => (
                 <PollRow broadcasterId={props.broadcasterId} poll={p()} />
               )}
-            </Presence>
-            <Presence when={prediction()}>
+            </Transition>
+            <Transition when={prediction()}>
               {(p) => (
                 <PredictionRow
                   broadcasterId={props.broadcasterId}
                   prediction={p()}
                 />
               )}
-            </Presence>
-            <Presence when={raiding()}>
+            </Transition>
+            <Transition when={raiding()}>
               {(r) => (
                 <RaidRow raid={r()} onOpenChannel={props.onOpenChannel} />
               )}
-            </Presence>
+            </Transition>
           </div>
         </div>
       )}
-    </Presence>
+    </Transition>
   );
 }

@@ -1,8 +1,8 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { Plus } from "lucide-solid";
 import { createSignal, For } from "solid-js";
-import PageBody from "../../ui/PageBody.tsx";
-import Button from "../../ui/Button.tsx";
+import PageBody from "../../../kit/PageBody.tsx";
+import Button from "../../../kit/Button.tsx";
 import TriggerCard from "./TriggerCard.tsx";
 import BuiltInTriggers from "./BuiltInTriggers.tsx";
 import {

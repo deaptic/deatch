@@ -5,7 +5,7 @@ import {
   DEFAULT_ZOOM,
   stepStop,
   type UiDensity,
-  ZOOM_STOPS,
+  ZOOM_STEPS,
 } from "../../constants/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
 import type { Language } from "../../i18n/index.ts";
@@ -44,11 +44,11 @@ export function setAppearanceUiDensity(density: UiDensity) {
 }
 
 export function setAppearanceZoom(zoom: number) {
-  setPrefs("appearance", "zoom", clampToStops(zoom, ZOOM_STOPS));
+  setPrefs("appearance", "zoom", clampToStops(zoom, ZOOM_STEPS));
 }
 
 export function stepAppearanceZoom(direction: 1 | -1) {
-  setAppearanceZoom(stepStop(appearanceZoom(), ZOOM_STOPS, direction));
+  setAppearanceZoom(stepStop(appearanceZoom(), ZOOM_STEPS, direction));
 }
 
 export function resetAppearanceZoom() {

@@ -1,9 +1,9 @@
 import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
-import Field from "../../ui/Field.tsx";
+import Field from "../../../kit/Field.tsx";
 import Suggestions, {
   type SuggestionsApi,
 } from "../../suggestions/Suggestions.tsx";
-import { fieldFrom } from "../../../lib/reactive/createListbox.ts";
+import { fieldFrom } from "../../../shared/solid/createListbox.ts";
 import { methodQueryAt } from "../../../lib/services/triggerTemplate.ts";
 import {
   METHODS,

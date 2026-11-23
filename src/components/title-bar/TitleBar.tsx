@@ -24,17 +24,17 @@ import {
   appearanceRailExpanded,
   setAppearanceRailExpanded,
 } from "../../lib/stores/preferences.ts";
-import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
-import Badge from "../ui/Badge.tsx";
-import TitleBarButton from "../ui/TitleBarButton.tsx";
-import ToolbarDivider from "../ui/ToolbarDivider.tsx";
-import { OVERLAY_GAP } from "../ui/Popover.tsx";
+import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
+import Badge from "../../kit/Badge.tsx";
+import TitleBarButton from "../../kit/TitleBarButton.tsx";
+import ToolbarDivider from "../../kit/ToolbarDivider.tsx";
+import { OVERLAY_GAP } from "../../kit/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
 import AppearancePanel from "./AppearancePanel.tsx";
 import Diagnostics from "../diagnostics/Diagnostics.tsx";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../lib/i18n/index.ts";
-import Presence from "../ui/Presence.tsx";
+import Transition from "../../kit/Transition.tsx";
 
 function below(button: HTMLElement | undefined) {
   const r = button?.getBoundingClientRect();
@@ -167,14 +167,14 @@ export default function TitleBar(props: Props) {
           </TitleBarButton>
         </div>
       </div>
-      <Presence when={isOverlayOpen("appearance")}>
+      <Transition when={isOverlayOpen("appearance")}>
         {() => (
           <AppearancePanel
             {...below(appearanceBtn)}
             onClose={() => toggleOverlay("appearance")}
           />
         )}
-      </Presence>
+      </Transition>
       <Show when={isOverlayOpen("inbox")}>
         <Inbox
           {...below(inboxBtn)}
@@ -183,14 +183,16 @@ export default function TitleBar(props: Props) {
           onOpenChannel={props.onOpenChannel}
         />
       </Show>
-      <Presence when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}>
+      <Transition
+        when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}
+      >
         {() => (
           <Diagnostics
             {...below(diagnosticsBtn)}
             onClose={() => toggleOverlay("diagnostics")}
           />
         )}
-      </Presence>
+      </Transition>
       {!maximized() && (
         <>
           <ResizeHandle

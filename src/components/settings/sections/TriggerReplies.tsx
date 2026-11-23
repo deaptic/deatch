@@ -1,6 +1,6 @@
 import { Index, Show } from "solid-js";
 import { Plus } from "lucide-solid";
-import Button from "../../ui/Button.tsx";
+import Button from "../../../kit/Button.tsx";
 import TriggerConditionalReply from "./TriggerConditionalReply.tsx";
 import TriggerMethodChips from "./TriggerMethodChips.tsx";
 import TriggerResponseField, {

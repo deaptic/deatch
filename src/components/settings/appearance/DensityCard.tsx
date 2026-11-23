@@ -1,13 +1,13 @@
 import { t } from "../../../lib/i18n/index.ts";
-import Card from "../../ui/Card.tsx";
-import CardLabel from "../../ui/CardLabel.tsx";
-import Segmented from "../../ui/Segmented.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
-import StopSlider from "../../ui/StopSlider.tsx";
-import Toggle from "../../ui/Toggle.tsx";
+import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
+import Segmented from "../../../kit/Segmented.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
+import StepSlider from "../../../kit/StepSlider.tsx";
+import Toggle from "../../../kit/Toggle.tsx";
 import {
-  GROUP_SPACING_STOPS,
-  ZOOM_STOPS,
+  GROUP_SPACING_STEPS,
+  ZOOM_STEPS,
 } from "../../../lib/constants/accessibility.ts";
 import { messageLayoutOptions, uiDensityOptions } from "./options.ts";
 import {
@@ -67,11 +67,11 @@ export default function DensityCard() {
         description={t("SETTINGS_APPEARANCE_GROUP_SPACING_DESCRIPTION")}
         stacked
       >
-        <StopSlider
+        <StepSlider
           label={t("SETTINGS_APPEARANCE_GROUP_SPACING_LABEL")}
           disabled={feedDensity() !== "comfortable"}
           value={feedGroupSpacing()}
-          stops={GROUP_SPACING_STOPS}
+          steps={GROUP_SPACING_STEPS}
           format={formatPx}
           onChange={setFeedGroupSpacing}
         />
@@ -81,10 +81,10 @@ export default function DensityCard() {
         description={t("SETTINGS_APPEARANCE_ZOOM_DESCRIPTION")}
         stacked
       >
-        <StopSlider
+        <StepSlider
           label={t("SETTINGS_APPEARANCE_ZOOM_LABEL")}
           value={appearanceZoom()}
-          stops={ZOOM_STOPS}
+          steps={ZOOM_STEPS}
           format={formatWholePercent}
           onChange={setAppearanceZoom}
         />

@@ -6,7 +6,7 @@ import {
   RAID_DURATION_MS,
 } from "../../../lib/stores/raid.ts";
 import { knownUser } from "../../../lib/stores/users.ts";
-import Button from "../../ui/Button.tsx";
+import Button from "../../../kit/Button.tsx";
 import { createChannelLink } from "../../context-menus/createChannelLink.tsx";
 import ActivityRow from "../ActivityRow.tsx";
 import { ActivityIcon } from "../activityIcons.tsx";

@@ -7,16 +7,16 @@ import {
 } from "../../platform/twitch/channels.ts";
 import { searchCategories } from "../../platform/twitch/search.ts";
 import { channelInfoFor } from "../../lib/stores/channels.ts";
-import { autofocus } from "../../lib/reactive/focus.ts";
+import { autofocus } from "../../shared/solid/focus.ts";
 import { checkTag, type TagCheck } from "../../lib/utils/streamTags.ts";
 import type { Category, ContentLabel } from "../../lib/types/index.ts";
-import Artwork from "../ui/Artwork.tsx";
-import Chip from "../ui/Chip.tsx";
-import ChipInput from "../ui/ChipInput.tsx";
-import Field from "../ui/Field.tsx";
-import Toggle from "../ui/Toggle.tsx";
+import Thumbnail from "../../kit/Thumbnail.tsx";
+import Chip from "../../kit/Chip.tsx";
+import ChipInput from "../../kit/ChipInput.tsx";
+import Field from "../../kit/Field.tsx";
+import Toggle from "../../kit/Toggle.tsx";
 import FormField from "./FormField.tsx";
-import SearchPicker from "../ui/SearchPicker.tsx";
+import SearchPicker from "../../kit/SearchPicker.tsx";
 import ToolForm from "./ToolForm.tsx";
 
 const TITLE_LENGTH = 140;
@@ -126,7 +126,7 @@ export default function InfoForm(props: Props) {
             }
             name={(c) => c.name}
             picture={(c) => (
-              <Artwork src={c.boxArtUrl} shape="boxart" fit="inline" />
+              <Thumbnail src={c.boxArtUrl} shape="boxart" fit="inline" />
             )}
             onPick={(c: Category | null) => setCategory(c)}
           />

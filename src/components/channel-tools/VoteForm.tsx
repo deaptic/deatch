@@ -4,10 +4,10 @@ import { t } from "../../lib/i18n/index.ts";
 import { createPoll } from "../../platform/twitch/polls.ts";
 import { createPrediction } from "../../platform/twitch/predictions.ts";
 import { formatDuration } from "../../lib/format/duration.ts";
-import { autofocus } from "../../lib/reactive/focus.ts";
-import Button from "../ui/Button.tsx";
-import Field from "../ui/Field.tsx";
-import Segmented from "../ui/Segmented.tsx";
+import { autofocus } from "../../shared/solid/focus.ts";
+import Button from "../../kit/Button.tsx";
+import Field from "../../kit/Field.tsx";
+import Segmented from "../../kit/Segmented.tsx";
 import FormField from "./FormField.tsx";
 import ToolForm from "./ToolForm.tsx";
 import {

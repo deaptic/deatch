@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
-import Skeleton from "../ui/Skeleton.tsx";
-import { railRowHeight } from "../ui/rowHeight.ts";
+import Skeleton from "../../kit/Skeleton.tsx";
+import { railRowHeight } from "../../kit/rowHeight.ts";
 
 export default function RailRowSkeleton() {
   return (

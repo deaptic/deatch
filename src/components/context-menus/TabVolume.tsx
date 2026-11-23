@@ -1,6 +1,6 @@
 import { t } from "../../lib/i18n/index.ts";
-import Button from "../ui/Button.tsx";
-import Slider from "../ui/Slider.tsx";
+import Button from "../../kit/Button.tsx";
+import Slider from "../../kit/Slider.tsx";
 import {
   DEFAULT_CHANNEL_GAIN,
   MAX_CHANNEL_GAIN,

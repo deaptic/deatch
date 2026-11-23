@@ -1,6 +1,6 @@
 import type { User } from "../../lib/types/index.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
-import Avatar from "../ui/Avatar.tsx";
+import Avatar from "../../kit/Avatar.tsx";
 
 type Props = {
   channel: User;

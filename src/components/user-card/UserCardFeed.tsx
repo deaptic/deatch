@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
 import Feed from "../feed/Feed.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
-import type { UserActions } from "../ui/userLink.ts";
+import type { UserActions } from "../../features/message/userLink.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = UserActions & {

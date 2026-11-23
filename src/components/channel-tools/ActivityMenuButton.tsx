@@ -10,8 +10,8 @@ import {
   activityShown,
   setActivityShown,
 } from "../../lib/stores/preferences/appearance.ts";
-import IconMenuButton from "../ui/IconMenuButton.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
+import IconMenuButton from "../../kit/IconMenuButton.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import { ActivityIcon } from "./activityIcons.tsx";
 
 export default function ActivityMenuButton(props: { broadcasterId: string }) {

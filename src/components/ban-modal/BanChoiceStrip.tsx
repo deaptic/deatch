@@ -1,5 +1,5 @@
 import { ShieldBan, ShieldCheck } from "lucide-solid";
-import Segmented from "../ui/Segmented.tsx";
+import Segmented from "../../kit/Segmented.tsx";
 import {
   type BanChoice,
   TIMEOUT_PRESETS,

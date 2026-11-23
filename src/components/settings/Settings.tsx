@@ -20,12 +20,12 @@ import {
   Show,
   Suspense,
 } from "solid-js";
-import NavItem from "../ui/NavItem.tsx";
-import Field from "../ui/Field.tsx";
-import IconButton from "../ui/IconButton.tsx";
-import { SettingsQuery } from "../ui/settingsQuery.ts";
-import InputPopover from "../ui/InputPopover.tsx";
-import { SIDE_GAP } from "../ui/Popover.tsx";
+import NavItem from "../../kit/NavItem.tsx";
+import Field from "../../kit/Field.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import { SettingsQuery } from "../../kit/settingsQuery.ts";
+import InputPopover from "../../kit/InputPopover.tsx";
+import { SIDE_GAP } from "../../kit/Popover.tsx";
 import {
   setSettingsSection,
   type SettingsSection,

@@ -2,8 +2,8 @@ import { Check } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import * as chatSettings from "../../lib/services/chatSettings.ts";
 import { presetLabel, type TimedMode } from "./modes.ts";
 

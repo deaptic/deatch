@@ -1,7 +1,7 @@
 import { Index, Show } from "solid-js";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-solid";
-import Button from "../../ui/Button.tsx";
-import IconButton from "../../ui/IconButton.tsx";
+import Button from "../../../kit/Button.tsx";
+import IconButton from "../../../kit/IconButton.tsx";
 import TriggerConditionRow from "./TriggerConditionRow.tsx";
 import TriggerLead from "./TriggerLead.tsx";
 import TriggerResponseField, {

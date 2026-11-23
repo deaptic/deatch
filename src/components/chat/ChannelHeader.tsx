@@ -18,21 +18,21 @@ import {
   streamGame,
   streamTitle,
 } from "../../lib/format/stream.ts";
-import { createCopyable } from "../ui/copyable.ts";
+import { createCopyable } from "../../kit/copyable.ts";
 import type { User } from "../../lib/types/index.ts";
-import Avatar from "../ui/Avatar.tsx";
-import Stat from "../ui/Stat.tsx";
+import Avatar from "../../kit/Avatar.tsx";
+import Stat from "../../kit/Stat.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { hasPermission, showsControls } from "../../lib/stores/roles.ts";
 import { ChannelToolForm } from "../channel-tools/ChannelToolsMenu.tsx";
 import { channelForm, setChannelForm } from "../../lib/stores/ui.ts";
-import IconButton from "../ui/IconButton.tsx";
+import IconButton from "../../kit/IconButton.tsx";
 import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
 import ActivityMenuButton from "../channel-tools/ActivityMenuButton.tsx";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
-import Presence from "../ui/Presence.tsx";
+import Transition from "../../kit/Transition.tsx";
 
 type Props = {
   channel: User;
@@ -152,7 +152,9 @@ export default function ChannelHeader(props: Props) {
           </Show>
         </div>
       </div>
-      <Presence when={!chatConnected()}>{() => <ConnectionBanner />}</Presence>
+      <Transition when={!chatConnected()}>
+        {() => <ConnectionBanner />}
+      </Transition>
       <Show when={showsControls(props.channel.id, "moderate")}>
         <ActivityStrip
           broadcasterId={props.channel.id}

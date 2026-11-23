@@ -30,20 +30,20 @@ import RailTile from "./RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
 import RailLinkRow from "./RailLinkRow.tsx";
 import ChannelRow from "./ChannelRow.tsx";
-import Avatar from "../ui/Avatar.tsx";
+import Avatar from "../../kit/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
-import { railGap } from "../ui/rowHeight.ts";
+import { railGap } from "../../kit/rowHeight.ts";
 import TabMuteBadge from "./TabMuteBadge.tsx";
 import PinChannelPopover from "./PinChannelPopover.tsx";
-import { SIDE_GAP } from "../ui/Popover.tsx";
+import { SIDE_GAP } from "../../kit/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
-import { createPopover } from "../ui/createPopover.ts";
+import { createPopover } from "../../kit/createPopover.ts";
 import * as session from "../../lib/services/session.ts";
 import type { User } from "../../lib/types/index.ts";
 import { t } from "../../lib/i18n/index.ts";
-import { scrollBehavior } from "../ui/scrollBehavior.ts";
-import Presence from "../ui/Presence.tsx";
+import { scrollBehavior } from "../../kit/scrollBehavior.ts";
+import Transition from "../../kit/Transition.tsx";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -351,7 +351,7 @@ export default function Rail(props: Props) {
         )}
       </Show>
 
-      <Presence when={addPop.state()}>
+      <Transition when={addPop.state()}>
         {(p) => (
           <PinChannelPopover
             x={p().x}
@@ -360,7 +360,7 @@ export default function Rail(props: Props) {
             onClose={addPop.close}
           />
         )}
-      </Presence>
+      </Transition>
     </nav>
   );
 }

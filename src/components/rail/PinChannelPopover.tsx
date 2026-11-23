@@ -4,9 +4,9 @@ import * as pins from "../../lib/services/pins.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { user } from "../../lib/stores/users.ts";
 import { userFromSearch } from "../../lib/utils/knownUsers.ts";
-import Avatar from "../ui/Avatar.tsx";
-import Popover from "../ui/Popover.tsx";
-import SearchPicker from "../ui/SearchPicker.tsx";
+import Avatar from "../../kit/Avatar.tsx";
+import Popover from "../../kit/Popover.tsx";
+import SearchPicker from "../../kit/SearchPicker.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {

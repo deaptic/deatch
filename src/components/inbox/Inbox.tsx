@@ -5,9 +5,9 @@ import { mentions } from "../../lib/stores/inbox.ts";
 import * as inbox from "../../lib/services/inbox.ts";
 import type { Mention } from "../../lib/types/index.ts";
 import * as users from "../../lib/services/users.ts";
-import Button from "../ui/Button.tsx";
-import EmptyState from "../ui/EmptyState.tsx";
-import Popover from "../ui/Popover.tsx";
+import Button from "../../kit/Button.tsx";
+import EmptyState from "../../kit/EmptyState.tsx";
+import Popover from "../../kit/Popover.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {

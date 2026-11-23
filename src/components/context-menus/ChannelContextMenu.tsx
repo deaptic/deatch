@@ -17,10 +17,10 @@ import {
 import { Show } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
 import { t } from "../../lib/i18n/index.ts";
-import Menu from "../ui/Menu.tsx";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
-import SubMenu from "../ui/SubMenu.tsx";
+import Menu from "../../kit/Menu.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
+import SubMenu from "../../kit/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import TabVolume from "./TabVolume.tsx";
 import {

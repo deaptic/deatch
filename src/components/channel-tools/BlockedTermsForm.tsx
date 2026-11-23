@@ -6,13 +6,13 @@ import {
   getBlockedTerms,
   removeBlockedTerm,
 } from "../../platform/twitch/moderation.ts";
-import { autofocus } from "../../lib/reactive/focus.ts";
+import { autofocus } from "../../shared/solid/focus.ts";
 import type { BlockedTerm } from "../../lib/types/index.ts";
-import Button from "../ui/Button.tsx";
-import Dialog from "../ui/Dialog.tsx";
-import Field from "../ui/Field.tsx";
-import IconButton from "../ui/IconButton.tsx";
-import Loading from "../ui/Loading.tsx";
+import Button from "../../kit/Button.tsx";
+import Dialog from "../../kit/Dialog.tsx";
+import Field from "../../kit/Field.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import Loading from "../../kit/Loading.tsx";
 
 const MIN_TERM_LENGTH = 2;
 

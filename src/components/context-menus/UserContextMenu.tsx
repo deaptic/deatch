@@ -20,12 +20,12 @@ import { t } from "../../lib/i18n/index.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { setSuspiciousStatus } from "../../platform/twitch/moderation.ts";
 import type { SuspiciousStatus } from "../../lib/types/index.ts";
-import Menu from "../ui/Menu.tsx";
+import Menu from "../../kit/Menu.tsx";
 import * as blocks from "../../lib/services/blocks.ts";
 import { user as currentUser } from "../../lib/stores/users.ts";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
-import SubMenu from "../ui/SubMenu.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
+import SubMenu from "../../kit/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 
 type UserContextTarget = {

@@ -1,11 +1,11 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { createSignal } from "solid-js";
-import PageBody from "../../ui/PageBody.tsx";
-import Card from "../../ui/Card.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
-import Toggle from "../../ui/Toggle.tsx";
-import Dialog from "../../ui/Dialog.tsx";
-import Button from "../../ui/Button.tsx";
+import PageBody from "../../../kit/PageBody.tsx";
+import Card from "../../../kit/Card.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
+import Toggle from "../../../kit/Toggle.tsx";
+import Dialog from "../../../kit/Dialog.tsx";
+import Button from "../../../kit/Button.tsx";
 import * as graphics from "../../../lib/services/graphics.ts";
 import * as history from "../../../lib/services/history.ts";
 import {
@@ -21,7 +21,7 @@ import {
   setAdvancedDiscordRichPresence,
   setAdvancedShowLogs,
 } from "../../../lib/stores/preferences.ts";
-import Presence from "../../ui/Presence.tsx";
+import Transition from "../../../kit/Transition.tsx";
 
 export default function AdvancedSection() {
   const [pendingRestart, setPendingRestart] = createSignal<{
@@ -57,7 +57,7 @@ export default function AdvancedSection() {
 
   return (
     <PageBody title={t("SETTINGS_ADVANCED_TITLE")}>
-      <Presence when={pendingRestart()}>
+      <Transition when={pendingRestart()}>
         {(pending) => (
           <Dialog
             title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM_TITLE", {
@@ -83,7 +83,7 @@ export default function AdvancedSection() {
             }
           />
         )}
-      </Presence>
+      </Transition>
       <Card>
         <SettingsRow
           label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
@@ -128,7 +128,7 @@ export default function AdvancedSection() {
           />
         </SettingsRow>
       </Card>
-      <Presence when={confirmingClear()}>
+      <Transition when={confirmingClear()}>
         {() => (
           <Dialog
             title={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM_TITLE")}
@@ -155,7 +155,7 @@ export default function AdvancedSection() {
             }
           />
         )}
-      </Presence>
+      </Transition>
       <Card>
         <SettingsRow
           label={t("SETTINGS_ADVANCED_FEED_HISTORY_LABEL")}

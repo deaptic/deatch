@@ -1,11 +1,11 @@
 import { t } from "../../../lib/i18n/index.ts";
 import { For, Show } from "solid-js";
-import PageBody from "../../ui/PageBody.tsx";
-import Card from "../../ui/Card.tsx";
-import Chip from "../../ui/Chip.tsx";
-import ChipInput from "../../ui/ChipInput.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
-import Toggle from "../../ui/Toggle.tsx";
+import PageBody from "../../../kit/PageBody.tsx";
+import Card from "../../../kit/Card.tsx";
+import Chip from "../../../kit/Chip.tsx";
+import ChipInput from "../../../kit/ChipInput.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
+import Toggle from "../../../kit/Toggle.tsx";
 import {
   addFeedKeyword,
   feedKeywords,

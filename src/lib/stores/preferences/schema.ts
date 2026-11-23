@@ -10,12 +10,12 @@ import { type Theme, THEMES } from "../../constants/theme.ts";
 import { type Language, LANGUAGES, systemLanguage } from "../../i18n/index.ts";
 import {
   clampToStops,
-  FONT_SIZE_STOPS,
-  GROUP_SPACING_STOPS,
-  type Stops,
+  FONT_SIZE_STEPS,
+  GROUP_SPACING_STEPS,
+  type Steps,
   UI_DENSITIES,
   type UiDensity,
-  ZOOM_STOPS,
+  ZOOM_STEPS,
 } from "../../constants/accessibility.ts";
 import {
   clampControl,
@@ -213,7 +213,7 @@ function sanitizeTheme(raw: unknown): Theme {
   return oneOf(THEMES, raw, DEFAULT_PREFERENCES.appearance.theme);
 }
 
-function sanitizeStop(raw: unknown, stops: Stops, fallback: number): number {
+function sanitizeStop(raw: unknown, stops: Steps, fallback: number): number {
   return typeof raw === "number" && Number.isFinite(raw)
     ? clampToStops(raw, stops)
     : fallback;
@@ -336,13 +336,13 @@ export function sanitize(raw: unknown): UserPreferences {
     feed: {
       fontSize: sanitizeStop(
         stored.feed?.fontSize,
-        FONT_SIZE_STOPS,
+        FONT_SIZE_STEPS,
         DEFAULT_PREFERENCES.feed.fontSize,
       ),
       density: sanitizeDensity(stored.feed?.density),
       groupSpacing: sanitizeStop(
         stored.feed?.groupSpacing,
-        GROUP_SPACING_STOPS,
+        GROUP_SPACING_STEPS,
         DEFAULT_PREFERENCES.feed.groupSpacing,
       ),
       showTimestamp: bool(
@@ -454,7 +454,7 @@ export function sanitize(raw: unknown): UserPreferences {
       uiDensity: sanitizeUiDensity(stored.appearance?.uiDensity),
       zoom: sanitizeStop(
         stored.appearance?.zoom,
-        ZOOM_STOPS,
+        ZOOM_STEPS,
         DEFAULT_PREFERENCES.appearance.zoom,
       ),
     },

@@ -5,7 +5,7 @@ import {
   goalTitle,
 } from "../../../lib/format/goals.ts";
 import type { Goal } from "../../../lib/types/index.ts";
-import Meter from "../../ui/Meter.tsx";
+import Meter from "../../../kit/Meter.tsx";
 import ActivityRow from "../ActivityRow.tsx";
 import { ActivityIcon } from "../activityIcons.tsx";
 import LabeledBar from "../LabeledBar.tsx";

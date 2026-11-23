@@ -5,7 +5,7 @@ import { exploreFilters } from "../../lib/stores/explore.ts";
 import { exploreLanguage } from "../../lib/stores/preferences.ts";
 import { byViewers, matchingStreams } from "../../lib/utils/liveFilter.ts";
 import ChannelTile from "./ChannelTile.tsx";
-import { moveGridFocus } from "../ui/gridKeys.ts";
+import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {

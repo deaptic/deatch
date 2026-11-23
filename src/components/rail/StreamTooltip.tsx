@@ -8,7 +8,7 @@ import {
 } from "../../lib/format/stream.ts";
 import * as clock from "../../lib/services/clock.ts";
 import type { ChannelInfo, Stream, User } from "../../lib/types/index.ts";
-import Stat from "../ui/Stat.tsx";
+import Stat from "../../kit/Stat.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 export default function StreamTooltip(props: {

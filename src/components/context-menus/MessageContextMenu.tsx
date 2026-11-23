@@ -8,9 +8,9 @@ import {
 import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
-import Menu from "../ui/Menu.tsx";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
+import Menu from "../../kit/Menu.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
 import { textOf } from "../../lib/utils/message.ts";

@@ -8,8 +8,8 @@ import * as clock from "../../../lib/services/clock.ts";
 import { formatElapsed } from "../../../lib/format/duration.ts";
 import { matchesPerson } from "../../../lib/utils/chatterGroups.ts";
 import type { BannedUser, UserRef } from "../../../lib/types/index.ts";
-import Button from "../../ui/Button.tsx";
-import Loading from "../../ui/Loading.tsx";
+import Button from "../../../kit/Button.tsx";
+import Loading from "../../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
 
 const LOAD_MORE_PX = 400;

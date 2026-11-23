@@ -1,7 +1,7 @@
 import { For } from "solid-js";
 import type { Category } from "../../lib/types/index.ts";
-import Artwork from "../ui/Artwork.tsx";
-import { moveGridFocus } from "../ui/gridKeys.ts";
+import Thumbnail from "../../kit/Thumbnail.tsx";
+import { moveGridFocus } from "../../kit/gridKeys.ts";
 
 type Props = {
   categories: Category[];
@@ -30,7 +30,7 @@ export default function CategoryRow(props: Props) {
                 "outline-transparent": props.selectedId !== category.id,
               }}
             >
-              <Artwork
+              <Thumbnail
                 src={category.boxArtUrl}
                 alt={category.name}
                 shape="boxart"

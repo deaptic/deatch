@@ -4,9 +4,9 @@ import type { User } from "../../lib/types/index.ts";
 import { selectedChannel, showExplore } from "../../lib/stores/view.ts";
 import Chat from "../chat/Chat.tsx";
 import ChannelHeader from "../chat/ChannelHeader.tsx";
-import EmptyState from "../ui/EmptyState.tsx";
-import Button from "../ui/Button.tsx";
-import Boundary from "../ui/Boundary.tsx";
+import EmptyState from "../../kit/EmptyState.tsx";
+import Button from "../../kit/Button.tsx";
+import Boundary from "../../kit/Boundary.tsx";
 import { t } from "../../lib/i18n/index.ts";
 
 type ChatPanesProps = {

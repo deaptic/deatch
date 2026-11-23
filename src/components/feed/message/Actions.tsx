@@ -6,9 +6,9 @@ import type {
   Reaction,
 } from "../../../lib/types/index.ts";
 import { feedShowCopypasta } from "../../../lib/stores/preferences.ts";
-import { OVERLAY_GAP } from "../../ui/Popover.tsx";
-import Toolbar from "../../ui/Toolbar.tsx";
-import ToolbarItem from "../../ui/ToolbarItem.tsx";
+import { OVERLAY_GAP } from "../../../kit/Popover.tsx";
+import Toolbar from "../../../kit/Toolbar.tsx";
+import ToolbarItem from "../../../kit/ToolbarItem.tsx";
 
 export default function Actions(props: {
   item: Message;

@@ -1,8 +1,8 @@
 import { Check, Copy, ExternalLink } from "lucide-solid";
 import { createMemo, createSignal, onCleanup, onMount, Show } from "solid-js";
-import Popover, { OVERLAY_GAP } from "../ui/Popover.tsx";
-import IconButton from "../ui/IconButton.tsx";
-import { createCopied } from "../ui/createCopied.ts";
+import Popover, { OVERLAY_GAP } from "../../kit/Popover.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import { createCopied } from "../../kit/createCopied.ts";
 import * as browser from "../../lib/services/browser.ts";
 import {
   bttvChannel,
@@ -21,7 +21,7 @@ import {
 } from "../../lib/utils/emoteSource.ts";
 import { zoomUrls } from "../../lib/utils/emoteZoom.ts";
 import { t } from "../../lib/i18n/index.ts";
-import Presence from "../ui/Presence.tsx";
+import Transition from "../../kit/Transition.tsx";
 
 type Opened = { url: string; name: string; x: number; y: number };
 
@@ -125,7 +125,7 @@ export default function EmoteCard() {
   });
 
   return (
-    <Presence when={opened()}>
+    <Transition when={opened()}>
       {(current) => (
         <Show when={current()} keyed>
           {(o) => (
@@ -144,6 +144,6 @@ export default function EmoteCard() {
           )}
         </Show>
       )}
-    </Presence>
+    </Transition>
   );
 }

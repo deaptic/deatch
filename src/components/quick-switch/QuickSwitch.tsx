@@ -10,7 +10,7 @@ import {
   Show,
 } from "solid-js";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { createListbox } from "../../lib/reactive/createListbox.ts";
+import { createListbox } from "../../shared/solid/createListbox.ts";
 import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
@@ -26,13 +26,13 @@ import {
   quickSwitchRows,
   uniqueUsers,
 } from "../../lib/utils/quickSwitch.ts";
-import Avatar from "../ui/Avatar.tsx";
+import Avatar from "../../kit/Avatar.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
-import Field from "../ui/Field.tsx";
-import Loading from "../ui/Loading.tsx";
-import Modal from "../ui/Modal.tsx";
-import { autofocus } from "../../lib/reactive/focus.ts";
-import Kbd from "../ui/Kbd.tsx";
+import Field from "../../kit/Field.tsx";
+import Loading from "../../kit/Loading.tsx";
+import Modal from "../../kit/Modal.tsx";
+import { autofocus } from "../../shared/solid/focus.ts";
+import Kbd from "../../kit/Kbd.tsx";
 import { Dynamic } from "solid-js/web";
 import { type PaletteAction, paletteActions } from "./paletteActions.ts";
 import { t } from "../../lib/i18n/index.ts";

@@ -1,10 +1,10 @@
 import { type JSX, Show } from "solid-js";
-import Badge from "../ui/Badge.tsx";
-import EdgeMark from "../ui/EdgeMark.tsx";
-import { createSideTip } from "../ui/createSideTip.tsx";
-import TipLabel from "../ui/TipLabel.tsx";
+import Badge from "../../kit/Badge.tsx";
+import RowIndicator from "../../kit/RowIndicator.tsx";
+import { createSideTip } from "../../kit/createSideTip.tsx";
+import TipLabel from "../../kit/TipLabel.tsx";
 import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
-import { railRowHeight } from "../ui/rowHeight.ts";
+import { railRowHeight } from "../../kit/rowHeight.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
@@ -73,7 +73,7 @@ export default function RailRow(props: Props) {
           props.dimmed ? "opacity-40" : ""
         }`}
       >
-        <EdgeMark
+        <RowIndicator
           mark={props.selected ? "selected" : props.unread ? "unread" : "none"}
         />
         <span

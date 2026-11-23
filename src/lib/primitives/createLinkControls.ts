@@ -16,7 +16,7 @@ import {
 } from "../stores/preferences.ts";
 import * as link from "../services/link.ts";
 import { at } from "../utils/at.ts";
-import { wrapIndex } from "../reactive/createListNavigation.ts";
+import { wrapIndex } from "../../shared/solid/createListNavigation.ts";
 
 export type LinkControls = {
   cycleChannel: (direction: 1 | -1) => void;

@@ -1,7 +1,7 @@
 import { createContext, createSignal, type JSX, Show } from "solid-js";
 import type { Density } from "../../../lib/constants/density.ts";
 import { openMenuAt } from "../../../lib/utils/contextMenu.ts";
-import Timestamp from "../../ui/Timestamp.tsx";
+import Timestamp from "../../../kit/Timestamp.tsx";
 
 export type ItemLayout = {
   density: Density;

@@ -10,16 +10,16 @@ import { channelEntries } from "../../lib/stores/feeds.ts";
 import * as backlog from "../../lib/services/backlog.ts";
 import type { FeedMessage, UserRef } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
-import { captureFocusForRestore } from "../../lib/reactive/focus.ts";
+import { captureFocusForRestore } from "../../shared/solid/focus.ts";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
 import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
 import { mergeMessages } from "./mergeMessages.ts";
-import type { UserAction } from "../ui/userLink.ts";
-import { dismissOnOutside } from "../../lib/reactive/dismissOnOutside.ts";
+import type { UserAction } from "../../features/message/userLink.ts";
+import { dismissOnOutside } from "../../shared/solid/dismissOnOutside.ts";
 import { t } from "../../lib/i18n/index.ts";
-import { playExit } from "../ui/playExit.ts";
+import { playExit } from "../../kit/playExit.ts";
 
 type Props = {
   x: number;

@@ -1,22 +1,8 @@
 # Frontend
 
-Components render. Everything else lives in `src/lib/`, in layers that only
-import downward:
-
-- `events/` — listeners that map backend events into stores. One file per event
-  family, each exporting `start()`. The mapping itself is pure and lives in
-  `mappers/`, which backlog replay shares.
-- `services/` — one module per feature holding its logic, state, and lifecycle
-  (caching, dedupe, outcome handling, retries, listeners).
-- `api/` — one thin typed wrapper per command; the only layer that calls
-  `bindings.ts`. No state, no logic beyond toasts.
-- `stores/` — signals and state only. Never call the backend.
-- `primitives/` — app wiring: `createAppController` composes the lifecycle
-  pieces and calls `createServices`, which starts every service. Only `App.tsx`
-  calls `createAppController`.
-- `types/`, `constants/`, `utils/`, `format/`, `i18n/`, `mappers/` — shared
-  leaves. `reactive/` is the leaf for generic Solid helpers, which import
-  nothing but `solid-js`.
+The target layout is in `docs/ARCHITECTURE.md`. Code still under `lib/` and
+`components/` is not migrated yet; it keeps the old layers (`events/`,
+`services/`, `stores/`, `primitives/`) until its feature moves.
 
 All user-facing text goes through `t()` from `i18n/`, keyed in
 `src/locales/<language>.json`; `en-US.json` is the source and every file has the same keys. Names of things (Deatch, Link, Twitch, Discord, 7TV, BetterTTV,
@@ -33,9 +19,9 @@ their feature. `KIND` ends every key, one of `_LABEL`, `_TITLE`,
 inserted into other text), `_STATUS`. Completed events are past tense
 (`FEED_RAID_CANCELED_LINE`).
 
-A component may call an `api/` wrapper directly for a plain one-shot call; once
+A component may call a `platform/` wrapper directly for a plain one-shot call; once
 caching, state, or outcome logic is involved, it belongs in a service. Types
-come from `types/`, never re-exported through `api/`.
+come from `types/`, never re-exported through `platform/`.
 
 Every Tauri call, commands and plugins alike, goes through `invokeCommand`,
 which logs each failure and toasts it unless `silent`; callers never report it
@@ -51,7 +37,7 @@ A service is a plain ES module, never a class; the module is the singleton.
   `users.get`. The namespace supplies the feature, so don't repeat it.
 - Callers import a service as a namespace named after the file
   (`import * as raid from ".../services/raid.ts"`). Types may be imported by
-  name alongside. `api/` wrappers keep named imports.
+  name alongside. `platform/` wrappers keep named imports.
 - State is module-level and never exported; expose reads through functions or
   keep them in a store.
 - Nothing runs on import, in services and `events/` alike. Listeners, timers,
@@ -65,7 +51,7 @@ A service is a plain ES module, never a class; the module is the singleton.
 
 ## UI
 
-Primitives live in `components/ui/`; feature components compose them without
+Primitives live in `kit/`; feature components compose them without
 restyling, and a missing look is a new variant on the primitive. Colours, type,
 radii, sizes, and motion come from the `@theme` tokens in `App.css`; depth is
 only `material-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
@@ -96,7 +82,7 @@ vp check --fix --deny-warnings && vp run check:tauri && vp test && vp build
 `vp check` rejects raw colours, arbitrary values, inline styles, and restyled
 primitives.
 
-`lib/bindings.ts` is generated from the Rust side by `vp run bindings`; never
+`platform/bindings.ts` is generated from the Rust side by `vp run bindings`; never
 edit it by hand.
 
 ## Logging

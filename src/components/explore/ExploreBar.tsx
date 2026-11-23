@@ -1,13 +1,13 @@
 import { Search, X } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
-import Field from "../ui/Field.tsx";
-import IconButton from "../ui/IconButton.tsx";
+import Field from "../../kit/Field.tsx";
+import IconButton from "../../kit/IconButton.tsx";
 import LanguageSelect from "./LanguageSelect.tsx";
-import { autofocus } from "../../lib/reactive/focus.ts";
+import { autofocus } from "../../shared/solid/focus.ts";
 import {
   comboboxFrom,
   type ListboxField,
-} from "../../lib/reactive/createListbox.ts";
+} from "../../shared/solid/createListbox.ts";
 import { liveStreams } from "../../lib/stores/channels.ts";
 import { liveBrowse } from "../../lib/stores/explore.ts";
 import {

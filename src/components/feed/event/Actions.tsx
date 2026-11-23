@@ -5,8 +5,8 @@ import { setChannelForm } from "../../../lib/stores/ui.ts";
 import type { FeedEvent } from "../../../lib/types/index.ts";
 import { clipUrl } from "../../../lib/utils/twitchUrl.ts";
 import { t } from "../../../lib/i18n/index.ts";
-import Toolbar from "../../ui/Toolbar.tsx";
-import ToolbarItem from "../../ui/ToolbarItem.tsx";
+import Toolbar from "../../../kit/Toolbar.tsx";
+import ToolbarItem from "../../../kit/ToolbarItem.tsx";
 
 export default function Actions(props: { item: FeedEvent }) {
   return (

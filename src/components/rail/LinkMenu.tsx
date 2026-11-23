@@ -10,9 +10,9 @@ import {
 import { Show } from "solid-js";
 import { linkSynced } from "../../lib/stores/view.ts";
 import * as browser from "../../lib/services/browser.ts";
-import Menu from "../ui/Menu.tsx";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
+import Menu from "../../kit/Menu.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import { FIREFOX_ADDON_URL } from "../../lib/constants/links.ts";
 import {
   linkConnected,

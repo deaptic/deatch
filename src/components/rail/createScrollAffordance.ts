@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { scrollBehavior } from "../ui/scrollBehavior.ts";
+import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 
 type ScrollAffordance = {
   canUp: () => boolean;

@@ -4,7 +4,7 @@ import EmoteAutocomplete from "./EmoteAutocomplete.tsx";
 import MentionAutocomplete from "./MentionAutocomplete.tsx";
 import CommandAutocomplete from "./CommandAutocomplete.tsx";
 import type { Command } from "../../command-composer/types.ts";
-import type { ListboxField } from "../../../lib/reactive/createListbox.ts";
+import type { ListboxField } from "../../../shared/solid/createListbox.ts";
 
 export type ChatAutocompleteHandle = {
   update: (value: string, cursor: number) => void;

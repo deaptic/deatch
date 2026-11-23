@@ -3,12 +3,14 @@ import type {
   FeedMessage as Message,
   UserRef,
 } from "../../../lib/types/index.ts";
-import ChatterPicture, { chatterTint } from "../../ui/ChatterPicture.tsx";
+import ChatterPicture, {
+  chatterTint,
+} from "../../../features/message/ChatterPicture.tsx";
 import {
   type UserActions,
   userLink,
   userLinkHover,
-} from "../../ui/userLink.ts";
+} from "../../../features/message/userLink.ts";
 import FeedItem from "../item/index.ts";
 import Source from "./Source.tsx";
 

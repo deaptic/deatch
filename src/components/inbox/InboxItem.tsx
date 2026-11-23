@@ -9,9 +9,9 @@ import {
   feedKeywords,
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
-import Avatar from "../ui/Avatar.tsx";
-import Card from "../ui/Card.tsx";
-import IconButton from "../ui/IconButton.tsx";
+import Avatar from "../../kit/Avatar.tsx";
+import Card from "../../kit/Card.tsx";
+import IconButton from "../../kit/IconButton.tsx";
 import Message from "../feed/message/Message.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { t } from "../../lib/i18n/index.ts";

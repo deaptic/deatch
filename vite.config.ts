@@ -19,7 +19,7 @@ export default defineConfig({
     ignorePatterns: ignored,
     settings: {
       shadcn: {
-        ui: "src/components/ui",
+        ui: "src/kit",
         theme: "src/App.css",
       },
     },

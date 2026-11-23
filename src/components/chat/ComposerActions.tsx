@@ -6,8 +6,8 @@ import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import * as clips from "../../lib/services/clips.ts";
 import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
-import MenuDivider from "../ui/MenuDivider.tsx";
-import MenuItem from "../ui/MenuItem.tsx";
+import MenuDivider from "../../kit/MenuDivider.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import * as chatSettings from "../../lib/services/chatSettings.ts";
 import { showsControls } from "../../lib/stores/roles.ts";
 import {
@@ -15,13 +15,13 @@ import {
   isOverlayOpen,
   toggleOverlay,
 } from "../../lib/stores/ui.ts";
-import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
-import Badge from "../ui/Badge.tsx";
-import ComposerPanel from "../ui/ComposerPanel.tsx";
-import IconButton from "../ui/IconButton.tsx";
-import { MenuClose } from "../ui/Menu.tsx";
-import MenuHost from "../ui/MenuHost.tsx";
-import SubMenu from "../ui/SubMenu.tsx";
+import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
+import Badge from "../../kit/Badge.tsx";
+import ComposerPanel from "../../kit/ComposerPanel.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import { MenuClose } from "../../kit/Menu.tsx";
+import MenuHost from "../../kit/MenuHost.tsx";
+import SubMenu from "../../kit/SubMenu.tsx";
 import ChatModesList from "./ChatModesList.tsx";
 import { ChannelToolItems } from "../channel-tools/ChannelToolsMenu.tsx";
 import { activeModes, type ChatMode } from "./modes.ts";

@@ -11,9 +11,9 @@ import {
   onMiddleClick,
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
-import Avatar from "../ui/Avatar.tsx";
-import BadgeBox from "../ui/BadgeBox.tsx";
-import IconButton from "../ui/IconButton.tsx";
+import Avatar from "../../kit/Avatar.tsx";
+import Badges from "../../features/message/Badges.tsx";
+import IconButton from "../../kit/IconButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardLive from "./UserCardLive.tsx";
 import { streamForUserId } from "../../lib/stores/channels.ts";
@@ -128,7 +128,7 @@ export default function UserCardHeader(props: Props) {
             />
           </button>
           <div class="ml-auto flex items-center pt-card-gap text-card-name">
-            <BadgeBox
+            <Badges
               badges={latestBadges()}
               channelBadges={channelBadges()}
               placement="alone"

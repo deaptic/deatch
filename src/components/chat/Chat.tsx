@@ -48,9 +48,9 @@ import {
   feedKeywords,
   feedShowCopypasta,
 } from "../../lib/stores/preferences.ts";
-import { createPopover } from "../ui/createPopover.ts";
+import { createPopover } from "../../kit/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
-import Presence from "../ui/Presence.tsx";
+import Transition from "../../kit/Transition.tsx";
 import PeopleDialog from "./people/PeopleDialog.tsx";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 
@@ -274,7 +274,7 @@ export default function Chat(props: Props) {
       />
 
       <div class="relative z-20 shrink-0 bg-surface border-t border-line-soft">
-        <Presence when={feedApi()?.isPaused()}>
+        <Transition when={feedApi()?.isPaused()}>
           {() => (
             <div class="absolute inset-x-0 bottom-full enter-rise">
               <ScrollStatusBar
@@ -283,7 +283,7 @@ export default function Chat(props: Props) {
               />
             </div>
           )}
-        </Presence>
+        </Transition>
         <ChatInput
           broadcasterId={props.broadcasterId}
           broadcasterName={props.broadcasterName}
@@ -299,7 +299,7 @@ export default function Chat(props: Props) {
         />
       </div>
 
-      <Presence when={isMod() && isOverlayOpen("chatters")}>
+      <Transition when={isMod() && isOverlayOpen("chatters")}>
         {() => (
           <PeopleDialog
             broadcasterId={props.broadcasterId}
@@ -308,7 +308,7 @@ export default function Chat(props: Props) {
             onUserContextMenu={openUserContextMenu}
           />
         )}
-      </Presence>
+      </Transition>
 
       <Show when={messageMenu.state()}>
         {(cm) => (
@@ -381,7 +381,7 @@ export default function Chat(props: Props) {
           />
         )}
       </Show>
-      <Presence when={modAction()}>
+      <Transition when={modAction()}>
         {(ma) => (
           <Show
             when={ma().action !== "warn"}
@@ -402,7 +402,7 @@ export default function Chat(props: Props) {
             />
           </Show>
         )}
-      </Presence>
+      </Transition>
     </div>
   );
 }

@@ -6,8 +6,8 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
-import { onActivateKey } from "../ui/keyActivation.ts";
-import { createPopover } from "../ui/createPopover.ts";
+import { onActivateKey } from "../../kit/keyActivation.ts";
+import { createPopover } from "../../kit/createPopover.ts";
 import ChannelContextMenu from "./ChannelContextMenu.tsx";
 
 export function createChannelLink(

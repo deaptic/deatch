@@ -2,16 +2,16 @@ import { t, type MessageKey } from "../../../lib/i18n/index.ts";
 import { CaseSensitive, Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
-import Card from "../../ui/Card.tsx";
-import Toggle from "../../ui/Toggle.tsx";
-import Textarea from "../../ui/Textarea.tsx";
-import Field from "../../ui/Field.tsx";
-import IconButton from "../../ui/IconButton.tsx";
-import Segmented from "../../ui/Segmented.tsx";
+import Card from "../../../kit/Card.tsx";
+import Toggle from "../../../kit/Toggle.tsx";
+import Textarea from "../../../kit/Textarea.tsx";
+import Field from "../../../kit/Field.tsx";
+import IconButton from "../../../kit/IconButton.tsx";
+import Segmented from "../../../kit/Segmented.tsx";
 import TriggerField from "./TriggerField.tsx";
 import TriggerReplies from "./TriggerReplies.tsx";
 import TriggerPreview from "./TriggerPreview.tsx";
-import { autofocus } from "../../../lib/reactive/focus.ts";
+import { autofocus } from "../../../shared/solid/focus.ts";
 import { isComplete } from "../../../lib/services/triggers.ts";
 import {
   clampCooldown,

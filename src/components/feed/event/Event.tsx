@@ -4,11 +4,11 @@ import type { FeedEvent } from "../../../lib/types/index.ts";
 import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import { t, tRich } from "../../../lib/i18n/index.ts";
-import Fragments from "../../ui/Fragments.tsx";
-import NamedText from "../../ui/NamedText.tsx";
-import NameList from "../../ui/NameList.tsx";
-import Timestamp from "../../ui/Timestamp.tsx";
-import type { UserActions } from "../../ui/userLink.ts";
+import MessageText from "../../../features/message/MessageText.tsx";
+import TextWithMentions from "../../../features/message/TextWithMentions.tsx";
+import NameList from "../../../features/message/NameList.tsx";
+import Timestamp from "../../../kit/Timestamp.tsx";
+import type { UserActions } from "../../../features/message/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
 import Actions from "./Actions.tsx";
 import * as details from "./details.ts";
@@ -66,7 +66,7 @@ export default function Event(props: Props) {
             {icon()}
           </span>
         </Show>
-        <NamedText
+        <TextWithMentions
           text={item.system_message}
           people={details.people(item)}
           onShowUserCard={props.onShowUserCard}
@@ -77,7 +77,7 @@ export default function Event(props: Props) {
         <Show when={item.message}>
           {(words) => (
             <div>
-              <Fragments
+              <MessageText
                 fragments={words()}
                 emotes={props.emotes}
                 cheermotes={props.cheermotes}

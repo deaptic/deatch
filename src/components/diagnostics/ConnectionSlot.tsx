@@ -3,7 +3,7 @@ import type {
   ConnectionState,
   ConnectionStats,
 } from "../../lib/types/index.ts";
-import Meter from "../ui/Meter.tsx";
+import Meter from "../../kit/Meter.tsx";
 import { type MessageKey, t } from "../../lib/i18n/index.ts";
 
 type Props = {

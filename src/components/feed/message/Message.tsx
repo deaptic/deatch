@@ -15,11 +15,13 @@ import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
 import { formatSuspicious } from "../../../lib/format/suspicious.ts";
-import BadgeBox, { type BadgePlacement } from "../../ui/BadgeBox.tsx";
-import DisplayName from "../../ui/DisplayName.tsx";
-import Fragments from "../../ui/Fragments.tsx";
-import Timestamp from "../../ui/Timestamp.tsx";
-import type { UserActions } from "../../ui/userLink.ts";
+import Badges, {
+  type BadgePlacement,
+} from "../../../features/message/Badges.tsx";
+import DisplayName from "../../../features/message/DisplayName.tsx";
+import MessageText from "../../../features/message/MessageText.tsx";
+import Timestamp from "../../../kit/Timestamp.tsx";
+import type { UserActions } from "../../../features/message/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
 import * as details from "./details.ts";
 import Avatar from "./Avatar.tsx";
@@ -67,7 +69,7 @@ export default function Message(props: Props) {
   );
 
   const badges = (placement: BadgePlacement) => (
-    <BadgeBox
+    <Badges
       badges={props.showBadges !== false ? details.chatterBadges(item) : []}
       channelBadges={details.badgeMap(item, props.badges)}
       placement={placement}
@@ -75,7 +77,7 @@ export default function Message(props: Props) {
       <Show when={!comfortable() && item.source}>
         {(source) => <Source source={source()} onOpen={props.onOpenChannel} />}
       </Show>
-    </BadgeBox>
+    </Badges>
   );
 
   const name = () => (
@@ -103,7 +105,7 @@ export default function Message(props: Props) {
           item.deleted ? "text-ink-faint *:text-ink-faint" : ""
         }`}
       >
-        <Fragments
+        <MessageText
           fragments={withoutReplyMention(item)}
           emotes={props.emotes}
           cheermotes={props.cheermotes}

@@ -1,7 +1,7 @@
 import type { JSX } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
-import Button from "../ui/Button.tsx";
-import Dialog from "../ui/Dialog.tsx";
+import Button from "../../kit/Button.tsx";
+import Dialog from "../../kit/Dialog.tsx";
 
 type Props = {
   title: string;

@@ -7,11 +7,11 @@ import type { Role } from "../../../lib/services/chatters.ts";
 import { chatterListFor } from "../../../lib/stores/chatters.ts";
 import { feeds } from "../../../lib/stores/feeds.ts";
 import type { SearchChannel, UserRef } from "../../../lib/types/index.ts";
-import Avatar from "../../ui/Avatar.tsx";
-import Chip from "../../ui/Chip.tsx";
-import IconMenuButton from "../../ui/IconMenuButton.tsx";
-import MenuItem from "../../ui/MenuItem.tsx";
-import SearchPicker from "../../ui/SearchPicker.tsx";
+import Avatar from "../../../kit/Avatar.tsx";
+import Chip from "../../../kit/Chip.tsx";
+import IconMenuButton from "../../../kit/IconMenuButton.tsx";
+import MenuItem from "../../../kit/MenuItem.tsx";
+import SearchPicker from "../../../kit/SearchPicker.tsx";
 import PersonRow from "./PersonRow.tsx";
 
 type RoleLook = {

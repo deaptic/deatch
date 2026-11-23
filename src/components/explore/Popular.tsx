@@ -8,11 +8,11 @@ import {
 import * as explore from "../../lib/services/explore.ts";
 import { sortStreams } from "../../lib/utils/liveFilter.ts";
 import LiveCard from "./LiveCard.tsx";
-import Chip from "../ui/Chip.tsx";
-import EmptyState from "../ui/EmptyState.tsx";
-import Skeleton from "../ui/Skeleton.tsx";
-import Segmented from "../ui/Segmented.tsx";
-import { moveGridFocus } from "../ui/gridKeys.ts";
+import Chip from "../../kit/Chip.tsx";
+import EmptyState from "../../kit/EmptyState.tsx";
+import Skeleton from "../../kit/Skeleton.tsx";
+import Segmented from "../../kit/Segmented.tsx";
+import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../lib/i18n/index.ts";
 
 type Props = {

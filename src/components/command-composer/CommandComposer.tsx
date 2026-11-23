@@ -11,13 +11,13 @@ import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import Suggestions, {
   type SuggestionsApi,
 } from "../suggestions/Suggestions.tsx";
-import { comboboxFrom } from "../../lib/reactive/createListbox.ts";
+import { comboboxFrom } from "../../shared/solid/createListbox.ts";
 import ChatterRow from "../suggestions/ChatterRow.tsx";
 import type { Chatter } from "../../lib/types/index.ts";
-import Artwork from "../ui/Artwork.tsx";
-import Chip from "../ui/Chip.tsx";
-import ComposerBox from "../ui/ComposerBox.tsx";
-import ComposerCaption from "../ui/ComposerCaption.tsx";
+import Thumbnail from "../../kit/Thumbnail.tsx";
+import Chip from "../../kit/Chip.tsx";
+import ComposerBox from "../../kit/ComposerBox.tsx";
+import ComposerCaption from "../../kit/ComposerCaption.tsx";
 import CommandComposerSlot from "./CommandComposerSlot.tsx";
 import { createCommandComposer } from "./createCommandComposer.ts";
 
@@ -31,7 +31,7 @@ function renderSearchItem(s: OptionSuggestion): JSX.Element {
   return (
     <>
       <Show when={s.image}>
-        {(image) => <Artwork src={image()} shape="boxart" fit="inline" />}
+        {(image) => <Thumbnail src={image()} shape="boxart" fit="inline" />}
       </Show>
       <span class="text-ink truncate">{s.label}</span>
     </>

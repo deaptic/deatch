@@ -1,9 +1,9 @@
 import { LANGUAGE_NAMES, LANGUAGES, t } from "../../../lib/i18n/index.ts";
-import Card from "../../ui/Card.tsx";
-import CardLabel from "../../ui/CardLabel.tsx";
-import ColorPicker from "../../ui/ColorPicker.tsx";
-import Segmented from "../../ui/Segmented.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
+import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
+import ColorPicker from "../../../kit/ColorPicker.tsx";
+import Segmented from "../../../kit/Segmented.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
 import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
 import { themeOptions } from "./options.ts";
 import {

@@ -11,8 +11,8 @@ import {
   Suspense,
 } from "solid-js";
 import * as shortcuts from "../../lib/services/shortcuts.ts";
-import { POPOVER_TOGGLE } from "../../lib/reactive/dismissOnOutside.ts";
-import { fieldFrom } from "../../lib/reactive/createListbox.ts";
+import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
+import { fieldFrom } from "../../shared/solid/createListbox.ts";
 import * as chat from "../../lib/services/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
@@ -30,8 +30,8 @@ import {
 } from "../../lib/stores/ui.ts";
 import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import CharCounter from "./CharCounter.tsx";
-import IconButton from "../ui/IconButton.tsx";
-import ComposerCaption from "../ui/ComposerCaption.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import ComposerCaption from "../../kit/ComposerCaption.tsx";
 const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
@@ -39,8 +39,8 @@ import ChatAutocomplete, {
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 import ComposerActions from "./ComposerActions.tsx";
-import ComposerSlot from "../ui/ComposerSlot.tsx";
-import Presence from "../ui/Presence.tsx";
+import ComposerSlot from "../../kit/ComposerSlot.tsx";
+import Transition from "../../kit/Transition.tsx";
 import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
 
 const SEND_ACTION = "chat::send";
@@ -264,7 +264,7 @@ export default function ChatInput(props: Props) {
 
   return (
     <div class="p-2">
-      <Presence when={props.replyTo()}>
+      <Transition when={props.replyTo()}>
         {(reply) => (
           <ComposerCaption>
             <span class="shrink-0">
@@ -285,7 +285,7 @@ export default function ChatInput(props: Props) {
             </IconButton>
           </ComposerCaption>
         )}
-      </Presence>
+      </Transition>
       <Show
         when={commandMode()}
         fallback={

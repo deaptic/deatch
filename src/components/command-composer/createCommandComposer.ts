@@ -4,7 +4,7 @@ import { chattersIn } from "../../lib/stores/users.ts";
 import * as users from "../../lib/services/users.ts";
 import { rankChatters } from "../../lib/utils/rankChatters.ts";
 import { at } from "../../lib/utils/at.ts";
-import { createDebounced } from "../../lib/reactive/createDebounced.ts";
+import { createDebounced } from "../../shared/solid/createDebounced.ts";
 import type { Chatter } from "../../lib/types/index.ts";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import {

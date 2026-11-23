@@ -3,8 +3,8 @@ import { t } from "../../lib/i18n/index.ts";
 import * as channelSearch from "../../lib/services/channelSearch.ts";
 import * as raid from "../../lib/services/raid.ts";
 import type { SearchChannel } from "../../lib/types/index.ts";
-import Avatar from "../ui/Avatar.tsx";
-import SearchPicker from "../ui/SearchPicker.tsx";
+import Avatar from "../../kit/Avatar.tsx";
+import SearchPicker from "../../kit/SearchPicker.tsx";
 import ToolForm from "./ToolForm.tsx";
 
 type Props = {

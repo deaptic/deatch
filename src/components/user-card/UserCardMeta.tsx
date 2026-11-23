@@ -1,7 +1,7 @@
 import type { FollowStatus, User } from "../../lib/types/index.ts";
 import { Calendar, Heart } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
-import { createCopied } from "../ui/createCopied.ts";
+import { createCopied } from "../../kit/createCopied.ts";
 import { Time } from "../../lib/utils/time.ts";
 import { t } from "../../lib/i18n/index.ts";
 

@@ -2,10 +2,10 @@ import { For, Show } from "solid-js";
 import { t } from "../../../lib/i18n/index.ts";
 import * as blocks from "../../../lib/services/blocks.ts";
 import { blockedUsers } from "../../../lib/stores/blocks.ts";
-import Button from "../../ui/Button.tsx";
-import Card from "../../ui/Card.tsx";
-import PageBody from "../../ui/PageBody.tsx";
-import SettingsRow from "../../ui/SettingsRow.tsx";
+import Button from "../../../kit/Button.tsx";
+import Card from "../../../kit/Card.tsx";
+import PageBody from "../../../kit/PageBody.tsx";
+import SettingsRow from "../../../kit/SettingsRow.tsx";
 
 export default function BlockedUsersSection() {
   const sorted = () =>
