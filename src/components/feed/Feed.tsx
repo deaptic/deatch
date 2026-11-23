@@ -48,7 +48,7 @@ import Divider from "../../kit/Divider.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import type { Density } from "../../lib/constants/density.ts";
 import { dayLabel, layoutFeed } from "../../lib/utils/feedLayout.ts";
-import type { UserActions } from "../../features/message/userLink.ts";
+import { type UserActions } from "../../features/message/index.ts";
 import { at } from "../../lib/utils/at.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 

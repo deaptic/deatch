@@ -2,7 +2,6 @@ export type * from "../../platform/bindings.ts";
 export type { Error as AppError } from "../../platform/bindings.ts";
 export * from "./twitch/index.ts";
 export * from "./chatter.ts";
-export * from "./diagnostics.ts";
 export * from "./feed.ts";
 export * from "./history.ts";
 export * from "./inbox.ts";

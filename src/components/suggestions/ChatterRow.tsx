@@ -1,5 +1,5 @@
 import type { Chatter } from "../../lib/types/index.ts";
-import { nameColor } from "../../features/message/nameColor.ts";
+import { nameColor } from "../../features/message/index.ts";
 
 export default function ChatterRow(props: {
   chatter: Pick<Chatter, "login" | "displayName" | "color">;

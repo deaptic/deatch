@@ -15,13 +15,14 @@ import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
 import { withoutReplyMention } from "../../../lib/utils/message.ts";
 import * as automod from "../../../lib/services/automod.ts";
 import { formatSuspicious } from "../../../lib/mappers/suspiciousText.ts";
-import Badges, {
+import {
+  Badges,
   type BadgePlacement,
-} from "../../../features/message/Badges.tsx";
-import DisplayName from "../../../features/message/DisplayName.tsx";
-import MessageText from "../../../features/message/MessageText.tsx";
+  DisplayName,
+  MessageText,
+  type UserActions,
+} from "../../../features/message/index.ts";
 import Timestamp from "../../../kit/Timestamp.tsx";
-import type { UserActions } from "../../../features/message/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
 import * as details from "./details.ts";
 import Avatar from "./Avatar.tsx";

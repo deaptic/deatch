@@ -16,7 +16,7 @@ import UserCardHeader from "./UserCardHeader.tsx";
 import UserCardModActions from "./UserCardModActions.tsx";
 import UserCardFeed from "./UserCardFeed.tsx";
 import { mergeMessages } from "./mergeMessages.ts";
-import type { UserAction } from "../../features/message/userLink.ts";
+import { type UserAction } from "../../features/message/index.ts";
 import { dismissOnOutside } from "../../shared/solid/dismissOnOutside.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { playExit } from "../../kit/playExit.ts";

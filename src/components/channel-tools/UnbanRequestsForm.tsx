@@ -11,7 +11,7 @@ import type {
   UnbanRequest,
 } from "../../lib/types/index.ts";
 import Button from "../../kit/Button.tsx";
-import ChatterPicture from "../../features/message/ChatterPicture.tsx";
+import { ChatterPicture } from "../../features/message/index.ts";
 import Dialog from "../../kit/Dialog.tsx";
 import Field from "../../kit/Field.tsx";
 

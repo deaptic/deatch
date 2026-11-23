@@ -12,7 +12,7 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import Avatar from "../../kit/Avatar.tsx";
-import Badges from "../../features/message/Badges.tsx";
+import { Badges } from "../../features/message/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
 import UserCardIdentity from "./UserCardIdentity.tsx";
 import UserCardLive from "./UserCardLive.tsx";

@@ -31,7 +31,7 @@ import ToolbarDivider from "../../kit/ToolbarDivider.tsx";
 import { OVERLAY_GAP } from "../../kit/Popover.tsx";
 import Inbox from "../inbox/Inbox.tsx";
 import AppearancePanel from "./AppearancePanel.tsx";
-import Diagnostics from "../diagnostics/Diagnostics.tsx";
+import { Diagnostics } from "../../features/diagnostics/index.ts";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import Transition from "../../kit/Transition.tsx";

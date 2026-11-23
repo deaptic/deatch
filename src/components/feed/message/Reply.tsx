@@ -2,15 +2,14 @@ import { Show } from "solid-js";
 import type { FeedMessage as Message } from "../../../lib/types/index.ts";
 import { knownChatterColor } from "../../../lib/stores/users.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import ChatterPicture, {
-  chatterTint,
-} from "../../../features/message/ChatterPicture.tsx";
-import DisplayName from "../../../features/message/DisplayName.tsx";
 import {
+  ChatterPicture,
+  chatterTint,
+  DisplayName,
   type UserActions,
   userLink,
   userLinkHover,
-} from "../../../features/message/userLink.ts";
+} from "../../../features/message/index.ts";
 import { onActivateKey } from "../../../kit/keyActivation.ts";
 
 export default function Reply(

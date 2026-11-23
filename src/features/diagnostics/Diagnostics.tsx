@@ -1,13 +1,12 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import * as diagnostics from "../../lib/services/diagnostics.ts";
-import type { Diagnostics as Sample } from "../../lib/types/index.ts";
+import { For, onCleanup, onMount, Show } from "solid-js";
+import { sample, watch } from "./store.ts";
 import { formatBytes } from "../../shared/format/size.ts";
 import { formatPercent } from "../../shared/format/units.ts";
 import Loading from "../../kit/Loading.tsx";
 import Popover from "../../kit/Popover.tsx";
-import ConnectionSlot from "./ConnectionSlot.tsx";
-import DiagnosticsSection from "./DiagnosticsSection.tsx";
-import MetricRow from "./MetricRow.tsx";
+import ConnectionSlot from "./ui/ConnectionSlot.tsx";
+import Section from "./ui/Section.tsx";
+import MetricRow from "./ui/MetricRow.tsx";
 import { t } from "../../shared/i18n/index.ts";
 
 type Props = {
@@ -17,8 +16,7 @@ type Props = {
 };
 
 export default function Diagnostics(props: Props) {
-  const [sample, setSample] = createSignal<Sample | null>(null);
-  onMount(() => onCleanup(diagnostics.watch(setSample)));
+  onMount(() => onCleanup(watch()));
 
   return (
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
@@ -36,7 +34,7 @@ export default function Diagnostics(props: Props) {
         >
           {(s) => (
             <div class="flex-1 min-h-0 overflow-y-auto px-5 py-4 flex flex-col gap-5">
-              <DiagnosticsSection title={t("DIAGNOSTICS_APP_TITLE")}>
+              <Section title={t("DIAGNOSTICS_APP_TITLE")}>
                 <MetricRow
                   label={t("DIAGNOSTICS_MEMORY_LABEL")}
                   value={formatBytes(s().app.app.privateBytes)}
@@ -64,9 +62,9 @@ export default function Diagnostics(props: Props) {
                   label={t("DIAGNOSTICS_WEBVIEW_CPU_LABEL")}
                   value={formatPercent(s().app.webview.cpuPercent ?? 0)}
                 />
-              </DiagnosticsSection>
+              </Section>
 
-              <DiagnosticsSection title={t("DIAGNOSTICS_EVENTSUB_TITLE")}>
+              <Section title={t("DIAGNOSTICS_EVENTSUB_TITLE")}>
                 <For
                   each={Array.from(
                     { length: s().app.eventsub.maxConnections },
@@ -108,9 +106,9 @@ export default function Diagnostics(props: Props) {
                     tone="negative"
                   />
                 </Show>
-              </DiagnosticsSection>
+              </Section>
 
-              <DiagnosticsSection title={t("DIAGNOSTICS_CACHE_TITLE")}>
+              <Section title={t("DIAGNOSTICS_CACHE_TITLE")}>
                 <MetricRow
                   label={t("DIAGNOSTICS_USERS_LABEL")}
                   value={`${s().cache.users}`}
@@ -123,7 +121,7 @@ export default function Diagnostics(props: Props) {
                   label={t("DIAGNOSTICS_MESSAGES_LABEL")}
                   value={`${s().cache.messages}`}
                 />
-              </DiagnosticsSection>
+              </Section>
             </div>
           )}
         </Show>

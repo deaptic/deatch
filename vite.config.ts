@@ -39,6 +39,10 @@ export default defineConfig({
               regex: "^@tauri-apps/",
               message: "Only src/platform imports Tauri.",
             },
+            {
+              group: ["**/features/*/**", "!**/features/*/index.ts"],
+              message: "Import a feature through its index.ts.",
+            },
           ],
         },
       ],

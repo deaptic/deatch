@@ -5,7 +5,7 @@ type Props = {
   children: JSX.Element;
 };
 
-export default function DiagnosticsSection(props: Props) {
+export default function Section(props: Props) {
   return (
     <section class="flex flex-col gap-2">
       <h3 class="text-small text-ink">{props.title}</h3>

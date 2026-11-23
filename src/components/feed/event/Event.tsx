@@ -4,11 +4,13 @@ import type { FeedEvent } from "../../../lib/types/index.ts";
 import type { EmoteMap } from "../../../lib/utils/emoteMap.ts";
 import type { CheermoteMap } from "../../../lib/utils/cheermote.ts";
 import { t, tRich } from "../../../shared/i18n/index.ts";
-import MessageText from "../../../features/message/MessageText.tsx";
-import TextWithMentions from "../../../features/message/TextWithMentions.tsx";
-import NameList from "../../../features/message/NameList.tsx";
+import {
+  MessageText,
+  TextWithMentions,
+  NameList,
+  type UserActions,
+} from "../../../features/message/index.ts";
 import Timestamp from "../../../kit/Timestamp.tsx";
-import type { UserActions } from "../../../features/message/userLink.ts";
 import FeedItem, { type ItemLayout } from "../item/index.ts";
 import Actions from "./Actions.tsx";
 import * as details from "./details.ts";
