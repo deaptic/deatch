@@ -9,7 +9,7 @@ import * as eventsub from "./eventsub.ts";
 import * as hypeTrain from "./hypeTrain.ts";
 import * as moderation from "./moderation.ts";
 import * as notifications from "./notifications.ts";
-import * as link from "./link.ts";
+import * as link from "../../features/link/index.ts";
 
 export function start(): () => void {
   const stops = [

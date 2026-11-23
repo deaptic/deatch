@@ -1,3 +1,4 @@
+import { connected, hasAudio, tabs } from "./store.ts";
 import {
   AudioLines,
   AudioWaveform,
@@ -15,17 +16,12 @@ import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import { FIREFOX_ADDON_URL } from "../../lib/constants/links.ts";
 import {
-  linkConnected,
-  linkHasAudio,
-  linkWarmedChannels,
-} from "../../lib/stores/link.ts";
-import {
   linkAudioLink,
   linkCompressor,
   setLinkAudioLink,
   setLinkCompressor,
 } from "../../lib/stores/preferences.ts";
-import * as link from "../../lib/services/link.ts";
+import * as link from "./store.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { t } from "../../shared/i18n/index.ts";
 
@@ -38,12 +34,12 @@ type Props = {
 };
 
 export default function LinkMenu(props: Props) {
-  const hasTabs = () => linkWarmedChannels().length > 0;
+  const hasTabs = () => tabs().length > 0;
 
   return (
     <Menu x={props.x} y={props.y} opener={props.opener} onClose={props.onClose}>
       <Show
-        when={linkConnected()}
+        when={connected()}
         fallback={
           <>
             <MenuItem
@@ -76,7 +72,7 @@ export default function LinkMenu(props: Props) {
           shortcut={shortcuts.keyFor("link::toggleAudioLink")}
           onClick={() => setLinkAudioLink(!linkAudioLink())}
         />
-        <Show when={linkHasAudio()}>
+        <Show when={hasAudio()}>
           <MenuItem
             label={t("RAIL_LINK_COMPRESSOR_LABEL")}
             icon={<AudioWaveform />}

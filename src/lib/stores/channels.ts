@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import type { ChannelInfo, Stream, User, UserRef } from "../types/index.ts";
 import { pinnedChannels } from "./preferences.ts";
-import { linkWarmedChannels } from "./link.ts";
+import * as link from "../../features/link/index.ts";
 import { knownUser } from "./users.ts";
 import { orderChannels } from "../utils/channelOrder.ts";
 import { userFromRef } from "../utils/knownUsers.ts";
@@ -56,7 +56,7 @@ export function streamForUserId(userId: string): Stream | undefined {
 export function channelsInOrder(): User[] {
   return orderChannels({
     pinnedIds: pinnedChannels(),
-    tabIds: new Set(linkWarmedChannels().map((c) => c.id)),
+    tabIds: new Set(link.tabs().map((c) => c.id)),
     streams: liveStreams(),
     knownUser,
   });

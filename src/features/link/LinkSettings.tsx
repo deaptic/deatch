@@ -1,26 +1,26 @@
-import { type MessageKey, t } from "../../../shared/i18n/index.ts";
+import { connected, hasAudio } from "./store.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import { For, Show } from "solid-js";
-import Button from "../../../kit/Button.tsx";
-import Card from "../../../kit/Card.tsx";
-import Disclosure from "../../../kit/Disclosure.tsx";
-import PageBody from "../../../kit/PageBody.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
-import Slider from "../../../kit/Slider.tsx";
-import Toggle from "../../../kit/Toggle.tsx";
+import Button from "../../kit/Button.tsx";
+import Card from "../../kit/Card.tsx";
+import Disclosure from "../../kit/Disclosure.tsx";
+import PageBody from "../../kit/PageBody.tsx";
+import SettingsRow from "../../kit/SettingsRow.tsx";
+import Slider from "../../kit/Slider.tsx";
+import Toggle from "../../kit/Toggle.tsx";
 import {
   COMPRESSOR,
   COMPRESSOR_CONTROLS,
   type CompressorControl,
   DEFAULT_COMPRESSOR,
-} from "../../../lib/constants/audio.ts";
-import { linkConnected, linkHasAudio } from "../../../lib/stores/link.ts";
+} from "../../lib/constants/audio.ts";
 import {
   compressorSettings,
   linkCompressor,
   resetCompressorSettings,
   setCompressorControl,
   setLinkCompressor,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
 
 const db = (value: number) => `${value} dB`;
 const ms = (value: number) => `${value} ms`;
@@ -79,7 +79,7 @@ export default function LinkSection() {
             onChange={setLinkCompressor}
           />
         </SettingsRow>
-        <Show when={linkConnected() && !linkHasAudio()}>
+        <Show when={connected() && !hasAudio()}>
           <p class="px-5 pb-4 text-small text-caution">
             {t("SETTINGS_LINK_UPDATE_EXTENSION_HINT")}
           </p>

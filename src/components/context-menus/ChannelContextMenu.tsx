@@ -22,17 +22,12 @@ import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
-import TabVolume from "./TabVolume.tsx";
+import { TabVolume } from "../../features/link/index.ts";
 import {
   advancedDeveloperMode,
   pinnedChannels,
 } from "../../lib/stores/preferences.ts";
-import {
-  linkHasAudio,
-  linkMutedByLogin,
-  linkWarmedChannels,
-} from "../../lib/stores/link.ts";
-import * as link from "../../lib/services/link.ts";
+import * as link from "../../features/link/index.ts";
 import * as pins from "../../lib/services/pins.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
@@ -59,8 +54,8 @@ type Props = {
 
 export default function ChannelContextMenu(props: Props) {
   const url = () => channelUrl(props.ch.login);
-  const hasTab = () => linkWarmedChannels().some((c) => c.id === props.ch.id);
-  const muted = () => linkMutedByLogin()[props.ch.login] === true;
+  const hasTab = () => link.tabs().some((c) => c.id === props.ch.id);
+  const muted = () => link.mutedByLogin()[props.ch.login] === true;
   const pinned = () => pinnedChannels().includes(props.ch.id);
   const selected = () => selectedChannel()?.id === props.ch.id;
   const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
@@ -130,7 +125,7 @@ export default function ChannelContextMenu(props: Props) {
           shortcut={selected() ? shortcuts.keyFor("link::closeTab") : undefined}
           onClick={() => link.close(props.ch.login)}
         />
-        <Show when={linkHasAudio()}>
+        <Show when={link.hasAudio()}>
           <MenuDivider />
           <TabVolume login={props.ch.login} />
         </Show>

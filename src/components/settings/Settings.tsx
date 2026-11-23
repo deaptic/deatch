@@ -37,7 +37,7 @@ import AppearanceSection from "./sections/AppearanceSection.tsx";
 import KeyboardSection from "./sections/KeyboardSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
 import TriggersSection from "./sections/TriggersSection.tsx";
-import LinkSection from "./sections/LinkSection.tsx";
+import { LinkSettings } from "../../features/link/index.ts";
 import BlockedUsersSection from "./sections/BlockedUsersSection.tsx";
 
 const SECTIONS: {
@@ -62,7 +62,7 @@ const SECTIONS: {
     key: "link",
     label: "SETTINGS_LINK_TITLE",
     Icon: Eye,
-    Section: LinkSection,
+    Section: LinkSettings,
   },
   {
     key: "moderation",

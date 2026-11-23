@@ -1,6 +1,6 @@
 import type { User } from "../types/index.ts";
 import { createChannelNavigation } from "./createChannelNavigation.ts";
-import { createLinkControls } from "./createLinkControls.ts";
+import { createLinkControls } from "../../features/link/index.ts";
 import { createChannelSubscriptions } from "./createChannelSubscriptions.ts";
 import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
 import { createMentionsBadge } from "./createMentionsBadge.ts";

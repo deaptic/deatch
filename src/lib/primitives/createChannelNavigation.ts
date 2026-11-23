@@ -11,7 +11,7 @@ import {
   setLinkSynced,
   setSelectedChannel,
 } from "../stores/view.ts";
-import { linkWarmedChannels } from "../stores/link.ts";
+import * as link from "../../features/link/index.ts";
 import { rememberChannel } from "../stores/preferences.ts";
 import { linkFocus } from "../../platform/link.ts";
 import { reportFailure } from "../../platform/invoke.ts";
@@ -29,7 +29,7 @@ export type ChannelNavigation = {
 export function createChannelNavigation(): ChannelNavigation {
   function selectChannel(ch: User) {
     if (linkSynced()) {
-      const linked = linkWarmedChannels().some((c) => c.id === ch.id);
+      const linked = link.tabs().some((c) => c.id === ch.id);
       if (linked) {
         linkFocus({ channel: ch.login }, { silent: true }).catch(() => {});
       } else {

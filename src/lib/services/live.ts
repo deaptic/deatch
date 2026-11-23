@@ -13,7 +13,7 @@ import {
   setPinsLoaded,
 } from "../stores/channels.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
-import { linkedChannel, linkWarmedChannels } from "../stores/link.ts";
+import * as link from "../../features/link/index.ts";
 import { selectedChannel } from "../stores/view.ts";
 import type { Stream, User } from "../types/index.ts";
 import { idsNotIn } from "../utils/idsNotIn.ts";
@@ -69,8 +69,8 @@ function reset() {
 function wantedIds(): (string | undefined)[] {
   return [
     ...pinnedChannels(),
-    ...linkWarmedChannels().map((ch) => ch.id),
-    linkedChannel()?.id,
+    ...link.tabs().map((ch) => ch.id),
+    link.activeTab()?.id,
     selectedChannel()?.id,
   ];
 }

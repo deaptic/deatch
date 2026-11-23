@@ -1,7 +1,7 @@
 import { onCleanup, onMount } from "solid-js";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import * as readout from "../services/readout.ts";
-import * as link from "../services/link.ts";
+import * as link from "../../features/link/index.ts";
 import { closeOverlay, openOverlay, toggleOverlay } from "../stores/ui.ts";
 import { leavePage, showExplore, toggleSettings } from "../stores/view.ts";
 import {
@@ -18,7 +18,7 @@ import {
 } from "../stores/preferences.ts";
 import { channelsInOrder } from "../stores/channels.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
-import type { LinkControls } from "./createLinkControls.ts";
+import type { LinkControls } from "../../features/link/index.ts";
 import { formatWholePercent } from "../../shared/format/units.ts";
 
 const MOUSE_HISTORY_STEPS: Record<number, 1 | -1> = { 3: -1, 4: 1 };

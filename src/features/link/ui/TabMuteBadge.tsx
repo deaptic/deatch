@@ -1,6 +1,6 @@
 import { Volume2, VolumeOff } from "lucide-solid";
 import { Show } from "solid-js";
-import { t } from "../../shared/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 
 type Props = {
   muted: boolean;

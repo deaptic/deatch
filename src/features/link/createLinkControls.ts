@@ -1,21 +1,21 @@
+import { activeTab, tabs } from "./store.ts";
 import { createEffect, on } from "solid-js";
-import type { ChannelNavigation } from "./createChannelNavigation.ts";
-import { channelsInOrder } from "../stores/channels.ts";
+import type { ChannelNavigation } from "../../lib/primitives/createChannelNavigation.ts";
+import { channelsInOrder } from "../../lib/stores/channels.ts";
 import {
   linkSynced,
   pendingChannel,
   selectedChannel,
   setLinkSynced,
-} from "../stores/view.ts";
-import { linkedChannel, linkWarmedChannels } from "../stores/link.ts";
+} from "../../lib/stores/view.ts";
 import {
   compressorSettings,
   linkAudioLink,
   linkChannelGains,
   linkCompressor,
-} from "../stores/preferences.ts";
-import * as link from "../services/link.ts";
-import { at } from "../utils/at.ts";
+} from "../../lib/stores/preferences.ts";
+import * as link from "./store.ts";
+import { at } from "../../lib/utils/at.ts";
 import { wrapIndex } from "../../shared/solid/createListNavigation.ts";
 
 export type LinkControls = {
@@ -26,7 +26,7 @@ export type LinkControls = {
 export function createLinkControls(nav: ChannelNavigation): LinkControls {
   createEffect(
     on(
-      linkedChannel,
+      activeTab,
       (wc) => {
         if (linkSynced() && wc) nav.selectChannel(wc);
       },
@@ -42,7 +42,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
     on(
       [selectedChannel, linkSynced, linkAudioLink],
       () => {
-        if (linkSynced() && linkAudioLink() && link.selectedLinked()) {
+        if (linkSynced() && linkAudioLink() && link.selectedTab()) {
           link.muteOthersSilently();
         }
       },
@@ -51,9 +51,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
   );
 
   function cycleChannel(direction: 1 | -1) {
-    const list = linkSynced()
-      ? linkWarmedChannels()
-      : [...linkWarmedChannels(), ...channelsInOrder()];
+    const list = linkSynced() ? tabs() : [...tabs(), ...channelsInOrder()];
     if (list.length === 0) return;
     const i = list.findIndex((c) => c.id === pendingChannel()?.id);
     const nextIdx =
@@ -70,8 +68,7 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
       setLinkSynced(false);
       return;
     }
-    const target =
-      link.selectedLinked() ?? linkedChannel() ?? linkWarmedChannels()[0];
+    const target = link.selectedTab() ?? activeTab() ?? tabs()[0];
     if (!target) return;
     setLinkSynced(true);
     nav.selectChannel(target);

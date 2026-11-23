@@ -1,6 +1,6 @@
-import type { LinkState, User } from "../types/index.ts";
+import type { LinkState, User } from "../../lib/types/index.ts";
 
-export type LinkPlan = {
+export type Plan = {
   muted: Record<string, boolean>;
   keep: User[];
   fetch: Set<string>;
@@ -8,16 +8,16 @@ export type LinkPlan = {
   unlink: boolean;
 };
 
-export function planLinkState(
+export function planState(
   { channels, current }: Pick<LinkState, "channels" | "current">,
-  warmed: User[],
+  open: User[],
   linkedLogin: string | null,
-): LinkPlan {
+): Plan {
   const muted: Record<string, boolean> = {};
   for (const c of channels) muted[c.login.toLowerCase()] = c.muted ?? false;
 
   const incoming = new Set(channels.map((c) => c.login.toLowerCase()));
-  const keep = warmed.filter((c) => incoming.has(c.login));
+  const keep = open.filter((c) => incoming.has(c.login));
   const known = new Set(keep.map((c) => c.login));
   const fetch = new Set([...incoming].filter((l) => !known.has(l)));
 

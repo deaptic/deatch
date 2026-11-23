@@ -12,7 +12,6 @@ import * as emotes from "../services/emotes.ts";
 import * as view from "../services/view.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import * as live from "../services/live.ts";
-import * as link from "../services/link.ts";
 import * as preferences from "../services/preferences.ts";
 import * as feedLog from "../services/feedLog.ts";
 import * as exit from "../services/exit.ts";
@@ -43,7 +42,6 @@ export function createServices(): void {
       discord.start(),
       windowState.start(),
       explore.start(),
-      link.start(),
       blocks.start(),
     ];
     onCleanup(() => {

@@ -2,7 +2,7 @@ import { createMemo } from "solid-js";
 import { followedLive, pinsLoaded } from "../../lib/stores/channels.ts";
 import { knownUser } from "../../lib/stores/users.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
-import { linkWarmedChannels } from "../../lib/stores/link.ts";
+import * as link from "../../features/link/index.ts";
 import type { User } from "../../lib/types/index.ts";
 
 type RailChannels = {
@@ -17,9 +17,7 @@ export function createRailChannels(): RailChannels {
   const live = () => followedLive() ?? [];
   const liveById = createMemo(() => new Map(live().map((ch) => [ch.id, ch])));
   const pinnedIdSet = createMemo(() => new Set(pinnedChannels()));
-  const warmedIdSet = createMemo(
-    () => new Set(linkWarmedChannels().map((ch) => ch.id)),
-  );
+  const warmedIdSet = createMemo(() => new Set(link.tabs().map((ch) => ch.id)));
   const onlineList = createMemo(() =>
     live().filter(
       (ch) => !pinnedIdSet().has(ch.id) && !warmedIdSet().has(ch.id),

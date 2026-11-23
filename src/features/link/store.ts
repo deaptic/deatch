@@ -1,17 +1,6 @@
-import { createEffect, createRoot, on } from "solid-js";
-import { selectedChannel } from "../stores/view.ts";
-import { user } from "../stores/users.ts";
-import {
-  linkConnected,
-  linkedChannel,
-  linkMutedByLogin,
-  linkWarmedChannels,
-  setLinkConnected,
-  setLinkedChannel,
-  setLinkHasAudio,
-  setLinkMutedByLogin,
-  setLinkWarmedChannels,
-} from "../stores/link.ts";
+import { createEffect, createRoot, createSignal, on } from "solid-js";
+import { selectedChannel } from "../../lib/stores/view.ts";
+import { user } from "../../lib/stores/users.ts";
 import {
   linkClose,
   linkFocus,
@@ -20,16 +9,25 @@ import {
 } from "../../platform/link.ts";
 import { openUrl } from "../../platform/opener.ts";
 import { focusWindow, onWindowFocusChanged } from "../../platform/window.ts";
-import { channelUrl } from "../utils/twitchUrl.ts";
-import type { CompressorSettings } from "../constants/audio.ts";
+import { channelUrl } from "../../lib/utils/twitchUrl.ts";
+import type { CompressorSettings } from "../../lib/constants/audio.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
 import { addToast } from "../../kit/toasts.ts";
-import * as users from "./users.ts";
-import type { LinkState, SetAudioParams, User } from "../types/index.ts";
+import * as users from "../../lib/services/users.ts";
+import type { LinkState, SetAudioParams, User } from "../../lib/types/index.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
 import { t } from "../../shared/i18n/index.ts";
-import { createBackoff } from "../utils/backoff.ts";
-import { planLinkState } from "../utils/linkPlan.ts";
+import { createBackoff } from "../../lib/utils/backoff.ts";
+import { planState } from "./model.ts";
+
+const [connected, setConnected] = createSignal(false);
+const [hasAudio, setHasAudio] = createSignal(false);
+const [activeTab, setActiveTab] = createSignal<User | null>(null);
+const [tabs, setTabs] = createSignal<User[]>([]);
+const [mutedByLogin, setMutedByLogin] = createSignal<Record<string, boolean>>(
+  {},
+);
+export { activeTab, connected, hasAudio, mutedByLogin, tabs };
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
@@ -46,25 +44,25 @@ export function close(login: string) {
   linkClose({ channel: login }, tabAction()).catch(() => {});
 }
 
-function closeTabs(tabs: User[]) {
-  for (const ch of tabs) if (ch.login) close(ch.login);
+function closeEach(list: User[]) {
+  for (const ch of list) if (ch.login) close(ch.login);
 }
 
 export function closeAll() {
-  closeTabs(linkWarmedChannels());
+  closeEach(tabs());
 }
 
 export async function closeOffline() {
-  const tabs = linkWarmedChannels();
-  if (tabs.length === 0) return;
-  const streams = await getStreamsFromIds({ userIds: tabs.map((c) => c.id) });
+  const open = tabs();
+  if (open.length === 0) return;
+  const streams = await getStreamsFromIds({ userIds: open.map((c) => c.id) });
   const live = new Set(streams.map((s) => s.user.id));
-  const offline = tabs.filter((c) => !live.has(c.id));
+  const offline = open.filter((c) => !live.has(c.id));
   if (offline.length === 0) {
     addToast(t("LINK_ALL_TABS_LIVE_TOAST"));
     return;
   }
-  closeTabs(offline);
+  closeEach(offline);
   addToast(
     t("LINK_OFFLINE_TABS_CLOSED_TOAST", { count: offline.length }),
     "success",
@@ -72,12 +70,12 @@ export async function closeOffline() {
 }
 
 function isMuted(login: string): boolean {
-  return linkMutedByLogin()[login] === true;
+  return mutedByLogin()[login] === true;
 }
 
-export function selectedLinked() {
+export function selectedTab() {
   const sel = selectedChannel();
-  return sel && linkWarmedChannels().some((c) => c.id === sel.id) ? sel : null;
+  return sel && tabs().some((c) => c.id === sel.id) ? sel : null;
 }
 
 const REFOCUS_MS = 2000;
@@ -100,7 +98,7 @@ async function keepingFocus(action: () => Promise<unknown>) {
 }
 
 export function openTab() {
-  const tab = selectedLinked();
+  const tab = selectedTab();
   if (tab) {
     focus(tab.login);
     return;
@@ -111,7 +109,7 @@ export function openTab() {
 }
 
 export function closeTab(): boolean {
-  const tab = selectedLinked();
+  const tab = selectedTab();
   if (!tab) return false;
   keepingFocus(() => linkClose({ channel: tab.login }, tabAction())).catch(
     () => {},
@@ -141,7 +139,7 @@ export function sendAudio(
 }
 
 export function anyUnmuted(): boolean {
-  return linkWarmedChannels().some((ch) => ch.login && !isMuted(ch.login));
+  return tabs().some((ch) => ch.login && !isMuted(ch.login));
 }
 
 export function muteOthers() {
@@ -153,8 +151,8 @@ export function muteOthersSilently() {
 }
 
 function setOthersMuted(options: InvokeOptions) {
-  const focusedLogin = selectedLinked()?.login ?? null;
-  for (const ch of linkWarmedChannels()) {
+  const focusedLogin = selectedTab()?.login ?? null;
+  for (const ch of tabs()) {
     if (!ch.login) continue;
     const shouldBeMuted = ch.login !== focusedLogin;
     if (isMuted(ch.login) !== shouldBeMuted) {
@@ -166,7 +164,7 @@ function setOthersMuted(options: InvokeOptions) {
 }
 
 export function toggleMuteAll() {
-  const linked = linkWarmedChannels();
+  const linked = tabs();
   if (linked.length === 0) return;
   const muteAll = anyUnmuted();
   for (const ch of linked) {
@@ -180,7 +178,7 @@ export function toggleMuteAll() {
 }
 
 export function currentMuted(): boolean | null {
-  const target = selectedLinked();
+  const target = selectedTab();
   return target?.login ? isMuted(target.login) : null;
 }
 
@@ -191,7 +189,7 @@ export function toggleMuted(login: string) {
 }
 
 export function toggleMute() {
-  const target = selectedLinked();
+  const target = selectedTab();
   if (target?.login) toggleMuted(target.login);
 }
 
@@ -200,18 +198,18 @@ let pendingCurrent: string | null = null;
 const retry = createBackoff(RETRY_MIN_MS, RETRY_MAX_MS);
 
 async function drainPending() {
-  if (!linkConnected() || !user()) return;
-  if (pendingFetch.size > 0) await drainWarmed();
+  if (!connected() || !user()) return;
+  if (pendingFetch.size > 0) await drainTabs();
   if (pendingCurrent) await drainCurrent(pendingCurrent);
 
   if (pendingFetch.size > 0 || pendingCurrent) {
-    if (linkConnected()) retry.schedule(() => void drainPending());
+    if (connected()) retry.schedule(() => void drainPending());
   } else {
     retry.succeeded();
   }
 }
 
-async function drainWarmed() {
+async function drainTabs() {
   const toFetch = Array.from(pendingFetch);
   const fetched = await users
     .fetchFresh({ logins: toFetch }, { silent: true })
@@ -219,12 +217,9 @@ async function drainWarmed() {
   if (!fetched) return;
   const stillOpen = fetched.filter((u) => pendingFetch.has(u.login));
   for (const login of toFetch) pendingFetch.delete(login);
-  const current = linkWarmedChannels();
+  const current = tabs();
   const known = new Set(current.map((c) => c.login));
-  setLinkWarmedChannels([
-    ...current,
-    ...stillOpen.filter((u) => !known.has(u.login)),
-  ]);
+  setTabs([...current, ...stillOpen.filter((u) => !known.has(u.login))]);
 }
 
 async function drainCurrent(slug: string) {
@@ -235,25 +230,25 @@ async function drainCurrent(slug: string) {
   if (pendingCurrent !== slug) return;
   pendingCurrent = null;
   const [ch] = found;
-  if (ch && linkedChannel()?.id !== ch.id) setLinkedChannel(ch);
+  if (ch && activeTab()?.id !== ch.id) setActiveTab(ch);
 }
 
 export async function applyState(state: LinkState) {
-  setLinkConnected(true);
-  setLinkHasAudio(state.audio === true);
+  setConnected(true);
+  setHasAudio(state.audio === true);
 
-  const warmed = linkWarmedChannels();
-  const plan = planLinkState(state, warmed, linkedChannel()?.login ?? null);
-  setLinkMutedByLogin(plan.muted);
-  if (plan.keep.length !== warmed.length) setLinkWarmedChannels(plan.keep);
+  const warmed = tabs();
+  const plan = planState(state, warmed, activeTab()?.login ?? null);
+  setMutedByLogin(plan.muted);
+  if (plan.keep.length !== warmed.length) setTabs(plan.keep);
   pendingFetch = plan.fetch;
   pendingCurrent = plan.lookUp;
-  if (plan.unlink) setLinkedChannel(null);
+  if (plan.unlink) setActiveTab(null);
 
   await drainPending();
 }
 
-export function start(): () => void {
+export function watchSignIn(): () => void {
   return createRoot((dispose) => {
     createEffect(
       on(user, (signedIn) => {
@@ -265,11 +260,11 @@ export function start(): () => void {
 }
 
 export function disconnect() {
-  setLinkConnected(false);
-  setLinkHasAudio(false);
-  setLinkWarmedChannels([]);
-  setLinkedChannel(null);
-  setLinkMutedByLogin({});
+  setConnected(false);
+  setHasAudio(false);
+  setTabs([]);
+  setActiveTab(null);
+  setMutedByLogin({});
   pendingFetch.clear();
   pendingCurrent = null;
   retry.reset();

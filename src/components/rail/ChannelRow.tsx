@@ -5,7 +5,7 @@ import type { User } from "../../lib/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
-import TabMuteBadge from "./TabMuteBadge.tsx";
+import { TabMuteBadge } from "../../features/link/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";

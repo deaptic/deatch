@@ -15,7 +15,7 @@ import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import * as pins from "../../lib/services/pins.ts";
-import { linkWarmedChannels } from "../../lib/stores/link.ts";
+import * as link from "../../features/link/index.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { liveLine } from "../../shared/format/stream.ts";
@@ -49,7 +49,7 @@ export default function QuickSwitch(props: Props) {
   const actions = createMemo(paletteActions);
   const rows = createMemo(() =>
     quickSwitchRows(
-      uniqueUsers([...channelsInOrder(), ...linkWarmedChannels(), user()]),
+      uniqueUsers([...channelsInOrder(), ...link.tabs(), user()]),
       actions(),
       query(),
     ),
@@ -144,7 +144,7 @@ export default function QuickSwitch(props: Props) {
         >
           <For each={rows()}>
             {(row, i) => {
-              const link = createChannelLink(() =>
+              const channelLink = createChannelLink(() =>
                 row.kind === "channel" ? row.user : undefined,
               );
               return (
@@ -154,8 +154,8 @@ export default function QuickSwitch(props: Props) {
                   onMouseMove={() => listbox.setActive(i())}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={(e) => void open(row, e.ctrlKey)}
-                  onContextMenu={link.handlers.onContextMenu}
-                  onAuxClick={link.handlers.onAuxClick}
+                  onContextMenu={channelLink.handlers.onContextMenu}
+                  onAuxClick={channelLink.handlers.onAuxClick}
                   class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
                     listbox.active() === i() ? "bg-raised" : "hover:bg-raised"
                   }`}
@@ -236,7 +236,7 @@ export default function QuickSwitch(props: Props) {
                   <Show when={listbox.active() === i()}>
                     <Kbd size="sm" combo="enter" />
                   </Show>
-                  {link.menu()}
+                  {channelLink.menu()}
                 </button>
               );
             }}

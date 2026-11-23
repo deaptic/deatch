@@ -7,12 +7,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
-import {
-  linkedChannel,
-  linkMutedByLogin,
-  linkWarmedChannels,
-} from "../../lib/stores/link.ts";
-import * as link from "../../lib/services/link.ts";
+import * as link from "../../features/link/index.ts";
 import {
   activeView,
   isSettingsOpen,
@@ -28,13 +23,13 @@ import { createPinDrag } from "./createPinDrag.ts";
 import RailRow from "./RailRow.tsx";
 import RailTile from "./RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
-import RailLinkRow from "./RailLinkRow.tsx";
+import { RailLinkRow } from "../../features/link/index.ts";
 import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../../kit/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
 import { RAIL_GAP } from "../../kit/density.ts";
-import TabMuteBadge from "./TabMuteBadge.tsx";
+import { TabMuteBadge } from "../../features/link/index.ts";
 import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
@@ -59,18 +54,15 @@ export default function Rail(props: Props) {
   const linkScroll = createScrollAffordance();
   const drag = createPinDrag();
 
-  const linkedOthers = () =>
-    linkWarmedChannels().filter((c) => !isOwnChannel(c.id));
-  const ownTab = () => linkWarmedChannels().find((c) => isOwnChannel(c.id));
+  const linkedOthers = () => link.tabs().filter((c) => !isOwnChannel(c.id));
+  const ownTab = () => link.tabs().find((c) => isOwnChannel(c.id));
 
-  const warmedIds = createMemo(
-    () => new Set(linkWarmedChannels().map((c) => c.id)),
-  );
+  const warmedIds = createMemo(() => new Set(link.tabs().map((c) => c.id)));
 
   const isListed = (id: string) =>
     new Set(pinnedChannels()).has(id) ||
     warmedIds().has(id) ||
-    linkedChannel()?.id === id ||
+    link.activeTab()?.id === id ||
     channels.isLive(id) ||
     isOwnChannel(id);
 
@@ -93,7 +85,7 @@ export default function Rail(props: Props) {
 
   createEffect(
     on(
-      () => linkWarmedChannels().length,
+      () => link.tabs().length,
       () => queueMicrotask(linkScroll.update),
     ),
   );
@@ -243,7 +235,7 @@ export default function Rail(props: Props) {
                   <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      muted={linkMutedByLogin()[ch.login] === true}
+                      muted={link.mutedByLogin()[ch.login] === true}
                       onToggleMute={() => link.toggleMuted(ch.login)}
                       onSelect={props.onSelect}
                       onMiddleClick={() => link.close(ch.login)}
@@ -325,7 +317,7 @@ export default function Rail(props: Props) {
                 <Show when={ownTab()}>
                   {(tab) => (
                     <TabMuteBadge
-                      muted={linkMutedByLogin()[tab().login] === true}
+                      muted={link.mutedByLogin()[tab().login] === true}
                       onToggle={() => link.toggleMuted(tab().login)}
                     />
                   )}
