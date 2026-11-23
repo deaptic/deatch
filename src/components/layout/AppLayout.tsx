@@ -59,7 +59,9 @@ export default function AppLayout(props: AppLayoutProps) {
         >
           {(u) => (
             <>
-              <Rail onSelect={c.selectChannel} onToggleLink={c.toggleLink} />
+              <Boundary>
+                <Rail onSelect={c.selectChannel} onToggleLink={c.toggleLink} />
+              </Boundary>
               <main class="relative flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
                 <Show when={activeView() === "explore"}>
                   <Explore onSelectChannel={c.selectChannel} />

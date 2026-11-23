@@ -1,4 +1,4 @@
-import { type JSX, Show } from "solid-js";
+import { children, type JSX, Show } from "solid-js";
 import { createSideTip } from "./createSideTip.tsx";
 import TipLabel from "./TipLabel.tsx";
 import EdgeMark from "./EdgeMark.tsx";
@@ -20,9 +20,10 @@ export default function NavItem(props: Props) {
       ? "text-ink [&>span:first-child]:text-accent-ink"
       : "text-ink-soft group-hover:text-ink";
 
+  const iconEl = children(() => props.icon);
   const icon = (size: string) => (
-    <Show when={props.icon}>
-      <span class={`shrink-0 ${size}`}>{props.icon}</span>
+    <Show when={iconEl.toArray().length}>
+      <span class={`shrink-0 ${size}`}>{iconEl()}</span>
     </Show>
   );
 

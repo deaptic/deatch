@@ -18,10 +18,12 @@ type ChatPanesProps = {
 function ChannelPane(props: ChatPanesProps & { channel: User }) {
   return (
     <div class="absolute inset-0 flex flex-col">
-      <ChannelHeader
-        channel={props.channel}
-        onOpenChannel={props.onOpenChannel}
-      />
+      <Boundary>
+        <ChannelHeader
+          channel={props.channel}
+          onOpenChannel={props.onOpenChannel}
+        />
+      </Boundary>
       <Boundary label={t("FEED_BOUNDARY_ERROR")}>
         <Chat
           broadcasterId={props.channel.id}

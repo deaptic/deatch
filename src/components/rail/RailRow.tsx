@@ -22,7 +22,7 @@ type Props = {
   subTone?: SubTone;
   trailing?: JSX.Element;
   tooltip?: JSX.Element;
-  card?: JSX.Element;
+  card?: () => JSX.Element;
   selected?: boolean;
   unread?: boolean;
   mentions?: number;
@@ -37,7 +37,7 @@ type Props = {
 export default function RailRow(props: Props) {
   const expanded = appearanceRailExpanded;
   const tip = createSideTip(
-    () => props.card ?? props.tooltip ?? <TipLabel>{props.label}</TipLabel>,
+    () => props.card?.() ?? props.tooltip ?? <TipLabel>{props.label}</TipLabel>,
   );
   const hasMentions = () => (props.mentions ?? 0) > 0;
 

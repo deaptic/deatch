@@ -18,6 +18,15 @@ export default function StreamTooltip(props: {
 }) {
   const title = () => streamTitle(props.stream, props.info);
   const game = () => streamGame(props.stream, props.info);
+  const viewers = () =>
+    props.stream
+      ? t("RAIL_VIEWERS_VALUE", {
+          count: props.stream.viewerCount,
+          viewers: formatViewers(props.stream.viewerCount),
+        })
+      : "";
+  const uptime = () =>
+    props.stream ? formatUptime(props.stream.startedAt, clock.now()) : "";
 
   return (
     <div class="flex flex-col gap-2 max-w-72 px-0.5 py-0.5">
@@ -33,21 +42,8 @@ export default function StreamTooltip(props: {
           when={props.stream}
           fallback={<Stat icon={<Moon />} value={t("RAIL_OFFLINE_STATUS")} />}
         >
-          {(s) => (
-            <>
-              <Stat
-                icon={<Users />}
-                value={t("RAIL_VIEWERS_VALUE", {
-                  count: s().viewerCount,
-                  viewers: formatViewers(s().viewerCount),
-                })}
-              />
-              <Stat
-                icon={<Clock />}
-                value={formatUptime(s().startedAt, clock.now())}
-              />
-            </>
-          )}
+          <Stat icon={<Users />} value={viewers()} />
+          <Stat icon={<Clock />} value={uptime()} />
         </Show>
       </div>
     </div>

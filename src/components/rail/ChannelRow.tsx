@@ -49,7 +49,9 @@ export default function ChannelRow(props: Props) {
           )}
         </Show>
       }
-      card={<StreamTooltip user={props.ch} stream={stream()} info={info()} />}
+      card={() => (
+        <StreamTooltip user={props.ch} stream={stream()} info={info()} />
+      )}
       selected={props.selected}
       unread={props.unread}
       mentions={props.mentions}
