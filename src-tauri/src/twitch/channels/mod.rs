@@ -4,13 +4,16 @@ pub mod dto;
 use super::Authed;
 use crate::error::{Error, Result};
 use crate::twitch::ids::{GameId, UserId};
-use crate::twitch::params::BroadcasterUserParams;
-use dto::ChannelInfo;
+use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
+use dto::{ChannelDetails, ChannelInfo, ContentLabel};
 use serde::Deserialize;
 use std::borrow::Cow;
+use twitch_api::helix::ccls::GetContentClassificationLabelsRequest;
 use twitch_api::helix::channels::{
     get_followed_channels::GetFollowedChannels,
-    modify_channel_information::{ModifyChannelInformationBody, ModifyChannelInformationRequest},
+    modify_channel_information::{
+        ContentClassificationLabel, ModifyChannelInformationBody, ModifyChannelInformationRequest,
+    },
     start_commercial::{StartCommercialBody, StartCommercialRequest},
     GetChannelFollowersRequest,
 };
@@ -30,6 +33,33 @@ pub async fn get_channel_information(
     let ids = ids.into();
     crate::twitch::pagination::collect(twitch.helix.get_channels_from_ids(&ids, &twitch.token))
         .await
+}
+
+pub async fn get_channel_details(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<Option<ChannelDetails>> {
+    let ids: types::Collection<'_, types::UserId> =
+        vec![types::UserId::from(params.broadcaster_id.as_str())].into();
+    let mut channels: Vec<ChannelDetails> =
+        crate::twitch::pagination::collect(twitch.helix.get_channels_from_ids(&ids, &twitch.token))
+            .await?;
+    Ok(channels.pop())
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct GetContentLabelsParams {
+    pub locale: String,
+}
+
+pub async fn get_content_labels(
+    twitch: &Authed<'_>,
+    params: GetContentLabelsParams,
+) -> Result<Vec<ContentLabel>> {
+    let request = GetContentClassificationLabelsRequest::locale(params.locale);
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.into_iter().map(ContentLabel::from).collect())
 }
 
 pub async fn get_followed_at(
@@ -59,6 +89,26 @@ pub struct ModifyChannelInformationParams {
     pub title: Option<String>,
     #[serde(default)]
     pub game_id: Option<GameId>,
+    #[serde(default)]
+    pub tags: Option<Vec<String>>,
+    #[serde(default)]
+    pub content_labels: Option<Vec<ContentLabelChange>>,
+    #[serde(default)]
+    pub branded_content: Option<bool>,
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ContentLabelChange {
+    pub id: String,
+    pub enabled: bool,
+}
+
+fn content_label(change: &ContentLabelChange) -> Result<ContentClassificationLabel> {
+    let id: types::ContentClassificationId =
+        serde_json::from_value(serde_json::Value::String(change.id.clone()))
+            .map_err(|e| Error::Invalid(format!("unknown content label {}: {e}", change.id)))?;
+    Ok(ContentClassificationLabel::new(change.enabled, id))
 }
 
 pub async fn modify_channel_information(
@@ -73,6 +123,21 @@ pub async fn modify_channel_information(
     if let Some(g) = params.game_id.filter(|g| !g.as_str().is_empty()) {
         body.game_id = Some(Cow::Owned(g.into()));
     }
+    let tags: Option<Vec<&str>> = params
+        .tags
+        .as_ref()
+        .map(|tags| tags.iter().map(String::as_str).collect());
+    if let Some(tags) = &tags {
+        body.tags = Some(Cow::Borrowed(tags.as_slice()));
+    }
+    if let Some(changes) = &params.content_labels {
+        let labels = changes
+            .iter()
+            .map(content_label)
+            .collect::<Result<Vec<_>>>()?;
+        body.content_classification_labels = Some(Cow::Owned(labels));
+    }
+    body.is_branded_content = params.branded_content;
     twitch.helix.req_patch(request, body, &twitch.token).await?;
     Ok(())
 }
@@ -197,7 +262,7 @@ pub async fn remove_channel_moderator(
 
 #[cfg(test)]
 mod tests {
-    use super::StartCommercialParams;
+    use super::{content_label, ContentLabelChange, StartCommercialParams};
     use serde_json::json;
     use twitch_api::types;
 
@@ -217,5 +282,18 @@ mod tests {
     fn rejects_other_commercial_lengths() {
         assert!(commercial(45).is_err());
         assert!(commercial(0).is_err());
+    }
+
+    #[test]
+    fn content_label_changes_use_twitch_ids() {
+        let label = content_label(&ContentLabelChange {
+            id: "Gambling".into(),
+            enabled: true,
+        })
+        .unwrap();
+        assert_eq!(
+            serde_json::to_value(&label).unwrap(),
+            json!({ "is_enabled": true, "id": "Gambling" })
+        );
     }
 }

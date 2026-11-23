@@ -116,6 +116,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::predictions::commands::end_prediction,
             twitch::channels::commands::add_channel_moderator,
             twitch::channels::commands::remove_channel_moderator,
+            twitch::channels::commands::get_channel_details,
+            twitch::channels::commands::get_content_labels,
             twitch::channels::commands::add_channel_vip,
             twitch::channels::commands::remove_channel_vip,
             twitch::raids::commands::start_raid,

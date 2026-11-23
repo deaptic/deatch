@@ -112,6 +112,12 @@ export const commands = {
 	endPrediction: (params: EndPredictionParams) => __TAURI_INVOKE<null>("end_prediction", { params }),
 	addChannelModerator: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("add_channel_moderator", { params }),
 	removeChannelModerator: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("remove_channel_moderator", { params }),
+	getChannelDetails: (params: BroadcasterParams) => __TAURI_INVOKE<{
+	tags: string[],
+	contentLabels: string[],
+	brandedContent: boolean,
+} | null>("get_channel_details", { params }),
+	getContentLabels: (params: GetContentLabelsParams) => __TAURI_INVOKE<ContentLabel[]>("get_content_labels", { params }),
 	addChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("add_channel_vip", { params }),
 	removeChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("remove_channel_vip", { params }),
 	startRaid: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("start_raid", { params }),
@@ -276,6 +282,12 @@ export type Category = {
 	boxArtUrl: string,
 };
 
+export type ChannelDetails = {
+	tags: string[],
+	contentLabels: string[],
+	brandedContent: boolean,
+};
+
 export type ChannelFocus = {
 	broadcasterId: UserId,
 	focus: Focus,
@@ -377,6 +389,17 @@ export type ConnectionState = "connecting" | "up" | "lost";
 export type ConnectionStats = {
 	state: ConnectionState,
 	subscriptions: number,
+};
+
+export type ContentLabel = {
+	id: string,
+	name: string,
+	description: string,
+};
+
+export type ContentLabelChange = {
+	id: string,
+	enabled: boolean,
 };
 
 export type CreateClipParams = {
@@ -523,6 +546,10 @@ export type GetChattersParams = {
 	cursor?: string | null,
 };
 
+export type GetContentLabelsParams = {
+	locale: string,
+};
+
 export type GetRecentMessagesParams = {
 	broadcasterLogin: string,
 	limit: number,
@@ -616,6 +643,9 @@ export type ModifyChannelInformationParams = {
 	broadcasterId: UserId,
 	title?: string | null,
 	gameId?: GameId | null,
+	tags?: string[] | null,
+	contentLabels?: ContentLabelChange[] | null,
+	brandedContent?: boolean | null,
 };
 
 export type PageParams = {

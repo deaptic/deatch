@@ -1,7 +1,11 @@
 import { commands } from "../../bindings.ts";
 import type {
+  BroadcasterParams,
   BroadcasterUserParams,
+  ChannelDetails,
   ChannelInfo,
+  ContentLabel,
+  GetContentLabelsParams,
   GetChannelInformationParams,
   ModifyChannelInformationParams,
   StartCommercialParams,
@@ -78,4 +82,18 @@ export async function removeChannelVip(
     successMessage: t("COMMAND_VIP_REMOVED_TOAST"),
     ...options,
   });
+}
+
+export function getChannelDetails(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<ChannelDetails | null> {
+  return invokeCommand(commands.getChannelDetails, [params], options);
+}
+
+export function getContentLabels(
+  params: GetContentLabelsParams,
+  options?: InvokeOptions,
+): Promise<ContentLabel[]> {
+  return invokeCommand(commands.getContentLabels, [params], options);
 }

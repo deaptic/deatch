@@ -1,9 +1,10 @@
-use super::dto::ChannelInfo;
+use super::dto::{ChannelDetails, ChannelInfo, ContentLabel};
 use crate::error::Result;
 use crate::twitch::channels::{
-    self, GetChannelInformationParams, ModifyChannelInformationParams, StartCommercialParams,
+    self, GetChannelInformationParams, GetContentLabelsParams, ModifyChannelInformationParams,
+    StartCommercialParams,
 };
-use crate::twitch::params::BroadcasterUserParams;
+use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::Twitch;
 use tauri::State;
 
@@ -77,4 +78,22 @@ pub async fn remove_channel_vip(
     params: BroadcasterUserParams,
 ) -> Result<()> {
     channels::remove_channel_vip(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_channel_details(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<Option<ChannelDetails>> {
+    channels::get_channel_details(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_content_labels(
+    twitch: State<'_, Twitch>,
+    params: GetContentLabelsParams,
+) -> Result<Vec<ContentLabel>> {
+    channels::get_content_labels(&twitch.authed().await?, params).await
 }
