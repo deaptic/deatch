@@ -13,6 +13,7 @@ import type {
 } from "../types/index.ts";
 import { getCharityCampaign } from "../api/twitch/charity.ts";
 import { getGoals } from "../api/twitch/goals.ts";
+import { getAdSchedule, snoozeNextAd } from "../api/twitch/ads.ts";
 import {
   getShieldMode,
   getUnbanRequests,
@@ -50,6 +51,7 @@ export function load(broadcasterId: string, isBroadcaster: boolean): void {
   getGoals(params, silent)
     .then((goals) => updateActivity(broadcasterId, { goals }))
     .catch(() => {});
+  refreshAds(broadcasterId);
 }
 
 export function endPoll(broadcasterId: string, pollId: string): void {
@@ -103,4 +105,16 @@ export function showSample(broadcasterId: string): void {
 export function reset(broadcasterId: string, isBroadcaster: boolean): void {
   clearActivity(broadcasterId);
   load(broadcasterId, isBroadcaster);
+}
+
+export function refreshAds(broadcasterId: string): void {
+  getAdSchedule({ broadcasterId }, { silent: true })
+    .then((ads) => updateActivity(broadcasterId, { ads }))
+    .catch(() => {});
+}
+
+export function snoozeAd(broadcasterId: string): void {
+  snoozeNextAd({ broadcasterId })
+    .then(() => refreshAds(broadcasterId))
+    .catch(() => {});
 }

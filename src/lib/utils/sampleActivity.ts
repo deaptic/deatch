@@ -3,6 +3,7 @@ import type { Activity } from "../stores/activity.ts";
 const POLL_MS = 90_000;
 const PREDICTION_MS = 120_000;
 const HOUR_MS = 3_600_000;
+const AD_IN_MS = 270_000;
 
 const at = (ms: number) => new Date(ms).toISOString();
 
@@ -43,6 +44,12 @@ export function sampleActivity(now: number): Activity {
         createdAt: at(now - HOUR_MS),
       },
     ],
+    ads: {
+      nextAdMs: now + AD_IN_MS,
+      durationSeconds: 90,
+      snoozeCount: 2,
+      snoozeRefreshMs: now + HOUR_MS,
+    },
     goals: [
       {
         id: "sample-goal-1",

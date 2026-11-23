@@ -1,11 +1,15 @@
 import { listenEventSub, unlistenAll } from "./listen.ts";
+import * as activity from "../services/activity.ts";
+import { createTimeouts } from "../utils/timeouts.ts";
 import type {
   EventKind,
+  RawAdBreak,
   RawCharityCampaign,
   RawGoal,
   RawPoll,
   RawPrediction,
   RawShieldMode,
+  RawStreamOnline,
   RawUnbanRequestCreate,
   RawUnbanRequestResolve,
 } from "../types/index.ts";
@@ -46,7 +50,10 @@ function listenCharity(
   );
 }
 
+const AD_REFRESH_MARGIN_MS = 5_000;
+
 export function start(): () => void {
+  const timeouts = createTimeouts();
   const poll = (raw: RawPoll) => ({ poll: pollFrom(raw) });
   const goal = (raw: RawGoal, current: Activity) => ({
     goals: withGoal(current.goals, goalFrom(raw)),
@@ -57,7 +64,16 @@ export function start(): () => void {
   const prediction = (raw: RawPrediction) => ({
     prediction: predictionFrom(raw),
   });
-  return unlistenAll([
+  const stops = unlistenAll([
+    listenActivity<RawAdBreak>("channel.ad_break.begin", (raw) => {
+      timeouts.after(raw.duration_seconds * 1000 + AD_REFRESH_MARGIN_MS, () =>
+        activity.refreshAds(raw.broadcaster_user_id),
+      );
+      return { ads: null };
+    }),
+    listenEventSub<RawStreamOnline>("stream.online", (e) =>
+      activity.refreshAds(e.event.broadcaster_user_id),
+    ),
     listenActivity("channel.poll.begin", poll),
     listenActivity("channel.poll.progress", poll),
     listenActivity<RawPoll>("channel.poll.end", () => ({ poll: null })),
@@ -97,4 +113,8 @@ export function start(): () => void {
     listenCharity("channel.charity_campaign.progress", charity),
     listenCharity("channel.charity_campaign.stop", () => ({ charity: null })),
   ]);
+  return () => {
+    stops();
+    timeouts.clear();
+  };
 }

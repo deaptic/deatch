@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import type {
+  AdSchedule,
   CharityCampaign,
   Goal,
   Poll,
@@ -14,6 +15,7 @@ export type Activity = {
   charity: CharityCampaign | null;
   unbanRequests: UnbanRequest[];
   goals: Goal[];
+  ads: AdSchedule | null;
 };
 
 const NONE: Activity = {
@@ -23,6 +25,7 @@ const NONE: Activity = {
   charity: null,
   unbanRequests: [],
   goals: [],
+  ads: null,
 };
 
 const [byChannel, setByChannel] = createSignal<Record<string, Activity>>({});

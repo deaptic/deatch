@@ -8,6 +8,7 @@ const idle = {
   charity: null,
   unbanRequests: [],
   goals: [],
+  ads: null,
 };
 
 test("nothing runs on an idle channel", () => {

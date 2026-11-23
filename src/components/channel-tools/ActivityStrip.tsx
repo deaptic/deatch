@@ -47,6 +47,11 @@ export default function ActivityStrip(props: Props) {
   };
   const unbans = () =>
     activityShown("unbans") ? current().unbanRequests.length : 0;
+  const ads = () => {
+    const schedule = current().ads;
+    const next = schedule?.nextAdMs;
+    return activityShown("ads") && next && next > clock.now() ? schedule : null;
+  };
   const poll = () => (activityShown("poll") ? current().poll : null);
   const prediction = () =>
     activityShown("prediction") ? current().prediction : null;
@@ -63,6 +68,7 @@ export default function ActivityStrip(props: Props) {
         charity() ||
         raiding() ||
         unbans() ||
+        ads() ||
         poll() ||
         prediction()
       }
@@ -101,6 +107,31 @@ export default function ActivityStrip(props: Props) {
                       onClick={() => setChannelForm("unbans")}
                     >
                       {t("HEADER_REVIEW_LABEL")}
+                    </Button>
+                  }
+                />
+              )}
+            </Presence>
+            <Presence when={ads()}>
+              {(schedule) => (
+                <ActivityRow
+                  icon={<ActivityIcon kind="ads" />}
+                  title={t("HEADER_AD_NEXT_STATUS", {
+                    time: formatCountdown(
+                      (schedule().nextAdMs ?? 0) - clock.now(),
+                    ),
+                  })}
+                  meta={t("HEADER_AD_SNOOZES_STATUS", {
+                    count: schedule().snoozeCount,
+                  })}
+                  actions={
+                    <Button
+                      variant="neutral"
+                      size="sm"
+                      disabled={schedule().snoozeCount === 0}
+                      onClick={() => activity.snoozeAd(props.broadcasterId)}
+                    >
+                      {t("HEADER_AD_SNOOZE_LABEL")}
                     </Button>
                   }
                 />
