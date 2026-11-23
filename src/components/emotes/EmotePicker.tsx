@@ -15,7 +15,7 @@ import {
   computeGlobalSections,
   favorites,
   emoteUses,
-  userEmotes,
+  usableUserEmotes,
 } from "../../lib/stores/emotes.ts";
 import { usableIn } from "../../lib/utils/emoteSections.ts";
 import { mostUsed } from "../../lib/utils/emoteUsage.ts";
@@ -82,7 +82,7 @@ export default function EmotePicker(props: Props) {
   createEffect(() => {
     const broadcaster = selectedChannel();
     const ids = new Set<string>();
-    for (const e of userEmotes()) {
+    for (const e of usableUserEmotes()) {
       if (
         e.emoteType === "subscriptions" &&
         e.ownerId &&

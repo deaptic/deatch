@@ -43,6 +43,7 @@ export const commands = {
 	getUserChatColor: (params: GetUserChatColorParams) => __TAURI_INVOKE<string | null>("get_user_chat_color", { params }),
 	updateUserChatColor: (params: UpdateUserChatColorParams) => __TAURI_INVOKE<null>("update_user_chat_color", { params }),
 	getUserEmotes: () => __TAURI_INVOKE<UserEmote[]>("get_user_emotes"),
+	getFollowerEmotes: (params: BroadcasterParams) => __TAURI_INVOKE<UserEmote[]>("get_follower_emotes", { params }),
 	getGlobalEmotes: () => __TAURI_INVOKE<Emote[]>("get_global_emotes"),
 	getGlobalChatBadges: () => __TAURI_INVOKE<BadgeSet[]>("get_global_chat_badges"),
 	getChannelChatBadges: (params: BroadcasterParams) => __TAURI_INVOKE<BadgeSet[]>("get_channel_chat_badges", { params }),

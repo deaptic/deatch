@@ -77,6 +77,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::chat::commands::get_user_chat_color,
             twitch::chat::commands::update_user_chat_color,
             twitch::chat::commands::get_user_emotes,
+            twitch::chat::commands::get_follower_emotes,
             twitch::chat::commands::get_global_emotes,
             twitch::chat::commands::get_global_chat_badges,
             twitch::chat::commands::get_channel_chat_badges,

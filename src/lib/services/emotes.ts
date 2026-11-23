@@ -14,7 +14,11 @@ import {
   ffzGetGlobalEmotes,
 } from "../api/external/ffz.ts";
 import { seventvGetGlobalEmotes } from "../api/external/seventv.ts";
-import { getGlobalEmotes, getUserEmotes } from "../api/twitch/chat.ts";
+import {
+  getFollowerEmotes,
+  getGlobalEmotes,
+  getUserEmotes,
+} from "../api/twitch/chat.ts";
 import type { InvokeOptions } from "../api/utils.ts";
 import { createEffect, createRoot } from "solid-js";
 import {
@@ -30,6 +34,7 @@ import {
   emoteUses,
   setEmoteUses,
   setFfzChannel,
+  setFollowerEmotes,
   setFfzGlobal,
   setGlobalEmotes,
   setSevenTvGlobal,
@@ -57,6 +62,9 @@ const bttv = channelResource((c) =>
 );
 const ffz = channelResource((c) =>
   ffzGetChannelEmotes({ broadcasterLogin: c.login }, { silent: true }),
+);
+const follower = channelResource((c) =>
+  getFollowerEmotes({ broadcasterId: c.id }, { silent: true }),
 );
 
 let userEmotesLoadStarted = false;
@@ -170,17 +178,20 @@ function keepLoading(
   };
 }
 
-export function loadChannelThirdParty(channel: ChannelRef) {
+export function loadChannel(channel: ChannelRef) {
+  follower.show(channel, setFollowerEmotes);
   bttv.show(channel, setBttvChannel);
   ffz.show(channel, setFfzChannel);
 }
 
-export function forgetChannelThirdParty(channelId: string) {
+export function forgetChannel(channelId: string) {
+  follower.forget(channelId);
   bttv.forget(channelId);
   ffz.forget(channelId);
 }
 
-export function resetChannelThirdParty() {
+export function resetChannels() {
+  follower.clear();
   bttv.clear();
   ffz.clear();
 }

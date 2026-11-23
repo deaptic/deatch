@@ -22,6 +22,15 @@ pub async fn get_user_emotes(twitch: State<'_, Twitch>) -> Result<Vec<UserEmote>
 
 #[tauri::command]
 #[specta::specta]
+pub async fn get_follower_emotes(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<Vec<UserEmote>> {
+    chat::get_follower_emotes(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn get_global_chat_badges(twitch: State<'_, Twitch>) -> Result<Vec<BadgeSet>> {
     chat::get_global_chat_badges(&twitch.authed().await?).await
 }

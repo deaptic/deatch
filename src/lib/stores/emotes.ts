@@ -3,6 +3,7 @@ import type { Emote, EmoteEntry, User, UserEmote } from "../types/index.ts";
 import { type EmoteMap, emoteMap } from "../utils/emoteMap.ts";
 import {
   channelSections,
+  dedupeById,
   type EmoteSection,
   globalSections,
   usableIn,
@@ -19,6 +20,13 @@ export const [emoteUses, setEmoteUses] = createSignal<EmoteUse[]>([]);
 
 export const [globalEmotes, setGlobalEmotes] = createSignal<Emote[]>([]);
 export const [userEmotes, setUserEmotes] = createSignal<UserEmote[]>([]);
+export const [followerEmotes, setFollowerEmotes] = createSignal<UserEmote[]>(
+  [],
+);
+
+export function usableUserEmotes(): UserEmote[] {
+  return dedupeById([...userEmotes(), ...followerEmotes()]);
+}
 export const [sevenTvGlobal, setSevenTvGlobal] = createSignal<EmoteEntry[]>([]);
 export const [bttvGlobal, setBttvGlobal] = createSignal<EmoteEntry[]>([]);
 export const [ffzGlobal, setFfzGlobal] = createSignal<EmoteEntry[]>([]);
@@ -39,7 +47,8 @@ export function usableFavorites(broadcaster: User | null): FavoriteEmote[] {
   return favorites().filter((f) => usable(f.value));
 }
 
-export function clearChannelThirdPartyEmotes() {
+export function clearChannelEmotes() {
+  setFollowerEmotes([]);
   setSevenTvChannel([]);
   setBttvChannel([]);
   setFfzChannel([]);
@@ -48,7 +57,7 @@ export function clearChannelThirdPartyEmotes() {
 export function computeChannelSections(
   broadcaster: User | null,
 ): EmoteSection[] {
-  return channelSections(broadcaster, userEmotes(), {
+  return channelSections(broadcaster, usableUserEmotes(), {
     sevenTv: sevenTvChannel(),
     bttv: bttvChannel(),
     ffz: ffzChannel(),
@@ -60,7 +69,7 @@ export function computeGlobalSections(
 ): EmoteSection[] {
   return globalSections(
     broadcaster,
-    userEmotes(),
+    usableUserEmotes(),
     globalEmotes(),
     { sevenTv: sevenTvGlobal(), bttv: bttvGlobal(), ffz: ffzGlobal() },
     (id) => knownUser(id)?.displayName,

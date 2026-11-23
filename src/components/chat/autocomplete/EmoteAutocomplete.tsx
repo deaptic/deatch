@@ -9,7 +9,7 @@ import {
   globalEmotes,
   sevenTvChannel,
   sevenTvGlobal,
-  userEmotes,
+  usableUserEmotes,
 } from "../../../lib/stores/emotes.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import { emoteZoom } from "../../../lib/utils/emoteZoom.ts";
@@ -35,7 +35,7 @@ export default function EmoteAutocomplete(props: Props) {
     for (const e of sevenTvGlobal()) add(e.name, e.url, "7TV");
     for (const e of bttvGlobal()) add(e.name, e.url, "BetterTTV");
     for (const e of ffzGlobal()) add(e.name, e.url, "FrankerFaceZ");
-    for (const e of userEmotes()) add(e.name, e.url, "Twitch");
+    for (const e of usableUserEmotes()) add(e.name, e.url, "Twitch");
     for (const e of globalEmotes()) add(e.name, e.url, "Twitch");
     return map;
   });

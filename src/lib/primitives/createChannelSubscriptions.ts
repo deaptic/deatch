@@ -43,7 +43,7 @@ export function createChannelSubscriptions(): ChannelSubscriptions {
     clearActivity(broadcasterId);
     clearCheermotes(broadcasterId);
     badges.forgetChannel(broadcasterId);
-    emotes.forgetChannelThirdParty(broadcasterId);
+    emotes.forgetChannel(broadcasterId);
     channelInfo.forget(broadcasterId);
     clearDraft(broadcasterId);
     clearSentMessages(broadcasterId);

@@ -26,6 +26,13 @@ export function getUserEmotes(options?: InvokeOptions): Promise<UserEmote[]> {
   return invokeCommand(commands.getUserEmotes, [], options);
 }
 
+export function getFollowerEmotes(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<UserEmote[]> {
+  return invokeCommand(commands.getFollowerEmotes, [params], options);
+}
+
 export function getGlobalChatBadges(
   options?: InvokeOptions,
 ): Promise<BadgeSet[]> {

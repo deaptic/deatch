@@ -8,17 +8,17 @@ use super::Authed;
 use crate::error::Result;
 use crate::twitch::ids::{MessageId, UserId};
 use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
-use dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
+use dto::{BadgeSet, ChatSettings, Emote, EmoteType, SendMessageResult, UserEmote};
 use serde::Deserialize;
 use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
 use twitch_api::helix::chat::{
     send_a_shoutout::SendAShoutoutRequest,
     send_chat_announcement::{SendChatAnnouncementBody, SendChatAnnouncementRequest},
     update_chat_settings::{UpdateChatSettingsBody, UpdateChatSettingsRequest},
-    GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest,
+    GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetUserEmotesRequest,
 };
 use twitch_api::helix::EmptyBody;
-use twitch_api::types::NamedUserColor;
+use twitch_api::types::{IntoCow, NamedUserColor};
 
 pub async fn get_global_emotes(twitch: &Authed<'_>) -> Result<Vec<Emote>> {
     let emotes = twitch.helix.get_global_emotes(&twitch.token).await?;
@@ -32,6 +32,21 @@ pub async fn get_user_emotes(twitch: &Authed<'_>) -> Result<Vec<UserEmote>> {
             .get_user_emotes(&twitch.token.user_id, &twitch.token),
     )
     .await
+}
+
+pub async fn get_follower_emotes(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<Vec<UserEmote>> {
+    let mut request = GetUserEmotesRequest::user_id(&twitch.token.user_id);
+    request.broadcaster_id = Some(params.broadcaster_id.as_str().into_cow());
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response
+        .data
+        .into_iter()
+        .map(UserEmote::from)
+        .filter(|e| e.emote_type == EmoteType::Follower && e.owner_id == params.broadcaster_id)
+        .collect())
 }
 
 pub async fn get_global_chat_badges(twitch: &Authed<'_>) -> Result<Vec<BadgeSet>> {

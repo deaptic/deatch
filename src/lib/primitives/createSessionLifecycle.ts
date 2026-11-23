@@ -9,7 +9,7 @@ import { getModeratedChannels } from "../api/twitch/moderation.ts";
 function resetUserScopedCaches() {
   setModeratedChannels([]);
   badges.resetChannelCache();
-  emotes.resetChannelThirdParty();
+  emotes.resetChannels();
   emotes.resetUser();
   feedLog.discard();
 }
