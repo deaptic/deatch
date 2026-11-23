@@ -1,9 +1,9 @@
-import type { Focus } from "../types/index.ts";
+import type { Focus } from "../../lib/types/index.ts";
 
 type FocusSources = {
   ownId: string;
   pinnedIds: string[];
-  warmedIds: string[];
+  tabIds: string[];
   selectedId: string | undefined;
   liveIds: string[];
 };
@@ -21,7 +21,7 @@ export function channelFocus(sources: FocusSources): Map<string, Focus> {
   const focusedIds = [
     sources.ownId,
     ...sources.pinnedIds,
-    ...sources.warmedIds,
+    ...sources.tabIds,
     ...(sources.selectedId ? [sources.selectedId] : []),
   ];
   for (const id of focusedIds) focus.set(id, "focused");

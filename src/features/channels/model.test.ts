@@ -1,15 +1,15 @@
 import { expect, test } from "vite-plus/test";
-import { channelFocus, diffFocus } from "./channelFocus.ts";
+import { channelFocus, diffFocus } from "./model.ts";
 
 const sources = {
   ownId: "me",
   pinnedIds: ["pinned"],
-  warmedIds: ["warmed"],
+  tabIds: ["warmed"],
   selectedId: "live1",
   liveIds: ["live1", "live2", "pinned"],
 };
 
-test("focuses own, pinned, warmed and selected; the rest is background", () => {
+test("focuses own, pinned, tab and selected; the rest is background", () => {
   expect(Object.fromEntries(channelFocus(sources))).toStrictEqual({
     me: "focused",
     pinned: "focused",

@@ -18,6 +18,7 @@ import * as exit from "../services/exit.ts";
 import * as discord from "../services/discord.ts";
 import * as windowState from "../services/windowState.ts";
 import * as explore from "../../features/explore/index.ts";
+import * as channels from "../../features/channels/index.ts";
 import * as blocks from "../services/blocks.ts";
 
 export function createServices(): void {
@@ -42,6 +43,7 @@ export function createServices(): void {
       discord.start(),
       windowState.start(),
       explore.start(),
+      channels.start(),
       blocks.start(),
     ];
     onCleanup(() => {

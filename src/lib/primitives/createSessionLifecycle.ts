@@ -4,6 +4,7 @@ import * as emotes from "../services/emotes.ts";
 import * as badges from "../services/badges.ts";
 import * as feedLog from "../services/feedLog.ts";
 import { resetView } from "../stores/view.ts";
+import * as channels from "../../features/channels/index.ts";
 import { getModeratedChannels } from "../../platform/twitch/moderation.ts";
 
 function resetUserScopedCaches() {
@@ -14,24 +15,20 @@ function resetUserScopedCaches() {
   feedLog.discard();
 }
 
-type SessionDeps = {
-  leaveAll(): void;
-};
-
-export function createSessionLifecycle(deps: SessionDeps): void {
+export function createSessionLifecycle(): void {
   createEffect(
     on(user, (signedIn, previous) => {
       if (signedIn) {
         emotes.ensureGlobalLoaded();
         getModeratedChannels({ silent: true })
-          .then((channels) => {
-            if (user()?.id === signedIn.id) setModeratedChannels(channels);
+          .then((moderated) => {
+            if (user()?.id === signedIn.id) setModeratedChannels(moderated);
           })
           .catch(() => {});
         return;
       }
       if (!previous) return;
-      deps.leaveAll();
+      channels.leaveAll();
       resetUserScopedCaches();
       resetView();
     }),
