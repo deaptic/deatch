@@ -15,7 +15,7 @@ import * as link from "../../features/link/index.ts";
 import { rememberChannel } from "../stores/preferences.ts";
 import { linkFocus } from "../../platform/link.ts";
 import { reportFailure } from "../../platform/invoke.ts";
-import { ensureFeed } from "../stores/feeds.ts";
+import { ensureFeed } from "../../features/feed/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 

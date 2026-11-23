@@ -1,4 +1,4 @@
-import { listenEventSub, unlistenAll } from "../../lib/events/listen.ts";
+import { listenEventSub, unlistenAll } from "../../platform/listen.ts";
 import * as activity from "./store.ts";
 import { createTimeouts } from "../../lib/utils/timeouts.ts";
 import type {

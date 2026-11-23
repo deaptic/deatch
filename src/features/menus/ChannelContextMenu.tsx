@@ -29,7 +29,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import * as link from "../link/index.ts";
 import { pins } from "../rail/index.ts";
-import { hasUnread } from "../../lib/stores/feeds.ts";
+import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import { user } from "../../lib/stores/users.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";

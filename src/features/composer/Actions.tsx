@@ -3,7 +3,7 @@ import { For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { t } from "../../shared/i18n/index.ts";
 import { streamForUserId } from "../channels/index.ts";
-import * as clips from "../../lib/services/clips.ts";
+import { clips } from "../chat/index.ts";
 import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";

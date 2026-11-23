@@ -6,8 +6,7 @@ import {
   onMount,
   untrack,
 } from "solid-js";
-import { channelEntries } from "../../lib/stores/feeds.ts";
-import * as backlog from "../../lib/services/backlog.ts";
+import { channelEntries, backlog } from "../feed/index.ts";
 import type { FeedMessage, UserRef } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../shared/solid/focus.ts";

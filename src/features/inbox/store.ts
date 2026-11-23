@@ -1,7 +1,7 @@
 import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
 import { createEffect, createRoot, createSignal } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
-import { markSeen } from "../../lib/stores/feeds.ts";
+import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
 import { notificationsMentionSound } from "../../lib/stores/preferences.ts";

@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 import type { Person } from "../../lib/types/index.ts";
-import { splitNames } from "../../lib/utils/splitNames.ts";
+import { splitNames } from "./splitNames.ts";
 import DisplayName from "./DisplayName.tsx";
 import type { UserActions } from "./userLink.ts";
 import { at } from "../../lib/utils/at.ts";

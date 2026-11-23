@@ -13,7 +13,7 @@ import {
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import { fieldFrom } from "../../shared/solid/createListbox.ts";
-import * as chat from "../../lib/services/chat.ts";
+import { chat } from "../chat/index.ts";
 import { type Command, CommandComposer } from "../commands/index.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
 import * as emotes from "../emotes/index.ts";

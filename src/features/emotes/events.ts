@@ -1,4 +1,4 @@
-import { listenApp, unlistenAll } from "../../lib/events/listen.ts";
+import { listenApp, unlistenAll } from "../../platform/listen.ts";
 import * as sevenTv from "./sevenTv.ts";
 
 export function start(): () => void {

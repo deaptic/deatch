@@ -4,7 +4,7 @@ import {
   getGlobalChatBadges,
 } from "../../platform/twitch/chat.ts";
 import { loadCache, saveCache } from "../../lib/utils/cache.ts";
-import { setBadges } from "../../lib/stores/feeds.ts";
+import { setBadges } from "../feed/index.ts";
 import {
   clearSharedChatBadges,
   setSharedChatBadges,

@@ -1,5 +1,4 @@
 import { onCleanup, onMount } from "solid-js";
-import * as backendEvents from "../events/index.ts";
 import * as log from "../services/log.ts";
 import * as users from "../services/users.ts";
 import * as login from "../../features/login/index.ts";
@@ -12,9 +11,12 @@ import * as emotes from "../../features/emotes/index.ts";
 import * as badges from "../../features/badges/index.ts";
 import * as composer from "../../features/composer/index.ts";
 import * as view from "../services/view.ts";
-import * as channelPoints from "../services/channelPoints.ts";
+import * as activity from "../../features/activity/index.ts";
+import * as chatModes from "../../features/chat-modes/index.ts";
+import * as link from "../../features/link/index.ts";
+import * as feed from "../../features/feed/index.ts";
+import * as chat from "../../features/chat/index.ts";
 import * as preferences from "../services/preferences.ts";
-import * as feedLog from "../services/feedLog.ts";
 import * as exit from "../services/exit.ts";
 import * as discord from "../services/discord.ts";
 import * as windowState from "../services/windowState.ts";
@@ -31,8 +33,11 @@ export function createServices(): void {
       view.start(),
       theme.start(),
       inbox.start(),
-      channelPoints.start(),
-      backendEvents.start(),
+      feed.start(),
+      chat.start(),
+      activity.start(),
+      chatModes.start(),
+      link.start(),
       users.start(),
       login.start(),
       shortcuts.start(),
@@ -41,7 +46,6 @@ export function createServices(): void {
       emotes.start(),
       badges.start(),
       composer.start(),
-      feedLog.start(),
       exit.start(),
       discord.start(),
       windowState.start(),

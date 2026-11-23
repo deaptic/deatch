@@ -9,9 +9,7 @@ import {
 } from "../../lib/stores/preferences.ts";
 import * as users from "../../lib/services/users.ts";
 import { user } from "../../lib/stores/users.ts";
-import { feedEvent } from "../../lib/utils/feedEvent.ts";
-import { layoutFeed } from "../../lib/utils/feedLayout.ts";
-import FeedRow from "../../components/feed/FeedRow.tsx";
+import { feedEvent, layoutFeed, FeedRow } from "../feed/index.ts";
 
 type Me = { id: string; login: string; name: string; color: string };
 

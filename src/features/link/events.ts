@@ -1,4 +1,4 @@
-import { listenApp, unlistenAll } from "../../lib/events/listen.ts";
+import { listenApp, unlistenAll } from "../../platform/listen.ts";
 import { linkRequestState } from "../../platform/link.ts";
 import { applyState, disconnect, watchSignIn } from "./store.ts";
 

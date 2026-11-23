@@ -5,7 +5,7 @@ import {
   onMiddleClick,
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
-import { textSegments } from "../../lib/utils/textSegments.ts";
+import { textSegments } from "./textSegments.ts";
 import InlineEmote from "./InlineEmote.tsx";
 
 export default function TextWithEmotes(props: {

@@ -1,4 +1,4 @@
-import * as chat from "../../lib/services/chat.ts";
+import { chat } from "../chat/index.ts";
 import * as match from "./match.ts";
 import { phraseOf, BUILT_INS } from "./builtIns/index.ts";
 import { failed } from "./builtIns/context.ts";

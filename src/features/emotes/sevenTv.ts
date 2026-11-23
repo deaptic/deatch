@@ -5,8 +5,7 @@ import {
 } from "../../platform/emotes/seventvEvents.ts";
 import * as emoteSetUpdate from "./setUpdate.ts";
 import { setSevenTvChannel } from "./store.ts";
-import { appendItem } from "../../lib/stores/feeds.ts";
-import { feedEvent } from "../../lib/utils/feedEvent.ts";
+import { appendItem, feedEvent } from "../feed/index.ts";
 import { SEVENTV_UPDATE } from "../../lib/constants/events.ts";
 import type { EmoteEntry, EmoteSetUpdated } from "../../lib/types/index.ts";
 

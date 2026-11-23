@@ -1,4 +1,4 @@
-import { listenApp, unlistenAll } from "../../lib/events/listen.ts";
+import { listenApp, unlistenAll } from "../../platform/listen.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { setUser } from "../../lib/stores/users.ts";
 import { setDeviceCode, setWaiting } from "./auth.ts";

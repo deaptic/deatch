@@ -14,7 +14,7 @@ import {
   updateChatSettings,
   updateUserChatColor,
 } from "../../../platform/twitch/chat.ts";
-import * as chat from "../../../lib/services/chat.ts";
+import { chat } from "../../chat/index.ts";
 import { createStreamMarker } from "../../../platform/twitch/streams.ts";
 import { searchCategories } from "../../../platform/twitch/search.ts";
 import {

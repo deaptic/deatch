@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { unwrap } from "solid-js/store";
 import { getAppStats } from "../../platform/diagnostics.ts";
-import { feeds } from "../../lib/stores/feeds.ts";
+import { feeds } from "../feed/index.ts";
 import { knownUsers } from "../../lib/stores/users.ts";
 import { countCache, type Sample } from "./model.ts";
 

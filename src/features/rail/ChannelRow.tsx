@@ -8,7 +8,7 @@ import StreamTooltip from "./StreamTooltip.tsx";
 import { TabMuteBadge } from "../link/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import * as browser from "../../lib/services/browser.ts";
-import { hasUnread } from "../../lib/stores/feeds.ts";
+import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import { pendingChannel } from "../../lib/stores/view.ts";
 

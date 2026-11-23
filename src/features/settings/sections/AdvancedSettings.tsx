@@ -7,7 +7,7 @@ import Toggle from "../../../kit/Toggle.tsx";
 import Dialog from "../../../kit/Dialog.tsx";
 import Button from "../../../kit/Button.tsx";
 import * as graphics from "../../../lib/services/graphics.ts";
-import * as history from "../../../lib/services/history.ts";
+import { history } from "../../feed/index.ts";
 import {
   advancedAlwaysOnTop,
   advancedAutostart,
