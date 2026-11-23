@@ -8,7 +8,7 @@ const GAP = 8;
 type PanelSize = "picker" | "menu";
 
 const SIZES: Record<PanelSize, string> = {
-  picker: "w-100 h-110",
+  picker: "w-120 h-130",
   menu: "w-72 p-1.5",
 };
 

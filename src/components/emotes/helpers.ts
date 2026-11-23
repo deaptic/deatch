@@ -1,3 +1,4 @@
+import type { JSX } from "solid-js";
 import type { EmoteGridItem } from "./types.ts";
 import { at } from "../../lib/utils/at.ts";
 
@@ -5,9 +6,11 @@ export const COLUMNS = 8;
 export const GRID_COLUMNS = "grid-cols-8";
 
 export type RenderSection = {
+  id: string;
   label?: string;
+  icon?: () => JSX.Element;
+  empty?: string;
   items: EmoteGridItem[];
-  emptyHint?: string;
   startIndex: number;
 };
 

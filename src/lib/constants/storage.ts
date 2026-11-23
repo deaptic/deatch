@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
   preferences: "user_preferences",
   mentions: "mentions",
   emoteFavorites: "emote_favorites",
+  emoteUsage: "emote_usage",
   users: "cache:users",
   globalBadges: "cache:global_badges",
   globalEmotes: "cache:global_emotes",

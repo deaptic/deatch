@@ -15,6 +15,7 @@ type Props = {
   onHover: (index: number) => void;
   startIndex: number;
   activeIndex: number;
+  keyboard: boolean;
 };
 
 export default function EmoteGrid(props: Props) {
@@ -39,10 +40,12 @@ export default function EmoteGrid(props: Props) {
                 openMenuAt(e, () => props.onToggleFavorite(item))
               }
               class={`relative aspect-square grid place-items-center rounded-sm transition-colors duration-snap ${
-                item.disabled ? "cursor-default" : "cursor-pointer"
-              } ${
-                active()
-                  ? "bg-accent-soft outline outline-2 -outline-offset-2 outline-accent"
+                item.disabled
+                  ? "cursor-default"
+                  : "cursor-pointer pressable active:pressed"
+              } ${active() ? "bg-accent-soft" : ""} ${
+                active() && props.keyboard
+                  ? "outline outline-2 -outline-offset-2 outline-accent"
                   : ""
               }`}
             >
@@ -50,7 +53,9 @@ export default function EmoteGrid(props: Props) {
                 src={item.url}
                 {...emoteZoom(item.url)}
                 alt={item.label}
-                class={`size-7 object-contain ${
+                loading="lazy"
+                decoding="async"
+                class={`size-8 object-contain ${
                   item.disabled ? "opacity-40 grayscale" : ""
                 }`}
               />

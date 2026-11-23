@@ -1,8 +1,10 @@
 import {
   isUserEmotesKey,
   STORAGE_KEYS,
+  type StorageKey,
   userEmotesKey,
 } from "../constants/storage.ts";
+import { type EmoteUse, withUse } from "../utils/emoteUsage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
@@ -25,6 +27,8 @@ import {
   setBttvChannel,
   setBttvGlobal,
   setFavorites,
+  emoteUses,
+  setEmoteUses,
   setFfzChannel,
   setFfzGlobal,
   setGlobalEmotes,
@@ -121,7 +125,8 @@ async function fetchGlobal(): Promise<void> {
 }
 
 export function start(): () => void {
-  setFavorites(loadFavorites());
+  setFavorites(loadSaved(STORAGE_KEYS.emoteFavorites));
+  setEmoteUses(loadUses());
   const stops = [
     keepLoading(seventvGetGlobalEmotes, setSevenTvGlobal),
     keepLoading(bttvGetGlobalEmotes, setBttvGlobal),
@@ -180,8 +185,8 @@ export function resetChannelThirdParty() {
   ffz.clear();
 }
 
-function loadFavorites(): FavoriteEmote[] {
-  const stored = storage.read(STORAGE_KEYS.emoteFavorites);
+function loadSaved(key: StorageKey): FavoriteEmote[] {
+  const stored = storage.read(key);
   return Array.isArray(stored) ? stored.filter(isFavorite) : [];
 }
 
@@ -193,6 +198,23 @@ function isFavorite(value: unknown): value is FavoriteEmote {
     typeof f.url === "string" &&
     typeof f.label === "string"
   );
+}
+
+function loadUses(): EmoteUse[] {
+  const stored = storage.read(STORAGE_KEYS.emoteUsage);
+  return Array.isArray(stored) ? stored.filter(isUse) : [];
+}
+
+function isUse(value: unknown): value is EmoteUse {
+  if (!isFavorite(value)) return false;
+  const u = value as Record<string, unknown>;
+  return typeof u.count === "number" && typeof u.lastUsed === "number";
+}
+
+export function recordUse(emote: FavoriteEmote) {
+  const next = withUse(emoteUses(), emote, Date.now());
+  setEmoteUses(next);
+  storage.write(STORAGE_KEYS.emoteUsage, next);
 }
 
 export function toggleFavorite(emote: FavoriteEmote) {

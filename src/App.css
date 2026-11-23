@@ -258,6 +258,11 @@
   }
 }
 
+@utility render-lazy {
+  content-visibility: auto;
+  contain-intrinsic-size: auto calc(var(--rows, 4) * 3.5rem);
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
 }

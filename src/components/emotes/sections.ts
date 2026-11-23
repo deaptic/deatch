@@ -30,3 +30,36 @@ export function itemAt(
   }
   return undefined;
 }
+
+const PROVIDERS = ["7tv", "bttv", "ffz"] as const;
+const PROVIDER_SECTION = /^(7tv|bttv|ffz)(-channel)?$/;
+
+export function providerScope(sectionId: string): "channel" | "global" | null {
+  const match = PROVIDER_SECTION.exec(sectionId);
+  if (!match) return null;
+  return match[2] ? "channel" : "global";
+}
+
+export function mergeProviders(sections: PickerSection[]): PickerSection[] {
+  const byProvider = new Map<string, PickerSection>();
+  const others: PickerSection[] = [];
+  for (const section of sections) {
+    const provider = PROVIDER_SECTION.exec(section.id)?.[1];
+    if (!provider) {
+      others.push(section);
+      continue;
+    }
+    const existing = byProvider.get(provider);
+    if (!existing) {
+      const first = { ...section, id: provider };
+      byProvider.set(provider, first);
+      continue;
+    }
+    const seen = new Set(existing.items.map((item) => item.value));
+    existing.items = [
+      ...existing.items,
+      ...section.items.filter((item) => !seen.has(item.value)),
+    ];
+  }
+  return [...PROVIDERS.flatMap((p) => byProvider.get(p) ?? []), ...others];
+}

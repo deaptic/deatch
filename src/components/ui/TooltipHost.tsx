@@ -24,6 +24,16 @@ export default function TooltipHost() {
     const text = el.dataset.tip;
     if (!text || !el.isConnected) return;
     const r = el.getBoundingClientRect();
+    if (el.dataset.tipSide === "right") {
+      setTip({
+        text,
+        instant,
+        side: "right",
+        x: r.right + SIDE_GAP,
+        y: r.top + r.height / 2,
+      });
+      return;
+    }
     setTip({
       text,
       instant,

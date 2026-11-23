@@ -23,8 +23,8 @@ test("nextVerticalIndex moves within a section and across sections", () => {
       label: "",
     }));
   const sections = [
-    { items: items(COLUMNS + 2), startIndex: 0 },
-    { items: items(3), startIndex: COLUMNS + 2 },
+    { id: "a", items: items(COLUMNS + 2), startIndex: 0 },
+    { id: "b", items: items(3), startIndex: COLUMNS + 2 },
   ];
   expect(nextVerticalIndex(sections, 1, 1)).toStrictEqual(COLUMNS + 1);
   expect(nextVerticalIndex(sections, COLUMNS + 1, 1)).toStrictEqual(

@@ -9,9 +9,13 @@ import {
 } from "../utils/emoteSections.ts";
 import { knownUser } from "./users.ts";
 
+export type { EmoteUse } from "../utils/emoteUsage.ts";
+import type { EmoteUse } from "../utils/emoteUsage.ts";
+
 export type FavoriteEmote = { value: string; url: string; label: string };
 
 export const [favorites, setFavorites] = createSignal<FavoriteEmote[]>([]);
+export const [emoteUses, setEmoteUses] = createSignal<EmoteUse[]>([]);
 
 export const [globalEmotes, setGlobalEmotes] = createSignal<Emote[]>([]);
 export const [userEmotes, setUserEmotes] = createSignal<UserEmote[]>([]);
