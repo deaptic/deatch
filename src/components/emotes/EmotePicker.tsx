@@ -254,7 +254,7 @@ export default function EmotePicker(props: Props) {
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
       </div>
-      <div class="flex px-2.5 shrink-0">
+      <div class="flex mx-2.5 shrink-0 border-b border-line-soft">
         <For each={TABS}>
           {(entry) => (
             <NavItem
@@ -272,7 +272,7 @@ export default function EmotePicker(props: Props) {
         </For>
       </div>
 
-      <div class="overflow-y-auto flex-1 px-2.5 py-1.5 flex flex-col gap-1 scrollbar-gutter-stable">
+      <div class="overflow-y-auto flex-1 px-2.5 pt-2 pb-1.5 flex flex-col gap-1 scrollbar-gutter-stable">
         <For each={sections()}>
           {(section) => (
             <Show when={section.label} fallback={renderGrid(section)}>
