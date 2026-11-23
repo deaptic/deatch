@@ -1,4 +1,4 @@
-import type { Chatter } from "../types/index.ts";
+import type { Chatter } from "../../lib/types/index.ts";
 
 const MAX_PER_CHANNEL = 1000;
 const PRUNE_SLACK = 200;

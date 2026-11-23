@@ -1,5 +1,6 @@
 import { createEffect, on } from "solid-js";
-import { setModeratedChannels, user } from "../stores/users.ts";
+import { setModeratedChannels } from "../../features/permissions/index.ts";
+import { user } from "../../features/users/index.ts";
 import * as emotes from "../../features/emotes/index.ts";
 import * as badges from "../../features/badges/index.ts";
 import { feedLog } from "../../features/feed/index.ts";

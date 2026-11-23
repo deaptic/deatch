@@ -20,7 +20,8 @@ import {
 import { usableIn } from "../emoteSections.ts";
 import { mostUsed } from "../emoteUsage.ts";
 import { selectedChannel } from "../../../lib/stores/view.ts";
-import * as users from "../../../lib/services/users.ts";
+import { users } from "../../users/index.ts";
+import { isUserId } from "../../../shared/user.ts";
 import * as emotes from "../load.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
@@ -44,8 +45,7 @@ import { COLUMNS, emojiUrl, nextVerticalIndex, toItem } from "./helpers.ts";
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
 import { t } from "../../../shared/i18n/index.ts";
 import { autofocus } from "../../../shared/solid/focus.ts";
-import { isUserId } from "../../../lib/utils/knownUsers.ts";
-import { knownUser } from "../../../lib/stores/users.ts";
+import { knownUser } from "../../users/index.ts";
 
 const EMOJI_SECTIONS: PickerSection[] = emojiGroups.map((g) => ({
   id: `emoji-${g.slug}`,

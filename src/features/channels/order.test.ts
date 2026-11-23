@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import { orderChannels } from "./order.ts";
-import { userFromRef } from "../../lib/utils/knownUsers.ts";
+import { userFromRef } from "../../shared/user.ts";
 
 const stream = (id: string) => ({ user: { id, login: id, displayName: id } });
 const known = (ids: string[]) => (id: string) =>

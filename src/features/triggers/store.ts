@@ -7,7 +7,7 @@ import { parse, render } from "./template.ts";
 import { type Resolve, resolverFor, templateProblems } from "./methods.ts";
 import { holds, needsValue, satisfied } from "./conditions.ts";
 import type { UserRef } from "../../lib/types/index.ts";
-import { user } from "../../lib/stores/users.ts";
+import { knownUser, user } from "../users/index.ts";
 import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
 import {
   clampCooldown,
@@ -174,6 +174,7 @@ async function respond(
 ): Promise<void> {
   const resolve = resolverFor({
     broadcasterId: message.broadcasterId,
+    channelName: knownUser(message.broadcasterId)?.displayName ?? "",
     sender: message.chatter,
     args: fired.args,
     count: fired.trigger.count + 1,
@@ -205,6 +206,7 @@ export async function preview(
   if (!me || !fired) return null;
   const resolve = resolverFor({
     broadcasterId: me.id,
+    channelName: me.displayName,
     sender: me,
     args: fired.args,
     count: trigger.count + 1,

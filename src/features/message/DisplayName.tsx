@@ -1,5 +1,5 @@
 import { feedUserShowDisplayName } from "../../lib/stores/preferences.ts";
-import { knownChatterColor } from "../../lib/stores/users.ts";
+import { knownChatterColor } from "../users/index.ts";
 import { nameColor } from "./nameColor.ts";
 import { type UserActions, userLink, userLinkHover } from "./userLink.ts";
 

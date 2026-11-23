@@ -3,7 +3,7 @@ import type { Focus } from "../../lib/types/index.ts";
 import { setEventsubChannels } from "../../platform/twitch/eventsub.ts";
 import { lastChannel, selectedChannel } from "../../lib/stores/view.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../users/index.ts";
 import { followedLive } from "./streams.ts";
 import * as link from "../link/index.ts";
 import { channelFocus, diffFocus } from "./model.ts";

@@ -13,12 +13,12 @@ import {
   searchCategories,
   searchChannels,
 } from "../../platform/twitch/search.ts";
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
+import { userFromSearch } from "../../shared/user.ts";
 import {
   createListbox,
   type ListboxField,
 } from "../../shared/solid/createListbox.ts";
-import { userFromSearch } from "../../lib/utils/knownUsers.ts";
 import { rankChannels } from "../channels/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { liveLine } from "../../shared/format/stream.ts";

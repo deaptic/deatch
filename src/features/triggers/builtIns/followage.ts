@@ -1,4 +1,4 @@
-import * as users from "../../../lib/services/users.ts";
+import { users } from "../../users/index.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import { formatElapsed } from "../../../shared/format/duration.ts";
 import { Time } from "../../../shared/time.ts";

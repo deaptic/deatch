@@ -1,6 +1,6 @@
 import { createMemo } from "solid-js";
 import { followedLive, pinsLoaded } from "../channels/index.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { knownUser } from "../users/index.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import * as link from "../link/index.ts";
 import type { User } from "../../lib/types/index.ts";

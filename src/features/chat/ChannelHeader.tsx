@@ -23,7 +23,7 @@ import type { User } from "../../lib/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import Stat from "../../kit/Stat.tsx";
 import { createChannelLink } from "../menus/index.ts";
-import { hasPermission, showsControls } from "../../lib/stores/roles.ts";
+import { hasPermission, showsControls } from "../permissions/index.ts";
 import { ChannelToolForm } from "../channel-tools/index.ts";
 import { channelForm, setChannelForm } from "../../lib/stores/ui.ts";
 import IconButton from "../../kit/IconButton.tsx";

@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 import type { Category, Stream } from "../../lib/types/index.ts";
 import type { StreamSort } from "./model.ts";
 import { exploreLanguage } from "../../lib/stores/preferences.ts";
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
 
 type Filters = {
   category: Category | null;

@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { Chatter } from "../types/index.ts";
+import type { Chatter } from "../../lib/types/index.ts";
 import { rankChatters } from "./rankChatters.ts";
 
 const chatter = (login: string, displayName: string, lastSeen: number) =>

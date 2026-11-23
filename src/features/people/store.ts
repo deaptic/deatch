@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import type { UserRef } from "../../lib/types/index.ts";
 import * as channels from "../channels/index.ts";
-import { hasPermission } from "../../lib/stores/roles.ts";
+import { hasPermission } from "../permissions/index.ts";
 import {
   getChannelModerators,
   getChannelVips,

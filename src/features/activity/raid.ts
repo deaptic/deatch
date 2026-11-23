@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { cancelRaid, startRaid } from "../../platform/twitch/raids.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
-import { hasPermission } from "../../lib/stores/roles.ts";
+import { hasPermission } from "../permissions/index.ts";
 import { moderationAutoShoutoutOnRaid } from "../../lib/stores/preferences.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 

@@ -7,8 +7,8 @@ import {
   feedShowDeletedContent,
   feedShowTimestamp,
 } from "../../lib/stores/preferences.ts";
-import * as users from "../../lib/services/users.ts";
-import { user } from "../../lib/stores/users.ts";
+import { users } from "../users/index.ts";
+import { user } from "../users/index.ts";
 import { feedEvent, layoutFeed, FeedRow } from "../feed/index.ts";
 
 type Me = { id: string; login: string; name: string; color: string };

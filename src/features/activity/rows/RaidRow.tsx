@@ -2,7 +2,7 @@ import { t, tRich } from "../../../shared/i18n/index.ts";
 import * as clock from "../../../lib/services/clock.ts";
 import * as raid from "../raid.ts";
 import { type PendingRaid, RAID_DURATION_MS } from "../raid.ts";
-import { knownUser } from "../../../lib/stores/users.ts";
+import { knownUser } from "../../users/index.ts";
 import Button from "../../../kit/Button.tsx";
 import { createChannelLink } from "../../menus/index.ts";
 import ActivityRow from "../ui/ActivityRow.tsx";

@@ -4,9 +4,10 @@ import {
   type ChannelRole,
   meets,
   roleOf,
-} from "../utils/roles.ts";
-import { moderationActionsDisabled } from "./preferences/moderation.ts";
-import { moderatedChannels, user } from "./users.ts";
+} from "./model.ts";
+import { moderationActionsDisabled } from "../../lib/stores/preferences/moderation.ts";
+import { moderatedChannels } from "./moderated.ts";
+import { user } from "../users/index.ts";
 
 export function roleIn(channelId: string): ChannelRole {
   return roleOf(

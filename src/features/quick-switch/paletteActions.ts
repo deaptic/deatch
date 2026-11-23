@@ -25,7 +25,7 @@ import {
   setChannelForm,
   toggleOverlay,
 } from "../../lib/stores/ui.ts";
-import { showsControls } from "../../lib/stores/roles.ts";
+import { showsControls } from "../permissions/index.ts";
 import {
   isSettingsOpen,
   selectedChannel,

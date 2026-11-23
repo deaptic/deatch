@@ -7,9 +7,9 @@ import type {
 } from "../../lib/types/index.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import * as link from "../link/index.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { knownUser } from "../users/index.ts";
 import { orderChannels } from "./order.ts";
-import { userFromRef } from "../../lib/utils/knownUsers.ts";
+import { userFromRef } from "../../shared/user.ts";
 
 export const [liveStreams, setLiveStreams] = createSignal<Stream[]>([]);
 

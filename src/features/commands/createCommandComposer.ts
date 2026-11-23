@@ -1,8 +1,7 @@
 import { createMemo, createResource, createSignal, onCleanup } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import { chattersIn } from "../../lib/stores/users.ts";
-import * as users from "../../lib/services/users.ts";
-import { rankChatters } from "../../lib/utils/rankChatters.ts";
+import { chattersIn } from "../users/index.ts";
+import { users, rankChatters } from "../users/index.ts";
 import { at } from "../../lib/utils/at.ts";
 import { createDebounced } from "../../shared/solid/createDebounced.ts";
 import type { Chatter } from "../../lib/types/index.ts";

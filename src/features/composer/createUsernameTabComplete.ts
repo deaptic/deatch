@@ -1,4 +1,4 @@
-import { chattersIn } from "../../lib/stores/users.ts";
+import { chattersIn } from "../users/index.ts";
 import { completions } from "./usernameCompletion.ts";
 
 type Options = {

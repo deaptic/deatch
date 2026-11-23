@@ -3,7 +3,7 @@ import { banUser } from "../../../platform/twitch/moderation.ts";
 import { clips } from "../../chat/index.ts";
 import { getStreamsFromIds } from "../../../platform/twitch/streams.ts";
 import { getFollowedAt } from "../../../platform/twitch/channels.ts";
-import { user } from "../../../lib/stores/users.ts";
+import { user } from "../../users/index.ts";
 import { appendLocalNotice } from "../../feed/index.ts";
 import { formatClock } from "../../../shared/format/stream.ts";
 import { Time } from "../../../shared/time.ts";

@@ -1,5 +1,5 @@
-import { setUser, user as signedIn } from "../../lib/stores/users.ts";
-import * as users from "../../lib/services/users.ts";
+import { setUser, user as signedIn } from "../users/index.ts";
+import { users } from "../users/index.ts";
 import { feedLog } from "../feed/index.ts";
 import {
   setAuthChecked,

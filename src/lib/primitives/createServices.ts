@@ -1,6 +1,6 @@
 import { onCleanup, onMount } from "solid-js";
 import * as log from "../services/log.ts";
-import * as users from "../services/users.ts";
+import { users } from "../../features/users/index.ts";
 import * as login from "../../features/login/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import * as updater from "../../features/updater/index.ts";

@@ -9,8 +9,7 @@ import {
 } from "solid-js";
 import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import * as chatters from "./store.ts";
-import { hasPermission } from "../../lib/stores/roles.ts";
-import type { Capability } from "../../lib/utils/roles.ts";
+import { hasPermission, type Capability } from "../permissions/index.ts";
 import { formatViewers } from "../../shared/format/stream.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
 import type { UserRef } from "../../lib/types/index.ts";

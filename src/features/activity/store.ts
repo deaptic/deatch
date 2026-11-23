@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { hasPermission } from "../../lib/stores/roles.ts";
+import { hasPermission, type Capability } from "../permissions/index.ts";
 import {
   endPoll as endPollRequest,
   getActivePoll,
@@ -27,7 +27,6 @@ import {
   resolveUnbanRequest,
   updateShieldMode,
 } from "../../platform/twitch/moderation.ts";
-import type { Capability } from "../../lib/utils/roles.ts";
 import { withoutUnbanRequest } from "./model.ts";
 
 export type Activity = {

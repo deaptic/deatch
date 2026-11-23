@@ -3,7 +3,7 @@ import { createEffect, Show } from "solid-js";
 import Group from "./Group.tsx";
 import * as inbox from "./store.ts";
 import type { Mention } from "../../lib/types/index.ts";
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
 import Button from "../../kit/Button.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
 import Popover from "../../kit/Popover.tsx";

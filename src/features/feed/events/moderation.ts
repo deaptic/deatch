@@ -34,8 +34,8 @@ import {
   setSuspicious,
 } from "../store/index.ts";
 import { chatterFields, feedEvent, noticeText } from "../entries/feedEvent.ts";
-import { setModeratedChannels } from "../../../lib/stores/users.ts";
-import { hasPermission } from "../../../lib/stores/roles.ts";
+import { setModeratedChannels } from "../../permissions/index.ts";
+import { hasPermission } from "../../permissions/index.ts";
 import { mapFragment } from "../entries/chat.ts";
 import { moderateMessage } from "../entries/moderateMessage.ts";
 import { automodReason } from "../entries/automodReason.ts";

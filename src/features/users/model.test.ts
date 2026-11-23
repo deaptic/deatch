@@ -1,13 +1,13 @@
 import { expect, test } from "vite-plus/test";
-import type { User } from "../types/index.ts";
+import type { User } from "../../lib/types/index.ts";
 import {
   changedEntries,
   freshEntries,
   isKnownUser,
-  isUserId,
   mergeUser,
   sameUser,
-} from "./knownUsers.ts";
+} from "./model.ts";
+import { isUserId } from "../../shared/user.ts";
 
 const full: User = {
   id: "1",

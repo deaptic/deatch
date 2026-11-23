@@ -5,7 +5,7 @@ import type {
   User,
   UserEmote,
 } from "../../lib/types/index.ts";
-import { isUserId } from "../../lib/utils/knownUsers.ts";
+import { isUserId } from "../../shared/user.ts";
 
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 

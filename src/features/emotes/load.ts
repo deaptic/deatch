@@ -43,7 +43,7 @@ import {
   sevenTvChannel,
   sevenTvGlobal,
 } from "./store.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../users/index.ts";
 import {
   type ChannelRef,
   channelResource,

@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import type { Chatter } from "../types/index.ts";
-import { recordIn } from "./chatters.ts";
+import type { Chatter } from "../../lib/types/index.ts";
+import { recordIn } from "./chatterBucket.ts";
 
 const chatter = (id: string, lastSeen: number): Chatter => ({
   id,

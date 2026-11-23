@@ -8,7 +8,7 @@ import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import * as chatModes from "../chat-modes/index.ts";
-import { showsControls } from "../../lib/stores/roles.ts";
+import { showsControls } from "../permissions/index.ts";
 import {
   closeOverlay,
   isOverlayOpen,

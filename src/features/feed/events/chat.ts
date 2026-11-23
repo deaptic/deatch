@@ -5,13 +5,13 @@ import {
 } from "../../../platform/listen.ts";
 import type { RawChatMessage } from "../../../lib/types/index.ts";
 import { appendItem } from "../store/index.ts";
-import { knownUser, recordChatter, user } from "../../../lib/stores/users.ts";
+import { knownUser, recordChatter, user } from "../../users/index.ts";
 import * as inbox from "../../inbox/index.ts";
 import { feedKeywords } from "../../../lib/stores/preferences.ts";
 import { mentionReason } from "../entries/mention.ts";
 import { chatterOf, mapChatMessage } from "../entries/chat.ts";
 import * as channelPoints from "../channelPoints.ts";
-import * as users from "../../../lib/services/users.ts";
+import { users } from "../../users/index.ts";
 import * as badges from "../../badges/index.ts";
 import * as triggers from "../../triggers/index.ts";
 

@@ -3,9 +3,9 @@ import {
   getFollowedStreams,
   getStreamsFromIds,
 } from "../../platform/twitch/streams.ts";
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
 import * as channelInfo from "./info.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../users/index.ts";
 import {
   followedLive,
   setFollowedLive,
@@ -16,7 +16,7 @@ import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import * as link from "../link/index.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import type { Stream, User } from "../../lib/types/index.ts";
-import { idsNotIn } from "../../lib/utils/idsNotIn.ts";
+import { idsNotIn } from "./idsNotIn.ts";
 
 const POLL_MS = 60_000;
 

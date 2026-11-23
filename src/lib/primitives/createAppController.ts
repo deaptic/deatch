@@ -1,7 +1,6 @@
 import type { User } from "../types/index.ts";
 import { createChannelNavigation } from "./createChannelNavigation.ts";
 import { createLinkControls } from "../../features/link/index.ts";
-import { createChannelHooks } from "./createChannelHooks.ts";
 import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
 import { createMentionsBadge } from "../../features/inbox/index.ts";
 import { createSystemIntegration } from "./createSystemIntegration.ts";
@@ -19,7 +18,6 @@ export type AppController = {
 export function createAppController(): AppController {
   createServices();
   const nav = createChannelNavigation();
-  createChannelHooks();
   const link = createLinkControls(nav);
 
   createSelectedChannelEffects();

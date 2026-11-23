@@ -11,7 +11,7 @@ import Dialog from "../../kit/Dialog.tsx";
 import { autofocus } from "../../shared/solid/focus.ts";
 import Textarea from "../../kit/Textarea.tsx";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";
-import { hasPermission } from "../../lib/stores/roles.ts";
+import { hasPermission } from "../permissions/index.ts";
 import { t, tRich } from "../../shared/i18n/index.ts";
 
 type Props = {

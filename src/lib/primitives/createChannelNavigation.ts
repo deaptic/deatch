@@ -1,7 +1,7 @@
 import { createEffect, on } from "solid-js";
 import type { User } from "../types/index.ts";
 import { addToast } from "../../kit/toasts.ts";
-import * as users from "../services/users.ts";
+import { users } from "../../features/users/index.ts";
 import {
   stepVisits,
   linkSynced,

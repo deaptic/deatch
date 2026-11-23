@@ -1,8 +1,8 @@
 import { onCleanup, Show } from "solid-js";
 import Suggestions from "../../../kit/Suggestions.tsx";
 import { ChatterRow } from "../../message/index.ts";
-import { chattersIn } from "../../../lib/stores/users.ts";
-import { rankChatters } from "../../../lib/utils/rankChatters.ts";
+import { chattersIn } from "../../users/index.ts";
+import { rankChatters } from "../../users/index.ts";
 import type { Chatter } from "../../../lib/types/index.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 import { TRIGGERS } from "./detect.ts";

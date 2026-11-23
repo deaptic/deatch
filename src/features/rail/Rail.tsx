@@ -15,8 +15,8 @@ import {
   showExplore,
   toggleSettings,
 } from "../../lib/stores/view.ts";
-import { user } from "../../lib/stores/users.ts";
-import { isOwnChannel } from "../../lib/stores/roles.ts";
+import { user } from "../users/index.ts";
+import { isOwnChannel } from "../permissions/index.ts";
 import { createScrollAffordance } from "./createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
 import { createPinDrag } from "./createPinDrag.ts";

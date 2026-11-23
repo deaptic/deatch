@@ -14,7 +14,7 @@ import {
 import { resolvedTheme } from "../stores/theme.ts";
 import * as appearance from "../services/appearance.ts";
 import * as discord from "../services/discord.ts";
-import { user } from "../stores/users.ts";
+import { user } from "../../features/users/index.ts";
 import { liveStreams } from "../../features/channels/index.ts";
 import { activeView, selectedChannel } from "../stores/view.ts";
 import { t } from "../../shared/i18n/index.ts";

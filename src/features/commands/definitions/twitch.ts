@@ -6,7 +6,7 @@ import {
   unbanUser,
   warnUser,
 } from "../../../platform/twitch/moderation.ts";
-import * as users from "../../../lib/services/users.ts";
+import { users } from "../../users/index.ts";
 import { raid } from "../../activity/index.ts";
 import {
   sendChatAnnouncement,

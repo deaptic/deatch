@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { allows, meets, roleOf } from "./roles.ts";
+import { allows, meets, roleOf } from "./model.ts";
 
 test("your own channel makes you its broadcaster, a moderated one its moderator", () => {
   const moderated = new Set(["2"]);

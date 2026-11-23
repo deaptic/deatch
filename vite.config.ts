@@ -63,6 +63,7 @@ export default defineConfig({
                   regex:
                     "^(../)+(lib|components|features|platform|app)/|^@tauri-apps/",
                   message: "kit and shared import only kit and shared.",
+                  allowTypeImports: true,
                 },
               ],
             },

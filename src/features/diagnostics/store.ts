@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { unwrap } from "solid-js/store";
 import { getAppStats } from "../../platform/diagnostics.ts";
 import { feeds } from "../feed/index.ts";
-import { knownUsers } from "../../lib/stores/users.ts";
+import { knownUsers } from "../users/index.ts";
 import { countCache, type Sample } from "./model.ts";
 
 const POLL_MS = 1000;

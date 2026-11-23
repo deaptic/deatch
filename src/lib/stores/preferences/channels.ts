@@ -1,5 +1,5 @@
 import { prefs, setPrefs } from "./core.ts";
-import { isOwnChannel as isOwn } from "../roles.ts";
+import { isOwnChannel as isOwn } from "../../../features/permissions/index.ts";
 import { moved } from "../../utils/moved.ts";
 
 export const pinnedChannels = () =>

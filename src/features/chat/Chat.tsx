@@ -35,8 +35,8 @@ import {
 } from "../menus/index.ts";
 import { BanModal, UserCard, WarnModal } from "../user-card/index.ts";
 import { createUserCards } from "./createUserCards.ts";
-import * as users from "../../lib/services/users.ts";
-import { showsControls } from "../../lib/stores/roles.ts";
+import { users } from "../users/index.ts";
+import { showsControls } from "../permissions/index.ts";
 import type {
   FeedEvent as EventItem,
   FeedMessage as Message,

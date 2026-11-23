@@ -12,7 +12,7 @@ import ChatPanes from "./ChatPanes.tsx";
 import Readout from "./Readout.tsx";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 import { activeView } from "../../lib/stores/view.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../../features/users/index.ts";
 import { authChecked, Login } from "../../features/login/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
 import { removeToast, toasts } from "../../kit/toasts.ts";

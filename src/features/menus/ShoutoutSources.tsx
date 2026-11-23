@@ -1,7 +1,8 @@
 import { createResource, For, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import MenuItem from "../../kit/MenuItem.tsx";
-import { moderatedChannels, user } from "../../lib/stores/users.ts";
+import { moderatedChannels } from "../permissions/index.ts";
+import { user } from "../users/index.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
 import type { User, UserRef } from "../../lib/types/index.ts";

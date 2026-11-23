@@ -23,7 +23,7 @@ import { historyViews } from "./history/views.ts";
 import * as history from "./history/history.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { thirdPartyEmoteMap, usableFavorites } from "../emotes/index.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { knownUser } from "../users/index.ts";
 import { cheermotes } from "../emotes/index.ts";
 import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
 import { createFeedScroll } from "./createFeedScroll.ts";

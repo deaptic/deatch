@@ -1,34 +1,30 @@
-import { STORAGE_KEYS } from "../constants/storage.ts";
+import * as chatters from "./chatters.ts";
+import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
 import { getUsers } from "../../platform/twitch/users.ts";
 import { getFollowedAt } from "../../platform/twitch/channels.ts";
 import { getUserChatColor } from "../../platform/twitch/chat.ts";
 import { type InvokeOptions, reportFailure } from "../../platform/invoke.ts";
-import { pinnedChannels } from "../stores/preferences.ts";
-import {
-  knownUser,
-  knownUsers,
-  setKnownUsers,
-  user as self,
-} from "../stores/users.ts";
-import { hasPermission } from "../stores/roles.ts";
+import { pinnedChannels } from "../../lib/stores/preferences.ts";
+import { knownUser, knownUsers, setKnownUsers } from "./known.ts";
+import { user as self } from "./account.ts";
+import { hasPermission } from "../permissions/index.ts";
 import type {
   FollowStatus,
   GetUsersParams,
   User,
   UserRef,
-} from "../types/index.ts";
-import * as storage from "../utils/storage.ts";
+} from "../../lib/types/index.ts";
+import * as storage from "../../lib/utils/storage.ts";
 import { addToast } from "../../kit/toasts.ts";
 import {
   changedEntries,
   freshEntries,
   isKnownUser,
-  isUserId,
   type KnownUser,
-  userFromRef,
-} from "../utils/knownUsers.ts";
+} from "./model.ts";
+import { isUserId, userFromRef } from "../../shared/user.ts";
 
 const TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_KNOWN = 2000;
@@ -55,7 +51,9 @@ export function start(): () => void {
       for (const [id, entry] of Object.entries(saved)) table[id] ??= entry;
     }),
   );
+  const stopChatters = chatters.start();
   return () => {
+    stopChatters();
     clearTimeout(batchTimer);
     batchTimer = undefined;
     for (const id of waiters.keys()) settle(id, new Error("stopped"));

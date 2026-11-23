@@ -1,8 +1,8 @@
 import type { FeedMessage, FollowStatus, User } from "../../lib/types/index.ts";
 import { createEffect, createMemo, createResource, on, Show } from "solid-js";
-import * as users from "../../lib/services/users.ts";
-import { knownUser } from "../../lib/stores/users.ts";
-import { hasPermission } from "../../lib/stores/roles.ts";
+import { users } from "../users/index.ts";
+import { knownUser } from "../users/index.ts";
+import { hasPermission } from "../permissions/index.ts";
 import { getSubscription } from "../../platform/twitch/subscriptions.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { Pin } from "lucide-solid";

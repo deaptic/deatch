@@ -19,7 +19,7 @@ import type {
   FeedMessage,
   RecentHistory,
 } from "../../../lib/types/index.ts";
-import { recordChatter, user } from "../../../lib/stores/users.ts";
+import { recordChatter, user } from "../../users/index.ts";
 import { appendOlderSentMessage } from "../../composer/index.ts";
 import * as badges from "../../badges/index.ts";
 

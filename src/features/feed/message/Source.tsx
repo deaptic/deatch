@@ -1,8 +1,8 @@
 import { createEffect, Show } from "solid-js";
 import { t } from "../../../shared/i18n/index.ts";
 import type { FeedMessage as Message } from "../../../lib/types/index.ts";
-import * as users from "../../../lib/services/users.ts";
-import { knownUser } from "../../../lib/stores/users.ts";
+import { users } from "../../users/index.ts";
+import { knownUser } from "../../users/index.ts";
 import { avatarZoom } from "../../../shared/avatar.ts";
 import { createChannelLink } from "../../menus/index.ts";
 

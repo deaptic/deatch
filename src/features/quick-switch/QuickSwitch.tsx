@@ -11,12 +11,12 @@ import {
 } from "solid-js";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../../shared/solid/createListbox.ts";
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
 import { channelsInOrder, streamForUserId } from "../channels/index.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import { pins } from "../rail/index.ts";
 import * as link from "../link/index.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../users/index.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { liveLine } from "../../shared/format/stream.ts";
 import type { JSX } from "solid-js";

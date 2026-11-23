@@ -3,7 +3,7 @@ import type { InvokeOptions } from "../../platform/invoke.ts";
 import { onWindowCloseRequested } from "../../platform/window.ts";
 import { feedLog } from "../../features/feed/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
-import * as users from "./users.ts";
+import { users } from "../../features/users/index.ts";
 
 export function start(): () => void {
   const flushNow = () => void flush();

@@ -1,4 +1,4 @@
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
 import {
   type PinOutcome,
   pinChannel,

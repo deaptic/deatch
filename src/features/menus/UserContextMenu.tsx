@@ -22,7 +22,7 @@ import { setSuspiciousStatus } from "../../platform/twitch/moderation.ts";
 import type { SuspiciousStatus } from "../../lib/types/index.ts";
 import Menu from "../../kit/Menu.tsx";
 import * as blocks from "../blocks/index.ts";
-import { user as currentUser } from "../../lib/stores/users.ts";
+import { user as currentUser } from "../users/index.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";

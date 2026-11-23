@@ -4,7 +4,7 @@ import {
   getBlockedUsers,
   unblockUser,
 } from "../../platform/twitch/blocks.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../users/index.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 
 const [blocked, setBlocked] = createSignal<UserRef[]>([]);

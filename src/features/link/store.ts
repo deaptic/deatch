@@ -1,6 +1,6 @@
 import { createEffect, createRoot, createSignal, on } from "solid-js";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import { user } from "../../lib/stores/users.ts";
+import { user } from "../users/index.ts";
 import {
   linkClose,
   linkFocus,
@@ -13,7 +13,7 @@ import { channelUrl } from "../../lib/utils/twitchUrl.ts";
 import type { CompressorSettings } from "../../lib/constants/audio.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
 import { addToast } from "../../kit/toasts.ts";
-import * as users from "../../lib/services/users.ts";
+import { users } from "../users/index.ts";
 import type { LinkState, SetAudioParams, User } from "../../lib/types/index.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
 import { t } from "../../shared/i18n/index.ts";

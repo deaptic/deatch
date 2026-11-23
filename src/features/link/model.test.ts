@@ -1,7 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import type { User } from "../../lib/types/index.ts";
 import { planState } from "./model.ts";
-import { userFromRef } from "../../lib/utils/knownUsers.ts";
+import { userFromRef } from "../../shared/user.ts";
 
 const user = (login: string): User =>
   userFromRef({ id: login, login, displayName: login });

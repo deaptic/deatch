@@ -1,10 +1,10 @@
 import { type MethodSpec, parse, problems } from "./template.ts";
 import type { UserRef } from "../../lib/types/index.ts";
 import type { MessageKey } from "../../shared/i18n/index.ts";
-import { knownUser } from "../../lib/stores/users.ts";
 
 export type TriggerContext = {
   broadcasterId: string;
+  channelName: string;
   sender: UserRef;
   args: string;
   count: number;
@@ -77,7 +77,7 @@ export const METHODS: readonly TriggerMethod[] = [
     name: "channel",
     arg: "none",
     description: "SETTINGS_TRIGGERS_METHOD_CHANNEL_DESCRIPTION",
-    resolve: sync((ctx) => knownUser(ctx.broadcasterId)?.displayName ?? ""),
+    resolve: sync((ctx) => ctx.channelName),
   },
   {
     name: "count",

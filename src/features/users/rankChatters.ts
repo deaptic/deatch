@@ -1,5 +1,5 @@
-import type { Chatter } from "../types/index.ts";
-import { rankSuggestions } from "./rankSuggestions.ts";
+import type { Chatter } from "../../lib/types/index.ts";
+import { rankSuggestions } from "../../lib/utils/rankSuggestions.ts";
 
 const LIMIT = 10;
 

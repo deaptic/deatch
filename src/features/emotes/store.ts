@@ -14,7 +14,7 @@ import {
   globalSections,
   usableIn,
 } from "./emoteSections.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { knownUser } from "../users/index.ts";
 
 export type { EmoteUse } from "./emoteUsage.ts";
 import type { EmoteUse } from "./emoteUsage.ts";
