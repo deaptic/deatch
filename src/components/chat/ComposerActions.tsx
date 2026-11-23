@@ -23,7 +23,7 @@ import { MenuClose } from "../../kit/Menu.tsx";
 import MenuHost from "../../kit/MenuHost.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
 import ChatModesList from "./ChatModesList.tsx";
-import { ChannelToolItems } from "../channel-tools/ChannelToolsMenu.tsx";
+import { ChannelToolItems } from "../../features/channel-tools/index.ts";
 import { activeModes, type ChatMode } from "./modes.ts";
 
 type Props = {

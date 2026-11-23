@@ -17,9 +17,8 @@ import { startCommercial } from "../../platform/twitch/channels.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
-import * as activity from "../../lib/services/activity.ts";
+import * as activity from "../../features/activity/index.ts";
 import * as chatSettings from "../../lib/services/chatSettings.ts";
-import { activityFor } from "../../lib/stores/activity.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import { chatSettingsFor } from "../../lib/stores/chatSettings.ts";
 import {
@@ -108,7 +107,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
 }
 
 function moderatorActions(broadcasterId: string): PaletteAction[] {
-  const shield = activityFor(broadcasterId).shield;
+  const shield = activity.forChannel(broadcasterId).shield;
   return [
     ...chatModeActions(broadcasterId),
     {

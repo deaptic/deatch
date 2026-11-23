@@ -24,13 +24,15 @@ import Avatar from "../../kit/Avatar.tsx";
 import Stat from "../../kit/Stat.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import { hasPermission, showsControls } from "../../lib/stores/roles.ts";
-import { ChannelToolForm } from "../channel-tools/ChannelToolsMenu.tsx";
+import { ChannelToolForm } from "../../features/channel-tools/index.ts";
 import { channelForm, setChannelForm } from "../../lib/stores/ui.ts";
 import IconButton from "../../kit/IconButton.tsx";
-import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
+import {
+  ActivityMenuButton,
+  ActivityStrip,
+} from "../../features/activity/index.ts";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
-import ActivityMenuButton from "../channel-tools/ActivityMenuButton.tsx";
 import { isOverlayOpen, toggleOverlay } from "../../lib/stores/ui.ts";
 import Transition from "../../kit/Transition.tsx";
 

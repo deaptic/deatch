@@ -1,4 +1,4 @@
-import * as activity from "./activity.ts";
+import * as activity from "../../features/activity/index.ts";
 import * as auth from "./auth.ts";
 import * as channel from "./channel.ts";
 import * as chat from "./chat.ts";

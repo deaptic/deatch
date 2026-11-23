@@ -19,7 +19,7 @@ import type {
 import { addGiftRecipient, appendItem } from "../stores/feeds.ts";
 import { chatterFields, feedEvent } from "../utils/feedEvent.ts";
 import * as channelPoints from "../services/channelPoints.ts";
-import * as raid from "../services/raid.ts";
+import { raid } from "../../features/activity/index.ts";
 import { createTimeouts } from "../utils/timeouts.ts";
 import { mapRedemption } from "../mappers/redemption.ts";
 import { mapNotice } from "../mappers/notice.ts";

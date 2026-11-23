@@ -7,7 +7,7 @@ import {
   warnUser,
 } from "../../../platform/twitch/moderation.ts";
 import * as users from "../../../lib/services/users.ts";
-import * as raid from "../../../lib/services/raid.ts";
+import { raid } from "../../../features/activity/index.ts";
 import {
   sendChatAnnouncement,
   sendShoutout,

@@ -33,7 +33,7 @@ import { hasUnread } from "../../lib/stores/feeds.ts";
 import * as inbox from "../../features/inbox/index.ts";
 import { user } from "../../lib/stores/users.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
-import * as raid from "../../lib/services/raid.ts";
+import { raid } from "../../features/activity/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
 import * as clipboard from "../../kit/clipboard.ts";

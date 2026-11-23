@@ -9,7 +9,6 @@ import * as badges from "../services/badges.ts";
 import * as emotes from "../services/emotes.ts";
 import * as channelInfo from "../services/channelInfo.ts";
 import { clearChatSettings } from "../stores/chatSettings.ts";
-import { clearActivity } from "../stores/activity.ts";
 import { clearCheermotes } from "../stores/cheermotes.ts";
 import { clearDraft } from "../stores/drafts.ts";
 import { clearSentMessages } from "../stores/sentMessages.ts";
@@ -41,7 +40,6 @@ export function createChannelHooks(): void {
     channels.onChannel({
       leave: (id) => {
         clearChatters(id);
-        clearActivity(id);
         badges.forgetChannel(id);
         emotes.forgetChannel(id);
         channelInfo.forget(id);
