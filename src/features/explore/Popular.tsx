@@ -1,12 +1,7 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
-import {
-  exploreFilters,
-  liveBrowse,
-  setExploreFilters,
-} from "../../lib/stores/explore.ts";
-import * as explore from "../../lib/services/explore.ts";
-import { sortStreams } from "../../lib/utils/liveFilter.ts";
+import * as explore from "./store.ts";
+import { sortStreams } from "./model.ts";
 import LiveCard from "./LiveCard.tsx";
 import Chip from "../../kit/Chip.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
@@ -34,9 +29,10 @@ export default function Popular(props: Props) {
     onCleanup(explore.watch());
   });
 
-  const sorted = () => sortStreams(liveBrowse.streams, exploreFilters.sort);
+  const sorted = () =>
+    sortStreams(explore.popular.streams, explore.filters.sort);
   const initialLoading = () =>
-    liveBrowse.fetching && liveBrowse.streams.length === 0;
+    explore.popular.fetching && explore.popular.streams.length === 0;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -50,24 +46,24 @@ export default function Popular(props: Props) {
     <section>
       <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
         <h2 class="text-heading text-ink">{t("EXPLORE_POPULAR_TITLE")}</h2>
-        <Show when={exploreFilters.category}>
+        <Show when={explore.filters.category}>
           {(category) => (
             <Chip
               label={category().name}
               selected
-              onRemove={() => setExploreFilters("category", null)}
+              onRemove={() => explore.setCategory(null)}
             />
           )}
         </Show>
         <span class="ml-auto">
           <Segmented
             label={t("EXPLORE_SORT_LABEL")}
-            value={exploreFilters.sort}
+            value={explore.filters.sort}
             options={[
               { value: "viewers", label: t("EXPLORE_SORT_VIEWERS_LABEL") },
               { value: "recent", label: t("EXPLORE_SORT_RECENT_LABEL") },
             ]}
-            onChange={(sort) => setExploreFilters("sort", sort)}
+            onChange={(sort) => explore.setSort(sort)}
           />
         </span>
       </div>
@@ -116,7 +112,9 @@ export default function Popular(props: Props) {
         </Show>
 
         <div ref={(el) => observer.observe(el)} class="h-px" />
-        <Show when={liveBrowse.fetching && liveBrowse.streams.length > 0}>
+        <Show
+          when={explore.popular.fetching && explore.popular.streams.length > 0}
+        >
           <p class="py-4 text-center text-small text-ink-soft">
             {t("EXPLORE_LOADING_MORE_STATUS")}
           </p>

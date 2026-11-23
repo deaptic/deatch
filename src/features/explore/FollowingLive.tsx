@@ -1,10 +1,10 @@
 import { For, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import { liveStreams, resolveUser } from "../../lib/stores/channels.ts";
-import { exploreFilters } from "../../lib/stores/explore.ts";
+import { filters } from "./store.ts";
 import { exploreLanguage } from "../../lib/stores/preferences.ts";
-import { byViewers, matchingStreams } from "../../lib/utils/liveFilter.ts";
-import ChannelTile from "./ChannelTile.tsx";
+import { byViewers, matchingStreams } from "./model.ts";
+import ChannelTile from "./ui/ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
 
@@ -15,11 +15,7 @@ type Props = {
 export default function FollowingLive(props: Props) {
   const streams = () =>
     byViewers(
-      matchingStreams(
-        liveStreams(),
-        exploreLanguage(),
-        exploreFilters.category,
-      ),
+      matchingStreams(liveStreams(), exploreLanguage(), filters.category),
     );
 
   return (

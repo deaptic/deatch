@@ -9,7 +9,7 @@ import Login from "../login/Login.tsx";
 import Loading from "../../kit/Loading.tsx";
 import Boundary from "../../kit/Boundary.tsx";
 import Rail from "../rail/Rail.tsx";
-import Explore from "../explore/Explore.tsx";
+import { Explore } from "../../features/explore/index.ts";
 import ChatPanes from "./ChatPanes.tsx";
 import Readout from "./Readout.tsx";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";

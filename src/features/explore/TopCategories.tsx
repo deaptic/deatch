@@ -1,7 +1,7 @@
 import { createResource, Show } from "solid-js";
 import { getTopCategories } from "../../platform/twitch/search.ts";
-import { exploreFilters, setExploreFilters } from "../../lib/stores/explore.ts";
-import CategoryRow from "./CategoryRow.tsx";
+import { filters, toggleCategory } from "./store.ts";
+import CategoryRow from "./ui/CategoryRow.tsx";
 import { t } from "../../shared/i18n/index.ts";
 
 const TOP_CATEGORY_COUNT = 20;
@@ -19,12 +19,8 @@ export default function TopCategories() {
         </h2>
         <CategoryRow
           categories={categories() ?? []}
-          selectedId={exploreFilters.category?.id}
-          onSelect={(category) =>
-            setExploreFilters("category", (current) =>
-              current?.id === category.id ? null : category,
-            )
-          }
+          selectedId={filters.category?.id}
+          onSelect={toggleCategory}
         />
       </section>
     </Show>

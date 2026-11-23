@@ -2,19 +2,19 @@ import { Search, X } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
-import LanguageSelect from "./LanguageSelect.tsx";
+import LanguageSelect from "./ui/LanguageSelect.tsx";
 import { autofocus } from "../../shared/solid/focus.ts";
 import {
   comboboxFrom,
   type ListboxField,
 } from "../../shared/solid/createListbox.ts";
 import { liveStreams } from "../../lib/stores/channels.ts";
-import { liveBrowse } from "../../lib/stores/explore.ts";
+import { popular } from "./store.ts";
 import {
   exploreLanguage,
   setExploreLanguage,
 } from "../../lib/stores/preferences.ts";
-import { orderLanguages } from "../../lib/utils/languages.ts";
+import { orderLanguages } from "./languages.ts";
 import { at } from "../../lib/utils/at.ts";
 import { t } from "../../shared/i18n/index.ts";
 
@@ -32,7 +32,7 @@ export default function ExploreBar(props: Props) {
   const seenLanguages = createMemo<Set<string>>((prev) => {
     const next = new Set(prev);
     for (const s of liveStreams()) next.add(s.language);
-    for (const s of liveBrowse.streams) next.add(s.language);
+    for (const s of popular.streams) next.add(s.language);
     return next.size === prev.size ? prev : next;
   }, new Set());
 

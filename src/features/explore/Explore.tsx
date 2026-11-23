@@ -1,7 +1,7 @@
 import { createSignal, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import type { ListboxField } from "../../shared/solid/createListbox.ts";
-import { setExploreFilters } from "../../lib/stores/explore.ts";
+import { setCategory } from "./store.ts";
 import ExploreBar from "./ExploreBar.tsx";
 import SearchResults from "./SearchResults.tsx";
 import FollowingLive from "./FollowingLive.tsx";
@@ -37,7 +37,7 @@ export default function Explore(props: Props) {
             ref={setResults}
             onSelect={props.onSelectChannel}
             onSelectGame={(game) => {
-              setExploreFilters("category", game);
+              setCategory(game);
               setQuery("");
             }}
           />

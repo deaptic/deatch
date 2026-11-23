@@ -17,7 +17,7 @@ import * as feedLog from "../services/feedLog.ts";
 import * as exit from "../services/exit.ts";
 import * as discord from "../services/discord.ts";
 import * as windowState from "../services/windowState.ts";
-import * as explore from "../services/explore.ts";
+import * as explore from "../../features/explore/index.ts";
 import * as blocks from "../services/blocks.ts";
 
 export function createServices(): void {

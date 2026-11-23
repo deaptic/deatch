@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import type { Category, Stream } from "../types/index.ts";
-import { byViewers, matchingStreams, sortStreams } from "./liveFilter.ts";
+import type { Category, Stream } from "../../lib/types/index.ts";
+import { byViewers, matchingStreams, sortStreams } from "./model.ts";
 
 const stream = (id: string, language: string, game: string, viewers: number) =>
   ({
