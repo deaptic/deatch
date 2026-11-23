@@ -1,9 +1,11 @@
 import { expect, test } from "vite-plus/test";
 import {
   charityFrom,
+  goalFrom,
   pollFrom,
   predictionFrom,
   unbanRequestFrom,
+  withGoal,
   withoutUnbanRequest,
   withUnbanRequest,
 } from "./activity.ts";
@@ -111,4 +113,26 @@ test("an unban request is listed once and leaves when resolved", () => {
   const listed = withUnbanRequest(withUnbanRequest([], request), request);
   expect(listed).toHaveLength(1);
   expect(withoutUnbanRequest(listed, "u1")).toEqual([]);
+});
+
+test("a goal keeps its place in the list as it progresses", () => {
+  const raw = {
+    broadcaster_user_id: "1",
+    id: "g1",
+    type: "new_bit",
+    description: "New mic",
+    current_amount: 100,
+    target_amount: 1000,
+  };
+  const other = goalFrom({ ...raw, id: "g2" });
+  const started = withGoal([goalFrom(raw), other], goalFrom(raw));
+  const progressed = withGoal(
+    started,
+    goalFrom({ ...raw, current_amount: 400 }),
+  );
+  expect(progressed.map((g) => [g.id, g.current])).toEqual([
+    ["g1", 400],
+    ["g2", 100],
+  ]);
+  expect(progressed[0]?.kind).toBe("new_bit");
 });

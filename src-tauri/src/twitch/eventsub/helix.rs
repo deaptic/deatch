@@ -20,7 +20,10 @@ use twitch_api::eventsub::{
         ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
         ChannelChatMessageV1, ChannelChatNotificationV1,
     },
-    channel::{ChannelAdBreakBeginV1, ChannelBitsUseV1, ChannelGoalBeginV1, ChannelGoalEndV1},
+    channel::{
+        ChannelAdBreakBeginV1, ChannelBitsUseV1, ChannelGoalBeginV1, ChannelGoalEndV1,
+        ChannelGoalProgressV1,
+    },
     channel::{
         ChannelCharityCampaignProgressV1, ChannelCharityCampaignStartV1,
         ChannelCharityCampaignStopV1,
@@ -210,6 +213,9 @@ async fn create(
             subscribe!(ChannelPredictionEndV1::broadcaster_user_id(b))
         }
         EventKind::ChannelGoalBegin => subscribe!(ChannelGoalBeginV1::broadcaster_user_id(b)),
+        EventKind::ChannelGoalProgress => {
+            subscribe!(ChannelGoalProgressV1::broadcaster_user_id(b))
+        }
         EventKind::ChannelGoalEnd => subscribe!(ChannelGoalEndV1::broadcaster_user_id(b)),
         EventKind::ChannelAdBreakBegin => {
             subscribe!(ChannelAdBreakBeginV1::broadcaster_user_id(b))

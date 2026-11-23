@@ -13,6 +13,7 @@ type Props = {
   presence?: Presence;
   dashed?: boolean;
   square?: boolean;
+  overlay?: JSX.Element;
   children?: JSX.Element;
 };
 
@@ -74,6 +75,7 @@ export default function Avatar(props: Props) {
           />
         )}
       </Show>
+      {props.overlay}
       <Show when={props.presence}>
         {(presence) => (
           <span

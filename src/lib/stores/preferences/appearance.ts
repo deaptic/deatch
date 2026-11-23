@@ -1,3 +1,4 @@
+import type { ActivityKind } from "../../constants/activities.ts";
 import type { Theme } from "../../constants/theme.ts";
 import {
   clampToStops,
@@ -17,6 +18,8 @@ export function setAppearanceLanguage(language: Language) {
 }
 export const appearanceAccent = () => prefs.appearance.accent;
 export const appearanceRailExpanded = () => prefs.appearance.railExpanded;
+export const activityShown = (kind: ActivityKind) =>
+  prefs.appearance.activities[kind];
 export const appearanceUiDensity = () => prefs.appearance.uiDensity;
 export const appearanceZoom = () => prefs.appearance.zoom;
 
@@ -30,6 +33,10 @@ export function setAppearanceAccent(hex: string | null) {
 
 export function setAppearanceRailExpanded(expanded: boolean) {
   setPrefs("appearance", "railExpanded", expanded);
+}
+
+export function setActivityShown(kind: ActivityKind, shown: boolean) {
+  setPrefs("appearance", "activities", kind, shown);
 }
 
 export function setAppearanceUiDensity(density: UiDensity) {

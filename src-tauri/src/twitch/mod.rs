@@ -6,6 +6,7 @@ pub mod chat;
 pub mod clips;
 pub mod eventsub;
 pub mod game;
+pub mod goals;
 pub mod ids;
 pub mod moderation;
 pub mod pagination;

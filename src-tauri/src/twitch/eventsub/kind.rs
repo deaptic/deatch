@@ -74,6 +74,7 @@ kinds! {
     ChannelPredictionLock = "channel.prediction.lock", "channel-prediction-lock" => (Broadcaster, Focused),
     ChannelPredictionEnd = "channel.prediction.end", "channel-prediction-end" => (Broadcaster, Focused),
     ChannelGoalBegin = "channel.goal.begin", "channel-goal-begin" => (Broadcaster, Focused),
+    ChannelGoalProgress = "channel.goal.progress", "channel-goal-progress" => (Broadcaster, Focused),
     ChannelGoalEnd = "channel.goal.end", "channel-goal-end" => (Broadcaster, Focused),
     ChannelAdBreakBegin = "channel.ad_break.begin", "channel-ad-break-begin" => (Broadcaster, Focused),
     ChannelBitsUse = "channel.bits.use", "channel-bits-use" => (Broadcaster, Focused),

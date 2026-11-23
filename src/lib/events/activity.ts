@@ -2,6 +2,7 @@ import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   EventKind,
   RawCharityCampaign,
+  RawGoal,
   RawPoll,
   RawPrediction,
   RawShieldMode,
@@ -15,9 +16,11 @@ import {
 } from "../stores/activity.ts";
 import {
   charityFrom,
+  goalFrom,
   pollFrom,
   predictionFrom,
   unbanRequestFrom,
+  withGoal,
   withoutUnbanRequest,
   withUnbanRequest,
 } from "../mappers/activity.ts";
@@ -45,6 +48,9 @@ function listenCharity(
 
 export function start(): () => void {
   const poll = (raw: RawPoll) => ({ poll: pollFrom(raw) });
+  const goal = (raw: RawGoal, current: Activity) => ({
+    goals: withGoal(current.goals, goalFrom(raw)),
+  });
   const charity = (raw: RawCharityCampaign) => ({
     charity: charityFrom(raw),
   });
@@ -82,6 +88,11 @@ export function start(): () => void {
         unbanRequests: withoutUnbanRequest(current.unbanRequests, raw.id),
       }),
     ),
+    listenActivity("channel.goal.begin", goal),
+    listenActivity("channel.goal.progress", goal),
+    listenActivity<RawGoal>("channel.goal.end", (raw, current) => ({
+      goals: current.goals.filter((g) => g.id !== raw.id),
+    })),
     listenCharity("channel.charity_campaign.start", charity),
     listenCharity("channel.charity_campaign.progress", charity),
     listenCharity("channel.charity_campaign.stop", () => ({ charity: null })),

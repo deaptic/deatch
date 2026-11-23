@@ -1,16 +1,9 @@
-import {
-  ChartColumn,
-  HeartHandshake,
-  Scale,
-  Shield,
-  Swords,
-  Trophy,
-} from "lucide-solid";
-import { onMount, Show } from "solid-js";
+import { For, onMount, Show } from "solid-js";
 import { t, tRich } from "../../lib/i18n/index.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
 import { pendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
 import { setChannelForm } from "../../lib/stores/ui.ts";
+import { activityShown } from "../../lib/stores/preferences/appearance.ts";
 import { knownUser, user } from "../../lib/stores/users.ts";
 import * as activity from "../../lib/services/activity.ts";
 import * as clock from "../../lib/services/clock.ts";
@@ -18,8 +11,10 @@ import * as raid from "../../lib/services/raid.ts";
 import { formatCountdown } from "../../lib/format/duration.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
 import { formatDonation } from "../../lib/format/currency.ts";
+import { goalProgress, goalsTitle, goalTitle } from "../../lib/format/goals.ts";
 import type {
   CharityCampaign,
+  Goal,
   Poll,
   Prediction,
 } from "../../lib/types/index.ts";
@@ -27,6 +22,8 @@ import Button from "../ui/Button.tsx";
 import Meter from "../ui/Meter.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import ActivityRow from "./ActivityRow.tsx";
+import { ActivityIcon } from "./activityIcons.tsx";
+import LabeledBar from "./LabeledBar.tsx";
 import OptionBars from "./OptionBars.tsx";
 import Presence from "../ui/Presence.tsx";
 
@@ -39,10 +36,20 @@ const until = (iso: string) => formatCountdown(Date.parse(iso) - clock.now());
 
 export default function ActivityStrip(props: Props) {
   const current = () => activityFor(props.broadcasterId);
+  const shield = () => activityShown("shield") && current().shield;
+  const goals = () => (activityShown("goals") ? current().goals : []);
+  const charity = () => (activityShown("charity") ? current().charity : null);
   const raiding = () => {
     const r = pendingRaid();
-    return r?.fromId === props.broadcasterId ? r : null;
+    return activityShown("raid") && r?.fromId === props.broadcasterId
+      ? r
+      : null;
   };
+  const unbans = () =>
+    activityShown("unbans") ? current().unbanRequests.length : 0;
+  const poll = () => (activityShown("poll") ? current().poll : null);
+  const prediction = () =>
+    activityShown("prediction") ? current().prediction : null;
 
   onMount(() =>
     activity.load(props.broadcasterId, props.broadcasterId === user()?.id),
@@ -51,21 +58,22 @@ export default function ActivityStrip(props: Props) {
   return (
     <Presence
       when={
-        current().shield ||
-        current().poll ||
-        current().prediction ||
-        current().charity ||
-        current().unbanRequests.length ||
-        raiding()
+        shield() ||
+        goals().length ||
+        charity() ||
+        raiding() ||
+        unbans() ||
+        poll() ||
+        prediction()
       }
     >
       {() => (
         <div class="enter-expand">
           <div class="flex flex-col border-t border-line-soft divide-y divide-line-soft">
-            <Presence when={current().shield}>
+            <Presence when={shield()}>
               {() => (
                 <ActivityRow
-                  icon={<Shield />}
+                  icon={<ActivityIcon kind="shield" />}
                   title={t("HEADER_SHIELD_ACTIVE_STATUS")}
                   actions={
                     <Button
@@ -81,23 +89,10 @@ export default function ActivityStrip(props: Props) {
                 />
               )}
             </Presence>
-            <Presence when={current().poll}>
-              {(poll) => (
-                <PollRow broadcasterId={props.broadcasterId} poll={poll()} />
-              )}
-            </Presence>
-            <Presence when={current().prediction}>
-              {(prediction) => (
-                <PredictionRow
-                  broadcasterId={props.broadcasterId}
-                  prediction={prediction()}
-                />
-              )}
-            </Presence>
-            <Presence when={current().unbanRequests.length}>
+            <Presence when={unbans()}>
               {(count) => (
                 <ActivityRow
-                  icon={<Scale />}
+                  icon={<ActivityIcon kind="unbans" />}
                   title={t("HEADER_UNBAN_REQUESTS_STATUS", { count: count() })}
                   actions={
                     <Button
@@ -111,8 +106,24 @@ export default function ActivityStrip(props: Props) {
                 />
               )}
             </Presence>
-            <Presence when={current().charity}>
-              {(charity) => <CharityRow charity={charity()} />}
+            <Presence when={goals().length}>
+              {() => <GoalsRow goals={goals()} />}
+            </Presence>
+            <Presence when={charity()}>
+              {(c) => <CharityRow charity={c()} />}
+            </Presence>
+            <Presence when={poll()}>
+              {(p) => (
+                <PollRow broadcasterId={props.broadcasterId} poll={p()} />
+              )}
+            </Presence>
+            <Presence when={prediction()}>
+              {(p) => (
+                <PredictionRow
+                  broadcasterId={props.broadcasterId}
+                  prediction={p()}
+                />
+              )}
             </Presence>
             <Presence when={raiding()}>
               {(r) => {
@@ -130,7 +141,7 @@ export default function ActivityStrip(props: Props) {
                 return (
                   <>
                     <ActivityRow
-                      icon={<Swords />}
+                      icon={<ActivityIcon kind="raid" />}
                       title={tRich("HEADER_RAID_PENDING_STATUS", {
                         name: r().target.displayName,
                         seconds: seconds(),
@@ -173,7 +184,7 @@ export default function ActivityStrip(props: Props) {
 function PollRow(props: { broadcasterId: string; poll: Poll }) {
   return (
     <ActivityRow
-      icon={<ChartColumn />}
+      icon={<ActivityIcon kind="poll" />}
       title={props.poll.title}
       meta={t("HEADER_POLL_ENDS_IN_STATUS", { time: until(props.poll.endsAt) })}
       actions={
@@ -223,7 +234,7 @@ function PredictionRow(props: {
 
   return (
     <ActivityRow
-      icon={<Trophy />}
+      icon={<ActivityIcon kind="prediction" />}
       title={props.prediction.title}
       meta={meta()}
       actions={
@@ -283,7 +294,7 @@ function CharityRow(props: { charity: CharityCampaign }) {
   };
   return (
     <ActivityRow
-      icon={<HeartHandshake />}
+      icon={<ActivityIcon kind="charity" />}
       title={props.charity.charityName}
       meta={meta()}
     >
@@ -293,6 +304,49 @@ function CharityRow(props: { charity: CharityCampaign }) {
             value={props.charity.current.value}
             max={goal().value}
             label={t("HEADER_CHARITY_PROGRESS_LABEL")}
+            tone="accent"
+          />
+        )}
+      </Show>
+    </ActivityRow>
+  );
+}
+
+function GoalsRow(props: { goals: Goal[] }) {
+  const only = () => (props.goals.length === 1 ? props.goals[0] : undefined);
+  const meta = () => {
+    const goal = only();
+    return goal ? goalProgress(goal) : undefined;
+  };
+  return (
+    <ActivityRow
+      icon={<ActivityIcon kind="goals" />}
+      title={goalsTitle(props.goals)}
+      meta={meta()}
+    >
+      <Show
+        when={only()}
+        fallback={
+          <div class="flex flex-col gap-3">
+            <For each={props.goals}>
+              {(goal) => (
+                <LabeledBar
+                  label={goalTitle(goal)}
+                  detail={goalProgress(goal)}
+                  value={goal.current}
+                  max={goal.target}
+                  tone="accent"
+                />
+              )}
+            </For>
+          </div>
+        }
+      >
+        {(goal) => (
+          <Meter
+            value={goal().current}
+            max={goal().target}
+            label={goalTitle(goal())}
             tone="accent"
           />
         )}

@@ -1,11 +1,13 @@
 import type {
   CharityCampaign,
   DonationAmount,
+  Goal,
   Poll,
   Prediction,
   RawPoll,
   RawCampaignAmount,
   RawCharityCampaign,
+  RawGoal,
   RawPrediction,
   RawUnbanRequestCreate,
   UnbanRequest,
@@ -81,4 +83,19 @@ export function withUnbanRequest(
   request: UnbanRequest,
 ): UnbanRequest[] {
   return [...withoutUnbanRequest(list, request.id), request];
+}
+
+export function goalFrom(raw: RawGoal): Goal {
+  return {
+    id: raw.id,
+    kind: raw.type,
+    description: raw.description,
+    current: raw.current_amount,
+    target: raw.target_amount,
+  };
+}
+
+export function withGoal(list: Goal[], goal: Goal): Goal[] {
+  const at = list.findIndex((g) => g.id === goal.id);
+  return at < 0 ? [...list, goal] : list.with(at, goal);
 }

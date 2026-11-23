@@ -12,13 +12,20 @@ import type {
   UnbanDecision,
 } from "../types/index.ts";
 import { getCharityCampaign } from "../api/twitch/charity.ts";
+import { getGoals } from "../api/twitch/goals.ts";
 import {
   getShieldMode,
   getUnbanRequests,
   resolveUnbanRequest,
   updateShieldMode,
 } from "../api/twitch/moderation.ts";
-import { activityFor, updateActivity } from "../stores/activity.ts";
+import {
+  activityFor,
+  clearActivity,
+  updateActivity,
+} from "../stores/activity.ts";
+import { sampleActivity } from "../utils/sampleActivity.ts";
+import * as clock from "./clock.ts";
 import { withoutUnbanRequest } from "../mappers/activity.ts";
 
 export function load(broadcasterId: string, isBroadcaster: boolean): void {
@@ -39,6 +46,9 @@ export function load(broadcasterId: string, isBroadcaster: boolean): void {
     .catch(() => {});
   getCharityCampaign(params, silent)
     .then((charity) => updateActivity(broadcasterId, { charity }))
+    .catch(() => {});
+  getGoals(params, silent)
+    .then((goals) => updateActivity(broadcasterId, { goals }))
     .catch(() => {});
 }
 
@@ -84,4 +94,13 @@ export async function resolveUnban(
       requestId,
     ),
   });
+}
+
+export function showSample(broadcasterId: string): void {
+  updateActivity(broadcasterId, sampleActivity(clock.now()));
+}
+
+export function reset(broadcasterId: string, isBroadcaster: boolean): void {
+  clearActivity(broadcasterId);
+  load(broadcasterId, isBroadcaster);
 }

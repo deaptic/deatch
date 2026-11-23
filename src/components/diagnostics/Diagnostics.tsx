@@ -9,6 +9,10 @@ import ConnectionSlot from "./ConnectionSlot.tsx";
 import DiagnosticsSection from "./DiagnosticsSection.tsx";
 import MetricRow from "./MetricRow.tsx";
 import { t } from "../../lib/i18n/index.ts";
+import * as activity from "../../lib/services/activity.ts";
+import { selectedChannel } from "../../lib/stores/view.ts";
+import { canModerate, user } from "../../lib/stores/users.ts";
+import Button from "../ui/Button.tsx";
 
 type Props = {
   x: number;
@@ -124,10 +128,47 @@ export default function Diagnostics(props: Props) {
                   value={`${s().cache.messages}`}
                 />
               </DiagnosticsSection>
+
+              <ActivityPreview />
             </div>
           )}
         </Show>
       </div>
     </Popover>
+  );
+}
+
+function ActivityPreview() {
+  const channel = () => {
+    const c = selectedChannel();
+    return c && canModerate(c.id) ? c : null;
+  };
+  return (
+    <DiagnosticsSection title={t("DIAGNOSTICS_PREVIEW_TITLE")}>
+      <div class="flex flex-wrap gap-2">
+        <Button
+          variant="neutral"
+          size="sm"
+          disabled={!channel()}
+          onClick={() => {
+            const c = channel();
+            if (c) activity.showSample(c.id);
+          }}
+        >
+          {t("DIAGNOSTICS_SHOW_SAMPLE_ACTIVITY_LABEL")}
+        </Button>
+        <Button
+          variant="neutral"
+          size="sm"
+          disabled={!channel()}
+          onClick={() => {
+            const c = channel();
+            if (c) activity.reset(c.id, c.id === user()?.id);
+          }}
+        >
+          {t("DIAGNOSTICS_RESET_ACTIVITY_LABEL")}
+        </Button>
+      </div>
+    </DiagnosticsSection>
   );
 }

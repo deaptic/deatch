@@ -1,6 +1,6 @@
-import { For, type JSX, Show } from "solid-js";
+import { For, type JSX } from "solid-js";
 import { formatWholePercent } from "../../lib/format/units.ts";
-import Meter from "../ui/Meter.tsx";
+import LabeledBar from "./LabeledBar.tsx";
 
 export type BarOption = {
   id: string;
@@ -20,26 +20,17 @@ export default function OptionBars(props: Props) {
   const share = (o: BarOption) => (total() > 0 ? (o.value / total()) * 100 : 0);
 
   return (
-    <div
-      class={`grid items-center gap-x-3 gap-y-2 ${
-        props.action ? "grid-options-action" : "grid-options"
-      }`}
-    >
+    <div class="flex flex-col gap-3">
       <For each={props.options}>
         {(o) => (
-          <>
-            <span class="truncate text-ink">{o.title}</span>
-            <Meter
-              value={o.value}
-              max={total()}
-              label={o.title}
-              tone={o.value > 0 && o.value === top() ? "accent" : "neutral"}
-            />
-            <span class="text-right text-ink-soft tabular-nums">
-              {o.detail} · {formatWholePercent(share(o))}
-            </span>
-            <Show when={props.action}>{(action) => action()(o)}</Show>
-          </>
+          <LabeledBar
+            label={o.title}
+            detail={`${o.detail} · ${formatWholePercent(share(o))}`}
+            value={o.value}
+            max={total()}
+            tone={o.value > 0 && o.value === top() ? "accent" : "neutral"}
+            action={props.action?.(o)}
+          />
         )}
       </For>
     </div>

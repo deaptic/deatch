@@ -1,3 +1,5 @@
+import { ACTIVITIES } from "../../constants/activities.ts";
+import { fromKeys } from "../../utils/fromKeys.ts";
 import { systemLanguage } from "../../i18n/index.ts";
 import type { UserPreferences } from "./schema.ts";
 
@@ -68,6 +70,7 @@ export const DEFAULTS: Defaults = {
     theme: "system",
     accent: null,
     railExpanded: false,
+    activities: fromKeys(ACTIVITIES, () => true),
     uiDensity: "default",
     zoom: 100,
   },

@@ -25,6 +25,7 @@ import {
   MAX_CHANNEL_GAIN,
 } from "../../constants/audio.ts";
 import { fromKeys } from "../../utils/fromKeys.ts";
+import { ACTIVITIES, type ActivityKind } from "../../constants/activities.ts";
 import { DEFAULTS as defaults } from "./defaults.ts";
 
 type ShowPref = { show: boolean };
@@ -127,6 +128,7 @@ export type UserPreferences = {
     theme: Theme;
     accent: string | null;
     railExpanded: boolean;
+    activities: Record<ActivityKind, boolean>;
     uiDensity: UiDensity;
     zoom: number;
   };
@@ -442,6 +444,12 @@ export function sanitize(raw: unknown): UserPreferences {
       railExpanded: bool(
         stored.appearance?.railExpanded,
         DEFAULT_PREFERENCES.appearance.railExpanded,
+      ),
+      activities: fromKeys(ACTIVITIES, (key) =>
+        bool(
+          stored.appearance?.activities?.[key],
+          DEFAULT_PREFERENCES.appearance.activities[key],
+        ),
       ),
       uiDensity: sanitizeUiDensity(stored.appearance?.uiDensity),
       zoom: sanitizeStop(

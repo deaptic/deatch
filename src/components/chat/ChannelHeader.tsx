@@ -1,9 +1,8 @@
 import { Clock, Gamepad2, Info, Moon, Pencil, Users } from "lucide-solid";
-import { Show } from "solid-js";
+import { type JSX, Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
 import * as clock from "../../lib/services/clock.ts";
-import * as browser from "../../lib/services/browser.ts";
 import {
   formatUptime,
   formatViewers,
@@ -23,6 +22,7 @@ import IconButton from "../ui/IconButton.tsx";
 import ActivityStrip from "../channel-tools/ActivityStrip.tsx";
 import ConnectionBanner from "./ConnectionBanner.tsx";
 import { chatConnected } from "../../lib/stores/eventsub.ts";
+import ActivityMenuButton from "../channel-tools/ActivityMenuButton.tsx";
 import Presence from "../ui/Presence.tsx";
 
 type Props = {
@@ -40,6 +40,16 @@ export default function ChannelHeader(props: Props) {
   const titleCopy = createCopyable("text-ink-soft");
 
   const isBroadcaster = () => props.channel.id === user()?.id;
+  const avatar = (overlay?: JSX.Element) => (
+    <Avatar
+      src={props.channel.profileImageUrl}
+      alt={props.channel.displayName}
+      size={64}
+      square
+      presence={stream() ? "on-air" : "offline"}
+      overlay={overlay}
+    />
+  );
   const uptime = () => {
     const s = stream();
     return s ? formatUptime(s.startedAt, clock.now()) : "";
@@ -48,21 +58,21 @@ export default function ChannelHeader(props: Props) {
   return (
     <header class="shrink-0 flex flex-col bg-surface border-b border-line-soft">
       <div class="flex items-center gap-4 px-4 py-3" {...link.handlers}>
-        <button
-          type="button"
-          aria-label={t("MENU_OPEN_IN_BROWSER_LABEL")}
-          data-tip={t("MENU_OPEN_IN_BROWSER_LABEL")}
-          class="shrink-0 rounded-xs cursor-pointer pressable active:pressed"
-          onClick={() => browser.openChannel(props.channel.login)}
-        >
-          <Avatar
-            src={props.channel.profileImageUrl}
-            alt={props.channel.displayName}
-            size={64}
-            square
-            presence={stream() ? "on-air" : "offline"}
-          />
-        </button>
+        <Show when={isBroadcaster()} fallback={avatar()}>
+          <button
+            type="button"
+            aria-label={t("HEADER_EDIT_INFO_LABEL")}
+            data-tip={t("HEADER_EDIT_INFO_LABEL")}
+            class="group shrink-0 rounded-xs cursor-pointer pressable active:pressed"
+            onClick={() => setChannelForm("info")}
+          >
+            {avatar(
+              <span class="absolute inset-0 grid place-items-center rounded-xs bg-media-scrim text-on-accent opacity-0 transition-opacity duration-quick group-hover:opacity-100 group-focus-visible:opacity-100 [&>svg]:size-6">
+                <Pencil />
+              </span>,
+            )}
+          </button>
+        </Show>
         <div class="flex-1 min-w-0 flex flex-col">
           <div class="flex items-center gap-4 min-w-0">
             <h1
@@ -92,7 +102,7 @@ export default function ChannelHeader(props: Props) {
               </Show>
             </div>
           </div>
-          <Show when={title() || stream() || isBroadcaster()}>
+          <Show when={title() || stream() || canModerate(props.channel.id)}>
             <div class="mt-1 flex items-center gap-2 min-w-0">
               <p
                 class={`min-w-0 text-body truncate ${titleCopy.class()}`}
@@ -113,14 +123,8 @@ export default function ChannelHeader(props: Props) {
                     </IconButton>
                   )}
                 </Show>
-                <Show when={isBroadcaster()}>
-                  <IconButton
-                    label={t("HEADER_EDIT_INFO_LABEL")}
-                    size="sm"
-                    onClick={() => setChannelForm("info")}
-                  >
-                    <Pencil class="size-4" />
-                  </IconButton>
+                <Show when={canModerate(props.channel.id)}>
+                  <ActivityMenuButton broadcasterId={props.channel.id} />
                 </Show>
               </span>
             </div>
