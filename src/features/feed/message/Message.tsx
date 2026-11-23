@@ -10,7 +10,7 @@ import type {
 } from "../../../lib/types/index.ts";
 import type { Density } from "../../../lib/constants/density.ts";
 import { isMention } from "../entries/mention.ts";
-import { feedShowAvatars } from "../../../lib/stores/preferences.ts";
+import { feedShowAvatars } from "../../preferences/index.ts";
 import { withoutReplyMention } from "../entries/message.ts";
 import * as automod from "../automod.ts";
 import { formatSuspicious } from "../entries/suspiciousText.ts";

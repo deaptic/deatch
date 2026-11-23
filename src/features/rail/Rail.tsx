@@ -4,7 +4,7 @@ import * as browser from "../../lib/services/browser.ts";
 import {
   appearanceRailExpanded,
   pinnedChannels,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import * as link from "../link/index.ts";

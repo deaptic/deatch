@@ -2,7 +2,7 @@ import { createEffect, createRoot } from "solid-js";
 import type { Focus } from "../../lib/types/index.ts";
 import { setEventsubChannels } from "../../platform/twitch/eventsub.ts";
 import { lastChannel, selectedChannel } from "../../lib/stores/view.ts";
-import { pinnedChannels } from "../../lib/stores/preferences.ts";
+import { pinnedChannels } from "../preferences/index.ts";
 import { user } from "../users/index.ts";
 import { followedLive } from "./streams.ts";
 import * as link from "../link/index.ts";

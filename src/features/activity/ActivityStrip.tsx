@@ -1,6 +1,6 @@
 import { onMount } from "solid-js";
 import * as raid from "./raid.ts";
-import { activityShown } from "../../lib/stores/preferences/appearance.ts";
+import { activityShown } from "../preferences/index.ts";
 import * as activity from "./store.ts";
 import * as clock from "../../lib/services/clock.ts";
 import Transition from "../../kit/Transition.tsx";

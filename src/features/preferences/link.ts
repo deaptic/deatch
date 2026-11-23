@@ -4,7 +4,7 @@ import {
   type CompressorControl,
   DEFAULT_CHANNEL_GAIN,
   DEFAULT_COMPRESSOR,
-} from "../../constants/audio.ts";
+} from "../../lib/constants/audio.ts";
 import { prefs, setPrefs } from "./core.ts";
 
 export const linkAudioLink = () => prefs.link.audioLink;

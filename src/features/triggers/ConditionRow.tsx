@@ -10,7 +10,7 @@ import {
   type Condition,
   CONDITION_OPS,
   type ConditionOp,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { type MessageKey, t } from "../../shared/i18n/index.ts";
 
 const OP_LABELS: Record<ConditionOp, MessageKey> = {

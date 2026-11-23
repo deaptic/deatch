@@ -8,7 +8,7 @@ import {
   moderationAutoShoutoutOnRaid,
   setModerationActionsDisabled,
   setModerationAutoShoutoutOnRaid,
-} from "../../../lib/stores/preferences.ts";
+} from "../../preferences/index.ts";
 
 export default function ModerationSettings() {
   return (

@@ -1,7 +1,7 @@
 import { createResource, For, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import { streamForUserId } from "../channels/index.ts";
-import { recentChannels } from "../../lib/stores/preferences.ts";
+import { recentChannels } from "../preferences/index.ts";
 import { users } from "../users/index.ts";
 import ChannelTile from "./ui/ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";

@@ -2,8 +2,8 @@
 document.addEventListener("contextmenu", (e) => e.preventDefault(), true);
 import { render } from "solid-js/web";
 import App from "./App.tsx";
-import * as preferences from "./lib/services/preferences.ts";
-import * as storage from "./lib/utils/storage.ts";
+import * as preferences from "./features/preferences/index.ts";
+import * as storage from "./platform/storage.ts";
 
 storage.prune();
 preferences.load();

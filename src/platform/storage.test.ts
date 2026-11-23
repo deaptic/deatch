@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from "vite-plus/test";
-import { STORAGE_KEYS, userEmotesKey } from "../constants/storage.ts";
+import { STORAGE_KEYS, userEmotesKey } from "./storageKeys.ts";
 import { prune, read, removeWhere, write } from "./storage.ts";
 
 const KEY = STORAGE_KEYS.mentions;

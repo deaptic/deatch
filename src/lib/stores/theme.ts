@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import type { ResolvedTheme } from "../constants/theme.ts";
-import { appearanceTheme } from "./preferences.ts";
+import { appearanceTheme } from "../../features/preferences/index.ts";
 
 export const [systemPrefersDark, setSystemPrefersDark] = createSignal(false);
 

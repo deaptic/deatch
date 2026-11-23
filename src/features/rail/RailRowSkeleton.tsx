@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
+import { appearanceRailExpanded } from "../preferences/index.ts";
 import Skeleton from "../../kit/Skeleton.tsx";
 import { RAIL_ROW_HEIGHT } from "../../kit/density.ts";
 

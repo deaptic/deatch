@@ -1,4 +1,4 @@
-import { feedUserOverrideNameColor } from "../../lib/stores/preferences.ts";
+import { feedUserOverrideNameColor } from "../preferences/index.ts";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
 import { readableColor } from "../../lib/utils/color.ts";
 

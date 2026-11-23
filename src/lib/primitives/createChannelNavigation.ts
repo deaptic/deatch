@@ -12,7 +12,7 @@ import {
   setSelectedChannel,
 } from "../stores/view.ts";
 import * as link from "../../features/link/index.ts";
-import { rememberChannel } from "../stores/preferences.ts";
+import { rememberChannel } from "../../features/preferences/index.ts";
 import { linkFocus } from "../../platform/link.ts";
 import { reportFailure } from "../../platform/invoke.ts";
 import { ensureFeed } from "../../features/feed/index.ts";

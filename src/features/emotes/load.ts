@@ -3,7 +3,7 @@ import {
   STORAGE_KEYS,
   type StorageKey,
   userEmotesKey,
-} from "../../lib/constants/storage.ts";
+} from "../../platform/storageKeys.ts";
 import { type EmoteUse, withUse } from "./emoteUsage.ts";
 import {
   bttvGetChannelEmotes,
@@ -53,7 +53,7 @@ import { createBackoff } from "../../lib/utils/backoff.ts";
 import { loadCache, saveCache } from "../../lib/utils/cache.ts";
 import { emoteMap } from "./emoteMap.ts";
 import { dedupeById } from "./emoteSections.ts";
-import * as storage from "../../lib/utils/storage.ts";
+import * as storage from "../../platform/storage.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;

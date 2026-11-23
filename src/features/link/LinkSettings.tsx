@@ -20,7 +20,7 @@ import {
   resetCompressorSettings,
   setCompressorControl,
   setLinkCompressor,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 const db = (value: number) => `${value} dB`;
 const ms = (value: number) => `${value} ms`;

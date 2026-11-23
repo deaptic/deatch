@@ -3,10 +3,7 @@ import { beforeEach, expect, test, vi } from "vite-plus/test";
 import type { FeedEntry, User } from "../../../lib/types/index.ts";
 import { userFromRef } from "../../../shared/user.ts";
 import { commitSelectedChannel } from "../../../lib/stores/view.ts";
-import {
-  setFeedEvent,
-  setFeedShowEvents,
-} from "../../../lib/stores/preferences/feed.ts";
+import { setFeedEvent, setFeedShowEvents } from "../../preferences/index.ts";
 import { ensureFeed, setFeeds } from "./core.ts";
 import { appendItem } from "./write.ts";
 import {

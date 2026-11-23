@@ -13,7 +13,7 @@ import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../../shared/solid/createListbox.ts";
 import { users } from "../users/index.ts";
 import { channelsInOrder, streamForUserId } from "../channels/index.ts";
-import { pinnedChannels } from "../../lib/stores/preferences.ts";
+import { pinnedChannels } from "../preferences/index.ts";
 import { pins } from "../rail/index.ts";
 import * as link from "../link/index.ts";
 import { user } from "../users/index.ts";

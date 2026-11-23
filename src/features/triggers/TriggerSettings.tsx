@@ -5,7 +5,7 @@ import PageBody from "../../kit/PageBody.tsx";
 import Button from "../../kit/Button.tsx";
 import TriggerCard from "./TriggerCard.tsx";
 import BuiltIns from "./BuiltIns.tsx";
-import { type Trigger } from "../../lib/stores/preferences.ts";
+import { type Trigger } from "../preferences/index.ts";
 import {
   blankTrigger,
   removeTrigger,

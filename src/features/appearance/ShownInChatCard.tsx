@@ -10,7 +10,7 @@ import {
   feedShowEvents,
   setFeedEvent,
   setFeedShowEvents,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 export default function ShownInChatCard() {
   return (

@@ -20,7 +20,7 @@ import {
   type Trigger,
   TRIGGER_ROLES,
   type TriggerRole,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { sameTriggerSettings } from "./saved.ts";
 
 const ROLE_LABELS: Record<TriggerRole, MessageKey> = {

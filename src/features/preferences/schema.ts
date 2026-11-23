@@ -1,17 +1,17 @@
-import { RECENT_LIMIT } from "../../utils/recentChannels.ts";
-import type { Anchor } from "../../../shared/wordMatch.ts";
+import { RECENT_LIMIT } from "./recentChannels.ts";
+import type { Anchor } from "../../shared/wordMatch.ts";
 import {
   BADGE_CATEGORIES,
   type BadgeCategoryKey,
-} from "../../constants/badges.ts";
-import { EVENTS, type EventKey } from "../../constants/events.ts";
-import { DENSITIES, type Density } from "../../constants/density.ts";
-import { type Theme, THEMES } from "../../constants/theme.ts";
+} from "../../lib/constants/badges.ts";
+import { EVENTS, type EventKey } from "../../lib/constants/events.ts";
+import { DENSITIES, type Density } from "../../lib/constants/density.ts";
+import { type Theme, THEMES } from "../../lib/constants/theme.ts";
 import {
   type Language,
   LANGUAGES,
   systemLanguage,
-} from "../../../shared/i18n/index.ts";
+} from "../../shared/i18n/index.ts";
 import {
   clampToStops,
   FONT_SIZE_STEPS,
@@ -20,16 +20,19 @@ import {
   UI_DENSITIES,
   type UiDensity,
   ZOOM_STEPS,
-} from "../../../shared/accessibility.ts";
+} from "../../shared/accessibility.ts";
 import {
   clampControl,
   COMPRESSOR_CONTROLS,
   type CompressorSettings,
   DEFAULT_COMPRESSOR,
   MAX_CHANNEL_GAIN,
-} from "../../constants/audio.ts";
-import { fromKeys } from "../../utils/fromKeys.ts";
-import { ACTIVITIES, type ActivityKind } from "../../constants/activities.ts";
+} from "../../lib/constants/audio.ts";
+import { fromKeys } from "../../lib/utils/fromKeys.ts";
+import {
+  ACTIVITIES,
+  type ActivityKind,
+} from "../../lib/constants/activities.ts";
 import { DEFAULTS as defaults } from "./defaults.ts";
 
 type ShowPref = { show: boolean };

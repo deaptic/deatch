@@ -20,7 +20,7 @@ import {
   setAdvancedDeveloperMode,
   setAdvancedDiscordRichPresence,
   setAdvancedShowLogs,
-} from "../../../lib/stores/preferences.ts";
+} from "../../preferences/index.ts";
 import Transition from "../../../kit/Transition.tsx";
 
 export default function AdvancedSettings() {

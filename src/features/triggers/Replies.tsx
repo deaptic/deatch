@@ -10,7 +10,7 @@ import ResponseField, {
 import { BLANK_CONDITION } from "./conditionGroups.ts";
 import { moved } from "../../lib/utils/moved.ts";
 import { removedAt, replacedAt } from "../../lib/utils/listEdit.ts";
-import type { ConditionalReply } from "../../lib/stores/preferences.ts";
+import type { ConditionalReply } from "../preferences/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 const BLANK_REPLY: ConditionalReply = { when: [[BLANK_CONDITION]], text: "" };

@@ -1,7 +1,7 @@
-import { STORAGE_KEYS } from "../constants/storage.ts";
+import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import { createEffect, createRoot } from "solid-js";
-import { prefs, restorePreferences } from "../stores/preferences.ts";
-import * as storage from "../utils/storage.ts";
+import { prefs, restorePreferences } from "./core.ts";
+import * as storage from "../../platform/storage.ts";
 import { setLocale } from "../../shared/i18n/index.ts";
 
 export function load(): void {

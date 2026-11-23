@@ -1,4 +1,4 @@
-import { isStorageKey, type StorageKey } from "../constants/storage.ts";
+import { isStorageKey, type StorageKey } from "./storageKeys.ts";
 
 export function read(key: StorageKey): unknown {
   try {

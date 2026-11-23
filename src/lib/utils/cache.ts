@@ -1,5 +1,5 @@
-import type { StorageKey } from "../constants/storage.ts";
-import * as storage from "./storage.ts";
+import type { StorageKey } from "../../platform/storageKeys.ts";
+import * as storage from "../../platform/storage.ts";
 
 type Cached<T> = { ts: number; data: T };
 

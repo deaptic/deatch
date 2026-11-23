@@ -16,7 +16,7 @@ import * as chatModes from "../../features/chat-modes/index.ts";
 import * as link from "../../features/link/index.ts";
 import * as feed from "../../features/feed/index.ts";
 import * as chat from "../../features/chat/index.ts";
-import * as preferences from "../services/preferences.ts";
+import * as preferences from "../../features/preferences/index.ts";
 import * as exit from "../services/exit.ts";
 import * as discord from "../services/discord.ts";
 import * as windowState from "../services/windowState.ts";

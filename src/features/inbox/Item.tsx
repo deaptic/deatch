@@ -8,7 +8,7 @@ import {
   feedDensity,
   feedKeywords,
   feedShowTimestamp,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import Card from "../../kit/Card.tsx";
 import IconButton from "../../kit/IconButton.tsx";

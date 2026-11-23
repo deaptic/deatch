@@ -13,7 +13,7 @@ import {
   setFeedShowCopypasta,
   setFeedShowDeletedContent,
   setFeedShowTimestamp,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 export default function MessagesCard() {
   return (

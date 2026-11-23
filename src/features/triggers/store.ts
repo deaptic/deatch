@@ -14,7 +14,7 @@ import {
   type Condition,
   MIN_TRIGGER_COOLDOWN,
   type Trigger,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { countReply, builtInEnabled, customTriggers } from "./saved.ts";
 
 type IncomingMessage = {

@@ -10,7 +10,7 @@ import {
   feedShowBadges,
   setFeedBadge,
   setFeedShowBadges,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 export default function BadgesCard() {
   return (

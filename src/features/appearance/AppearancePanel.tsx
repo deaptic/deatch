@@ -46,7 +46,7 @@ import {
   stepFeedFontSize,
   stepFeedGroupSpacing,
   setFeedDensity,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { openSettings } from "../../lib/stores/view.ts";
 import Popover from "../../kit/Popover.tsx";
 import IconButton from "../../kit/IconButton.tsx";

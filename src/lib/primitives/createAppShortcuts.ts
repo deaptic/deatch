@@ -15,7 +15,7 @@ import {
   setLinkAudioLink,
   stepAppearanceZoom,
   toggleFeedDensity,
-} from "../stores/preferences.ts";
+} from "../../features/preferences/index.ts";
 import { channelsInOrder } from "../../features/channels/index.ts";
 import type { ChannelNavigation } from "./createChannelNavigation.ts";
 import type { LinkControls } from "../../features/link/index.ts";

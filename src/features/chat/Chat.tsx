@@ -48,7 +48,7 @@ import {
   feedFontSize,
   feedKeywords,
   feedShowCopypasta,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { createPopover } from "../../kit/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import Transition from "../../kit/Transition.tsx";

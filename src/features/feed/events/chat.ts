@@ -7,7 +7,7 @@ import type { RawChatMessage } from "../../../lib/types/index.ts";
 import { appendItem } from "../store/index.ts";
 import { knownUser, recordChatter, user } from "../../users/index.ts";
 import * as inbox from "../../inbox/index.ts";
-import { feedKeywords } from "../../../lib/stores/preferences.ts";
+import { feedKeywords } from "../../preferences/index.ts";
 import { mentionReason } from "../entries/mention.ts";
 import { chatterOf, mapChatMessage } from "../entries/chat.ts";
 import * as channelPoints from "../channelPoints.ts";

@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
+import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import {
   getChannelChatBadges,
   getGlobalChatBadges,

@@ -1,4 +1,4 @@
-import { remember } from "../../utils/recentChannels.ts";
+import { remember } from "./recentChannels.ts";
 import { prefs, setPrefs } from "./core.ts";
 
 export const exploreLanguage = () => prefs.explore.language;

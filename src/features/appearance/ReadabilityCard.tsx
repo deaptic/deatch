@@ -13,7 +13,7 @@ import {
   setFeedFontSize,
   setFeedUserOverrideNameColor,
   setFeedUserShowDisplayName,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 import { formatPx } from "../../shared/format/units.ts";
 import { DEFAULT_ACCENT_HEX } from "../../lib/constants/theme.ts";

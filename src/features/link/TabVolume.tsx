@@ -5,7 +5,7 @@ import {
   DEFAULT_CHANNEL_GAIN,
   MAX_CHANNEL_GAIN,
 } from "../../lib/constants/audio.ts";
-import { channelGain, setChannelGain } from "../../lib/stores/preferences.ts";
+import { channelGain, setChannelGain } from "../preferences/index.ts";
 
 type Props = {
   login: string;

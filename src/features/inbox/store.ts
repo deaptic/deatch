@@ -1,13 +1,13 @@
-import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
+import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import { createEffect, createRoot, createSignal } from "solid-js";
 import notificationSound from "../../assets/notification.mp3";
 import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
-import { notificationsMentionSound } from "../../lib/stores/preferences.ts";
+import { notificationsMentionSound } from "../preferences/index.ts";
 import { selectedChannel } from "../../lib/stores/view.ts";
 import type { Mention } from "../../lib/types/index.ts";
-import * as storage from "../../lib/utils/storage.ts";
+import * as storage from "../../platform/storage.ts";
 
 const [mentions, setMentions] = createSignal<Mention[]>([]);
 export { mentions };

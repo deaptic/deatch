@@ -1,4 +1,4 @@
-import type { Trigger, TriggerRole } from "../../lib/stores/preferences.ts";
+import type { Trigger, TriggerRole } from "../preferences/index.ts";
 import { matchEnd } from "../../shared/wordMatch.ts";
 
 export type Fired = { trigger: Trigger; args: string };

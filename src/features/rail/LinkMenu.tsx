@@ -19,7 +19,7 @@ import {
   linkCompressor,
   setLinkAudioLink,
   setLinkCompressor,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { t } from "../../shared/i18n/index.ts";

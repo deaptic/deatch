@@ -6,10 +6,7 @@ import * as activity from "./store.ts";
 import * as raid from "./raid.ts";
 import { runningActivities } from "./running.ts";
 import { ACTIVITIES, ACTIVITY_LABELS } from "../../lib/constants/activities.ts";
-import {
-  activityShown,
-  setActivityShown,
-} from "../../lib/stores/preferences/appearance.ts";
+import { activityShown, setActivityShown } from "../preferences/index.ts";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import { ActivityIcon } from "./ui/ActivityIcon.tsx";

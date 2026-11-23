@@ -1,4 +1,4 @@
-import { advancedShowLogs } from "../lib/stores/preferences.ts";
+import { advancedShowLogs } from "../features/preferences/index.ts";
 import { addToast } from "../kit/toasts.ts";
 import { errorMessage } from "../lib/utils/error.ts";
 import { listSize } from "../lib/utils/listSize.ts";

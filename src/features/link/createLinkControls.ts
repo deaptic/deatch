@@ -13,7 +13,7 @@ import {
   linkAudioLink,
   linkChannelGains,
   linkCompressor,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import * as link from "./store.ts";
 import { at } from "../../lib/utils/at.ts";
 import { wrapIndex } from "../../shared/solid/createListNavigation.ts";

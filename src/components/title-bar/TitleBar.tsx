@@ -23,7 +23,7 @@ import {
   advancedDeveloperMode,
   appearanceRailExpanded,
   setAppearanceRailExpanded,
-} from "../../lib/stores/preferences.ts";
+} from "../../features/preferences/index.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import Badge from "../../kit/Badge.tsx";
 import TitleBarButton from "../../kit/TitleBarButton.tsx";

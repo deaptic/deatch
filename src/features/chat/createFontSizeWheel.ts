@@ -1,8 +1,5 @@
 import { formatPx } from "../../shared/format/units.ts";
-import {
-  feedFontSize,
-  stepFeedFontSize,
-} from "../../lib/stores/preferences.ts";
+import { feedFontSize, stepFeedFontSize } from "../preferences/index.ts";
 import * as readout from "../../lib/services/readout.ts";
 
 export function createFontSizeWheel() {

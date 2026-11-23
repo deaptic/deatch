@@ -4,7 +4,7 @@ import {
   pinChannel,
   reorderPinnedChannels,
   unpinChannel,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import type { User } from "../../lib/types/index.ts";
 
 export function add(channel: User): PinOutcome {

@@ -34,7 +34,7 @@ import {
   feedShowTimestamp,
   feedGroupMessages,
   feedShowAvatars,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import FeedRow from "./FeedRow.tsx";
 import Divider from "../../kit/Divider.tsx";

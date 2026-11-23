@@ -1,7 +1,7 @@
 import { feeds, isSilent, lastVisible, setFeeds } from "./core.ts";
 import { getEntryId } from "./entryId.ts";
 import { selectedChannel } from "../../../lib/stores/view.ts";
-import { feedEvents, feedShowEvents } from "../../../lib/stores/preferences.ts";
+import { feedEvents, feedShowEvents } from "../../preferences/index.ts";
 import { NOTICE_TO_EVENT } from "../../../lib/constants/events.ts";
 import type { FeedEntry } from "../../../lib/types/index.ts";
 import { historyViews } from "../history/views.ts";

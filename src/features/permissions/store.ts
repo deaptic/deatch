@@ -5,7 +5,7 @@ import {
   meets,
   roleOf,
 } from "./model.ts";
-import { moderationActionsDisabled } from "../../lib/stores/preferences/moderation.ts";
+import { moderationActionsDisabled } from "../preferences/index.ts";
 import { moderatedChannels } from "./moderated.ts";
 import { user } from "../users/index.ts";
 

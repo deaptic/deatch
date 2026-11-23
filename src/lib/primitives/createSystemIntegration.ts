@@ -10,7 +10,7 @@ import {
   appearanceZoom,
   feedFontSize,
   feedGroupSpacing,
-} from "../stores/preferences.ts";
+} from "../../features/preferences/index.ts";
 import { resolvedTheme } from "../stores/theme.ts";
 import * as appearance from "../services/appearance.ts";
 import * as discord from "../services/discord.ts";

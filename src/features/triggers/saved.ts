@@ -1,9 +1,10 @@
-import { prefs, setPrefs } from "../../lib/stores/preferences/core.ts";
 import {
+  prefs,
+  setPrefs,
   type BuiltInTrigger,
   MIN_TRIGGER_COOLDOWN,
   type Trigger,
-} from "../../lib/stores/preferences/schema.ts";
+} from "../preferences/index.ts";
 
 export const customTriggers = () => prefs.triggers.custom;
 export const builtInEnabled = (builtIn: BuiltInTrigger) =>

@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
 import { liveStreams, resolveUser } from "../channels/index.ts";
 import { filters } from "./store.ts";
-import { exploreLanguage } from "../../lib/stores/preferences.ts";
+import { exploreLanguage } from "../preferences/index.ts";
 import { byViewers, matchingStreams } from "./model.ts";
 import ChannelTile from "./ui/ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";

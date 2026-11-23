@@ -10,10 +10,7 @@ import {
 } from "../../shared/solid/createListbox.ts";
 import { liveStreams } from "../channels/index.ts";
 import { popular } from "./store.ts";
-import {
-  exploreLanguage,
-  setExploreLanguage,
-} from "../../lib/stores/preferences.ts";
+import { exploreLanguage, setExploreLanguage } from "../preferences/index.ts";
 import { orderLanguages } from "./languages.ts";
 import { at } from "../../lib/utils/at.ts";
 import { t } from "../../shared/i18n/index.ts";

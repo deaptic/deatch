@@ -1,5 +1,5 @@
 import type { MessageKey } from "../../../shared/i18n/index.ts";
-import type { BuiltInTrigger } from "../../../lib/stores/preferences.ts";
+import type { BuiltInTrigger } from "../../preferences/index.ts";
 import type { BuiltInContext } from "./context.ts";
 import { accountage } from "./accountage.ts";
 import { followageOf } from "./followage.ts";

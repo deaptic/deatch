@@ -1,14 +1,14 @@
-import type { ActivityKind } from "../../constants/activities.ts";
-import type { Theme } from "../../constants/theme.ts";
+import type { ActivityKind } from "../../lib/constants/activities.ts";
+import type { Theme } from "../../lib/constants/theme.ts";
 import {
   clampToStops,
   DEFAULT_ZOOM,
   stepStop,
   type UiDensity,
   ZOOM_STEPS,
-} from "../../../shared/accessibility.ts";
+} from "../../shared/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
-import type { Language } from "../../../shared/i18n/index.ts";
+import type { Language } from "../../shared/i18n/index.ts";
 
 export const appearanceTheme = () => prefs.appearance.theme;
 export const appearanceLanguage = () => prefs.appearance.language;

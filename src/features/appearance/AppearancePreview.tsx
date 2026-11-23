@@ -6,7 +6,7 @@ import {
   feedDensity,
   feedShowDeletedContent,
   feedShowTimestamp,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 import { users } from "../users/index.ts";
 import { user } from "../users/index.ts";
 import { feedEvent, layoutFeed, FeedRow } from "../feed/index.ts";

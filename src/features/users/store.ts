@@ -1,12 +1,12 @@
 import * as chatters from "./chatters.ts";
-import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
+import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import { untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
 import { getUsers } from "../../platform/twitch/users.ts";
 import { getFollowedAt } from "../../platform/twitch/channels.ts";
 import { getUserChatColor } from "../../platform/twitch/chat.ts";
 import { type InvokeOptions, reportFailure } from "../../platform/invoke.ts";
-import { pinnedChannels } from "../../lib/stores/preferences.ts";
+import { pinnedChannels } from "../preferences/index.ts";
 import { knownUser, knownUsers, setKnownUsers } from "./known.ts";
 import { user as self } from "./account.ts";
 import { hasPermission } from "../permissions/index.ts";
@@ -16,7 +16,7 @@ import type {
   User,
   UserRef,
 } from "../../lib/types/index.ts";
-import * as storage from "../../lib/utils/storage.ts";
+import * as storage from "../../platform/storage.ts";
 import { addToast } from "../../kit/toasts.ts";
 import {
   changedEntries,

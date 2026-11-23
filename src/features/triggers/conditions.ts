@@ -1,4 +1,4 @@
-import type { ConditionOp } from "../../lib/stores/preferences.ts";
+import type { ConditionOp } from "../preferences/index.ts";
 
 export const needsValue = (op: ConditionOp) => op !== "set" && op !== "empty";
 

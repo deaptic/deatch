@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
+import { appearanceRailExpanded } from "../preferences/index.ts";
 
 export default function RailDivider(props: { label?: string }) {
   return (

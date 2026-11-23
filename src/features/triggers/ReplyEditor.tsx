@@ -11,10 +11,7 @@ import {
   removeCondition,
   updateCondition,
 } from "./conditionGroups.ts";
-import type {
-  Condition,
-  ConditionalReply,
-} from "../../lib/stores/preferences.ts";
+import type { Condition, ConditionalReply } from "../preferences/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 type Props = Targeting & {

@@ -23,10 +23,7 @@ import MenuItem from "../../kit/MenuItem.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import { TabVolume } from "../link/index.ts";
-import {
-  advancedDeveloperMode,
-  pinnedChannels,
-} from "../../lib/stores/preferences.ts";
+import { advancedDeveloperMode, pinnedChannels } from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import { pins } from "../rail/index.ts";
 import { hasUnread } from "../feed/index.ts";

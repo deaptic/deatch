@@ -3,7 +3,7 @@ import Badge from "../../kit/Badge.tsx";
 import RowIndicator from "../../kit/RowIndicator.tsx";
 import { createSideTip } from "../../kit/createSideTip.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";
-import { appearanceRailExpanded } from "../../lib/stores/preferences.ts";
+import { appearanceRailExpanded } from "../preferences/index.ts";
 import { RAIL_ROW_HEIGHT } from "../../kit/density.ts";
 import { onMiddleClick } from "../../lib/utils/middleClick.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";

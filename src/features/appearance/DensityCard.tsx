@@ -19,7 +19,7 @@ import {
   setFeedDensity,
   setFeedGroupMessages,
   setFeedGroupSpacing,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 import { formatPx, formatWholePercent } from "../../shared/format/units.ts";
 export default function DensityCard() {

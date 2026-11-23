@@ -5,7 +5,7 @@ import type {
   FeedMessage as Message,
   Reaction,
 } from "../../../lib/types/index.ts";
-import { feedShowCopypasta } from "../../../lib/stores/preferences.ts";
+import { feedShowCopypasta } from "../../preferences/index.ts";
 import { OVERLAY_GAP } from "../../../kit/Popover.tsx";
 import Toolbar from "../../../kit/Toolbar.tsx";
 import ToolbarItem from "../../../kit/ToolbarItem.tsx";

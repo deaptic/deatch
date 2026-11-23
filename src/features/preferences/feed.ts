@@ -1,12 +1,12 @@
-import type { BadgeCategoryKey } from "../../constants/badges.ts";
-import type { EventKey } from "../../constants/events.ts";
-import type { Density } from "../../constants/density.ts";
+import type { BadgeCategoryKey } from "../../lib/constants/badges.ts";
+import type { EventKey } from "../../lib/constants/events.ts";
+import type { Density } from "../../lib/constants/density.ts";
 import {
   clampToStops,
   FONT_SIZE_STEPS,
   GROUP_SPACING_STEPS,
   stepStop,
-} from "../../../shared/accessibility.ts";
+} from "../../shared/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
 
 export const feedFontSize = () => prefs.feed.fontSize;

@@ -13,7 +13,7 @@ import {
   setAppearanceAccent,
   setAppearanceLanguage,
   setAppearanceTheme,
-} from "../../lib/stores/preferences.ts";
+} from "../preferences/index.ts";
 
 export default function ThemeCard() {
   return (
