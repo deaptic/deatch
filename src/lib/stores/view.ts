@@ -2,18 +2,27 @@ import { createSignal } from "solid-js";
 import type { User } from "../types/index.ts";
 import { emptyVisits, step, visit } from "../utils/visits.ts";
 import { at } from "../utils/at.ts";
+import {
+  channelOf,
+  leavePage as leaveNavigationPage,
+  type Navigation,
+  openChannel,
+  openExplore,
+  startNavigation,
+  toggleSettings as toggleNavigationSettings,
+} from "../utils/navigation.ts";
 
-type ActiveView = "explore" | "settings" | User;
+const [navigation, setNavigation] =
+  createSignal<Navigation<User>>(startNavigation());
 
-const [activeView, setActiveView] = createSignal<ActiveView>("explore");
-export { activeView };
+export const activeView = () => navigation().view;
+export const lastChannel = () => navigation().last;
 
 export const sameChannel = (a: User | null, b: User | null) =>
   (a?.id ?? null) === (b?.id ?? null);
 
 export function pendingChannel(): User | null {
-  const v = activeView();
-  return typeof v === "string" ? null : v;
+  return channelOf(activeView());
 }
 
 const [selectedChannel, commitSelectedChannel] = createSignal<User | null>(
@@ -38,11 +47,6 @@ const [settingsSection, setSettingsSection] =
   createSignal<SettingsSection>("notifications");
 export { setSettingsSection, settingsSection };
 
-let beforeSettings: Exclude<ActiveView, "settings"> = "explore";
-
-const [lastChannel, setLastChannel] = createSignal<User | null>(null);
-export { lastChannel };
-
 let visits = emptyVisits<User>();
 
 export function recordVisit(channel: User) {
@@ -57,30 +61,22 @@ export function stepVisits(delta: 1 | -1): User | null {
 }
 
 export function showExplore() {
-  setActiveView("explore");
+  setNavigation(openExplore);
   setLinkSynced(false);
 }
 
 export function resetView() {
   visits = emptyVisits();
-  setLastChannel(null);
-  beforeSettings = "explore";
-  showExplore();
+  setNavigation(startNavigation<User>());
+  setLinkSynced(false);
 }
 
 export function setSelectedChannel(channel: User) {
-  setLastChannel(channel);
-  setActiveView(channel);
+  setNavigation((nav) => openChannel(nav, channel));
 }
 
 export function toggleSettings() {
-  const v = activeView();
-  if (v === "settings") {
-    setActiveView(beforeSettings);
-    return;
-  }
-  beforeSettings = v;
-  setActiveView("settings");
+  setNavigation(toggleNavigationSettings);
 }
 
 export function openSettings(section: SettingsSection) {
@@ -89,17 +85,9 @@ export function openSettings(section: SettingsSection) {
 }
 
 export function leavePage(): boolean {
-  const v = activeView();
-  if (v === "settings") {
-    setActiveView(beforeSettings);
-    return true;
-  }
-  const back = lastChannel();
-  if (v === "explore" && back) {
-    setActiveView(back);
-    return true;
-  }
-  return false;
+  const next = leaveNavigationPage(navigation());
+  if (next) setNavigation(next);
+  return next !== null;
 }
 
 type JumpTarget = { broadcasterId: string; messageId: string };

@@ -1,3 +1,4 @@
+import { hasPermission } from "../stores/roles.ts";
 import {
   getChannelModerators,
   getChannelVips,
@@ -18,7 +19,7 @@ const loadingMore = new Set<string>();
 
 const ids = (list: { id: string }[]) => list.map((u) => u.id);
 
-export function load(broadcasterId: string, isOwner: boolean): void {
+export function load(broadcasterId: string): void {
   getChatters({ broadcasterId, cursor: null }, silent)
     .then((page) =>
       updateChatterList(broadcasterId, {
@@ -28,7 +29,7 @@ export function load(broadcasterId: string, isOwner: boolean): void {
       }),
     )
     .catch(() => {});
-  if (isOwner) loadRoles(broadcasterId);
+  if (hasPermission(broadcasterId, "manageRoles")) loadRoles(broadcasterId);
 }
 
 export function loadRoles(broadcasterId: string): void {

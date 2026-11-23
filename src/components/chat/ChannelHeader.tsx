@@ -23,7 +23,7 @@ import type { User } from "../../lib/types/index.ts";
 import Avatar from "../ui/Avatar.tsx";
 import Stat from "../ui/Stat.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
-import { canModerate, user } from "../../lib/stores/users.ts";
+import { hasPermission, showsControls } from "../../lib/stores/roles.ts";
 import { ChannelToolForm } from "../channel-tools/ChannelToolsMenu.tsx";
 import { channelForm, setChannelForm } from "../../lib/stores/ui.ts";
 import IconButton from "../ui/IconButton.tsx";
@@ -48,7 +48,7 @@ export default function ChannelHeader(props: Props) {
   const name = createCopyable("text-ink");
   const titleCopy = createCopyable("text-ink-soft");
 
-  const isBroadcaster = () => props.channel.id === user()?.id;
+  const isBroadcaster = () => hasPermission(props.channel.id, "manageStream");
   const avatar = (overlay?: JSX.Element) => (
     <Avatar
       src={props.channel.profileImageUrl}
@@ -111,7 +111,11 @@ export default function ChannelHeader(props: Props) {
               </Show>
             </div>
           </div>
-          <Show when={title() || stream() || canModerate(props.channel.id)}>
+          <Show
+            when={
+              title() || stream() || showsControls(props.channel.id, "moderate")
+            }
+          >
             <div class="mt-1 flex items-center gap-2 min-w-0">
               <p
                 class={`min-w-0 text-body truncate ${titleCopy.class()}`}
@@ -132,7 +136,7 @@ export default function ChannelHeader(props: Props) {
                     </IconButton>
                   )}
                 </Show>
-                <Show when={canModerate(props.channel.id)}>
+                <Show when={showsControls(props.channel.id, "moderate")}>
                   <ActivityMenuButton broadcasterId={props.channel.id} />
                   <IconButton
                     label={t("HEADER_CHATTERS_LABEL")}
@@ -149,7 +153,7 @@ export default function ChannelHeader(props: Props) {
         </div>
       </div>
       <Presence when={!chatConnected()}>{() => <ConnectionBanner />}</Presence>
-      <Show when={canModerate(props.channel.id)}>
+      <Show when={showsControls(props.channel.id, "moderate")}>
         <ActivityStrip
           broadcasterId={props.channel.id}
           onOpenChannel={props.onOpenChannel}

@@ -11,7 +11,7 @@ import Dialog from "../ui/Dialog.tsx";
 import { autofocus } from "../../lib/reactive/focus.ts";
 import Textarea from "../ui/Textarea.tsx";
 import BanChoiceStrip from "./BanChoiceStrip.tsx";
-import { user } from "../../lib/stores/users.ts";
+import { hasPermission } from "../../lib/stores/roles.ts";
 import { t, tRich } from "../../lib/i18n/index.ts";
 
 type Props = {
@@ -38,7 +38,6 @@ export default function BanModal(props: Props) {
     return s.kind === "banned" ? s.ban : null;
   };
 
-  const isBroadcaster = () => user()?.id === props.broadcasterId;
   const confirmLabel = () => {
     const picked = choice();
     if (picked === "unban") return t("BAN_UNBAN_LABEL");
@@ -65,7 +64,7 @@ export default function BanModal(props: Props) {
   }
 
   onMount(() => {
-    if (!isBroadcaster()) {
+    if (!hasPermission(props.broadcasterId, "viewBans")) {
       setStatus({ kind: "clear" });
       return;
     }

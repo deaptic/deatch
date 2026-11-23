@@ -1,7 +1,8 @@
 import { Show } from "solid-js";
 import * as bans from "../../lib/services/bans.ts";
 import type { BanChoice } from "../../lib/constants/timeouts.ts";
-import { canModerate, user as currentUser } from "../../lib/stores/users.ts";
+import { user as currentUser } from "../../lib/stores/users.ts";
+import { showsControls } from "../../lib/stores/roles.ts";
 import BanChoiceStrip from "../ban-modal/BanChoiceStrip.tsx";
 
 type Props = {
@@ -12,7 +13,8 @@ type Props = {
 
 export default function UserCardModActions(props: Props) {
   const canModerateChatter = () =>
-    currentUser()?.id !== props.chatterId && canModerate(props.broadcasterId);
+    currentUser()?.id !== props.chatterId &&
+    showsControls(props.broadcasterId, "moderate");
 
   function apply(choice: BanChoice) {
     bans

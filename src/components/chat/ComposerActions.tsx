@@ -9,7 +9,7 @@ import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
 import MenuDivider from "../ui/MenuDivider.tsx";
 import MenuItem from "../ui/MenuItem.tsx";
 import * as chatSettings from "../../lib/services/chatSettings.ts";
-import { canModerate } from "../../lib/stores/users.ts";
+import { showsControls } from "../../lib/stores/roles.ts";
 import {
   closeOverlay,
   isOverlayOpen,
@@ -34,7 +34,7 @@ type Props = {
 export default function ComposerActions(props: Props) {
   const settings = () => chatSettingsFor(props.broadcasterId);
   const active = () => activeModes(settings());
-  const isMod = () => canModerate(props.broadcasterId);
+  const isMod = () => showsControls(props.broadcasterId, "moderate");
   const open = () => isOverlayOpen("composerActions");
   const live = () => streamForUserId(props.broadcasterId) !== undefined;
 

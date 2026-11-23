@@ -5,7 +5,7 @@ import { commandUsage } from "./usage.ts";
 const ban: Command = {
   name: "ban",
   description: "COMMAND_BAN_DESCRIPTION",
-  role: "mod",
+  role: "moderator",
   options: [
     {
       name: "user",

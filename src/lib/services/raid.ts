@@ -1,6 +1,6 @@
 import { cancelRaid, startRaid } from "../api/twitch/raids.ts";
 import { sendShoutout } from "../api/twitch/chat.ts";
-import { isModOfChannel } from "../stores/users.ts";
+import { hasPermission } from "../stores/roles.ts";
 import { moderationAutoShoutoutOnRaid } from "../stores/preferences.ts";
 import type { UserRef } from "../types/index.ts";
 import {
@@ -26,7 +26,8 @@ export async function cancel(fromId?: string): Promise<void> {
 }
 
 export function shoutOutRaider(channelId: string, raiderId: string): void {
-  if (!moderationAutoShoutoutOnRaid() || !isModOfChannel(channelId)) return;
+  if (!moderationAutoShoutoutOnRaid() || !hasPermission(channelId, "moderate"))
+    return;
   sendShoutout(
     { fromBroadcasterId: channelId, toBroadcasterId: raiderId },
     { silent: true },

@@ -1,3 +1,4 @@
+import type { ChannelRole } from "../../lib/utils/roles.ts";
 import type { MessageKey } from "../../lib/i18n/index.ts";
 
 export type CommandContext = {
@@ -29,13 +30,11 @@ export type CommandOption =
       search: (query: string) => Promise<OptionSuggestion[]>;
     });
 
-type CommandRole = "broadcaster" | "mod" | "regular";
-
 export type Command = {
   name: string;
   aliases?: string[];
   description: MessageKey;
-  role: CommandRole;
+  role: ChannelRole;
   options: CommandOption[];
   execute: (
     values: Record<string, unknown>,

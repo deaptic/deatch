@@ -7,12 +7,12 @@ import { getUserChatColor } from "../api/twitch/chat.ts";
 import { type InvokeOptions, reportFailure } from "../api/utils.ts";
 import { pinnedChannels } from "../stores/preferences.ts";
 import {
-  isModOfChannel,
   knownUser,
   knownUsers,
   setKnownUsers,
   user as self,
 } from "../stores/users.ts";
+import { hasPermission } from "../stores/roles.ts";
 import type {
   FollowStatus,
   GetUsersParams,
@@ -149,7 +149,7 @@ export async function followStatus(
   broadcasterId: string,
   chatterId: string,
 ): Promise<FollowStatus> {
-  if (self()?.id !== chatterId && !isModOfChannel(broadcasterId)) {
+  if (self()?.id !== chatterId && !hasPermission(broadcasterId, "moderate")) {
     return { kind: "hidden" };
   }
   const at = await getFollowedAt(

@@ -1,8 +1,6 @@
 import { prefs, setPrefs } from "./core.ts";
-import { user } from "../users.ts";
+import { isOwnChannel as isOwn } from "../roles.ts";
 import { moved } from "../../utils/moved.ts";
-
-const isOwn = (id: string) => id === user()?.id;
 
 export const pinnedChannels = () =>
   prefs.menu.channels.pinned.filter((id) => !isOwn(id));

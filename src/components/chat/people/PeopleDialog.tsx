@@ -7,10 +7,11 @@ import {
   Show,
   Switch,
 } from "solid-js";
-import { t } from "../../../lib/i18n/index.ts";
+import { type MessageKey, t } from "../../../lib/i18n/index.ts";
 import * as chatters from "../../../lib/services/chatters.ts";
 import { chatterListFor } from "../../../lib/stores/chatters.ts";
-import { user as currentUser } from "../../../lib/stores/users.ts";
+import { hasPermission } from "../../../lib/stores/roles.ts";
+import type { Capability } from "../../../lib/utils/roles.ts";
 import { formatViewers } from "../../../lib/format/stream.ts";
 import { autofocus } from "../../../lib/reactive/focus.ts";
 import type { UserRef } from "../../../lib/types/index.ts";
@@ -26,6 +27,16 @@ const REFRESH_MS = 120_000;
 
 type Tab = "chatters" | "roles" | "banned";
 
+const TABS: { tab: Tab; label: MessageKey; capability: Capability }[] = [
+  {
+    tab: "chatters",
+    label: "PEOPLE_CHATTERS_TAB_LABEL",
+    capability: "moderate",
+  },
+  { tab: "roles", label: "PEOPLE_ROLES_TAB_LABEL", capability: "manageRoles" },
+  { tab: "banned", label: "PEOPLE_BANNED_TAB_LABEL", capability: "viewBans" },
+];
+
 type Props = {
   broadcasterId: string;
   onClose: () => void;
@@ -34,16 +45,19 @@ type Props = {
 };
 
 export default function PeopleDialog(props: Props) {
-  const [tab, setTab] = createSignal<Tab>("chatters");
+  const [picked, setPicked] = createSignal<Tab>("chatters");
   const [query, setQuery] = createSignal("");
-  const isOwner = () => props.broadcasterId === currentUser()?.id;
+  const tabs = () =>
+    TABS.filter((t) => hasPermission(props.broadcasterId, t.capability));
+  const tab = (): Tab =>
+    tabs().some((t) => t.tab === picked()) ? picked() : "chatters";
   const [banned, setBanned] = createSignal<{
     count: number;
     more: boolean;
   } | null>(null);
   const count = () => {
     const list = chatterListFor(props.broadcasterId);
-    if (!isOwner() || tab() === "chatters") return formatViewers(list.total);
+    if (tab() === "chatters") return formatViewers(list.total);
     if (tab() === "roles") {
       return t("PEOPLE_COUNT_VALUE", {
         count: list.moderators.length + list.vips.length,
@@ -57,7 +71,7 @@ export default function PeopleDialog(props: Props) {
   };
 
   onMount(() => {
-    const refresh = () => chatters.load(props.broadcasterId, isOwner());
+    const refresh = () => chatters.load(props.broadcasterId);
     refresh();
     const timer = setInterval(refresh, REFRESH_MS);
     onCleanup(() => clearInterval(timer));
@@ -78,21 +92,17 @@ export default function PeopleDialog(props: Props) {
           <X class="size-4" />
         </IconButton>
       </div>
-      <Show when={isOwner()}>
+      <Show when={tabs().length > 1}>
         <Segmented
           label={t("PEOPLE_TITLE")}
           fill
           value={tab()}
-          options={[
-            { value: "chatters", label: t("PEOPLE_CHATTERS_TAB_LABEL") },
-            { value: "roles", label: t("PEOPLE_ROLES_TAB_LABEL") },
-            { value: "banned", label: t("PEOPLE_BANNED_TAB_LABEL") },
-          ]}
-          onChange={setTab}
+          options={tabs().map((x) => ({ value: x.tab, label: t(x.label) }))}
+          onChange={setPicked}
         />
       </Show>
       <div class="h-112 min-h-0 flex flex-col gap-4">
-        <Show when={!isOwner() || tab() !== "roles"}>
+        <Show when={tab() !== "roles"}>
           <Field
             ref={autofocus}
             icon={<Search class="size-4" />}
@@ -103,7 +113,7 @@ export default function PeopleDialog(props: Props) {
           />
         </Show>
         <Switch>
-          <Match when={tab() === "chatters" || !isOwner()}>
+          <Match when={tab() === "chatters"}>
             <ChattersTab
               broadcasterId={props.broadcasterId}
               query={query()}

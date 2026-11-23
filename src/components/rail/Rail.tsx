@@ -1,46 +1,34 @@
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  on,
-  onCleanup,
-  Show,
-} from "solid-js";
-import { Eye, Plus, Search, Settings } from "lucide-solid";
+import { createEffect, createMemo, For, on, Show } from "solid-js";
+import { Plus, Search, Settings } from "lucide-solid";
 import * as browser from "../../lib/services/browser.ts";
 import {
   appearanceRailExpanded,
-  linkAudioLink,
   pinnedChannels,
 } from "../../lib/stores/preferences.ts";
 import { hasUnread } from "../../lib/stores/feeds.ts";
 import { channelMentionCount } from "../../lib/stores/inbox.ts";
 import {
-  linkConnected,
   linkedChannel,
   linkMutedByLogin,
   linkWarmedChannels,
 } from "../../lib/stores/link.ts";
-import LinkMenu from "./LinkMenu.tsx";
 import * as link from "../../lib/services/link.ts";
-import * as pins from "../../lib/services/pins.ts";
 import {
   activeView,
   isSettingsOpen,
-  linkSynced,
   pendingChannel,
-  selectedChannel,
   showExplore,
   toggleSettings,
 } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
+import { isOwnChannel } from "../../lib/stores/roles.ts";
 import { createScrollAffordance } from "./createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
-import RailRow, { type SubTone } from "./RailRow.tsx";
-import RailTile, { type TileTone } from "./RailTile.tsx";
+import { createPinDrag } from "./createPinDrag.ts";
+import RailRow from "./RailRow.tsx";
+import RailTile from "./RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
-import TipLabel from "../ui/TipLabel.tsx";
+import RailLinkRow from "./RailLinkRow.tsx";
 import ChannelRow from "./ChannelRow.tsx";
 import Avatar from "../ui/Avatar.tsx";
 import ScrollChevron from "./ScrollChevron.tsx";
@@ -62,27 +50,18 @@ type Props = {
   onToggleLink: () => void;
 };
 
-type LinkStatus = {
-  sub: string;
-  tone: SubTone;
-  tile: TileTone | false;
-  onClick?: () => void;
-};
+const PLACEHOLDER_ROWS = 4;
 
 export default function Rail(props: Props) {
   const expanded = appearanceRailExpanded;
   const channels = createRailChannels();
   const main = createScrollAffordance();
   const linkScroll = createScrollAffordance();
-
-  const selectedId = () => {
-    const v = activeView();
-    return typeof v === "object" ? v.id : null;
-  };
+  const drag = createPinDrag();
 
   const linkedOthers = () =>
-    linkWarmedChannels().filter((c) => c.id !== user()?.id);
-  const ownTab = () => linkWarmedChannels().find((c) => c.id === user()?.id);
+    linkWarmedChannels().filter((c) => !isOwnChannel(c.id));
+  const ownTab = () => linkWarmedChannels().find((c) => isOwnChannel(c.id));
 
   const warmedIds = createMemo(
     () => new Set(linkWarmedChannels().map((c) => c.id)),
@@ -93,58 +72,18 @@ export default function Rail(props: Props) {
     warmedIds().has(id) ||
     linkedChannel()?.id === id ||
     channels.isLive(id) ||
-    id === user()?.id;
+    isOwnChannel(id);
 
   const nowViewing = createMemo(() => {
-    const sel = selectedChannel();
+    const sel = pendingChannel();
     return sel && !isListed(sel.id) ? sel : null;
   });
 
-  const linkStatus = (): LinkStatus => {
-    if (!linkConnected()) {
-      return {
-        sub: t("RAIL_LINK_ADD_FIREFOX_LABEL"),
-        tone: "soft",
-        tile: false,
-        onClick: openLinkMenu,
-      };
-    }
-    if (linkWarmedChannels().length === 0) {
-      return { sub: t("RAIL_LINK_NO_TABS_EMPTY"), tone: "soft", tile: false };
-    }
-    if (linkSynced()) {
-      return {
-        sub: t(
-          linkAudioLink()
-            ? "RAIL_LINK_SYNCED_AUDIO_STATUS"
-            : "RAIL_LINK_SYNCED_STATUS",
-        ),
-        tone: "positive",
-        tile: "positive",
-        onClick: props.onToggleLink,
-      };
-    }
-    return {
-      sub: t("RAIL_LINK_NOT_SYNCED_STATUS"),
-      tone: "soft",
-      tile: false,
-      onClick: props.onToggleLink,
-    };
-  };
-
   const chMenu = createPopover<{ ch: User }>();
+  const openMenu = (x: number, y: number, ch: User) =>
+    chMenu.open(x, y, { ch });
   const addPop = createPopover();
-  const [dragIdx, setDragIdx] = createSignal<number | null>(null);
-  const [overIdx, setOverIdx] = createSignal<number | null>(null);
   let addBtn: HTMLButtonElement | undefined;
-  const linkMenu = createPopover();
-  let linkBtn: HTMLButtonElement | undefined;
-
-  function openLinkMenu() {
-    if (!linkBtn || linkMenu.state()) return linkMenu.close();
-    const rect = linkBtn.getBoundingClientRect();
-    linkMenu.open(rect.right + SIDE_GAP, rect.top, {});
-  }
 
   createEffect(
     on([pinnedChannels, () => channels.onlineList().length, expanded], () =>
@@ -174,46 +113,6 @@ export default function Rail(props: Props) {
       }
     });
   });
-
-  function openInBrowser(ch: User) {
-    browser.openChannel(ch.login);
-  }
-
-  function startDrag(e: MouseEvent, idx: number) {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    setDragIdx(idx);
-    document.body.style.cursor = "grabbing";
-    document.body.style.userSelect = "none";
-
-    const onMove = (ev: MouseEvent) => {
-      const row = document
-        .elementFromPoint(ev.clientX, ev.clientY)
-        ?.closest<HTMLElement>("[data-pinned-index]");
-      const index = row?.dataset.pinnedIndex;
-      const i = index === undefined ? null : parseInt(index);
-      setOverIdx(i !== null && !isNaN(i) ? i : null);
-    };
-    const end = () => {
-      endDrag = undefined;
-      setDragIdx(null);
-      setOverIdx(null);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-    };
-    const onUp = () => {
-      const over = overIdx();
-      if (over !== null && over !== idx) pins.move(idx, over);
-      end();
-    };
-    endDrag = end;
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-  }
-  let endDrag: (() => void) | undefined;
-  onCleanup(() => endDrag?.());
 
   function toggleAdd() {
     if (addPop.state()) return addPop.close();
@@ -249,39 +148,30 @@ export default function Rail(props: Props) {
               }
             >
               <For each={pinnedChannels()}>
-                {(id, index) => {
-                  const ch = () => channels.resolveChannel(id);
-                  const isOver = () =>
-                    overIdx() === index() && dragIdx() !== index();
-                  return (
-                    <Show when={!warmedIds().has(id) && ch()}>
-                      {(c) => (
-                        <div
-                          data-pinned-index={index()}
-                          data-channel-id={id}
-                          class="relative"
-                          onMouseDown={(e) => startDrag(e, index())}
-                        >
-                          <Show when={isOver()}>
-                            <div class="pointer-events-none absolute left-2 right-2 -top-px h-0.5 rounded-full bg-accent z-10" />
-                          </Show>
-                          <ChannelRow
-                            ch={c()}
-                            selected={selectedId() === id}
-                            unread={hasUnread(id)}
-                            mentions={channelMentionCount(id)}
-                            dimmed={dragIdx() === index()}
-                            onSelect={() => props.onSelect(c())}
-                            onMiddleClick={() => openInBrowser(c())}
-                            onContextMenu={(x, y) =>
-                              chMenu.open(x, y, { ch: c() })
-                            }
-                          />
-                        </div>
-                      )}
-                    </Show>
-                  );
-                }}
+                {(id, index) => (
+                  <Show
+                    when={!warmedIds().has(id) && channels.resolveChannel(id)}
+                  >
+                    {(c) => (
+                      <div
+                        data-pinned-index={index()}
+                        data-channel-id={id}
+                        class="relative"
+                        onMouseDown={(e) => drag.start(e, index())}
+                      >
+                        <Show when={drag.isOver(index())}>
+                          <div class="pointer-events-none absolute left-2 right-2 -top-px h-0.5 rounded-full bg-accent z-10" />
+                        </Show>
+                        <ChannelRow
+                          ch={c()}
+                          dimmed={drag.isDragging(index())}
+                          onSelect={props.onSelect}
+                          onContextMenu={openMenu}
+                        />
+                      </div>
+                    )}
+                  </Show>
+                )}
               </For>
             </Show>
             <RailRow
@@ -306,7 +196,7 @@ export default function Rail(props: Props) {
             <Show
               when={!channels.loadingLive()}
               fallback={
-                <For each={Array.from({ length: 4 })}>
+                <For each={Array.from({ length: PLACEHOLDER_ROWS })}>
                   {() => <RailRowSkeleton />}
                 </For>
               }
@@ -316,12 +206,8 @@ export default function Rail(props: Props) {
                   <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      selected={selectedId() === ch.id}
-                      unread={hasUnread(ch.id)}
-                      mentions={channelMentionCount(ch.id)}
-                      onSelect={() => props.onSelect(ch)}
-                      onMiddleClick={() => openInBrowser(ch)}
-                      onContextMenu={(x, y) => chMenu.open(x, y, { ch })}
+                      onSelect={props.onSelect}
+                      onContextMenu={openMenu}
                     />
                   </div>
                 )}
@@ -357,14 +243,11 @@ export default function Rail(props: Props) {
                   <div data-channel-id={ch.id}>
                     <ChannelRow
                       ch={ch}
-                      selected={selectedId() === ch.id}
-                      unread={hasUnread(ch.id)}
-                      mentions={channelMentionCount(ch.id)}
                       muted={linkMutedByLogin()[ch.login] === true}
                       onToggleMute={() => link.toggleMuted(ch.login)}
-                      onSelect={() => props.onSelect(ch)}
+                      onSelect={props.onSelect}
                       onMiddleClick={() => link.close(ch.login)}
-                      onContextMenu={(x, y) => chMenu.open(x, y, { ch })}
+                      onContextMenu={openMenu}
                     />
                   </div>
                 )}
@@ -381,13 +264,9 @@ export default function Rail(props: Props) {
             <div class="py-2 shrink-0" data-channel-id={nv().id}>
               <ChannelRow
                 ch={nv()}
-                selected={selectedId() === nv().id}
-                unread={hasUnread(nv().id)}
-                mentions={channelMentionCount(nv().id)}
                 ephemeral
-                onSelect={() => props.onSelect(nv())}
-                onMiddleClick={() => openInBrowser(nv())}
-                onContextMenu={(x, y) => chMenu.open(x, y, { ch: nv() })}
+                onSelect={props.onSelect}
+                onContextMenu={openMenu}
               />
             </div>
           </>
@@ -396,23 +275,7 @@ export default function Rail(props: Props) {
 
       <RailDivider />
       <div class={`flex flex-col py-2 shrink-0 ${railGap()}`}>
-        <RailRow
-          ref={(el) => (linkBtn = el)}
-          label={t("RAIL_LINK_LABEL")}
-          sub={linkStatus().sub}
-          subTone={linkStatus().tone}
-          tooltip={
-            <TipLabel>
-              {t("RAIL_LINK_STATUS_HINT", { status: linkStatus().sub })}
-            </TipLabel>
-          }
-          onClick={() => linkStatus().onClick?.()}
-          onContextMenu={openLinkMenu}
-        >
-          <RailTile active={linkStatus().tile}>
-            <Eye />
-          </RailTile>
-        </RailRow>
+        <RailLinkRow onToggleLink={props.onToggleLink} />
         <RailRow
           label={t("RAIL_EXPLORE_LABEL")}
           sub={t("RAIL_EXPLORE_DESCRIPTION")}
@@ -442,15 +305,15 @@ export default function Rail(props: Props) {
             <RailRow
               label={u().displayName}
               sub={t("RAIL_YOUR_CHANNEL_LABEL")}
-              selected={selectedId() === u().id}
+              selected={pendingChannel()?.id === u().id}
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() => {
                 if (ownTab()) link.close(u().login);
-                else openInBrowser(u());
+                else browser.openChannel(u().login);
               }}
-              onContextMenu={(x, y) => chMenu.open(x, y, { ch: u() })}
+              onContextMenu={(x, y) => openMenu(x, y, u())}
             >
               <Avatar
                 src={u().profileImageUrl}
@@ -473,18 +336,6 @@ export default function Rail(props: Props) {
         </Show>
       </div>
 
-      <Show when={linkMenu.state()}>
-        {(m) => (
-          <LinkMenu
-            x={m().x}
-            y={m().y}
-            opener={() => linkBtn}
-            onClose={linkMenu.close}
-            onToggleSync={props.onToggleLink}
-          />
-        )}
-      </Show>
-
       <Show when={chMenu.state()}>
         {(m) => (
           <ChannelContextMenu
@@ -494,7 +345,7 @@ export default function Rail(props: Props) {
             place="rail"
             onClose={chMenu.close}
             onLogout={
-              m().ch.id === user()?.id ? () => session.logout() : undefined
+              isOwnChannel(m().ch.id) ? () => session.logout() : undefined
             }
           />
         )}

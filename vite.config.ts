@@ -5,7 +5,10 @@ import tailwindcss from "@tailwindcss/vite";
 const ignored = ["extension/**", "src-tauri/**", "src/lib/bindings.ts"];
 
 export default defineConfig({
-  plugins: lazyPlugins(() => [tailwindcss(), solid()]),
+  plugins: lazyPlugins(() => [
+    tailwindcss(),
+    solid({ hot: !process.env.VITEST }),
+  ]),
 
   lint: {
     jsPlugins: ["@shadcn/lint"],
@@ -40,7 +43,7 @@ export default defineConfig({
   },
 
   test: {
-    // vite-plugin-solid defaults to jsdom; the tests cover pure logic.
+    // Pure logic runs in node; component tests opt into happy-dom per file.
     environment: "node",
   },
 

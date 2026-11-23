@@ -27,7 +27,7 @@ import { createUserCards } from "./createUserCards.ts";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
 import BanModal from "../ban-modal/BanModal.tsx";
-import { canModerate } from "../../lib/stores/users.ts";
+import { showsControls } from "../../lib/stores/roles.ts";
 import type {
   FeedEvent as EventItem,
   FeedMessage as Message,
@@ -83,7 +83,9 @@ export default function Chat(props: Props) {
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
   let inputApi: ChatInputApi | undefined;
 
-  const isMod = createMemo(() => canModerate(props.broadcasterId));
+  const isMod = createMemo(() =>
+    showsControls(props.broadcasterId, "moderate"),
+  );
 
   onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
 

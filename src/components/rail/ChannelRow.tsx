@@ -7,19 +7,20 @@ import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
 import TabMuteBadge from "./TabMuteBadge.tsx";
 import { t } from "../../lib/i18n/index.ts";
+import * as browser from "../../lib/services/browser.ts";
+import { hasUnread } from "../../lib/stores/feeds.ts";
+import { channelMentionCount } from "../../lib/stores/inbox.ts";
+import { pendingChannel } from "../../lib/stores/view.ts";
 
 type Props = {
   ch: User;
-  selected: boolean;
-  unread?: boolean;
-  mentions?: number;
   dimmed?: boolean;
   muted?: boolean;
   ephemeral?: boolean;
   onToggleMute?: () => void;
-  onSelect: () => void;
-  onMiddleClick: () => void;
-  onContextMenu: (x: number, y: number) => void;
+  onSelect: (ch: User) => void;
+  onMiddleClick?: () => void;
+  onContextMenu: (x: number, y: number, ch: User) => void;
 };
 
 export default function ChannelRow(props: Props) {
@@ -52,13 +53,17 @@ export default function ChannelRow(props: Props) {
       card={() => (
         <StreamTooltip user={props.ch} stream={stream()} info={info()} />
       )}
-      selected={props.selected}
-      unread={props.unread}
-      mentions={props.mentions}
+      selected={pendingChannel()?.id === props.ch.id}
+      unread={hasUnread(props.ch.id)}
+      mentions={channelMentionCount(props.ch.id)}
       dimmed={props.dimmed}
-      onClick={props.onSelect}
-      onMiddleClick={props.onMiddleClick}
-      onContextMenu={props.onContextMenu}
+      onClick={() => props.onSelect(props.ch)}
+      onMiddleClick={() =>
+        props.onMiddleClick
+          ? props.onMiddleClick()
+          : browser.openChannel(props.ch.login)
+      }
+      onContextMenu={(x, y) => props.onContextMenu(x, y, props.ch)}
     >
       <Avatar
         src={props.ch.profileImageUrl}

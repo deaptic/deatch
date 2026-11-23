@@ -4,10 +4,7 @@ import Suggestions from "../../suggestions/Suggestions.tsx";
 import { commands } from "../../command-composer/commands.ts";
 import type { Command } from "../../command-composer/types.ts";
 import { commandUsage } from "../../command-composer/usage.ts";
-import {
-  canModerate,
-  isBroadcasterOfChannel,
-} from "../../../lib/stores/users.ts";
+import { showsRole } from "../../../lib/stores/roles.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
@@ -24,19 +21,13 @@ type Props = {
   onCommandSelected: (cmd: Command) => void;
 };
 
-function canRunCommand(cmd: Command, broadcasterId: string): boolean {
-  if (cmd.role === "regular") return true;
-  if (!canModerate(broadcasterId)) return false;
-  return cmd.role !== "broadcaster" || isBroadcasterOfChannel(broadcasterId);
-}
-
 export default function CommandAutocomplete(props: Props) {
   const suggestions = (): CommandSuggestion[] => {
     const q = props.controller.queryFor("command");
     if (q === null) return [];
     const items: CommandSuggestion[] = [];
     for (const c of commands) {
-      if (!canRunCommand(c, props.broadcasterId)) continue;
+      if (!showsRole(props.broadcasterId, c.role)) continue;
       items.push({
         name: c.name,
         aliases: c.aliases ?? [],

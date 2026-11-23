@@ -27,7 +27,7 @@ import {
   setChannelForm,
   toggleOverlay,
 } from "../../lib/stores/ui.ts";
-import { canModerate, user } from "../../lib/stores/users.ts";
+import { showsControls } from "../../lib/stores/roles.ts";
 import {
   isSettingsOpen,
   selectedChannel,
@@ -168,8 +168,8 @@ function broadcasterActions(broadcasterId: string): PaletteAction[] {
 export function paletteActions(): PaletteAction[] {
   const channel = selectedChannel();
   const app = appActions();
-  if (!channel || !canModerate(channel.id)) return app;
-  const own = channel.id === user()?.id;
+  if (!channel || !showsControls(channel.id, "moderate")) return app;
+  const own = showsControls(channel.id, "manageStream");
   return [
     ...(own ? broadcasterActions(channel.id) : []),
     ...moderatorActions(channel.id),

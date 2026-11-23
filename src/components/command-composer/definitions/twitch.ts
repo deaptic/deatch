@@ -35,7 +35,7 @@ export const twitchCommands: Command[] = [
   {
     name: "ban",
     description: "COMMAND_BAN_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -60,7 +60,7 @@ export const twitchCommands: Command[] = [
   {
     name: "unban",
     description: "COMMAND_UNBAN_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -79,7 +79,7 @@ export const twitchCommands: Command[] = [
   {
     name: "timeout",
     description: "COMMAND_TIMEOUT_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -114,7 +114,7 @@ export const twitchCommands: Command[] = [
   {
     name: "untimeout",
     description: "COMMAND_UNTIMEOUT_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -133,7 +133,7 @@ export const twitchCommands: Command[] = [
   {
     name: "clear",
     description: "COMMAND_CLEAR_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await deleteChatMessages({
@@ -145,7 +145,7 @@ export const twitchCommands: Command[] = [
   {
     name: "announce",
     description: "COMMAND_ANNOUNCE_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "message",
@@ -172,7 +172,7 @@ export const twitchCommands: Command[] = [
   {
     name: "slow",
     description: "COMMAND_SLOW_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "duration",
@@ -194,7 +194,7 @@ export const twitchCommands: Command[] = [
   {
     name: "slowoff",
     description: "COMMAND_SLOWOFF_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -206,7 +206,7 @@ export const twitchCommands: Command[] = [
   {
     name: "followers",
     description: "COMMAND_FOLLOWERS_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "duration",
@@ -229,7 +229,7 @@ export const twitchCommands: Command[] = [
   {
     name: "followersoff",
     description: "COMMAND_FOLLOWERSOFF_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -241,7 +241,7 @@ export const twitchCommands: Command[] = [
   {
     name: "emoteonly",
     description: "COMMAND_EMOTEONLY_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -253,7 +253,7 @@ export const twitchCommands: Command[] = [
   {
     name: "emoteonlyoff",
     description: "COMMAND_EMOTEONLYOFF_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -265,7 +265,7 @@ export const twitchCommands: Command[] = [
   {
     name: "subscribers",
     description: "COMMAND_SUBSCRIBERS_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -277,7 +277,7 @@ export const twitchCommands: Command[] = [
   {
     name: "subscribersoff",
     description: "COMMAND_SUBSCRIBERSOFF_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -289,7 +289,7 @@ export const twitchCommands: Command[] = [
   {
     name: "uniquechat",
     description: "COMMAND_UNIQUECHAT_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -301,7 +301,7 @@ export const twitchCommands: Command[] = [
   {
     name: "uniquechatoff",
     description: "COMMAND_UNIQUECHATOFF_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [],
     execute: async (_, ctx) => {
       await updateChatSettings({
@@ -314,7 +314,7 @@ export const twitchCommands: Command[] = [
     name: "shoutout",
     aliases: ["so"],
     description: "COMMAND_SHOUTOUT_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "channel",
@@ -440,7 +440,7 @@ export const twitchCommands: Command[] = [
   {
     name: "me",
     description: "COMMAND_ME_DESCRIPTION",
-    role: "regular",
+    role: "everyone",
     options: [
       {
         name: "message",
@@ -459,7 +459,7 @@ export const twitchCommands: Command[] = [
   {
     name: "monitor",
     description: "COMMAND_MONITOR_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -479,7 +479,7 @@ export const twitchCommands: Command[] = [
   {
     name: "unmonitor",
     description: "COMMAND_UNMONITOR_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -499,7 +499,7 @@ export const twitchCommands: Command[] = [
   {
     name: "restrict",
     description: "COMMAND_RESTRICT_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -519,7 +519,7 @@ export const twitchCommands: Command[] = [
   {
     name: "unrestrict",
     description: "COMMAND_UNRESTRICT_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -539,7 +539,7 @@ export const twitchCommands: Command[] = [
   {
     name: "warn",
     description: "COMMAND_WARN_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -582,7 +582,7 @@ export const twitchCommands: Command[] = [
   {
     name: "color",
     description: "COMMAND_COLOR_DESCRIPTION",
-    role: "regular",
+    role: "everyone",
     options: [
       {
         name: "color",

@@ -2,6 +2,7 @@ pub mod commands;
 pub(super) mod credentials;
 pub mod dto;
 pub mod events;
+mod scopes;
 
 use super::users::dto::User;
 use super::{users, Twitch};
@@ -11,59 +12,14 @@ use dto::DcfAuthResponse;
 use events::{AuthFailed, AuthSucceeded};
 use twitch_api::twitch_oauth2::tokens::errors::RetrieveTokenError;
 use twitch_api::twitch_oauth2::{
-    AccessToken, ClientId, DeviceUserTokenBuilder, RefreshToken, Scope, TwitchToken, UserToken,
+    AccessToken, ClientId, DeviceUserTokenBuilder, RefreshToken, TwitchToken, UserToken,
 };
 
 const CLIENT_ID: &str = "9zz5nm0knwecx9icd0xbkmkpnrdhjr";
 
-const SCOPES: [Scope; 42] = [
-    Scope::ChannelReadRedemptions,
-    Scope::ChannelReadHypeTrain,
-    Scope::ChannelReadPolls,
-    Scope::ChannelReadPredictions,
-    Scope::ChannelReadGoals,
-    Scope::ChannelReadAds,
-    Scope::ChannelManageAds,
-    Scope::BitsRead,
-    Scope::ChannelReadCharity,
-    Scope::ChannelReadSubscriptions,
-    Scope::UserReadModeratedChannels,
-    Scope::UserReadChat,
-    Scope::UserReadEmotes,
-    Scope::UserReadFollows,
-    Scope::UserReadBlockedUsers,
-    Scope::UserManageBlockedUsers,
-    Scope::UserWriteChat,
-    Scope::ModeratorManageChatMessages,
-    Scope::ModeratorManageShoutouts,
-    Scope::ModeratorManageAnnouncements,
-    Scope::ModeratorManageChatSettings,
-    Scope::ModeratorManageWarnings,
-    Scope::ModeratorManageAutoMod,
-    Scope::ModeratorReadFollowers,
-    Scope::ModeratorManageBannedUsers,
-    Scope::ModeratorManageBlockedTerms,
-    Scope::ModeratorManageUnbanRequests,
-    Scope::ModeratorReadModerators,
-    Scope::ModeratorReadChatters,
-    Scope::ModeratorReadVips,
-    Scope::ModeratorReadSuspiciousUsers,
-    Scope::ModeratorManageSuspiciousUsers,
-    Scope::ChannelManageVips,
-    Scope::ChannelManageModerators,
-    Scope::ChannelManageRaids,
-    Scope::ChannelManageBroadcast,
-    Scope::ChannelEditCommercial,
-    Scope::UserManageChatColor,
-    Scope::ClipsEdit,
-    Scope::ChannelManagePolls,
-    Scope::ChannelManagePredictions,
-    Scope::ModeratorManageShieldMode,
-];
-
 pub async fn get_device_code(app: tauri::AppHandle, twitch: Twitch) -> Result<DcfAuthResponse> {
     let generation = twitch.begin_login();
-    let mut builder = DeviceUserTokenBuilder::new(CLIENT_ID, SCOPES.to_vec());
+    let mut builder = DeviceUserTokenBuilder::new(CLIENT_ID, scopes::all());
     let code = builder.start(&twitch.helix).await?;
     let response = DcfAuthResponse {
         user_code: code.user_code.clone(),
@@ -118,10 +74,16 @@ pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
         }
         Err(e) => return Err(e.into()),
     };
-    if let Some(missing) = SCOPES.iter().find(|s| !token.scopes().contains(s)) {
+    let gaps = scopes::missing(token.scopes());
+    if let Some((_, scope)) = gaps.first() {
+        let features: Vec<&str> = gaps.iter().map(|(feature, _)| *feature).collect();
+        log::warn!(
+            "stored session lacks permissions for: {}",
+            features.join(", ")
+        );
         credentials::delete()?;
         return Err(Error::MissingScope {
-            scope: missing.to_string(),
+            scope: scope.to_string(),
         });
     }
     start_session(twitch, token).await.map(Some)

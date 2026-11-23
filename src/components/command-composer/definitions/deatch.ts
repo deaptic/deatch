@@ -13,7 +13,7 @@ export const deatchCommands: Command[] = [
   {
     name: "user",
     description: "COMMAND_USER_DESCRIPTION",
-    role: "regular",
+    role: "everyone",
     options: [
       {
         name: "username",
@@ -29,7 +29,7 @@ export const deatchCommands: Command[] = [
   {
     name: "purge",
     description: "COMMAND_PURGE_DESCRIPTION",
-    role: "mod",
+    role: "moderator",
     options: [
       {
         name: "username",
@@ -50,7 +50,7 @@ export const deatchCommands: Command[] = [
   {
     name: "clip",
     description: "COMMAND_CLIP_DESCRIPTION",
-    role: "regular",
+    role: "everyone",
     options: [
       {
         name: "title",
@@ -75,7 +75,7 @@ export const deatchCommands: Command[] = [
   {
     name: "uptime",
     description: "COMMAND_UPTIME_DESCRIPTION",
-    role: "regular",
+    role: "everyone",
     options: [],
     execute: async (_, ctx) => {
       try {
@@ -103,7 +103,7 @@ export const deatchCommands: Command[] = [
   {
     name: "followage",
     description: "COMMAND_FOLLOWAGE_DESCRIPTION",
-    role: "regular",
+    role: "everyone",
     options: [],
     execute: async (_, ctx) => {
       const me = user();

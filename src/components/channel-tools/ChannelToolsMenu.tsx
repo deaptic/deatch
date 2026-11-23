@@ -17,7 +17,8 @@ import { createStreamMarker } from "../../lib/api/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
-import { knownUser, user } from "../../lib/stores/users.ts";
+import { knownUser } from "../../lib/stores/users.ts";
+import { showsControls } from "../../lib/stores/roles.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { type ChannelForm, setChannelForm } from "../../lib/stores/ui.ts";
 import * as activity from "../../lib/services/activity.ts";
@@ -35,7 +36,8 @@ type ItemsProps = {
 };
 
 export function ChannelToolItems(props: ItemsProps) {
-  const isBroadcaster = () => props.broadcasterId === user()?.id;
+  const isBroadcaster = () =>
+    showsControls(props.broadcasterId, "manageStream");
   const live = () => streamForUserId(props.broadcasterId) !== undefined;
   const shield = () => activityFor(props.broadcasterId).shield;
 

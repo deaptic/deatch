@@ -1,3 +1,4 @@
+import { hasPermission } from "../stores/roles.ts";
 import {
   endPoll as endPollRequest,
   getActivePoll,
@@ -20,32 +21,75 @@ import {
   resolveUnbanRequest,
   updateShieldMode,
 } from "../api/twitch/moderation.ts";
-import { activityFor, updateActivity } from "../stores/activity.ts";
+import {
+  type Activity,
+  activityFor,
+  updateActivity,
+} from "../stores/activity.ts";
+import type { Capability } from "../utils/roles.ts";
 import { withoutUnbanRequest } from "../mappers/activity.ts";
 
-export function load(broadcasterId: string, isBroadcaster: boolean): void {
-  const params = { broadcasterId };
-  const silent = { silent: true };
-  getShieldMode(params, silent)
-    .then((shield) => updateActivity(broadcasterId, { shield }))
+type Source = {
+  capability: Capability;
+  load: (broadcasterId: string) => Promise<Partial<Activity>>;
+};
+
+const silent = { silent: true };
+const of = (broadcasterId: string) => ({ broadcasterId });
+
+const SOURCES = {
+  shield: {
+    capability: "moderate",
+    load: (id) => getShieldMode(of(id), silent).then((shield) => ({ shield })),
+  },
+  unbans: {
+    capability: "moderate",
+    load: (id) =>
+      getUnbanRequests(of(id), silent).then((unbanRequests) => ({
+        unbanRequests,
+      })),
+  },
+  poll: {
+    capability: "manageStream",
+    load: (id) => getActivePoll(of(id), silent).then((poll) => ({ poll })),
+  },
+  prediction: {
+    capability: "manageStream",
+    load: (id) =>
+      getActivePrediction(of(id), silent).then((prediction) => ({
+        prediction,
+      })),
+  },
+  charity: {
+    capability: "manageStream",
+    load: (id) =>
+      getCharityCampaign(of(id), silent).then((charity) => ({ charity })),
+  },
+  goals: {
+    capability: "manageStream",
+    load: (id) => getGoals(of(id), silent).then((goals) => ({ goals })),
+  },
+  ads: {
+    capability: "manageStream",
+    load: (id) => getAdSchedule(of(id), silent).then((ads) => ({ ads })),
+  },
+} satisfies Record<string, Source>;
+
+type SourceName = keyof typeof SOURCES;
+
+function refresh(broadcasterId: string, name: SourceName): void {
+  const source: Source = SOURCES[name];
+  if (!hasPermission(broadcasterId, source.capability)) return;
+  source
+    .load(broadcasterId)
+    .then((change) => updateActivity(broadcasterId, change))
     .catch(() => {});
-  getUnbanRequests(params, silent)
-    .then((unbanRequests) => updateActivity(broadcasterId, { unbanRequests }))
-    .catch(() => {});
-  if (!isBroadcaster) return;
-  getActivePoll(params, silent)
-    .then((poll) => updateActivity(broadcasterId, { poll }))
-    .catch(() => {});
-  getActivePrediction(params, silent)
-    .then((prediction) => updateActivity(broadcasterId, { prediction }))
-    .catch(() => {});
-  getCharityCampaign(params, silent)
-    .then((charity) => updateActivity(broadcasterId, { charity }))
-    .catch(() => {});
-  getGoals(params, silent)
-    .then((goals) => updateActivity(broadcasterId, { goals }))
-    .catch(() => {});
-  refreshAds(broadcasterId);
+}
+
+export function load(broadcasterId: string): void {
+  for (const name of Object.keys(SOURCES) as SourceName[]) {
+    refresh(broadcasterId, name);
+  }
 }
 
 export function endPoll(broadcasterId: string, pollId: string): void {
@@ -93,9 +137,7 @@ export async function resolveUnban(
 }
 
 export function refreshAds(broadcasterId: string): void {
-  getAdSchedule({ broadcasterId }, { silent: true })
-    .then((ads) => updateActivity(broadcasterId, { ads }))
-    .catch(() => {});
+  refresh(broadcasterId, "ads");
 }
 
 export function snoozeAd(broadcasterId: string): void {

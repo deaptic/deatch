@@ -34,7 +34,8 @@ import {
   setSuspicious,
 } from "../stores/feeds.ts";
 import { chatterFields, feedEvent, noticeText } from "../utils/feedEvent.ts";
-import { isModOfChannel, setModeratedChannels } from "../stores/users.ts";
+import { setModeratedChannels } from "../stores/users.ts";
+import { hasPermission } from "../stores/roles.ts";
 import { mapFragment } from "../mappers/chat.ts";
 import { moderateMessage } from "../mappers/moderateMessage.ts";
 import { automodReason } from "../mappers/automodReason.ts";
@@ -94,7 +95,7 @@ export function start(): () => void {
     listenEventSub<RawChatClear>("channel.chat.clear", (e) => {
       const broadcasterId = e.event.broadcaster_user_id;
       markAllMessagesDeleted(broadcasterId);
-      if (isModOfChannel(broadcasterId)) return;
+      if (hasPermission(broadcasterId, "moderate")) return;
       const now = serverTime(e);
       appendItem(
         broadcasterId,
@@ -201,7 +202,7 @@ export function start(): () => void {
       "channel.chat.user_message_hold",
       (e) => {
         const p = e.event;
-        if (isModOfChannel(p.broadcaster_user_id)) return;
+        if (hasPermission(p.broadcaster_user_id, "moderate")) return;
         appendItem(p.broadcaster_user_id, {
           kind: "message",
           message_id: p.message_id,
