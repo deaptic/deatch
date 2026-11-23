@@ -1,6 +1,6 @@
 import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "../title-bar/TitleBar.tsx";
-import UpdateBanner from "../update-banner/UpdateBanner.tsx";
+import { UpdateBanner } from "../../features/updater/index.ts";
 import Toaster from "../../kit/Toaster.tsx";
 import EmoteCard from "../emote-card/EmoteCard.tsx";
 import HoverZoom from "../hover-zoom/HoverZoom.tsx";

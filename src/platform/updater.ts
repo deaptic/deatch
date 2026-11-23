@@ -1,6 +1,10 @@
 import { check } from "@tauri-apps/plugin-updater";
-import type { Update } from "../lib/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "./invoke.ts";
+
+export type Update = {
+  version: string;
+  install: () => Promise<void>;
+};
 
 const commands = {
   checkForUpdate: () => check(),

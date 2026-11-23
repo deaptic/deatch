@@ -1,21 +1,25 @@
 import { Show } from "solid-js";
-import {
-  installError,
-  installing,
-  pendingUpdate,
-} from "../../lib/stores/updater.ts";
-import * as updater from "../../lib/services/updater.ts";
+import { install, state } from "./store.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 export default function UpdateBanner() {
+  const update = () => {
+    const s = state();
+    return s.kind === "none" ? null : s.update;
+  };
+  const installing = () => state().kind === "installing";
+  const error = () => {
+    const s = state();
+    return s.kind === "failed" ? s.error : null;
+  };
   return (
-    <Show when={pendingUpdate()}>
+    <Show when={update()}>
       {(u) => (
         <button
           type="button"
-          onClick={() => void updater.install()}
+          onClick={() => void install()}
           disabled={installing()}
-          data-tip={installError() ?? undefined}
+          data-tip={error() ?? undefined}
           class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
         >
           <span class="relative size-2 rounded-full bg-accent shrink-0">
@@ -27,7 +31,7 @@ export default function UpdateBanner() {
           <span class="text-ink truncate">
             <Show when={!installing()} fallback={t("UPDATE_INSTALLING_STATUS")}>
               <Show
-                when={installError()}
+                when={error()}
                 fallback={
                   <span class="font-semibold">{t("UPDATE_READY_STATUS")}</span>
                 }
@@ -40,7 +44,7 @@ export default function UpdateBanner() {
                 {" "}
                 {t("UPDATE_ACTION_HINT", {
                   version: u().version,
-                  failed: installError() ? "yes" : "no",
+                  failed: error() ? "yes" : "no",
                 })}
               </span>
             </Show>
