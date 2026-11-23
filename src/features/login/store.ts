@@ -1,14 +1,14 @@
-import { setUser, user as signedIn } from "../stores/users.ts";
-import * as users from "./users.ts";
-import * as feedLog from "./feedLog.ts";
+import { setUser, user as signedIn } from "../../lib/stores/users.ts";
+import * as users from "../../lib/services/users.ts";
+import * as feedLog from "../../lib/services/feedLog.ts";
 import {
   setAuthChecked,
   setDeviceCode,
   setRestoreFailure,
   setWaiting,
-} from "../stores/auth.ts";
-import { isAppError } from "../utils/error.ts";
-import { createBackoff } from "../utils/backoff.ts";
+} from "./auth.ts";
+import { isAppError } from "../../lib/utils/error.ts";
+import { createBackoff } from "../../lib/utils/backoff.ts";
 import {
   cancelLogin,
   getDeviceCode,

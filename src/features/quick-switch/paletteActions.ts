@@ -17,8 +17,8 @@ import { startCommercial } from "../../platform/twitch/channels.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../lib/constants/twitch.ts";
-import * as activity from "../../features/activity/index.ts";
-import * as chatModes from "../../features/chat-modes/index.ts";
+import * as activity from "../activity/index.ts";
+import * as chatModes from "../chat-modes/index.ts";
 import { streamForUserId } from "../../lib/stores/channels.ts";
 import {
   type ChannelForm,
@@ -32,11 +32,7 @@ import {
   showExplore,
   toggleSettings,
 } from "../../lib/stores/view.ts";
-import {
-  CHAT_MODES,
-  isOn,
-  presetLabel,
-} from "../../features/chat-modes/index.ts";
+import { CHAT_MODES, isOn, presetLabel } from "../chat-modes/index.ts";
 
 export type PaletteAction = {
   id: string;

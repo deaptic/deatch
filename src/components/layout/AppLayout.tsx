@@ -4,7 +4,6 @@ import { UpdateBanner } from "../../features/updater/index.ts";
 import Toaster from "../../kit/Toaster.tsx";
 import { EmoteCard, HoverZoom } from "../../features/emotes/index.ts";
 import TooltipHost from "../../kit/TooltipHost.tsx";
-import Login from "../login/Login.tsx";
 import Loading from "../../kit/Loading.tsx";
 import Boundary from "../../kit/Boundary.tsx";
 import Rail from "../rail/Rail.tsx";
@@ -14,7 +13,7 @@ import Readout from "./Readout.tsx";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 import { activeView } from "../../lib/stores/view.ts";
 import { user } from "../../lib/stores/users.ts";
-import { authChecked } from "../../lib/stores/auth.ts";
+import { authChecked, Login } from "../../features/login/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
 import { removeToast, toasts } from "../../kit/toasts.ts";
 import type { AppController } from "../../lib/primitives/createAppController.ts";
@@ -25,7 +24,11 @@ const Settings = lazy(() =>
     default: m.Settings,
   })),
 );
-const QuickSwitch = lazy(() => import("../quick-switch/QuickSwitch.tsx"));
+const QuickSwitch = lazy(() =>
+  import("../../features/quick-switch/index.ts").then((m) => ({
+    default: m.QuickSwitch,
+  })),
+);
 
 type AppLayoutProps = {
   controller: AppController;

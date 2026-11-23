@@ -1,4 +1,4 @@
-import type { User } from "../types/index.ts";
+import type { User } from "../../lib/types/index.ts";
 
 export type QuickSwitchRow<A> =
   | { kind: "channel"; user: User }

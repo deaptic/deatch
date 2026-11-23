@@ -34,7 +34,7 @@ import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
 import ChannelContextMenu from "../context-menus/ChannelContextMenu.tsx";
 import { createPopover } from "../../kit/createPopover.ts";
-import * as session from "../../lib/services/session.ts";
+import * as session from "../../features/login/index.ts";
 import type { User } from "../../lib/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";

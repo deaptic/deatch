@@ -1,9 +1,9 @@
-import { listenApp, unlistenAll } from "./listen.ts";
+import { listenApp, unlistenAll } from "../../lib/events/listen.ts";
 import { addToast } from "../../kit/toasts.ts";
-import { setUser } from "../stores/users.ts";
-import { setDeviceCode, setWaiting } from "../stores/auth.ts";
-import { errorMessage } from "../utils/error.ts";
-import * as users from "../services/users.ts";
+import { setUser } from "../../lib/stores/users.ts";
+import { setDeviceCode, setWaiting } from "./auth.ts";
+import { errorMessage } from "../../lib/utils/error.ts";
+import * as users from "../../lib/services/users.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 export function start(): () => void {

@@ -1,6 +1,6 @@
 import { Check, Copy } from "lucide-solid";
 import { Show } from "solid-js";
-import TwitchIcon from "./TwitchIcon.tsx";
+import TwitchIcon from "./ui/TwitchIcon.tsx";
 import Button from "../../kit/Button.tsx";
 import Loading from "../../kit/Loading.tsx";
 import Card from "../../kit/Card.tsx";
@@ -9,8 +9,8 @@ import {
   type RestoreFailure,
   restoreFailure,
   waiting,
-} from "../../lib/stores/auth.ts";
-import * as session from "../../lib/services/session.ts";
+} from "./auth.ts";
+import * as session from "./store.ts";
 import * as browser from "../../lib/services/browser.ts";
 import { createCopied } from "../../kit/createCopied.ts";
 import { t, tRich } from "../../shared/i18n/index.ts";

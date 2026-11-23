@@ -1,7 +1,7 @@
 import { expect, test } from "vite-plus/test";
-import type { User } from "../types/index.ts";
-import { userFromRef } from "./knownUsers.ts";
-import { matchesWords, quickSwitchRows, uniqueUsers } from "./quickSwitch.ts";
+import type { User } from "../../lib/types/index.ts";
+import { userFromRef } from "../../lib/utils/knownUsers.ts";
+import { matchesWords, quickSwitchRows, uniqueUsers } from "./model.ts";
 
 const user = (id: string, login: string, displayName = login): User =>
   userFromRef({ id, login, displayName });

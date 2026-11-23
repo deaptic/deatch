@@ -15,19 +15,15 @@ import * as users from "../../lib/services/users.ts";
 import { channelsInOrder, streamForUserId } from "../../lib/stores/channels.ts";
 import { pinnedChannels } from "../../lib/stores/preferences.ts";
 import * as pins from "../../lib/services/pins.ts";
-import * as link from "../../features/link/index.ts";
+import * as link from "../link/index.ts";
 import { user } from "../../lib/stores/users.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { liveLine } from "../../shared/format/stream.ts";
 import type { JSX } from "solid-js";
 import type { User } from "../../lib/types/index.ts";
-import {
-  type QuickSwitchRow,
-  quickSwitchRows,
-  uniqueUsers,
-} from "../../lib/utils/quickSwitch.ts";
+import { type QuickSwitchRow, quickSwitchRows, uniqueUsers } from "./model.ts";
 import Avatar from "../../kit/Avatar.tsx";
-import { createChannelLink } from "../context-menus/createChannelLink.tsx";
+import { createChannelLink } from "../../components/context-menus/createChannelLink.tsx";
 import Field from "../../kit/Field.tsx";
 import Loading from "../../kit/Loading.tsx";
 import Modal from "../../kit/Modal.tsx";

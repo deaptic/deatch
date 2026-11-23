@@ -2,7 +2,7 @@ import { onCleanup, onMount } from "solid-js";
 import * as backendEvents from "../events/index.ts";
 import * as log from "../services/log.ts";
 import * as users from "../services/users.ts";
-import * as session from "../services/session.ts";
+import * as login from "../../features/login/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import * as updater from "../../features/updater/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
@@ -35,7 +35,7 @@ export function createServices(): void {
       channelPoints.start(),
       backendEvents.start(),
       users.start(),
-      session.start(),
+      login.start(),
       shortcuts.start(),
       updater.start(),
       clock.start(),
