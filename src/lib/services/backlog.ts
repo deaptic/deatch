@@ -16,7 +16,7 @@ import { mapNotice } from "../mappers/notice.ts";
 import { groupGifts } from "../mappers/giftGroup.ts";
 import type { FeedEntry, FeedMessage, RecentHistory } from "../types/index.ts";
 import { recordChatter, user } from "../stores/users.ts";
-import { appendOlderSentMessage } from "../stores/sentMessages.ts";
+import { appendOlderSentMessage } from "../../features/composer/index.ts";
 import * as badges from "../../features/badges/index.ts";
 
 const GAP_MARGIN_MS = 5_000;

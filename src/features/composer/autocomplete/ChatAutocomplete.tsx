@@ -3,7 +3,7 @@ import { createChatAutocompleteController } from "./controller.ts";
 import EmoteAutocomplete from "./EmoteAutocomplete.tsx";
 import MentionAutocomplete from "./MentionAutocomplete.tsx";
 import CommandAutocomplete from "./CommandAutocomplete.tsx";
-import type { Command } from "../../command-composer/types.ts";
+import { type Command } from "../../commands/index.ts";
 import type { ListboxField } from "../../../shared/solid/createListbox.ts";
 
 export type ChatAutocompleteHandle = {

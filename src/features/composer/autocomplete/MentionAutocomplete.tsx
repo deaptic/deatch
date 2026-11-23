@@ -1,6 +1,6 @@
 import { onCleanup, Show } from "solid-js";
-import Suggestions from "../../suggestions/Suggestions.tsx";
-import ChatterRow from "../../suggestions/ChatterRow.tsx";
+import Suggestions from "../../../kit/Suggestions.tsx";
+import { ChatterRow } from "../../message/index.ts";
 import { chattersIn } from "../../../lib/stores/users.ts";
 import { rankChatters } from "../../../lib/utils/rankChatters.ts";
 import type { Chatter } from "../../../lib/types/index.ts";

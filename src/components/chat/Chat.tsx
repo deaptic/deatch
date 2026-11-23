@@ -16,7 +16,11 @@ import { mentionsIn } from "../../lib/utils/mention.ts";
 import { textOf, withoutReplyMention } from "../../lib/utils/message.ts";
 import Feed, { type FeedApi } from "../feed/Feed.tsx";
 import ScrollStatusBar from "./ScrollStatusBar.tsx";
-import ChatInput, { type ChatInputApi, type ReplyTo } from "./ChatInput.tsx";
+import {
+  Composer,
+  type ComposerApi,
+  type ReplyTo,
+} from "../../features/composer/index.ts";
 import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu, {
   type ModAction,
@@ -83,7 +87,7 @@ export default function Chat(props: Props) {
     userName: string;
   } | null>(null);
   const [feedApi, setFeedApi] = createSignal<FeedApi | null>(null);
-  let inputApi: ChatInputApi | undefined;
+  let inputApi: ComposerApi | undefined;
 
   const isMod = createMemo(() =>
     showsControls(props.broadcasterId, "moderate"),
@@ -286,7 +290,7 @@ export default function Chat(props: Props) {
             </div>
           )}
         </Transition>
-        <ChatInput
+        <Composer
           broadcasterId={props.broadcasterId}
           broadcasterName={props.broadcasterName}
           replyTo={replyTo}

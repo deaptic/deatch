@@ -1,44 +1,22 @@
 import { createMemo, onCleanup, Show } from "solid-js";
-import Suggestions from "../../suggestions/Suggestions.tsx";
+import Suggestions from "../../../kit/Suggestions.tsx";
 import { TRIGGERS } from "./detect.ts";
 import {
-  bttvChannel,
-  bttvGlobal,
-  ffzChannel,
-  ffzGlobal,
-  globalEmotes,
-  sevenTvChannel,
-  sevenTvGlobal,
-  usableUserEmotes,
+  type EmoteProvider,
   emoteZoom,
-} from "../../../features/emotes/index.ts";
+  typeableEmotes,
+} from "../../emotes/index.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
-type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";
-type EmoteEntry = { url: string; source: Source };
-type EmoteSuggestion = { name: string; url: string; source: Source };
+type EmoteSuggestion = { name: string; url: string; source: EmoteProvider };
 
 type Props = {
   controller: ChatAutocompleteController;
 };
 
 export default function EmoteAutocomplete(props: Props) {
-  const allEmotes = createMemo<Record<string, EmoteEntry>>(() => {
-    const map: Record<string, EmoteEntry> = {};
-    const add = (name: string, url: string, source: Source) => {
-      if (!map[name]) map[name] = { url, source };
-    };
-    for (const e of sevenTvChannel()) add(e.name, e.url, "7TV");
-    for (const e of bttvChannel()) add(e.name, e.url, "BetterTTV");
-    for (const e of ffzChannel()) add(e.name, e.url, "FrankerFaceZ");
-    for (const e of sevenTvGlobal()) add(e.name, e.url, "7TV");
-    for (const e of bttvGlobal()) add(e.name, e.url, "BetterTTV");
-    for (const e of ffzGlobal()) add(e.name, e.url, "FrankerFaceZ");
-    for (const e of usableUserEmotes()) add(e.name, e.url, "Twitch");
-    for (const e of globalEmotes()) add(e.name, e.url, "Twitch");
-    return map;
-  });
+  const allEmotes = createMemo(typeableEmotes);
 
   const suggestions = (): EmoteSuggestion[] => {
     const q = props.controller.queryFor("emote");

@@ -12,15 +12,9 @@ export { type EmoteMap } from "./emoteMap.ts";
 export { emoteZoom } from "./emoteZoom.ts";
 export { default as HoverZoom } from "./HoverZoom.tsx";
 export {
-  bttvChannel,
-  bttvGlobal,
-  ffzChannel,
-  ffzGlobal,
-  globalEmotes,
-  sevenTvChannel,
-  sevenTvGlobal,
-  usableUserEmotes,
   thirdPartyEmoteMap,
+  typeableEmotes,
   usableFavorites,
 } from "./store.ts";
+export type { EmoteProvider } from "./typeable.ts";
 export const loadEmotePicker = () => import("./picker/EmotePicker.tsx");

@@ -11,3 +11,4 @@ export {
   userLinkHover,
   type UserAction,
 } from "./userLink.ts";
+export { default as ChatterRow } from "./ChatterRow.tsx";

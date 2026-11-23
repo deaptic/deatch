@@ -3,8 +3,6 @@ import { selectedChannel } from "../stores/view.ts";
 import { clearChatters } from "../stores/users.ts";
 import * as channels from "../../features/channels/index.ts";
 import * as channelInfo from "../services/channelInfo.ts";
-import { clearDraft } from "../stores/drafts.ts";
-import { clearSentMessages } from "../stores/sentMessages.ts";
 import { dropFeed, ensureFeed, snapshotDivider } from "../stores/feeds.ts";
 
 export function createChannelHooks(): void {
@@ -13,8 +11,6 @@ export function createChannelHooks(): void {
       join: ensureFeed,
       leave: (id) => {
         dropFeed(id);
-        clearDraft(id);
-        clearSentMessages(id);
       },
     }),
     channels.onChannel({

@@ -2,7 +2,7 @@ import { createEffect, For, type JSX, on, onMount } from "solid-js";
 import {
   createListbox,
   type ListboxField,
-} from "../../shared/solid/createListbox.ts";
+} from "../shared/solid/createListbox.ts";
 import SuggestionItem from "./SuggestionItem.tsx";
 
 export type SuggestionsApi = {

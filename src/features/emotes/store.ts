@@ -1,3 +1,4 @@
+import { firstByName, type TypeableEmote } from "./typeable.ts";
 import { createSignal } from "solid-js";
 import type {
   Emote,
@@ -79,4 +80,17 @@ export function computeGlobalSections(
     { sevenTv: sevenTvGlobal(), bttv: bttvGlobal(), ffz: ffzGlobal() },
     (id) => knownUser(id)?.displayName,
   );
+}
+
+export function typeableEmotes(): Record<string, TypeableEmote> {
+  return firstByName([
+    ["7TV", sevenTvChannel()],
+    ["BetterTTV", bttvChannel()],
+    ["FrankerFaceZ", ffzChannel()],
+    ["7TV", sevenTvGlobal()],
+    ["BetterTTV", bttvGlobal()],
+    ["FrankerFaceZ", ffzGlobal()],
+    ["Twitch", usableUserEmotes()],
+    ["Twitch", globalEmotes()],
+  ]);
 }

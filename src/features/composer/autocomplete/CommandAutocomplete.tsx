@@ -1,9 +1,7 @@
 import { t } from "../../../shared/i18n/index.ts";
 import { onCleanup, Show } from "solid-js";
-import Suggestions from "../../suggestions/Suggestions.tsx";
-import { commands } from "../../command-composer/commands.ts";
-import type { Command } from "../../command-composer/types.ts";
-import { commandUsage } from "../../command-composer/usage.ts";
+import Suggestions from "../../../kit/Suggestions.tsx";
+import { commands, type Command, commandUsage } from "../../commands/index.ts";
 import { showsRole } from "../../../lib/stores/roles.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";

@@ -7,7 +7,7 @@ import * as clips from "../../lib/services/clips.ts";
 import { CLIP_LENGTHS } from "../../lib/constants/twitch.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
-import * as chatModes from "../../features/chat-modes/index.ts";
+import * as chatModes from "../chat-modes/index.ts";
 import { showsControls } from "../../lib/stores/roles.ts";
 import {
   closeOverlay,
@@ -21,16 +21,16 @@ import IconButton from "../../kit/IconButton.tsx";
 import { MenuClose } from "../../kit/Menu.tsx";
 import MenuHost from "../../kit/MenuHost.tsx";
 import SubMenu from "../../kit/SubMenu.tsx";
-import { ChatModesList } from "../../features/chat-modes/index.ts";
-import { ChannelToolItems } from "../../features/channel-tools/index.ts";
-import { activeModes, type ChatMode } from "../../features/chat-modes/index.ts";
+import { ChatModesList } from "../chat-modes/index.ts";
+import { ChannelToolItems } from "../channel-tools/index.ts";
+import { activeModes, type ChatMode } from "../chat-modes/index.ts";
 
 type Props = {
   broadcasterId: string;
   anchorEl: () => HTMLElement | undefined;
 };
 
-export default function ComposerActions(props: Props) {
+export default function Actions(props: Props) {
   const settings = () => chatModes.forChannel(props.broadcasterId);
   const active = () => activeModes(settings());
   const isMod = () => showsControls(props.broadcasterId, "moderate");

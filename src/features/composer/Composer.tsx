@@ -14,21 +14,17 @@ import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import { fieldFrom } from "../../shared/solid/createListbox.ts";
 import * as chat from "../../lib/services/chat.ts";
-import type { Command } from "../command-composer/types.ts";
+import { type Command, CommandComposer } from "../commands/index.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
-import CommandComposer from "../command-composer/CommandComposer.tsx";
-import * as emotes from "../../features/emotes/index.ts";
-import {
-  pushSentMessage,
-  sentMessages,
-} from "../../lib/stores/sentMessages.ts";
-import { getDraft, setDraft } from "../../lib/stores/drafts.ts";
+import * as emotes from "../emotes/index.ts";
+import { pushSentMessage, sentMessages } from "./sentMessages.ts";
+import { getDraft, setDraft } from "./drafts.ts";
 import {
   closeOverlay,
   isOverlayOpen,
   toggleOverlay,
 } from "../../lib/stores/ui.ts";
-import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
+import InputField, { type ComposerFieldApi } from "./InputField.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import ComposerCaption from "../../kit/ComposerCaption.tsx";
@@ -38,7 +34,7 @@ import ChatAutocomplete, {
 } from "./autocomplete/ChatAutocomplete.tsx";
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
-import ComposerActions from "./ComposerActions.tsx";
+import Actions from "./Actions.tsx";
 import ComposerSlot from "../../kit/ComposerSlot.tsx";
 import Transition from "../../kit/Transition.tsx";
 import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
@@ -47,7 +43,7 @@ const SEND_ACTION = "chat::send";
 
 export type ReplyTo = { messageId: string; name: string; text: string };
 
-export type ChatInputApi = {
+export type ComposerApi = {
   focus: () => void;
   insert: (text: string) => void;
   replace: (text: string) => void;
@@ -61,10 +57,10 @@ type Props = {
   getMentions: () => Message[];
   onReplyMention: (msg: Message) => void;
   openUserCard: (userId: string) => void;
-  ref?: (api: ChatInputApi) => void;
+  ref?: (api: ComposerApi) => void;
 };
 
-export default function ChatInput(props: Props) {
+export default function Composer(props: Props) {
   const [input, setInput] = createSignal(getDraft(props.broadcasterId));
   onCleanup(() => setDraft(props.broadcasterId, input()));
   const [sending, setSending] = createSignal(false);
@@ -289,7 +285,7 @@ export default function ChatInput(props: Props) {
       <Show
         when={commandMode()}
         fallback={
-          <ComposerField
+          <InputField
             {...suggestionsField}
             value={input()}
             onInput={onInputChange}
@@ -316,7 +312,7 @@ export default function ChatInput(props: Props) {
             }}
             leading={
               <ComposerSlot>
-                <ComposerActions
+                <Actions
                   broadcasterId={props.broadcasterId}
                   anchorEl={() => textAreaApi?.anchorEl()}
                 />
@@ -354,7 +350,7 @@ export default function ChatInput(props: Props) {
                 />
               </Suspense>
             </Show>
-          </ComposerField>
+          </InputField>
         }
       >
         {(cmd) => (

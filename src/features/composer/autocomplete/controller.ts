@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { fieldFrom } from "../../../shared/solid/createListbox.ts";
-import type { SuggestionsApi } from "../../suggestions/Suggestions.tsx";
+import type { SuggestionsApi } from "../../../kit/Suggestions.tsx";
 import { type Active, detect, type Kind } from "./detect.ts";
 
 type Options = {

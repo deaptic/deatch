@@ -20,7 +20,7 @@ type Props = Omit<
   ref?: (api: ComposerFieldApi) => void;
 };
 
-export default function ComposerField(props: Props) {
+export default function InputField(props: Props) {
   const [local, textareaProps] = splitProps(props, [
     "value",
     "onInput",

@@ -10,6 +10,7 @@ import * as clock from "../services/clock.ts";
 import * as theme from "../services/theme.ts";
 import * as emotes from "../../features/emotes/index.ts";
 import * as badges from "../../features/badges/index.ts";
+import * as composer from "../../features/composer/index.ts";
 import * as view from "../services/view.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import * as live from "../services/live.ts";
@@ -40,6 +41,7 @@ export function createServices(): void {
       clock.start(),
       emotes.start(),
       badges.start(),
+      composer.start(),
       live.start(),
       feedLog.start(),
       exit.start(),

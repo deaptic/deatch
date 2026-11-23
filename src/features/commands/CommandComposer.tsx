@@ -8,11 +8,9 @@ import {
   Show,
 } from "solid-js";
 import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
-import Suggestions, {
-  type SuggestionsApi,
-} from "../suggestions/Suggestions.tsx";
+import Suggestions, { type SuggestionsApi } from "../../kit/Suggestions.tsx";
 import { comboboxFrom } from "../../shared/solid/createListbox.ts";
-import ChatterRow from "../suggestions/ChatterRow.tsx";
+import { ChatterRow } from "../message/index.ts";
 import type { Chatter } from "../../lib/types/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Chip from "../../kit/Chip.tsx";
