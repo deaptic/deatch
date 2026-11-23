@@ -36,7 +36,7 @@ import ModerationSection from "./sections/ModerationSection.tsx";
 import AppearanceSection from "./sections/AppearanceSection.tsx";
 import KeyboardSection from "./sections/KeyboardSection.tsx";
 import AdvancedSection from "./sections/AdvancedSection.tsx";
-import TriggersSection from "./sections/TriggersSection.tsx";
+import { TriggerSettings } from "../../features/triggers/index.ts";
 import { LinkSettings } from "../../features/link/index.ts";
 import BlockedUsersSection from "./sections/BlockedUsersSection.tsx";
 
@@ -80,7 +80,7 @@ const SECTIONS: {
     key: "triggers",
     label: "SETTINGS_TRIGGERS_TITLE",
     Icon: Zap,
-    Section: TriggersSection,
+    Section: TriggerSettings,
   },
   {
     key: "keyboard",

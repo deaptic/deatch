@@ -1,19 +1,19 @@
-import { t } from "../../../shared/i18n/index.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { Plus } from "lucide-solid";
 import { createSignal, For } from "solid-js";
-import PageBody from "../../../kit/PageBody.tsx";
-import Button from "../../../kit/Button.tsx";
+import PageBody from "../../kit/PageBody.tsx";
+import Button from "../../kit/Button.tsx";
 import TriggerCard from "./TriggerCard.tsx";
-import BuiltInTriggers from "./BuiltInTriggers.tsx";
+import BuiltIns from "./BuiltIns.tsx";
+import { type Trigger } from "../../lib/stores/preferences.ts";
 import {
   blankTrigger,
   removeTrigger,
   saveTrigger,
-  type Trigger,
   customTriggers,
-} from "../../../lib/stores/preferences.ts";
+} from "./saved.ts";
 
-export default function TriggersSection() {
+export default function TriggerSettings() {
   const [drafts, setDrafts] = createSignal<Trigger[]>([]);
   const [open, setOpen] = createSignal<ReadonlySet<string>>(new Set());
   const isOpen = (id: string) => open().has(id);
@@ -38,7 +38,7 @@ export default function TriggersSection() {
 
   return (
     <PageBody title={t("SETTINGS_TRIGGERS_TITLE")}>
-      <BuiltInTriggers />
+      <BuiltIns />
       <For each={customTriggers()}>
         {(trigger) => (
           <TriggerCard

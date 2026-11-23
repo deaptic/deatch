@@ -1,17 +1,17 @@
 import { Index, Show } from "solid-js";
 import { Plus } from "lucide-solid";
-import Button from "../../../kit/Button.tsx";
-import TriggerConditionalReply from "./TriggerConditionalReply.tsx";
-import TriggerMethodChips from "./TriggerMethodChips.tsx";
-import TriggerResponseField, {
+import Button from "../../kit/Button.tsx";
+import ReplyEditor from "./ReplyEditor.tsx";
+import MethodChips from "./MethodChips.tsx";
+import ResponseField, {
   type Insert,
   type Targeting,
-} from "./TriggerResponseField.tsx";
-import { BLANK_CONDITION } from "../../../lib/services/conditionGroups.ts";
-import { moved } from "../../../lib/utils/moved.ts";
-import { removedAt, replacedAt } from "../../../lib/utils/listEdit.ts";
-import type { ConditionalReply } from "../../../lib/stores/preferences.ts";
-import { t } from "../../../shared/i18n/index.ts";
+} from "./ResponseField.tsx";
+import { BLANK_CONDITION } from "./conditionGroups.ts";
+import { moved } from "../../lib/utils/moved.ts";
+import { removedAt, replacedAt } from "../../lib/utils/listEdit.ts";
+import type { ConditionalReply } from "../../lib/stores/preferences.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 const BLANK_REPLY: ConditionalReply = { when: [[BLANK_CONDITION]], text: "" };
 
@@ -22,7 +22,7 @@ type Props = {
   onOtherwiseChange: (text: string) => void;
 };
 
-export default function TriggerReplies(props: Props) {
+export default function Replies(props: Props) {
   let focused: Insert | undefined;
   let otherwiseInsert: Insert | undefined;
   const targeting: Targeting = {
@@ -37,7 +37,7 @@ export default function TriggerReplies(props: Props) {
     <div class="flex flex-col gap-3">
       <Index each={props.replies}>
         {(reply, index) => (
-          <TriggerConditionalReply
+          <ReplyEditor
             reply={reply()}
             number={index + 1}
             first={index === 0}
@@ -63,7 +63,7 @@ export default function TriggerReplies(props: Props) {
             {t("SETTINGS_TRIGGERS_OTHERWISE_LABEL")}
           </span>
         </Show>
-        <TriggerResponseField
+        <ResponseField
           value={props.otherwise}
           placeholder={
             hasReplies()
@@ -78,7 +78,7 @@ export default function TriggerReplies(props: Props) {
           onRelease={targeting.onRelease}
         />
       </div>
-      <TriggerMethodChips
+      <MethodChips
         onPick={(method) => (focused ?? otherwiseInsert)?.(method)}
       />
       <div>

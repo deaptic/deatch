@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import type { Trigger } from "../stores/preferences.ts";
-import { firstMatch, isCoolingDown, roleAllows } from "./triggerMatch.ts";
+import type { Trigger } from "../../lib/stores/preferences.ts";
+import { firstMatch, isCoolingDown, roleAllows } from "./match.ts";
 
 const trigger = (overrides: Partial<Trigger>): Trigger => ({
   id: "t1",

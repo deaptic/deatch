@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { holds, needsValue, satisfied } from "./triggerConditions.ts";
+import { holds, needsValue, satisfied } from "./conditions.ts";
 
 test("set and empty look only at the left side", () => {
   expect(holds("set", " someone ", "")).toBe(true);

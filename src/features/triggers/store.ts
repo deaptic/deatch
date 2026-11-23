@@ -1,27 +1,21 @@
-import * as chat from "./chat.ts";
-import * as triggerMatch from "./triggerMatch.ts";
-import { phraseOf, BUILT_INS } from "./builtInTriggers/index.ts";
-import { failed } from "./builtInTriggers/context.ts";
-import { matchEnd } from "../utils/wordMatch.ts";
-import { parse, render } from "./triggerTemplate.ts";
-import {
-  type Resolve,
-  resolverFor,
-  templateProblems,
-} from "./triggerMethods.ts";
-import { holds, needsValue, satisfied } from "./triggerConditions.ts";
-import type { UserRef } from "../types/index.ts";
-import { user } from "../stores/users.ts";
-import { MAX_MESSAGE_LENGTH } from "../constants/twitch.ts";
+import * as chat from "../../lib/services/chat.ts";
+import * as match from "./match.ts";
+import { phraseOf, BUILT_INS } from "./builtIns/index.ts";
+import { failed } from "./builtIns/context.ts";
+import { matchEnd } from "../../shared/wordMatch.ts";
+import { parse, render } from "./template.ts";
+import { type Resolve, resolverFor, templateProblems } from "./methods.ts";
+import { holds, needsValue, satisfied } from "./conditions.ts";
+import type { UserRef } from "../../lib/types/index.ts";
+import { user } from "../../lib/stores/users.ts";
+import { MAX_MESSAGE_LENGTH } from "../../lib/constants/twitch.ts";
 import {
   clampCooldown,
   type Condition,
-  countReply,
-  builtInEnabled,
   MIN_TRIGGER_COOLDOWN,
   type Trigger,
-  customTriggers,
-} from "../stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
+import { countReply, builtInEnabled, customTriggers } from "./saved.ts";
 
 type IncomingMessage = {
   text: string;
@@ -108,7 +102,7 @@ export function isComplete(trigger: Trigger): boolean {
 
 function eligible(message: IncomingMessage): Trigger[] {
   return customTriggers().filter((t) =>
-    triggerMatch.roleAllows(t.role, message.badgeSets),
+    match.roleAllows(t.role, message.badgeSets),
   );
 }
 
@@ -119,7 +113,7 @@ function coolingDown(
 ): boolean {
   const now = Date.now();
   const key = `${broadcasterId}:${id}`;
-  if (triggerMatch.isCoolingDown(lastFiredAt.get(key), now, seconds)) {
+  if (match.isCoolingDown(lastFiredAt.get(key), now, seconds)) {
     return true;
   }
   lastFiredAt.set(key, now);
@@ -164,7 +158,7 @@ function handleBuiltIn(message: IncomingMessage): boolean {
       broadcasterId: message.broadcasterId,
       sender: message.chatter,
       args,
-      isModerator: triggerMatch.roleAllows("moderator", message.badgeSets),
+      isModerator: match.roleAllows("moderator", message.badgeSets),
     })
     .catch((e: unknown) => {
       console.warn(`${phraseOf(builtIn)} failed`, e);
@@ -175,7 +169,7 @@ function handleBuiltIn(message: IncomingMessage): boolean {
 }
 
 async function respond(
-  fired: triggerMatch.Fired,
+  fired: match.Fired,
   message: IncomingMessage,
 ): Promise<void> {
   const resolve = resolverFor({
@@ -193,7 +187,7 @@ async function respond(
 export function handle(message: IncomingMessage): void {
   if (message.broadcasterId !== user()?.id || isOwnEcho(message)) return;
   if (handleBuiltIn(message)) return;
-  const fired = triggerMatch.firstMatch(message.text, eligible(message));
+  const fired = match.firstMatch(message.text, eligible(message));
   if (!fired) return;
   const cooldown = clampCooldown(fired.trigger.cooldown);
   if (coolingDown(message.broadcasterId, fired.trigger.id, cooldown)) return;
@@ -207,7 +201,7 @@ export async function preview(
   text: string,
 ): Promise<Preview | null> {
   const me = user();
-  const fired = triggerMatch.firstMatch(text, [{ ...trigger, enabled: true }]);
+  const fired = match.firstMatch(text, [{ ...trigger, enabled: true }]);
   if (!me || !fired) return null;
   const resolve = resolverFor({
     broadcasterId: me.id,

@@ -1,6 +1,6 @@
 import type { FeedEntry, FeedMessage, MentionReason } from "../types/index.ts";
 import { textOf } from "./message.ts";
-import { matchedKeyword } from "./wordMatch.ts";
+import { matchedKeyword } from "../../shared/wordMatch.ts";
 
 export function mentionReason(
   msg: FeedMessage,

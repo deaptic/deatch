@@ -1,7 +1,7 @@
-import * as users from "../users.ts";
-import { typedTarget } from "../triggerMethods.ts";
+import * as users from "../../../lib/services/users.ts";
+import { typedTarget } from "../methods.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { User, UserRef } from "../../types/index.ts";
+import type { User, UserRef } from "../../../lib/types/index.ts";
 
 export type BuiltInContext = {
   broadcasterId: string;

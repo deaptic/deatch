@@ -1,13 +1,9 @@
 import { For } from "solid-js";
-import Chip from "../../../kit/Chip.tsx";
-import {
-  METHODS,
-  methodSyntax,
-  type TriggerMethod,
-} from "../../../lib/services/triggerMethods.ts";
-import { t } from "../../../shared/i18n/index.ts";
+import Chip from "../../kit/Chip.tsx";
+import { METHODS, methodSyntax, type TriggerMethod } from "./methods.ts";
+import { t } from "../../shared/i18n/index.ts";
 
-export default function TriggerMethodChips(props: {
+export default function MethodChips(props: {
   onPick: (method: TriggerMethod) => void;
 }) {
   return (

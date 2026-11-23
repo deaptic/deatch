@@ -1,27 +1,27 @@
-import { t, type MessageKey } from "../../../shared/i18n/index.ts";
+import { t, type MessageKey } from "../../shared/i18n/index.ts";
 import { CaseSensitive, Check, ChevronRight, Trash2 } from "lucide-solid";
 import { Show } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
-import Card from "../../../kit/Card.tsx";
-import Toggle from "../../../kit/Toggle.tsx";
-import Textarea from "../../../kit/Textarea.tsx";
-import Field from "../../../kit/Field.tsx";
-import IconButton from "../../../kit/IconButton.tsx";
-import Segmented from "../../../kit/Segmented.tsx";
+import Card from "../../kit/Card.tsx";
+import Toggle from "../../kit/Toggle.tsx";
+import Textarea from "../../kit/Textarea.tsx";
+import Field from "../../kit/Field.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import Segmented from "../../kit/Segmented.tsx";
 import TriggerField from "./TriggerField.tsx";
-import TriggerReplies from "./TriggerReplies.tsx";
+import Replies from "./Replies.tsx";
 import TriggerPreview from "./TriggerPreview.tsx";
-import { autofocus } from "../../../shared/solid/focus.ts";
-import { isComplete } from "../../../lib/services/triggers.ts";
+import { autofocus } from "../../shared/solid/focus.ts";
+import { isComplete } from "./store.ts";
 import {
   clampCooldown,
   MAX_TRIGGER_COOLDOWN,
   MIN_TRIGGER_COOLDOWN,
-  sameTriggerSettings,
   type Trigger,
   TRIGGER_ROLES,
   type TriggerRole,
-} from "../../../lib/stores/preferences.ts";
+} from "../../lib/stores/preferences.ts";
+import { sameTriggerSettings } from "./saved.ts";
 
 const ROLE_LABELS: Record<TriggerRole, MessageKey> = {
   everyone: "SETTINGS_TRIGGERS_ROLE_EVERYONE_LABEL",
@@ -145,7 +145,7 @@ export default function TriggerCard(props: {
           </TriggerField>
 
           <TriggerField label={t("SETTINGS_TRIGGERS_REPLY_LABEL")}>
-            <TriggerReplies
+            <Replies
               replies={draft.replies}
               otherwise={draft.otherwise}
               onRepliesChange={(replies) => setDraft("replies", replies)}

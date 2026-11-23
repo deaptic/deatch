@@ -9,7 +9,7 @@ import { chatterOf, mapChatMessage } from "../mappers/chat.ts";
 import * as channelPoints from "../services/channelPoints.ts";
 import * as users from "../services/users.ts";
 import * as badges from "../services/badges.ts";
-import * as triggers from "../services/triggers.ts";
+import * as triggers from "../../features/triggers/index.ts";
 
 function noteRename(raw: RawChatMessage) {
   const known = knownUser(raw.chatter_user_id);

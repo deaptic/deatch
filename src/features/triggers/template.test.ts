@@ -5,7 +5,7 @@ import {
   parse,
   problems,
   render,
-} from "./triggerTemplate.ts";
+} from "./template.ts";
 
 const SPECS: MethodSpec[] = [
   { name: "user", arg: "none" },

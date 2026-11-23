@@ -1,19 +1,17 @@
 import { Show } from "solid-js";
 import { ListFilter, X } from "lucide-solid";
-import IconButton from "../../../kit/IconButton.tsx";
-import MenuItem from "../../../kit/MenuItem.tsx";
-import PopoverButton from "../../../kit/PopoverButton.tsx";
-import TriggerLead from "./TriggerLead.tsx";
-import TriggerResponseField, {
-  type Targeting,
-} from "./TriggerResponseField.tsx";
-import { needsValue } from "../../../lib/services/triggerConditions.ts";
+import IconButton from "../../kit/IconButton.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
+import PopoverButton from "../../kit/PopoverButton.tsx";
+import Lead from "./Lead.tsx";
+import ResponseField, { type Targeting } from "./ResponseField.tsx";
+import { needsValue } from "./conditions.ts";
 import {
   type Condition,
   CONDITION_OPS,
   type ConditionOp,
-} from "../../../lib/stores/preferences.ts";
-import { type MessageKey, t } from "../../../shared/i18n/index.ts";
+} from "../../lib/stores/preferences.ts";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 
 const OP_LABELS: Record<ConditionOp, MessageKey> = {
   set: "SETTINGS_TRIGGERS_OP_SET_LABEL",
@@ -34,14 +32,14 @@ type Props = Targeting & {
   onRemove: () => void;
 };
 
-export default function TriggerConditionRow(props: Props) {
+export default function ConditionRow(props: Props) {
   const set = (patch: Partial<Condition>) =>
     props.onChange({ ...props.condition, ...patch });
 
   return (
     <div class="flex items-start gap-2">
-      <TriggerLead>{props.lead}</TriggerLead>
-      <TriggerResponseField
+      <Lead>{props.lead}</Lead>
+      <ResponseField
         value={props.condition.left}
         placeholder={t("SETTINGS_TRIGGERS_CONDITION_LEFT_PLACEHOLDER")}
         onChange={(left) => set({ left })}
@@ -70,7 +68,7 @@ export default function TriggerConditionRow(props: Props) {
         </PopoverButton>
       </div>
       <Show when={needsValue(props.condition.op)}>
-        <TriggerResponseField
+        <ResponseField
           value={props.condition.right}
           placeholder={t("SETTINGS_TRIGGERS_CONDITION_RIGHT_PLACEHOLDER")}
           onChange={(right) => set({ right })}

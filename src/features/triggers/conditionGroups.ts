@@ -1,5 +1,5 @@
-import type { Condition } from "../stores/preferences.ts";
-import { removedAt, replacedAt } from "../utils/listEdit.ts";
+import type { Condition } from "../../lib/stores/preferences.ts";
+import { removedAt, replacedAt } from "../../lib/utils/listEdit.ts";
 
 type Groups = readonly Condition[][];
 

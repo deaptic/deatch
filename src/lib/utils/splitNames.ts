@@ -1,4 +1,4 @@
-import { escapeRegExp } from "./regExp.ts";
+import { escapeRegExp } from "../../shared/regExp.ts";
 
 export type Segment = { text: string } | { text: string; person: number };
 

@@ -1,23 +1,21 @@
 import { Index, Show } from "solid-js";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-solid";
-import Button from "../../../kit/Button.tsx";
-import IconButton from "../../../kit/IconButton.tsx";
-import TriggerConditionRow from "./TriggerConditionRow.tsx";
-import TriggerLead from "./TriggerLead.tsx";
-import TriggerResponseField, {
-  type Targeting,
-} from "./TriggerResponseField.tsx";
+import Button from "../../kit/Button.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import ConditionRow from "./ConditionRow.tsx";
+import Lead from "./Lead.tsx";
+import ResponseField, { type Targeting } from "./ResponseField.tsx";
 import {
   addCondition,
   addGroup,
   removeCondition,
   updateCondition,
-} from "../../../lib/services/conditionGroups.ts";
+} from "./conditionGroups.ts";
 import type {
   Condition,
   ConditionalReply,
-} from "../../../lib/stores/preferences.ts";
-import { t } from "../../../shared/i18n/index.ts";
+} from "../../lib/stores/preferences.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 type Props = Targeting & {
   reply: ConditionalReply;
@@ -38,7 +36,7 @@ function OrDivider() {
   );
 }
 
-export default function TriggerConditionalReply(props: Props) {
+export default function ReplyEditor(props: Props) {
   const groups = () => props.reply.when;
   const setGroups = (next: Condition[][]) =>
     props.onChange({ ...props.reply, when: next });
@@ -79,7 +77,7 @@ export default function TriggerConditionalReply(props: Props) {
             </Show>
             <Index each={group()}>
               {(condition, at) => (
-                <TriggerConditionRow
+                <ConditionRow
                   lead={
                     at === 0
                       ? t("SETTINGS_TRIGGERS_IF_LABEL")
@@ -120,8 +118,8 @@ export default function TriggerConditionalReply(props: Props) {
         )}
       </Index>
       <div class="flex items-start gap-2">
-        <TriggerLead>{t("SETTINGS_TRIGGERS_THEN_LABEL")}</TriggerLead>
-        <TriggerResponseField
+        <Lead>{t("SETTINGS_TRIGGERS_THEN_LABEL")}</Lead>
+        <ResponseField
           value={props.reply.text}
           placeholder={t("SETTINGS_TRIGGERS_REPLY_PLACEHOLDER")}
           onChange={(text) => props.onChange({ ...props.reply, text })}

@@ -1,8 +1,8 @@
-import * as users from "../users.ts";
+import * as users from "../../../lib/services/users.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import { formatElapsed } from "../../../shared/format/duration.ts";
 import { Time } from "../../../shared/time.ts";
-import type { User } from "../../types/index.ts";
+import type { User } from "../../../lib/types/index.ts";
 import { type BuiltInContext, failed, forTarget } from "./context.ts";
 
 async function followage(

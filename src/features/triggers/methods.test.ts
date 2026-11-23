@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { typedTarget } from "./triggerMethods.ts";
+import { typedTarget } from "./methods.ts";
 
 test("typedTarget takes the first word without the @", () => {
   expect(typedTarget("@someone hard")).toBe("someone");

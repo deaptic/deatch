@@ -1,17 +1,17 @@
 import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
-import Field from "../../../kit/Field.tsx";
+import Field from "../../kit/Field.tsx";
 import Suggestions, {
   type SuggestionsApi,
-} from "../../suggestions/Suggestions.tsx";
-import { fieldFrom } from "../../../shared/solid/createListbox.ts";
-import { methodQueryAt } from "../../../lib/services/triggerTemplate.ts";
+} from "../../components/suggestions/Suggestions.tsx";
+import { fieldFrom } from "../../shared/solid/createListbox.ts";
+import { methodQueryAt } from "./template.ts";
 import {
   METHODS,
   methodSyntax,
   templateProblems,
   type TriggerMethod,
-} from "../../../lib/services/triggerMethods.ts";
-import { t } from "../../../shared/i18n/index.ts";
+} from "./methods.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 export type Insert = (method: TriggerMethod) => void;
 
@@ -29,7 +29,7 @@ type Props = Targeting & {
 const inserted = (method: TriggerMethod) =>
   method.arg === "required" ? methodSyntax(method) : `{${method.name}}`;
 
-export default function TriggerResponseField(props: Props) {
+export default function ResponseField(props: Props) {
   let input: HTMLInputElement | undefined;
   const [caret, setCaret] = createSignal(0);
   const [dismissed, setDismissed] = createSignal(false);

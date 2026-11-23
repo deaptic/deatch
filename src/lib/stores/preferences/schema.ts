@@ -1,5 +1,5 @@
 import { RECENT_LIMIT } from "../../utils/recentChannels.ts";
-import type { Anchor } from "../../utils/wordMatch.ts";
+import type { Anchor } from "../../../shared/wordMatch.ts";
 import {
   BADGE_CATEGORIES,
   type BadgeCategoryKey,

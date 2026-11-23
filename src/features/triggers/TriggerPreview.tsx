@@ -1,9 +1,9 @@
 import { createResource, createSignal, For, Show } from "solid-js";
-import Field from "../../../kit/Field.tsx";
-import { createDebounced } from "../../../shared/solid/createDebounced.ts";
-import * as triggers from "../../../lib/services/triggers.ts";
-import type { Trigger } from "../../../lib/stores/preferences.ts";
-import { t } from "../../../shared/i18n/index.ts";
+import Field from "../../kit/Field.tsx";
+import { createDebounced } from "../../shared/solid/createDebounced.ts";
+import * as triggers from "./store.ts";
+import type { Trigger } from "../../lib/stores/preferences.ts";
+import { t } from "../../shared/i18n/index.ts";
 
 const SETTLE_MS = 300;
 
