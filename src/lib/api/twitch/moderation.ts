@@ -6,6 +6,8 @@ import type {
   BroadcasterUserParams,
   DeleteChatMessagesParams,
   ManageHeldAutomodMessageParams,
+  ResolveUnbanRequestParams,
+  UnbanRequest,
   UpdateShieldModeParams,
   UserRef,
   WarnUserParams,
@@ -101,6 +103,27 @@ export async function manageHeldAutomodMessage(
       : t("FEED_AUTOMOD_DENIED_TOAST");
   await invokeCommand(commands.manageHeldAutomodMessage, [params], {
     successMessage,
+    ...options,
+  });
+}
+
+export function getUnbanRequests(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<UnbanRequest[]> {
+  return invokeCommand(commands.getUnbanRequests, [params], options);
+}
+
+export async function resolveUnbanRequest(
+  params: ResolveUnbanRequestParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.resolveUnbanRequest, [params], {
+    successMessage: t(
+      params.decision === "approve"
+        ? "UNBAN_REQUESTS_APPROVED_TOAST"
+        : "UNBAN_REQUESTS_DENIED_TOAST",
+    ),
     ...options,
   });
 }

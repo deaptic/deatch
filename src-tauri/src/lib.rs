@@ -85,6 +85,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::moderation::commands::unban_user,
             twitch::moderation::commands::get_ban,
             twitch::moderation::commands::get_moderated_channels,
+            twitch::moderation::commands::get_unban_requests,
+            twitch::moderation::commands::resolve_unban_request,
             twitch::moderation::commands::warn_user,
             twitch::moderation::commands::manage_held_automod_message,
             twitch::moderation::commands::get_shield_mode,

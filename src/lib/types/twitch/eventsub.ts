@@ -293,6 +293,7 @@ export type RawUnbanRequestCreate = RawModUser & {
   broadcaster_user_id: string;
   id: string;
   text: string;
+  created_at: string;
 };
 
 export type RawUnbanRequestResolve = RawModUser & {

@@ -1,7 +1,9 @@
+use crate::twitch::ids::UnbanRequestId;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::moderation::{
     BannedUser as HelixBannedUser, ModeratedChannel as HelixModeratedChannel,
+    UnbanRequest as HelixUnbanRequest,
 };
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
@@ -27,5 +29,25 @@ impl From<HelixBannedUser> for BannedUser {
 impl From<HelixModeratedChannel> for UserRef {
     fn from(m: HelixModeratedChannel) -> Self {
         UserRef::new(m.broadcaster_id, m.broadcaster_login, m.broadcaster_name)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UnbanRequest {
+    pub id: UnbanRequestId,
+    pub user: UserRef,
+    pub text: String,
+    pub created_at: String,
+}
+
+impl From<HelixUnbanRequest> for UnbanRequest {
+    fn from(r: HelixUnbanRequest) -> Self {
+        Self {
+            id: r.id.take().into(),
+            user: UserRef::new(r.user_id, r.user_login, r.user_name),
+            text: r.text,
+            created_at: r.created_at.to_string(),
+        }
     }
 }

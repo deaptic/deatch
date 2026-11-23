@@ -23,6 +23,7 @@ import MenuItem from "../ui/MenuItem.tsx";
 import SubMenu from "../ui/SubMenu.tsx";
 import InfoForm from "./InfoForm.tsx";
 import RaidForm from "./RaidForm.tsx";
+import UnbanRequestsForm from "./UnbanRequestsForm.tsx";
 import VoteForm from "./VoteForm.tsx";
 
 type ItemsProps = {
@@ -114,6 +115,12 @@ export function ChannelToolForm(props: FormProps) {
     <Switch>
       <Match when={props.form === "info"}>
         <InfoForm broadcasterId={props.broadcasterId} onDone={props.onDone} />
+      </Match>
+      <Match when={props.form === "unbans"}>
+        <UnbanRequestsForm
+          broadcasterId={props.broadcasterId}
+          onDone={props.onDone}
+        />
       </Match>
       <Match when={props.form === "raid"}>
         <RaidForm broadcasterId={props.broadcasterId} onDone={props.onDone} />

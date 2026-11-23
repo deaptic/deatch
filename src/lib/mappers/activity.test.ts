@@ -1,5 +1,12 @@
 import { expect, test } from "vite-plus/test";
-import { charityFrom, pollFrom, predictionFrom } from "./activity.ts";
+import {
+  charityFrom,
+  pollFrom,
+  predictionFrom,
+  unbanRequestFrom,
+  withoutUnbanRequest,
+  withUnbanRequest,
+} from "./activity.ts";
 import type {
   RawCharityCampaign,
   RawPoll,
@@ -73,4 +80,35 @@ test("charityFrom keeps the raised and target amounts", () => {
     current: { value: 12000, decimalPlaces: 2, currency: "EUR" },
     target: { value: 50000, decimalPlaces: 2, currency: "EUR" },
   });
+});
+
+test("unbanRequestFrom keeps who asked, what they wrote and when", () => {
+  expect(
+    unbanRequestFrom({
+      broadcaster_user_id: "1",
+      id: "u1",
+      user_id: "2",
+      user_login: "viewer1",
+      user_name: "Viewer1",
+      text: "sorry",
+      created_at: "2026-01-01T00:00:00Z",
+    }),
+  ).toEqual({
+    id: "u1",
+    user: { id: "2", login: "viewer1", displayName: "Viewer1" },
+    text: "sorry",
+    createdAt: "2026-01-01T00:00:00Z",
+  });
+});
+
+test("an unban request is listed once and leaves when resolved", () => {
+  const request = {
+    id: "u1",
+    user: { id: "2", login: "viewer1", displayName: "Viewer1" },
+    text: "sorry",
+    createdAt: "2026-01-01T00:00:00Z",
+  };
+  const listed = withUnbanRequest(withUnbanRequest([], request), request);
+  expect(listed).toHaveLength(1);
+  expect(withoutUnbanRequest(listed, "u1")).toEqual([]);
 });

@@ -1,6 +1,7 @@
 import {
   ChartColumn,
   HeartHandshake,
+  Scale,
   Shield,
   Swords,
   Trophy,
@@ -9,6 +10,7 @@ import { onMount, Show } from "solid-js";
 import { t, tRich } from "../../lib/i18n/index.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
 import { pendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
+import { setChannelForm } from "../../lib/stores/ui.ts";
 import { knownUser, user } from "../../lib/stores/users.ts";
 import * as activity from "../../lib/services/activity.ts";
 import * as clock from "../../lib/services/clock.ts";
@@ -53,6 +55,7 @@ export default function ActivityStrip(props: Props) {
         current().poll ||
         current().prediction ||
         current().charity ||
+        current().unbanRequests.length ||
         raiding()
       }
     >
@@ -88,6 +91,23 @@ export default function ActivityStrip(props: Props) {
                 <PredictionRow
                   broadcasterId={props.broadcasterId}
                   prediction={prediction()}
+                />
+              )}
+            </Presence>
+            <Presence when={current().unbanRequests.length}>
+              {(count) => (
+                <ActivityRow
+                  icon={<Scale />}
+                  title={t("HEADER_UNBAN_REQUESTS_STATUS", { count: count() })}
+                  actions={
+                    <Button
+                      variant="neutral"
+                      size="sm"
+                      onClick={() => setChannelForm("unbans")}
+                    >
+                      {t("HEADER_REVIEW_LABEL")}
+                    </Button>
+                  }
                 />
               )}
             </Presence>

@@ -5,19 +5,33 @@ import type {
   RawPoll,
   RawPrediction,
   RawShieldMode,
+  RawUnbanRequestCreate,
+  RawUnbanRequestResolve,
 } from "../types/index.ts";
-import { type Activity, updateActivity } from "../stores/activity.ts";
-import { charityFrom, pollFrom, predictionFrom } from "../mappers/activity.ts";
+import {
+  type Activity,
+  activityFor,
+  updateActivity,
+} from "../stores/activity.ts";
+import {
+  charityFrom,
+  pollFrom,
+  predictionFrom,
+  unbanRequestFrom,
+  withoutUnbanRequest,
+  withUnbanRequest,
+} from "../mappers/activity.ts";
 
 type Raw = { broadcaster_user_id: string };
 
 function listenActivity<T extends Raw>(
   kind: EventKind,
-  change: (raw: T) => Partial<Activity>,
+  change: (raw: T, current: Activity) => Partial<Activity>,
 ) {
-  return listenEventSub<T>(kind, (e) =>
-    updateActivity(e.event.broadcaster_user_id, change(e.event)),
-  );
+  return listenEventSub<T>(kind, (e) => {
+    const id = e.event.broadcaster_user_id;
+    updateActivity(id, change(e.event, activityFor(id)));
+  });
 }
 
 function listenCharity(
@@ -53,6 +67,21 @@ export function start(): () => void {
     listenActivity<RawShieldMode>("channel.shield_mode.end", () => ({
       shield: false,
     })),
+    listenActivity<RawUnbanRequestCreate>(
+      "channel.unban_request.create",
+      (raw, current) => ({
+        unbanRequests: withUnbanRequest(
+          current.unbanRequests,
+          unbanRequestFrom(raw),
+        ),
+      }),
+    ),
+    listenActivity<RawUnbanRequestResolve>(
+      "channel.unban_request.resolve",
+      (raw, current) => ({
+        unbanRequests: withoutUnbanRequest(current.unbanRequests, raw.id),
+      }),
+    ),
     listenCharity("channel.charity_campaign.start", charity),
     listenCharity("channel.charity_campaign.progress", charity),
     listenCharity("channel.charity_campaign.stop", () => ({ charity: null })),

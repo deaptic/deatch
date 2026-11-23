@@ -56,6 +56,8 @@ export const commands = {
 	expiresAt: string | null,
 } | null>("get_ban", { params }),
 	getModeratedChannels: () => __TAURI_INVOKE<UserRef[]>("get_moderated_channels"),
+	getUnbanRequests: (params: BroadcasterParams) => __TAURI_INVOKE<UnbanRequest[]>("get_unban_requests", { params }),
+	resolveUnbanRequest: (params: ResolveUnbanRequestParams) => __TAURI_INVOKE<null>("resolve_unban_request", { params }),
 	warnUser: (params: WarnUserParams) => __TAURI_INVOKE<null>("warn_user", { params }),
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
@@ -669,6 +671,13 @@ export type Reply = {
 	thread_user_login: string | null,
 };
 
+export type ResolveUnbanRequestParams = {
+	broadcasterId: UserId,
+	requestId: UnbanRequestId,
+	decision: UnbanDecision,
+	note?: string | null,
+};
+
 export type ResubNotice = {
 	sub_tier: SubTier,
 	is_prime: boolean,
@@ -788,6 +797,17 @@ export type SubNotice = {
 };
 
 export type SubTier = "1000" | "2000" | "3000";
+
+export type UnbanDecision = "approve" | "deny";
+
+export type UnbanRequest = {
+	id: UnbanRequestId,
+	user: UserRef,
+	text: string,
+	createdAt: string,
+};
+
+export type UnbanRequestId = string;
 
 export type UpdateChatSettingsParams = {
 	broadcasterId: UserId,

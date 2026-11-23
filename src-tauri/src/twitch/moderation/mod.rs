@@ -4,17 +4,18 @@ pub mod events;
 
 use super::Authed;
 use crate::error::Result;
-use crate::twitch::ids::{MessageId, UserId};
+use crate::twitch::ids::{MessageId, UnbanRequestId, UserId};
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
-use dto::BannedUser;
+use dto::{BannedUser, UnbanRequest};
 use serde::Deserialize;
 use twitch_api::helix::moderation::{
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
     update_shield_mode_status::{UpdateShieldModeStatusBody, UpdateShieldModeStatusRequest},
-    GetBannedUsersRequest, GetShieldModeStatusRequest,
+    GetBannedUsersRequest, GetShieldModeStatusRequest, GetUnbanRequestsRequest,
+    ResolveUnbanRequest, UnbanRequestStatus,
 };
 use twitch_api::types;
 
@@ -101,6 +102,67 @@ pub async fn get_ban(
     request.user_id = vec![types::UserId::from(params.user_id)].into();
     let response = twitch.helix.req_get(request, &twitch.token).await?;
     Ok(response.data.into_iter().next().map(BannedUser::from))
+}
+
+const UNBAN_REQUESTS_PAGE: usize = 100;
+
+pub async fn get_unban_requests(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<Vec<UnbanRequest>> {
+    let mut request = GetUnbanRequestsRequest::new(
+        params.broadcaster_id.as_str(),
+        &twitch.token.user_id,
+        UnbanRequestStatus::Pending,
+    );
+    request.first = Some(UNBAN_REQUESTS_PAGE);
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.into_iter().map(UnbanRequest::from).collect())
+}
+
+#[derive(Clone, Copy, Deserialize, specta::Type)]
+#[serde(rename_all = "snake_case")]
+pub enum UnbanDecision {
+    Approve,
+    Deny,
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolveUnbanRequestParams {
+    pub broadcaster_id: UserId,
+    pub request_id: UnbanRequestId,
+    pub decision: UnbanDecision,
+    #[serde(default)]
+    pub note: Option<String>,
+}
+
+pub async fn resolve_unban_request(
+    twitch: &Authed<'_>,
+    params: ResolveUnbanRequestParams,
+) -> Result<()> {
+    let broadcaster_id = params.broadcaster_id.as_str();
+    let moderator_id = &twitch.token.user_id;
+    let request_id = params.request_id.as_str();
+    let mut request = match params.decision {
+        UnbanDecision::Approve => {
+            ResolveUnbanRequest::approve(broadcaster_id, moderator_id, request_id)
+        }
+        UnbanDecision::Deny => ResolveUnbanRequest::deny(broadcaster_id, moderator_id, request_id),
+    };
+    if let Some(note) = params
+        .note
+        .as_deref()
+        .map(str::trim)
+        .filter(|n| !n.is_empty())
+    {
+        request = request.resolution_text(note.to_string());
+    }
+    twitch
+        .helix
+        .req_patch(request, twitch_api::helix::EmptyBody, &twitch.token)
+        .await?;
+    Ok(())
 }
 
 pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {
@@ -191,7 +253,10 @@ pub async fn update_shield_mode(
 
 #[cfg(test)]
 mod tests {
-    use super::{AutomodAction, ManageHeldAutomodMessageParams, UpdateShieldModeParams};
+    use super::{
+        AutomodAction, ManageHeldAutomodMessageParams, ResolveUnbanRequestParams, UnbanDecision,
+        UpdateShieldModeParams,
+    };
     use serde_json::json;
 
     #[test]
@@ -200,6 +265,24 @@ mod tests {
             serde_json::from_value(json!({ "broadcasterId": "1", "active": true })).unwrap();
         assert_eq!(params.broadcaster_id.as_str(), "1");
         assert!(params.active);
+    }
+
+    #[test]
+    fn unban_decision_takes_an_optional_note() {
+        let params: ResolveUnbanRequestParams = serde_json::from_value(json!({
+            "broadcasterId": "1",
+            "requestId": "r1",
+            "decision": "approve",
+        }))
+        .unwrap();
+        assert!(matches!(params.decision, UnbanDecision::Approve));
+        assert!(params.note.is_none());
+        assert!(serde_json::from_value::<ResolveUnbanRequestParams>(json!({
+            "broadcasterId": "1",
+            "requestId": "r1",
+            "decision": "allow",
+        }))
+        .is_err());
     }
 
     #[test]

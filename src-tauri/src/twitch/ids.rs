@@ -56,6 +56,7 @@ id_type!(SevenTvEmoteSetId);
 id_type!(PollId);
 id_type!(PredictionId);
 id_type!(PredictionOutcomeId);
+id_type!(UnbanRequestId);
 
 impl From<UserId> for twitch_api::types::UserId {
     fn from(id: UserId) -> Self {

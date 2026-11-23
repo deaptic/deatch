@@ -1,11 +1,17 @@
 import { createSignal } from "solid-js";
-import type { CharityCampaign, Poll, Prediction } from "../types/index.ts";
+import type {
+  CharityCampaign,
+  Poll,
+  Prediction,
+  UnbanRequest,
+} from "../types/index.ts";
 
 export type Activity = {
   poll: Poll | null;
   prediction: Prediction | null;
   shield: boolean;
   charity: CharityCampaign | null;
+  unbanRequests: UnbanRequest[];
 };
 
 const NONE: Activity = {
@@ -13,6 +19,7 @@ const NONE: Activity = {
   prediction: null,
   shield: false,
   charity: null,
+  unbanRequests: [],
 };
 
 const [byChannel, setByChannel] = createSignal<Record<string, Activity>>({});

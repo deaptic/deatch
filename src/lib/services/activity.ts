@@ -6,16 +6,29 @@ import {
   endPrediction as endPredictionRequest,
   getActivePrediction,
 } from "../api/twitch/predictions.ts";
-import type { Prediction, PredictionEnd } from "../types/index.ts";
+import type {
+  Prediction,
+  PredictionEnd,
+  UnbanDecision,
+} from "../types/index.ts";
 import { getCharityCampaign } from "../api/twitch/charity.ts";
-import { getShieldMode, updateShieldMode } from "../api/twitch/moderation.ts";
-import { updateActivity } from "../stores/activity.ts";
+import {
+  getShieldMode,
+  getUnbanRequests,
+  resolveUnbanRequest,
+  updateShieldMode,
+} from "../api/twitch/moderation.ts";
+import { activityFor, updateActivity } from "../stores/activity.ts";
+import { withoutUnbanRequest } from "../mappers/activity.ts";
 
 export function load(broadcasterId: string, isBroadcaster: boolean): void {
   const params = { broadcasterId };
   const silent = { silent: true };
   getShieldMode(params, silent)
     .then((shield) => updateActivity(broadcasterId, { shield }))
+    .catch(() => {});
+  getUnbanRequests(params, silent)
+    .then((unbanRequests) => updateActivity(broadcasterId, { unbanRequests }))
     .catch(() => {});
   if (!isBroadcaster) return;
   getActivePoll(params, silent)
@@ -56,4 +69,19 @@ export function setShield(broadcasterId: string, active: boolean): void {
   updateShieldMode({ broadcasterId, active })
     .then((shield) => updateActivity(broadcasterId, { shield }))
     .catch(() => {});
+}
+
+export async function resolveUnban(
+  broadcasterId: string,
+  requestId: string,
+  decision: UnbanDecision,
+  note: string,
+): Promise<void> {
+  await resolveUnbanRequest({ broadcasterId, requestId, decision, note });
+  updateActivity(broadcasterId, {
+    unbanRequests: withoutUnbanRequest(
+      activityFor(broadcasterId).unbanRequests,
+      requestId,
+    ),
+  });
 }

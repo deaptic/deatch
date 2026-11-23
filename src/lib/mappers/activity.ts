@@ -7,6 +7,8 @@ import type {
   RawCampaignAmount,
   RawCharityCampaign,
   RawPrediction,
+  RawUnbanRequestCreate,
+  UnbanRequest,
 } from "../types/index.ts";
 
 export function pollFrom(raw: RawPoll): Poll {
@@ -52,4 +54,31 @@ export function charityFrom(raw: RawCharityCampaign): CharityCampaign {
     current: amountFrom(raw.current_amount),
     target: amountFrom(raw.target_amount),
   };
+}
+
+export function unbanRequestFrom(raw: RawUnbanRequestCreate): UnbanRequest {
+  return {
+    id: raw.id,
+    user: {
+      id: raw.user_id,
+      login: raw.user_login,
+      displayName: raw.user_name,
+    },
+    text: raw.text,
+    createdAt: raw.created_at,
+  };
+}
+
+export function withoutUnbanRequest(
+  list: UnbanRequest[],
+  id: string,
+): UnbanRequest[] {
+  return list.filter((r) => r.id !== id);
+}
+
+export function withUnbanRequest(
+  list: UnbanRequest[],
+  request: UnbanRequest,
+): UnbanRequest[] {
+  return [...withoutUnbanRequest(list, request.id), request];
 }

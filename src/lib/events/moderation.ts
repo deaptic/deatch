@@ -125,6 +125,7 @@ export function start(): () => void {
           timestamp,
           {
             id: `unban-request-${raw.id}`,
+            unban_request: { id: raw.id },
             ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
           },
         ),

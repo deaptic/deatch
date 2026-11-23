@@ -43,7 +43,9 @@ export default function Event(props: Props) {
         </FeedItem.Tile>
       )}
       overlay={() => (
-        <Show when={item.clip}>{(clip) => <Actions clipId={clip().id} />}</Show>
+        <Show when={item.clip || item.unban_request}>
+          <Actions item={item} />
+        </Show>
       )}
       onContextMenu={
         props.onEventContextMenu &&

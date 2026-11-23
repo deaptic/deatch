@@ -1,8 +1,8 @@
-use super::dto::BannedUser;
+use super::dto::{BannedUser, UnbanRequest};
 use crate::error::Result;
 use crate::twitch::moderation::{
     self, BanUserParams, DeleteChatMessagesParams, ManageHeldAutomodMessageParams,
-    UpdateShieldModeParams, WarnUserParams,
+    ResolveUnbanRequestParams, UpdateShieldModeParams, WarnUserParams,
 };
 use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
@@ -37,6 +37,24 @@ pub async fn get_ban(
     params: BroadcasterUserParams,
 ) -> Result<Option<BannedUser>> {
     moderation::get_ban(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_unban_requests(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<Vec<UnbanRequest>> {
+    moderation::get_unban_requests(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn resolve_unban_request(
+    twitch: State<'_, Twitch>,
+    params: ResolveUnbanRequestParams,
+) -> Result<()> {
+    moderation::resolve_unban_request(&twitch.authed().await?, params).await
 }
 
 #[tauri::command]

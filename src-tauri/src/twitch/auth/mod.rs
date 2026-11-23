@@ -39,7 +39,7 @@ const SCOPES: [Scope; 35] = [
     Scope::ModeratorReadFollowers,
     Scope::ModeratorManageBannedUsers,
     Scope::ModeratorReadBlockedTerms,
-    Scope::ModeratorReadUnbanRequests,
+    Scope::ModeratorManageUnbanRequests,
     Scope::ModeratorReadModerators,
     Scope::ModeratorReadVips,
     Scope::ModeratorReadSuspiciousUsers,

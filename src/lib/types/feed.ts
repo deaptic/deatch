@@ -100,6 +100,7 @@ export type FeedEvent = {
   recipients?: Person[];
   announcement_color?: AnnouncementColor;
   clip?: { id: string };
+  unban_request?: { id: string };
 };
 
 export type FeedEntry = FeedMessage | FeedEvent;
