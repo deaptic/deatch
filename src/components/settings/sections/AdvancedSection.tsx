@@ -35,8 +35,8 @@ export default function AdvancedSection() {
     setClearing(true);
     await history
       .clear({
-        successMessage: t("SETTINGS_ADVANCED_CLEAR_HISTORY_DONE"),
-        failureMessage: t("SETTINGS_ADVANCED_CLEAR_HISTORY_FAILED"),
+        successMessage: t("SETTINGS_ADVANCED_CLEAR_HISTORY_TOAST"),
+        failureMessage: t("SETTINGS_ADVANCED_CLEAR_HISTORY_ERROR"),
       })
       .catch(() => {});
     setClearing(false);
@@ -45,7 +45,7 @@ export default function AdvancedSection() {
 
   async function restart(enabled: boolean) {
     setRestarting(true);
-    const options = { failureMessage: t("SETTINGS_ADVANCED_RESTART_FAILED") };
+    const options = { failureMessage: t("SETTINGS_ADVANCED_RESTART_ERROR") };
     try {
       await graphics.setHardwareAcceleration(enabled, options);
     } catch {
@@ -56,11 +56,11 @@ export default function AdvancedSection() {
   }
 
   return (
-    <PageBody title={t("SETTINGS_ADVANCED")}>
+    <PageBody title={t("SETTINGS_ADVANCED_TITLE")}>
       <Presence when={pendingRestart()}>
         {(pending) => (
           <Dialog
-            title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM", {
+            title={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_CONFIRM_TITLE", {
               enabled: pending().enabled,
             })}
             description={t("SETTINGS_ADVANCED_RESTART_DESCRIPTION")}
@@ -71,13 +71,13 @@ export default function AdvancedSection() {
                   variant="neutral"
                   onClick={() => setPendingRestart(null)}
                 >
-                  {t("SETTINGS_ADVANCED_CANCEL")}
+                  {t("SETTINGS_ADVANCED_CANCEL_LABEL")}
                 </Button>
                 <Button
                   onClick={() => restart(pending().enabled)}
                   loading={restarting()}
                 >
-                  {t("SETTINGS_ADVANCED_RESTART")}
+                  {t("SETTINGS_ADVANCED_RESTART_LABEL")}
                 </Button>
               </>
             }
@@ -86,31 +86,31 @@ export default function AdvancedSection() {
       </Presence>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP")}
+          label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
           description={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP")}
+            label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
             checked={advancedAlwaysOnTop()}
             onChange={setAdvancedAlwaysOnTop}
           />
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_AUTOSTART")}
+          label={t("SETTINGS_ADVANCED_AUTOSTART_LABEL")}
           description={t("SETTINGS_ADVANCED_AUTOSTART_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_AUTOSTART")}
+            label={t("SETTINGS_ADVANCED_AUTOSTART_LABEL")}
             checked={advancedAutostart()}
             onChange={setAdvancedAutostart}
           />
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION")}
+          label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_LABEL")}
           description={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION")}
+            label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_LABEL")}
             checked={
               pendingRestart()?.enabled ?? advancedHardwareAcceleration()
             }
@@ -118,11 +118,11 @@ export default function AdvancedSection() {
           />
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE")}
+          label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_LABEL")}
           description={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE")}
+            label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_LABEL")}
             checked={advancedDiscordRichPresence()}
             onChange={setAdvancedDiscordRichPresence}
           />
@@ -131,7 +131,7 @@ export default function AdvancedSection() {
       <Presence when={confirmingClear()}>
         {() => (
           <Dialog
-            title={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM")}
+            title={t("SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM_TITLE")}
             description={t(
               "SETTINGS_ADVANCED_CLEAR_HISTORY_CONFIRM_DESCRIPTION",
             )}
@@ -142,14 +142,14 @@ export default function AdvancedSection() {
                   variant="neutral"
                   onClick={() => setConfirmingClear(false)}
                 >
-                  {t("SETTINGS_ADVANCED_CANCEL")}
+                  {t("SETTINGS_ADVANCED_CANCEL_LABEL")}
                 </Button>
                 <Button
                   variant="danger"
                   onClick={clearHistory}
                   loading={clearing()}
                 >
-                  {t("SETTINGS_ADVANCED_CLEAR_HISTORY")}
+                  {t("SETTINGS_ADVANCED_CLEAR_HISTORY_LABEL")}
                 </Button>
               </>
             }
@@ -158,31 +158,31 @@ export default function AdvancedSection() {
       </Presence>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_FEED_HISTORY")}
+          label={t("SETTINGS_ADVANCED_FEED_HISTORY_LABEL")}
           description={t("SETTINGS_ADVANCED_FEED_HISTORY_DESCRIPTION")}
         >
           <Button variant="danger" onClick={() => setConfirmingClear(true)}>
-            {t("SETTINGS_ADVANCED_CLEAR_HISTORY")}
+            {t("SETTINGS_ADVANCED_CLEAR_HISTORY_LABEL")}
           </Button>
         </SettingsRow>
       </Card>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_DEVELOPER_MODE")}
+          label={t("SETTINGS_ADVANCED_DEVELOPER_MODE_LABEL")}
           description={t("SETTINGS_ADVANCED_DEVELOPER_MODE_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_DEVELOPER_MODE")}
+            label={t("SETTINGS_ADVANCED_DEVELOPER_MODE_LABEL")}
             checked={advancedDeveloperMode()}
             onChange={setAdvancedDeveloperMode}
           />
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_SHOW_LOGS")}
+          label={t("SETTINGS_ADVANCED_SHOW_LOGS_LABEL")}
           description={t("SETTINGS_ADVANCED_SHOW_LOGS_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_SHOW_LOGS")}
+            label={t("SETTINGS_ADVANCED_SHOW_LOGS_LABEL")}
             checked={advancedShowLogs()}
             onChange={setAdvancedShowLogs}
           />

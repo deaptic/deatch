@@ -23,14 +23,14 @@ import {
 
 const COPY = {
   poll: {
-    title: "CHANNEL_TOOLS_START_POLL",
-    submit: "CHANNEL_TOOLS_SUBMIT_POLL",
-    time: "CHANNEL_TOOLS_VOTING_TIME",
+    title: "HEADER_START_POLL_LABEL",
+    submit: "HEADER_SUBMIT_POLL_LABEL",
+    time: "HEADER_VOTING_TIME_LABEL",
   },
   prediction: {
-    title: "CHANNEL_TOOLS_START_PREDICTION",
-    submit: "CHANNEL_TOOLS_SUBMIT_PREDICTION",
-    time: "CHANNEL_TOOLS_PREDICTION_WINDOW",
+    title: "HEADER_START_PREDICTION_LABEL",
+    submit: "HEADER_SUBMIT_PREDICTION_LABEL",
+    time: "HEADER_PREDICTION_WINDOW_LABEL",
   },
 } as const;
 
@@ -78,21 +78,21 @@ export default function VoteForm(props: Props) {
       }
       onCancel={props.onDone}
     >
-      <FormField label={t("CHANNEL_TOOLS_QUESTION")}>
+      <FormField label={t("HEADER_QUESTION_LABEL")}>
         <Field
           ref={autofocus}
-          aria-label={t("CHANNEL_TOOLS_QUESTION")}
-          placeholder={t("CHANNEL_TOOLS_ASK")}
+          aria-label={t("HEADER_QUESTION_LABEL")}
+          placeholder={t("HEADER_QUESTION_PLACEHOLDER")}
           maxLength={limits().titleLength}
           value={question()}
           onInput={(e) => setQuestion(e.currentTarget.value)}
         />
       </FormField>
-      <FormField label={t("CHANNEL_TOOLS_OPTIONS")}>
+      <FormField label={t("HEADER_OPTIONS_LABEL")}>
         <div class="flex flex-col gap-1.5">
           <Index each={options()}>
             {(option, i) => {
-              const label = t("CHANNEL_TOOLS_OPTION", { number: i + 1 });
+              const label = t("HEADER_OPTION_LABEL", { number: i + 1 });
               return (
                 <div class="enter-rise">
                   <Field
@@ -116,7 +116,7 @@ export default function VoteForm(props: Props) {
             icon={<Plus class="size-4" />}
             onClick={() => setOptions((prev) => [...prev, ""])}
           >
-            {t("CHANNEL_TOOLS_ADD_OPTION")}
+            {t("HEADER_ADD_OPTION_LABEL")}
           </Button>
         </div>
       </Show>

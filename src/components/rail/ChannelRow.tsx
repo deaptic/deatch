@@ -37,7 +37,7 @@ export default function ChannelRow(props: Props) {
           when={stream()}
           fallback={
             <span class="shrink-0 text-small text-ink-faint">
-              {t("RAIL_OFFLINE")}
+              {t("RAIL_OFFLINE_STATUS")}
             </span>
           }
         >

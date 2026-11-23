@@ -41,9 +41,9 @@ function thirdPartySections(
   idSuffix: string,
 ): EmoteSection[] {
   const sections: [string, string, readonly EmoteEntry[]][] = [
-    ["7tv", t("EMOTES_SECTION_7TV"), lists.sevenTv],
-    ["bttv", t("EMOTES_SECTION_BTTV"), lists.bttv],
-    ["ffz", t("EMOTES_SECTION_FFZ"), lists.ffz],
+    ["7tv", t("EMOTES_SECTION_7TV_TITLE"), lists.sevenTv],
+    ["bttv", t("EMOTES_SECTION_BTTV_TITLE"), lists.bttv],
+    ["ffz", t("EMOTES_SECTION_FFZ_TITLE"), lists.ffz],
   ];
   return sections
     .filter(([, , emotes]) => emotes.length > 0)
@@ -107,7 +107,7 @@ export function globalSections(
       ? [
           {
             id: "twitch-global",
-            label: t("EMOTES_SECTION_TWITCH_GLOBAL"),
+            label: t("EMOTES_SECTION_TWITCH_GLOBAL_TITLE"),
             emotes: byName(twitch),
           },
         ]

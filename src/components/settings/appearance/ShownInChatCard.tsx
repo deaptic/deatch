@@ -15,13 +15,13 @@ import {
 export default function ShownInChatCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_SHOWN_IN_CHAT")}</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_SHOWN_IN_CHAT_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_EVENTS_SHOW")}
+        label={t("SETTINGS_APPEARANCE_EVENTS_SHOW_LABEL")}
         description={t("SETTINGS_APPEARANCE_EVENTS_SHOW_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_EVENTS_SHOW")}
+          label={t("SETTINGS_APPEARANCE_EVENTS_SHOW_LABEL")}
           checked={feedShowEvents()}
           onChange={setFeedShowEvents}
         />

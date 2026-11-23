@@ -26,17 +26,17 @@ export default function RaidForm(props: Props) {
 
   return (
     <ToolForm
-      title={t("CHANNEL_TOOLS_RAID")}
-      description={t("CHANNEL_TOOLS_RAID_DESCRIPTION")}
-      submitLabel={t("CHANNEL_TOOLS_START_RAID")}
+      title={t("HEADER_RAID_LABEL")}
+      description={t("HEADER_RAID_DESCRIPTION")}
+      submitLabel={t("HEADER_SUBMIT_RAID_LABEL")}
       canSubmit={target() !== null}
       onSubmit={submit}
       onCancel={props.onDone}
     >
       <SearchPicker
         autofocus
-        label={t("CHANNEL_TOOLS_RAID_CHANNEL")}
-        placeholder={t("CHANNEL_TOOLS_SEARCH_LIVE")}
+        label={t("HEADER_RAID_CHANNEL_LABEL")}
+        placeholder={t("HEADER_RAID_CHANNEL_PLACEHOLDER")}
         search={(query) =>
           searchChannels({ query, first: 8 }, { silent: true }).then((found) =>
             found.filter((c) => c.isLive),

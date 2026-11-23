@@ -65,7 +65,7 @@ export function fillGap(
       const first = items[0];
       if (lines >= GAP_LIMIT && first) {
         insertEntries(broadcasterId, [
-          feedEvent(LOCAL, t("BACKLOG_GAP"), first.timestamp - 1, {
+          feedEvent(LOCAL, t("FEED_HISTORY_GAP_LINE"), first.timestamp - 1, {
             silent: true,
           }),
         ]);
@@ -88,7 +88,7 @@ export function load(broadcasterId: string, broadcasterLogin: string) {
         broadcasterId,
         feedEvent(
           LOCAL,
-          t("BACKLOG_FAILED", { error: errorMessage(e) }),
+          t("FEED_HISTORY_FAILED_LINE", { error: errorMessage(e) }),
           Date.now(),
           { id: `backlog-failed-${broadcasterId}`, silent: true },
         ),

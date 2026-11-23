@@ -18,8 +18,11 @@ export function isHoldResolved(item: Message): boolean {
 
 export function holdOutcome(hold: AutomodHoldInfo): string {
   return hold.moderator
-    ? t("FEED_AUTOMOD_STATUS_BY", { status: hold.status, mod: hold.moderator })
-    : t("FEED_AUTOMOD_STATUS", { status: hold.status });
+    ? t("FEED_AUTOMOD_RESOLVED_BY_STATUS", {
+        status: hold.status,
+        mod: hold.moderator,
+      })
+    : t("FEED_AUTOMOD_RESOLVED_STATUS", { status: hold.status });
 }
 
 export function toneColor(
@@ -38,14 +41,14 @@ export function pointsLabel(item: Message): string | undefined {
   const points = item.channel_points;
   if (!points) return undefined;
   if (points.kind !== "custom_reward") {
-    return t("FEED_MESSAGE_PERK", { perk: points.kind });
+    return t("FEED_MESSAGE_PERK_LABEL", { perk: points.kind });
   }
   return points.redemption
-    ? t("FEED_REDEEMED_REWARD", {
+    ? t("FEED_REDEEMED_REWARD_LABEL", {
         reward: points.redemption.reward.title,
         cost: points.redemption.reward.cost,
       })
-    : t("FEED_REDEEMED_CHANNEL_POINTS");
+    : t("FEED_REDEEMED_CHANNEL_POINTS_LABEL");
 }
 
 export function chatterBadges(item: Message) {

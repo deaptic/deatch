@@ -13,9 +13,9 @@ type Props = {
 };
 
 const STATE: Record<ConnectionState, { label: MessageKey; class: string }> = {
-  up: { label: "DIAGNOSTICS_CONNECTED", class: "text-positive" },
-  connecting: { label: "DIAGNOSTICS_CONNECTING", class: "text-caution" },
-  lost: { label: "DIAGNOSTICS_DISCONNECTED", class: "text-negative" },
+  up: { label: "DIAGNOSTICS_CONNECTED_STATUS", class: "text-positive" },
+  connecting: { label: "DIAGNOSTICS_CONNECTING_STATUS", class: "text-caution" },
+  lost: { label: "DIAGNOSTICS_DISCONNECTED_STATUS", class: "text-negative" },
 };
 
 export default function ConnectionSlot(props: Props) {
@@ -27,12 +27,14 @@ export default function ConnectionSlot(props: Props) {
     >
       <div class="flex items-baseline gap-3 text-body">
         <span class="flex-1 text-ink-soft">
-          {t("DIAGNOSTICS_CONNECTION", { number: props.number })}
+          {t("DIAGNOSTICS_CONNECTION_LABEL", { number: props.number })}
         </span>
         <Show
           when={props.connection}
           fallback={
-            <span class="text-ink-soft">{t("DIAGNOSTICS_NOT_OPEN")}</span>
+            <span class="text-ink-soft">
+              {t("DIAGNOSTICS_NOT_OPEN_STATUS")}
+            </span>
           }
         >
           {(connection) => (
@@ -41,7 +43,7 @@ export default function ConnectionSlot(props: Props) {
                 {t(STATE[connection().state].label)}
               </span>
               <span class="text-ink tabular-nums">
-                {t("DIAGNOSTICS_USAGE", {
+                {t("DIAGNOSTICS_USAGE_VALUE", {
                   used: used(),
                   capacity: props.capacity,
                 })}
@@ -53,7 +55,7 @@ export default function ConnectionSlot(props: Props) {
       <Meter
         value={used()}
         max={props.capacity}
-        label={t("DIAGNOSTICS_CONNECTION_SUBSCRIPTIONS", {
+        label={t("DIAGNOSTICS_CONNECTION_SUBSCRIPTIONS_LABEL", {
           number: props.number,
         })}
         tone={used() >= props.capacity ? "caution" : "neutral"}

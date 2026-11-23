@@ -64,7 +64,7 @@ export default function QuickSwitch(props: Props) {
   function choose(channel: User, pin: boolean) {
     if (pin && pins.add(channel) === "pinned") {
       addToast(
-        t("QUICK_SWITCH_PINNED", { name: channel.displayName }),
+        t("QUICK_SWITCH_PINNED_TOAST", { name: channel.displayName }),
         "success",
       );
     }
@@ -83,7 +83,10 @@ export default function QuickSwitch(props: Props) {
       return;
     }
     setSearching(true);
-    const found = await users.lookUp(row.query, t("QUICK_SWITCH_NOT_FOUND"));
+    const found = await users.lookUp(
+      row.query,
+      t("QUICK_SWITCH_NOT_FOUND_ERROR"),
+    );
     setSearching(false);
     if (found) choose(found, pin);
   }
@@ -181,12 +184,12 @@ export default function QuickSwitch(props: Props) {
                       </RowIcon>
                       <span class="flex-1 min-w-0 flex flex-col">
                         <span class="text-body font-semibold text-ink truncate">
-                          {t("QUICK_SWITCH_SEARCH_TWITCH", {
+                          {t("QUICK_SWITCH_SEARCH_TWITCH_LABEL", {
                             query: query().trim(),
                           })}
                         </span>
                         <span class="text-small text-ink-soft">
-                          {t("QUICK_SWITCH_NOT_IN_RAIL")}
+                          {t("QUICK_SWITCH_NOT_IN_RAIL_LABEL")}
                         </span>
                       </span>
                     </>
@@ -213,7 +216,7 @@ export default function QuickSwitch(props: Props) {
                             >
                               <Show
                                 when={stream()}
-                                fallback={t("QUICK_SWITCH_OFFLINE")}
+                                fallback={t("QUICK_SWITCH_OFFLINE_STATUS")}
                               >
                                 {(s) =>
                                   liveLine(s().game.name, s().viewerCount)
@@ -222,7 +225,7 @@ export default function QuickSwitch(props: Props) {
                               <Show
                                 when={pinnedChannels().includes(r().user.id)}
                               >
-                                {` · ${t("QUICK_SWITCH_PINNED_TAG")}`}
+                                {` · ${t("QUICK_SWITCH_PINNED_LABEL")}`}
                               </Show>
                             </span>
                           </span>
@@ -243,13 +246,13 @@ export default function QuickSwitch(props: Props) {
       <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 text-small text-ink-faint">
         <span class="flex items-center gap-1.5">
           <Kbd size="sm" combo="up" />
-          <Kbd size="sm" combo="down" /> {t("QUICK_SWITCH_MOVE")}
+          <Kbd size="sm" combo="down" /> {t("QUICK_SWITCH_MOVE_HINT")}
         </span>
         <span class="flex items-center gap-1.5">
-          <Kbd size="sm" combo="enter" /> {t("QUICK_SWITCH_OPEN")}
+          <Kbd size="sm" combo="enter" /> {t("QUICK_SWITCH_OPEN_HINT")}
         </span>
         <span class="flex items-center gap-1.5">
-          <Kbd size="sm" combo="ctrl-enter" /> {t("QUICK_SWITCH_OPEN_PIN")}
+          <Kbd size="sm" combo="ctrl-enter" /> {t("QUICK_SWITCH_OPEN_PIN_HINT")}
         </span>
       </div>
     </Modal>

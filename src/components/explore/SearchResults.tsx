@@ -63,7 +63,10 @@ export default function SearchResults(props: Props) {
   async function forceOpenByLogin() {
     const login = props.query.trim().toLowerCase();
     if (!login) return;
-    const found = await users.lookUp(login, t("EXPLORE_CHANNEL_NOT_FOUND"));
+    const found = await users.lookUp(
+      login,
+      t("EXPLORE_CHANNEL_NOT_FOUND_ERROR"),
+    );
     if (found) props.onSelect(found);
   }
 
@@ -92,7 +95,9 @@ export default function SearchResults(props: Props) {
     <div class="flex flex-col gap-8">
       <Show when={categories()?.length}>
         <section>
-          <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_CATEGORIES")}</h2>
+          <h2 class="mb-3 text-heading text-ink">
+            {t("EXPLORE_CATEGORIES_TITLE")}
+          </h2>
           <CategoryRow
             categories={categories() ?? []}
             onSelect={props.onSelectGame}
@@ -108,15 +113,17 @@ export default function SearchResults(props: Props) {
               variant="inline"
               body={
                 results.loading || categories.loading
-                  ? t("EXPLORE_SEARCHING")
-                  : t("EXPLORE_NO_RESULTS", { query: debounced() })
+                  ? t("EXPLORE_SEARCHING_STATUS")
+                  : t("EXPLORE_NO_RESULTS_EMPTY", { query: debounced() })
               }
             />
           </Show>
         }
       >
         <section>
-          <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_CHANNELS")}</h2>
+          <h2 class="mb-3 text-heading text-ink">
+            {t("EXPLORE_CHANNELS_TITLE")}
+          </h2>
           <div {...listbox.list} class="flex flex-col gap-0.5">
             <For each={ranked()}>
               {(channel, index) => {
@@ -146,7 +153,7 @@ export default function SearchResults(props: Props) {
                       <p class="truncate text-small text-ink-soft">
                         <Show
                           when={channel.isLive}
-                          fallback={t("EXPLORE_OFFLINE")}
+                          fallback={t("EXPLORE_OFFLINE_STATUS")}
                         >
                           {liveLine(channel.gameName)}
                         </Show>

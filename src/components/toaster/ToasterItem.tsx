@@ -122,7 +122,7 @@ export default function ToasterItem(props: Props) {
           </p>
         </Show>
       </div>
-      <IconButton label={t("TOAST_DISMISS")} size="sm" onClick={dismiss}>
+      <IconButton label={t("UI_DISMISS_LABEL")} size="sm" onClick={dismiss}>
         <X class="size-4" />
       </IconButton>
     </div>

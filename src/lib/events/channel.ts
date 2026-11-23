@@ -31,7 +31,7 @@ import { appendLocalNotice } from "../stores/feeds.ts";
 
 function appendSharedChat(
   raw: RawSharedChatSession,
-  key: "SHARED_CHAT_BEGIN" | "SHARED_CHAT_UPDATE",
+  key: "FEED_SHARED_CHAT_STARTED_LINE" | "FEED_SHARED_CHAT_UPDATED_LINE",
 ) {
   const partners = raw.participants
     .filter((p) => p.broadcaster_user_id !== raw.broadcaster_user_id)
@@ -58,7 +58,7 @@ function campaignAmount(amount: RawCampaignAmount): string {
 
 function listenCharity(
   kind: "channel.charity_campaign.start" | "channel.charity_campaign.stop",
-  key: "CHARITY_START" | "CHARITY_STOP",
+  key: "FEED_CHARITY_STARTED_LINE" | "FEED_CHARITY_ENDED_LINE",
 ) {
   return listenFeed<RawCharityCampaign>(
     kind,
@@ -94,30 +94,30 @@ export function start(): () => void {
       if (!before || before.title !== raw.title) {
         appendLocalNotice(
           id,
-          t("CHANNEL_TITLE_CHANGED", { title: raw.title }),
+          t("FEED_TITLE_CHANGED_LINE", { title: raw.title }),
           CHANNEL_UPDATE,
         );
       }
       if (!before || before.game.id !== raw.category_id) {
         appendLocalNotice(
           id,
-          t("CHANNEL_CATEGORY_CHANGED", {
-            category: raw.category_name || t("CHANNEL_CATEGORY_NONE"),
+          t("FEED_CATEGORY_CHANGED_LINE", {
+            category: raw.category_name || t("FEED_CATEGORY_NONE_VALUE"),
           }),
           CHANNEL_UPDATE,
         );
       }
     }),
     listenEventSub<RawSharedChatSession>("channel.shared_chat.begin", (e) =>
-      appendSharedChat(e.event, "SHARED_CHAT_BEGIN"),
+      appendSharedChat(e.event, "FEED_SHARED_CHAT_STARTED_LINE"),
     ),
     listenEventSub<RawSharedChatSession>("channel.shared_chat.update", (e) =>
-      appendSharedChat(e.event, "SHARED_CHAT_UPDATE"),
+      appendSharedChat(e.event, "FEED_SHARED_CHAT_UPDATED_LINE"),
     ),
     listenEventSub<RawSharedChatEnd>("channel.shared_chat.end", (e) =>
       appendLocalNotice(
         e.event.broadcaster_user_id,
-        t("SHARED_CHAT_END"),
+        t("FEED_SHARED_CHAT_ENDED_LINE"),
         SHARED_CHAT_SESSION,
       ),
     ),
@@ -125,7 +125,7 @@ export function start(): () => void {
       feedEvent(
         AD_BREAK,
         {
-          text: t("AD_BREAK_BEGIN", {
+          text: t("FEED_AD_BREAK_STARTED_LINE", {
             duration: formatApproxDuration(raw.duration_seconds),
             automatic: String(raw.is_automatic),
             requester: raw.requester_user_name,
@@ -141,13 +141,16 @@ export function start(): () => void {
         timestamp,
       ),
     ),
-    listenCharity("channel.charity_campaign.start", "CHARITY_START"),
-    listenCharity("channel.charity_campaign.stop", "CHARITY_STOP"),
+    listenCharity(
+      "channel.charity_campaign.start",
+      "FEED_CHARITY_STARTED_LINE",
+    ),
+    listenCharity("channel.charity_campaign.stop", "FEED_CHARITY_ENDED_LINE"),
     listenEventSub<RawStreamOnline>("stream.online", (e) => {
       const raw = e.event;
       appendLocalNotice(
         raw.broadcaster_user_id,
-        t("STREAM_ONLINE", {
+        t("FEED_STREAM_ONLINE_LINE", {
           channel: raw.broadcaster_user_name,
           type: raw.type,
         }),
@@ -158,7 +161,7 @@ export function start(): () => void {
       const raw = e.event;
       appendLocalNotice(
         raw.broadcaster_user_id,
-        t("STREAM_OFFLINE", { channel: raw.broadcaster_user_name }),
+        t("FEED_STREAM_OFFLINE_LINE", { channel: raw.broadcaster_user_name }),
         STREAM_OFFLINE,
       );
     }),

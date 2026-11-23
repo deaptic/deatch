@@ -15,7 +15,7 @@ export default function TopCategories() {
     <Show when={categories()?.length}>
       <section>
         <h2 class="mb-3 text-heading text-ink">
-          {t("EXPLORE_TOP_CATEGORIES")}
+          {t("EXPLORE_TOP_CATEGORIES_TITLE")}
         </h2>
         <CategoryRow
           categories={categories() ?? []}

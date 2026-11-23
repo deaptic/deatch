@@ -95,7 +95,7 @@ export default function Reply(
             class="shrink-0 hover:text-ink-soft"
             {...jumpTo(() => thread().id)}
           >
-            {t("FEED_REPLY_THREAD", { user: thread().name })}
+            {t("FEED_REPLY_THREAD_LABEL", { user: thread().name })}
           </span>
         )}
       </Show>

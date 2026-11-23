@@ -16,14 +16,14 @@ import {
 import { type MessageKey, t } from "../../../lib/i18n/index.ts";
 
 const OP_LABELS: Record<ConditionOp, MessageKey> = {
-  set: "SETTINGS_TRIGGERS_OP_SET",
-  empty: "SETTINGS_TRIGGERS_OP_EMPTY",
-  is: "SETTINGS_TRIGGERS_OP_IS",
-  isNot: "SETTINGS_TRIGGERS_OP_IS_NOT",
-  contains: "SETTINGS_TRIGGERS_OP_CONTAINS",
-  notContains: "SETTINGS_TRIGGERS_OP_NOT_CONTAINS",
-  above: "SETTINGS_TRIGGERS_OP_ABOVE",
-  below: "SETTINGS_TRIGGERS_OP_BELOW",
+  set: "SETTINGS_TRIGGERS_OP_SET_LABEL",
+  empty: "SETTINGS_TRIGGERS_OP_EMPTY_LABEL",
+  is: "SETTINGS_TRIGGERS_OP_IS_LABEL",
+  isNot: "SETTINGS_TRIGGERS_OP_IS_NOT_LABEL",
+  contains: "SETTINGS_TRIGGERS_OP_CONTAINS_LABEL",
+  notContains: "SETTINGS_TRIGGERS_OP_NOT_CONTAINS_LABEL",
+  above: "SETTINGS_TRIGGERS_OP_ABOVE_LABEL",
+  below: "SETTINGS_TRIGGERS_OP_BELOW_LABEL",
 };
 
 type Props = Targeting & {
@@ -51,7 +51,7 @@ export default function TriggerConditionRow(props: Props) {
       <div class="h-control-md flex items-center">
         <PopoverButton
           look="menu"
-          label={t("SETTINGS_TRIGGERS_COMPARISON")}
+          label={t("SETTINGS_TRIGGERS_COMPARISON_LABEL")}
           icon={<ListFilter class="size-4" />}
           value={t(OP_LABELS[props.condition.op])}
         >
@@ -80,7 +80,7 @@ export default function TriggerConditionRow(props: Props) {
       </Show>
       <Show when={props.removable}>
         <IconButton
-          label={t("SETTINGS_TRIGGERS_REMOVE_CONDITION")}
+          label={t("SETTINGS_TRIGGERS_REMOVE_CONDITION_LABEL")}
           onClick={props.onRemove}
         >
           <X class="size-4" />

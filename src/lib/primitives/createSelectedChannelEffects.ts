@@ -12,8 +12,8 @@ export function createSelectedChannelEffects(): void {
   createEffect(() => {
     const ch = selectedChannel();
     const title = ch?.displayName
-      ? t("WINDOW_TITLE_CHANNEL", { channel: ch.displayName })
-      : t("WINDOW_TITLE");
+      ? t("WINDOW_CHANNEL_TITLE", { channel: ch.displayName })
+      : t("WINDOW_DEFAULT_TITLE");
     if (title === lastTitle) return;
     lastTitle = title;
     setWindowTitle(title, { silent: true }).catch(() => {});

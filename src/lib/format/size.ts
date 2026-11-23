@@ -10,7 +10,7 @@ export function formatBytes(bytes: number): string {
     unit++;
   }
   const digits = unit >= 3 && value < 10 ? 1 : 0;
-  return t("FORMAT_BYTES", {
+  return t("FORMAT_BYTES_VALUE", {
     value: Number(value.toFixed(digits)),
     unit: UNITS[unit] ?? "gb",
   });

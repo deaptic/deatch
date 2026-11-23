@@ -22,8 +22,8 @@ export default function UserCardFeed(props: Props) {
             <div class="flex-1 min-h-0 flex items-center justify-center text-ink-soft p-card-pad text-center">
               {t(
                 props.loading
-                  ? "USER_CARD_LOADING_MESSAGES"
-                  : "USER_CARD_NO_MESSAGES",
+                  ? "USER_CARD_LOADING_MESSAGES_STATUS"
+                  : "USER_CARD_MESSAGES_EMPTY",
               )}
             </div>
           }

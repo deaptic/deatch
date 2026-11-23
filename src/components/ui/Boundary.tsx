@@ -19,7 +19,7 @@ export default function Boundary(props: Props) {
             {err instanceof Error ? err.message : String(err)}
           </p>
           <Button variant="neutral" size="sm" class="mt-2" onClick={reset}>
-            {t("UI_BOUNDARY_RETRY")}
+            {t("UI_BOUNDARY_RETRY_LABEL")}
           </Button>
         </div>
       )}

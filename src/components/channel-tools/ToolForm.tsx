@@ -25,7 +25,7 @@ export default function ToolForm(props: Props) {
       actions={
         <>
           <Button variant="neutral" onClick={() => props.onCancel()}>
-            {t("CHANNEL_TOOLS_CANCEL")}
+            {t("HEADER_CANCEL_LABEL")}
           </Button>
           <Button type="submit" disabled={!props.canSubmit}>
             {props.submitLabel}

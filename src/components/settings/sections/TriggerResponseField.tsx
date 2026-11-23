@@ -112,7 +112,7 @@ export default function TriggerResponseField(props: Props) {
       <For each={found()}>
         {(problem) => (
           <p class="text-small text-negative">
-            {t("SETTINGS_TRIGGERS_PROBLEM", {
+            {t("SETTINGS_TRIGGERS_PROBLEM_ERROR", {
               kind: problem.kind,
               raw: problem.raw,
             })}

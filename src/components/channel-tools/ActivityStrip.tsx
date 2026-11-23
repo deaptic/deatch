@@ -47,7 +47,7 @@ export default function ActivityStrip(props: Props) {
               {() => (
                 <ActivityRow
                   icon={<Shield />}
-                  title={t("CHANNEL_TOOLS_SHIELD_ACTIVE")}
+                  title={t("HEADER_SHIELD_ACTIVE_STATUS")}
                 >
                   <Button
                     variant="neutral"
@@ -56,7 +56,7 @@ export default function ActivityStrip(props: Props) {
                       activity.setShield(props.broadcasterId, false)
                     }
                   >
-                    {t("CHANNEL_TOOLS_SHIELD_OFF")}
+                    {t("HEADER_SHIELD_OFF_LABEL")}
                   </Button>
                 </ActivityRow>
               )}
@@ -90,7 +90,7 @@ export default function ActivityStrip(props: Props) {
                 return (
                   <ActivityRow
                     icon={<Swords />}
-                    title={tRich("CHAT_RAID_STATUS", {
+                    title={tRich("HEADER_RAID_PENDING_STATUS", {
                       name: r().target.displayName,
                       seconds: seconds(),
                       target: (chunks) => (
@@ -111,7 +111,7 @@ export default function ActivityStrip(props: Props) {
                       size="sm"
                       onClick={() => raid.cancel().catch(() => {})}
                     >
-                      {t("CHAT_RAID_CANCEL")}
+                      {t("HEADER_CANCEL_RAID_LABEL")}
                     </Button>
                     {link.menu()}
                   </ActivityRow>
@@ -131,7 +131,7 @@ function PollRow(props: { broadcasterId: string; poll: Poll }) {
       <For each={props.poll.choices}>
         {(choice) => (
           <Chip
-            label={t("CHANNEL_TOOLS_CHOICE_VOTES", {
+            label={t("HEADER_POLL_CHOICE_VOTES_VALUE", {
               choice: choice.title,
               votes: formatViewers(choice.votes),
             })}
@@ -139,14 +139,14 @@ function PollRow(props: { broadcasterId: string; poll: Poll }) {
         )}
       </For>
       <span class="text-ink-soft tabular-nums">
-        {t("CHANNEL_TOOLS_ENDS_IN", { time: until(props.poll.endsAt) })}
+        {t("HEADER_POLL_ENDS_IN_STATUS", { time: until(props.poll.endsAt) })}
       </span>
       <Button
         variant="neutral"
         size="sm"
         onClick={() => activity.endPoll(props.broadcasterId, props.poll.id)}
       >
-        {t("CHANNEL_TOOLS_END_POLL")}
+        {t("HEADER_END_POLL_LABEL")}
       </Button>
     </ActivityRow>
   );
@@ -157,7 +157,7 @@ function PredictionRow(props: {
   prediction: Prediction;
 }) {
   const label = (o: Prediction["outcomes"][number]) =>
-    t("CHANNEL_TOOLS_OUTCOME_POINTS", {
+    t("HEADER_PREDICTION_OUTCOME_POINTS_VALUE", {
       outcome: o.title,
       points: formatViewers(o.channelPoints),
     });
@@ -178,20 +178,22 @@ function PredictionRow(props: {
                 {(o) => <Chip label={label(o)} />}
               </For>
               <span class="text-ink-soft tabular-nums">
-                {t("CHANNEL_TOOLS_LOCKS_IN", { time: until(open().locksAt) })}
+                {t("HEADER_PREDICTION_LOCKS_IN_STATUS", {
+                  time: until(open().locksAt),
+                })}
               </span>
               <Button
                 variant="neutral"
                 size="sm"
                 onClick={() => end({ kind: "lock" })}
               >
-                {t("CHANNEL_TOOLS_LOCK")}
+                {t("HEADER_LOCK_PREDICTION_LABEL")}
               </Button>
             </>
           )}
         </Match>
         <Match when={props.prediction.phase.kind === "locked"}>
-          <span class="text-ink-soft">{t("CHANNEL_TOOLS_PICK_WINNER")}</span>
+          <span class="text-ink-soft">{t("HEADER_PICK_WINNER_LABEL")}</span>
           <For each={props.prediction.outcomes}>
             {(o) => (
               <Button
@@ -211,7 +213,7 @@ function PredictionRow(props: {
         size="sm"
         onClick={() => end({ kind: "cancel" })}
       >
-        {t("CHANNEL_TOOLS_REFUND")}
+        {t("HEADER_REFUND_PREDICTION_LABEL")}
       </Button>
     </ActivityRow>
   );

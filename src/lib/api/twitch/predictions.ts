@@ -10,9 +10,9 @@ import { invokeCommand, type InvokeOptions } from "../utils.ts";
 import { type MessageKey, t } from "../../i18n/index.ts";
 
 const ENDED: Record<PredictionEnd["kind"], MessageKey> = {
-  lock: "TOAST_PREDICTION_LOCKED",
-  resolve: "TOAST_PREDICTION_RESOLVED",
-  cancel: "TOAST_PREDICTION_REFUNDED",
+  lock: "HEADER_PREDICTION_LOCKED_TOAST",
+  resolve: "HEADER_PREDICTION_RESOLVED_TOAST",
+  cancel: "HEADER_PREDICTION_REFUNDED_TOAST",
 };
 
 export function getActivePrediction(
@@ -27,7 +27,7 @@ export async function createPrediction(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.createPrediction, [params], {
-    successMessage: t("TOAST_PREDICTION_STARTED"),
+    successMessage: t("HEADER_PREDICTION_STARTED_TOAST"),
     ...options,
   });
 }

@@ -27,8 +27,8 @@ export default function Source(props: {
     <span
       data-tip={
         name()
-          ? t("FEED_SENT_IN_CHAT", { channel: name() })
-          : t("FEED_SENT_IN_SHARED_CHAT")
+          ? t("FEED_SENT_IN_CHAT_LABEL", { channel: name() })
+          : t("FEED_SENT_IN_SHARED_CHAT_LABEL")
       }
       {...link.handlers}
       class={`size-feed-badge grid overflow-hidden bg-picture ${link.cursor} ${

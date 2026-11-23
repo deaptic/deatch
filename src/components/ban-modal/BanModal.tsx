@@ -41,11 +41,11 @@ export default function BanModal(props: Props) {
   const isBroadcaster = () => user()?.id === props.broadcasterId;
   const confirmLabel = () => {
     const picked = choice();
-    if (picked === "unban") return t("BAN_UNBAN");
+    if (picked === "unban") return t("BAN_UNBAN_LABEL");
     const seconds = secondsFor(picked);
     return seconds === null
-      ? t("BAN_BAN")
-      : t("BAN_TIME_OUT", { duration: formatDuration(seconds) });
+      ? t("BAN_BAN_LABEL")
+      : t("BAN_TIME_OUT_LABEL", { duration: formatDuration(seconds) });
   };
 
   async function confirm() {
@@ -87,7 +87,7 @@ export default function BanModal(props: Props) {
       actions={
         <>
           <Button variant="neutral" onClick={props.onClose}>
-            {t("BAN_CANCEL")}
+            {t("BAN_CANCEL_LABEL")}
           </Button>
           <Button
             variant={choice() === "unban" ? "accent" : "danger"}
@@ -103,7 +103,7 @@ export default function BanModal(props: Props) {
         {(info) => (
           <Callout tone="negative">
             <span class="text-ink">
-              {tRich("BAN_STATUS_BY", {
+              {tRich("BAN_ISSUED_BY_STATUS", {
                 status: info().expiresAt ? "timeout" : "ban",
                 moderator: info().moderator.displayName,
                 name: (chunks) => <span class="font-semibold">{chunks}</span>,
@@ -112,14 +112,14 @@ export default function BanModal(props: Props) {
             <Show when={info().reason}>
               {(reason) => (
                 <span class="text-ink-soft">
-                  {t("BAN_REASON", { reason: reason() })}
+                  {t("BAN_REASON_STATUS", { reason: reason() })}
                 </span>
               )}
             </Show>
             <Show when={info().expiresAt}>
               {(expiresAt) => (
                 <span class="text-ink-soft">
-                  {t("BAN_EXPIRES", {
+                  {t("BAN_EXPIRES_STATUS", {
                     date: new Time(expiresAt(), "f").toString(),
                   })}
                 </span>

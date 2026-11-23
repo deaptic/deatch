@@ -18,12 +18,12 @@ export function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
   return feedEvent(
     SHOUTOUT,
     noticeText(
-      t("EVENT_SHOUTOUT", {
+      t("FEED_SHOUTOUT_SENT_LINE", {
         mod: raw.moderator_user_name,
         channel: raw.to_broadcaster_user_name,
         count: raw.viewer_count,
       }),
-      t("EVENT_SHOUTOUT_COOLDOWN", {
+      t("FEED_SHOUTOUT_COOLDOWN_LINE", {
         next: formatSpan(raw.started_at, raw.cooldown_ends_at),
         channel: raw.to_broadcaster_user_name,
         again: formatSpan(raw.started_at, raw.target_cooldown_ends_at),
@@ -51,7 +51,7 @@ export function mapShoutoutReceive(
 ): FeedEvent {
   return feedEvent(
     SHOUTOUT,
-    t("EVENT_SHOUTOUT_RECEIVED", {
+    t("FEED_SHOUTOUT_RECEIVED_LINE", {
       channel: raw.from_broadcaster_user_name,
       count: raw.viewer_count,
     }),

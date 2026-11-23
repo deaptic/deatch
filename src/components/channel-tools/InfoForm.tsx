@@ -30,7 +30,7 @@ export default function InfoForm(props: Props) {
         title: title().trim(),
         gameId: category()?.id,
       },
-      { successMessage: t("TOAST_STREAM_INFO_UPDATED") },
+      { successMessage: t("HEADER_INFO_UPDATED_TOAST") },
     )
       .then(props.onDone)
       .catch(() => {});
@@ -38,25 +38,25 @@ export default function InfoForm(props: Props) {
 
   return (
     <ToolForm
-      title={t("CHANNEL_TOOLS_EDIT_INFO")}
-      submitLabel={t("CHANNEL_TOOLS_SAVE_INFO")}
+      title={t("HEADER_EDIT_INFO_LABEL")}
+      submitLabel={t("HEADER_SAVE_INFO_LABEL")}
       canSubmit={title().trim().length > 0}
       onSubmit={submit}
       onCancel={props.onDone}
     >
-      <FormField label={t("CHANNEL_TOOLS_TITLE")}>
+      <FormField label={t("HEADER_STREAM_TITLE_LABEL")}>
         <Field
           ref={autofocus}
-          aria-label={t("CHANNEL_TOOLS_TITLE")}
+          aria-label={t("HEADER_STREAM_TITLE_LABEL")}
           maxLength={TITLE_LENGTH}
           value={title()}
           onInput={(e) => setTitle(e.currentTarget.value)}
         />
       </FormField>
-      <FormField label={t("CHANNEL_TOOLS_CATEGORY")}>
+      <FormField label={t("HEADER_CATEGORY_LABEL")}>
         <SearchPicker
-          label={t("CHANNEL_TOOLS_CATEGORY")}
-          placeholder={t("CHANNEL_TOOLS_SEARCH_CATEGORIES")}
+          label={t("HEADER_CATEGORY_LABEL")}
+          placeholder={t("HEADER_CATEGORY_PLACEHOLDER")}
           initial={info?.game.name}
           search={(query) =>
             searchCategories({ query, first: 8 }, { silent: true })

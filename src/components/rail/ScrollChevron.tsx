@@ -11,7 +11,9 @@ export default function ScrollChevron(props: Props) {
     <button
       type="button"
       aria-label={t(
-        props.direction === "up" ? "RAIL_SCROLL_UP" : "RAIL_SCROLL_DOWN",
+        props.direction === "up"
+          ? "RAIL_SCROLL_UP_LABEL"
+          : "RAIL_SCROLL_DOWN_LABEL",
       )}
       onClick={() => props.onClick()}
       class={`absolute inset-x-0 h-control-sm flex items-center justify-center z-10 bg-surface text-ink-faint hover:text-ink cursor-pointer ${

@@ -49,7 +49,7 @@ export default function Popular(props: Props) {
   return (
     <section>
       <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 class="text-heading text-ink">{t("EXPLORE_POPULAR")}</h2>
+        <h2 class="text-heading text-ink">{t("EXPLORE_POPULAR_TITLE")}</h2>
         <Show when={exploreFilters.category}>
           {(category) => (
             <Chip
@@ -61,11 +61,11 @@ export default function Popular(props: Props) {
         </Show>
         <span class="ml-auto">
           <Segmented
-            label={t("EXPLORE_SORT")}
+            label={t("EXPLORE_SORT_LABEL")}
             value={exploreFilters.sort}
             options={[
-              { value: "viewers", label: t("EXPLORE_SORT_VIEWERS") },
-              { value: "recent", label: t("EXPLORE_SORT_RECENT") },
+              { value: "viewers", label: t("EXPLORE_SORT_VIEWERS_LABEL") },
+              { value: "recent", label: t("EXPLORE_SORT_RECENT_LABEL") },
             ]}
             onChange={(sort) => setExploreFilters("sort", sort)}
           />
@@ -96,7 +96,7 @@ export default function Popular(props: Props) {
         <Show
           when={sorted().length > 0}
           fallback={
-            <EmptyState variant="inline" body={t("EXPLORE_NO_MATCHES")} />
+            <EmptyState variant="inline" body={t("EXPLORE_NO_MATCHES_EMPTY")} />
           }
         >
           <div
@@ -118,7 +118,7 @@ export default function Popular(props: Props) {
         <div ref={(el) => observer.observe(el)} class="h-px" />
         <Show when={liveBrowse.fetching && liveBrowse.streams.length > 0}>
           <p class="py-4 text-center text-small text-ink-soft">
-            {t("EXPLORE_LOADING_MORE")}
+            {t("EXPLORE_LOADING_MORE_STATUS")}
           </p>
         </Show>
       </Show>

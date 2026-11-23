@@ -16,10 +16,10 @@ import {
 
 export default function NotificationsSection() {
   return (
-    <PageBody title={t("SETTINGS_NOTIFICATIONS")}>
+    <PageBody title={t("SETTINGS_NOTIFICATIONS_TITLE")}>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_NOTIFICATIONS_KEYWORDS")}
+          label={t("SETTINGS_NOTIFICATIONS_KEYWORDS_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_KEYWORDS_DESCRIPTION")}
           stacked
         >
@@ -38,11 +38,11 @@ export default function NotificationsSection() {
           </Show>
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND")}
+          label={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND")}
+            label={t("SETTINGS_NOTIFICATIONS_MENTION_SOUND_LABEL")}
             checked={notificationsMentionSound()}
             onChange={setNotificationsMentionSound}
           />

@@ -25,20 +25,20 @@ export default function UpdateBanner() {
             />
           </span>
           <span class="text-ink truncate">
-            <Show when={!installing()} fallback={t("UPDATE_INSTALLING")}>
+            <Show when={!installing()} fallback={t("UPDATE_INSTALLING_STATUS")}>
               <Show
                 when={installError()}
                 fallback={
-                  <span class="font-semibold">{t("UPDATE_READY")}</span>
+                  <span class="font-semibold">{t("UPDATE_READY_STATUS")}</span>
                 }
               >
                 <span class="font-semibold text-negative">
-                  {t("UPDATE_FAILED")}
+                  {t("UPDATE_FAILED_STATUS")}
                 </span>
               </Show>
               <span class="text-ink-soft">
                 {" "}
-                {t("UPDATE_ACTION", {
+                {t("UPDATE_ACTION_HINT", {
                   version: u().version,
                   failed: installError() ? "yes" : "no",
                 })}

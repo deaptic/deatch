@@ -14,7 +14,7 @@ export default function LivePill(props: Props) {
       }`}
     >
       <span class="size-1.5 rounded-full bg-current" />
-      {t("UI_LIVE")}
+      {t("UI_LIVE_STATUS")}
       {props.viewers !== undefined && (
         <span class="opacity-80">· {formatViewers(props.viewers)}</span>
       )}

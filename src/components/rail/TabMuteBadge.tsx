@@ -11,7 +11,9 @@ export default function TabMuteBadge(props: Props) {
   return (
     <span
       aria-hidden
-      data-tip={t(props.muted ? "RAIL_UNMUTE_TAB" : "RAIL_MUTE_TAB")}
+      data-tip={t(
+        props.muted ? "RAIL_UNMUTE_TAB_LABEL" : "RAIL_MUTE_TAB_LABEL",
+      )}
       onClick={(e) => {
         e.stopPropagation();
         props.onToggle();

@@ -18,13 +18,13 @@ import {
 export default function ThemeCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_THEME")}</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_THEME_LABEL")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_LANGUAGE")}
+        label={t("SETTINGS_APPEARANCE_LANGUAGE_LABEL")}
         description={t("SETTINGS_APPEARANCE_LANGUAGE_DESCRIPTION")}
       >
         <Segmented
-          label={t("SETTINGS_APPEARANCE_LANGUAGE")}
+          label={t("SETTINGS_APPEARANCE_LANGUAGE_LABEL")}
           value={appearanceLanguage()}
           options={LANGUAGES.map((language) => ({
             value: language,
@@ -34,18 +34,18 @@ export default function ThemeCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_THEME")}
+        label={t("SETTINGS_APPEARANCE_THEME_LABEL")}
         description={t("SETTINGS_APPEARANCE_THEME_DESCRIPTION")}
       >
         <Segmented
-          label={t("SETTINGS_APPEARANCE_THEME")}
+          label={t("SETTINGS_APPEARANCE_THEME_LABEL")}
           value={appearanceTheme()}
           options={themeOptions()}
           onChange={setAppearanceTheme}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_ACCENT")}
+        label={t("SETTINGS_APPEARANCE_ACCENT_LABEL")}
         description={t("SETTINGS_APPEARANCE_ACCENT_DESCRIPTION")}
       >
         <ColorPicker

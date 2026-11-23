@@ -268,7 +268,7 @@ export default function ChatInput(props: Props) {
         {(reply) => (
           <ComposerCaption>
             <span class="shrink-0">
-              {tRich("CHAT_INPUT_REPLYING_TO", {
+              {tRich("COMPOSER_REPLYING_TO_LABEL", {
                 user: reply().name,
                 name: (chunks) => (
                   <span class="font-semibold text-ink">{chunks}</span>
@@ -277,7 +277,7 @@ export default function ChatInput(props: Props) {
             </span>
             <span class="flex-1 min-w-0 truncate">{reply().text}</span>
             <IconButton
-              label={t("CHAT_INPUT_CANCEL_REPLY")}
+              label={t("COMPOSER_CANCEL_REPLY_LABEL")}
               size="sm"
               onClick={props.onClearReply}
             >
@@ -297,7 +297,7 @@ export default function ChatInput(props: Props) {
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             maxLength={MAX_MESSAGE_LENGTH}
-            placeholder={t("CHAT_INPUT_PLACEHOLDER", {
+            placeholder={t("COMPOSER_MESSAGE_PLACEHOLDER", {
               channel: props.broadcasterName,
             })}
             ref={(api) => {
@@ -326,7 +326,7 @@ export default function ChatInput(props: Props) {
               <ComposerSlot>
                 <CharCounter value={input} max={MAX_MESSAGE_LENGTH} />
                 <IconButton
-                  label={t("CHAT_INPUT_EMOTE_PICKER")}
+                  label={t("COMPOSER_EMOTE_PICKER_LABEL")}
                   pressed={isOverlayOpen("emotePicker")}
                   {...{ [POPOVER_TOGGLE]: "" }}
                   onClick={() => toggleOverlay("emotePicker")}

@@ -7,9 +7,9 @@ export function uptime(ctx: BuiltInContext): Promise<string> {
   const live = streamForUserId(ctx.broadcasterId);
   return Promise.resolve(
     live
-      ? t("TRIGGER_UPTIME_LIVE", {
+      ? t("TRIGGER_UPTIME_REPLY", {
           duration: formatElapsed(Date.parse(live.startedAt), Date.now()),
         })
-      : t("TRIGGER_UPTIME_OFFLINE"),
+      : t("TRIGGER_UPTIME_OFFLINE_REPLY"),
   );
 }

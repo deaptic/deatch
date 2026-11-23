@@ -89,12 +89,14 @@ export default function Event(props: Props) {
         <Show when={item.recipients?.length ? item.recipients : undefined}>
           {(recipients) => (
             <div>
-              {tRich("EVENT_GIFTED_TO", {
+              {tRich("FEED_GIFT_RECIPIENTS_LINE", {
                 names: () => (
                   <NameList
                     people={recipients()}
                     limit={details.RECIPIENTS_SHOWN}
-                    more={(count) => t("EVENT_GIFT_MORE", { count })}
+                    more={(count) =>
+                      t("FEED_GIFT_RECIPIENTS_MORE_VALUE", { count })
+                    }
                     onShowUserCard={props.onShowUserCard}
                     onUserContextMenu={props.onUserContextMenu}
                   />

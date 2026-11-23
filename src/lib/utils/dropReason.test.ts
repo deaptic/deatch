@@ -2,9 +2,7 @@ import { expect, test } from "vite-plus/test";
 import { dropMessage } from "./dropReason.ts";
 
 test("explains a known drop code", () => {
-  expect(dropMessage({ code: "duplicate" })).toBe(
-    "You just sent this same message",
-  );
+  expect(dropMessage({ code: "duplicate" })).toBe("You just sent that");
 });
 
 test("keeps Twitch's text for an unknown code", () => {
@@ -14,5 +12,5 @@ test("keeps Twitch's text for an unknown code", () => {
 });
 
 test("falls back when Twitch gives no reason", () => {
-  expect(dropMessage(null)).toBe("Message dropped");
+  expect(dropMessage(null)).toBe("Message not sent");
 });

@@ -65,7 +65,7 @@ export default function AppLayout(props: AppLayoutProps) {
                   <Explore onSelectChannel={c.selectChannel} />
                 </Show>
                 <Show when={activeView() === "settings"}>
-                  <Boundary label={t("LAYOUT_SETTINGS_ERROR")}>
+                  <Boundary label={t("SETTINGS_BOUNDARY_ERROR")}>
                     <Suspense>
                       <Settings />
                     </Suspense>

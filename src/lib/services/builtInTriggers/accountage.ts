@@ -6,7 +6,7 @@ import { type BuiltInContext, forTarget } from "./context.ts";
 export function accountage(ctx: BuiltInContext): Promise<string> {
   return forTarget(ctx, (user, self) =>
     Promise.resolve(
-      t("TRIGGER_ACCOUNTAGE", {
+      t("TRIGGER_ACCOUNTAGE_REPLY", {
         target: user.displayName,
         self: String(self),
         duration: formatElapsed(Date.parse(user.createdAt), Date.now()),

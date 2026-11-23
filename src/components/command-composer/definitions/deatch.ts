@@ -12,12 +12,12 @@ import type { Command } from "../types.ts";
 export const deatchCommands: Command[] = [
   {
     name: "user",
-    description: "COMMAND_USER",
+    description: "COMMAND_USER_DESCRIPTION",
     role: "regular",
     options: [
       {
         name: "username",
-        description: "COMMAND_USER_USERNAME",
+        description: "COMMAND_USER_USERNAME_LABEL",
         type: "user",
         required: true,
       },
@@ -28,12 +28,12 @@ export const deatchCommands: Command[] = [
   },
   {
     name: "purge",
-    description: "COMMAND_PURGE",
+    description: "COMMAND_PURGE_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "COMMAND_PURGE_USERNAME",
+        description: "COMMAND_PURGE_USERNAME_LABEL",
         type: "user",
         required: true,
       },
@@ -49,13 +49,17 @@ export const deatchCommands: Command[] = [
   },
   {
     name: "clip",
-    description: "COMMAND_CLIP",
+    description: "COMMAND_CLIP_DESCRIPTION",
     role: "regular",
     options: [
-      { name: "title", description: "COMMAND_CLIP_TITLE", type: "string" },
+      {
+        name: "title",
+        description: "COMMAND_CLIP_TITLE_LABEL",
+        type: "string",
+      },
       {
         name: "duration",
-        description: "COMMAND_CLIP_DURATION",
+        description: "COMMAND_CLIP_DURATION_LABEL",
         type: "duration",
         min: 5,
         max: 60,
@@ -70,7 +74,7 @@ export const deatchCommands: Command[] = [
   },
   {
     name: "uptime",
-    description: "COMMAND_UPTIME",
+    description: "COMMAND_UPTIME_DESCRIPTION",
     role: "regular",
     options: [],
     execute: async (_, ctx) => {
@@ -80,22 +84,25 @@ export const deatchCommands: Command[] = [
           { silent: true },
         );
         if (!s) {
-          appendLocalNotice(ctx.broadcasterId, t("COMMAND_UPTIME_OFFLINE"));
+          appendLocalNotice(
+            ctx.broadcasterId,
+            t("COMMAND_UPTIME_OFFLINE_LINE"),
+          );
           return;
         }
         const ms = Date.now() - new Date(s.startedAt).getTime();
         appendLocalNotice(
           ctx.broadcasterId,
-          t("COMMAND_UPTIME_RESULT", { uptime: formatClock(ms) }),
+          t("COMMAND_UPTIME_RESULT_LINE", { uptime: formatClock(ms) }),
         );
       } catch {
-        appendLocalNotice(ctx.broadcasterId, t("COMMAND_UPTIME_FAILED"));
+        appendLocalNotice(ctx.broadcasterId, t("COMMAND_UPTIME_FAILED_ERROR"));
       }
     },
   },
   {
     name: "followage",
-    description: "COMMAND_FOLLOWAGE",
+    description: "COMMAND_FOLLOWAGE_DESCRIPTION",
     role: "regular",
     options: [],
     execute: async (_, ctx) => {
@@ -109,18 +116,21 @@ export const deatchCommands: Command[] = [
         if (!followedAt) {
           appendLocalNotice(
             ctx.broadcasterId,
-            t("COMMAND_FOLLOWAGE_NOT_FOLLOWING"),
+            t("COMMAND_FOLLOWAGE_NOT_FOLLOWING_LINE"),
           );
           return;
         }
         appendLocalNotice(
           ctx.broadcasterId,
-          t("COMMAND_FOLLOWAGE_RESULT", {
+          t("COMMAND_FOLLOWAGE_RESULT_LINE", {
             since: new Time(followedAt, "R").toString(),
           }),
         );
       } catch {
-        appendLocalNotice(ctx.broadcasterId, t("COMMAND_FOLLOWAGE_FAILED"));
+        appendLocalNotice(
+          ctx.broadcasterId,
+          t("COMMAND_FOLLOWAGE_FAILED_ERROR"),
+        );
       }
     },
   },

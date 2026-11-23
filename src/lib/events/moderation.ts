@@ -95,7 +95,7 @@ export function start(): () => void {
       const now = serverTime(e);
       appendItem(
         broadcasterId,
-        feedEvent(CHAT_CLEARED, t("EVENT_CHAT_CLEARED"), now, {
+        feedEvent(CHAT_CLEARED, t("FEED_CHAT_CLEARED_LINE"), now, {
           id: `chat-cleared-${broadcasterId}-${now}`,
         }),
       );
@@ -119,7 +119,7 @@ export function start(): () => void {
         feedEvent(
           UNBAN_REQUEST,
           noticeText(
-            t("EVENT_UNBAN_REQUEST", { user: raw.user_name }),
+            t("FEED_UNBAN_REQUEST_SENT_LINE", { user: raw.user_name }),
             raw.text,
           ),
           timestamp,
@@ -135,7 +135,7 @@ export function start(): () => void {
         raw.status === "canceled"
           ? feedEvent(
               UNBAN_REQUEST,
-              t("EVENT_UNBAN_REQUEST_CANCELED", { user: raw.user_name }),
+              t("FEED_UNBAN_REQUEST_WITHDRAWN_LINE", { user: raw.user_name }),
               timestamp,
               {
                 ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
@@ -148,7 +148,7 @@ export function start(): () => void {
       (raw, timestamp) =>
         feedEvent(
           WARNING_ACKNOWLEDGED,
-          t("EVENT_WARNING_ACKNOWLEDGED", { user: raw.user_name }),
+          t("FEED_WARNING_ACKNOWLEDGED_LINE", { user: raw.user_name }),
           timestamp,
           {
             ...chatterFields(raw.user_id, raw.user_login, raw.user_name),

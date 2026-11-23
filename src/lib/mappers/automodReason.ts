@@ -13,12 +13,12 @@ function blockedTerms(
 
 export function automodReason(p: RawAutomodMessageHold): string {
   if (p.reason !== "automod") {
-    return t("AUTOMOD_BLOCKED_TERM", {
+    return t("FEED_AUTOMOD_BLOCKED_TERM_VALUE", {
       kind: p.reason,
       terms: blockedTerms(p),
     });
   }
-  return t("AUTOMOD_CATEGORY", {
+  return t("FEED_AUTOMOD_CATEGORY_VALUE", {
     category: p.automod.category,
     level: p.automod.level,
   });

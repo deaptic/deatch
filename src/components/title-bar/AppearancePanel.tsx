@@ -75,43 +75,43 @@ const SHOW_TOGGLES: {
   disabled?: () => boolean;
 }[] = [
   {
-    label: "CHAT_APPEARANCE_AVATARS",
+    label: "TITLE_BAR_APPEARANCE_AVATARS_LABEL",
     Icon: CircleUserRound,
     on: feedShowAvatars,
     set: setFeedShowAvatars,
   },
   {
-    label: "CHAT_APPEARANCE_TIMESTAMPS",
+    label: "TITLE_BAR_APPEARANCE_TIMESTAMPS_LABEL",
     Icon: Clock,
     on: feedShowTimestamp,
     set: setFeedShowTimestamp,
   },
   {
-    label: "CHAT_APPEARANCE_BADGES",
+    label: "TITLE_BAR_APPEARANCE_BADGES_LABEL",
     Icon: BadgeCheck,
     on: feedShowBadges,
     set: setFeedShowBadges,
   },
   {
-    label: "CHAT_APPEARANCE_DISPLAY_NAMES",
+    label: "TITLE_BAR_APPEARANCE_DISPLAY_NAMES_LABEL",
     Icon: AtSign,
     on: feedUserShowDisplayName,
     set: setFeedUserShowDisplayName,
   },
   {
-    label: "CHAT_APPEARANCE_EVENTS",
+    label: "TITLE_BAR_APPEARANCE_EVENTS_LABEL",
     Icon: Megaphone,
     on: feedShowEvents,
     set: setFeedShowEvents,
   },
   {
-    label: "CHAT_APPEARANCE_DELETED",
+    label: "TITLE_BAR_APPEARANCE_DELETED_LABEL",
     Icon: Trash2,
     on: feedShowDeletedContent,
     set: setFeedShowDeletedContent,
   },
   {
-    label: "CHAT_APPEARANCE_GROUPING",
+    label: "TITLE_BAR_APPEARANCE_GROUPING_LABEL",
     Icon: Layers,
     on: feedGroupMessages,
     set: setFeedGroupMessages,
@@ -135,13 +135,13 @@ export default function AppearancePanel(props: Props) {
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div
         role="menu"
-        aria-label={t("CHAT_APPEARANCE")}
+        aria-label={t("TITLE_BAR_APPEARANCE_LABEL")}
         class="w-72 p-1.5 flex flex-col"
       >
-        <Section label={t("SETTINGS_APPEARANCE_THEME")}>
+        <Section label={t("SETTINGS_APPEARANCE_THEME_LABEL")}>
           <div class="px-1">
             <Segmented
-              label={t("SETTINGS_APPEARANCE_THEME")}
+              label={t("SETTINGS_APPEARANCE_THEME_LABEL")}
               value={appearanceTheme()}
               options={themeOptions()}
               onChange={setAppearanceTheme}
@@ -149,20 +149,20 @@ export default function AppearancePanel(props: Props) {
             />
           </div>
         </Section>
-        <Section label={t("CHAT_APPEARANCE_SECTION_APP")}>
+        <Section label={t("TITLE_BAR_APPEARANCE_APP_TITLE")}>
           <MenuStepper
-            label={t("SETTINGS_APPEARANCE_ZOOM")}
+            label={t("SETTINGS_APPEARANCE_ZOOM_LABEL")}
             icon={<ZoomIn />}
             value={formatWholePercent(appearanceZoom())}
-            lessLabel={t("SETTINGS_KEYBOARD_ZOOM_OUT")}
-            moreLabel={t("SETTINGS_KEYBOARD_ZOOM_IN")}
+            lessLabel={t("SETTINGS_KEYBOARD_ZOOM_OUT_LABEL")}
+            moreLabel={t("SETTINGS_KEYBOARD_ZOOM_IN_LABEL")}
             canLess={canStep(appearanceZoom(), ZOOM_STOPS, -1)}
             canMore={canStep(appearanceZoom(), ZOOM_STOPS, 1)}
             onStep={stepAppearanceZoom}
           />
           <div class="px-1 pt-1">
             <Segmented
-              label={t("SETTINGS_APPEARANCE_DENSITY")}
+              label={t("SETTINGS_APPEARANCE_DENSITY_LABEL")}
               value={appearanceUiDensity()}
               options={uiDensityOptions()}
               onChange={setAppearanceUiDensity}
@@ -170,10 +170,10 @@ export default function AppearancePanel(props: Props) {
             />
           </div>
         </Section>
-        <Section label={t("CHAT_APPEARANCE_SECTION_CHAT")}>
+        <Section label={t("TITLE_BAR_APPEARANCE_CHAT_TITLE")}>
           <div class="flex flex-col gap-2 px-1 pb-1">
             <Segmented
-              label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
+              label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_LABEL")}
               value={feedDensity()}
               options={messageLayoutOptions()}
               onChange={setFeedDensity}
@@ -196,21 +196,21 @@ export default function AppearancePanel(props: Props) {
             </div>
           </div>
           <MenuStepper
-            label={t("CHAT_APPEARANCE_TEXT_SIZE")}
+            label={t("TITLE_BAR_APPEARANCE_TEXT_SIZE_LABEL")}
             icon={<Type />}
             value={formatPx(feedFontSize())}
-            lessLabel={t("CHAT_APPEARANCE_TEXT_SMALLER")}
-            moreLabel={t("CHAT_APPEARANCE_TEXT_LARGER")}
+            lessLabel={t("TITLE_BAR_APPEARANCE_TEXT_SMALLER_LABEL")}
+            moreLabel={t("TITLE_BAR_APPEARANCE_TEXT_LARGER_LABEL")}
             canLess={canStep(feedFontSize(), FONT_SIZE_STOPS, -1)}
             canMore={canStep(feedFontSize(), FONT_SIZE_STOPS, 1)}
             onStep={stepFeedFontSize}
           />
           <MenuStepper
-            label={t("CHAT_APPEARANCE_GROUP_SPACING")}
+            label={t("TITLE_BAR_APPEARANCE_GROUP_SPACING_LABEL")}
             icon={<SeparatorHorizontal />}
             value={formatPx(feedGroupSpacing())}
-            lessLabel={t("CHAT_APPEARANCE_GROUP_SPACING_LESS")}
-            moreLabel={t("CHAT_APPEARANCE_GROUP_SPACING_MORE")}
+            lessLabel={t("TITLE_BAR_APPEARANCE_GROUP_SPACING_LESS_LABEL")}
+            moreLabel={t("TITLE_BAR_APPEARANCE_GROUP_SPACING_MORE_LABEL")}
             canLess={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, -1)}
             canMore={canStep(feedGroupSpacing(), GROUP_SPACING_STOPS, 1)}
             onStep={stepFeedGroupSpacing}
@@ -219,7 +219,7 @@ export default function AppearancePanel(props: Props) {
         </Section>
         <MenuDivider />
         <MenuItem
-          label={t("CHAT_APPEARANCE_MORE_SETTINGS")}
+          label={t("TITLE_BAR_APPEARANCE_MORE_SETTINGS_LABEL")}
           icon={<Settings />}
           onClick={() => {
             props.onClose();

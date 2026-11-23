@@ -85,7 +85,9 @@ export default function UserCardHeader(props: Props) {
       </div>
       <div class="absolute top-card-gap right-card-gap flex rounded-sm bg-media-scrim">
         <IconButton
-          label={t(props.pinned ? "USER_CARD_UNPIN" : "USER_CARD_PIN")}
+          label={t(
+            props.pinned ? "USER_CARD_UNPIN_LABEL" : "USER_CARD_PIN_LABEL",
+          )}
           variant="media"
           size="sm"
           pressed={props.pinned}
@@ -99,7 +101,7 @@ export default function UserCardHeader(props: Props) {
         <div class="flex gap-card-gap">
           <button
             type="button"
-            aria-label={t("USER_CARD_OPEN_CHAT")}
+            aria-label={t("USER_CARD_OPEN_CHAT_LABEL")}
             class="relative shrink-0 self-start flex rounded-full cursor-pointer ring-6 ring-overlay -mt-card-avatar-lift"
             onMouseDown={(e) => {
               e.stopPropagation();

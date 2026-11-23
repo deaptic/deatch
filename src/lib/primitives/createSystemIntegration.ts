@@ -36,13 +36,13 @@ export function createSystemIntegration(): void {
 
   createEffect(() => {
     setAlwaysOnTop(advancedAlwaysOnTop(), {
-      failureMessage: t("SYSTEM_ALWAYS_ON_TOP_FAILED"),
+      failureMessage: t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_ERROR"),
     }).catch(() => {});
   });
 
   createEffect(() => {
     const want = advancedAutostart();
-    const options = { failureMessage: t("SYSTEM_AUTOSTART_FAILED") };
+    const options = { failureMessage: t("SETTINGS_ADVANCED_AUTOSTART_ERROR") };
     isAutostartEnabled(options)
       .then((have) => (have === want ? undefined : setAutostart(want, options)))
       .catch(() => {});

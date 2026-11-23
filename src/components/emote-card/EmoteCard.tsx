@@ -60,7 +60,7 @@ function Details(props: { url: string; name: string; source: EmoteSource }) {
               {(page) => (
                 <IconButton
                   size="sm"
-                  label={t("EMOTE_CARD_OPEN", { provider: provider() })}
+                  label={t("EMOTES_CARD_OPEN_LABEL", { provider: provider() })}
                   onClick={() => browser.open(page())}
                 >
                   <ExternalLink class="size-4" />
@@ -70,7 +70,9 @@ function Details(props: { url: string; name: string; source: EmoteSource }) {
             <IconButton
               size="sm"
               label={
-                copied() ? t("CLIPBOARD_COPIED") : t("EMOTE_CARD_COPY_NAME")
+                copied()
+                  ? t("UI_COPIED_TOAST")
+                  : t("EMOTES_CARD_COPY_NAME_LABEL")
               }
               onClick={() => void copy(props.name)}
             >
@@ -86,7 +88,7 @@ function Details(props: { url: string; name: string; source: EmoteSource }) {
           {provider()}
           <Show when={scope()}>
             {(s) =>
-              ` · ${t(s() === "channel" ? "EMOTE_CARD_CHANNEL" : "EMOTE_CARD_GLOBAL")}`
+              ` · ${t(s() === "channel" ? "EMOTES_CARD_CHANNEL_LABEL" : "EMOTES_CARD_GLOBAL_LABEL")}`
             }
           </Show>
         </p>

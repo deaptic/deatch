@@ -49,8 +49,8 @@ export default function ChannelHeader(props: Props) {
       <div class="flex items-center gap-4 px-4 py-3" {...link.handlers}>
         <button
           type="button"
-          aria-label={t("MENU_OPEN_IN_BROWSER")}
-          data-tip={t("MENU_OPEN_IN_BROWSER")}
+          aria-label={t("MENU_OPEN_IN_BROWSER_LABEL")}
+          data-tip={t("MENU_OPEN_IN_BROWSER_LABEL")}
           class="shrink-0 rounded-xs cursor-pointer pressable active:pressed"
           onClick={() => browser.openChannel(props.channel.login)}
         >
@@ -74,7 +74,9 @@ export default function ChannelHeader(props: Props) {
               <Stat icon={<Gamepad2 />} value={game()} copy={game()} truncate />
               <Show
                 when={stream()}
-                fallback={<Stat icon={<Moon />} value={t("CHAT_OFFLINE")} />}
+                fallback={
+                  <Stat icon={<Moon />} value={t("HEADER_OFFLINE_STATUS")} />
+                }
               >
                 {(s) => (
                   <>
@@ -101,7 +103,7 @@ export default function ChannelHeader(props: Props) {
               <Show when={isBroadcaster()}>
                 <span class="ml-auto shrink-0 -my-1">
                   <IconButton
-                    label={t("CHANNEL_TOOLS_EDIT_INFO")}
+                    label={t("HEADER_EDIT_INFO_LABEL")}
                     size="sm"
                     onClick={() => setChannelForm("info")}
                   >

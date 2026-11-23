@@ -54,13 +54,13 @@ export const METHODS: readonly TriggerMethod[] = [
   {
     name: "user",
     arg: "none",
-    description: "SETTINGS_TRIGGERS_METHOD_USER",
+    description: "SETTINGS_TRIGGERS_METHOD_USER_DESCRIPTION",
     resolve: sync((ctx) => ctx.sender.displayName),
   },
   {
     name: "target",
     arg: "none",
-    description: "SETTINGS_TRIGGERS_METHOD_TARGET",
+    description: "SETTINGS_TRIGGERS_METHOD_TARGET_DESCRIPTION",
     resolve: sync((ctx) => typedTarget(ctx.args) ?? ctx.sender.displayName),
   },
   {
@@ -68,7 +68,7 @@ export const METHODS: readonly TriggerMethod[] = [
     arg: "optional",
     argHint: "1",
     validArg: (arg) => POSITION.test(arg),
-    description: "SETTINGS_TRIGGERS_METHOD_ARGS",
+    description: "SETTINGS_TRIGGERS_METHOD_ARGS_DESCRIPTION",
     resolve: sync((ctx, arg) =>
       arg === null ? ctx.args : (words(ctx.args)[Number(arg) - 1] ?? ""),
     ),
@@ -76,13 +76,13 @@ export const METHODS: readonly TriggerMethod[] = [
   {
     name: "channel",
     arg: "none",
-    description: "SETTINGS_TRIGGERS_METHOD_CHANNEL",
+    description: "SETTINGS_TRIGGERS_METHOD_CHANNEL_DESCRIPTION",
     resolve: sync((ctx) => knownUser(ctx.broadcasterId)?.displayName ?? ""),
   },
   {
     name: "count",
     arg: "none",
-    description: "SETTINGS_TRIGGERS_METHOD_COUNT",
+    description: "SETTINGS_TRIGGERS_METHOD_COUNT_DESCRIPTION",
     resolve: sync((ctx) => String(ctx.count)),
   },
   {
@@ -90,7 +90,7 @@ export const METHODS: readonly TriggerMethod[] = [
     arg: "required",
     argHint: "1-100",
     validArg: (arg) => range(arg) !== null,
-    description: "SETTINGS_TRIGGERS_METHOD_RANDOM",
+    description: "SETTINGS_TRIGGERS_METHOD_RANDOM_DESCRIPTION",
     resolve: sync((_ctx, arg) => randomIn(arg)),
   },
 ];

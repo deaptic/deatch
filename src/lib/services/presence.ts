@@ -9,14 +9,14 @@ import { categoryUrl, channelUrl } from "../utils/twitchUrl.ts";
 import { type MessageKey, t } from "../i18n/index.ts";
 
 export const SELF_LURK_PHRASES: NonEmpty<MessageKey> = [
-  "PRESENCE_LURK_TALKING_TO_THEMSELVES",
-  "PRESENCE_LURK_EMPTY_ROOM",
-  "PRESENCE_LURK_PRACTICING_INTRO",
-  "PRESENCE_LURK_SOLO",
-  "PRESENCE_LURK_SELF_LURKING",
-  "PRESENCE_LURK_READING_OWN_CHAT",
-  "PRESENCE_LURK_PLOTTING",
-  "PRESENCE_LURK_TUMBLEWEEDS",
+  "PRESENCE_LURK_TALKING_TO_THEMSELVES_STATUS",
+  "PRESENCE_LURK_EMPTY_ROOM_STATUS",
+  "PRESENCE_LURK_PRACTICING_INTRO_STATUS",
+  "PRESENCE_LURK_SOLO_STATUS",
+  "PRESENCE_LURK_SELF_LURKING_STATUS",
+  "PRESENCE_LURK_READING_OWN_CHAT_STATUS",
+  "PRESENCE_LURK_PLOTTING_STATUS",
+  "PRESENCE_LURK_TUMBLEWEEDS_STATUS",
 ];
 
 const clamp = (s: string, max: number) =>
@@ -52,8 +52,8 @@ export function buildPresence(
   const ch = activeChannel(ctx);
   if (!ch) {
     return {
-      details: t("PRESENCE_BROWSING"),
-      stateText: t("PRESENCE_ON_TWITCH"),
+      details: t("PRESENCE_BROWSING_STATUS"),
+      stateText: t("PRESENCE_ON_TWITCH_STATUS"),
       largeImage: "app_logo",
       largeText: "Deatch",
       startedAt: session.startedAt,
@@ -64,14 +64,14 @@ export function buildPresence(
   const gameName = stream?.game.name;
   const stateText =
     stream && gameName
-      ? t("PRESENCE_PLAYING", {
+      ? t("PRESENCE_PLAYING_STATUS", {
           game: gameName,
           count: stream.viewerCount,
           viewers: formatViewers(stream.viewerCount),
         })
       : isOwnChannel
         ? t(session.lurkPhrase)
-        : t("PRESENCE_OFFLINE");
+        : t("PRESENCE_OFFLINE_STATUS");
   const streamStartedAt = stream
     ? Math.floor(new Date(stream.startedAt).getTime() / 1000)
     : null;
@@ -89,6 +89,6 @@ export function buildPresence(
     smallImage: "app_logo",
     smallText: "Deatch",
     startedAt: streamStartedAt ?? session.startedAt,
-    buttons: [{ label: t("PRESENCE_OPEN_ON_TWITCH"), url }],
+    buttons: [{ label: t("PRESENCE_OPEN_ON_TWITCH_LABEL"), url }],
   };
 }

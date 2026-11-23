@@ -37,11 +37,13 @@ export default function ShoutoutSources(props: Props) {
     <>
       <Show
         when={!sources.loading}
-        fallback={<MenuItem label={t("MENU_CHECKING")} disabled />}
+        fallback={<MenuItem label={t("MENU_CHECKING_STATUS")} disabled />}
       >
         <For
           each={sources() ?? []}
-          fallback={<MenuItem label={t("MENU_NO_LIVE_CHANNELS")} disabled />}
+          fallback={
+            <MenuItem label={t("MENU_NO_LIVE_CHANNELS_EMPTY")} disabled />
+          }
         >
           {(from) => (
             <MenuItem

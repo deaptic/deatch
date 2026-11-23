@@ -77,7 +77,7 @@ export default function ChannelContextMenu(props: Props) {
         {(open) => (
           <>
             <MenuItem
-              label={t("MENU_OPEN_CHAT")}
+              label={t("MENU_OPEN_CHAT_LABEL")}
               icon={<MessageSquare />}
               onClick={open()}
             />
@@ -87,7 +87,7 @@ export default function ChannelContextMenu(props: Props) {
       </Show>
       <Show when={props.place === "rail"}>
         <MenuItem
-          label={t("MENU_MARK_AS_READ")}
+          label={t("MENU_MARK_AS_READ_LABEL")}
           icon={<CheckCheck />}
           disabled={!unread()}
           onClick={() => {
@@ -100,7 +100,7 @@ export default function ChannelContextMenu(props: Props) {
         when={props.place === "rail" && hasTab()}
         fallback={
           <MenuItem
-            label={t("MENU_OPEN_IN_BROWSER")}
+            label={t("MENU_OPEN_IN_BROWSER_LABEL")}
             icon={<ExternalLink />}
             shortcut={
               selected() ? shortcuts.keyFor("link::openTab") : undefined
@@ -110,12 +110,14 @@ export default function ChannelContextMenu(props: Props) {
         }
       >
         <MenuItem
-          label={t("MENU_SHOW_BROWSER_TAB")}
+          label={t("MENU_SHOW_BROWSER_TAB_LABEL")}
           icon={<ExternalLink />}
           onClick={() => link.focus(props.ch.login)}
         />
         <MenuItem
-          label={muted() ? t("MENU_UNMUTE_TAB") : t("MENU_MUTE_TAB")}
+          label={
+            muted() ? t("MENU_UNMUTE_TAB_LABEL") : t("MENU_MUTE_TAB_LABEL")
+          }
           icon={muted() ? <Volume2 /> : <VolumeX />}
           shortcut={
             selected() ? shortcuts.keyFor("link::toggleMute") : undefined
@@ -123,7 +125,7 @@ export default function ChannelContextMenu(props: Props) {
           onClick={() => link.toggleMuted(props.ch.login)}
         />
         <MenuItem
-          label={t("MENU_CLOSE_BROWSER_TAB")}
+          label={t("MENU_CLOSE_BROWSER_TAB_LABEL")}
           icon={<X />}
           shortcut={selected() ? shortcuts.keyFor("link::closeTab") : undefined}
           onClick={() => link.close(props.ch.login)}
@@ -140,20 +142,20 @@ export default function ChannelContextMenu(props: Props) {
           when={pinned()}
           fallback={
             <MenuItem
-              label={t("MENU_PIN")}
+              label={t("MENU_PIN_LABEL")}
               icon={<Pin />}
               onClick={() => pins.add(props.ch)}
             />
           }
         >
           <MenuItem
-            label={t("MENU_UNPIN")}
+            label={t("MENU_UNPIN_LABEL")}
             icon={<PinOff />}
             onClick={() => pins.remove(props.ch.id)}
           />
           <Show when={props.place === "rail" && pinIndex() > 0}>
             <MenuItem
-              label={t("UI_MOVE_UP")}
+              label={t("UI_MOVE_UP_LABEL")}
               icon={<ArrowUp />}
               onClick={movePin(-1)}
             />
@@ -164,7 +166,7 @@ export default function ChannelContextMenu(props: Props) {
             }
           >
             <MenuItem
-              label={t("UI_MOVE_DOWN")}
+              label={t("UI_MOVE_DOWN_LABEL")}
               icon={<ArrowDown />}
               onClick={movePin(1)}
             />
@@ -172,7 +174,7 @@ export default function ChannelContextMenu(props: Props) {
         </Show>
       </Show>
       <MenuItem
-        label={t("MENU_COPY_LINK")}
+        label={t("MENU_COPY_LINK_LABEL")}
         icon={<Link2 />}
         onClick={() => clipboard.copy(url())}
       />
@@ -181,7 +183,7 @@ export default function ChannelContextMenu(props: Props) {
         <MenuDivider />
         <Show when={other()}>
           <MenuItem
-            label={t("MENU_RAID")}
+            label={t("MENU_RAID_LABEL")}
             icon={<Radio />}
             onClick={() => {
               const me = self();
@@ -190,7 +192,7 @@ export default function ChannelContextMenu(props: Props) {
           />
         </Show>
         <Show when={canShoutout()}>
-          <SubMenu label={t("MENU_SHOUTOUT")} icon={<Megaphone />}>
+          <SubMenu label={t("MENU_SHOUTOUT_LABEL")} icon={<Megaphone />}>
             <ShoutoutSources target={props.ch} />
           </SubMenu>
         </Show>
@@ -202,7 +204,7 @@ export default function ChannelContextMenu(props: Props) {
           <>
             <MenuDivider />
             <MenuItem
-              label={t("MENU_LOG_OUT")}
+              label={t("MENU_SIGN_OUT_LABEL")}
               icon={<LogOut />}
               tone="negative"
               onClick={logout()}

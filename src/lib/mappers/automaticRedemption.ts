@@ -18,7 +18,7 @@ export function mapAutomaticRedemption(
   const emote = raw.reward.emote;
   return feedEvent(
     CHANNEL_POINTS_REDEMPTION,
-    t("EVENT_AUTOMATIC_REDEMPTION", {
+    t("FEED_AUTOMATIC_REDEMPTION_LINE", {
       user: raw.user_name,
       type: raw.reward.type,
       cost: raw.reward.channel_points,

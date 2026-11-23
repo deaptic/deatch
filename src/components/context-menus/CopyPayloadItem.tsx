@@ -15,7 +15,7 @@ export default function CopyPayloadItem(props: Props) {
     <Show when={props.show}>
       <MenuDivider />
       <MenuItem
-        label={t("MENU_COPY_PAYLOAD")}
+        label={t("MENU_COPY_PAYLOAD_LABEL")}
         icon={<Copy />}
         onClick={() => clipboard.copy(JSON.stringify(props.data, null, 2))}
       />

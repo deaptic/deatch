@@ -50,7 +50,7 @@ export function mapNotice(
     chatter_login: raw.chatter_is_anonymous
       ? undefined
       : raw.chatter_user_login,
-    chatter_name: raw.chatter_user_name ?? t("EVENT_ANONYMOUS"),
+    chatter_name: raw.chatter_user_name ?? t("FEED_ANONYMOUS_VALUE"),
     color: raw.color ?? "",
     message: wordsOf(raw.message),
     announcement_color: announcementColor(raw),

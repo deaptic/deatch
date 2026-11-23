@@ -42,7 +42,7 @@ export default function ComposerActions(props: Props) {
     <>
       <span class="relative flex">
         <IconButton
-          label={t("CHAT_ACTIONS")}
+          label={t("COMPOSER_ACTIONS_LABEL")}
           pressed={open()}
           {...{ [POPOVER_TOGGLE]: "" }}
           onClick={() => toggleOverlay("composerActions")}
@@ -62,7 +62,7 @@ export default function ComposerActions(props: Props) {
         <ComposerPanel
           side="start"
           size="menu"
-          label={t("CHAT_ACTIONS")}
+          label={t("COMPOSER_ACTIONS_LABEL")}
           anchorEl={props.anchorEl()}
           onClose={closeOverlay}
         >
@@ -77,15 +77,15 @@ export default function ComposerActions(props: Props) {
                 />
                 <MenuDivider />
                 <SubMenu
-                  label={t("CHAT_ACTIONS_CLIP")}
+                  label={t("COMPOSER_ACTIONS_CLIP_LABEL")}
                   icon={<Clapperboard />}
-                  hint={live() ? undefined : t("CHANNEL_TOOLS_LIVE_ONLY_HINT")}
+                  hint={live() ? undefined : t("HEADER_LIVE_ONLY_HINT")}
                   disabled={!live()}
                 >
                   <For each={CLIP_LENGTHS}>
                     {(duration) => (
                       <MenuItem
-                        label={t("CHAT_MODE_SECONDS", { count: duration })}
+                        label={t("COMPOSER_SECONDS_VALUE", { count: duration })}
                         onClick={() =>
                           void clips.create(props.broadcasterId, { duration })
                         }
@@ -117,7 +117,7 @@ function Overview(props: {
         when={props.active.length > 0}
         fallback={
           <p class="px-2.5 py-2 text-small text-ink-soft">
-            {t("CHAT_ACTIONS_NO_MODES")}
+            {t("COMPOSER_ACTIONS_NO_MODES_EMPTY")}
           </p>
         }
       >
@@ -132,7 +132,7 @@ function Overview(props: {
         </For>
       </Show>
       <Show when={props.isMod && props.settingsReady}>
-        <SubMenu label={t("CHAT_ACTIONS_CHANGE_MODES")}>
+        <SubMenu label={t("COMPOSER_ACTIONS_CHANGE_MODES_LABEL")}>
           <ChatModesList broadcasterId={props.broadcasterId} />
         </SubMenu>
       </Show>
@@ -147,7 +147,8 @@ function ModeDetail(props: {
 }) {
   const settings = () => chatSettingsFor(props.broadcasterId);
   const Icon = props.mode.icon;
-  const turnOff = () => t("CHAT_MODE_TURN_OFF", { mode: t(props.mode.label) });
+  const turnOff = () =>
+    t("COMPOSER_MODE_OFF_LABEL", { mode: t(props.mode.label) });
   return (
     <Show when={settings()}>
       {(s) => (

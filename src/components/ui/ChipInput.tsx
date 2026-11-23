@@ -31,7 +31,7 @@ export default function ChipInput(props: Props) {
         }}
       />
       <IconButton
-        label={t("UI_ADD")}
+        label={t("UI_ADD_LABEL")}
         variant="neutral"
         onClick={submit}
         disabled={!value().trim()}

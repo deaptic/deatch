@@ -15,10 +15,10 @@ const notice = (n: Partial<RawNotification>) =>
 test("describes subs by plan", () => {
   expect(
     notice({ notice_type: "sub", sub: { sub_tier: "2000", is_prime: false } }),
-  ).toBe("Viewer subscribed at Tier 2.");
+  ).toBe("Viewer subscribed at Tier 2!");
   expect(
     notice({ notice_type: "sub", sub: { sub_tier: "1000", is_prime: true } }),
-  ).toBe("Viewer subscribed with Prime.");
+  ).toBe("Viewer subscribed with Prime!");
 });
 
 test("adds the streak to a resub only when there is one", () => {
@@ -29,11 +29,11 @@ test("adds the streak to a resub only when there is one", () => {
     streak_months: 3,
   };
   expect(notice({ notice_type: "resub", resub })).toBe(
-    "Viewer subscribed at Tier 1. They've subscribed for 14 months, currently on a 3 month streak!",
+    "Viewer subscribed at Tier 1, 14 months total, 3-month streak!",
   );
   expect(
     notice({ notice_type: "resub", resub: { ...resub, streak_months: null } }),
-  ).toBe("Viewer subscribed at Tier 1. They've subscribed for 14 months!");
+  ).toBe("Viewer subscribed at Tier 1, 14 months total!");
 });
 
 test("credits an anonymous gifter", () => {
@@ -53,7 +53,7 @@ test("credits an anonymous gifter", () => {
       notice_type: "gift_paid_upgrade",
       gift_paid_upgrade: { gifter_is_anonymous: true, gifter_user_name: null },
     }),
-  ).toBe("Viewer is continuing the gift sub they got from an anonymous user!");
+  ).toBe("Viewer is continuing their gift sub from an anonymous user!");
 });
 
 test("reads the shared chat variant", () => {
@@ -74,7 +74,7 @@ test("formats a charity amount in its currency", () => {
         amount: { value: 1050, decimal_place: 2, currency: "USD" },
       },
     }),
-  ).toBe("Viewer donated US$10.50 to support Kind Org.");
+  ).toBe("Viewer donated US$10.50 to Kind Org");
 });
 
 test("names who made an announcement", () => {

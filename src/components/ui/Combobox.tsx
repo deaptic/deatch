@@ -77,7 +77,7 @@ export default function Combobox(props: Props) {
           >
             <button
               type="button"
-              aria-label={t("UI_CLEAR_FIELD", {
+              aria-label={t("UI_CLEAR_FIELD_LABEL", {
                 field: props.ariaLabel.toLowerCase(),
               })}
               class="shrink-0 grid place-items-center text-ink-soft hover:text-ink cursor-pointer"
@@ -117,7 +117,7 @@ export default function Combobox(props: Props) {
             each={shown()}
             fallback={
               <p class="px-2.5 py-2 text-small text-ink-faint">
-                {t("UI_COMBOBOX_NO_MATCHES")}
+                {t("UI_COMBOBOX_EMPTY")}
               </p>
             }
           >

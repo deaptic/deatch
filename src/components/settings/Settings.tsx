@@ -46,38 +46,43 @@ const SECTIONS: {
 }[] = [
   {
     key: "notifications",
-    label: "SETTINGS_NOTIFICATIONS",
+    label: "SETTINGS_NOTIFICATIONS_TITLE",
     Icon: Megaphone,
     Section: NotificationsSection,
   },
   {
     key: "appearance",
-    label: "SETTINGS_APPEARANCE",
+    label: "SETTINGS_APPEARANCE_TITLE",
     Icon: Palette,
     Section: AppearanceSection,
   },
-  { key: "link", label: "SETTINGS_LINK", Icon: Eye, Section: LinkSection },
+  {
+    key: "link",
+    label: "SETTINGS_LINK_TITLE",
+    Icon: Eye,
+    Section: LinkSection,
+  },
   {
     key: "moderation",
-    label: "SETTINGS_MODERATION",
+    label: "SETTINGS_MODERATION_TITLE",
     Icon: Ban,
     Section: ModerationSection,
   },
   {
     key: "triggers",
-    label: "SETTINGS_TRIGGERS",
+    label: "SETTINGS_TRIGGERS_TITLE",
     Icon: Zap,
     Section: TriggersSection,
   },
   {
     key: "keyboard",
-    label: "SETTINGS_KEYBOARD",
+    label: "SETTINGS_KEYBOARD_TITLE",
     Icon: Keyboard,
     Section: KeyboardSection,
   },
   {
     key: "advanced",
-    label: "SETTINGS_ADVANCED",
+    label: "SETTINGS_ADVANCED_TITLE",
     Icon: SettingsIcon,
     Section: AdvancedSection,
   },
@@ -143,7 +148,7 @@ export default function Settings() {
               <IconButton
                 ref={(el) => (searchButton = el)}
                 class="self-center"
-                label={t("SETTINGS_SEARCH")}
+                label={t("SETTINGS_SEARCH_LABEL")}
                 size="sm"
                 pressed={searching()}
                 onClick={toggleSearchPopover}
@@ -157,12 +162,12 @@ export default function Settings() {
               icon={<Search />}
               value={query()}
               onInput={(e) => setQuery(e.currentTarget.value)}
-              placeholder={t("SETTINGS_SEARCH")}
-              aria-label={t("SETTINGS_SEARCH")}
+              placeholder={t("SETTINGS_SEARCH_LABEL")}
+              aria-label={t("SETTINGS_SEARCH_LABEL")}
               trailing={
                 <Show when={query()}>
                   <IconButton
-                    label={t("SETTINGS_SEARCH_CLEAR")}
+                    label={t("SETTINGS_SEARCH_CLEAR_LABEL")}
                     size="sm"
                     onClick={() => setQuery("")}
                   >
@@ -218,7 +223,7 @@ export default function Settings() {
             x={at().x}
             y={at().y}
             value={query()}
-            placeholder={t("SETTINGS_SEARCH")}
+            placeholder={t("SETTINGS_SEARCH_LABEL")}
             opener={() => searchButton}
             onInput={setQuery}
             onSubmit={() => setSearchAt(undefined)}

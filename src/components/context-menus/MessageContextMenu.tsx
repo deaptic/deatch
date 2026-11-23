@@ -34,27 +34,27 @@ export default function MessageContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label={t("MENU_REPLY")}
+        label={t("MENU_REPLY_LABEL")}
         icon={<Reply />}
         onClick={() => props.onReply(props.msg)}
       />
       <Show when={props.msg.reply}>
         {(reply) => (
           <MenuItem
-            label={t("MENU_JUMP_TO_PARENT")}
+            label={t("MENU_JUMP_TO_PARENT_LABEL")}
             icon={<CornerUpLeft />}
             onClick={() => props.onJumpToMessage(reply().parent_message_id)}
           />
         )}
       </Show>
       <MenuItem
-        label={t("MENU_COPY_TEXT")}
+        label={t("MENU_COPY_TEXT_LABEL")}
         icon={<Copy />}
         onClick={() => clipboard.copy(textOf(props.msg))}
       />
       <Show when={props.showCopypasta}>
         <MenuItem
-          label={t("MENU_COPYPASTA")}
+          label={t("MENU_COPYPASTA_LABEL")}
           icon={<ClipboardPaste />}
           onClick={() => props.onCopypasta(props.msg)}
         />
@@ -62,7 +62,7 @@ export default function MessageContextMenu(props: Props) {
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
-          label={t("MENU_DELETE_MESSAGE")}
+          label={t("MENU_DELETE_MESSAGE_LABEL")}
           tone="negative"
           icon={<Trash2 />}
           onClick={() =>

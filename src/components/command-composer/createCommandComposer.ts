@@ -88,8 +88,8 @@ export function createCommandComposer(opts: Options) {
   const hint = createMemo(() => {
     if (resolving()) {
       return activeOption()?.type === "search"
-        ? t("COMMAND_SEARCHING")
-        : t("COMMAND_LOOKING_UP_USER");
+        ? t("COMMAND_SEARCHING_STATUS")
+        : t("COMMAND_LOOKING_UP_USER_STATUS");
     }
     const opt = activeOption();
     const slot = activeSlot();
@@ -114,8 +114,8 @@ export function createCommandComposer(opts: Options) {
     markInvalid(
       idx,
       lookup.status === "missing"
-        ? t("COMMAND_USER_NOT_FOUND", { login })
-        : t("COMMAND_LOOKUP_FAILED"),
+        ? t("COMMAND_USER_NOT_FOUND_ERROR", { login })
+        : t("COMMAND_LOOKUP_FAILED_ERROR"),
     );
     return false;
   }
@@ -131,7 +131,9 @@ export function createCommandComposer(opts: Options) {
     if (!match) {
       markInvalid(
         idx,
-        matches ? t("COMMAND_NO_MATCH", { query }) : t("COMMAND_LOOKUP_FAILED"),
+        matches
+          ? t("COMMAND_NO_MATCH_EMPTY", { query })
+          : t("COMMAND_LOOKUP_FAILED_ERROR"),
       );
       return false;
     }

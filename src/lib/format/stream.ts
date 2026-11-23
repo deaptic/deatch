@@ -34,7 +34,7 @@ export function streamGame(stream?: Described, info?: Described): string {
 }
 
 export function liveLine(game?: string, viewers?: number): string {
-  const parts = [t("STREAM_LIVE"), game];
+  const parts = [t("UI_STREAM_LIVE_STATUS"), game];
   if (viewers !== undefined) parts.push(formatViewers(viewers));
   return parts.filter(Boolean).join(" · ");
 }

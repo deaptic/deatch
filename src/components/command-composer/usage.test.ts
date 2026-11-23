@@ -4,11 +4,16 @@ import { commandUsage } from "./usage.ts";
 
 const ban: Command = {
   name: "ban",
-  description: "COMMAND_BAN",
+  description: "COMMAND_BAN_DESCRIPTION",
   role: "mod",
   options: [
-    { name: "user", description: "COMMAND_BAN", type: "user", required: true },
-    { name: "reason", description: "COMMAND_BAN", type: "string" },
+    {
+      name: "user",
+      description: "COMMAND_BAN_DESCRIPTION",
+      type: "user",
+      required: true,
+    },
+    { name: "reason", description: "COMMAND_BAN_DESCRIPTION", type: "string" },
   ],
   execute: () => Promise.resolve(),
 };

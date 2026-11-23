@@ -20,7 +20,7 @@ export async function createPoll(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.createPoll, [params], {
-    successMessage: t("TOAST_POLL_STARTED"),
+    successMessage: t("HEADER_POLL_STARTED_TOAST"),
     ...options,
   });
 }
@@ -30,7 +30,7 @@ export async function endPoll(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.endPoll, [params], {
-    successMessage: t("TOAST_POLL_ENDED"),
+    successMessage: t("HEADER_POLL_ENDED_TOAST"),
     ...options,
   });
 }

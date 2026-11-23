@@ -15,11 +15,11 @@ export default function ColorPicker(props: Props) {
       <label
         class="relative size-7 rounded-sm border border-line cursor-pointer overflow-hidden bg-(--swatch)"
         style={{ "--swatch": props.swatchColor }}
-        data-tip={t("UI_PICK_COLOUR")}
+        data-tip={t("UI_PICK_COLOR_LABEL")}
       >
         <input
           type="color"
-          aria-label={t("UI_PICK_COLOUR")}
+          aria-label={t("UI_PICK_COLOR_LABEL")}
           class="absolute inset-0 opacity-0 cursor-pointer"
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
@@ -31,7 +31,7 @@ export default function ColorPicker(props: Props) {
         disabled={props.resetDisabled}
         onClick={() => props.onReset()}
       >
-        {t("UI_RESET")}
+        {t("UI_RESET_LABEL")}
       </Button>
     </div>
   );

@@ -46,7 +46,7 @@ export function wrapUnlisten(unlisten: () => unknown): () => void {
 
 export function reportFailure(
   error: unknown,
-  failureMessage = t("API_ACTION_FAILED"),
+  failureMessage = t("ERROR_ACTION_FAILED_ERROR"),
 ): void {
   addToast(failureMessage, "error", errorMessage(error));
 }
@@ -54,6 +54,6 @@ export function reportFailure(
 function summarize(result: unknown, ms: number): string {
   const size = listSize(result);
   return size
-    ? t("API_LOG_ITEMS", { ms, ...size })
-    : t("API_LOG_DURATION", { ms });
+    ? t("DIAGNOSTICS_LOG_ITEMS_VALUE", { ms, ...size })
+    : t("DIAGNOSTICS_LOG_DURATION_VALUE", { ms });
 }

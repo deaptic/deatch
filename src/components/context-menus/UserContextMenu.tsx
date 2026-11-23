@@ -51,35 +51,35 @@ export default function UserContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label={t("MENU_PROFILE")}
+        label={t("MENU_PROFILE_LABEL")}
         icon={<User />}
         onClick={() => props.onShowProfile(props.x, props.y, props.userId)}
       />
       <MenuItem
-        label={t("MENU_MENTION")}
+        label={t("MENU_MENTION_LABEL")}
         icon={<AtSign />}
         onClick={() => props.onMention(props.userLogin)}
       />
       <MenuItem
-        label={t("MENU_OPEN_IN_BROWSER")}
+        label={t("MENU_OPEN_IN_BROWSER_LABEL")}
         icon={<ExternalLink />}
         onClick={() => browser.openChannel(props.userLogin)}
       />
       <MenuDivider />
       <MenuItem
-        label={t("MENU_COPY_LOGIN")}
+        label={t("MENU_COPY_LOGIN_LABEL")}
         icon={<Copy />}
         onClick={() => clipboard.copy(props.userLogin)}
       />
       <MenuItem
-        label={t("MENU_COPY_USER_ID")}
+        label={t("MENU_COPY_USER_ID_LABEL")}
         icon={<Hash />}
         onClick={() => clipboard.copy(props.userId)}
       />
       <Show when={props.isMod}>
         <MenuDivider />
         <MenuItem
-          label={t("MENU_SHOUTOUT")}
+          label={t("MENU_SHOUTOUT_LABEL")}
           icon={<Megaphone />}
           onClick={() =>
             sendShoutout({
@@ -89,13 +89,13 @@ export default function UserContextMenu(props: Props) {
           }
         />
         <MenuItem
-          label={t("MENU_WARN")}
+          label={t("MENU_WARN_LABEL")}
           icon={<TriangleAlert />}
           tone="caution"
           onClick={moderate("warn")}
         />
         <MenuItem
-          label={t("MENU_BAN_TIMEOUT")}
+          label={t("MENU_BAN_TIMEOUT_LABEL")}
           tone="negative"
           icon={<Ban />}
           onClick={moderate("ban")}

@@ -18,7 +18,7 @@ export default function EventContextMenu(props: Props) {
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
-        label={t("MENU_COPY_TEXT")}
+        label={t("MENU_COPY_TEXT_LABEL")}
         icon={<Copy />}
         onClick={() => clipboard.copy(props.item.system_message)}
       />

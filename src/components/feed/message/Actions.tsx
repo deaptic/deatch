@@ -31,21 +31,21 @@ export default function Actions(props: {
         )}
       </For>
       <ToolbarItem
-        title={t("MESSAGE_REPLY")}
+        title={t("FEED_REPLY_LABEL")}
         onClick={() => props.onReply(props.item)}
       >
         <Reply />
       </ToolbarItem>
       <Show when={feedShowCopypasta()}>
         <ToolbarItem
-          title={t("MESSAGE_COPYPASTA")}
+          title={t("FEED_COPYPASTA_LABEL")}
           onClick={() => props.onCopypasta(props.item)}
         >
           <ClipboardPaste />
         </ToolbarItem>
       </Show>
       <ToolbarItem
-        title={t("FEED_MORE_OPTIONS")}
+        title={t("FEED_MORE_OPTIONS_LABEL")}
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           props.onMore(rect.left, rect.bottom + OVERLAY_GAP, props.item);

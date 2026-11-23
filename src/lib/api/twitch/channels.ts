@@ -35,7 +35,7 @@ export async function startCommercial(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.startCommercial, [params], {
-    successMessage: t("TOAST_COMMERCIAL_STARTED"),
+    successMessage: t("HEADER_AD_STARTED_TOAST"),
     ...options,
   });
 }
@@ -45,7 +45,7 @@ export async function addChannelVip(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.addChannelVip, [params], {
-    successMessage: t("TOAST_VIP_ADDED"),
+    successMessage: t("COMMAND_VIP_ADDED_TOAST"),
     ...options,
   });
 }
@@ -55,7 +55,7 @@ export async function removeChannelVip(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.removeChannelVip, [params], {
-    successMessage: t("TOAST_VIP_REMOVED"),
+    successMessage: t("COMMAND_VIP_REMOVED_TOAST"),
     ...options,
   });
 }

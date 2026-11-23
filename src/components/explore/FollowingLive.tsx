@@ -25,7 +25,7 @@ export default function FollowingLive(props: Props) {
   return (
     <section>
       <h2 class="mb-3 flex items-baseline gap-2 text-heading text-ink">
-        {t("EXPLORE_FOLLOWING")}
+        {t("EXPLORE_FOLLOWING_TITLE")}
         <Show when={streams().length}>
           <span class="text-body tabular-nums text-ink-faint">
             {streams().length}
@@ -37,8 +37,8 @@ export default function FollowingLive(props: Props) {
         fallback={
           <p class="text-body text-ink-soft">
             {liveStreams().length
-              ? t("EXPLORE_NO_MATCHES")
-              : t("EXPLORE_NONE_LIVE")}
+              ? t("EXPLORE_NO_MATCHES_EMPTY")
+              : t("EXPLORE_NONE_LIVE_EMPTY")}
           </p>
         }
       >

@@ -35,7 +35,7 @@ const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
 
 function tabAction(): InvokeOptions {
-  return { failureMessage: t("LINK_TAB_UNREACHABLE") };
+  return { failureMessage: t("LINK_TAB_UNREACHABLE_ERROR") };
 }
 
 export function focus(login: string) {
@@ -61,11 +61,14 @@ export async function closeOffline() {
   const live = new Set(streams.map((s) => s.user.id));
   const offline = tabs.filter((c) => !live.has(c.id));
   if (offline.length === 0) {
-    addToast(t("LINK_ALL_TABS_LIVE"));
+    addToast(t("LINK_ALL_TABS_LIVE_TOAST"));
     return;
   }
   closeTabs(offline);
-  addToast(t("LINK_CLOSED_OFFLINE", { count: offline.length }), "success");
+  addToast(
+    t("LINK_OFFLINE_TABS_CLOSED_TOAST", { count: offline.length }),
+    "success",
+  );
 }
 
 function isMuted(login: string): boolean {

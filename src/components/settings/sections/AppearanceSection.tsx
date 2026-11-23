@@ -12,9 +12,9 @@ import BadgesCard from "../appearance/BadgesCard.tsx";
 
 export default function AppearanceSection() {
   return (
-    <PageBody title={t("SETTINGS_APPEARANCE")}>
+    <PageBody title={t("SETTINGS_APPEARANCE_TITLE")}>
       <Card>
-        <CardLabel>{t("SETTINGS_APPEARANCE_PREVIEW")}</CardLabel>
+        <CardLabel>{t("SETTINGS_APPEARANCE_PREVIEW_TITLE")}</CardLabel>
         <AppearancePreview />
       </Card>
       <ThemeCard />

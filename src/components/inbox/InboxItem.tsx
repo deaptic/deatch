@@ -24,7 +24,7 @@ type Props = {
 };
 
 function reasonLabel(name: string, reason: MentionReason): string {
-  return t("INBOX_REASON", {
+  return t("INBOX_REASON_LABEL", {
     name,
     reason: reason.kind,
     term: reason.kind === "keyword" ? reason.term : undefined,
@@ -65,7 +65,7 @@ export default function InboxItem(props: Props) {
           <IconButton
             size="sm"
             variant="neutral"
-            label={t("INBOX_JUMP")}
+            label={t("INBOX_JUMP_LABEL")}
             onClick={props.onJump}
           >
             <CornerDownRight class="size-4" />
@@ -73,7 +73,7 @@ export default function InboxItem(props: Props) {
           <IconButton
             size="sm"
             variant="neutral"
-            label={t("INBOX_CLEAR")}
+            label={t("INBOX_CLEAR_LABEL")}
             onClick={props.onClear}
           >
             <Check class="size-4" />

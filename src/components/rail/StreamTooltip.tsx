@@ -31,13 +31,13 @@ export default function StreamTooltip(props: {
         <Stat icon={<Gamepad2 />} value={game()} truncate />
         <Show
           when={props.stream}
-          fallback={<Stat icon={<Moon />} value={t("RAIL_OFFLINE")} />}
+          fallback={<Stat icon={<Moon />} value={t("RAIL_OFFLINE_STATUS")} />}
         >
           {(s) => (
             <>
               <Stat
                 icon={<Users />}
-                value={t("RAIL_VIEWERS", {
+                value={t("RAIL_VIEWERS_VALUE", {
                   count: s().viewerCount,
                   viewers: formatViewers(s().viewerCount),
                 })}

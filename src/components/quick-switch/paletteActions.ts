@@ -47,13 +47,13 @@ function appActions(): PaletteAction[] {
   return [
     {
       id: "explore",
-      label: t("QUICK_SWITCH_OPEN_EXPLORE"),
+      label: t("QUICK_SWITCH_OPEN_EXPLORE_LABEL"),
       icon: Compass,
       run: showExplore,
     },
     {
       id: "settings",
-      label: t("QUICK_SWITCH_OPEN_SETTINGS"),
+      label: t("QUICK_SWITCH_OPEN_SETTINGS_LABEL"),
       icon: Settings,
       run: () => {
         if (!isSettingsOpen()) toggleSettings();
@@ -61,7 +61,7 @@ function appActions(): PaletteAction[] {
     },
     {
       id: "inbox",
-      label: t("QUICK_SWITCH_OPEN_INBOX"),
+      label: t("QUICK_SWITCH_OPEN_INBOX_LABEL"),
       icon: Inbox,
       run: () => toggleOverlay("inbox"),
     },
@@ -78,7 +78,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
     const on = isOn(mode, settings);
     const turnOff: PaletteAction = {
       id: `mode-off-${mode.label}`,
-      label: t("CHAT_MODE_TURN_OFF", { mode: name }),
+      label: t("COMPOSER_MODE_OFF_LABEL", { mode: name }),
       icon: mode.icon,
       run: apply(mode.off),
     };
@@ -88,7 +88,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
         : [
             {
               id: `mode-on-${mode.label}`,
-              label: t("CHAT_MODE_TURN_ON", { mode: name }),
+              label: t("COMPOSER_MODE_ON_LABEL", { mode: name }),
               icon: mode.icon,
               run: apply(mode.on),
             },
@@ -96,7 +96,7 @@ function chatModeActions(broadcasterId: string): PaletteAction[] {
     }
     const presets = mode.presets.map((preset) => ({
       id: `mode-${mode.label}-${preset.value}`,
-      label: t("QUICK_SWITCH_MODE_PRESET", {
+      label: t("QUICK_SWITCH_MODE_PRESET_LABEL", {
         mode: name,
         preset: presetLabel(preset),
       }),
@@ -113,13 +113,13 @@ function moderatorActions(broadcasterId: string): PaletteAction[] {
     ...chatModeActions(broadcasterId),
     {
       id: "shield",
-      label: t(shield ? "CHANNEL_TOOLS_SHIELD_OFF" : "CHANNEL_TOOLS_SHIELD_ON"),
+      label: t(shield ? "HEADER_SHIELD_OFF_LABEL" : "HEADER_SHIELD_ON_LABEL"),
       icon: Shield,
       run: () => activity.setShield(broadcasterId, !shield),
     },
     {
       id: "clear",
-      label: t("CHANNEL_TOOLS_CLEAR_CHAT"),
+      label: t("HEADER_CLEAR_CHAT_LABEL"),
       icon: Eraser,
       run: () => {
         deleteChatMessages({ broadcasterId, messageId: null }).catch(() => {});
@@ -136,17 +136,17 @@ const form = (
 
 function broadcasterActions(broadcasterId: string): PaletteAction[] {
   const forms = [
-    form("info", t("CHANNEL_TOOLS_EDIT_INFO"), Pencil),
-    form("poll", t("CHANNEL_TOOLS_START_POLL"), ChartColumn),
-    form("prediction", t("CHANNEL_TOOLS_START_PREDICTION"), Trophy),
-    form("raid", t("CHANNEL_TOOLS_RAID"), Swords),
+    form("info", t("HEADER_EDIT_INFO_LABEL"), Pencil),
+    form("poll", t("HEADER_START_POLL_LABEL"), ChartColumn),
+    form("prediction", t("HEADER_START_PREDICTION_LABEL"), Trophy),
+    form("raid", t("HEADER_RAID_LABEL"), Swords),
   ];
   if (!streamForUserId(broadcasterId)) return forms;
   return [
     ...forms,
     {
       id: "marker",
-      label: t("CHANNEL_TOOLS_ADD_MARKER"),
+      label: t("HEADER_ADD_MARKER_LABEL"),
       icon: Bookmark,
       run: () => {
         createStreamMarker().catch(() => {});
@@ -154,8 +154,8 @@ function broadcasterActions(broadcasterId: string): PaletteAction[] {
     },
     ...AD_LENGTHS.map((length) => ({
       id: `ad-${length}`,
-      label: t("QUICK_SWITCH_RUN_AD", {
-        length: t("CHANNEL_TOOLS_AD_SECONDS", { count: length }),
+      label: t("QUICK_SWITCH_RUN_AD_LABEL", {
+        length: t("HEADER_AD_SECONDS_VALUE", { count: length }),
       }),
       icon: Tv,
       run: () => {

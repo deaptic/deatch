@@ -32,7 +32,7 @@ import { CHANNEL_POINTS_REDEMPTION, FOLLOW } from "../constants/events.ts";
 function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
   return feedEvent(
     FOLLOW,
-    t("EVENT_FOLLOW", { user: raw.user_name }),
+    t("FEED_FOLLOWED_LINE", { user: raw.user_name }),
     timestamp,
     chatterFields(raw.user_id, raw.user_login, raw.user_name),
   );
@@ -45,7 +45,7 @@ function redemptionEvent(
 ): FeedEvent {
   return feedEvent(
     CHANNEL_POINTS_REDEMPTION,
-    t("EVENT_REDEMPTION", {
+    t("FEED_REDEMPTION_LINE", {
       user: raw.user_name,
       reward: raw.reward.title,
       cost: raw.reward.cost,

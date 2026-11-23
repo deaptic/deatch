@@ -30,7 +30,7 @@ async function renderBadgeBytes(
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(
-    count > 9 ? t("MENTIONS_BADGE_OVERFLOW") : String(count),
+    count > 9 ? t("WINDOW_MENTIONS_OVERFLOW_VALUE") : String(count),
     16,
     17,
   );

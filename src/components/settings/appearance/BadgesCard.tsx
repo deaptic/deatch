@@ -15,13 +15,13 @@ import {
 export default function BadgesCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_BADGES")}</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_BADGES_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_BADGES_SHOW")}
+        label={t("SETTINGS_APPEARANCE_BADGES_SHOW_LABEL")}
         description={t("SETTINGS_APPEARANCE_BADGES_SHOW_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_BADGES_SHOW")}
+          label={t("SETTINGS_APPEARANCE_BADGES_SHOW_LABEL")}
           checked={feedShowBadges()}
           onChange={setFeedShowBadges}
         />

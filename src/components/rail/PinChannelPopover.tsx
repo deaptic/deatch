@@ -41,8 +41,8 @@ export default function PinChannelPopover(props: Props) {
       <div class="w-72 p-2">
         <SearchPicker
           autofocus
-          label={t("RAIL_PIN_CHANNEL")}
-          placeholder={t("RAIL_SEARCH_CHANNELS")}
+          label={t("RAIL_PIN_CHANNEL_LABEL")}
+          placeholder={t("RAIL_PIN_CHANNEL_PLACEHOLDER")}
           search={(query) =>
             searchChannels({ query, first: FETCHED }, { silent: true }).then(
               (found) =>

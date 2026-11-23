@@ -17,9 +17,9 @@ export default function TabVolume(props: Props) {
 
   return (
     <div class="px-2.5 pt-2 pb-1 flex flex-col gap-1">
-      <span class="text-small text-ink-soft">{t("MENU_TAB_VOLUME")}</span>
+      <span class="text-small text-ink-soft">{t("MENU_TAB_VOLUME_LABEL")}</span>
       <Slider
-        label={t("MENU_TAB_VOLUME")}
+        label={t("MENU_TAB_VOLUME_LABEL")}
         value={gain()}
         min={0}
         max={MAX_CHANNEL_GAIN}
@@ -36,7 +36,7 @@ export default function TabVolume(props: Props) {
           disabled={gain() === DEFAULT_CHANNEL_GAIN}
           onClick={() => setChannelGain(props.login, DEFAULT_CHANNEL_GAIN)}
         >
-          {t("MENU_RESET")}
+          {t("MENU_RESET_VOLUME_LABEL")}
         </Button>
       </div>
     </div>

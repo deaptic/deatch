@@ -44,7 +44,7 @@ const ctx = (extra: Partial<PresenceContext> = {}): PresenceContext => ({
 
 const session = {
   startedAt: 100,
-  lurkPhrase: "PRESENCE_LURK_SELF_LURKING",
+  lurkPhrase: "PRESENCE_LURK_SELF_LURKING_STATUS",
 } as const;
 
 test("no presence when disabled or signed out", () => {

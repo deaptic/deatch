@@ -31,18 +31,18 @@ import {
 export const twitchCommands: Command[] = [
   {
     name: "ban",
-    description: "COMMAND_BAN",
+    description: "COMMAND_BAN_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "COMMAND_BAN_USERNAME",
+        description: "COMMAND_BAN_USERNAME_LABEL",
         type: "user",
         required: true,
       },
       {
         name: "reason",
-        description: "COMMAND_BAN_REASON",
+        description: "COMMAND_BAN_REASON_LABEL",
         type: "string",
       },
     ],
@@ -56,12 +56,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "unban",
-    description: "COMMAND_UNBAN",
+    description: "COMMAND_UNBAN_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "COMMAND_UNBAN_USERNAME",
+        description: "COMMAND_UNBAN_USERNAME_LABEL",
         type: "user",
         required: true,
       },
@@ -75,18 +75,18 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "timeout",
-    description: "COMMAND_TIMEOUT",
+    description: "COMMAND_TIMEOUT_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "COMMAND_TIMEOUT_USERNAME",
+        description: "COMMAND_TIMEOUT_USERNAME_LABEL",
         type: "user",
         required: true,
       },
       {
         name: "duration",
-        description: "COMMAND_TIMEOUT_DURATION",
+        description: "COMMAND_TIMEOUT_DURATION_LABEL",
         type: "duration",
         required: true,
         min: 1,
@@ -95,7 +95,7 @@ export const twitchCommands: Command[] = [
       },
       {
         name: "reason",
-        description: "COMMAND_TIMEOUT_REASON",
+        description: "COMMAND_TIMEOUT_REASON_LABEL",
         type: "string",
       },
     ],
@@ -110,12 +110,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "untimeout",
-    description: "COMMAND_UNTIMEOUT",
+    description: "COMMAND_UNTIMEOUT_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "COMMAND_UNTIMEOUT_USERNAME",
+        description: "COMMAND_UNTIMEOUT_USERNAME_LABEL",
         type: "user",
         required: true,
       },
@@ -129,7 +129,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "clear",
-    description: "COMMAND_CLEAR",
+    description: "COMMAND_CLEAR_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -141,18 +141,18 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "announce",
-    description: "COMMAND_ANNOUNCE",
+    description: "COMMAND_ANNOUNCE_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "message",
-        description: "COMMAND_ANNOUNCE_MESSAGE",
+        description: "COMMAND_ANNOUNCE_MESSAGE_LABEL",
         type: "string",
         required: true,
       },
       {
         name: "color",
-        description: "COMMAND_ANNOUNCE_COLOR",
+        description: "COMMAND_ANNOUNCE_COLOR_LABEL",
         type: "enum",
         values: [...ANNOUNCEMENT_COLORS],
         hint: "COMMAND_ANNOUNCE_COLOR_HINT",
@@ -168,12 +168,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "slow",
-    description: "COMMAND_SLOW",
+    description: "COMMAND_SLOW_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "duration",
-        description: "COMMAND_SLOW_DURATION",
+        description: "COMMAND_SLOW_DURATION_LABEL",
         type: "duration",
         min: 3,
         max: 120,
@@ -190,7 +190,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "slowoff",
-    description: "COMMAND_SLOWOFF",
+    description: "COMMAND_SLOWOFF_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -202,12 +202,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "followers",
-    description: "COMMAND_FOLLOWERS",
+    description: "COMMAND_FOLLOWERS_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "duration",
-        description: "COMMAND_FOLLOWERS_DURATION",
+        description: "COMMAND_FOLLOWERS_DURATION_LABEL",
         type: "duration",
         min: 60,
         max: 7776000,
@@ -225,7 +225,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "followersoff",
-    description: "COMMAND_FOLLOWERSOFF",
+    description: "COMMAND_FOLLOWERSOFF_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -237,7 +237,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "emoteonly",
-    description: "COMMAND_EMOTEONLY",
+    description: "COMMAND_EMOTEONLY_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -249,7 +249,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "emoteonlyoff",
-    description: "COMMAND_EMOTEONLYOFF",
+    description: "COMMAND_EMOTEONLYOFF_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -261,7 +261,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "subscribers",
-    description: "COMMAND_SUBSCRIBERS",
+    description: "COMMAND_SUBSCRIBERS_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -273,7 +273,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "subscribersoff",
-    description: "COMMAND_SUBSCRIBERSOFF",
+    description: "COMMAND_SUBSCRIBERSOFF_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -285,7 +285,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "uniquechat",
-    description: "COMMAND_UNIQUECHAT",
+    description: "COMMAND_UNIQUECHAT_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -297,7 +297,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "uniquechatoff",
-    description: "COMMAND_UNIQUECHATOFF",
+    description: "COMMAND_UNIQUECHATOFF_DESCRIPTION",
     role: "mod",
     options: [],
     execute: async (_, ctx) => {
@@ -310,12 +310,12 @@ export const twitchCommands: Command[] = [
   {
     name: "shoutout",
     aliases: ["so"],
-    description: "COMMAND_SHOUTOUT",
+    description: "COMMAND_SHOUTOUT_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "channel",
-        description: "COMMAND_SHOUTOUT_CHANNEL",
+        description: "COMMAND_SHOUTOUT_CHANNEL_LABEL",
         type: "user",
         required: true,
       },
@@ -329,12 +329,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "vip",
-    description: "COMMAND_VIP",
+    description: "COMMAND_VIP_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "username",
-        description: "COMMAND_VIP_USERNAME",
+        description: "COMMAND_VIP_USERNAME_LABEL",
         type: "user",
         required: true,
       },
@@ -348,12 +348,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "unvip",
-    description: "COMMAND_UNVIP",
+    description: "COMMAND_UNVIP_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "username",
-        description: "COMMAND_UNVIP_USERNAME",
+        description: "COMMAND_UNVIP_USERNAME_LABEL",
         type: "user",
         required: true,
       },
@@ -367,12 +367,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "raid",
-    description: "COMMAND_RAID",
+    description: "COMMAND_RAID_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "channel",
-        description: "COMMAND_RAID_CHANNEL",
+        description: "COMMAND_RAID_CHANNEL_LABEL",
         type: "user",
         required: true,
       },
@@ -389,7 +389,7 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "unraid",
-    description: "COMMAND_UNRAID",
+    description: "COMMAND_UNRAID_DESCRIPTION",
     role: "broadcaster",
     options: [],
     execute: async (_, ctx) => {
@@ -398,12 +398,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "me",
-    description: "COMMAND_ME",
+    description: "COMMAND_ME_DESCRIPTION",
     role: "regular",
     options: [
       {
         name: "message",
-        description: "COMMAND_ME_MESSAGE",
+        description: "COMMAND_ME_MESSAGE_LABEL",
         type: "string",
         required: true,
       },
@@ -417,18 +417,18 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "warn",
-    description: "COMMAND_WARN",
+    description: "COMMAND_WARN_DESCRIPTION",
     role: "mod",
     options: [
       {
         name: "username",
-        description: "COMMAND_WARN_USERNAME",
+        description: "COMMAND_WARN_USERNAME_LABEL",
         type: "user",
         required: true,
       },
       {
         name: "reason",
-        description: "COMMAND_WARN_REASON",
+        description: "COMMAND_WARN_REASON_LABEL",
         type: "string",
         required: true,
       },
@@ -443,12 +443,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "marker",
-    description: "COMMAND_MARKER",
+    description: "COMMAND_MARKER_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "description",
-        description: "COMMAND_MARKER_DESCRIPTION",
+        description: "COMMAND_MARKER_NOTE_LABEL",
         type: "string",
       },
     ],
@@ -460,12 +460,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "color",
-    description: "COMMAND_COLOR",
+    description: "COMMAND_COLOR_DESCRIPTION",
     role: "regular",
     options: [
       {
         name: "color",
-        description: "COMMAND_COLOR_COLOR",
+        description: "COMMAND_COLOR_COLOR_LABEL",
         type: "enum",
         required: true,
         values: [
@@ -493,12 +493,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "title",
-    description: "COMMAND_TITLE",
+    description: "COMMAND_TITLE_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "title",
-        description: "COMMAND_TITLE_TITLE",
+        description: "COMMAND_TITLE_TITLE_LABEL",
         type: "string",
         required: true,
       },
@@ -513,15 +513,15 @@ export const twitchCommands: Command[] = [
   {
     name: "game",
     aliases: ["category"],
-    description: "COMMAND_GAME",
+    description: "COMMAND_GAME_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "game",
-        description: "COMMAND_GAME_GAME",
+        description: "COMMAND_GAME_CATEGORY_LABEL",
         type: "search",
         required: true,
-        hint: "COMMAND_GAME_GAME_HINT",
+        hint: "COMMAND_GAME_CATEGORY_HINT",
         search: async (query) => {
           const results = await searchCategories(
             { query, first: 8 },
@@ -545,12 +545,12 @@ export const twitchCommands: Command[] = [
   },
   {
     name: "commercial",
-    description: "COMMAND_COMMERCIAL",
+    description: "COMMAND_COMMERCIAL_DESCRIPTION",
     role: "broadcaster",
     options: [
       {
         name: "length",
-        description: "COMMAND_COMMERCIAL_LENGTH",
+        description: "COMMAND_COMMERCIAL_LENGTH_LABEL",
         type: "enum",
         required: true,
         values: AD_LENGTHS.map(String),

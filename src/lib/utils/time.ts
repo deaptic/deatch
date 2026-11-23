@@ -50,7 +50,7 @@ export class Time {
   }
 
   private dateTimeShort(date: Date): string {
-    return t("TIME_DATE_AT", {
+    return t("TIME_DATE_AT_VALUE", {
       date: this.dateLong(date),
       time: this.timeShort(date),
     });
@@ -86,7 +86,7 @@ export class Time {
     const formatted = new Intl.DurationFormat(this.locale, {
       style: "long",
     }).format(partial);
-    return t("TIME_RELATIVE", {
+    return t("TIME_RELATIVE_VALUE", {
       direction: dur.sign < 0 ? "past" : "future",
       duration: formatted,
     });
@@ -103,9 +103,9 @@ export class Time {
     const days = daysBetween(date, new Date());
     if (days === 0) return this.timeShort(date);
     if (days === 1) {
-      return t("TIME_YESTERDAY_AT", { time: this.timeShort(date) });
+      return t("TIME_YESTERDAY_AT_VALUE", { time: this.timeShort(date) });
     }
-    return t("TIME_DATE_TIME", {
+    return t("TIME_DATE_TIME_VALUE", {
       date: this.dateShort(date),
       time: this.timeShort(date),
     });

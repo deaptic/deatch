@@ -48,9 +48,9 @@ import { isUserId } from "../../lib/utils/knownUsers.ts";
 type Tab = "channel" | "global" | "emoji";
 
 const TABS: { id: Tab; label: MessageKey }[] = [
-  { id: "channel", label: "EMOTES_TAB_CHANNEL" },
-  { id: "global", label: "EMOTES_TAB_GLOBAL" },
-  { id: "emoji", label: "EMOTES_TAB_EMOJI" },
+  { id: "channel", label: "EMOTES_TAB_CHANNEL_LABEL" },
+  { id: "global", label: "EMOTES_TAB_GLOBAL_LABEL" },
+  { id: "emoji", label: "EMOTES_TAB_EMOJI_LABEL" },
 ];
 
 type Props = {
@@ -125,14 +125,14 @@ export default function EmotePicker(props: Props) {
         );
 
   const favouritesSection = (): PickerSection => ({
-    label: t("EMOTES_FAVOURITES"),
+    label: t("EMOTES_FAVORITES_TITLE"),
     items: favorites().map((f) => ({
       value: f.value,
       url: f.url,
       label: f.label,
       disabled: !usable()(f.value),
     })),
-    emptyHint: t("EMOTES_FAVOURITES_EMPTY"),
+    emptyHint: t("EMOTES_FAVORITES_EMPTY"),
   });
 
   const sections = createMemo(() =>
@@ -234,7 +234,7 @@ export default function EmotePicker(props: Props) {
   return (
     <ComposerPanel
       side="end"
-      label={t("EMOTES_LABEL")}
+      label={t("EMOTES_PICKER_LABEL")}
       anchorEl={props.anchorEl}
       onClose={props.onClose}
       size="picker"
@@ -249,7 +249,7 @@ export default function EmotePicker(props: Props) {
             searchRef = el;
             autofocus(el);
           }}
-          placeholder={t("EMOTES_SEARCH")}
+          placeholder={t("EMOTES_SEARCH_PLACEHOLDER")}
           value={search()}
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
@@ -300,7 +300,9 @@ export default function EmotePicker(props: Props) {
       <div class="shrink-0 h-11 flex items-center gap-2.5 px-3.5 text-small">
         <Show
           when={activeItem()}
-          fallback={<span class="text-ink-faint">{t("EMOTES_KEEP_OPEN")}</span>}
+          fallback={
+            <span class="text-ink-faint">{t("EMOTES_KEEP_OPEN_HINT")}</span>
+          }
         >
           {(item) => (
             <>
@@ -310,8 +312,8 @@ export default function EmotePicker(props: Props) {
               </span>
               <span class="ml-auto text-ink-faint whitespace-nowrap">
                 {item().disabled
-                  ? t("EMOTES_HINT_UNAVAILABLE")
-                  : t("EMOTES_HINT_AVAILABLE")}
+                  ? t("EMOTES_UNAVAILABLE_HINT")
+                  : t("EMOTES_AVAILABLE_HINT")}
               </span>
             </>
           )}

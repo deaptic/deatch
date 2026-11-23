@@ -60,7 +60,7 @@ export default function TriggerReplies(props: Props) {
       >
         <Show when={hasReplies()}>
           <span class="h-control-sm flex items-center text-small font-semibold text-ink-soft">
-            {t("SETTINGS_TRIGGERS_OTHERWISE")}
+            {t("SETTINGS_TRIGGERS_OTHERWISE_LABEL")}
           </span>
         </Show>
         <TriggerResponseField
@@ -88,7 +88,7 @@ export default function TriggerReplies(props: Props) {
           icon={<Plus class="size-4" />}
           onClick={() => props.onRepliesChange([...props.replies, BLANK_REPLY])}
         >
-          {t("SETTINGS_TRIGGERS_ADD_REPLY")}
+          {t("SETTINGS_TRIGGERS_ADD_REPLY_LABEL")}
         </Button>
       </div>
     </div>

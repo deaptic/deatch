@@ -16,7 +16,7 @@ import { t } from "../../../lib/i18n/index.ts";
 export default function BuiltInTriggers() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_TRIGGERS_BUILT_IN")}</CardLabel>
+      <CardLabel>{t("SETTINGS_TRIGGERS_BUILT_IN_TITLE")}</CardLabel>
       <For each={BUILT_INS}>
         {(builtIn) => (
           <SettingsRow

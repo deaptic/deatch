@@ -37,7 +37,7 @@ export default function TriggersSection() {
   };
 
   return (
-    <PageBody title={t("SETTINGS_TRIGGERS")}>
+    <PageBody title={t("SETTINGS_TRIGGERS_TITLE")}>
       <BuiltInTriggers />
       <For each={customTriggers()}>
         {(trigger) => (
@@ -69,7 +69,7 @@ export default function TriggersSection() {
         icon={<Plus class="size-4" />}
         onClick={addDraft}
       >
-        {t("SETTINGS_TRIGGERS_ADD")}
+        {t("SETTINGS_TRIGGERS_ADD_LABEL")}
       </Button>
     </PageBody>
   );

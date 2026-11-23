@@ -37,15 +37,15 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
     ...extra,
   });
   return [
-    message("p1", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_WELCOME"), 12),
-    message("p2", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_START"), 11.5),
-    message("p3", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_WRONG_TAB"), 11, {
+    message("p1", t("SETTINGS_APPEARANCE_PREVIEW_WELCOME_LINE"), 12),
+    message("p2", t("SETTINGS_APPEARANCE_PREVIEW_START_LINE"), 11.5),
+    message("p3", t("SETTINGS_APPEARANCE_PREVIEW_WRONG_TAB_LINE"), 11, {
       deleted: true,
     }),
-    message("p4", t("SETTINGS_APPEARANCE_PREVIEW_MESSAGE_THANKS"), 1),
+    message("p4", t("SETTINGS_APPEARANCE_PREVIEW_THANKS_LINE"), 1),
     feedEvent(
       "sub",
-      t("SETTINGS_APPEARANCE_PREVIEW_SUB", { name: me.name }),
+      t("SETTINGS_APPEARANCE_PREVIEW_SUB_LINE", { name: me.name }),
       at(0.5),
       {
         id: "p5",
@@ -62,7 +62,7 @@ export default function AppearancePreview() {
     return {
       id: u?.id ?? "preview",
       login: u?.login ?? "you",
-      name: u?.displayName ?? t("SETTINGS_APPEARANCE_PREVIEW_YOU"),
+      name: u?.displayName ?? t("SETTINGS_APPEARANCE_PREVIEW_YOU_VALUE"),
       color: color() ?? "",
     };
   };

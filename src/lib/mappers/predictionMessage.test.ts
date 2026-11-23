@@ -34,10 +34,10 @@ test("names the winner and the pot, or the refund", () => {
   expect(
     predictionEnd(prediction({ status: "resolved", winning_outcome_id: "a" })),
   ).toStrictEqual({
-    text: "Prediction “Win?” resolved: Yes won",
+    text: "Prediction “Win?”: Yes won",
     detail: "1,500 points split between 4 viewers",
   });
   expect(predictionEnd(prediction({ status: "canceled" }))).toStrictEqual({
-    text: "Prediction “Win?” was cancelled and points were refunded",
+    text: "Prediction “Win?” cancelled, points refunded",
   });
 });

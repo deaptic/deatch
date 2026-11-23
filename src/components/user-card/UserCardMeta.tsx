@@ -18,13 +18,13 @@ const day = (at: string) => new Time(at, "D").toString();
 function followTip(follow: FollowStatus): string {
   switch (follow.kind) {
     case "since":
-      return `${t("USER_CARD_FOLLOWING_SINCE")}\n${new Time(follow.at, "F").toString()}`;
+      return `${t("USER_CARD_FOLLOWING_SINCE_LABEL")}\n${new Time(follow.at, "F").toString()}`;
     case "none":
-      return t("USER_CARD_NOT_FOLLOWING");
+      return t("USER_CARD_NOT_FOLLOWING_STATUS");
     case "hidden":
-      return t("USER_CARD_FOLLOW_HIDDEN");
+      return t("USER_CARD_FOLLOW_HIDDEN_HINT");
     case "unknown":
-      return t("USER_CARD_FOLLOW_UNKNOWN");
+      return t("USER_CARD_FOLLOW_UNKNOWN_STATUS");
   }
 }
 
@@ -56,7 +56,7 @@ export default function UserCardMeta(props: Props) {
         {(createdAt) => (
           <DateChip
             at={createdAt()}
-            tip={`${t("USER_CARD_ACCOUNT_CREATED")}\n${new Time(createdAt(), "F").toString()}`}
+            tip={`${t("USER_CARD_ACCOUNT_CREATED_LABEL")}\n${new Time(createdAt(), "F").toString()}`}
             icon={<Calendar class="size-4" />}
           />
         )}

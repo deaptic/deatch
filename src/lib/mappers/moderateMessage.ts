@@ -55,7 +55,7 @@ export function moderateMessage(
     ...notice,
     text:
       channel && p.action.startsWith("shared_chat_")
-        ? t("MODERATION_SHARED", { channel, text: notice.text })
+        ? t("FEED_SHARED_CHAT_ACTION_LINE", { channel, text: notice.text })
         : notice.text,
     people: [
       ...person(
@@ -75,14 +75,14 @@ function localMessage(
   const mod = p.moderator_user_name;
   switch (p.action) {
     case "clear":
-      return t("MODERATION_CLEAR", { mod });
+      return t("FEED_CHAT_CLEARED_BY_LINE", { mod });
     case "ban":
       return noticeText(
-        t("MODERATION_BAN", { mod, user: p.ban.user_name }),
+        t("FEED_BANNED_LINE", { mod, user: p.ban.user_name }),
         p.ban.reason,
       );
     case "unban":
-      return t("MODERATION_UNBAN", { mod, user: p.unban.user_name });
+      return t("FEED_UNBANNED_LINE", { mod, user: p.unban.user_name });
     case "timeout": {
       const secs = Math.max(
         0,
@@ -91,7 +91,7 @@ function localMessage(
         ),
       );
       return noticeText(
-        t("MODERATION_TIMEOUT", {
+        t("FEED_TIMED_OUT_LINE", {
           mod,
           user: p.timeout.user_name,
           duration: formatApproxDuration(secs),
@@ -100,57 +100,60 @@ function localMessage(
       );
     }
     case "untimeout":
-      return t("MODERATION_UNTIMEOUT", { mod, user: p.untimeout.user_name });
+      return t("FEED_TIMEOUT_LIFTED_LINE", {
+        mod,
+        user: p.untimeout.user_name,
+      });
     case "delete":
       return noticeText(
-        t("MODERATION_DELETE", { mod, user: p.delete.user_name }),
+        t("FEED_MESSAGE_DELETED_LINE", { mod, user: p.delete.user_name }),
         p.delete.message_body,
       );
     case "mod":
-      return t("MODERATION_MOD", { mod, user: p.mod.user_name });
+      return t("FEED_MOD_ADDED_LINE", { mod, user: p.mod.user_name });
     case "unmod":
-      return t("MODERATION_UNMOD", { mod, user: p.unmod.user_name });
+      return t("FEED_MOD_REMOVED_LINE", { mod, user: p.unmod.user_name });
     case "vip":
-      return t("MODERATION_VIP", { mod, user: p.vip.user_name });
+      return t("FEED_VIP_ADDED_LINE", { mod, user: p.vip.user_name });
     case "unvip":
-      return t("MODERATION_UNVIP", { mod, user: p.unvip.user_name });
+      return t("FEED_VIP_REMOVED_LINE", { mod, user: p.unvip.user_name });
     case "raid":
-      return t("MODERATION_RAID", {
+      return t("FEED_RAID_STARTED_LINE", {
         mod,
         user: p.raid.user_name,
         count: p.raid.viewer_count,
       });
     case "unraid":
-      return t("MODERATION_UNRAID", { mod });
+      return t("FEED_RAID_CANCELED_LINE", { mod });
     case "slow":
-      return t("MODERATION_SLOW", {
+      return t("FEED_SLOW_MODE_ON_LINE", {
         mod,
         seconds: p.slow.wait_time_seconds,
       });
     case "slowoff":
-      return t("MODERATION_SLOW_OFF", { mod });
+      return t("FEED_SLOW_MODE_OFF_LINE", { mod });
     case "followers":
-      return t("MODERATION_FOLLOWERS", {
+      return t("FEED_FOLLOWERS_ONLY_ON_LINE", {
         mod,
         minutes: p.followers.follow_duration_minutes,
       });
     case "followersoff":
-      return t("MODERATION_FOLLOWERS_OFF", { mod });
+      return t("FEED_FOLLOWERS_ONLY_OFF_LINE", { mod });
     case "emoteonly":
-      return t("MODERATION_EMOTE_ONLY", { mod });
+      return t("FEED_EMOTE_ONLY_ON_LINE", { mod });
     case "emoteonlyoff":
-      return t("MODERATION_EMOTE_ONLY_OFF", { mod });
+      return t("FEED_EMOTE_ONLY_OFF_LINE", { mod });
     case "subscribers":
-      return t("MODERATION_SUBSCRIBERS", { mod });
+      return t("FEED_SUBSCRIBERS_ONLY_ON_LINE", { mod });
     case "subscribersoff":
-      return t("MODERATION_SUBSCRIBERS_OFF", { mod });
+      return t("FEED_SUBSCRIBERS_ONLY_OFF_LINE", { mod });
     case "uniquechat":
-      return t("MODERATION_UNIQUE_CHAT", { mod });
+      return t("FEED_UNIQUE_CHAT_ON_LINE", { mod });
     case "uniquechatoff":
-      return t("MODERATION_UNIQUE_CHAT_OFF", { mod });
+      return t("FEED_UNIQUE_CHAT_OFF_LINE", { mod });
     case "warn":
       return noticeText(
-        t("MODERATION_WARN", { mod, user: p.warn.user_name }),
+        t("FEED_WARNED_LINE", { mod, user: p.warn.user_name }),
         p.warn.reason,
       );
     case "add_blocked_term":
@@ -158,7 +161,7 @@ function localMessage(
     case "remove_blocked_term":
     case "remove_permitted_term":
       return noticeText(
-        t("MODERATION_AUTOMOD_TERMS", {
+        t("FEED_AUTOMOD_TERMS_UPDATED_LINE", {
           mod,
           action: p.automod_terms.action,
           list: p.automod_terms.list,
@@ -169,7 +172,7 @@ function localMessage(
     case "approve_unban_request":
     case "deny_unban_request":
       return noticeText(
-        t("MODERATION_UNBAN_REQUEST", {
+        t("FEED_UNBAN_REQUEST_RESOLVED_LINE", {
           mod,
           approved: String(p.unban_request.is_approved),
           user: p.unban_request.user_name,

@@ -10,11 +10,13 @@ type ConnectFailure = Extract<
 export function connectFailure(state: ConnectFailure): string {
   switch (state.type) {
     case "rejected":
-      return t("CHAT_CONNECT_FAILED", { error: state.message });
+      return t("FEED_CONNECT_FAILED_LINE", { error: state.message });
     case "failed":
-      return t("CHAT_CONNECT_FAILED", { error: errorMessage(state.error) });
+      return t("FEED_CONNECT_FAILED_LINE", {
+        error: errorMessage(state.error),
+      });
     case "capped":
-      return t("CHAT_CONNECT_CAPPED", {
+      return t("FEED_CONNECT_CAPPED_LINE", {
         connections: state.connections,
         perConnection: state.perConnection,
       });

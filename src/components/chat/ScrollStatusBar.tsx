@@ -18,17 +18,17 @@ export default function ScrollStatusBar(props: Props) {
         when={props.unseen > 0}
         fallback={
           <span class="flex-1 min-w-0 truncate text-left text-ink-soft">
-            {t("CHAT_VIEWING_OLDER")}
+            {t("FEED_VIEWING_OLDER_STATUS")}
           </span>
         }
       >
         <span class="size-2 shrink-0 rounded-full bg-accent" />
         <span class="flex-1 min-w-0 truncate text-left font-semibold text-accent-ink">
-          {t("CHAT_NEW_MESSAGES", { count: props.unseen })}
+          {t("FEED_UNREAD_COUNT_LABEL", { count: props.unseen })}
         </span>
       </Show>
       <span class="shrink-0 px-2.5 flex items-center gap-1 font-semibold text-ink">
-        {t("CHAT_JUMP_TO_LATEST")}
+        {t("FEED_JUMP_TO_LATEST_LABEL")}
         <ChevronDown class="size-4" />
       </span>
     </button>

@@ -50,7 +50,7 @@ export default function Inbox(props: Props) {
           <h2 class="text-title text-ink flex-1">{t("INBOX_TITLE")}</h2>
           <Show when={mentions().length > 0}>
             <Button variant="ghost" size="sm" onClick={inbox.dismissAll}>
-              {t("INBOX_CLEAR_ALL")}
+              {t("INBOX_CLEAR_ALL_LABEL")}
             </Button>
           </Show>
         </header>
@@ -59,21 +59,21 @@ export default function Inbox(props: Props) {
           fallback={
             <EmptyState
               icon={<AtSign />}
-              title={t("INBOX_EMPTY_TITLE")}
-              body={t("INBOX_EMPTY_BODY")}
+              title={t("INBOX_EMPTY")}
+              body={t("INBOX_EMPTY_DESCRIPTION")}
             />
           }
         >
           <div class="flex-1 min-h-0 overflow-y-auto p-3 flex flex-col gap-4">
             <InboxGroup
-              label={t("INBOX_NEW")}
+              label={t("INBOX_NEW_TITLE")}
               mentions={unread()}
               onJump={jump}
               onOpenChannel={openChannel}
               onClear={clear}
             />
             <InboxGroup
-              label={t("INBOX_EARLIER")}
+              label={t("INBOX_EARLIER_TITLE")}
               mentions={seen()}
               onJump={jump}
               onOpenChannel={openChannel}

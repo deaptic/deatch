@@ -69,13 +69,13 @@ export default function TitleBar(props: Props) {
         <TitleBarButton
           label={t(
             appearanceRailExpanded()
-              ? "RAIL_COLLAPSE_RAIL"
-              : "RAIL_EXPAND_RAIL",
+              ? "RAIL_COLLAPSE_LABEL"
+              : "RAIL_EXPAND_LABEL",
           )}
           data-tip={t(
             appearanceRailExpanded()
-              ? "RAIL_COLLAPSE_RAIL"
-              : "RAIL_EXPAND_RAIL",
+              ? "RAIL_COLLAPSE_LABEL"
+              : "RAIL_EXPAND_LABEL",
           )}
           aria-expanded={appearanceRailExpanded()}
           onClick={() => setAppearanceRailExpanded(!appearanceRailExpanded())}
@@ -103,8 +103,8 @@ export default function TitleBar(props: Props) {
           <Show when={advancedDeveloperMode()}>
             <TitleBarButton
               ref={diagnosticsBtn}
-              label={t("TITLE_BAR_DIAGNOSTICS")}
-              data-tip={t("TITLE_BAR_DIAGNOSTICS")}
+              label={t("TITLE_BAR_DIAGNOSTICS_LABEL")}
+              data-tip={t("TITLE_BAR_DIAGNOSTICS_LABEL")}
               pressed={isOverlayOpen("diagnostics")}
               {...{ [POPOVER_TOGGLE]: "" }}
               onClick={() => toggleOverlay("diagnostics")}
@@ -114,8 +114,8 @@ export default function TitleBar(props: Props) {
           </Show>
           <TitleBarButton
             ref={appearanceBtn}
-            label={t("CHAT_APPEARANCE")}
-            data-tip={t("CHAT_APPEARANCE")}
+            label={t("TITLE_BAR_APPEARANCE_LABEL")}
+            data-tip={t("TITLE_BAR_APPEARANCE_LABEL")}
             pressed={isOverlayOpen("appearance")}
             {...{ [POPOVER_TOGGLE]: "" }}
             onClick={() => toggleOverlay("appearance")}
@@ -124,8 +124,8 @@ export default function TitleBar(props: Props) {
           </TitleBarButton>
           <TitleBarButton
             ref={inboxBtn}
-            label={t("TITLE_BAR_INBOX")}
-            data-tip={t("TITLE_BAR_INBOX")}
+            label={t("TITLE_BAR_INBOX_LABEL")}
+            data-tip={t("TITLE_BAR_INBOX_LABEL")}
             pressed={isOverlayOpen("inbox")}
             {...{ [POPOVER_TOGGLE]: "" }}
             onClick={() => toggleOverlay("inbox")}
@@ -139,14 +139,16 @@ export default function TitleBar(props: Props) {
           </TitleBarButton>
           <ToolbarDivider in="titleBar" />
           <TitleBarButton
-            label={t("TITLE_BAR_MINIMIZE")}
+            label={t("TITLE_BAR_MINIMIZE_LABEL")}
             onClick={() => minimizeWindow().catch(() => {})}
           >
             <Minus class="size-3" />
           </TitleBarButton>
           <TitleBarButton
             label={
-              maximized() ? t("TITLE_BAR_RESTORE") : t("TITLE_BAR_MAXIMIZE")
+              maximized()
+                ? t("TITLE_BAR_RESTORE_LABEL")
+                : t("TITLE_BAR_MAXIMIZE_LABEL")
             }
             onClick={() => toggleMaximizeWindow().catch(() => {})}
           >
@@ -158,7 +160,7 @@ export default function TitleBar(props: Props) {
           </TitleBarButton>
           <TitleBarButton
             variant="close"
-            label={t("TITLE_BAR_CLOSE")}
+            label={t("TITLE_BAR_CLOSE_LABEL")}
             onClick={() => closeWindow().catch(() => {})}
           >
             <X class="size-3" />

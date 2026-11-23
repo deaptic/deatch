@@ -13,23 +13,23 @@ import {
 
 const GROUPS: { title: MessageKey; prefix: string[] }[] = [
   {
-    title: "SETTINGS_KEYBOARD_GROUP_NAVIGATION",
+    title: "SETTINGS_KEYBOARD_GROUP_NAVIGATION_TITLE",
     prefix: ["channel::", "explore::", "settings::"],
   },
   {
-    title: "SETTINGS_KEYBOARD_GROUP_PANELS",
+    title: "SETTINGS_KEYBOARD_GROUP_PANELS_TITLE",
     prefix: ["rail::", "inbox::", "emotePicker::", "quickSwitch::", "panel::"],
   },
-  { title: "SETTINGS_KEYBOARD_GROUP_LINK", prefix: ["link::"] },
-  { title: "SETTINGS_KEYBOARD_GROUP_VIEW", prefix: ["view::"] },
-  { title: "SETTINGS_KEYBOARD_GROUP_CHAT", prefix: ["feed::", "chat::"] },
+  { title: "SETTINGS_KEYBOARD_GROUP_LINK_TITLE", prefix: ["link::"] },
+  { title: "SETTINGS_KEYBOARD_GROUP_VIEW_TITLE", prefix: ["view::"] },
+  { title: "SETTINGS_KEYBOARD_GROUP_CHAT_TITLE", prefix: ["feed::", "chat::"] },
 ];
 
 type Row = { combo: string; label: string };
 
 function actionLabel(action: string): string {
   const slot = CHANNEL_SELECT.exec(action)?.[1];
-  if (slot) return t("SETTINGS_KEYBOARD_CHANNEL_SELECT", { slot });
+  if (slot) return t("SETTINGS_KEYBOARD_CHANNEL_SELECT_LABEL", { slot });
   const key = ACTION_LABELS[action];
   return key ? t(key) : action;
 }
@@ -47,7 +47,7 @@ export default function KeyboardSection() {
   const query = useContext(SettingsQuery);
 
   return (
-    <PageBody title={t("SETTINGS_KEYBOARD")}>
+    <PageBody title={t("SETTINGS_KEYBOARD_TITLE")}>
       <For each={GROUPS}>
         {(g) => (
           <Card>

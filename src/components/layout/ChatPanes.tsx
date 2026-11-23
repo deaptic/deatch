@@ -22,7 +22,7 @@ function ChannelPane(props: ChatPanesProps & { channel: User }) {
         channel={props.channel}
         onOpenChannel={props.onOpenChannel}
       />
-      <Boundary label={t("LAYOUT_CHANNEL_ERROR")}>
+      <Boundary label={t("FEED_BOUNDARY_ERROR")}>
         <Chat
           broadcasterId={props.channel.id}
           broadcasterLogin={props.channel.login}
@@ -44,11 +44,11 @@ export default function ChatPanes(props: ChatPanesProps) {
         fallback={
           <EmptyState
             icon={<MessagesSquare />}
-            title={t("LAYOUT_EMPTY_TITLE")}
-            body={t("LAYOUT_EMPTY_BODY")}
+            title={t("FEED_EMPTY")}
+            body={t("FEED_EMPTY_DESCRIPTION")}
             action={
               <Button variant="accent" onClick={showExplore}>
-                {t("LAYOUT_EXPLORE")}
+                {t("FEED_EMPTY_EXPLORE_LABEL")}
               </Button>
             }
           />

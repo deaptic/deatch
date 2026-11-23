@@ -18,27 +18,27 @@ type BuiltIn = {
 export const BUILT_INS: readonly BuiltIn[] = [
   {
     key: "accountage",
-    description: "SETTINGS_TRIGGERS_ACCOUNTAGE_DESCRIPTION",
+    description: "SETTINGS_TRIGGERS_BUILT_IN_ACCOUNTAGE_DESCRIPTION",
     run: accountage,
   },
   {
     key: "followage",
-    description: "SETTINGS_TRIGGERS_FOLLOWAGE_DESCRIPTION",
+    description: "SETTINGS_TRIGGERS_BUILT_IN_FOLLOWAGE_DESCRIPTION",
     run: followageOf,
   },
   {
     key: "game",
-    description: "SETTINGS_TRIGGERS_GAME_DESCRIPTION",
+    description: "SETTINGS_TRIGGERS_BUILT_IN_GAME_DESCRIPTION",
     run: game,
   },
   {
     key: "title",
-    description: "SETTINGS_TRIGGERS_TITLE_DESCRIPTION",
+    description: "SETTINGS_TRIGGERS_BUILT_IN_TITLE_DESCRIPTION",
     run: title,
   },
   {
     key: "uptime",
-    description: "SETTINGS_TRIGGERS_UPTIME_DESCRIPTION",
+    description: "SETTINGS_TRIGGERS_BUILT_IN_UPTIME_DESCRIPTION",
     run: uptime,
   },
 ];

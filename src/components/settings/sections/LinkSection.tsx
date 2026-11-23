@@ -34,27 +34,27 @@ const CONTROLS: Record<
   }
 > = {
   threshold: {
-    label: "SETTINGS_LINK_THRESHOLD",
+    label: "SETTINGS_LINK_THRESHOLD_LABEL",
     description: "SETTINGS_LINK_THRESHOLD_DESCRIPTION",
     format: db,
   },
   ratio: {
-    label: "SETTINGS_LINK_RATIO",
+    label: "SETTINGS_LINK_RATIO_LABEL",
     description: "SETTINGS_LINK_RATIO_DESCRIPTION",
     format: (value) => `${value.toFixed(1)}:1`,
   },
   attack: {
-    label: "SETTINGS_LINK_ATTACK",
+    label: "SETTINGS_LINK_ATTACK_LABEL",
     description: "SETTINGS_LINK_ATTACK_DESCRIPTION",
     format: ms,
   },
   release: {
-    label: "SETTINGS_LINK_RELEASE",
+    label: "SETTINGS_LINK_RELEASE_LABEL",
     description: "SETTINGS_LINK_RELEASE_DESCRIPTION",
     format: ms,
   },
   gain: {
-    label: "SETTINGS_LINK_GAIN",
+    label: "SETTINGS_LINK_GAIN_LABEL",
     description: "SETTINGS_LINK_GAIN_DESCRIPTION",
     format: (value) => `${value > 0 ? "+" : ""}${value} dB`,
   },
@@ -67,24 +67,24 @@ const isDefault = () =>
 
 export default function LinkSection() {
   return (
-    <PageBody title={t("SETTINGS_LINK")}>
+    <PageBody title={t("SETTINGS_LINK_TITLE")}>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_LINK_COMPRESSOR")}
+          label={t("SETTINGS_LINK_COMPRESSOR_LABEL")}
           description={t("SETTINGS_LINK_COMPRESSOR_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_LINK_COMPRESSOR")}
+            label={t("SETTINGS_LINK_COMPRESSOR_LABEL")}
             checked={linkCompressor()}
             onChange={setLinkCompressor}
           />
         </SettingsRow>
         <Show when={linkConnected() && !linkHasAudio()}>
           <p class="px-5 pb-4 text-small text-caution">
-            {t("SETTINGS_LINK_UPDATE_EXTENSION")}
+            {t("SETTINGS_LINK_UPDATE_EXTENSION_HINT")}
           </p>
         </Show>
-        <Disclosure label={t("SETTINGS_LINK_ADVANCED")}>
+        <Disclosure label={t("SETTINGS_LINK_ADVANCED_TITLE")}>
           <For each={COMPRESSOR_CONTROLS}>
             {(control) => {
               const { label, description, format } = CONTROLS[control];
@@ -121,7 +121,7 @@ export default function LinkSection() {
               disabled={isDefault()}
               onClick={resetCompressorSettings}
             >
-              {t("SETTINGS_LINK_RESET")}
+              {t("SETTINGS_LINK_RESET_LABEL")}
             </Button>
           </div>
         </Disclosure>

@@ -20,12 +20,12 @@ async function change(ctx: BuiltInContext): Promise<string> {
     { silent: true },
   );
   const category = bestMatch(ctx.args, found);
-  if (!category) return t("TRIGGER_GAME_NOT_FOUND", { query: ctx.args });
+  if (!category) return t("TRIGGER_GAME_NOT_FOUND_REPLY", { query: ctx.args });
   await modifyChannelInformation(
     { broadcasterId: ctx.broadcasterId, gameId: category.id },
     { silent: true },
   );
-  return t("TRIGGER_GAME_UPDATED", { game: category.name });
+  return t("TRIGGER_GAME_UPDATED_REPLY", { game: category.name });
 }
 
 export async function game(ctx: BuiltInContext): Promise<string | null> {
@@ -35,5 +35,5 @@ export async function game(ctx: BuiltInContext): Promise<string | null> {
     streamForUserId(ctx.broadcasterId),
     channelInfoFor(ctx.broadcasterId),
   );
-  return current ? t("TRIGGER_GAME_CURRENT", { game: current }) : null;
+  return current ? t("TRIGGER_GAME_REPLY", { game: current }) : null;
 }

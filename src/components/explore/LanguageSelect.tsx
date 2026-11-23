@@ -16,8 +16,8 @@ export default function LanguageSelect(props: Props) {
       options={props.options}
       search={searchLanguages}
       label={languageName}
-      placeholder={t("EXPLORE_ALL_LANGUAGES")}
-      ariaLabel={t("EXPLORE_LANGUAGE")}
+      placeholder={t("EXPLORE_LANGUAGE_ALL_LABEL")}
+      ariaLabel={t("EXPLORE_LANGUAGE_LABEL")}
       icon={<Languages />}
       onChange={props.onChange}
     />

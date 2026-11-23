@@ -13,7 +13,7 @@ export function start(): () => void {
       setDeviceCode(null);
       setUser(user);
       users.set([user]);
-      addToast(t("AUTH_CONNECTED"), "success");
+      addToast(t("LOGIN_CONNECTED_TOAST"), "success");
     }),
     listenApp("authFailed", (error) => {
       setWaiting(false);
@@ -22,7 +22,7 @@ export function start(): () => void {
     }),
     listenApp("sessionEnded", () => {
       setUser(null);
-      addToast(t("AUTH_SIGNED_OUT"), "error");
+      addToast(t("LOGIN_SIGNED_OUT_ERROR"), "error");
     }),
   ]);
 }

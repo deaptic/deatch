@@ -32,7 +32,7 @@ test("rejects anything that is not a duration", () => {
 test("reports a value outside the option's range", () => {
   const opt: CommandOption = {
     name: "d",
-    description: "COMMAND_SLOW_DURATION",
+    description: "COMMAND_SLOW_DURATION_LABEL",
     type: "duration",
     min: 3,
     max: 120,
@@ -50,19 +50,19 @@ test("reports a value outside the option's range", () => {
 
 const user: CommandOption = {
   name: "user",
-  description: "COMMAND_SLOW_DURATION",
+  description: "COMMAND_SLOW_DURATION_LABEL",
   type: "user",
   required: true,
 };
 const mode: CommandOption = {
   name: "mode",
-  description: "COMMAND_SLOW_DURATION",
+  description: "COMMAND_SLOW_DURATION_LABEL",
   type: "enum",
   values: ["on", "off"],
 };
 const seconds: CommandOption = {
   name: "seconds",
-  description: "COMMAND_SLOW_DURATION",
+  description: "COMMAND_SLOW_DURATION_LABEL",
   type: "duration",
   min: 3,
   max: 120,

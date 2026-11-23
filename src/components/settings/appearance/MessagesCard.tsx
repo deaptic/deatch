@@ -18,45 +18,45 @@ import {
 export default function MessagesCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_MESSAGES")}</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_MESSAGES_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_TIMESTAMPS")}
+        label={t("SETTINGS_APPEARANCE_TIMESTAMPS_LABEL")}
         description={t("SETTINGS_APPEARANCE_TIMESTAMPS_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_TIMESTAMPS")}
+          label={t("SETTINGS_APPEARANCE_TIMESTAMPS_LABEL")}
           disabled={feedDensity() === "comfortable"}
           checked={feedShowTimestamp()}
           onChange={setFeedShowTimestamp}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_AVATARS")}
+        label={t("SETTINGS_APPEARANCE_AVATARS_LABEL")}
         description={t("SETTINGS_APPEARANCE_AVATARS_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_AVATARS")}
+          label={t("SETTINGS_APPEARANCE_AVATARS_LABEL")}
           disabled={feedDensity() !== "comfortable"}
           checked={feedShowAvatars()}
           onChange={setFeedShowAvatars}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_DELETED")}
+        label={t("SETTINGS_APPEARANCE_DELETED_LABEL")}
         description={t("SETTINGS_APPEARANCE_DELETED_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_DELETED")}
+          label={t("SETTINGS_APPEARANCE_DELETED_LABEL")}
           checked={feedShowDeletedContent()}
           onChange={setFeedShowDeletedContent}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_COPYPASTA")}
+        label={t("SETTINGS_APPEARANCE_COPYPASTA_LABEL")}
         description={t("SETTINGS_APPEARANCE_COPYPASTA_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_COPYPASTA")}
+          label={t("SETTINGS_APPEARANCE_COPYPASTA_LABEL")}
           checked={feedShowCopypasta()}
           onChange={setFeedShowCopypasta}
         />

@@ -11,7 +11,7 @@ export async function startRaid(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.startRaid, [params], {
-    successMessage: t("TOAST_RAID_STARTED"),
+    successMessage: t("HEADER_RAID_STARTED_TOAST"),
     ...options,
   });
 }
@@ -21,7 +21,7 @@ export async function cancelRaid(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.cancelRaid, [params], {
-    successMessage: t("TOAST_RAID_CANCELLED"),
+    successMessage: t("HEADER_RAID_CANCELED_TOAST"),
     ...options,
   });
 }

@@ -15,13 +15,13 @@ type Props = {
 export default function BanChoiceStrip(props: Props) {
   return (
     <Segmented
-      label={t("BAN_CHOICE")}
+      label={t("BAN_CHOICE_LABEL")}
       size="lg"
       value={props.value}
       options={[
         {
           value: "unban",
-          label: t("BAN_UNBAN"),
+          label: t("BAN_UNBAN_LABEL"),
           icon: <ShieldCheck class="text-positive" />,
         },
         ...TIMEOUT_PRESETS.map((p) => ({
@@ -30,7 +30,7 @@ export default function BanChoiceStrip(props: Props) {
         })),
         {
           value: "ban",
-          label: t("BAN_BAN"),
+          label: t("BAN_BAN_LABEL"),
           icon: <ShieldBan class="text-negative" />,
         },
       ]}

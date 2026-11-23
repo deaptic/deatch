@@ -32,7 +32,7 @@ type Props = Targeting & {
 function OrDivider() {
   return (
     <div class="flex items-center gap-2 text-small font-semibold text-ink-soft">
-      {t("SETTINGS_TRIGGERS_JOIN_OR")}
+      {t("SETTINGS_TRIGGERS_JOIN_OR_VALUE")}
       <span class="flex-1 border-t border-line" />
     </div>
   );
@@ -48,24 +48,24 @@ export default function TriggerConditionalReply(props: Props) {
     <div class="flex flex-col gap-2 pl-3 border-l-2 border-line enter-rise">
       <div class="flex items-center gap-1">
         <span class="flex-1 text-small font-semibold text-ink-soft">
-          {t("SETTINGS_TRIGGERS_REPLY_NUMBER", { number: props.number })}
+          {t("SETTINGS_TRIGGERS_REPLY_NUMBER_LABEL", { number: props.number })}
         </span>
         <IconButton
-          label={t("UI_MOVE_UP")}
+          label={t("UI_MOVE_UP_LABEL")}
           disabled={props.first}
           onClick={() => props.onMove(-1)}
         >
           <ArrowUp class="size-4" />
         </IconButton>
         <IconButton
-          label={t("UI_MOVE_DOWN")}
+          label={t("UI_MOVE_DOWN_LABEL")}
           disabled={props.last}
           onClick={() => props.onMove(1)}
         >
           <ArrowDown class="size-4" />
         </IconButton>
         <IconButton
-          label={t("SETTINGS_TRIGGERS_REMOVE_REPLY")}
+          label={t("SETTINGS_TRIGGERS_REMOVE_REPLY_LABEL")}
           onClick={props.onRemove}
         >
           <Trash2 class="size-4" />
@@ -82,8 +82,8 @@ export default function TriggerConditionalReply(props: Props) {
                 <TriggerConditionRow
                   lead={
                     at === 0
-                      ? t("SETTINGS_TRIGGERS_IF")
-                      : t("SETTINGS_TRIGGERS_JOIN_AND")
+                      ? t("SETTINGS_TRIGGERS_IF_LABEL")
+                      : t("SETTINGS_TRIGGERS_JOIN_AND_VALUE")
                   }
                   condition={condition()}
                   removable={removable()}
@@ -103,7 +103,7 @@ export default function TriggerConditionalReply(props: Props) {
                 icon={<Plus class="size-4" />}
                 onClick={() => setGroups(addCondition(groups(), g))}
               >
-                {t("SETTINGS_TRIGGERS_ADD_AND")}
+                {t("SETTINGS_TRIGGERS_ADD_AND_LABEL")}
               </Button>
               <Show when={g === groups().length - 1}>
                 <Button
@@ -112,7 +112,7 @@ export default function TriggerConditionalReply(props: Props) {
                   icon={<Plus class="size-4" />}
                   onClick={() => setGroups(addGroup(groups()))}
                 >
-                  {t("SETTINGS_TRIGGERS_ADD_OR")}
+                  {t("SETTINGS_TRIGGERS_ADD_OR_LABEL")}
                 </Button>
               </Show>
             </div>
@@ -120,7 +120,7 @@ export default function TriggerConditionalReply(props: Props) {
         )}
       </Index>
       <div class="flex items-start gap-2">
-        <TriggerLead>{t("SETTINGS_TRIGGERS_THEN")}</TriggerLead>
+        <TriggerLead>{t("SETTINGS_TRIGGERS_THEN_LABEL")}</TriggerLead>
         <TriggerResponseField
           value={props.reply.text}
           placeholder={t("SETTINGS_TRIGGERS_REPLY_PLACEHOLDER")}

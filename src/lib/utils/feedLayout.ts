@@ -51,8 +51,8 @@ export function layoutFeed(
 
 export function dayLabel(ts: number, now: number): string {
   const days = daysBetween(ts, now);
-  if (days === 0) return t("FEED_DAY_TODAY");
-  if (days === 1) return t("FEED_DAY_YESTERDAY");
+  if (days === 0) return t("FEED_DAY_TODAY_LABEL");
+  if (days === 1) return t("FEED_DAY_YESTERDAY_LABEL");
   const sameYear = new Date(ts).getFullYear() === new Date(now).getFullYear();
   return new Intl.DateTimeFormat(formatLocale(), {
     weekday: sameYear ? "long" : undefined,

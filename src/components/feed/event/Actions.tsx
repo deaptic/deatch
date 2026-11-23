@@ -9,7 +9,7 @@ export default function Actions(props: { clipId: string }) {
   return (
     <Toolbar alwaysVisible>
       <ToolbarItem
-        title={t("EVENT_VIEW_CLIP")}
+        title={t("FEED_VIEW_CLIP_LABEL")}
         tone="success"
         onClick={() => browser.open(clipUrl(props.clipId))}
       >

@@ -31,7 +31,9 @@ export function updateShieldMode(
   options?: InvokeOptions,
 ): Promise<boolean> {
   return invokeCommand(commands.updateShieldMode, [params], {
-    successMessage: t(params.active ? "TOAST_SHIELD_ON" : "TOAST_SHIELD_OFF"),
+    successMessage: t(
+      params.active ? "HEADER_SHIELD_ON_TOAST" : "HEADER_SHIELD_OFF_TOAST",
+    ),
     ...options,
   });
 }
@@ -41,8 +43,8 @@ export async function deleteChatMessages(
   options?: InvokeOptions,
 ): Promise<void> {
   const successMessage = params.messageId
-    ? t("TOAST_MESSAGE_DELETED")
-    : t("TOAST_CHAT_CLEARED");
+    ? t("FEED_MESSAGE_DELETED_TOAST")
+    : t("HEADER_CHAT_CLEARED_TOAST");
   await invokeCommand(commands.deleteChatMessages, [params], {
     successMessage,
     ...options,
@@ -54,8 +56,8 @@ export async function banUser(
   options?: InvokeOptions,
 ): Promise<void> {
   const successMessage = params.duration
-    ? t("TOAST_USER_TIMED_OUT")
-    : t("TOAST_USER_BANNED");
+    ? t("BAN_TIMED_OUT_TOAST")
+    : t("BAN_BANNED_TOAST");
   await invokeCommand(commands.banUser, [params], {
     successMessage,
     ...options,
@@ -67,7 +69,7 @@ export async function unbanUser(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.unbanUser, [params], {
-    successMessage: t("TOAST_USER_UNBANNED"),
+    successMessage: t("BAN_UNBANNED_TOAST"),
     ...options,
   });
 }
@@ -84,7 +86,7 @@ export async function warnUser(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.warnUser, [params], {
-    successMessage: t("TOAST_USER_WARNED"),
+    successMessage: t("WARN_WARNED_TOAST"),
     ...options,
   });
 }
@@ -95,8 +97,8 @@ export async function manageHeldAutomodMessage(
 ): Promise<void> {
   const successMessage =
     params.action === "allow"
-      ? t("TOAST_MESSAGE_ALLOWED")
-      : t("TOAST_MESSAGE_DENIED");
+      ? t("FEED_AUTOMOD_ALLOWED_TOAST")
+      : t("FEED_AUTOMOD_DENIED_TOAST");
   await invokeCommand(commands.manageHeldAutomodMessage, [params], {
     successMessage,
     ...options,

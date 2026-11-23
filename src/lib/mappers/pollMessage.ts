@@ -5,11 +5,11 @@ import type { NoticeText, RawPoll } from "../types/index.ts";
 
 export function pollBegin(raw: RawPoll): NoticeText {
   return {
-    text: t("POLL_BEGIN", {
+    text: t("FEED_POLL_STARTED_LINE", {
       title: raw.title,
       duration: formatSpan(raw.started_at, raw.ends_at ?? raw.started_at),
     }),
-    detail: t("POLL_CHOICES", {
+    detail: t("FEED_POLL_CHOICES_LINE", {
       choices: formatList(raw.choices.map((c) => c.title)),
     }),
   };
@@ -20,13 +20,16 @@ export function pollEnd(raw: RawPoll): NoticeText | null {
   const results = [...raw.choices]
     .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0))
     .map((c) =>
-      t("POLL_CHOICE_VOTES", { choice: c.title, votes: c.votes ?? 0 }),
+      t("FEED_POLL_CHOICE_VOTES_VALUE", {
+        choice: c.title,
+        votes: c.votes ?? 0,
+      }),
     );
   return {
-    text: t("POLL_END", {
+    text: t("FEED_POLL_ENDED_LINE", {
       early: String(raw.status === "terminated"),
       title: raw.title,
     }),
-    detail: t("POLL_RESULTS", { results: formatList(results) }),
+    detail: t("FEED_POLL_RESULTS_LINE", { results: formatList(results) }),
   };
 }

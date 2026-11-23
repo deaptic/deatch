@@ -16,12 +16,12 @@ export async function create(
     );
     appendItem(
       broadcasterId,
-      feedEvent("clip_created", t("COMMAND_CLIP_CREATED"), Date.now(), {
+      feedEvent("clip_created", t("COMMAND_CLIP_CREATED_LINE"), Date.now(), {
         id: clip.id,
         clip: { id: clip.id },
       }),
     );
   } catch {
-    appendLocalNotice(broadcasterId, t("COMMAND_CLIP_FAILED"));
+    appendLocalNotice(broadcasterId, t("COMMAND_CLIP_FAILED_ERROR"));
   }
 }

@@ -32,8 +32,7 @@ type ItemsProps = {
 export function ChannelToolItems(props: ItemsProps) {
   const isBroadcaster = () => props.broadcasterId === user()?.id;
   const live = () => streamForUserId(props.broadcasterId) !== undefined;
-  const liveHint = () =>
-    live() ? undefined : t("CHANNEL_TOOLS_LIVE_ONLY_HINT");
+  const liveHint = () => (live() ? undefined : t("HEADER_LIVE_ONLY_HINT"));
   const shield = () => activityFor(props.broadcasterId).shield;
 
   return (
@@ -41,22 +40,22 @@ export function ChannelToolItems(props: ItemsProps) {
       <Show when={isBroadcaster()}>
         <MenuDivider />
         <MenuItem
-          label={t("CHANNEL_TOOLS_START_POLL")}
+          label={t("HEADER_START_POLL_LABEL")}
           icon={<ChartColumn />}
           onClick={() => setChannelForm("poll")}
         />
         <MenuItem
-          label={t("CHANNEL_TOOLS_START_PREDICTION")}
+          label={t("HEADER_START_PREDICTION_LABEL")}
           icon={<Trophy />}
           onClick={() => setChannelForm("prediction")}
         />
         <MenuItem
-          label={t("CHANNEL_TOOLS_RAID")}
+          label={t("HEADER_RAID_LABEL")}
           icon={<Swords />}
           onClick={() => setChannelForm("raid")}
         />
         <SubMenu
-          label={t("CHANNEL_TOOLS_RUN_AD")}
+          label={t("HEADER_RUN_AD_LABEL")}
           icon={<Tv />}
           hint={liveHint()}
           disabled={!live()}
@@ -64,7 +63,7 @@ export function ChannelToolItems(props: ItemsProps) {
           <For each={AD_LENGTHS}>
             {(length) => (
               <MenuItem
-                label={t("CHANNEL_TOOLS_AD_SECONDS", { count: length })}
+                label={t("HEADER_AD_SECONDS_VALUE", { count: length })}
                 onClick={() =>
                   startCommercial({
                     broadcasterId: props.broadcasterId,
@@ -76,7 +75,7 @@ export function ChannelToolItems(props: ItemsProps) {
           </For>
         </SubMenu>
         <MenuItem
-          label={t("CHANNEL_TOOLS_ADD_MARKER")}
+          label={t("HEADER_ADD_MARKER_LABEL")}
           icon={<Bookmark />}
           hint={liveHint()}
           disabled={!live()}
@@ -86,14 +85,14 @@ export function ChannelToolItems(props: ItemsProps) {
       <MenuDivider />
       <MenuItem
         label={t(
-          shield() ? "CHANNEL_TOOLS_SHIELD_OFF" : "CHANNEL_TOOLS_SHIELD_ON",
+          shield() ? "HEADER_SHIELD_OFF_LABEL" : "HEADER_SHIELD_ON_LABEL",
         )}
         icon={<Shield />}
         active={shield()}
         onClick={() => activity.setShield(props.broadcasterId, !shield())}
       />
       <MenuItem
-        label={t("CHANNEL_TOOLS_CLEAR_CHAT")}
+        label={t("HEADER_CLEAR_CHAT_LABEL")}
         icon={<Eraser />}
         tone="negative"
         onClick={() =>

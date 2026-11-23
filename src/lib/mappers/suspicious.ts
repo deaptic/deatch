@@ -39,7 +39,7 @@ export function suspiciousMessage(
 
 export function suspiciousUpdate(raw: RawSuspiciousUserUpdate): NoticeText {
   return {
-    text: t("MODERATION_SUSPICIOUS_UPDATE", {
+    text: t("FEED_SUSPICIOUS_UPDATED_LINE", {
       mod: raw.moderator_user_name,
       user: raw.user_name,
       status: raw.low_trust_status,

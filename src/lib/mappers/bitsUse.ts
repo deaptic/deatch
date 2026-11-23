@@ -26,7 +26,7 @@ export function mapBitsUse(
   if (shownElsewhere(raw)) return null;
   return feedEvent(
     BITS_USE,
-    t("EVENT_BITS_USE", {
+    t("FEED_BITS_USED_LINE", {
       user: raw.user_name,
       bits: raw.bits,
       kind: raw.type === "power_up" ? (raw.power_up?.type ?? "") : raw.type,

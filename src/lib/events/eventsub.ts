@@ -15,12 +15,16 @@ export function start(): () => void {
     listenApp("chatStatus", ({ broadcasterId, state }) => {
       switch (state.type) {
         case "connected":
-          appendLocalNotice(broadcasterId, t("CHAT_CONNECTED"), CHAT_CONNECTED);
+          appendLocalNotice(
+            broadcasterId,
+            t("FEED_CONNECTED_LINE"),
+            CHAT_CONNECTED,
+          );
           break;
         case "disconnected":
           appendLocalNotice(
             broadcasterId,
-            t("CHAT_DISCONNECTED"),
+            t("FEED_DISCONNECTED_LINE"),
             CHAT_DISCONNECTED,
           );
           break;

@@ -79,7 +79,7 @@ test("the global tab groups subscriptions, leaving out the open channel", () => 
   );
   expect(sections.map((s) => s.label)).toStrictEqual([
     "Viewer1",
-    "Twitch Global",
+    "Twitch global",
     "7TV",
   ]);
   expect(sections[1]?.emotes.map((e) => e.name)).toStrictEqual([

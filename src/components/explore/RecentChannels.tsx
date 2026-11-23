@@ -20,7 +20,7 @@ export default function RecentChannels(props: Props) {
   return (
     <Show when={channels()?.length}>
       <section>
-        <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_RECENT")}</h2>
+        <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_RECENT_TITLE")}</h2>
         <div onKeyDown={moveGridFocus} class="-mx-2 grid grid-avatars">
           <For each={channels()}>
             {(channel) => {
@@ -29,7 +29,7 @@ export default function RecentChannels(props: Props) {
                 <ChannelTile
                   channel={channel}
                   live={!!stream()}
-                  detail={stream()?.game.name ?? t("EXPLORE_OFFLINE")}
+                  detail={stream()?.game.name ?? t("EXPLORE_OFFLINE_STATUS")}
                   tip={stream()?.title}
                   onSelect={props.onSelect}
                 />

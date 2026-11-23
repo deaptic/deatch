@@ -1,6 +1,7 @@
 import { createSignal, type JSX } from "solid-js";
 import enUS from "../../locales/en-US.json" with { type: "json" };
 import enGB from "../../locales/en-GB.json" with { type: "json" };
+import fi from "../../locales/fi.json" with { type: "json" };
 import {
   createTranslator,
   type MessageValues,
@@ -11,12 +12,13 @@ export type MessageKey = keyof typeof enUS;
 
 type Messages = Record<MessageKey, string>;
 
-export const LANGUAGES = ["en-US", "en-GB"] as const;
+export const LANGUAGES = ["en-US", "en-GB", "fi"] as const;
 export type Language = (typeof LANGUAGES)[number];
 
 export const LANGUAGE_NAMES: Record<Language, string> = {
   "en-US": "English (US)",
   "en-GB": "English (UK)",
+  fi: "Suomi",
 };
 
 function load(messages: Messages, format: Language) {
@@ -26,10 +28,13 @@ function load(messages: Messages, format: Language) {
 const LOCALES: Record<Language, ReturnType<typeof load>> = {
   "en-US": load(enUS, "en-US"),
   "en-GB": load(enGB, "en-GB"),
+  fi: load(fi, "fi"),
 };
 
 export function systemLanguage(): Language {
-  return navigator.language === "en-US" ? "en-US" : "en-GB";
+  const system = navigator.language;
+  if (system.startsWith("fi")) return "fi";
+  return system === "en-US" ? "en-US" : "en-GB";
 }
 
 export const [locale, setLocale] = createSignal<Language>("en-GB");

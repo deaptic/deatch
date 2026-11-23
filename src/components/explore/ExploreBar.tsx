@@ -54,7 +54,7 @@ export default function ExploreBar(props: Props) {
           trailing={
             <Show when={props.query}>
               <IconButton
-                label={t("EXPLORE_CLEAR_SEARCH")}
+                label={t("EXPLORE_CLEAR_SEARCH_LABEL")}
                 size="sm"
                 onClick={() => props.onQuery("")}
               >

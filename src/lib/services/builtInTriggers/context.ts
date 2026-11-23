@@ -12,7 +12,7 @@ export type BuiltInContext = {
 
 const LOGIN = /^\w+$/;
 
-export const failed = () => t("TRIGGER_FAILED");
+export const failed = () => t("TRIGGER_FAILED_REPLY");
 
 function lookup(name: string): Promise<users.Lookup> {
   return LOGIN.test(name)
@@ -30,7 +30,7 @@ export async function forTarget(
     case "found":
       return run(found.user, found.user.id === ctx.sender.id);
     case "missing":
-      return t("TRIGGER_USER_NOT_FOUND", { name });
+      return t("TRIGGER_USER_NOT_FOUND_REPLY", { name });
     case "failed":
       return failed();
   }

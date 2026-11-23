@@ -20,10 +20,10 @@ import { DEFAULT_ACCENT_HEX } from "../../../lib/constants/theme.ts";
 export default function ReadabilityCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_TEXT")}</CardLabel>
-      <SettingsRow label={t("SETTINGS_APPEARANCE_FONT_SIZE")} stacked>
+      <CardLabel>{t("SETTINGS_APPEARANCE_TEXT_TITLE")}</CardLabel>
+      <SettingsRow label={t("SETTINGS_APPEARANCE_FONT_SIZE_LABEL")} stacked>
         <StopSlider
-          label={t("SETTINGS_APPEARANCE_FONT_SIZE")}
+          label={t("SETTINGS_APPEARANCE_FONT_SIZE_LABEL")}
           value={feedFontSize()}
           stops={FONT_SIZE_STOPS}
           format={formatPx}
@@ -31,17 +31,17 @@ export default function ReadabilityCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES")}
+        label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_LABEL")}
         description={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES")}
+          label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_LABEL")}
           checked={feedUserShowDisplayName()}
           onChange={setFeedUserShowDisplayName}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_NAME_COLOR")}
+        label={t("SETTINGS_APPEARANCE_NAME_COLOR_LABEL")}
         description={t("SETTINGS_APPEARANCE_NAME_COLOR_DESCRIPTION")}
       >
         <ColorPicker

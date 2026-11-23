@@ -28,47 +28,47 @@ import { formatPx, formatWholePercent } from "../../../lib/format/units.ts";
 export default function DensityCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_LAYOUT")}</CardLabel>
+      <CardLabel>{t("SETTINGS_APPEARANCE_LAYOUT_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_DENSITY")}
+        label={t("SETTINGS_APPEARANCE_DENSITY_LABEL")}
         description={t("SETTINGS_APPEARANCE_DENSITY_DESCRIPTION")}
       >
         <Segmented
-          label={t("SETTINGS_APPEARANCE_DENSITY")}
+          label={t("SETTINGS_APPEARANCE_DENSITY_LABEL")}
           value={appearanceUiDensity()}
           options={uiDensityOptions()}
           onChange={setAppearanceUiDensity}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
+        label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_LABEL")}
         description={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_DESCRIPTION")}
       >
         <Segmented
-          label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT")}
+          label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_LABEL")}
           value={feedDensity()}
           options={messageLayoutOptions()}
           onChange={setFeedDensity}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_GROUPING")}
+        label={t("SETTINGS_APPEARANCE_GROUPING_LABEL")}
         description={t("SETTINGS_APPEARANCE_GROUPING_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_GROUPING")}
+          label={t("SETTINGS_APPEARANCE_GROUPING_LABEL")}
           checked={feedGroupMessages()}
           onChange={setFeedGroupMessages}
           disabled={feedDensity() !== "comfortable" || !feedShowAvatars()}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_GROUP_SPACING")}
+        label={t("SETTINGS_APPEARANCE_GROUP_SPACING_LABEL")}
         description={t("SETTINGS_APPEARANCE_GROUP_SPACING_DESCRIPTION")}
         stacked
       >
         <StopSlider
-          label={t("SETTINGS_APPEARANCE_GROUP_SPACING")}
+          label={t("SETTINGS_APPEARANCE_GROUP_SPACING_LABEL")}
           disabled={feedDensity() !== "comfortable"}
           value={feedGroupSpacing()}
           stops={GROUP_SPACING_STOPS}
@@ -77,12 +77,12 @@ export default function DensityCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_ZOOM")}
+        label={t("SETTINGS_APPEARANCE_ZOOM_LABEL")}
         description={t("SETTINGS_APPEARANCE_ZOOM_DESCRIPTION")}
         stacked
       >
         <StopSlider
-          label={t("SETTINGS_APPEARANCE_ZOOM")}
+          label={t("SETTINGS_APPEARANCE_ZOOM_LABEL")}
           value={appearanceZoom()}
           stops={ZOOM_STOPS}
           format={formatWholePercent}

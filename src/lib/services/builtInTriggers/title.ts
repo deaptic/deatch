@@ -11,12 +11,12 @@ export async function title(ctx: BuiltInContext): Promise<string | null> {
       { broadcasterId: ctx.broadcasterId, title: ctx.args },
       { silent: true },
     );
-    return t("TRIGGER_TITLE_UPDATED", { title: ctx.args });
+    return t("TRIGGER_TITLE_UPDATED_REPLY", { title: ctx.args });
   }
   await channelInfo.load([ctx.broadcasterId]);
   const current = streamTitle(
     streamForUserId(ctx.broadcasterId),
     channelInfoFor(ctx.broadcasterId),
   );
-  return current ? t("TRIGGER_TITLE_CURRENT", { title: current }) : null;
+  return current ? t("TRIGGER_TITLE_REPLY", { title: current }) : null;
 }

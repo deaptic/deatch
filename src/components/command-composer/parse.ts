@@ -18,7 +18,9 @@ export function invalid(message: string): SlotError {
 }
 
 export function slotErrorText(error: SlotError): string {
-  return error.kind === "required" ? t("COMMAND_REQUIRED") : error.message;
+  return error.kind === "required"
+    ? t("COMMAND_REQUIRED_ERROR")
+    : error.message;
 }
 
 export function parseDuration(raw: string): number | null {
@@ -37,16 +39,16 @@ export function durationError(
   seconds: number | null,
 ): string | null {
   if (seconds === null) {
-    return t("COMMAND_DURATION_TRY", {
-      examples: t(opt.hint ?? "COMMAND_DURATION_EXAMPLES"),
+    return t("COMMAND_DURATION_TRY_ERROR", {
+      examples: t(opt.hint ?? "COMMAND_DURATION_EXAMPLES_VALUE"),
     });
   }
   const min = opt.min ?? 0;
   const max = opt.max ?? Infinity;
   if (seconds >= min && seconds <= max) return null;
   return max === Infinity
-    ? t("COMMAND_DURATION_MIN", { min: formatDuration(min) })
-    : t("COMMAND_DURATION_RANGE", {
+    ? t("COMMAND_DURATION_MIN_ERROR", { min: formatDuration(min) })
+    : t("COMMAND_DURATION_RANGE_ERROR", {
         min: formatDuration(min),
         max: formatDuration(max),
       });
@@ -87,7 +89,7 @@ export function slotFromInput(opt: CommandOption, value: string): Slot {
         error:
           value !== "" && !exact
             ? invalid(
-                t("COMMAND_ENUM_INVALID", {
+                t("COMMAND_ENUM_INVALID_ERROR", {
                   values: formatAlternatives(opt.values),
                 }),
               )

@@ -3,7 +3,7 @@ import { formatLocale, t } from "../i18n/index.ts";
 const OTHER = "other";
 
 export function languageName(code: string): string {
-  if (code === OTHER) return t("LANGUAGE_OTHER");
+  if (code === OTHER) return t("EXPLORE_LANGUAGE_OTHER_LABEL");
   try {
     return (
       new Intl.DisplayNames([formatLocale()], { type: "language" }).of(code) ??

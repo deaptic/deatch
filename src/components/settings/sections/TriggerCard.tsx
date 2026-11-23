@@ -24,11 +24,11 @@ import {
 } from "../../../lib/stores/preferences.ts";
 
 const ROLE_LABELS: Record<TriggerRole, MessageKey> = {
-  everyone: "SETTINGS_TRIGGERS_ROLE_EVERYONE",
-  subscriber: "SETTINGS_TRIGGERS_ROLE_SUBSCRIBER",
-  vip: "SETTINGS_TRIGGERS_ROLE_VIP",
-  moderator: "SETTINGS_TRIGGERS_ROLE_MODERATOR",
-  broadcaster: "SETTINGS_TRIGGERS_ROLE_BROADCASTER",
+  everyone: "SETTINGS_TRIGGERS_ROLE_EVERYONE_LABEL",
+  subscriber: "SETTINGS_TRIGGERS_ROLE_SUBSCRIBER_LABEL",
+  vip: "SETTINGS_TRIGGERS_ROLE_VIP_LABEL",
+  moderator: "SETTINGS_TRIGGERS_ROLE_MODERATOR_LABEL",
+  broadcaster: "SETTINGS_TRIGGERS_ROLE_BROADCASTER_LABEL",
 };
 
 export default function TriggerCard(props: {
@@ -50,7 +50,7 @@ export default function TriggerCard(props: {
     <Card tone={canSave() ? "edited" : "plain"}>
       <div class="flex items-center gap-2 py-3 pl-4 pr-3">
         <Toggle
-          label={t("SETTINGS_TRIGGERS_ENABLED")}
+          label={t("SETTINGS_TRIGGERS_ENABLED_LABEL")}
           checked={draft.enabled}
           onChange={(v) => setDraft("enabled", v)}
         />
@@ -58,8 +58,8 @@ export default function TriggerCard(props: {
           look="inline"
           class="flex-1 min-w-0"
           ref={props.persisted ? undefined : autofocus}
-          aria-label={t("SETTINGS_TRIGGERS_NAME")}
-          placeholder={t("SETTINGS_TRIGGERS_UNTITLED")}
+          aria-label={t("SETTINGS_TRIGGERS_NAME_LABEL")}
+          placeholder={t("SETTINGS_TRIGGERS_NAME_PLACEHOLDER")}
           value={draft.name}
           onInput={(e) => setDraft("name", e.currentTarget.value)}
           onKeyDown={(e) => {
@@ -71,8 +71,8 @@ export default function TriggerCard(props: {
             variant="accent"
             label={
               valid()
-                ? t("SETTINGS_TRIGGERS_SAVE")
-                : t("SETTINGS_TRIGGERS_REQUIRED")
+                ? t("SETTINGS_TRIGGERS_SAVE_LABEL")
+                : t("SETTINGS_TRIGGERS_REQUIRED_ERROR")
             }
             disabled={!valid()}
             onClick={() => props.onSave({ ...unwrap(draft) })}
@@ -82,7 +82,7 @@ export default function TriggerCard(props: {
         </Show>
         <IconButton
           variant="danger"
-          label={t("SETTINGS_TRIGGERS_DELETE")}
+          label={t("SETTINGS_TRIGGERS_DELETE_LABEL")}
           onClick={props.onDelete}
         >
           <Trash2 class="size-4" />
@@ -90,8 +90,8 @@ export default function TriggerCard(props: {
         <IconButton
           label={
             expanded()
-              ? t("SETTINGS_TRIGGERS_COLLAPSE")
-              : t("SETTINGS_TRIGGERS_EXPAND")
+              ? t("SETTINGS_TRIGGERS_COLLAPSE_LABEL")
+              : t("SETTINGS_TRIGGERS_EXPAND_LABEL")
           }
           aria-expanded={expanded()}
           onClick={props.onToggle}
@@ -106,7 +106,7 @@ export default function TriggerCard(props: {
 
       <Show when={expanded()}>
         <div class="flex flex-col gap-3 px-4 pb-4 enter-rise">
-          <TriggerField label={t("SETTINGS_TRIGGERS_PHRASE")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_PHRASE_LABEL")}>
             <Textarea
               rows={2}
               resizable
@@ -116,26 +116,26 @@ export default function TriggerCard(props: {
             />
             <div class="flex items-center gap-2">
               <Segmented
-                label={t("SETTINGS_TRIGGERS_LOCATION")}
+                label={t("SETTINGS_TRIGGERS_LOCATION_LABEL")}
                 value={draft.location}
                 options={[
                   {
                     value: "start",
-                    label: t("SETTINGS_TRIGGERS_LOCATION_START"),
+                    label: t("SETTINGS_TRIGGERS_LOCATION_START_LABEL"),
                   },
                   {
                     value: "exact",
-                    label: t("SETTINGS_TRIGGERS_LOCATION_EXACT"),
+                    label: t("SETTINGS_TRIGGERS_LOCATION_EXACT_LABEL"),
                   },
                   {
                     value: "anywhere",
-                    label: t("SETTINGS_TRIGGERS_LOCATION_ANYWHERE"),
+                    label: t("SETTINGS_TRIGGERS_LOCATION_ANYWHERE_LABEL"),
                   },
                 ]}
                 onChange={(v) => setDraft("location", v)}
               />
               <IconButton
-                label={t("SETTINGS_TRIGGERS_CASE_SENSITIVE")}
+                label={t("SETTINGS_TRIGGERS_CASE_SENSITIVE_LABEL")}
                 pressed={draft.caseSensitive}
                 onClick={() => setDraft("caseSensitive", !draft.caseSensitive)}
               >
@@ -144,7 +144,7 @@ export default function TriggerCard(props: {
             </div>
           </TriggerField>
 
-          <TriggerField label={t("SETTINGS_TRIGGERS_REPLY")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_REPLY_LABEL")}>
             <TriggerReplies
               replies={draft.replies}
               otherwise={draft.otherwise}
@@ -153,26 +153,29 @@ export default function TriggerCard(props: {
             />
           </TriggerField>
 
-          <TriggerField label={t("SETTINGS_TRIGGERS_ACTION")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_ACTION_LABEL")}>
             <div class="flex items-center gap-2">
               <Segmented
-                label={t("SETTINGS_TRIGGERS_ACTION")}
+                label={t("SETTINGS_TRIGGERS_ACTION_LABEL")}
                 value={draft.action}
                 options={[
                   {
                     value: "reply",
-                    label: t("SETTINGS_TRIGGERS_ACTION_REPLY"),
+                    label: t("SETTINGS_TRIGGERS_ACTION_REPLY_LABEL"),
                   },
-                  { value: "send", label: t("SETTINGS_TRIGGERS_ACTION_SEND") },
+                  {
+                    value: "send",
+                    label: t("SETTINGS_TRIGGERS_ACTION_SEND_LABEL"),
+                  },
                 ]}
                 onChange={(v) => setDraft("action", v)}
               />
               <span class="ml-auto text-small text-ink-soft">
-                {t("SETTINGS_TRIGGERS_COOLDOWN")}
+                {t("SETTINGS_TRIGGERS_COOLDOWN_LABEL")}
               </span>
               <Field
                 type="number"
-                aria-label={t("SETTINGS_TRIGGERS_COOLDOWN")}
+                aria-label={t("SETTINGS_TRIGGERS_COOLDOWN_LABEL")}
                 min={MIN_TRIGGER_COOLDOWN}
                 max={MAX_TRIGGER_COOLDOWN}
                 value={draft.cooldown}
@@ -185,7 +188,7 @@ export default function TriggerCard(props: {
                 }
                 trailing={
                   <span class="text-small text-ink-soft">
-                    {t("SETTINGS_TRIGGERS_SECONDS")}
+                    {t("SETTINGS_TRIGGERS_SECONDS_VALUE")}
                   </span>
                 }
                 class="w-28"
@@ -193,10 +196,10 @@ export default function TriggerCard(props: {
             </div>
           </TriggerField>
 
-          <TriggerField label={t("SETTINGS_TRIGGERS_ROLE")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_ROLE_LABEL")}>
             <div>
               <Segmented
-                label={t("SETTINGS_TRIGGERS_ROLE")}
+                label={t("SETTINGS_TRIGGERS_ROLE_LABEL")}
                 value={draft.role}
                 options={TRIGGER_ROLES.map((role) => ({
                   value: role,
@@ -207,7 +210,7 @@ export default function TriggerCard(props: {
             </div>
           </TriggerField>
 
-          <TriggerField label={t("SETTINGS_TRIGGERS_TRY")}>
+          <TriggerField label={t("SETTINGS_TRIGGERS_TRY_LABEL")}>
             <TriggerPreview trigger={draft} />
           </TriggerField>
         </div>

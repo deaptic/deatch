@@ -155,7 +155,7 @@ export default function Feed(props: Props) {
       if (jumpTarget()?.messageId !== messageId) return;
       setJumpTarget(null);
       toPresent();
-      if (outcome === "missing") addToast(t("FEED_MESSAGE_GONE"));
+      if (outcome === "missing") addToast(t("FEED_MESSAGE_GONE_TOAST"));
     });
   }
 
@@ -418,7 +418,10 @@ export default function Feed(props: Props) {
                   />
                 </Show>
                 <Show when={hasDividerBefore(getEntryId(entry))}>
-                  <Divider variant="accent" label={t("FEED_NEW_MESSAGES")} />
+                  <Divider
+                    variant="accent"
+                    label={t("FEED_NEW_MESSAGES_LABEL")}
+                  />
                 </Show>
                 <Show when={isFeedEntryVisible(entry)}>{row(entry)}</Show>
               </div>

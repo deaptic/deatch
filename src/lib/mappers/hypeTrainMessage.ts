@@ -6,7 +6,7 @@ import { noticeText } from "../utils/feedEvent.ts";
 function contributors(raw: RawHypeTrain): string {
   return formatList(
     raw.top_contributions.map((c) =>
-      t("HYPE_TRAIN_CONTRIBUTION", {
+      t("FEED_HYPE_TRAIN_CONTRIBUTION_VALUE", {
         name: c.user_name,
         type: c.type,
         total: c.total,
@@ -16,7 +16,10 @@ function contributors(raw: RawHypeTrain): string {
 }
 
 export function hypeTrainBegin(raw: RawHypeTrain): string {
-  return t("HYPE_TRAIN_BEGIN", { type: raw.type, level: raw.level });
+  return t("FEED_HYPE_TRAIN_STARTED_LINE", {
+    type: raw.type,
+    level: raw.level,
+  });
 }
 
 export function hypeTrainProgress(
@@ -24,15 +27,15 @@ export function hypeTrainProgress(
   lastLevel: number,
 ): string | null {
   return raw.level > lastLevel
-    ? t("HYPE_TRAIN_LEVEL", { level: raw.level })
+    ? t("FEED_HYPE_TRAIN_LEVELED_UP_LINE", { level: raw.level })
     : null;
 }
 
 export function hypeTrainEnd(raw: RawHypeTrain): NoticeText {
   return noticeText(
-    t("HYPE_TRAIN_END", { level: raw.level, total: raw.total }),
+    t("FEED_HYPE_TRAIN_ENDED_LINE", { level: raw.level, total: raw.total }),
     raw.top_contributions.length
-      ? t("HYPE_TRAIN_TOP", { contributors: contributors(raw) })
+      ? t("FEED_HYPE_TRAIN_TOP_LINE", { contributors: contributors(raw) })
       : null,
   );
 }

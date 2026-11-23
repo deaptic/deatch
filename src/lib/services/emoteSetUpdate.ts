@@ -19,17 +19,21 @@ export function describe(update: EmoteSetUpdated): string[] {
   const who = actor(update);
   return [
     ...update.added.map((e) =>
-      t("SEVENTV_ADDED", { actor: who, emote: e.name }),
+      t("FEED_SEVENTV_EMOTE_ADDED_LINE", { actor: who, emote: e.name }),
     ),
     ...update.removed.map((n) =>
-      t("SEVENTV_REMOVED", { actor: who, emote: n }),
+      t("FEED_SEVENTV_EMOTE_REMOVED_LINE", { actor: who, emote: n }),
     ),
     ...update.renamed.map((r) =>
-      t("SEVENTV_RENAMED", { actor: who, from: r.from, to: r.to }),
+      t("FEED_SEVENTV_EMOTE_RENAMED_LINE", {
+        actor: who,
+        from: r.from,
+        to: r.to,
+      }),
     ),
   ];
 }
 
 export function actor(update: EmoteSetUpdated): string {
-  return update.actor ?? t("SEVENTV_SOMEONE");
+  return update.actor ?? t("FEED_SEVENTV_SOMEONE_VALUE");
 }

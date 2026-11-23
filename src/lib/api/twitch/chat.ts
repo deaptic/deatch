@@ -44,7 +44,7 @@ export async function sendShoutout(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.sendShoutout, [params], {
-    successMessage: t("TOAST_SHOUTOUT_SENT"),
+    successMessage: t("MENU_SHOUTOUT_SENT_TOAST"),
     ...options,
   });
 }
@@ -68,7 +68,7 @@ export async function sendChatAnnouncement(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.sendChatAnnouncement, [params], {
-    successMessage: t("TOAST_ANNOUNCEMENT_SENT"),
+    successMessage: t("COMMAND_ANNOUNCEMENT_SENT_TOAST"),
     ...options,
   });
 }
@@ -85,7 +85,7 @@ export async function updateChatSettings(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.updateChatSettings, [params], {
-    successMessage: t("TOAST_CHAT_SETTINGS_UPDATED"),
+    successMessage: t("COMPOSER_MODES_UPDATED_TOAST"),
     ...options,
   });
 }
@@ -102,7 +102,7 @@ export async function updateUserChatColor(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.updateUserChatColor, [params], {
-    successMessage: t("TOAST_CHAT_COLOR_UPDATED"),
+    successMessage: t("COMMAND_COLOR_UPDATED_TOAST"),
     ...options,
   });
 }

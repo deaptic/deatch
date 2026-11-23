@@ -19,8 +19,19 @@ import downward:
   nothing but `solid-js`.
 
 All user-facing text goes through `t()` from `i18n/`, keyed in
-`src/locales/en-US.json` and `src/locales/en-GB.json` (same keys in both). Names of things (Deatch, Link, Twitch, badges) stay as
-plain text inside messages.
+`src/locales/<language>.json`; `en-US.json` is the source and every file has the same keys. Names of things (Deatch, Link, Twitch, Discord, 7TV, BetterTTV,
+FrankerFaceZ, AutoMod, Prime, Bits, Hype Train, VIP, Power-up, badges),
+`KEY_*` values and command syntax (`!followage`, `/clip`, `30s`) stay the
+same in every language.
+
+Keys read `WHERE_WHAT_KIND`. `WHERE` is the surface the text shows on (`FEED`,
+`COMPOSER`, `HEADER`, `RAIL`, `MENU`, `SETTINGS_<SECTION>`, `TRIGGER`, `UI` for
+shared controls, `ERROR` for generic failures, ...); toasts take the `WHERE` of
+their feature. `KIND` ends every key, one of `_LABEL`, `_TITLE`,
+`_DESCRIPTION`, `_PLACEHOLDER`, `_HINT`, `_EMPTY`, `_LINE` (feed sentence),
+`_REPLY` (posted to Twitch chat), `_TOAST`, `_ERROR`, `_VALUE` (fragment
+inserted into other text), `_STATUS`. Completed events are past tense
+(`FEED_RAID_CANCELED_LINE`).
 
 A component may call an `api/` wrapper directly for a plain one-shot call; once
 caching, state, or outcome logic is involved, it belongs in a service. Types

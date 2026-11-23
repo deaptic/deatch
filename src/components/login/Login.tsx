@@ -17,8 +17,8 @@ import { t, tRich } from "../../lib/i18n/index.ts";
 import { formatUrl } from "../../lib/format/url.ts";
 
 const RESTORE_FAILURE_TEXT = {
-  missingScope: "LOGIN_MISSING_SCOPE",
-  unreachable: "LOGIN_RESTORE_RETRYING",
+  missingScope: "LOGIN_MISSING_SCOPE_ERROR",
+  unreachable: "LOGIN_RESTORE_RETRYING_STATUS",
 } as const satisfies Record<RestoreFailure, string>;
 
 export default function Login() {
@@ -27,8 +27,8 @@ export default function Login() {
   return (
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
-        <h1 class="text-hero text-ink">{t("LOGIN_WELCOME")}</h1>
-        <p class="text-body text-ink-soft">{t("LOGIN_TAGLINE")}</p>
+        <h1 class="text-hero text-ink">{t("LOGIN_WELCOME_TITLE")}</h1>
+        <p class="text-body text-ink-soft">{t("LOGIN_TAGLINE_DESCRIPTION")}</p>
         <Show when={restoreFailure()}>
           {(failure) => (
             <p class="text-small text-caution">
@@ -47,7 +47,7 @@ export default function Login() {
                 icon={<TwitchIcon class="size-5" />}
                 onClick={() => session.login()}
               >
-                {t("LOGIN_BUTTON")}
+                {t("LOGIN_SIGN_IN_LABEL")}
               </Button>
             </>
           }
@@ -61,7 +61,7 @@ export default function Login() {
                     <>
                       <Loading size={24} />
                       <p class="text-small text-ink-soft">
-                        {t("LOGIN_REQUESTING")}
+                        {t("LOGIN_REQUESTING_CODE_STATUS")}
                       </p>
                     </>
                   }
@@ -69,7 +69,7 @@ export default function Login() {
                   {(code) => (
                     <>
                       <p class="text-small text-ink-soft">
-                        {tRich("LOGIN_ENTER_CODE", {
+                        {tRich("LOGIN_ENTER_CODE_DESCRIPTION", {
                           site: formatUrl(code().verificationUri),
                           link: (chunks) => (
                             <a
@@ -101,8 +101,8 @@ export default function Login() {
                         onClick={() => codeCopy.copy(code().userCode)}
                       >
                         {codeCopy.copied()
-                          ? t("LOGIN_COPIED")
-                          : t("LOGIN_COPY_CODE")}
+                          ? t("LOGIN_COPIED_LABEL")
+                          : t("LOGIN_COPY_CODE_LABEL")}
                       </Button>
                     </>
                   )}
@@ -111,7 +111,7 @@ export default function Login() {
             </Card>
           </div>
           <Button variant="ghost" onClick={() => session.abort()}>
-            {t("LOGIN_CANCEL")}
+            {t("LOGIN_CANCEL_LABEL")}
           </Button>
         </Show>
       </div>

@@ -20,10 +20,10 @@ const PRESENCE: Record<
   Presence,
   { dot: string; label: MessageKey; breathes: boolean }
 > = {
-  "on-air": { dot: "bg-live", label: "UI_LIVE", breathes: true },
-  live: { dot: "bg-live", label: "UI_LIVE", breathes: false },
-  online: { dot: "bg-positive", label: "UI_ONLINE", breathes: false },
-  offline: { dot: "bg-ink-faint", label: "UI_OFFLINE", breathes: false },
+  "on-air": { dot: "bg-live", label: "UI_LIVE_STATUS", breathes: true },
+  live: { dot: "bg-live", label: "UI_LIVE_STATUS", breathes: false },
+  online: { dot: "bg-positive", label: "UI_ONLINE_STATUS", breathes: false },
+  offline: { dot: "bg-ink-faint", label: "UI_OFFLINE_STATUS", breathes: false },
 };
 
 const SIZES: Record<AvatarSize, { box: string; dot: string }> = {

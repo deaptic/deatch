@@ -93,7 +93,9 @@ export default function Message(props: Props) {
     <Show
       when={!item.deleted || props.showDeletedContent}
       fallback={
-        <span class="italic text-ink-soft">{t("FEED_MESSAGE_DELETED")}</span>
+        <span class="italic text-ink-soft">
+          {t("FEED_MESSAGE_DELETED_LABEL")}
+        </span>
       }
     >
       <span
@@ -112,7 +114,7 @@ export default function Message(props: Props) {
       </span>
       <Show when={item.deleted}>
         <span class="ml-1.5 text-feed-meta text-ink-faint select-none">
-          {t("MESSAGE_DELETED")}
+          {t("FEED_DELETED_MARK_LABEL")}
         </span>
       </Show>
     </Show>
@@ -186,7 +188,7 @@ export default function Message(props: Props) {
           {(h) => (
             <FeedItem.Note
               class="text-caution"
-              label={t("FEED_AUTOMOD_HELD", { reason: h().reason })}
+              label={t("FEED_AUTOMOD_HELD_LINE", { reason: h().reason })}
               suffix={
                 details.isHoldResolved(item)
                   ? details.holdOutcome(h())
@@ -196,13 +198,13 @@ export default function Message(props: Props) {
                 details.isHoldPending(item)
                   ? [
                       {
-                        title: t("FEED_AUTOMOD_ALLOW"),
+                        title: t("FEED_AUTOMOD_ALLOW_LABEL"),
                         icon: () => <Check class="size-4" />,
                         tone: "success",
                         onClick: () => handleHold("allow"),
                       },
                       {
-                        title: t("FEED_AUTOMOD_DENY"),
+                        title: t("FEED_AUTOMOD_DENY_LABEL"),
                         icon: () => <X class="size-4" />,
                         tone: "danger",
                         onClick: () => handleHold("deny"),
@@ -225,7 +227,7 @@ export default function Message(props: Props) {
           {(cheer) => (
             <FeedItem.Note
               class="text-event-support"
-              label={t("FEED_CHEERED", { bits: cheer().bits })}
+              label={t("FEED_CHEERED_LABEL", { bits: cheer().bits })}
             />
           )}
         </Show>
@@ -233,7 +235,7 @@ export default function Message(props: Props) {
           {(perk) => (
             <FeedItem.Note
               class="text-event-support"
-              label={t("FEED_MESSAGE_PERK", { perk: perk() })}
+              label={t("FEED_MESSAGE_PERK_LABEL", { perk: perk() })}
             />
           )}
         </Show>
@@ -245,7 +247,7 @@ export default function Message(props: Props) {
         <Show when={item.first_message && !hold()}>
           <FeedItem.Note
             class="text-ink-soft"
-            label={t("FEED_FIRST_MESSAGE")}
+            label={t("FEED_FIRST_MESSAGE_LABEL")}
           />
         </Show>
       </FeedItem.Context>

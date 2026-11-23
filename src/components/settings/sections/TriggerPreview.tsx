@@ -27,7 +27,7 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
         placeholder={
           example()
             ? t("SETTINGS_TRIGGERS_TRY_PLACEHOLDER", { example: example() })
-            : t("SETTINGS_TRIGGERS_TRY_PLACEHOLDER_EMPTY")
+            : t("SETTINGS_TRIGGERS_TRY_DISABLED_PLACEHOLDER")
         }
         value={text()}
         onInput={(e) => setText(e.currentTarget.value)}
@@ -37,7 +37,7 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
           when={response.latest}
           fallback={
             <p class="text-small text-ink-soft">
-              {t("SETTINGS_TRIGGERS_TRY_NO_MATCH")}
+              {t("SETTINGS_TRIGGERS_TRY_NO_MATCH_HINT")}
             </p>
           }
         >
@@ -47,7 +47,7 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
                 when={preview().text}
                 fallback={
                   <p class="text-small text-ink-soft">
-                    {t("SETTINGS_TRIGGERS_TRY_SILENT")}
+                    {t("SETTINGS_TRIGGERS_TRY_SILENT_HINT")}
                   </p>
                 }
               >
@@ -60,7 +60,7 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
                   <p class="flex gap-2 text-small min-w-0">
                     <span class="font-semibold text-ink-soft">{syntax}</span>
                     <span class={value ? "text-ink truncate" : "text-ink-soft"}>
-                      {value || t("SETTINGS_TRIGGERS_TRY_EMPTY")}
+                      {value || t("SETTINGS_TRIGGERS_TRY_EMPTY_VALUE")}
                     </span>
                   </p>
                 )}

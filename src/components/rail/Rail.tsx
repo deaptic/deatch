@@ -103,25 +103,29 @@ export default function Rail(props: Props) {
   const linkStatus = (): LinkStatus => {
     if (!linkConnected()) {
       return {
-        sub: t("RAIL_LINK_ADD_FIREFOX"),
+        sub: t("RAIL_LINK_ADD_FIREFOX_LABEL"),
         tone: "soft",
         tile: false,
         onClick: openLinkMenu,
       };
     }
     if (linkWarmedChannels().length === 0) {
-      return { sub: t("RAIL_LINK_NO_TABS"), tone: "soft", tile: false };
+      return { sub: t("RAIL_LINK_NO_TABS_EMPTY"), tone: "soft", tile: false };
     }
     if (linkSynced()) {
       return {
-        sub: t(linkAudioLink() ? "RAIL_LINK_SYNCED_AUDIO" : "RAIL_LINK_SYNCED"),
+        sub: t(
+          linkAudioLink()
+            ? "RAIL_LINK_SYNCED_AUDIO_STATUS"
+            : "RAIL_LINK_SYNCED_STATUS",
+        ),
         tone: "positive",
         tile: "positive",
         onClick: props.onToggleLink,
       };
     }
     return {
-      sub: t("RAIL_LINK_SYNC_BROWSER"),
+      sub: t("RAIL_LINK_NOT_SYNCED_STATUS"),
       tone: "soft",
       tile: false,
       onClick: props.onToggleLink,
@@ -220,7 +224,7 @@ export default function Rail(props: Props) {
 
   return (
     <nav
-      aria-label={t("RAIL_CHANNELS")}
+      aria-label={t("RAIL_CHANNELS_LABEL")}
       class={`flex flex-col h-full shrink-0 bg-surface overflow-hidden transition-all duration-settle ease-drawer ${
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
@@ -282,8 +286,8 @@ export default function Rail(props: Props) {
             </Show>
             <RailRow
               ref={(el) => (addBtn = el)}
-              label={t("RAIL_PIN_CHANNEL")}
-              sub={t("RAIL_PIN_CHANNEL_SUB")}
+              label={t("RAIL_PIN_CHANNEL_LABEL")}
+              sub={t("RAIL_PIN_CHANNEL_DESCRIPTION")}
               onClick={toggleAdd}
             >
               <RailTile>
@@ -293,7 +297,7 @@ export default function Rail(props: Props) {
           </div>
 
           <RailDivider
-            label={t("RAIL_SECTION_LIVE", {
+            label={t("RAIL_SECTION_LIVE_TITLE", {
               count: channels.onlineList().length,
             })}
           />
@@ -328,7 +332,7 @@ export default function Rail(props: Props) {
       </div>
 
       <Show when={linkedOthers().length > 0}>
-        <RailDivider label={t("RAIL_SECTION_TABS")} />
+        <RailDivider label={t("RAIL_SECTION_TABS_TITLE")} />
         <div class="flex flex-col py-2 shrink-0">
           <div class="relative">
             <Show when={linkScroll.canUp()}>
@@ -373,7 +377,7 @@ export default function Rail(props: Props) {
       <Show when={nowViewing()}>
         {(nv) => (
           <>
-            <RailDivider label={t("RAIL_SECTION_VIEWING")} />
+            <RailDivider label={t("RAIL_SECTION_VIEWING_TITLE")} />
             <div class="py-2 shrink-0" data-channel-id={nv().id}>
               <ChannelRow
                 ch={nv()}
@@ -394,12 +398,12 @@ export default function Rail(props: Props) {
       <div class={`flex flex-col py-2 shrink-0 ${railGap()}`}>
         <RailRow
           ref={(el) => (linkBtn = el)}
-          label={t("RAIL_LINK")}
+          label={t("RAIL_LINK_LABEL")}
           sub={linkStatus().sub}
           subTone={linkStatus().tone}
           tooltip={
             <TipLabel>
-              {t("RAIL_LINK_TOOLTIP", { status: linkStatus().sub })}
+              {t("RAIL_LINK_STATUS_HINT", { status: linkStatus().sub })}
             </TipLabel>
           }
           onClick={() => linkStatus().onClick?.()}
@@ -410,8 +414,8 @@ export default function Rail(props: Props) {
           </RailTile>
         </RailRow>
         <RailRow
-          label={t("RAIL_EXPLORE")}
-          sub={t("RAIL_EXPLORE_SUB")}
+          label={t("RAIL_EXPLORE_LABEL")}
+          sub={t("RAIL_EXPLORE_DESCRIPTION")}
           selected={activeView() === "explore"}
           onClick={showExplore}
         >
@@ -420,8 +424,8 @@ export default function Rail(props: Props) {
           </RailTile>
         </RailRow>
         <RailRow
-          label={t("RAIL_SETTINGS")}
-          sub={t("RAIL_SETTINGS_SUB")}
+          label={t("RAIL_SETTINGS_LABEL")}
+          sub={t("RAIL_SETTINGS_DESCRIPTION")}
           selected={isSettingsOpen()}
           onClick={toggleSettings}
         >
@@ -437,7 +441,7 @@ export default function Rail(props: Props) {
           {(u) => (
             <RailRow
               label={u().displayName}
-              sub={t("RAIL_YOUR_CHANNEL")}
+              sub={t("RAIL_YOUR_CHANNEL_LABEL")}
               selected={selectedId() === u().id}
               unread={hasUnread(u().id)}
               mentions={channelMentionCount(u().id)}

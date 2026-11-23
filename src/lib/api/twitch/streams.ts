@@ -32,7 +32,7 @@ export async function createStreamMarker(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.createStreamMarker, [params], {
-    successMessage: t("TOAST_MARKER_ADDED"),
+    successMessage: t("HEADER_MARKER_ADDED_TOAST"),
     ...options,
   });
 }
