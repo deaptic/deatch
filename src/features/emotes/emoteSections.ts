@@ -1,6 +1,11 @@
 import { t } from "../../shared/i18n/index.ts";
-import type { Emote, EmoteEntry, User, UserEmote } from "../types/index.ts";
-import { isUserId } from "./knownUsers.ts";
+import type {
+  Emote,
+  EmoteEntry,
+  User,
+  UserEmote,
+} from "../../lib/types/index.ts";
+import { isUserId } from "../../lib/utils/knownUsers.ts";
 
 export type EmoteSection = { id: string; label: string; emotes: EmoteEntry[] };
 

@@ -1,4 +1,4 @@
-import { emoteZoom } from "../../lib/utils/emoteZoom.ts";
+import { emoteZoom } from "../emotes/index.ts";
 
 export const INLINE_EMOTE =
   "inline-block h-feed-emote max-w-feed-emote-max -my-feed-emote-bleed w-auto object-contain align-middle mx-px";

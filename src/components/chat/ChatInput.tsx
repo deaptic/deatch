@@ -17,7 +17,7 @@ import * as chat from "../../lib/services/chat.ts";
 import type { Command } from "../command-composer/types.ts";
 import type { FeedMessage as Message } from "../../lib/types/index.ts";
 import CommandComposer from "../command-composer/CommandComposer.tsx";
-import * as emotes from "../../lib/services/emotes.ts";
+import * as emotes from "../../features/emotes/index.ts";
 import {
   pushSentMessage,
   sentMessages,
@@ -32,7 +32,7 @@ import ComposerField, { type ComposerFieldApi } from "./ComposerField.tsx";
 import CharCounter from "./CharCounter.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import ComposerCaption from "../../kit/ComposerCaption.tsx";
-const EmotePicker = lazy(() => import("../emotes/EmotePicker.tsx"));
+const EmotePicker = lazy(emotes.loadEmotePicker);
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
 } from "./autocomplete/ChatAutocomplete.tsx";

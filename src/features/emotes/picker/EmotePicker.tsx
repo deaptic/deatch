@@ -16,12 +16,12 @@ import {
   favorites,
   emoteUses,
   usableUserEmotes,
-} from "../../lib/stores/emotes.ts";
-import { usableIn } from "../../lib/utils/emoteSections.ts";
-import { mostUsed } from "../../lib/utils/emoteUsage.ts";
-import { selectedChannel } from "../../lib/stores/view.ts";
-import * as users from "../../lib/services/users.ts";
-import * as emotes from "../../lib/services/emotes.ts";
+} from "../store.ts";
+import { usableIn } from "../emoteSections.ts";
+import { mostUsed } from "../emoteUsage.ts";
+import { selectedChannel } from "../../../lib/stores/view.ts";
+import * as users from "../../../lib/services/users.ts";
+import * as emotes from "../load.ts";
 import EmoteGrid from "./EmoteGrid.tsx";
 import EmotePickerSection from "./EmotePickerSection.tsx";
 import ProviderIcon, { providerOf } from "./ProviderIcon.tsx";
@@ -34,18 +34,18 @@ import {
   type PickerSection,
   providerScope,
 } from "./sections.ts";
-import Field from "../../kit/Field.tsx";
-import IconButton from "../../kit/IconButton.tsx";
-import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
-import ComposerPanel from "../../kit/ComposerPanel.tsx";
-import { createListNavigation } from "../../shared/solid/createListNavigation.ts";
+import Field from "../../../kit/Field.tsx";
+import IconButton from "../../../kit/IconButton.tsx";
+import * as shortcuts from "../../../shared/keyboard/shortcuts.ts";
+import ComposerPanel from "../../../kit/ComposerPanel.tsx";
+import { createListNavigation } from "../../../shared/solid/createListNavigation.ts";
 import type { EmoteGridItem } from "./types.ts";
 import { COLUMNS, emojiUrl, nextVerticalIndex, toItem } from "./helpers.ts";
 import emojiGroups from "unicode-emoji-json/data-by-group.json" with { type: "json" };
-import { t } from "../../shared/i18n/index.ts";
-import { autofocus } from "../../shared/solid/focus.ts";
-import { isUserId } from "../../lib/utils/knownUsers.ts";
-import { knownUser } from "../../lib/stores/users.ts";
+import { t } from "../../../shared/i18n/index.ts";
+import { autofocus } from "../../../shared/solid/focus.ts";
+import { isUserId } from "../../../lib/utils/knownUsers.ts";
+import { knownUser } from "../../../lib/stores/users.ts";
 
 const EMOJI_SECTIONS: PickerSection[] = emojiGroups.map((g) => ({
   id: `emoji-${g.slug}`,

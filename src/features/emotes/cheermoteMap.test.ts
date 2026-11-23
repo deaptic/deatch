@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import { buildCheermoteMap, cheermoteTier } from "./cheermote.ts";
-import type { CheermoteTier } from "../types/index.ts";
+import { buildCheermoteMap, cheermoteTier } from "./cheermoteMap.ts";
+import type { CheermoteTier } from "../../lib/types/index.ts";
 
 const tier = (minBits: number): CheermoteTier => ({
   minBits,

@@ -12,14 +12,14 @@ import {
   globalEmotes,
   sevenTvChannel,
   sevenTvGlobal,
-} from "../../lib/stores/emotes.ts";
+} from "./store.ts";
 import {
   emoteScope,
   emoteSource,
   type EmoteSource,
   PROVIDER_NAMES,
-} from "../../lib/utils/emoteSource.ts";
-import { zoomUrls } from "../../lib/utils/emoteZoom.ts";
+} from "./emoteSource.ts";
+import { zoomUrls } from "./emoteZoom.ts";
 import { t } from "../../shared/i18n/index.ts";
 import Transition from "../../kit/Transition.tsx";
 

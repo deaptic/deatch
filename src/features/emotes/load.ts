@@ -3,8 +3,8 @@ import {
   STORAGE_KEYS,
   type StorageKey,
   userEmotesKey,
-} from "../constants/storage.ts";
-import { type EmoteUse, withUse } from "../utils/emoteUsage.ts";
+} from "../../lib/constants/storage.ts";
+import { type EmoteUse, withUse } from "./emoteUsage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
@@ -42,15 +42,18 @@ import {
   setUserEmotes,
   sevenTvChannel,
   sevenTvGlobal,
-} from "../stores/emotes.ts";
-import { user } from "../stores/users.ts";
-import { type ChannelRef, channelResource } from "./channelResource.ts";
-import type { Emote, EmoteEntry, UserEmote } from "../types/index.ts";
-import { createBackoff } from "../utils/backoff.ts";
-import { loadCache, saveCache } from "../utils/cache.ts";
-import { emoteMap } from "../utils/emoteMap.ts";
-import { dedupeById } from "../utils/emoteSections.ts";
-import * as storage from "../utils/storage.ts";
+} from "./store.ts";
+import { user } from "../../lib/stores/users.ts";
+import {
+  type ChannelRef,
+  channelResource,
+} from "../../lib/services/channelResource.ts";
+import type { Emote, EmoteEntry, UserEmote } from "../../lib/types/index.ts";
+import { createBackoff } from "../../lib/utils/backoff.ts";
+import { loadCache, saveCache } from "../../lib/utils/cache.ts";
+import { emoteMap } from "./emoteMap.ts";
+import { dedupeById } from "./emoteSections.ts";
+import * as storage from "../../lib/utils/storage.ts";
 
 const USER_EMOTES_TTL = 6 * 60 * 60 * 1000;
 const GLOBAL_EMOTES_TTL = 24 * 60 * 60 * 1000;

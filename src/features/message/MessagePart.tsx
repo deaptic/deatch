@@ -1,6 +1,5 @@
-import type { EmoteMap } from "../../lib/utils/emoteMap.ts";
+import { type EmoteMap, type CheermoteMap } from "../emotes/index.ts";
 import type { Fragment } from "../../lib/types/index.ts";
-import type { CheermoteMap } from "../../lib/utils/cheermote.ts";
 import { emoteUrl } from "../../lib/utils/twitchUrl.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Cheermote from "./Cheermote.tsx";

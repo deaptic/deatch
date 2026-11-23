@@ -10,9 +10,9 @@ import {
   sevenTvChannel,
   sevenTvGlobal,
   usableUserEmotes,
-} from "../../../lib/stores/emotes.ts";
+  emoteZoom,
+} from "../../../features/emotes/index.ts";
 import { rankSuggestions } from "../../../lib/utils/rankSuggestions.ts";
-import { emoteZoom } from "../../../lib/utils/emoteZoom.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 
 type Source = "Twitch" | "7TV" | "BetterTTV" | "FrankerFaceZ";

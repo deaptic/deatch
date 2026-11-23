@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 import * as browser from "../../lib/services/browser.ts";
-import type { EmoteMap } from "../../lib/utils/emoteMap.ts";
+import { type EmoteMap } from "../emotes/index.ts";
 import {
   onMiddleClick,
   preventAutoscroll,

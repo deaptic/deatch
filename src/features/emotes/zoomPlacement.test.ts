@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { zoomPlacement } from "./placement.ts";
+import { zoomPlacement } from "./zoomPlacement.ts";
 
 const viewport = { width: 1000, height: 800 };
 const square = { width: 300, height: 300 };

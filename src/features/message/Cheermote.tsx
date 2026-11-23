@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import { resolvedTheme } from "../../lib/stores/theme.ts";
-import { type CheermoteMap, cheermoteTier } from "../../lib/utils/cheermote.ts";
+import { type CheermoteMap, cheermoteTier } from "../emotes/index.ts";
 import { readableColor } from "../../lib/utils/color.ts";
 import { formatLocale } from "../../shared/i18n/index.ts";
 import { REDUCED_MOTION } from "../../shared/accessibility.ts";

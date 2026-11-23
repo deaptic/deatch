@@ -1,4 +1,4 @@
-import type { Cheermote, CheermoteTier } from "../types/index.ts";
+import type { Cheermote, CheermoteTier } from "../../lib/types/index.ts";
 
 export type CheermoteMap = Record<string, CheermoteTier[]>;
 

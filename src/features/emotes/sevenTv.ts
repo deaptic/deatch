@@ -3,12 +3,12 @@ import {
   seventvSubscribeEmoteSet,
   seventvUnsubscribeEmoteSet,
 } from "../../platform/emotes/seventvEvents.ts";
-import * as emoteSetUpdate from "./emoteSetUpdate.ts";
-import { setSevenTvChannel } from "../stores/emotes.ts";
-import { appendItem } from "../stores/feeds.ts";
-import { feedEvent } from "../utils/feedEvent.ts";
-import { SEVENTV_UPDATE } from "../constants/events.ts";
-import type { EmoteEntry, EmoteSetUpdated } from "../types/index.ts";
+import * as emoteSetUpdate from "./setUpdate.ts";
+import { setSevenTvChannel } from "./store.ts";
+import { appendItem } from "../../lib/stores/feeds.ts";
+import { feedEvent } from "../../lib/utils/feedEvent.ts";
+import { SEVENTV_UPDATE } from "../../lib/constants/events.ts";
+import type { EmoteEntry, EmoteSetUpdated } from "../../lib/types/index.ts";
 
 type Entry = { broadcasterId: string; setId: string; emotes: EmoteEntry[] };
 

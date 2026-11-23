@@ -29,9 +29,9 @@ import { addToast } from "../../kit/toasts.ts";
 import {
   thirdPartyEmoteMap,
   usableFavorites,
-} from "../../lib/stores/emotes.ts";
+} from "../../features/emotes/index.ts";
 import { knownUser } from "../../lib/stores/users.ts";
-import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
+import { cheermotes } from "../../features/emotes/index.ts";
 import { jumpTarget, setJumpTarget } from "../../lib/stores/view.ts";
 import { createFeedScroll } from "./createFeedScroll.ts";
 import { createFeedWindow } from "./createFeedWindow.ts";
@@ -356,7 +356,7 @@ export default function Feed(props: Props) {
       flush={props.flush}
       showTimestamp={feedShowTimestamp()}
       emotes={thirdPartyEmoteMap()}
-      cheermotes={cheermotesFor(props.broadcasterId)}
+      cheermotes={cheermotes.forChannel(props.broadcasterId)}
       badges={badges()}
       userLogin={props.userLogin ?? ""}
       reactions={reactions()}

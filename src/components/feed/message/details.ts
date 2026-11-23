@@ -1,5 +1,5 @@
 import { t } from "../../../shared/i18n/index.ts";
-import { sourceBadges } from "../../../lib/stores/sourceBadges.ts";
+import { sharedChatBadges } from "../../../features/badges/index.ts";
 import type {
   AutomodHoldInfo,
   BadgeMap,
@@ -56,5 +56,5 @@ export function chatterBadges(item: Message) {
 }
 
 export function badgeMap(item: Message, channel: BadgeMap): BadgeMap {
-  return (item.source && sourceBadges[item.source.id]) || channel;
+  return (item.source && sharedChatBadges[item.source.id]) || channel;
 }

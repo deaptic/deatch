@@ -1,8 +1,8 @@
 import { Check, CornerDownRight } from "lucide-solid";
 import type { Mention, MentionReason } from "../../lib/types/index.ts";
 import { knownUser, user } from "../../lib/stores/users.ts";
-import { thirdPartyEmoteMap } from "../../lib/stores/emotes.ts";
-import { cheermotesFor } from "../../lib/stores/cheermotes.ts";
+import { thirdPartyEmoteMap } from "../emotes/index.ts";
+import { cheermotes } from "../emotes/index.ts";
 import { feeds } from "../../lib/stores/feeds.ts";
 import {
   feedDensity,
@@ -87,7 +87,7 @@ export default function Item(props: Props) {
           bare
           showTimestamp={feedShowTimestamp()}
           emotes={thirdPartyEmoteMap()}
-          cheermotes={cheermotesFor(m().broadcasterId)}
+          cheermotes={cheermotes.forChannel(m().broadcasterId)}
           badges={feeds[m().broadcasterId]?.badges ?? {}}
           userLogin={user()?.login ?? ""}
           reactions={[]}

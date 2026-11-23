@@ -1,6 +1,6 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import { zoomPlacement } from "./placement.ts";
+import { zoomPlacement } from "./zoomPlacement.ts";
 
 export default function HoverZoom() {
   const [ctrl, setCtrl] = createSignal(false);

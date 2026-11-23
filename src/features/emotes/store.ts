@@ -1,17 +1,22 @@
 import { createSignal } from "solid-js";
-import type { Emote, EmoteEntry, User, UserEmote } from "../types/index.ts";
-import { type EmoteMap, emoteMap } from "../utils/emoteMap.ts";
+import type {
+  Emote,
+  EmoteEntry,
+  User,
+  UserEmote,
+} from "../../lib/types/index.ts";
+import { type EmoteMap, emoteMap } from "./emoteMap.ts";
 import {
   channelSections,
   dedupeById,
   type EmoteSection,
   globalSections,
   usableIn,
-} from "../utils/emoteSections.ts";
-import { knownUser } from "./users.ts";
+} from "./emoteSections.ts";
+import { knownUser } from "../../lib/stores/users.ts";
 
-export type { EmoteUse } from "../utils/emoteUsage.ts";
-import type { EmoteUse } from "../utils/emoteUsage.ts";
+export type { EmoteUse } from "./emoteUsage.ts";
+import type { EmoteUse } from "./emoteUsage.ts";
 
 export type FavoriteEmote = { value: string; url: string; label: string };
 

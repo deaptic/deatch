@@ -1,17 +1,20 @@
-import { STORAGE_KEYS } from "../constants/storage.ts";
+import { STORAGE_KEYS } from "../../lib/constants/storage.ts";
 import {
   getChannelChatBadges,
   getGlobalChatBadges,
 } from "../../platform/twitch/chat.ts";
-import { loadCache, saveCache } from "../utils/cache.ts";
-import { setBadges } from "../stores/feeds.ts";
+import { loadCache, saveCache } from "../../lib/utils/cache.ts";
+import { setBadges } from "../../lib/stores/feeds.ts";
 import {
-  clearSourceBadges,
-  setSourceBadges,
-  sourceBadges,
-} from "../stores/sourceBadges.ts";
-import type { BadgeMap, BadgeSet } from "../types/index.ts";
-import { type ChannelRef, channelResource } from "./channelResource.ts";
+  clearSharedChatBadges,
+  setSharedChatBadges,
+  sharedChatBadges,
+} from "./sharedChatBadges.ts";
+import type { BadgeMap, BadgeSet } from "../../lib/types/index.ts";
+import {
+  type ChannelRef,
+  channelResource,
+} from "../../lib/services/channelResource.ts";
 
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;
 
@@ -75,9 +78,9 @@ export function loadChannel(channel: ChannelRef) {
 }
 
 export function loadSource(channel: ChannelRef) {
-  if (sourceBadges[channel.id]) return;
+  if (sharedChatBadges[channel.id]) return;
   channelBadges.get(channel).then(
-    (map) => setSourceBadges(channel.id, map),
+    (map) => setSharedChatBadges(channel.id, map),
     () => {},
   );
 }
@@ -88,5 +91,5 @@ export function forgetChannel(channelId: string) {
 
 export function resetChannelCache() {
   channelBadges.clear();
-  clearSourceBadges();
+  clearSharedChatBadges();
 }
