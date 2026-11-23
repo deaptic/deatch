@@ -1,4 +1,4 @@
-type Tone = "neutral" | "caution";
+type Tone = "neutral" | "caution" | "accent";
 
 type Props = {
   value: number;
@@ -10,6 +10,7 @@ type Props = {
 const FILL: Record<Tone, string> = {
   neutral: "bg-ink-soft",
   caution: "bg-caution",
+  accent: "bg-accent",
 };
 
 export default function Meter(props: Props) {

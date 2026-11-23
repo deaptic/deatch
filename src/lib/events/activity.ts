@@ -1,12 +1,13 @@
 import { listenEventSub, unlistenAll } from "./listen.ts";
 import type {
   EventKind,
+  RawCharityCampaign,
   RawPoll,
   RawPrediction,
   RawShieldMode,
 } from "../types/index.ts";
 import { type Activity, updateActivity } from "../stores/activity.ts";
-import { pollFrom, predictionFrom } from "../mappers/activity.ts";
+import { charityFrom, pollFrom, predictionFrom } from "../mappers/activity.ts";
 
 type Raw = { broadcaster_user_id: string };
 
@@ -19,8 +20,20 @@ function listenActivity<T extends Raw>(
   );
 }
 
+function listenCharity(
+  kind: EventKind,
+  change: (raw: RawCharityCampaign) => Partial<Activity>,
+) {
+  return listenEventSub<RawCharityCampaign>(kind, (e) =>
+    updateActivity(e.event.broadcaster_id, change(e.event)),
+  );
+}
+
 export function start(): () => void {
   const poll = (raw: RawPoll) => ({ poll: pollFrom(raw) });
+  const charity = (raw: RawCharityCampaign) => ({
+    charity: charityFrom(raw),
+  });
   const prediction = (raw: RawPrediction) => ({
     prediction: predictionFrom(raw),
   });
@@ -40,5 +53,8 @@ export function start(): () => void {
     listenActivity<RawShieldMode>("channel.shield_mode.end", () => ({
       shield: false,
     })),
+    listenCharity("channel.charity_campaign.start", charity),
+    listenCharity("channel.charity_campaign.progress", charity),
+    listenCharity("channel.charity_campaign.stop", () => ({ charity: null })),
   ]);
 }

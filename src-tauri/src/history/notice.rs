@@ -1,7 +1,7 @@
 use super::dto::{
     AnnouncementNotice, BitsBadgeTierNotice, CharityAmount, CharityDonationNotice,
     CommunitySubGiftNotice, GifterNotice, MessageBody, PrimePaidUpgradeNotice, RaidNotice,
-    RecentNotice, ResubNotice, SubGiftNotice, SubNotice, SubTier,
+    RecentNotice, ResubNotice, SubGiftNotice, SubNotice, SubTier, WatchStreakNotice,
 };
 use super::irc::{build_fragments, nonempty, sent_at_ms, tag, Tags};
 use crate::twitch::ids::CommunityGiftId;
@@ -65,6 +65,7 @@ pub(super) fn parse_usernotice(tags: &Tags, body: &str) -> RecentNotice {
         bits_badge_tier: None,
         charity_donation: None,
         announcement: None,
+        watch_streak: None,
     };
     let notice_type = add_detail(&mut notice, msg_id, tags);
     notice.notice_type = if shared {
@@ -163,7 +164,11 @@ fn add_detail<'a>(notice: &mut RecentNotice, msg_id: &'a str, tags: &Tags) -> &'
                 });
             "announcement"
         }
-        "viewermilestone" if tag(tags, "msg-param-category") == "watch-streak" => "watch_streak",
+        "viewermilestone" if tag(tags, "msg-param-category") == "watch-streak" => {
+            notice.watch_streak =
+                num(tags, "msg-param-value").map(|streak_count| WatchStreakNotice { streak_count });
+            "watch_streak"
+        }
         other => other,
     }
 }
@@ -288,6 +293,7 @@ mod tests {
              :tmi.twitch.tv USERNOTICE #broadcaster",
         );
         assert_eq!(n["notice_type"], "watch_streak");
+        assert_eq!(n["watch_streak"], json!({ "streak_count": 80 }));
         assert_eq!(
             n["system_message"],
             "Viewer1 watched 80 consecutive streams"

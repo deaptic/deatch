@@ -258,6 +258,17 @@
   }
 }
 
+@utility grid-options {
+  grid-template-columns: fit-content(40%) minmax(4rem, 1fr) max-content;
+}
+
+@utility grid-options-action {
+  grid-template-columns: fit-content(40%) minmax(
+      4rem,
+      1fr
+    ) max-content max-content;
+}
+
 @utility render-lazy {
   content-visibility: auto;
   contain-intrinsic-size: auto calc(var(--rows, 4) * 3.5rem);

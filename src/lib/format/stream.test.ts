@@ -4,6 +4,7 @@ import {
   formatUptime,
   formatViewers,
   liveLine,
+  streamDetails,
   streamGame,
   streamTitle,
 } from "./stream.ts";
@@ -44,4 +45,24 @@ test("a live stream's title wins over the channel's last one", () => {
   expect(streamTitle(live, last)).toBe("now");
   expect(streamGame(undefined, last)).toBe("Go");
   expect(streamTitle()).toBe("");
+});
+
+test("lists tags, the mature flag and the start time on separate lines", () => {
+  const details = streamDetails({
+    tags: ["English", "Chill"],
+    isMature: true,
+    startedAt: "2026-01-01T12:00:00Z",
+  }).split("\n");
+  expect(details[0]).toBe("English · Chill");
+  expect(details[1]).toBe("Mature content");
+  expect(details[2]).toMatch(/^Live since /);
+});
+
+test("leaves out empty detail lines", () => {
+  const details = streamDetails({
+    tags: [],
+    isMature: false,
+    startedAt: "2026-01-01T12:00:00Z",
+  });
+  expect(details.split("\n")).toHaveLength(1);
 });

@@ -1,5 +1,11 @@
-import { ChartColumn, Shield, Swords, Trophy } from "lucide-solid";
-import { For, Match, onMount, Switch } from "solid-js";
+import {
+  ChartColumn,
+  HeartHandshake,
+  Shield,
+  Swords,
+  Trophy,
+} from "lucide-solid";
+import { onMount, Show } from "solid-js";
 import { t, tRich } from "../../lib/i18n/index.ts";
 import { activityFor } from "../../lib/stores/activity.ts";
 import { pendingRaid, RAID_DURATION_MS } from "../../lib/stores/raid.ts";
@@ -9,11 +15,17 @@ import * as clock from "../../lib/services/clock.ts";
 import * as raid from "../../lib/services/raid.ts";
 import { formatCountdown } from "../../lib/format/duration.ts";
 import { formatViewers } from "../../lib/format/stream.ts";
-import type { Poll, Prediction } from "../../lib/types/index.ts";
+import { formatDonation } from "../../lib/format/currency.ts";
+import type {
+  CharityCampaign,
+  Poll,
+  Prediction,
+} from "../../lib/types/index.ts";
 import Button from "../ui/Button.tsx";
-import Chip from "../ui/Chip.tsx";
+import Meter from "../ui/Meter.tsx";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import ActivityRow from "./ActivityRow.tsx";
+import OptionBars from "./OptionBars.tsx";
 import Presence from "../ui/Presence.tsx";
 
 type Props = {
@@ -37,28 +49,33 @@ export default function ActivityStrip(props: Props) {
   return (
     <Presence
       when={
-        current().shield || current().poll || current().prediction || raiding()
+        current().shield ||
+        current().poll ||
+        current().prediction ||
+        current().charity ||
+        raiding()
       }
     >
       {() => (
         <div class="enter-expand">
-          <div class="flex flex-col py-0.5">
+          <div class="flex flex-col border-t border-line-soft divide-y divide-line-soft">
             <Presence when={current().shield}>
               {() => (
                 <ActivityRow
                   icon={<Shield />}
                   title={t("HEADER_SHIELD_ACTIVE_STATUS")}
-                >
-                  <Button
-                    variant="neutral"
-                    size="sm"
-                    onClick={() =>
-                      activity.setShield(props.broadcasterId, false)
-                    }
-                  >
-                    {t("HEADER_SHIELD_OFF_LABEL")}
-                  </Button>
-                </ActivityRow>
+                  actions={
+                    <Button
+                      variant="neutral"
+                      size="sm"
+                      onClick={() =>
+                        activity.setShield(props.broadcasterId, false)
+                      }
+                    >
+                      {t("HEADER_SHIELD_OFF_LABEL")}
+                    </Button>
+                  }
+                />
               )}
             </Presence>
             <Presence when={current().poll}>
@@ -74,6 +91,9 @@ export default function ActivityStrip(props: Props) {
                 />
               )}
             </Presence>
+            <Presence when={current().charity}>
+              {(charity) => <CharityRow charity={charity()} />}
+            </Presence>
             <Presence when={raiding()}>
               {(r) => {
                 const link = createChannelLink(
@@ -88,33 +108,38 @@ export default function ActivityStrip(props: Props) {
                     ),
                   );
                 return (
-                  <ActivityRow
-                    icon={<Swords />}
-                    title={tRich("HEADER_RAID_PENDING_STATUS", {
-                      name: r().target.displayName,
-                      seconds: seconds(),
-                      target: (chunks) => (
-                        <b
-                          class={`font-semibold hover:underline ${link.cursor}`}
-                          {...link.handlers}
+                  <>
+                    <ActivityRow
+                      icon={<Swords />}
+                      title={tRich("HEADER_RAID_PENDING_STATUS", {
+                        name: r().target.displayName,
+                        seconds: seconds(),
+                        target: (chunks) => (
+                          <b
+                            class={`font-semibold hover:underline ${link.cursor}`}
+                            {...link.handlers}
+                          >
+                            {chunks}
+                          </b>
+                        ),
+                        time: (chunks) => (
+                          <span class="font-semibold tabular-nums">
+                            {chunks}
+                          </span>
+                        ),
+                      })}
+                      actions={
+                        <Button
+                          variant="neutral"
+                          size="sm"
+                          onClick={() => raid.cancel().catch(() => {})}
                         >
-                          {chunks}
-                        </b>
-                      ),
-                      time: (chunks) => (
-                        <span class="font-semibold tabular-nums">{chunks}</span>
-                      ),
-                    })}
-                  >
-                    <Button
-                      variant="neutral"
-                      size="sm"
-                      onClick={() => raid.cancel().catch(() => {})}
-                    >
-                      {t("HEADER_CANCEL_RAID_LABEL")}
-                    </Button>
+                          {t("HEADER_CANCEL_RAID_LABEL")}
+                        </Button>
+                      }
+                    />
                     {link.menu()}
-                  </ActivityRow>
+                  </>
                 );
               }}
             </Presence>
@@ -127,27 +152,28 @@ export default function ActivityStrip(props: Props) {
 
 function PollRow(props: { broadcasterId: string; poll: Poll }) {
   return (
-    <ActivityRow icon={<ChartColumn />} title={props.poll.title}>
-      <For each={props.poll.choices}>
-        {(choice) => (
-          <Chip
-            label={t("HEADER_POLL_CHOICE_VOTES_VALUE", {
-              choice: choice.title,
-              votes: formatViewers(choice.votes),
-            })}
-          />
-        )}
-      </For>
-      <span class="text-ink-soft tabular-nums">
-        {t("HEADER_POLL_ENDS_IN_STATUS", { time: until(props.poll.endsAt) })}
-      </span>
-      <Button
-        variant="neutral"
-        size="sm"
-        onClick={() => activity.endPoll(props.broadcasterId, props.poll.id)}
-      >
-        {t("HEADER_END_POLL_LABEL")}
-      </Button>
+    <ActivityRow
+      icon={<ChartColumn />}
+      title={props.poll.title}
+      meta={t("HEADER_POLL_ENDS_IN_STATUS", { time: until(props.poll.endsAt) })}
+      actions={
+        <Button
+          variant="neutral"
+          size="sm"
+          onClick={() => activity.endPoll(props.broadcasterId, props.poll.id)}
+        >
+          {t("HEADER_END_POLL_LABEL")}
+        </Button>
+      }
+    >
+      <OptionBars
+        options={props.poll.choices.map((c) => ({
+          id: c.id,
+          title: c.title,
+          value: c.votes,
+          detail: formatViewers(c.votes),
+        }))}
+      />
     </ActivityRow>
   );
 }
@@ -156,65 +182,101 @@ function PredictionRow(props: {
   broadcasterId: string;
   prediction: Prediction;
 }) {
-  const label = (o: Prediction["outcomes"][number]) =>
-    t("HEADER_PREDICTION_OUTCOME_POINTS_VALUE", {
-      outcome: o.title,
-      points: formatViewers(o.channelPoints),
-    });
   const end = (e: Parameters<typeof activity.endPrediction>[2]) =>
     activity.endPrediction(props.broadcasterId, props.prediction, e);
+  const phase = () => props.prediction.phase;
+  const options = () =>
+    props.prediction.outcomes.map((o) => ({
+      id: o.id,
+      title: o.title,
+      value: o.channelPoints,
+      detail: t("HEADER_PREDICTION_POINTS_VALUE", {
+        points: formatViewers(o.channelPoints),
+      }),
+    }));
+  const meta = () => {
+    const p = phase();
+    return p.kind === "open"
+      ? t("HEADER_PREDICTION_LOCKS_IN_STATUS", { time: until(p.locksAt) })
+      : t("HEADER_PICK_WINNER_LABEL");
+  };
 
   return (
-    <ActivityRow icon={<Trophy />} title={props.prediction.title}>
-      <Switch>
-        <Match
-          when={
-            props.prediction.phase.kind === "open" && props.prediction.phase
-          }
-        >
-          {(open) => (
-            <>
-              <For each={props.prediction.outcomes}>
-                {(o) => <Chip label={label(o)} />}
-              </For>
-              <span class="text-ink-soft tabular-nums">
-                {t("HEADER_PREDICTION_LOCKS_IN_STATUS", {
-                  time: until(open().locksAt),
-                })}
-              </span>
-              <Button
-                variant="neutral"
-                size="sm"
-                onClick={() => end({ kind: "lock" })}
-              >
-                {t("HEADER_LOCK_PREDICTION_LABEL")}
-              </Button>
-            </>
-          )}
-        </Match>
-        <Match when={props.prediction.phase.kind === "locked"}>
-          <span class="text-ink-soft">{t("HEADER_PICK_WINNER_LABEL")}</span>
-          <For each={props.prediction.outcomes}>
-            {(o) => (
-              <Button
-                variant="neutral"
-                size="sm"
-                pressed
-                onClick={() => end({ kind: "resolve", winningOutcomeId: o.id })}
-              >
-                {label(o)}
-              </Button>
-            )}
-          </For>
-        </Match>
-      </Switch>
-      <Button
-        variant="neutral"
-        size="sm"
-        onClick={() => end({ kind: "cancel" })}
-      >
-        {t("HEADER_REFUND_PREDICTION_LABEL")}
-      </Button>
+    <ActivityRow
+      icon={<Trophy />}
+      title={props.prediction.title}
+      meta={meta()}
+      actions={
+        <>
+          <Show when={phase().kind === "open"}>
+            <Button
+              variant="neutral"
+              size="sm"
+              onClick={() => end({ kind: "lock" })}
+            >
+              {t("HEADER_LOCK_PREDICTION_LABEL")}
+            </Button>
+          </Show>
+          <Button
+            variant="neutral"
+            size="sm"
+            onClick={() => end({ kind: "cancel" })}
+          >
+            {t("HEADER_REFUND_PREDICTION_LABEL")}
+          </Button>
+        </>
+      }
+    >
+      <OptionBars
+        options={options()}
+        action={
+          phase().kind === "locked"
+            ? (o) => (
+                <Button
+                  variant="neutral"
+                  size="sm"
+                  onClick={() =>
+                    end({ kind: "resolve", winningOutcomeId: o.id })
+                  }
+                >
+                  {t("HEADER_PICK_OUTCOME_LABEL")}
+                </Button>
+              )
+            : undefined
+        }
+      />
+    </ActivityRow>
+  );
+}
+
+function CharityRow(props: { charity: CharityCampaign }) {
+  const raised = () => formatDonation(props.charity.current);
+  const target = () => props.charity.target;
+  const meta = () => {
+    const goal = target();
+    return goal
+      ? t("HEADER_CHARITY_PROGRESS_STATUS", {
+          current: raised(),
+          target: formatDonation(goal),
+        })
+      : t("HEADER_CHARITY_RAISED_STATUS", { current: raised() });
+  };
+  return (
+    <ActivityRow
+      icon={<HeartHandshake />}
+      title={props.charity.charityName}
+      meta={meta()}
+    >
+      <Show when={target()}>
+        {(goal) => (
+          <Meter
+            value={props.charity.current.value}
+            max={goal().value}
+            label={t("HEADER_CHARITY_PROGRESS_LABEL")}
+            tone="accent"
+          />
+        )}
+      </Show>
     </ActivityRow>
   );
 }

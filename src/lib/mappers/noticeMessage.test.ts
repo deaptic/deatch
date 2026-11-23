@@ -89,6 +89,12 @@ test("counts a moderator's months", () => {
   ).toBe("Viewer has been a moderator for 84 months!");
 });
 
+test("counts a watch streak", () => {
+  expect(
+    notice({ notice_type: "watch_streak", watch_streak: { streak_count: 80 } }),
+  ).toBe("Viewer watched 80 streams in a row");
+});
+
 test("leaves unknown notices to Twitch's text", () => {
   expect(notice({ notice_type: "watch_streak" })).toBeNull();
   expect(notice({ notice_type: "sub" })).toBeNull();

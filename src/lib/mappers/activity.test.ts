@@ -1,6 +1,10 @@
 import { expect, test } from "vite-plus/test";
-import { pollFrom, predictionFrom } from "./activity.ts";
-import type { RawPoll, RawPrediction } from "../types/index.ts";
+import { charityFrom, pollFrom, predictionFrom } from "./activity.ts";
+import type {
+  RawCharityCampaign,
+  RawPoll,
+  RawPrediction,
+} from "../types/index.ts";
 
 const poll: RawPoll = {
   broadcaster_user_id: "1",
@@ -53,4 +57,20 @@ test("predictionFrom is open until voting locks", () => {
 test("predictionFrom is locked once the lock stage drops locks_at", () => {
   const { locks_at: _, ...locked } = prediction;
   expect(predictionFrom(locked).phase).toEqual({ kind: "locked" });
+});
+
+const campaign: RawCharityCampaign = {
+  broadcaster_id: "1",
+  id: "c1",
+  charity_name: "Kind Org",
+  current_amount: { value: 12000, decimal_places: 2, currency: "EUR" },
+  target_amount: { value: 50000, decimal_places: 2, currency: "EUR" },
+};
+
+test("charityFrom keeps the raised and target amounts", () => {
+  expect(charityFrom(campaign)).toEqual({
+    charityName: "Kind Org",
+    current: { value: 12000, decimalPlaces: 2, currency: "EUR" },
+    target: { value: 50000, decimalPlaces: 2, currency: "EUR" },
+  });
 });

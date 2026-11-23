@@ -60,6 +60,11 @@ export const commands = {
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
 	updateShieldMode: (params: UpdateShieldModeParams) => __TAURI_INVOKE<boolean>("update_shield_mode", { params }),
+	getCharityCampaign: (params: BroadcasterParams) => __TAURI_INVOKE<{
+	charityName: string,
+	current: DonationAmount,
+	target: DonationAmount | null,
+} | null>("get_charity_campaign", { params }),
 	getActivePoll: (params: BroadcasterParams) => __TAURI_INVOKE<{
 	id: PollId,
 	title: string,
@@ -119,7 +124,7 @@ export const events = {
 };
 
 /* Constants */
-export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.ad_break.begin":"channel-ad-break-begin","channel.bits.use":"channel-bits-use","channel.channel_points_automatic_reward_redemption.add":"channel-points-automatic-redemption-add","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.charity_campaign.start":"channel-charity-campaign-start","channel.charity_campaign.stop":"channel-charity-campaign-stop","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.goal.begin":"channel-goal-begin","channel.goal.end":"channel-goal-end","channel.hype_train.begin":"channel-hype-train-begin","channel.hype_train.end":"channel-hype-train-end","channel.hype_train.progress":"channel-hype-train-progress","channel.moderate":"channel-moderate","channel.poll.begin":"channel-poll-begin","channel.poll.end":"channel-poll-end","channel.poll.progress":"channel-poll-progress","channel.prediction.begin":"channel-prediction-begin","channel.prediction.end":"channel-prediction-end","channel.prediction.lock":"channel-prediction-lock","channel.prediction.progress":"channel-prediction-progress","channel.shared_chat.begin":"channel-shared-chat-begin","channel.shared_chat.end":"channel-shared-chat-end","channel.shared_chat.update":"channel-shared-chat-update","channel.shield_mode.begin":"channel-shield-mode-begin","channel.shield_mode.end":"channel-shield-mode-end","channel.shoutout.create":"channel-shoutout-create","channel.shoutout.receive":"channel-shoutout-receive","channel.suspicious_user.message":"channel-suspicious-user-message","channel.suspicious_user.update":"channel-suspicious-user-update","channel.unban_request.create":"channel-unban-request-create","channel.unban_request.resolve":"channel-unban-request-resolve","channel.update":"channel-update","channel.warning.acknowledge":"channel-warning-acknowledge","stream.offline":"stream-offline","stream.online":"stream-online"} as const;
+export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.ad_break.begin":"channel-ad-break-begin","channel.bits.use":"channel-bits-use","channel.channel_points_automatic_reward_redemption.add":"channel-points-automatic-redemption-add","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.charity_campaign.progress":"channel-charity-campaign-progress","channel.charity_campaign.start":"channel-charity-campaign-start","channel.charity_campaign.stop":"channel-charity-campaign-stop","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.goal.begin":"channel-goal-begin","channel.goal.end":"channel-goal-end","channel.hype_train.begin":"channel-hype-train-begin","channel.hype_train.end":"channel-hype-train-end","channel.hype_train.progress":"channel-hype-train-progress","channel.moderate":"channel-moderate","channel.poll.begin":"channel-poll-begin","channel.poll.end":"channel-poll-end","channel.poll.progress":"channel-poll-progress","channel.prediction.begin":"channel-prediction-begin","channel.prediction.end":"channel-prediction-end","channel.prediction.lock":"channel-prediction-lock","channel.prediction.progress":"channel-prediction-progress","channel.shared_chat.begin":"channel-shared-chat-begin","channel.shared_chat.end":"channel-shared-chat-end","channel.shared_chat.update":"channel-shared-chat-update","channel.shield_mode.begin":"channel-shield-mode-begin","channel.shield_mode.end":"channel-shield-mode-end","channel.shoutout.create":"channel-shoutout-create","channel.shoutout.receive":"channel-shoutout-receive","channel.suspicious_user.message":"channel-suspicious-user-message","channel.suspicious_user.update":"channel-suspicious-user-update","channel.unban_request.create":"channel-unban-request-create","channel.unban_request.resolve":"channel-unban-request-resolve","channel.update":"channel-update","channel.warning.acknowledge":"channel-warning-acknowledge","stream.offline":"stream-offline","stream.online":"stream-online"} as const;
 
 /* Types */
 export type AnnouncementColor = "primary" | "blue" | "green" | "orange" | "purple";
@@ -236,6 +241,12 @@ export type CharityAmount = {
 	currency: string,
 };
 
+export type CharityCampaign = {
+	charityName: string,
+	current: DonationAmount,
+	target: DonationAmount | null,
+};
+
 export type CharityDonationNotice = {
 	charity_name: string,
 	amount: CharityAmount,
@@ -349,6 +360,12 @@ export type DeleteChatMessagesParams = {
 	messageId?: MessageId | null,
 };
 
+export type DonationAmount = {
+	value: number,
+	decimalPlaces: number,
+	currency: string,
+};
+
 export type DropReason = { code: "held" } | { code: "rejected" } | { code: "banned" } | { code: "timedOut" } | { code: "suspended" } | { code: "channelBlocked" } | { code: "channelSuspended" } | { code: "badCharacters" } | { code: "duplicate" } | { code: "uniqueChat" } | { code: "rateLimit" } | { code: "slowMode" } | { code: "emoteOnly" } | { code: "followersOnly" } | { code: "subscribersOnly" } | { code: "phoneRequired" } | { code: "emailRequired" } | { code: "unknown"; message: string };
 
 export type Emote = {
@@ -399,7 +416,7 @@ export type Error = { kind: "notAuthenticated" } | { kind: "helix"; message: str
 	scope: string,
 } } | { kind: "discord"; message: string } | { kind: "io"; message: string } | { kind: "invalid"; message: string };
 
-export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shared_chat.begin" | "channel.shared_chat.update" | "channel.shared_chat.end" | "channel.shoutout.create" | "channel.shoutout.receive" | "channel.follow" | "channel.moderate" | "channel.unban_request.create" | "channel.unban_request.resolve" | "channel.warning.acknowledge" | "channel.suspicious_user.message" | "channel.suspicious_user.update" | "channel.shield_mode.begin" | "channel.shield_mode.end" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.channel_points_automatic_reward_redemption.add" | "channel.update" | "channel.hype_train.begin" | "channel.hype_train.progress" | "channel.hype_train.end" | "channel.poll.begin" | "channel.poll.progress" | "channel.poll.end" | "channel.prediction.begin" | "channel.prediction.progress" | "channel.prediction.lock" | "channel.prediction.end" | "channel.goal.begin" | "channel.goal.end" | "channel.ad_break.begin" | "channel.bits.use" | "channel.charity_campaign.start" | "channel.charity_campaign.stop" | "stream.online" | "stream.offline";
+export type EventKind = "channel.chat.message" | "channel.chat.notification" | "channel.chat.message_delete" | "channel.chat.clear" | "channel.chat.clear_user_messages" | "channel.chat_settings.update" | "channel.shared_chat.begin" | "channel.shared_chat.update" | "channel.shared_chat.end" | "channel.shoutout.create" | "channel.shoutout.receive" | "channel.follow" | "channel.moderate" | "channel.unban_request.create" | "channel.unban_request.resolve" | "channel.warning.acknowledge" | "channel.suspicious_user.message" | "channel.suspicious_user.update" | "channel.shield_mode.begin" | "channel.shield_mode.end" | "automod.message.hold" | "automod.message.update" | "channel.channel_points_custom_reward_redemption.add" | "channel.channel_points_automatic_reward_redemption.add" | "channel.update" | "channel.hype_train.begin" | "channel.hype_train.progress" | "channel.hype_train.end" | "channel.poll.begin" | "channel.poll.progress" | "channel.poll.end" | "channel.prediction.begin" | "channel.prediction.progress" | "channel.prediction.lock" | "channel.prediction.end" | "channel.goal.begin" | "channel.goal.end" | "channel.ad_break.begin" | "channel.bits.use" | "channel.charity_campaign.start" | "channel.charity_campaign.progress" | "channel.charity_campaign.stop" | "stream.online" | "stream.offline";
 
 export type EventSubConnection = {
 	connected: boolean,
@@ -634,6 +651,7 @@ export type RecentNotice = {
 	bits_badge_tier: BitsBadgeTierNotice | null,
 	charity_donation: CharityDonationNotice | null,
 	announcement: AnnouncementNotice | null,
+	watch_streak: WatchStreakNotice | null,
 };
 
 export type Rename = {
@@ -823,6 +841,10 @@ export type WarnUserParams = {
 	broadcasterId: UserId,
 	userId: UserId,
 	reason: string,
+};
+
+export type WatchStreakNotice = {
+	streak_count: number,
 };
 
 /* Tauri Specta runtime */

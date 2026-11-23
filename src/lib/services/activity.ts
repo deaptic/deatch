@@ -7,6 +7,7 @@ import {
   getActivePrediction,
 } from "../api/twitch/predictions.ts";
 import type { Prediction, PredictionEnd } from "../types/index.ts";
+import { getCharityCampaign } from "../api/twitch/charity.ts";
 import { getShieldMode, updateShieldMode } from "../api/twitch/moderation.ts";
 import { updateActivity } from "../stores/activity.ts";
 
@@ -22,6 +23,9 @@ export function load(broadcasterId: string, isBroadcaster: boolean): void {
     .catch(() => {});
   getActivePrediction(params, silent)
     .then((prediction) => updateActivity(broadcasterId, { prediction }))
+    .catch(() => {});
+  getCharityCampaign(params, silent)
+    .then((charity) => updateActivity(broadcasterId, { charity }))
     .catch(() => {});
 }
 

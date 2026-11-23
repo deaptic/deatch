@@ -78,6 +78,7 @@ kinds! {
     ChannelAdBreakBegin = "channel.ad_break.begin", "channel-ad-break-begin" => (Broadcaster, Focused),
     ChannelBitsUse = "channel.bits.use", "channel-bits-use" => (Broadcaster, Focused),
     ChannelCharityCampaignStart = "channel.charity_campaign.start", "channel-charity-campaign-start" => (Broadcaster, Focused),
+    ChannelCharityCampaignProgress = "channel.charity_campaign.progress", "channel-charity-campaign-progress" => (Broadcaster, Focused),
     ChannelCharityCampaignStop = "channel.charity_campaign.stop", "channel-charity-campaign-stop" => (Broadcaster, Focused),
     StreamOnline = "stream.online", "stream-online" => (Broadcaster, Focused),
     StreamOffline = "stream.offline", "stream-offline" => (Broadcaster, Focused),

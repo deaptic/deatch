@@ -116,6 +116,12 @@ export function noticeMessage(raw: RawNotification): string | null {
       const d = detail(raw, "modiversary");
       return d ? t("FEED_MODIVERSARY_LINE", { name, months: d.months }) : null;
     }
+    case "watch_streak": {
+      const d = detail(raw, "watch_streak");
+      return d
+        ? t("FEED_WATCH_STREAK_LINE", { name, count: d.streak_count })
+        : null;
+    }
     case "announcement":
       return t("FEED_ANNOUNCEMENT_LINE", { name });
     default:

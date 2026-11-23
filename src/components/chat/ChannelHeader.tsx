@@ -1,4 +1,4 @@
-import { Clock, Gamepad2, Moon, Pencil, Users } from "lucide-solid";
+import { Clock, Gamepad2, Info, Moon, Pencil, Users } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../lib/i18n/index.ts";
 import { channelInfoFor, streamForUserId } from "../../lib/stores/channels.ts";
@@ -7,6 +7,7 @@ import * as browser from "../../lib/services/browser.ts";
 import {
   formatUptime,
   formatViewers,
+  streamDetails,
   streamGame,
   streamTitle,
 } from "../../lib/format/stream.ts";
@@ -91,7 +92,7 @@ export default function ChannelHeader(props: Props) {
               </Show>
             </div>
           </div>
-          <Show when={title() || isBroadcaster()}>
+          <Show when={title() || stream() || isBroadcaster()}>
             <div class="mt-1 flex items-center gap-2 min-w-0">
               <p
                 class={`min-w-0 text-body truncate ${titleCopy.class()}`}
@@ -100,8 +101,19 @@ export default function ChannelHeader(props: Props) {
               >
                 {title()}
               </p>
-              <Show when={isBroadcaster()}>
-                <span class="ml-auto shrink-0 -my-1">
+              <span class="ml-auto shrink-0 -my-1 flex items-center gap-1">
+                <Show when={stream()}>
+                  {(s) => (
+                    <IconButton
+                      label={t("HEADER_STREAM_DETAILS_LABEL")}
+                      tip={streamDetails(s())}
+                      size="sm"
+                    >
+                      <Info class="size-4" />
+                    </IconButton>
+                  )}
+                </Show>
+                <Show when={isBroadcaster()}>
                   <IconButton
                     label={t("HEADER_EDIT_INFO_LABEL")}
                     size="sm"
@@ -109,8 +121,8 @@ export default function ChannelHeader(props: Props) {
                   >
                     <Pencil class="size-4" />
                   </IconButton>
-                </span>
-              </Show>
+                </Show>
+              </span>
             </div>
           </Show>
         </div>

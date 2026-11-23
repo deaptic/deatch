@@ -38,3 +38,15 @@ export function liveLine(game?: string, viewers?: number): string {
   if (viewers !== undefined) parts.push(formatViewers(viewers));
   return parts.filter(Boolean).join(" · ");
 }
+
+type Details = { tags: string[]; isMature: boolean; startedAt: string };
+
+export function streamDetails(stream: Details): string {
+  return [
+    stream.tags.join(" · "),
+    stream.isMature ? t("HEADER_MATURE_STATUS") : "",
+    t("HEADER_LIVE_SINCE_STATUS", { time: new Date(stream.startedAt) }),
+  ]
+    .filter(Boolean)
+    .join("\n");
+}

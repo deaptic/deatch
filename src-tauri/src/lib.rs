@@ -89,6 +89,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::moderation::commands::manage_held_automod_message,
             twitch::moderation::commands::get_shield_mode,
             twitch::moderation::commands::update_shield_mode,
+            twitch::charity::commands::get_charity_campaign,
             twitch::polls::commands::get_active_poll,
             twitch::polls::commands::create_poll,
             twitch::polls::commands::end_poll,

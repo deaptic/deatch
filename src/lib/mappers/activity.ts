@@ -1,7 +1,11 @@
 import type {
+  CharityCampaign,
+  DonationAmount,
   Poll,
   Prediction,
   RawPoll,
+  RawCampaignAmount,
+  RawCharityCampaign,
   RawPrediction,
 } from "../types/index.ts";
 
@@ -31,5 +35,21 @@ export function predictionFrom(raw: RawPrediction): Prediction {
       channelPoints: o.channel_points ?? 0,
       users: o.users ?? 0,
     })),
+  };
+}
+
+function amountFrom(raw: RawCampaignAmount): DonationAmount {
+  return {
+    value: raw.value,
+    decimalPlaces: raw.decimal_places,
+    currency: raw.currency,
+  };
+}
+
+export function charityFrom(raw: RawCharityCampaign): CharityCampaign {
+  return {
+    charityName: raw.charity_name,
+    current: amountFrom(raw.current_amount),
+    target: amountFrom(raw.target_amount),
   };
 }

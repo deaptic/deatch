@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { For, Show } from "solid-js";
 import { Clock, Users } from "lucide-solid";
 import type { Stream, User } from "../../lib/types/index.ts";
 import { resolveUser } from "../../lib/stores/channels.ts";
@@ -7,9 +7,12 @@ import * as clock from "../../lib/services/clock.ts";
 import { createChannelLink } from "../context-menus/createChannelLink.tsx";
 import Artwork from "../ui/Artwork.tsx";
 import Avatar from "../ui/Avatar.tsx";
+import Chip from "../ui/Chip.tsx";
 import LivePill from "../ui/LivePill.tsx";
 import Stat from "../ui/Stat.tsx";
 import { CARD_FRAME } from "../ui/Card.tsx";
+
+const SHOWN_TAGS = 3;
 
 type Props = {
   stream: Stream;
@@ -64,6 +67,13 @@ export default function LiveCard(props: Props) {
               {(game) => <span class="text-ink-faint"> · {game()}</span>}
             </Show>
           </p>
+          <Show when={props.stream.tags.length}>
+            <div class="mt-2 flex flex-wrap gap-1 h-5 overflow-hidden">
+              <For each={props.stream.tags.slice(0, SHOWN_TAGS)}>
+                {(tag) => <Chip variant="label" label={tag} />}
+              </For>
+            </div>
+          </Show>
         </div>
       </div>
       {link.menu()}

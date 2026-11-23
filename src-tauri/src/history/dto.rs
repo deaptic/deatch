@@ -51,6 +51,12 @@ pub struct RecentNotice {
     pub bits_badge_tier: Option<BitsBadgeTierNotice>,
     pub charity_donation: Option<CharityDonationNotice>,
     pub announcement: Option<AnnouncementNotice>,
+    pub watch_streak: Option<WatchStreakNotice>,
+}
+
+#[derive(Debug, PartialEq, Serialize, specta::Type)]
+pub struct WatchStreakNotice {
+    pub streak_count: u32,
 }
 
 #[derive(Debug, PartialEq, Serialize, specta::Type)]

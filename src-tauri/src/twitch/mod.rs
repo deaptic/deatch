@@ -1,6 +1,7 @@
 pub mod auth;
 pub mod bits;
 pub mod channels;
+pub mod charity;
 pub mod chat;
 pub mod clips;
 pub mod eventsub;
