@@ -1,4 +1,4 @@
-use crate::twitch::ids::GameId;
+use crate::twitch::client::ids::GameId;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize, specta::Type)]

@@ -13,10 +13,10 @@ use super::subscriptions::{
     Channels, ConnId, Created, Outcome, Subs, Subscription, Viewer, MAX_CONNECTIONS, PER_CONNECTION,
 };
 use super::EventKind;
-use crate::clock::unix_ms;
-use crate::emit::{emit, emit_named};
-use crate::error::{Error, Result};
-use crate::twitch::ids::UserId;
+use crate::platform::clock::unix_ms;
+use crate::platform::emit::{emit, emit_named};
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::UserId;
 use crate::twitch::users::dto::UserRef;
 
 const MODERATED_REFRESH: Duration = Duration::from_secs(10 * 60);

@@ -1,6 +1,6 @@
-use crate::clock::rfc3339_after;
-use crate::error::{Error, Result};
-use crate::twitch::ids::{PredictionId, PredictionOutcomeId};
+use crate::platform::clock::rfc3339_after;
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::{PredictionId, PredictionOutcomeId};
 use crate::twitch::polls::dto::count;
 use serde::Serialize;
 use twitch_api::helix::predictions::Prediction as HelixPrediction;

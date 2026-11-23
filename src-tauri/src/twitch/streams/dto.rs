@@ -1,6 +1,6 @@
-use crate::twitch::game::GameRef;
-use crate::twitch::ids::StreamId;
-use crate::twitch::template::render_size;
+use crate::twitch::client::game::GameRef;
+use crate::twitch::client::ids::StreamId;
+use crate::twitch::client::template::render_size;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::streams as helix_streams;

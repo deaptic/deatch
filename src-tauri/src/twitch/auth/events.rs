@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::platform::error::Error;
 use crate::twitch::users::dto::User;
 use serde::Serialize;
 

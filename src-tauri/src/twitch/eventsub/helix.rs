@@ -12,8 +12,8 @@ use super::versions::{
     ChannelPointsAutomaticRewardRedemptionAddV2,
 };
 use super::EventKind;
-use crate::error::{Error, Result};
-use crate::twitch::ids::UserId;
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::UserId;
 use twitch_api::eventsub::{
     automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
     channel::chat::{

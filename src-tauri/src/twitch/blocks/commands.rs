@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::blocks::{self, BlockParams};
 use crate::twitch::users::dto::UserRef;
 use crate::twitch::Twitch;

@@ -11,9 +11,9 @@ use tokio_tungstenite::tungstenite::{Error as WsError, Message};
 
 use super::dto::{EmoteEntry, StvEmote};
 use super::events::{EmoteSetUpdated, Rename};
-use crate::emit::emit;
-use crate::twitch::ids::SevenTvEmoteSetId;
-use crate::ws::{self, Socket};
+use crate::platform::emit::emit;
+use crate::platform::ws::{self, Socket};
+use crate::twitch::client::ids::SevenTvEmoteSetId;
 
 const WS_URL: &str = "wss://events.7tv.io/v3";
 const EMOTE_SET_UPDATE: &str = "emote_set.update";
@@ -34,7 +34,7 @@ pub enum SevenTvOp {
 pub struct SevenTvEvents(UnboundedSender<SevenTvOp>);
 
 impl SevenTvEvents {
-    pub fn request(&self, op: SevenTvOp) -> crate::error::Result<()> {
+    pub fn request(&self, op: SevenTvOp) -> crate::platform::error::Result<()> {
         Ok(self.0.send(op)?)
     }
 }

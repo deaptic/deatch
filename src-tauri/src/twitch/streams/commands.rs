@@ -1,6 +1,6 @@
 use super::dto::Stream;
-use crate::error::Result;
-use crate::twitch::pagination::PaginatedResponse;
+use crate::platform::error::Result;
+use crate::twitch::client::pagination::PaginatedResponse;
 use crate::twitch::streams::{
     self, CreateStreamMarkerParams, GetStreamsFromIdsParams, GetStreamsParams,
 };

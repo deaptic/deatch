@@ -1,5 +1,5 @@
-use super::Authed;
-use crate::error::Result;
+use crate::platform::error::Result;
+use crate::twitch::Authed;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::marker::PhantomData;

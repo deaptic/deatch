@@ -1,7 +1,7 @@
 use super::dto::Cheermote;
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::bits;
-use crate::twitch::params::BroadcasterParams;
+use crate::twitch::client::params::BroadcasterParams;
 use crate::twitch::Twitch;
 use tauri::State;
 

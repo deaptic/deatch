@@ -10,10 +10,10 @@ mod versions;
 
 pub use kind::{EventKind, Focus};
 
-use super::ids::UserId;
+use super::client::ids::UserId;
 use super::Twitch;
-use crate::error::Result;
-use crate::lock::lock;
+use crate::platform::error::Result;
+use crate::platform::lock::lock;
 use dto::EventSubStats;
 use serde::Deserialize;
 use std::sync::Mutex;

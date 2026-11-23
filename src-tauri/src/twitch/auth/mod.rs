@@ -3,11 +3,12 @@ pub(super) mod credentials;
 pub mod dto;
 pub mod events;
 mod scopes;
+pub mod session;
 
 use super::users::dto::User;
 use super::{users, Twitch};
-use crate::emit::emit;
-use crate::error::{Error, Result};
+use crate::platform::emit::emit;
+use crate::platform::error::{Error, Result};
 use dto::DcfAuthResponse;
 use events::{AuthFailed, AuthSucceeded};
 use twitch_api::twitch_oauth2::tokens::errors::RetrieveTokenError;
@@ -65,9 +66,7 @@ pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
     .await;
     let token = match restored {
         Ok(token) => token,
-        Err(RetrieveTokenError::RefreshTokenError { error, .. })
-            if super::session::is_final(&error) =>
-        {
+        Err(RetrieveTokenError::RefreshTokenError { error, .. }) if session::is_final(&error) => {
             log::warn!("stored session rejected: {error}");
             credentials::delete()?;
             return Ok(None);

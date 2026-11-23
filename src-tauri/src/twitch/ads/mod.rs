@@ -1,10 +1,10 @@
 pub mod commands;
 pub mod dto;
 
-use super::broadcaster_endpoint::{self, BroadcasterEndpoint};
+use super::client::broadcaster_endpoint::{self, BroadcasterEndpoint};
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterParams;
 use dto::{AdSchedule, HelixAdSchedule};
 use twitch_api::twitch_oauth2::{validator, Scope, Validator};
 

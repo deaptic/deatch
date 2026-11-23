@@ -2,9 +2,9 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::{GameId, UserId};
-use crate::twitch::pagination::PaginatedResponse;
+use crate::platform::error::Result;
+use crate::twitch::client::ids::{GameId, UserId};
+use crate::twitch::client::pagination::PaginatedResponse;
 use dto::Stream;
 use serde::Deserialize;
 use std::borrow::Cow;
@@ -54,11 +54,15 @@ pub async fn get_streams_from_ids(
 ) -> Result<Vec<Stream>> {
     let ids: Vec<types::UserId> = params.user_ids.into_iter().map(Into::into).collect();
     let ids = ids.into();
-    crate::twitch::pagination::collect(twitch.helix.get_streams_from_ids(&ids, &twitch.token)).await
+    crate::twitch::client::pagination::collect(
+        twitch.helix.get_streams_from_ids(&ids, &twitch.token),
+    )
+    .await
 }
 
 pub async fn get_followed_streams(twitch: &Authed<'_>) -> Result<Vec<Stream>> {
-    crate::twitch::pagination::collect(twitch.helix.get_followed_streams(&twitch.token)).await
+    crate::twitch::client::pagination::collect(twitch.helix.get_followed_streams(&twitch.token))
+        .await
 }
 
 #[derive(Default, Deserialize, specta::Type)]

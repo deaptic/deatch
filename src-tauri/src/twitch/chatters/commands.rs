@@ -1,7 +1,7 @@
 use super::dto::ChattersPage;
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::chatters::{self, GetChattersParams};
-use crate::twitch::params::BroadcasterParams;
+use crate::twitch::client::params::BroadcasterParams;
 use crate::twitch::users::dto::UserRef;
 use crate::twitch::Twitch;
 use tauri::State;

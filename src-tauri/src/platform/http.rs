@@ -1,4 +1,4 @@
-use crate::error::{Error, Result};
+use crate::platform::error::{Error, Result};
 use reqwest::{IntoUrl, Method, StatusCode, Url};
 use serde::de::DeserializeOwned;
 use std::fmt::Display;

@@ -1,7 +1,7 @@
 pub mod commands;
 
-use crate::error::{Error, Result};
-use crate::lock::lock;
+use crate::platform::error::{Error, Result};
+use crate::platform::lock::lock;
 use discord_rich_presence::activity::{
     Activity, ActivityType, Assets, Button as ActivityButton, StatusDisplayType, Timestamps,
 };

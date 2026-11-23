@@ -6,7 +6,7 @@ mod ffz;
 mod seventv;
 pub mod seventv_events;
 
-use crate::twitch::ids::SevenTvEmoteSetId;
+use crate::twitch::client::ids::SevenTvEmoteSetId;
 use serde::Deserialize;
 
 #[derive(Deserialize, specta::Type)]

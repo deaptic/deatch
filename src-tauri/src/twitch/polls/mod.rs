@@ -2,9 +2,9 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::{PollId, UserId};
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::ids::{PollId, UserId};
+use crate::twitch::client::params::BroadcasterParams;
 use dto::Poll;
 use serde::Deserialize;
 use twitch_api::helix::polls::{

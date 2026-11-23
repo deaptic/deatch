@@ -1,6 +1,6 @@
-use crate::clock::rfc3339_after;
-use crate::error::{Error, Result};
-use crate::twitch::ids::PollId;
+use crate::platform::clock::rfc3339_after;
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::PollId;
 use serde::Serialize;
 use twitch_api::helix::polls::Poll as HelixPoll;
 use twitch_api::types::PollChoice as HelixPollChoice;

@@ -1,8 +1,8 @@
 pub mod commands;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
+use crate::platform::error::Result;
+use crate::twitch::client::params::{BroadcasterPairParams, BroadcasterParams};
 
 pub async fn start_raid(twitch: &Authed<'_>, params: BroadcasterPairParams) -> Result<()> {
     twitch

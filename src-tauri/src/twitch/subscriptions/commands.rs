@@ -1,6 +1,6 @@
 use super::dto::Subscription;
-use crate::error::Result;
-use crate::twitch::params::BroadcasterUserParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterUserParams;
 use crate::twitch::subscriptions;
 use crate::twitch::Twitch;
 use tauri::State;

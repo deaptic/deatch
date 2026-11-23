@@ -18,7 +18,7 @@ const CHROMIUM_REGISTRY_KEYS: [&str; 2] = [
 ];
 
 pub fn register() -> io::Result<()> {
-    let dir = crate::local_dir::local_dir()?;
+    let dir = crate::platform::local_dir::local_dir()?;
     let exe = std::env::current_exe()?;
 
     let firefox = write_manifest(

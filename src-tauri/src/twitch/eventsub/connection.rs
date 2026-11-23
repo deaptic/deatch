@@ -9,8 +9,8 @@ use tokio_tungstenite::tungstenite::Message as WsMessage;
 use super::runner::Signal;
 use super::subscriptions::ConnId;
 use super::EventKind;
-use crate::twitch::ids::UserId;
-use crate::ws::{self, Socket};
+use crate::platform::ws::{self, Socket};
+use crate::twitch::client::ids::UserId;
 
 const WS_URL: &str = "wss://eventsub.wss.twitch.tv/ws";
 const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(30);
@@ -253,7 +253,7 @@ fn reconnect_delay(failed_connects: u32) -> Duration {
 }
 
 fn jittered(delay: Duration) -> Duration {
-    let spread = crate::clock::since_epoch().subsec_nanos() % 1000;
+    let spread = crate::platform::clock::since_epoch().subsec_nanos() % 1000;
     delay + delay.mul_f64(f64::from(spread) / 4000.0)
 }
 

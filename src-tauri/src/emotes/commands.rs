@@ -2,8 +2,8 @@ use super::dto::{ChannelResult, EmoteEntry};
 use super::seventv_events::{SevenTvEvents, SevenTvOp};
 use super::{bttv, ffz, seventv};
 use super::{BroadcasterLoginParams, EmoteSetParams};
-use crate::error::Result;
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterParams;
 use tauri::State;
 
 #[tauri::command]

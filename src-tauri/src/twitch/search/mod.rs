@@ -2,7 +2,7 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
+use crate::platform::error::Result;
 use dto::{Category, SearchChannel};
 use serde::Deserialize;
 use twitch_api::helix::games::GetTopGamesRequest;

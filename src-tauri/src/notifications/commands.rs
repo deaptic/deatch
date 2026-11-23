@@ -1,5 +1,5 @@
 use super::SetMentionsBadgeParams;
-use crate::error::Result;
+use crate::platform::error::Result;
 use tauri::WebviewWindow;
 
 #[tauri::command]

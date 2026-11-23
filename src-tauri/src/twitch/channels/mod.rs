@@ -2,9 +2,9 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::{Error, Result};
-use crate::twitch::ids::{GameId, UserId};
-use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::{GameId, UserId};
+use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use dto::{ChannelDetails, ChannelInfo, ContentLabel};
 use serde::Deserialize;
 use std::borrow::Cow;
@@ -31,8 +31,10 @@ pub async fn get_channel_information(
 ) -> Result<Vec<ChannelInfo>> {
     let ids: Vec<types::UserId> = params.broadcaster_ids.into_iter().map(Into::into).collect();
     let ids = ids.into();
-    crate::twitch::pagination::collect(twitch.helix.get_channels_from_ids(&ids, &twitch.token))
-        .await
+    crate::twitch::client::pagination::collect(
+        twitch.helix.get_channels_from_ids(&ids, &twitch.token),
+    )
+    .await
 }
 
 pub async fn get_channel_details(
@@ -41,9 +43,10 @@ pub async fn get_channel_details(
 ) -> Result<Option<ChannelDetails>> {
     let ids: types::Collection<'_, types::UserId> =
         vec![types::UserId::from(params.broadcaster_id.as_str())].into();
-    let mut channels: Vec<ChannelDetails> =
-        crate::twitch::pagination::collect(twitch.helix.get_channels_from_ids(&ids, &twitch.token))
-            .await?;
+    let mut channels: Vec<ChannelDetails> = crate::twitch::client::pagination::collect(
+        twitch.helix.get_channels_from_ids(&ids, &twitch.token),
+    )
+    .await?;
     Ok(channels.pop())
 }
 

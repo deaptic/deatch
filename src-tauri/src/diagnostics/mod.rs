@@ -1,7 +1,7 @@
 pub mod commands;
 pub mod dto;
 
-use crate::lock::lock;
+use crate::platform::lock::lock;
 use crate::twitch::Twitch;
 use dto::{AppStats, ProcessStats};
 use std::collections::{HashMap, HashSet};

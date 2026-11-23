@@ -1,4 +1,4 @@
-use crate::twitch::ids::SevenTvEmoteSetId;
+use crate::twitch::client::ids::SevenTvEmoteSetId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

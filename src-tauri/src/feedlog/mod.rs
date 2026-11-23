@@ -1,9 +1,9 @@
 pub mod commands;
 
-use crate::clock::unix_ms;
-use crate::db::{Databases, Schema};
-use crate::error::Result;
-use crate::twitch::ids::UserId;
+use crate::platform::clock::unix_ms;
+use crate::platform::db::{Databases, Schema};
+use crate::platform::error::Result;
+use crate::twitch::client::ids::UserId;
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::Deserialize;
 use std::time::Duration;
@@ -217,7 +217,7 @@ fn used_bytes(db: &Connection) -> Result<u64> {
 pub fn spawn_pruning(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
         loop {
-            let pruned = crate::blocking::run(app.clone(), |app| {
+            let pruned = crate::platform::blocking::run(app.clone(), |app| {
                 let dbs = app.state::<Databases>();
                 for account in dbs.accounts()? {
                     dbs.upkeep(&account, |db| prune(db, unix_ms(), MAX_BYTES))?;
@@ -236,7 +236,7 @@ pub fn spawn_pruning(app: tauri::AppHandle) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::in_memory;
+    use crate::platform::db::in_memory;
 
     fn entry(id: &str, timestamp: u64, text: &str) -> LogEntry {
         LogEntry {

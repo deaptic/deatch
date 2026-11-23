@@ -2,9 +2,9 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::{PredictionId, PredictionOutcomeId, UserId};
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::ids::{PredictionId, PredictionOutcomeId, UserId};
+use crate::twitch::client::params::BroadcasterParams;
 use dto::Prediction;
 use serde::Deserialize;
 use twitch_api::helix::predictions::{

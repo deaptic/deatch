@@ -2,40 +2,33 @@ pub mod ads;
 pub mod auth;
 pub mod bits;
 pub mod blocks;
-pub mod broadcaster_endpoint;
 pub mod channels;
 pub mod charity;
 pub mod chat;
 pub mod chatters;
+pub mod client;
 pub mod clips;
 pub mod eventsub;
-pub mod game;
 pub mod goals;
-pub mod ids;
 pub mod moderation;
-pub mod pagination;
-pub mod params;
 pub mod polls;
 pub mod predictions;
 pub mod raids;
 pub mod search;
-pub mod session;
 pub mod streams;
 pub mod subscriptions;
-pub mod template;
-mod transport;
 pub mod users;
 
-use crate::error::{Error, Result};
-use crate::lock::lock;
-use ids::UserId;
-use session::Session;
+use crate::platform::error::{Error, Result};
+use crate::platform::lock::lock;
+use auth::session::Session;
+use client::ids::UserId;
 use std::sync::{Arc, Mutex};
 use tauri::async_runtime::JoinHandle;
 use twitch_api::twitch_oauth2::UserToken;
 use twitch_api::HelixClient;
 
-pub type Helix = HelixClient<'static, transport::HelixTransport>;
+pub type Helix = HelixClient<'static, client::transport::HelixTransport>;
 
 #[derive(Clone)]
 pub struct Twitch {
@@ -59,7 +52,7 @@ pub struct Authed<'a> {
 impl Twitch {
     pub fn new(http: reqwest::Client, app: tauri::AppHandle) -> Self {
         Self {
-            helix: HelixClient::with_client(transport::HelixTransport::new(http)),
+            helix: HelixClient::with_client(client::transport::HelixTransport::new(http)),
             session: Arc::new(Session::new(app)),
             eventsub: Arc::default(),
             login: Arc::default(),

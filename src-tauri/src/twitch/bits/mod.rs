@@ -2,8 +2,8 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterParams;
 use dto::Cheermote;
 use twitch_api::helix::bits::GetCheermotesRequest;
 

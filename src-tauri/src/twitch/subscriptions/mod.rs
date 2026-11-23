@@ -2,8 +2,8 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::params::BroadcasterUserParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterUserParams;
 use dto::Subscription;
 use twitch_api::helix::subscriptions::GetBroadcasterSubscriptionsRequest;
 use twitch_api::types;

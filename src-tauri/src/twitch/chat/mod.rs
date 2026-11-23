@@ -5,9 +5,9 @@ pub mod dto;
 pub use color::{AnnouncementColor, ChatColor};
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::{MessageId, UserId};
-use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
+use crate::platform::error::Result;
+use crate::twitch::client::ids::{MessageId, UserId};
+use crate::twitch::client::params::{BroadcasterPairParams, BroadcasterParams};
 use dto::{BadgeSet, ChatSettings, Emote, EmoteType, SendMessageResult, UserEmote};
 use serde::Deserialize;
 use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
@@ -26,7 +26,7 @@ pub async fn get_global_emotes(twitch: &Authed<'_>) -> Result<Vec<Emote>> {
 }
 
 pub async fn get_user_emotes(twitch: &Authed<'_>) -> Result<Vec<UserEmote>> {
-    crate::twitch::pagination::collect(
+    crate::twitch::client::pagination::collect(
         twitch
             .helix
             .get_user_emotes(&twitch.token.user_id, &twitch.token),

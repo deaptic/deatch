@@ -1,5 +1,5 @@
-use crate::error::Result;
-use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
+use crate::platform::error::Result;
+use crate::twitch::client::params::{BroadcasterPairParams, BroadcasterParams};
 use crate::twitch::raids;
 use crate::twitch::Twitch;
 use tauri::State;

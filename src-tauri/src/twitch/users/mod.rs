@@ -2,9 +2,9 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::{Error, Result};
-use crate::twitch::ids::UserId;
-use crate::twitch::pagination::collect;
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::UserId;
+use crate::twitch::client::pagination::collect;
 use dto::User;
 use futures_util::StreamExt;
 use serde::Deserialize;

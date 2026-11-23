@@ -1,5 +1,5 @@
 use super::dto::{Category, SearchChannel};
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::search::{self, SearchParams};
 use crate::twitch::Twitch;
 use tauri::State;

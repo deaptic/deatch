@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::platform::error::Result;
 
 pub async fn run<R: Send + 'static>(
     app: tauri::AppHandle,

@@ -1,4 +1,4 @@
-use crate::twitch::ids::UnbanRequestId;
+use crate::twitch::client::ids::UnbanRequestId;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::moderation::{

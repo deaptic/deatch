@@ -1,6 +1,6 @@
 use super::{DiscordState, SetActivityParams};
-use crate::blocking;
-use crate::error::Result;
+use crate::platform::blocking;
+use crate::platform::error::Result;
 use tauri::Manager;
 
 #[tauri::command]

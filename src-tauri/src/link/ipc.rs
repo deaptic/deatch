@@ -1,6 +1,6 @@
 use super::events::{LinkChannel, LinkDisconnected, LinkState};
 use super::MAX_MESSAGE_SIZE;
-use crate::emit::emit;
+use crate::platform::emit::emit;
 use interprocess::os::windows::security_descriptor::SecurityDescriptor;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

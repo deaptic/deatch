@@ -3,7 +3,7 @@ use super::dto::{
     RecentHistory, RecentMessage, Reply,
 };
 use super::notice;
-use crate::twitch::ids::EmoteId;
+use crate::twitch::client::ids::EmoteId;
 use std::collections::HashMap;
 
 pub(super) type Tags = HashMap<String, String>;

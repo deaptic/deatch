@@ -1,9 +1,9 @@
-use super::auth::credentials;
-use super::auth::events::SessionEnded;
-use super::ids::UserId;
-use super::Helix;
-use crate::emit::emit;
-use crate::error::{Error, Result};
+use super::credentials;
+use super::events::SessionEnded;
+use crate::platform::emit::emit;
+use crate::platform::error::{Error, Result};
+use crate::twitch::client::ids::UserId;
+use crate::twitch::Helix;
 use std::time::Duration;
 use tokio::sync::Mutex;
 use twitch_api::twitch_oauth2::tokens::errors::RefreshTokenError;

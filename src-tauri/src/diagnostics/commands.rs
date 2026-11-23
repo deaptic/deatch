@@ -1,7 +1,7 @@
 use super::dto::AppStats;
 use super::Monitor;
-use crate::blocking;
-use crate::error::Result;
+use crate::platform::blocking;
+use crate::platform::error::Result;
 use crate::twitch::Twitch;
 use tauri::Manager;
 

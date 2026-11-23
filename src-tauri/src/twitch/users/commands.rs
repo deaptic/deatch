@@ -1,5 +1,5 @@
 use super::dto::User;
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::users::{self, GetUsersParams};
 use crate::twitch::Twitch;
 use tauri::State;

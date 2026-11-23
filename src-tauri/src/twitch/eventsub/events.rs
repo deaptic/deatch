@@ -1,5 +1,5 @@
-use crate::error::Error;
-use crate::twitch::ids::UserId;
+use crate::platform::error::Error;
+use crate::twitch::client::ids::UserId;
 use serde::Serialize;
 
 #[derive(Clone, Serialize, specta::Type, tauri_specta::Event)]

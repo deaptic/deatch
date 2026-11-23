@@ -1,10 +1,10 @@
 use super::dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::chat::{
     self, GetUserChatColorParams, SendChatAnnouncementParams, SendChatMessageParams,
     UpdateChatSettingsParams, UpdateUserChatColorParams,
 };
-use crate::twitch::params::{BroadcasterPairParams, BroadcasterParams};
+use crate::twitch::client::params::{BroadcasterPairParams, BroadcasterParams};
 use crate::twitch::Twitch;
 use tauri::State;
 

@@ -1,6 +1,6 @@
 use super::dto::{EmoteEntry, FfzResponse};
-use crate::error::Result;
-use crate::http::{get_json, url};
+use crate::platform::error::Result;
+use crate::platform::http::{get_json, url};
 
 pub async fn get_global_emotes(http: &reqwest::Client) -> Result<Vec<EmoteEntry>> {
     let response: FfzResponse =

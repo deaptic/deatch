@@ -1,4 +1,4 @@
-use crate::twitch::ids::{EmoteId, EmoteSetId, MessageId, UserId};
+use crate::twitch::client::ids::{EmoteId, EmoteSetId, MessageId, UserId};
 use serde::Serialize;
 use twitch_api::helix::chat::{
     send_chat_message::{ChatMessageDropCode, ChatMessageDropReason, SendChatMessageResponse},

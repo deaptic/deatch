@@ -1,5 +1,5 @@
 use super::SetChannelsParams;
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::Twitch;
 use tauri::State;
 

@@ -1,4 +1,4 @@
-use crate::lock::lock;
+use crate::platform::lock::lock;
 use http::HeaderMap;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -39,7 +39,7 @@ fn header_number<T: std::str::FromStr>(headers: &HeaderMap, name: &str) -> Optio
 }
 
 fn now() -> u64 {
-    crate::clock::since_epoch().as_secs()
+    crate::platform::clock::since_epoch().as_secs()
 }
 
 fn until(at: u64, now: u64) -> Option<Duration> {

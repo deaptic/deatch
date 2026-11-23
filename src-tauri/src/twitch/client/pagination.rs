@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::platform::error::Result;
 use futures_util::{Stream, TryStreamExt};
 use serde::Serialize;
 use twitch_api::helix::ClientRequestError;

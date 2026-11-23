@@ -1,11 +1,11 @@
 use super::dto::{BannedPage, BannedUser, BlockedTerm, UnbanRequest};
-use crate::error::Result;
+use crate::platform::error::Result;
+use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::moderation::{
     self, AddBlockedTermParams, BanUserParams, DeleteChatMessagesParams, GetBannedUsersParams,
     ManageHeldAutomodMessageParams, RemoveBlockedTermParams, ResolveUnbanRequestParams,
     SetSuspiciousStatusParams, UpdateShieldModeParams, WarnUserParams,
 };
-use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
 use crate::twitch::Twitch;
 use tauri::State;

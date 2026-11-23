@@ -1,5 +1,5 @@
 use super::dto::CreatedClip;
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::clips::{self, CreateClipParams};
 use crate::twitch::Twitch;
 use tauri::State;

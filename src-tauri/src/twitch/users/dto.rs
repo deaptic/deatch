@@ -1,4 +1,4 @@
-use crate::twitch::ids::UserId;
+use crate::twitch::client::ids::UserId;
 use serde::Serialize;
 use twitch_api::helix::users as helix_users;
 use twitch_api::types;

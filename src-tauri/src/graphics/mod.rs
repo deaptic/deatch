@@ -23,7 +23,7 @@ pub struct SetHardwareAccelerationParams {
 }
 
 pub fn apply_startup_flags() {
-    match crate::local_dir::local_dir() {
+    match crate::platform::local_dir::local_dir() {
         Ok(dir) if !hardware_acceleration_enabled(&dir) => {
             let existing = std::env::var(BROWSER_ARGUMENTS).ok();
             std::env::set_var(
@@ -50,7 +50,7 @@ pub fn hardware_acceleration_enabled(dir: &Path) -> bool {
 pub fn set_hardware_acceleration(
     dir: &Path,
     params: SetHardwareAccelerationParams,
-) -> crate::error::Result<()> {
+) -> crate::platform::error::Result<()> {
     let marker = dir.join(DISABLE_GPU_MARKER);
     if params.enabled {
         match fs::remove_file(marker) {

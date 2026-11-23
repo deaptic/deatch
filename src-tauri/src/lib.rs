@@ -1,22 +1,13 @@
-mod blocking;
-mod clock;
-mod db;
 mod diagnostics;
 mod discord;
-mod emit;
 mod emotes;
-mod error;
 mod feedlog;
 mod graphics;
 mod history;
-mod http;
-mod keyring;
 mod link;
-mod local_dir;
-mod lock;
 mod notifications;
+mod platform;
 mod twitch;
-mod ws;
 
 pub use link::host as browser_host;
 
@@ -29,7 +20,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
     tauri_specta::Builder::<tauri::Wry>::new()
         .error_handling(tauri_specta::ErrorHandlingMode::Throw)
         .dangerously_cast_bigints_to_number()
-        .typ::<error::Error>()
+        .typ::<platform::error::Error>()
         .typ::<twitch::eventsub::EventKind>()
         .constant(
             "EVENTSUB_EVENT_NAMES",
@@ -168,7 +159,7 @@ fn bring_to_front(app: &tauri::AppHandle) {
     }
 }
 
-const SCHEMAS: &[db::Schema] = &[feedlog::SCHEMA];
+const SCHEMAS: &[platform::db::Schema] = &[feedlog::SCHEMA];
 
 pub fn run() {
     let bindings = bindings();
@@ -203,9 +194,9 @@ pub fn run() {
                 .build(),
         )
         .setup(move |app| {
-            keyring::init_store();
+            platform::keyring::init_store();
             bindings.mount_events(app);
-            let http = http::client()?;
+            let http = platform::http::client()?;
             let twitch = twitch::Twitch::new(http.clone(), app.handle().clone());
             twitch::eventsub::spawn(app.handle().clone(), twitch.clone());
             app.manage(twitch);
@@ -220,7 +211,7 @@ pub fn run() {
             link::ipc::start_server(app.handle().clone(), hosts.clone());
             app.manage(hosts);
             app.manage(emotes::seventv_events::spawn(app.handle().clone()));
-            app.manage(db::Databases::open(SCHEMAS)?);
+            app.manage(platform::db::Databases::open(SCHEMAS)?);
             feedlog::spawn_pruning(app.handle().clone());
 
             Ok(())
@@ -233,7 +224,7 @@ pub fn run() {
         .expect("error while building tauri application")
         .run(|app, event| {
             if let tauri::RunEvent::Exit = event {
-                app.state::<db::Databases>().close();
+                app.state::<platform::db::Databases>().close();
             }
         });
 }

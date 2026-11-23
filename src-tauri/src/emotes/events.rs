@@ -1,5 +1,5 @@
 use super::dto::EmoteEntry;
-use crate::twitch::ids::SevenTvEmoteSetId;
+use crate::twitch::client::ids::SevenTvEmoteSetId;
 use serde::Serialize;
 
 #[derive(Serialize, Clone, specta::Type, tauri_specta::Event)]

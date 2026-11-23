@@ -25,7 +25,7 @@ fn log(message: impl Display) {
         let _ = writeln!(
             file,
             "{} {} {message}",
-            crate::clock::unix_ms(),
+            crate::platform::clock::unix_ms(),
             std::process::id()
         );
     }

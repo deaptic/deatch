@@ -1,4 +1,4 @@
-use crate::twitch::ids::GameId;
+use crate::twitch::client::ids::GameId;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::search::search_channels::Channel as HelixSearchChannel;
@@ -21,7 +21,11 @@ impl From<HelixSearchChannel> for SearchChannel {
             game_name: c.game_name,
             title: c.title,
             is_live: c.is_live,
-            profile_image_url: crate::twitch::template::render_size(&c.thumbnail_url, 300, 300),
+            profile_image_url: crate::twitch::client::template::render_size(
+                &c.thumbnail_url,
+                300,
+                300,
+            ),
         }
     }
 }
@@ -39,7 +43,7 @@ impl From<TwitchCategory> for Category {
         Self {
             id: GameId::from(c.id.to_string()),
             name: c.name,
-            box_art_url: crate::twitch::template::render_size(&c.box_art_url, 285, 380)
+            box_art_url: crate::twitch::client::template::render_size(&c.box_art_url, 285, 380)
                 .replace("-52x72.", "-285x380."),
         }
     }

@@ -7,7 +7,7 @@ pub mod ipc;
 use serde::Deserialize;
 use std::collections::BTreeMap;
 
-use crate::error::Result;
+use crate::platform::error::Result;
 use ipc::{Compressor, HostCommand, Hosts};
 
 pub const MAX_MESSAGE_SIZE: usize = 1_048_576;

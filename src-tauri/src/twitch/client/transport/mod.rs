@@ -1,7 +1,7 @@
 mod rate_limit;
 mod retry;
 
-use crate::http::log_request;
+use crate::platform::http::log_request;
 use rate_limit::RateLimit;
 use std::future::Future;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -121,7 +121,7 @@ mod tests {
 
     #[test]
     fn failed_requests_never_expose_the_query() {
-        let transport = HelixTransport::new(crate::http::client().unwrap());
+        let transport = HelixTransport::new(crate::platform::http::client().unwrap());
         let request = http::Request::post("http://127.0.0.1:1/oauth2/revoke?token=secret")
             .body(Default::default())
             .unwrap();

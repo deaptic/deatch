@@ -1,6 +1,6 @@
-use crate::error::Result;
-use crate::lock::lock;
-use crate::twitch::ids::UserId;
+use crate::platform::error::Result;
+use crate::platform::lock::lock;
+use crate::twitch::client::ids::UserId;
 use rusqlite::{Connection, OptionalExtension};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
@@ -23,7 +23,7 @@ pub struct Databases {
 
 impl Databases {
     pub fn open(schemas: &'static [Schema]) -> Result<Self> {
-        let dir = crate::local_dir::local_dir()?.join("data");
+        let dir = crate::platform::local_dir::local_dir()?.join("data");
         std::fs::create_dir_all(&dir)?;
         Ok(Self {
             dir,
@@ -104,7 +104,7 @@ pub async fn run<R: Send + 'static>(
     account: UserId,
     work: impl FnOnce(&mut Connection) -> Result<R> + Send + 'static,
 ) -> Result<R> {
-    crate::blocking::run(app, move |app| {
+    crate::platform::blocking::run(app, move |app| {
         app.state::<Databases>().with(&account, work)
     })
     .await?

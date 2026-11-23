@@ -3,9 +3,9 @@ pub mod dto;
 pub mod events;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::{MessageId, UnbanRequestId, UserId};
-use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
+use crate::platform::error::Result;
+use crate::twitch::client::ids::{MessageId, UnbanRequestId, UserId};
+use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
 use dto::{BannedPage, BannedUser, BlockedTerm, UnbanRequest};
 use serde::Deserialize;
@@ -309,7 +309,7 @@ pub async fn remove_blocked_term(
 }
 
 pub async fn get_moderated_channels(twitch: &Authed<'_>) -> Result<Vec<UserRef>> {
-    crate::twitch::pagination::collect(
+    crate::twitch::client::pagination::collect(
         twitch
             .helix
             .get_moderated_channels(&twitch.token.user_id, &twitch.token),

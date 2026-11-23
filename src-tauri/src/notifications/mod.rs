@@ -1,6 +1,6 @@
 pub mod commands;
 
-use crate::error::Result;
+use crate::platform::error::Result;
 use serde::Deserialize;
 use tauri::image::Image;
 use tauri::WebviewWindow;

@@ -1,6 +1,6 @@
 use super::dto::Prediction;
-use crate::error::Result;
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterParams;
 use crate::twitch::predictions::{self, CreatePredictionParams, EndPredictionParams};
 use crate::twitch::Twitch;
 use tauri::State;

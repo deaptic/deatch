@@ -1,6 +1,6 @@
 use super::{AppendParams, AroundParams, PageParams};
-use crate::db;
-use crate::error::Result;
+use crate::platform::db;
+use crate::platform::error::Result;
 use crate::twitch::Twitch;
 use tauri::State;
 

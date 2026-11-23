@@ -1,4 +1,4 @@
-use crate::twitch::game::GameRef;
+use crate::twitch::client::game::GameRef;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::ccls::ContentClassificationLabel as HelixContentLabel;

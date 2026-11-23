@@ -1,4 +1,4 @@
-use crate::error::{Error, Result};
+use crate::platform::error::{Error, Result};
 use serde::{Deserialize, Serialize};
 use twitch_api::twitch_oauth2::UserToken;
 

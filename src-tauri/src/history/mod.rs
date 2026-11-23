@@ -3,8 +3,8 @@ pub mod dto;
 mod irc;
 mod notice;
 
-use crate::error::Result;
-use crate::http::{get_json, url};
+use crate::platform::error::Result;
+use crate::platform::http::{get_json, url};
 use dto::RecentHistory;
 use reqwest::Url;
 use serde::Deserialize;

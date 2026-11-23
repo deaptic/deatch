@@ -2,7 +2,7 @@ use tauri::State;
 
 use super::ipc::Hosts;
 use super::{LinkChannelParams, SetAudioParams, SetMutedParams};
-use crate::error::Result;
+use crate::platform::error::Result;
 
 #[tauri::command]
 #[specta::specta]

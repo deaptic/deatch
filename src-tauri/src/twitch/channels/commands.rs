@@ -1,10 +1,10 @@
 use super::dto::{ChannelDetails, ChannelInfo, ContentLabel};
-use crate::error::Result;
+use crate::platform::error::Result;
 use crate::twitch::channels::{
     self, GetChannelInformationParams, GetContentLabelsParams, ModifyChannelInformationParams,
     StartCommercialParams,
 };
-use crate::twitch::params::{BroadcasterParams, BroadcasterUserParams};
+use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::Twitch;
 use tauri::State;
 

@@ -1,4 +1,4 @@
-use crate::twitch::ids::{CommunityGiftId, EmoteId, MessageId, RewardId, UserId};
+use crate::twitch::client::ids::{CommunityGiftId, EmoteId, MessageId, RewardId, UserId};
 use serde::Serialize;
 
 #[derive(Default, Serialize, specta::Type)]

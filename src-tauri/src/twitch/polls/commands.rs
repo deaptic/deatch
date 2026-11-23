@@ -1,6 +1,6 @@
 use super::dto::Poll;
-use crate::error::Result;
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::params::BroadcasterParams;
 use crate::twitch::polls::{self, CreatePollParams, EndPollParams};
 use crate::twitch::Twitch;
 use tauri::State;

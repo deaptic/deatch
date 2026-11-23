@@ -5,8 +5,8 @@ use std::time::{Duration, Instant};
 use super::dto::{ConnectionState, ConnectionStats, EventSubStats};
 use super::kind::{Focus, Role};
 use super::EventKind;
-use crate::error::Error;
-use crate::twitch::ids::UserId;
+use crate::platform::error::Error;
+use crate::twitch::client::ids::UserId;
 
 pub(super) const MAX_CONNECTIONS: usize = 3;
 pub(super) const PER_CONNECTION: usize = 300;

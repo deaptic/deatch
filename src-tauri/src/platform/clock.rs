@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::platform::error::Result;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use time::format_description::well_known::Rfc3339;
 use time::OffsetDateTime;

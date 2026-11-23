@@ -4,7 +4,7 @@ use super::dto::{
     RecentNotice, ResubNotice, SubGiftNotice, SubNotice, SubTier, WatchStreakNotice,
 };
 use super::irc::{build_fragments, nonempty, sent_at_ms, tag, Tags};
-use crate::twitch::ids::CommunityGiftId;
+use crate::twitch::client::ids::CommunityGiftId;
 use std::str::FromStr;
 
 const ANONYMOUS_LOGIN: &str = "ananonymousgifter";

@@ -1,6 +1,6 @@
 use super::SetHardwareAccelerationParams;
-use crate::error::Result;
-use crate::local_dir::local_dir;
+use crate::platform::error::Result;
+use crate::platform::local_dir::local_dir;
 
 #[tauri::command]
 #[specta::specta]

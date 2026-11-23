@@ -1,6 +1,6 @@
 use super::dto::RecentHistory;
 use super::GetRecentMessagesParams;
-use crate::error::Result;
+use crate::platform::error::Result;
 use tauri::State;
 
 #[tauri::command]

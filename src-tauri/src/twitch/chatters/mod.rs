@@ -2,10 +2,10 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::UserId;
-use crate::twitch::pagination::collect;
-use crate::twitch::params::BroadcasterParams;
+use crate::platform::error::Result;
+use crate::twitch::client::ids::UserId;
+use crate::twitch::client::pagination::collect;
+use crate::twitch::client::params::BroadcasterParams;
 use crate::twitch::users::dto::UserRef;
 use dto::ChattersPage;
 use serde::Deserialize;

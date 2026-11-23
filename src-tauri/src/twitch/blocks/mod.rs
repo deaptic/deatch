@@ -2,8 +2,8 @@ pub mod commands;
 pub mod dto;
 
 use super::Authed;
-use crate::error::Result;
-use crate::twitch::ids::UserId;
+use crate::platform::error::Result;
+use crate::twitch::client::ids::UserId;
 use crate::twitch::users::dto::UserRef;
 use serde::Deserialize;
 use twitch_api::helix::users::GetUserBlockListRequest;
