@@ -1,11 +1,10 @@
 import { createMemo, For, Show } from "solid-js";
-import { t } from "../../../shared/i18n/index.ts";
-import * as chatters from "../../../lib/services/chatters.ts";
-import { chatterListFor } from "../../../lib/stores/chatters.ts";
-import { groupChatters } from "../../../lib/utils/chatterGroups.ts";
-import type { UserRef } from "../../../lib/types/index.ts";
-import Loading from "../../../kit/Loading.tsx";
-import PersonRow from "./PersonRow.tsx";
+import { t } from "../../shared/i18n/index.ts";
+import * as chatters from "./store.ts";
+import { groupChatters } from "./model.ts";
+import type { UserRef } from "../../lib/types/index.ts";
+import Loading from "../../kit/Loading.tsx";
+import PersonRow from "./ui/PersonRow.tsx";
 
 const LOAD_MORE_PX = 400;
 
@@ -19,7 +18,7 @@ type Props = {
 const idsOf = (users: UserRef[]) => new Set(users.map((u) => u.id));
 
 export default function ChattersTab(props: Props) {
-  const list = () => chatterListFor(props.broadcasterId);
+  const list = () => chatters.listFor(props.broadcasterId);
   const groups = createMemo(() =>
     groupChatters(
       list().chatters,

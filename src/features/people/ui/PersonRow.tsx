@@ -1,6 +1,6 @@
 import { type JSX, Show } from "solid-js";
 import type { UserRef } from "../../../lib/types/index.ts";
-import { ChatterPicture } from "../../../features/message/index.ts";
+import { ChatterPicture } from "../../message/index.ts";
 
 type Props = {
   user: UserRef;

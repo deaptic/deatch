@@ -1,18 +1,17 @@
 import { Gem, Plus, Sword } from "lucide-solid";
 import { createSignal, For, type JSX, Show } from "solid-js";
-import { type MessageKey, t } from "../../../shared/i18n/index.ts";
-import * as channelSearch from "../../../lib/services/channelSearch.ts";
-import * as chatters from "../../../lib/services/chatters.ts";
-import type { Role } from "../../../lib/services/chatters.ts";
-import { chatterListFor } from "../../../lib/stores/chatters.ts";
-import { feeds } from "../../../lib/stores/feeds.ts";
-import type { SearchChannel, UserRef } from "../../../lib/types/index.ts";
-import Avatar from "../../../kit/Avatar.tsx";
-import Chip from "../../../kit/Chip.tsx";
-import IconMenuButton from "../../../kit/IconMenuButton.tsx";
-import MenuItem from "../../../kit/MenuItem.tsx";
-import SearchPicker from "../../../kit/SearchPicker.tsx";
-import PersonRow from "./PersonRow.tsx";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
+import * as channelSearch from "../../lib/services/channelSearch.ts";
+import * as chatters from "./store.ts";
+import type { Role } from "./store.ts";
+import { feeds } from "../../lib/stores/feeds.ts";
+import type { SearchChannel, UserRef } from "../../lib/types/index.ts";
+import Avatar from "../../kit/Avatar.tsx";
+import Chip from "../../kit/Chip.tsx";
+import IconMenuButton from "../../kit/IconMenuButton.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
+import SearchPicker from "../../kit/SearchPicker.tsx";
+import PersonRow from "./ui/PersonRow.tsx";
 
 type RoleLook = {
   role: Role;
@@ -44,7 +43,7 @@ type Props = {
 
 export default function RolesTab(props: Props) {
   const [picked, setPicked] = createSignal<UserRef | null>(null);
-  const list = () => chatterListFor(props.broadcasterId);
+  const list = () => chatters.listFor(props.broadcasterId);
   const icon = (look: RoleLook) => {
     const badge = feeds[props.broadcasterId]?.badges[look.badge];
     return badge ? (

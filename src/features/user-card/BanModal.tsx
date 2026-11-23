@@ -1,7 +1,7 @@
 import type { BannedUser } from "../../lib/types/index.ts";
 import { createSignal, onMount, Show } from "solid-js";
 import { getBan } from "../../platform/twitch/moderation.ts";
-import * as bans from "../../lib/services/bans.ts";
+import * as bans from "./bans.ts";
 import { type BanChoice, secondsFor } from "../../lib/constants/timeouts.ts";
 import { formatDuration } from "../../shared/format/duration.ts";
 import { Time } from "../../shared/time.ts";

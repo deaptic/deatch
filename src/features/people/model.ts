@@ -1,4 +1,4 @@
-import type { UserRef } from "../types/index.ts";
+import type { UserRef } from "../../lib/types/index.ts";
 
 export type ChatterGroupKind =
   | "broadcaster"

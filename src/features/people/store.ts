@@ -1,4 +1,7 @@
-import { hasPermission } from "../stores/roles.ts";
+import { createSignal } from "solid-js";
+import type { UserRef } from "../../lib/types/index.ts";
+import * as channels from "../channels/index.ts";
+import { hasPermission } from "../../lib/stores/roles.ts";
 import {
   getChannelModerators,
   getChannelVips,
@@ -10,7 +13,46 @@ import {
   removeChannelModerator,
   removeChannelVip,
 } from "../../platform/twitch/channels.ts";
-import { chatterListFor, updateChatterList } from "../stores/chatters.ts";
+
+export type ChatterList = {
+  chatters: UserRef[];
+  total: number;
+  cursor: string | null;
+  moderators: UserRef[];
+  vips: UserRef[];
+};
+
+const EMPTY: ChatterList = {
+  chatters: [],
+  total: 0,
+  cursor: null,
+  moderators: [],
+  vips: [],
+};
+
+const [byChannel, setByChannel] = createSignal<Record<string, ChatterList>>({});
+
+export function listFor(broadcasterId: string): ChatterList {
+  return byChannel()[broadcasterId] ?? EMPTY;
+}
+
+function update(broadcasterId: string, change: Partial<ChatterList>) {
+  setByChannel((prev) => ({
+    ...prev,
+    [broadcasterId]: { ...(prev[broadcasterId] ?? EMPTY), ...change },
+  }));
+}
+
+function clear(broadcasterId: string) {
+  setByChannel((prev) => {
+    const { [broadcasterId]: _, ...rest } = prev;
+    return rest;
+  });
+}
+
+export function start(): () => void {
+  return channels.onChannel({ leave: clear });
+}
 
 export type Role = "moderator" | "vip";
 
@@ -22,7 +64,7 @@ const ids = (list: { id: string }[]) => list.map((u) => u.id);
 export function load(broadcasterId: string): void {
   getChatters({ broadcasterId, cursor: null }, silent)
     .then((page) =>
-      updateChatterList(broadcasterId, {
+      update(broadcasterId, {
         chatters: page.chatters,
         total: page.total,
         cursor: page.cursor,
@@ -35,21 +77,21 @@ export function load(broadcasterId: string): void {
 export function loadRoles(broadcasterId: string): void {
   const params = { broadcasterId };
   getChannelModerators(params, silent)
-    .then((moderators) => updateChatterList(broadcasterId, { moderators }))
+    .then((moderators) => update(broadcasterId, { moderators }))
     .catch(() => {});
   getChannelVips(params, silent)
-    .then((vips) => updateChatterList(broadcasterId, { vips }))
+    .then((vips) => update(broadcasterId, { vips }))
     .catch(() => {});
 }
 
 export function loadMore(broadcasterId: string): void {
-  const { cursor, chatters } = chatterListFor(broadcasterId);
+  const { cursor, chatters } = listFor(broadcasterId);
   if (!cursor || loadingMore.has(broadcasterId)) return;
   loadingMore.add(broadcasterId);
   getChatters({ broadcasterId, cursor }, silent)
     .then((page) => {
       const seen = new Set(ids(chatters));
-      updateChatterList(broadcasterId, {
+      update(broadcasterId, {
         chatters: [
           ...chatters,
           ...page.chatters.filter((c) => !seen.has(c.id)),

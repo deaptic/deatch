@@ -12,12 +12,12 @@ import {
   preventAutoscroll,
 } from "../../lib/utils/middleClick.ts";
 import Avatar from "../../kit/Avatar.tsx";
-import { Badges } from "../../features/message/index.ts";
+import { Badges } from "../message/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
-import UserCardIdentity from "./UserCardIdentity.tsx";
-import UserCardLive from "./UserCardLive.tsx";
+import Identity from "./Identity.tsx";
+import Live from "./Live.tsx";
 import { streamForUserId } from "../../lib/stores/channels.ts";
-import UserCardMeta from "./UserCardMeta.tsx";
+import Meta from "./Meta.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import { openMenuAt } from "../../lib/utils/contextMenu.ts";
 
@@ -32,7 +32,7 @@ type Props = {
   onOpenChannel: (broadcasterId: string) => void;
 };
 
-export default function UserCardHeader(props: Props) {
+export default function Header(props: Props) {
   const user = (): User | null => knownUser(props.chatterId) ?? null;
   createEffect(
     on(
@@ -92,7 +92,7 @@ export default function UserCardHeader(props: Props) {
             />
           )}
         </Show>
-        <UserCardMeta user={user()} follow={follow()} />
+        <Meta user={user()} follow={follow()} />
       </div>
       <div class="absolute top-card-gap right-card-gap flex rounded-sm bg-media-scrim">
         <IconButton
@@ -135,13 +135,13 @@ export default function UserCardHeader(props: Props) {
             />
           </div>
         </div>
-        <UserCardIdentity
+        <Identity
           chatterId={props.chatterId}
           user={user()}
           color={color()}
           subscription={subscription() ?? null}
         />
-        <UserCardLive
+        <Live
           stream={stream()}
           onOpen={() => props.onOpenChannel(props.chatterId)}
         />

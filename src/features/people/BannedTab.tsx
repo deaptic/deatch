@@ -1,16 +1,13 @@
 import { createEffect, createSignal, For, onMount, Show } from "solid-js";
-import { t } from "../../../shared/i18n/index.ts";
-import {
-  getBannedUsers,
-  unbanUser,
-} from "../../../platform/twitch/moderation.ts";
-import * as clock from "../../../lib/services/clock.ts";
-import { formatElapsed } from "../../../shared/format/duration.ts";
-import { matchesPerson } from "../../../lib/utils/chatterGroups.ts";
-import type { BannedUser, UserRef } from "../../../lib/types/index.ts";
-import Button from "../../../kit/Button.tsx";
-import Loading from "../../../kit/Loading.tsx";
-import PersonRow from "./PersonRow.tsx";
+import { t } from "../../shared/i18n/index.ts";
+import { getBannedUsers, unbanUser } from "../../platform/twitch/moderation.ts";
+import * as clock from "../../lib/services/clock.ts";
+import { formatElapsed } from "../../shared/format/duration.ts";
+import { matchesPerson } from "./model.ts";
+import type { BannedUser, UserRef } from "../../lib/types/index.ts";
+import Button from "../../kit/Button.tsx";
+import Loading from "../../kit/Loading.tsx";
+import PersonRow from "./ui/PersonRow.tsx";
 
 const LOAD_MORE_PX = 400;
 

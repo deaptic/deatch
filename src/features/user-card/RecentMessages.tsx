@@ -1,7 +1,7 @@
 import { Show } from "solid-js";
-import Feed from "../feed/Feed.tsx";
+import Feed from "../../components/feed/Feed.tsx";
 import type { FeedMessage } from "../../lib/types/index.ts";
-import { type UserActions } from "../../features/message/index.ts";
+import { type UserActions } from "../message/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 type Props = UserActions & {
@@ -12,7 +12,7 @@ type Props = UserActions & {
   onOpenChannel?: (broadcasterId: string) => void;
 };
 
-export default function UserCardFeed(props: Props) {
+export default function RecentMessages(props: Props) {
   return (
     <div class="relative flex-1 min-h-card-feed-min text-(length:--chat-size)">
       <div class="absolute inset-0 flex flex-col">

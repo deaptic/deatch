@@ -46,7 +46,7 @@ function DateChip(props: { at: string; tip: string; icon: JSX.Element }) {
   );
 }
 
-export default function UserCardMeta(props: Props) {
+export default function Meta(props: Props) {
   const followedAt = () =>
     props.follow.kind === "since" ? props.follow.at : undefined;
 

@@ -7,18 +7,17 @@ import {
   Show,
   Switch,
 } from "solid-js";
-import { type MessageKey, t } from "../../../shared/i18n/index.ts";
-import * as chatters from "../../../lib/services/chatters.ts";
-import { chatterListFor } from "../../../lib/stores/chatters.ts";
-import { hasPermission } from "../../../lib/stores/roles.ts";
-import type { Capability } from "../../../lib/utils/roles.ts";
-import { formatViewers } from "../../../shared/format/stream.ts";
-import { autofocus } from "../../../shared/solid/focus.ts";
-import type { UserRef } from "../../../lib/types/index.ts";
-import Field from "../../../kit/Field.tsx";
-import IconButton from "../../../kit/IconButton.tsx";
-import Modal from "../../../kit/Modal.tsx";
-import Segmented from "../../../kit/Segmented.tsx";
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
+import * as chatters from "./store.ts";
+import { hasPermission } from "../../lib/stores/roles.ts";
+import type { Capability } from "../../lib/utils/roles.ts";
+import { formatViewers } from "../../shared/format/stream.ts";
+import { autofocus } from "../../shared/solid/focus.ts";
+import type { UserRef } from "../../lib/types/index.ts";
+import Field from "../../kit/Field.tsx";
+import IconButton from "../../kit/IconButton.tsx";
+import Modal from "../../kit/Modal.tsx";
+import Segmented from "../../kit/Segmented.tsx";
 import BannedTab from "./BannedTab.tsx";
 import ChattersTab from "./ChattersTab.tsx";
 import RolesTab from "./RolesTab.tsx";
@@ -56,7 +55,7 @@ export default function PeopleDialog(props: Props) {
     more: boolean;
   } | null>(null);
   const count = () => {
-    const list = chatterListFor(props.broadcasterId);
+    const list = chatters.listFor(props.broadcasterId);
     if (tab() === "chatters") return formatViewers(list.total);
     if (tab() === "roles") {
       return t("PEOPLE_COUNT_VALUE", {

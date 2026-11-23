@@ -1,9 +1,9 @@
 import { Show } from "solid-js";
-import * as bans from "../../lib/services/bans.ts";
+import * as bans from "./bans.ts";
 import type { BanChoice } from "../../lib/constants/timeouts.ts";
 import { user as currentUser } from "../../lib/stores/users.ts";
 import { showsControls } from "../../lib/stores/roles.ts";
-import BanChoiceStrip from "../ban-modal/BanChoiceStrip.tsx";
+import BanChoiceStrip from "./BanChoiceStrip.tsx";
 
 type Props = {
   chatterId: string;
@@ -11,7 +11,7 @@ type Props = {
   onRemoved: () => void;
 };
 
-export default function UserCardModActions(props: Props) {
+export default function ModActions(props: Props) {
   const canModerateChatter = () =>
     currentUser()?.id !== props.chatterId &&
     showsControls(props.broadcasterId, "moderate");

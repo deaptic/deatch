@@ -1,6 +1,6 @@
 import { banUser, unbanUser } from "../../platform/twitch/moderation.ts";
-import { type BanChoice, secondsFor } from "../constants/timeouts.ts";
-import type { BroadcasterUserParams } from "../types/index.ts";
+import { type BanChoice, secondsFor } from "../../lib/constants/timeouts.ts";
+import type { BroadcasterUserParams } from "../../lib/types/index.ts";
 
 export function apply(
   target: BroadcasterUserParams,

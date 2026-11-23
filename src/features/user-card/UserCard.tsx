@@ -12,11 +12,11 @@ import type { FeedMessage, UserRef } from "../../lib/types/index.ts";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../shared/solid/focus.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
-import UserCardHeader from "./UserCardHeader.tsx";
-import UserCardModActions from "./UserCardModActions.tsx";
-import UserCardFeed from "./UserCardFeed.tsx";
+import Header from "./Header.tsx";
+import ModActions from "./ModActions.tsx";
+import RecentMessages from "./RecentMessages.tsx";
 import { mergeMessages } from "./mergeMessages.ts";
-import { type UserAction } from "../../features/message/index.ts";
+import { type UserAction } from "../message/index.ts";
 import { dismissOnOutside } from "../../shared/solid/dismissOnOutside.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { playExit } from "../../kit/playExit.ts";
@@ -166,7 +166,7 @@ export default function UserCard(props: Props) {
           "--max-h": `min(var(--spacing-card-max-height), ${room().h}px)`,
         }}
       >
-        <UserCardHeader
+        <Header
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
           messages={messages()}
@@ -178,14 +178,14 @@ export default function UserCard(props: Props) {
           }
           onOpenChannel={props.onOpenChannel}
         />
-        <UserCardModActions
+        <ModActions
           chatterId={props.chatterId}
           broadcasterId={props.broadcasterId}
           onRemoved={() =>
             setHistory((h) => h?.map((m) => ({ ...m, deleted: true })))
           }
         />
-        <UserCardFeed
+        <RecentMessages
           broadcasterId={props.broadcasterId}
           messages={messages()}
           loading={history.loading}

@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { groupChatters } from "./chatterGroups.ts";
+import { groupChatters } from "./model.ts";
 
 const user = (id: string, login: string) => ({
   id,

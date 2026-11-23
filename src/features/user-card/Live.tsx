@@ -8,7 +8,7 @@ type Props = {
   onOpen: () => void;
 };
 
-export default function UserCardLive(props: Props) {
+export default function Live(props: Props) {
   return (
     <Show when={props.stream}>
       {(stream) => (

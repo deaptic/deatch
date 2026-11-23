@@ -21,12 +21,14 @@ import MessageContextMenu from "../context-menus/MessageContextMenu.tsx";
 import UserContextMenu, {
   type ModAction,
 } from "../context-menus/UserContextMenu.tsx";
-import WarnModal from "../warn-modal/WarnModal.tsx";
-import UserCard from "../user-card/UserCard.tsx";
+import {
+  BanModal,
+  UserCard,
+  WarnModal,
+} from "../../features/user-card/index.ts";
 import { createUserCards } from "./createUserCards.ts";
 import * as users from "../../lib/services/users.ts";
 import EventContextMenu from "../context-menus/EventContextMenu.tsx";
-import BanModal from "../ban-modal/BanModal.tsx";
 import { showsControls } from "../../lib/stores/roles.ts";
 import type {
   FeedEvent as EventItem,
@@ -51,7 +53,7 @@ import {
 import { createPopover } from "../../kit/createPopover.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import Transition from "../../kit/Transition.tsx";
-import PeopleDialog from "./people/PeopleDialog.tsx";
+import { PeopleDialog } from "../../features/people/index.ts";
 import { closeOverlay, isOverlayOpen } from "../../lib/stores/ui.ts";
 
 type Props = {
