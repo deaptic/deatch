@@ -98,6 +98,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::predictions::commands::get_active_prediction,
             twitch::predictions::commands::create_prediction,
             twitch::predictions::commands::end_prediction,
+            twitch::channels::commands::add_channel_moderator,
+            twitch::channels::commands::remove_channel_moderator,
             twitch::channels::commands::add_channel_vip,
             twitch::channels::commands::remove_channel_vip,
             twitch::raids::commands::start_raid,

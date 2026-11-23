@@ -83,6 +83,8 @@ export const commands = {
 } | null>("get_active_prediction", { params }),
 	createPrediction: (params: CreatePredictionParams) => __TAURI_INVOKE<null>("create_prediction", { params }),
 	endPrediction: (params: EndPredictionParams) => __TAURI_INVOKE<null>("end_prediction", { params }),
+	addChannelModerator: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("add_channel_moderator", { params }),
+	removeChannelModerator: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("remove_channel_moderator", { params }),
 	addChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("add_channel_vip", { params }),
 	removeChannelVip: (params: BroadcasterUserParams) => __TAURI_INVOKE<null>("remove_channel_vip", { params }),
 	startRaid: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("start_raid", { params }),

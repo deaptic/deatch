@@ -40,6 +40,26 @@ export async function startCommercial(
   });
 }
 
+export async function addChannelModerator(
+  params: BroadcasterUserParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.addChannelModerator, [params], {
+    successMessage: t("COMMAND_MOD_ADDED_TOAST"),
+    ...options,
+  });
+}
+
+export async function removeChannelModerator(
+  params: BroadcasterUserParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.removeChannelModerator, [params], {
+    successMessage: t("COMMAND_MOD_REMOVED_TOAST"),
+    ...options,
+  });
+}
+
 export async function addChannelVip(
   params: BroadcasterUserParams,
   options?: InvokeOptions,

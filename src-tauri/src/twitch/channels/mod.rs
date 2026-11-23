@@ -165,6 +165,36 @@ pub async fn remove_channel_vip(twitch: &Authed<'_>, params: BroadcasterUserPara
     Ok(())
 }
 
+pub async fn add_channel_moderator(
+    twitch: &Authed<'_>,
+    params: BroadcasterUserParams,
+) -> Result<()> {
+    twitch
+        .helix
+        .add_channel_moderator(
+            params.broadcaster_id.as_str(),
+            params.user_id.as_str(),
+            &twitch.token,
+        )
+        .await?;
+    Ok(())
+}
+
+pub async fn remove_channel_moderator(
+    twitch: &Authed<'_>,
+    params: BroadcasterUserParams,
+) -> Result<()> {
+    twitch
+        .helix
+        .remove_channel_moderator(
+            params.broadcaster_id.as_str(),
+            params.user_id.as_str(),
+            &twitch.token,
+        )
+        .await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::StartCommercialParams;

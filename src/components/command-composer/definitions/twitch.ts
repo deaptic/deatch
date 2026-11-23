@@ -17,8 +17,10 @@ import * as chat from "../../../lib/services/chat.ts";
 import { createStreamMarker } from "../../../lib/api/twitch/streams.ts";
 import { searchCategories } from "../../../lib/api/twitch/search.ts";
 import {
+  addChannelModerator,
   addChannelVip,
   modifyChannelInformation,
+  removeChannelModerator,
   removeChannelVip,
   startCommercial,
 } from "../../../lib/api/twitch/channels.ts";
@@ -324,6 +326,44 @@ export const twitchCommands: Command[] = [
       await sendShoutout({
         fromBroadcasterId: ctx.broadcasterId,
         toBroadcasterId: channel as string,
+      });
+    },
+  },
+  {
+    name: "mod",
+    description: "COMMAND_MOD_DESCRIPTION",
+    role: "broadcaster",
+    options: [
+      {
+        name: "username",
+        description: "COMMAND_MOD_USERNAME_LABEL",
+        type: "user",
+        required: true,
+      },
+    ],
+    execute: async ({ username }, ctx) => {
+      await addChannelModerator({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
+      });
+    },
+  },
+  {
+    name: "unmod",
+    description: "COMMAND_UNMOD_DESCRIPTION",
+    role: "broadcaster",
+    options: [
+      {
+        name: "username",
+        description: "COMMAND_UNMOD_USERNAME_LABEL",
+        type: "user",
+        required: true,
+      },
+    ],
+    execute: async ({ username }, ctx) => {
+      await removeChannelModerator({
+        broadcasterId: ctx.broadcasterId,
+        userId: username as string,
       });
     },
   },

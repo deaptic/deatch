@@ -45,6 +45,24 @@ pub async fn start_commercial(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn add_channel_moderator(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterUserParams,
+) -> Result<()> {
+    channels::add_channel_moderator(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn remove_channel_moderator(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterUserParams,
+) -> Result<()> {
+    channels::remove_channel_moderator(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn add_channel_vip(
     twitch: State<'_, Twitch>,
     params: BroadcasterUserParams,
