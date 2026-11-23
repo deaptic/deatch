@@ -18,7 +18,8 @@ use twitch_api::eventsub::{
     automod::message::{hold::AutomodMessageHoldV2, update::AutomodMessageUpdateV2},
     channel::chat::{
         ChannelChatClearUserMessagesV1, ChannelChatClearV1, ChannelChatMessageDeleteV1,
-        ChannelChatMessageV1, ChannelChatNotificationV1,
+        ChannelChatMessageV1, ChannelChatNotificationV1, ChannelChatUserMessageHoldV1,
+        ChannelChatUserMessageUpdateV1,
     },
     channel::{
         ChannelAdBreakBeginV1, ChannelBitsUseV1, ChannelGoalBeginV1, ChannelGoalEndV1,
@@ -141,6 +142,12 @@ async fn create(
     match subscription.kind {
         EventKind::ChannelChatMessage => subscribe!(ChannelChatMessageV1::new(b, u)),
         EventKind::ChannelChatNotification => subscribe!(ChannelChatNotificationV1::new(b, u)),
+        EventKind::ChannelChatUserMessageHold => {
+            subscribe!(ChannelChatUserMessageHoldV1::new(b, u))
+        }
+        EventKind::ChannelChatUserMessageUpdate => {
+            subscribe!(ChannelChatUserMessageUpdateV1::new(b, u))
+        }
         EventKind::ChannelChatMessageDelete => subscribe!(ChannelChatMessageDeleteV1::new(b, u)),
         EventKind::ChannelChatClear => subscribe!(ChannelChatClearV1::new(b, u)),
         EventKind::ChannelChatClearUserMessages => {

@@ -20,6 +20,8 @@ import type {
   RawSuspiciousUserUpdate,
   RawUnbanRequestCreate,
   RawUnbanRequestResolve,
+  RawUserMessageHold,
+  RawUserMessageUpdate,
   RawWarningAcknowledge,
 } from "../types/index.ts";
 import {
@@ -27,6 +29,7 @@ import {
   markAllMessagesDeleted,
   markMessageDeleted,
   markUserMessagesDeleted,
+  releaseHeldMessage,
   setAutomodHoldStatus,
   setSuspicious,
 } from "../stores/feeds.ts";
@@ -190,8 +193,46 @@ export function start(): () => void {
           reason: automodReason(p),
           status: "pending",
           broadcaster_user_id: p.broadcaster_user_id,
+          mine: false,
         },
       }),
+    ),
+    listenEventSub<RawUserMessageHold>(
+      "channel.chat.user_message_hold",
+      (e) => {
+        const p = e.event;
+        if (isModOfChannel(p.broadcaster_user_id)) return;
+        appendItem(p.broadcaster_user_id, {
+          kind: "message",
+          message_id: p.message_id,
+          ...chatterFields(p.user_id, p.user_login, p.user_name),
+          color: "",
+          fragments: p.message.fragments.map(mapFragment),
+          badges: [],
+          timestamp: serverTime(e),
+          automod_hold: {
+            reason: "",
+            status: "pending",
+            broadcaster_user_id: p.broadcaster_user_id,
+            mine: true,
+          },
+        });
+      },
+    ),
+    listenEventSub<RawUserMessageUpdate>(
+      "channel.chat.user_message_update",
+      (e) => {
+        const p = e.event;
+        if (p.status === "approved") {
+          releaseHeldMessage(p.broadcaster_user_id, p.message_id);
+          return;
+        }
+        setAutomodHoldStatus(
+          p.broadcaster_user_id,
+          p.message_id,
+          HOLD_OUTCOMES[p.status] ?? "expired",
+        );
+      },
     ),
     listenEventSub<RawAutomodMessageUpdate>("automod.message.update", (e) => {
       const p = e.event;

@@ -364,6 +364,14 @@ export type RawAutomodMessageUpdate = {
   moderator_user_name: string;
 };
 
+export type RawUserMessageHold = RawModUser & {
+  broadcaster_user_id: string;
+  message_id: string;
+  message: { text: string; fragments: RawFragment[] };
+};
+
+export type RawUserMessageUpdate = RawUserMessageHold & { status: string };
+
 export type RawSharedChatEnd = { broadcaster_user_id: string };
 
 export type RawSharedChatSession = RawSharedChatEnd & {

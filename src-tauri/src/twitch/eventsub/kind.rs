@@ -43,6 +43,8 @@ kinds! {
     ChannelChatMessageDelete = "channel.chat.message_delete", "channel-chat-message-delete" => (Viewer, Background),
     ChannelChatClear = "channel.chat.clear", "channel-chat-clear" => (Viewer, Background),
     ChannelChatClearUserMessages = "channel.chat.clear_user_messages", "channel-chat-clear-user-messages" => (Viewer, Background),
+    ChannelChatUserMessageHold = "channel.chat.user_message_hold", "channel-chat-user-message-hold" => (Viewer, Focused),
+    ChannelChatUserMessageUpdate = "channel.chat.user_message_update", "channel-chat-user-message-update" => (Viewer, Focused),
     ChannelChatSettingsUpdate = "channel.chat_settings.update", "channel-chat-settings-update" => (Viewer, Focused),
     ChannelSharedChatBegin = "channel.shared_chat.begin", "channel-shared-chat-begin" => (Broadcaster, Focused),
     ChannelSharedChatUpdate = "channel.shared_chat.update", "channel-shared-chat-update" => (Broadcaster, Focused),

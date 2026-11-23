@@ -354,6 +354,7 @@
   "FEED_MOD_REMOVED_LINE": "{mod} removed {user} as a moderator",
   "FEED_MORE_OPTIONS_LABEL": "More options",
   "FEED_NEW_MESSAGES_LABEL": "New messages",
+  "FEED_OWN_MESSAGE_HELD_LINE": "Your message is held for review",
   "FEED_PAY_IT_FORWARD_LINE": "{name} is paying forward their gift sub from {anonymous, select, true {an anonymous user} other {{gifter}}}!",
   "FEED_POLL_CHOICES_LINE": "Choices: {choices}",
   "FEED_POLL_CHOICE_VOTES_VALUE": "{choice} {votes, plural, one {# vote} other {# votes}}",

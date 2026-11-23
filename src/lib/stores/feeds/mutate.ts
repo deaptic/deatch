@@ -143,6 +143,12 @@ export function addGiftRecipient(
   });
 }
 
+export function releaseHeldMessage(broadcasterId: string, messageId: string) {
+  updateFirst(broadcasterId, messageWithId(messageId), (m) => {
+    delete m.automod_hold;
+  });
+}
+
 export function setAutomodHoldStatus(
   broadcasterId: string,
   messageId: string,

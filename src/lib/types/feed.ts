@@ -28,6 +28,7 @@ export type AutomodHoldInfo = {
   status: AutomodHoldStatus;
   moderator?: string;
   broadcaster_user_id: string;
+  mine: boolean;
 };
 
 export type SuspiciousInfo = {

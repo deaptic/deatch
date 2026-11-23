@@ -354,6 +354,7 @@
   "FEED_MOD_REMOVED_LINE": "{mod} poisti käyttäjän {user} moderaattorin roolin",
   "FEED_MORE_OPTIONS_LABEL": "Lisää vaihtoehtoja",
   "FEED_NEW_MESSAGES_LABEL": "Uudet viestit",
+  "FEED_OWN_MESSAGE_HELD_LINE": "Viestisi odottaa tarkistusta",
   "FEED_PAY_IT_FORWARD_LINE": "{name} antaa eteenpäin lahjatilauksen, jonka antoi {anonymous, select, true {anonyymi käyttäjä} other {{gifter}}}!",
   "FEED_POLL_CHOICES_LINE": "Vaihtoehdot: {choices}",
   "FEED_POLL_CHOICE_VOTES_VALUE": "{choice} {votes, plural, one {# ääni} other {# ääntä}}",

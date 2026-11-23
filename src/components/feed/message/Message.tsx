@@ -188,14 +188,18 @@ export default function Message(props: Props) {
           {(h) => (
             <FeedItem.Note
               class="text-caution"
-              label={t("FEED_AUTOMOD_HELD_LINE", { reason: h().reason })}
+              label={
+                h().mine
+                  ? t("FEED_OWN_MESSAGE_HELD_LINE")
+                  : t("FEED_AUTOMOD_HELD_LINE", { reason: h().reason })
+              }
               suffix={
                 details.isHoldResolved(item)
                   ? details.holdOutcome(h())
                   : undefined
               }
               actions={
-                details.isHoldPending(item)
+                details.isHoldPending(item) && !h().mine
                   ? [
                       {
                         title: t("FEED_AUTOMOD_ALLOW_LABEL"),

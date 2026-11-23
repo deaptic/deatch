@@ -87,6 +87,7 @@ test("replies, holds, rewards and first messages stand alone", () => {
           reason: "",
           status: "pending",
           broadcaster_user_id: "b",
+          mine: false,
         },
       }),
       msg("5", "viewer1", T0),
