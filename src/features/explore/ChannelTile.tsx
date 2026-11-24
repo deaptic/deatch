@@ -23,19 +23,12 @@ export default function ChannelTile(props: Props) {
       data-tip={props.tip}
       class={`group flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center pressable hover:bg-surface active:pressed ${link.cursor}`}
     >
-      <span
-        class="flex rounded-full outline-2 outline-offset-2"
-        classList={{
-          "outline-live": props.live,
-          "outline-transparent": !props.live,
-        }}
-      >
-        <Avatar
-          src={props.channel.profileImageUrl}
-          alt={props.channel.displayName}
-          size={64}
-        />
-      </span>
+      <Avatar
+        src={props.channel.profileImageUrl}
+        alt={props.channel.displayName}
+        size={64}
+        liveRing={props.live}
+      />
       <span class="w-full min-w-0">
         <span class="block truncate text-small text-ink">
           {props.channel.displayName}

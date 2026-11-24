@@ -262,7 +262,11 @@ export default function Rail(props: Props) {
                     <ChannelRow
                       ch={ch}
                       muted={link.mutedByLogin()[ch.login] === true}
-                      onToggleMute={() => link.toggleMuted(ch.login)}
+                      onToggleMute={
+                        link.hasAudio()
+                          ? () => link.toggleMuted(ch.login)
+                          : undefined
+                      }
                       onSelect={props.onSelect}
                       onMiddleClick={() => link.close(ch.login)}
                       onContextMenu={openMenu}
@@ -349,9 +353,8 @@ export default function Rail(props: Props) {
                 alt={u().displayName}
                 size={40}
                 square
-                presence="online"
               >
-                <Show when={ownTab()}>
+                <Show when={link.hasAudio() && ownTab()}>
                   {(tab) => (
                     <TabMuteBadge
                       muted={link.mutedByLogin()[tab().login] === true}

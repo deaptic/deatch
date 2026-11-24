@@ -70,8 +70,8 @@ export default function ChannelRow(props: Props) {
         alt={props.ch.displayName}
         size={40}
         square
-        presence={stream() ? "live" : "offline"}
         dashed={props.ephemeral}
+        dimmed={!stream()}
       >
         <Show when={props.onToggleMute}>
           {(toggle) => (

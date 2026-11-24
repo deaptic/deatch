@@ -71,7 +71,8 @@ export default function ChannelHeader(props: Props) {
       alt={props.channel.displayName}
       size={64}
       square
-      presence={stream() ? "on-air" : "offline"}
+      presence={stream() ? "live" : "offline"}
+      presenceLook="icon"
       overlay={overlay}
     />
   );
