@@ -172,6 +172,7 @@ export default function UserCard(props: Props) {
           messages={messages()}
           pinned={props.pinned}
           onTogglePin={props.onTogglePin}
+          onClose={close}
           onStartDrag={startDrag}
           onContextMenu={(x, y) =>
             props.onUserContextMenu(x, y, { id: props.chatterId })

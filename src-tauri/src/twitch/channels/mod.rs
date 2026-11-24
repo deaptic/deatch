@@ -5,7 +5,7 @@ use super::Authed;
 use crate::platform::error::{Error, Result};
 use crate::twitch::client::ids::{GameId, UserId};
 use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
-use dto::{ChannelDetails, ChannelInfo, ContentLabel};
+use dto::{ChannelDetails, ChannelInfo, ContentLabel, Follower, FollowersPage};
 use serde::Deserialize;
 use std::borrow::Cow;
 use twitch_api::helix::ccls::GetContentClassificationLabelsRequest;
@@ -82,6 +82,33 @@ pub async fn get_followed_at(
         response.data.into_iter().next().map(|f| f.followed_at)
     };
     Ok(followed_at.map(|t| t.to_string()))
+}
+
+const FOLLOWERS_PAGE: usize = 100;
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct GetFollowersParams {
+    pub broadcaster_id: UserId,
+    #[serde(default)]
+    pub cursor: Option<String>,
+}
+
+pub async fn get_followers(
+    twitch: &Authed<'_>,
+    params: GetFollowersParams,
+) -> Result<FollowersPage> {
+    let mut request = GetChannelFollowersRequest::broadcaster_id(params.broadcaster_id.as_str())
+        .first(FOLLOWERS_PAGE);
+    request.after = params
+        .cursor
+        .map(|c| twitch_api::helix::Cursor::from(c).into());
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(FollowersPage {
+        total: response.get_other("total").ok().flatten(),
+        cursor: response.pagination_data.cursor.map(|c| c.to_string()),
+        followers: response.data.into_iter().map(Follower::from).collect(),
+    })
 }
 
 #[derive(Deserialize, specta::Type)]

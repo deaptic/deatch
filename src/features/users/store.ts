@@ -1,3 +1,4 @@
+import { userRefOf } from "../../shared/user.ts";
 import * as chatters from "./chatters.ts";
 import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import { untrack } from "solid-js";
@@ -118,11 +119,11 @@ export async function resolve(
       reportFailure(e);
       return [];
     });
-    return user ? toUserRef(user) : null;
+    return user ? userRefOf(user) : null;
   }
   if (!login) return null;
   const lookup = await findByLogin(login);
-  return lookup.status === "found" ? toUserRef(lookup.user) : null;
+  return lookup.status === "found" ? userRefOf(lookup.user) : null;
 }
 
 export async function resolveId(
@@ -156,10 +157,6 @@ export async function followStatus(
   ).catch(() => undefined);
   if (at === undefined) return { kind: "unknown" };
   return at ? { kind: "since", at } : { kind: "none" };
-}
-
-function toUserRef({ id, login, displayName }: User): UserRef {
-  return { id, login, displayName };
 }
 
 export async function findByLogin(

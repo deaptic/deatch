@@ -19,16 +19,22 @@ import Modal from "../../kit/Modal.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import BannedTab from "./BannedTab.tsx";
 import ChattersTab from "./ChattersTab.tsx";
+import FollowersTab from "./FollowersTab.tsx";
 import RolesTab from "./RolesTab.tsx";
 
 const REFRESH_MS = 120_000;
 
-type Tab = "chatters" | "roles" | "banned";
+type Tab = "chatters" | "followers" | "roles" | "banned";
 
 const TABS: { tab: Tab; label: MessageKey; capability: Capability }[] = [
   {
     tab: "chatters",
     label: "PEOPLE_CHATTERS_TAB_LABEL",
+    capability: "moderate",
+  },
+  {
+    tab: "followers",
+    label: "PEOPLE_FOLLOWERS_TAB_LABEL",
     capability: "moderate",
   },
   { tab: "roles", label: "PEOPLE_ROLES_TAB_LABEL", capability: "manageRoles" },
@@ -49,7 +55,7 @@ export default function PeopleDialog(props: Props) {
     TABS.filter((t) => hasPermission(props.broadcasterId, t.capability));
   const tab = (): Tab =>
     tabs().some((t) => t.tab === picked()) ? picked() : "chatters";
-  const [banned, setBanned] = createSignal<{
+  const [paged, setPaged] = createSignal<{
     count: number;
     more: boolean;
   } | null>(null);
@@ -62,7 +68,7 @@ export default function PeopleDialog(props: Props) {
         more: "false",
       });
     }
-    const b = banned();
+    const b = paged();
     return b
       ? t("PEOPLE_COUNT_VALUE", { count: b.count, more: String(b.more) })
       : "";
@@ -119,6 +125,15 @@ export default function PeopleDialog(props: Props) {
               onUserContextMenu={props.onUserContextMenu}
             />
           </Match>
+          <Match when={tab() === "followers"}>
+            <FollowersTab
+              onCount={(count, more) => setPaged({ count, more })}
+              broadcasterId={props.broadcasterId}
+              query={query()}
+              onShowUserCard={props.onShowUserCard}
+              onUserContextMenu={props.onUserContextMenu}
+            />
+          </Match>
           <Match when={tab() === "roles"}>
             <RolesTab
               broadcasterId={props.broadcasterId}
@@ -128,7 +143,7 @@ export default function PeopleDialog(props: Props) {
           </Match>
           <Match when={tab() === "banned"}>
             <BannedTab
-              onCount={(count, more) => setBanned({ count, more })}
+              onCount={(count, more) => setPaged({ count, more })}
               broadcasterId={props.broadcasterId}
               query={query()}
               onShowUserCard={props.onShowUserCard}

@@ -44,6 +44,7 @@ use twitch_api::eventsub::{
     channel::{ChannelSharedChatBeginV1, ChannelSharedChatEndV1, ChannelSharedChatUpdateV1},
     channel::{ChannelShieldModeBeginV1, ChannelShieldModeEndV1},
     stream::{StreamOfflineV1, StreamOnlineV1},
+    user::UserWhisperMessageV1,
     EventSubSubscription, Status, Transport, TransportResponse,
 };
 use twitch_api::helix::{ClientRequestError, HelixRequestPostError};
@@ -239,6 +240,7 @@ async fn create(
         }
         EventKind::StreamOnline => subscribe!(StreamOnlineV1::broadcaster_user_id(b)),
         EventKind::StreamOffline => subscribe!(StreamOfflineV1::broadcaster_user_id(b)),
+        EventKind::UserWhisperMessage => subscribe!(UserWhisperMessageV1::new(u)),
     }
 }
 

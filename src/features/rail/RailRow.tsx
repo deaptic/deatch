@@ -25,7 +25,7 @@ type Props = {
   card?: () => JSX.Element;
   selected?: boolean;
   unread?: boolean;
-  mentions?: number;
+  count?: number;
   dimmed?: boolean;
   ref?: (el: HTMLButtonElement) => void;
   onClick?: () => void;
@@ -39,7 +39,7 @@ export default function RailRow(props: Props) {
   const tip = createSideTip(
     () => props.card?.() ?? props.tooltip ?? <TipLabel>{props.label}</TipLabel>,
   );
-  const hasMentions = () => (props.mentions ?? 0) > 0;
+  const hasCount = () => (props.count ?? 0) > 0;
 
   return (
     <>
@@ -83,9 +83,9 @@ export default function RailRow(props: Props) {
         >
           <span class="relative shrink-0 flex">
             {props.children}
-            <Show when={hasMentions() && !expanded()}>
+            <Show when={hasCount() && !expanded()}>
               <span class="absolute -top-1 -right-1.5 z-10">
-                <Badge count={props.mentions ?? 0} floating />
+                <Badge count={props.count ?? 0} floating />
               </span>
             </Show>
           </span>
@@ -114,8 +114,8 @@ export default function RailRow(props: Props) {
               </Show>
             </span>
             <Show when={expanded()}>
-              <Show when={hasMentions()} fallback={props.trailing}>
-                <Badge count={props.mentions ?? 0} />
+              <Show when={hasCount()} fallback={props.trailing}>
+                <Badge count={props.count ?? 0} />
               </Show>
             </Show>
           </span>

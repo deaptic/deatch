@@ -3,6 +3,7 @@ import { runningActivities } from "./running.ts";
 
 const idle = {
   pinned: null,
+  hypeTrain: null,
   shield: false,
   poll: null,
   prediction: null,

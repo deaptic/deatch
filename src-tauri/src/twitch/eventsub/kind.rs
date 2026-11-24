@@ -85,9 +85,14 @@ kinds! {
     ChannelCharityCampaignStop = "channel.charity_campaign.stop", "channel-charity-campaign-stop" => (Broadcaster, Focused),
     StreamOnline = "stream.online", "stream-online" => (Broadcaster, Focused),
     StreamOffline = "stream.offline", "stream-offline" => (Broadcaster, Focused),
+    UserWhisperMessage = "user.whisper.message", "user-whisper-message" => (Account, Background),
 }
 
 impl EventKind {
+    pub(super) fn is_account(self) -> bool {
+        self.requires().0 == Role::Account
+    }
+
     pub fn event_names() -> BTreeMap<Self, &'static str> {
         Self::ALL.iter().map(|&k| (k, k.event_name())).collect()
     }
@@ -105,6 +110,7 @@ pub(super) enum Role {
     Viewer,
     Moderator,
     Broadcaster,
+    Account,
 }
 
 #[cfg(test)]

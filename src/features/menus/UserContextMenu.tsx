@@ -7,6 +7,7 @@ import {
   EyeOff,
   Hash,
   Megaphone,
+  MessageCircle,
   ShieldAlert,
   TriangleAlert,
   User,
@@ -22,6 +23,8 @@ import { setSuspiciousStatus } from "../../platform/twitch/moderation.ts";
 import type { SuspiciousStatus } from "../../shared/types/index.ts";
 import Menu from "../../kit/Menu.tsx";
 import * as blocks from "../blocks/index.ts";
+import * as whispers from "../whispers/index.ts";
+import { showWhispers } from "../navigation/index.ts";
 import { user as currentUser } from "../users/index.ts";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
@@ -77,6 +80,20 @@ export default function UserContextMenu(props: Props) {
         icon={<AtSign />}
         onClick={() => props.onMention(props.userLogin)}
       />
+      <Show when={currentUser()?.id !== props.userId}>
+        <MenuItem
+          label={t("MENU_WHISPER_LABEL")}
+          icon={<MessageCircle />}
+          onClick={() => {
+            whispers.open({
+              id: props.userId,
+              login: props.userLogin,
+              displayName: props.userDisplayName,
+            });
+            showWhispers();
+          }}
+        />
+      </Show>
       <MenuItem
         label={t("MENU_OPEN_IN_BROWSER_LABEL")}
         icon={<ExternalLink />}

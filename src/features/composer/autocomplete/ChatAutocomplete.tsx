@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { onMount, Show } from "solid-js";
 import { createChatAutocompleteController } from "./controller.ts";
 import EmoteAutocomplete from "./EmoteAutocomplete.tsx";
 import MentionAutocomplete from "./MentionAutocomplete.tsx";
@@ -13,13 +13,17 @@ export type ChatAutocompleteHandle = {
   field: ListboxField;
 };
 
-type Props = {
+type Channel = {
   broadcasterId: string;
+  onCommandSelected: (cmd: Command) => void;
+};
+
+type Props = {
+  channel?: Channel;
   getValue: () => string;
   getCursor: () => number;
   setValue: (v: string) => void;
   focus: () => void;
-  onCommandSelected: (cmd: Command) => void;
   ref?: (h: ChatAutocompleteHandle) => void;
 };
 
@@ -42,15 +46,21 @@ export default function ChatAutocomplete(props: Props) {
 
   return (
     <>
-      <CommandAutocomplete
-        controller={controller}
-        broadcasterId={props.broadcasterId}
-        onCommandSelected={props.onCommandSelected}
-      />
-      <MentionAutocomplete
-        controller={controller}
-        broadcasterId={props.broadcasterId}
-      />
+      <Show when={props.channel}>
+        {(channel) => (
+          <>
+            <CommandAutocomplete
+              controller={controller}
+              broadcasterId={channel().broadcasterId}
+              onCommandSelected={channel().onCommandSelected}
+            />
+            <MentionAutocomplete
+              controller={controller}
+              broadcasterId={channel().broadcasterId}
+            />
+          </>
+        )}
+      </Show>
       <EmoteAutocomplete controller={controller} />
     </>
   );

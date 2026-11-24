@@ -13,6 +13,7 @@ import { mapFragment } from "../feed/index.ts";
 import { MessageText } from "../message/index.ts";
 import AdsRow from "./ui/rows/AdsRow.tsx";
 import CharityRow from "./ui/rows/CharityRow.tsx";
+import HypeTrainRow from "./ui/rows/HypeTrainRow.tsx";
 import GoalsRow from "./ui/rows/GoalsRow.tsx";
 import PinnedRow from "./ui/rows/PinnedRow.tsx";
 import PollRow from "./ui/rows/PollRow.tsx";
@@ -36,6 +37,14 @@ export default function ActivityStrip(props: Props) {
       : null;
   };
   const shield = () => activityShown("shield") && current().shield;
+  const hypeTrain = () => {
+    const train = current().hypeTrain;
+    return activityShown("hypeTrain") &&
+      train &&
+      Date.parse(train.expiresAt) > clock.now()
+      ? train
+      : null;
+  };
   const goals = () => (activityShown("goals") ? current().goals : []);
   const charity = () => (activityShown("charity") ? current().charity : null);
   const raiding = () => {
@@ -67,6 +76,7 @@ export default function ActivityStrip(props: Props) {
         raiding() ||
         unbans() ||
         ads() ||
+        hypeTrain() ||
         poll() ||
         prediction()
       }
@@ -119,6 +129,9 @@ export default function ActivityStrip(props: Props) {
                   onSnooze={() => activity.snoozeAd(props.broadcasterId)}
                 />
               )}
+            </Transition>
+            <Transition when={hypeTrain()}>
+              {(train) => <HypeTrainRow train={train()} now={clock.now()} />}
             </Transition>
             <Transition when={goals().length}>
               {() => <GoalsRow goals={goals()} />}

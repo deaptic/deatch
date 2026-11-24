@@ -1,4 +1,6 @@
-export type View<C extends object> = "explore" | "settings" | C;
+export type Page = "explore" | "whispers";
+
+export type View<C extends object> = Page | "settings" | C;
 
 export type Navigation<C extends object> = {
   view: View<C>;
@@ -11,7 +13,7 @@ export function startNavigation<C extends object>(): Navigation<C> {
 }
 
 export function channelOf<C extends object>(view: View<C>): C | null {
-  return view === "explore" || view === "settings" ? null : view;
+  return typeof view === "string" ? null : view;
 }
 
 export function openChannel<C extends object>(
@@ -21,10 +23,11 @@ export function openChannel<C extends object>(
   return { ...nav, view: channel, last: channel };
 }
 
-export function openExplore<C extends object>(
+export function openPage<C extends object>(
   nav: Navigation<C>,
+  page: Page,
 ): Navigation<C> {
-  return { ...nav, view: "explore" };
+  return { ...nav, view: page };
 }
 
 export function toggleSettings<C extends object>(
@@ -38,7 +41,7 @@ export function leavePage<C extends object>(
   nav: Navigation<C>,
 ): Navigation<C> | null {
   if (nav.view === "settings") return { ...nav, view: nav.beforeSettings };
-  if (nav.view === "explore" && nav.last !== null) {
+  if (typeof nav.view === "string" && nav.last !== null) {
     return { ...nav, view: nav.last };
   }
   return null;

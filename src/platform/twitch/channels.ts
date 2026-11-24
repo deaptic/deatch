@@ -5,6 +5,8 @@ import type {
   ChannelDetails,
   ChannelInfo,
   ContentLabel,
+  FollowersPage,
+  GetFollowersParams,
   GetContentLabelsParams,
   GetChannelInformationParams,
   ModifyChannelInformationParams,
@@ -25,6 +27,13 @@ export function getFollowedAt(
   options?: InvokeOptions,
 ): Promise<string | null> {
   return invokeCommand(commands.getFollowedAt, [params], options);
+}
+
+export function getFollowers(
+  params: GetFollowersParams,
+  options?: InvokeOptions,
+): Promise<FollowersPage> {
+  return invokeCommand(commands.getFollowers, [params], options);
 }
 
 export async function modifyChannelInformation(

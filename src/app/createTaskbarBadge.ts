@@ -1,8 +1,7 @@
-import { t } from "../../shared/i18n/index.ts";
+import { t } from "../shared/i18n/index.ts";
 import { createEffect } from "solid-js";
-import { setMentionsBadge } from "../../platform/notifications.ts";
-import { appearance } from "../appearance/index.ts";
-import { unreadCount } from "./store.ts";
+import { setTaskbarBadge } from "../platform/notifications.ts";
+import { appearance } from "../features/appearance/index.ts";
 
 type BadgeLook = { fill: string; text: string; font: string };
 
@@ -30,7 +29,7 @@ async function renderBadgeBytes(
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(
-    count > 9 ? t("WINDOW_MENTIONS_OVERFLOW_VALUE") : String(count),
+    count > 9 ? t("WINDOW_BADGE_OVERFLOW_VALUE") : String(count),
     16,
     17,
   );
@@ -41,7 +40,7 @@ async function renderBadgeBytes(
   return Array.from(new Uint8Array(await blob.arrayBuffer()));
 }
 
-export function createMentionsBadge(): void {
+export function createTaskbarBadge(unreadCount: () => number): void {
   let last = "";
   createEffect(() => {
     const count = unreadCount();
@@ -56,11 +55,11 @@ export function createMentionsBadge(): void {
     renderBadgeBytes(count, look).then(
       (bytes) => {
         if (key !== last) return;
-        setMentionsBadge({ count, iconBytes: bytes }, { silent: true }).catch(
+        setTaskbarBadge({ count, iconBytes: bytes }, { silent: true }).catch(
           () => {},
         );
       },
-      (e) => console.error("mentions badge not drawn", e),
+      (e) => console.error("taskbar badge not drawn", e),
     );
   });
 }

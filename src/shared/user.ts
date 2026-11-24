@@ -25,3 +25,11 @@ export function userFromRef(ref: UserRef): User {
 export function isUserId(id: string): boolean {
   return USER_ID.test(id);
 }
+
+export function userRefOf({ id, login, displayName }: UserRef): UserRef {
+  return { id, login, displayName };
+}
+
+export function loginOf(query: string): string {
+  return query.trim().replace(/^@/, "").toLowerCase();
+}

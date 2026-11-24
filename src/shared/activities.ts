@@ -5,6 +5,7 @@ export const ACTIVITIES = [
   "unbans",
   "pinned",
   "ads",
+  "hypeTrain",
   "goals",
   "charity",
   "poll",
@@ -17,6 +18,7 @@ export type ActivityKind = (typeof ACTIVITIES)[number];
 export const ACTIVITY_LABELS: Record<ActivityKind, MessageKey> = {
   pinned: "HEADER_ACTIVITY_PINNED_LABEL",
   shield: "HEADER_ACTIVITY_SHIELD_LABEL",
+  hypeTrain: "HEADER_ACTIVITY_HYPE_TRAIN_LABEL",
   goals: "HEADER_ACTIVITY_GOALS_LABEL",
   charity: "HEADER_ACTIVITY_CHARITY_LABEL",
   raid: "HEADER_ACTIVITY_RAID_LABEL",

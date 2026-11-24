@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import { createEffect, createRoot, createSignal } from "solid-js";
-import notificationSound from "../../assets/notification.mp3";
+import { playNotificationSound } from "../../kit/notificationSound.ts";
 import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
@@ -19,13 +19,11 @@ export const unreadCountIn = (broadcasterId: string) =>
 const MAX = 100;
 const SAVE_DELAY_MS = 1000;
 
-let sound: HTMLAudioElement | null = null;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 let unsaved: Mention[] | undefined;
 
 export function start(): () => void {
   setMentions(load());
-  sound = new Audio(notificationSound);
   let timer: ReturnType<typeof setTimeout> | undefined;
   const dispose = createRoot((dispose) => {
     createEffect(() => {
@@ -39,7 +37,6 @@ export function start(): () => void {
     dispose();
     clearTimeout(timer);
     flush();
-    sound = null;
   };
 }
 
@@ -70,9 +67,7 @@ export function record(m: Omit<Mention, "unread">) {
   const isActive = selectedChannel()?.id === m.broadcasterId;
   const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
   setMentions(save(next.length > MAX ? next.slice(0, MAX) : next));
-  if (notificationsMentionSound() && sound?.paused) {
-    sound.play().catch((e: unknown) => console.warn("mention sound", e));
-  }
+  if (notificationsMentionSound()) playNotificationSound();
 }
 
 function pruneExpired() {

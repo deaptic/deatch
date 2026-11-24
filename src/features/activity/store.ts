@@ -12,6 +12,7 @@ import type {
   AdSchedule,
   CharityCampaign,
   Goal,
+  HypeTrain,
   PinnedMessage,
   Poll,
   Prediction,
@@ -26,6 +27,7 @@ import {
 } from "../../platform/twitch/chat.ts";
 import { getCharityCampaign } from "../../platform/twitch/charity.ts";
 import { getGoals } from "../../platform/twitch/goals.ts";
+import { getHypeTrain } from "../../platform/twitch/hypeTrain.ts";
 import { getAdSchedule, snoozeNextAd } from "../../platform/twitch/ads.ts";
 import {
   getShieldMode,
@@ -42,6 +44,7 @@ export type Activity = {
   shield: boolean;
   charity: CharityCampaign | null;
   unbanRequests: UnbanRequest[];
+  hypeTrain: HypeTrain | null;
   goals: Goal[];
   ads: AdSchedule | null;
 };
@@ -53,6 +56,7 @@ const NONE: Activity = {
   shield: false,
   charity: null,
   unbanRequests: [],
+  hypeTrain: null,
   goals: [],
   ads: null,
 };
@@ -117,6 +121,11 @@ const SOURCES = {
     capability: "manageStream",
     load: (id) =>
       getCharityCampaign(of(id), silent).then((charity) => ({ charity })),
+  },
+  hypeTrain: {
+    capability: "manageStream",
+    load: (id) =>
+      getHypeTrain(of(id), silent).then((hypeTrain) => ({ hypeTrain })),
   },
   goals: {
     capability: "manageStream",

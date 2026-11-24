@@ -152,18 +152,14 @@ impl Coordinator<'_> {
             self.report_connection();
             return;
         }
-        let authed = if self.subs.is_empty() {
-            None
-        } else {
-            match twitch.authed().await {
-                Ok(authed) => Some(authed),
-                Err(Error::NotAuthenticated) => None,
-                Err(e) => {
-                    log::warn!("eventsub sync postponed, token refresh failed: {e}");
-                    self.resume_at = Some(Instant::now() + TOKEN_RETRY);
-                    self.report_connection();
-                    return;
-                }
+        let authed = match twitch.authed().await {
+            Ok(authed) => Some(authed),
+            Err(Error::NotAuthenticated) => None,
+            Err(e) => {
+                log::warn!("eventsub sync postponed, token refresh failed: {e}");
+                self.resume_at = Some(Instant::now() + TOKEN_RETRY);
+                self.report_connection();
+                return;
             }
         };
         match &authed {
@@ -242,7 +238,7 @@ impl Coordinator<'_> {
     }
 
     fn forward(&self, notification: Notification) {
-        if self.subs.has_channel(&notification.broadcaster_id) {
+        if notification.kind.is_account() || self.subs.has_channel(&notification.broadcaster_id) {
             emit_named(self.app, notification.kind.event_name(), notification);
         }
     }

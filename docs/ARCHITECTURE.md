@@ -70,7 +70,8 @@ src-tauri/src/
     auth/          sign-in, session, scopes
     eventsub/      subscriptions and the socket runner
     ads/ bits/ blocks/ channels/ charity/ chat/ chatters/ clips/ goals/
-    moderation/ polls/ predictions/ raids/ search/ streams/ subscriptions/ users/
+    hype_train/ moderation/ polls/ predictions/ raids/ search/ streams/
+    subscriptions/ users/ whispers/
   emotes/ history/ feedlog/ link/ discord/ notifications/ diagnostics/ graphics/
 ```
 

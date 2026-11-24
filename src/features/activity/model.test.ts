@@ -2,6 +2,7 @@ import { expect, test } from "vite-plus/test";
 import {
   charityFrom,
   goalFrom,
+  hypeTrainFrom,
   isPinActive,
   pollFrom,
   predictionFrom,
@@ -145,4 +146,28 @@ test("a pin without an end stays active, a timed pin ends at its end time", () =
   expect(isPinActive({ ...pin, endsAt: null }, 5_000)).toBe(true);
   expect(isPinActive({ ...pin, endsAt }, 999)).toBe(true);
   expect(isPinActive({ ...pin, endsAt }, 1_000)).toBe(false);
+});
+
+test("a hype train event maps to the running train, the end event to none", () => {
+  const raw = {
+    broadcaster_user_id: "1",
+    id: "h1",
+    level: 2,
+    total: 900,
+    progress: 300,
+    goal: 1000,
+    top_contributions: [],
+    type: "regular",
+    is_shared_train: false,
+  };
+  expect(hypeTrainFrom({ ...raw, expires_at: "2026-01-01T00:05:00Z" })).toEqual(
+    {
+      id: "h1",
+      level: 2,
+      progress: 300,
+      goal: 1000,
+      expiresAt: "2026-01-01T00:05:00Z",
+    },
+  );
+  expect(hypeTrainFrom(raw)).toBeNull();
 });

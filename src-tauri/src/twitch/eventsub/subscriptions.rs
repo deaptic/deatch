@@ -151,10 +151,6 @@ impl Subs {
         self.channels.contains_key(broadcaster_id)
     }
 
-    pub(super) fn is_empty(&self) -> bool {
-        self.channels.is_empty()
-    }
-
     pub(super) fn is_creating(&self) -> bool {
         self.states
             .values()
@@ -431,6 +427,13 @@ impl Subs {
 }
 
 fn wanted(channels: &Channels, viewer: &Viewer) -> HashSet<Subscription> {
+    let account = EventKind::ALL
+        .into_iter()
+        .filter(|kind| kind.is_account())
+        .map(|kind| Subscription {
+            channel: viewer.id.clone(),
+            kind,
+        });
     channels
         .iter()
         .flat_map(|(channel, &focus)| {
@@ -446,6 +449,7 @@ fn wanted(channels: &Channels, viewer: &Viewer) -> HashSet<Subscription> {
                     kind,
                 })
         })
+        .chain(account)
         .collect()
 }
 
@@ -565,6 +569,15 @@ mod tests {
         assert!(!wanted.contains(&sub("viewer", EventKind::StreamOnline)));
         let own = wanted.iter().filter(|s| s.channel == id("me")).count();
         assert_eq!(own, EventKind::ALL.len());
+    }
+
+    #[test]
+    fn account_kinds_are_wanted_once_even_without_channels() {
+        let wanted = wanted(&Channels::new(), &viewer(&[]));
+        assert_eq!(
+            wanted,
+            HashSet::from([sub("me", EventKind::UserWhisperMessage)])
+        );
     }
 
     #[test]

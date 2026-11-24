@@ -15,6 +15,7 @@ import {
   Show,
 } from "solid-js";
 import type { Component } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import type { Toast, ToastType } from "./toasts.ts";
 import { t } from "../shared/i18n/index.ts";
 import IconButton from "./IconButton.tsx";
@@ -114,14 +115,24 @@ export default function ToasterItem(props: Props) {
       }}
     >
       <Icon class={`size-4 shrink-0 ${TONE[toast.type]}`} />
-      <div class="flex-1 min-w-0 flex flex-col">
+      <Dynamic
+        component={toast.onOpen ? "button" : "div"}
+        type={toast.onOpen ? "button" : undefined}
+        class="flex-1 min-w-0 flex flex-col text-left"
+        classList={{ "cursor-pointer": !!toast.onOpen }}
+        onClick={() => {
+          if (!toast.onOpen) return;
+          toast.onOpen();
+          dismiss();
+        }}
+      >
         <p class="text-body text-ink break-words">{toast.title}</p>
         <Show when={toast.description}>
           <p class="text-small text-ink-soft break-words line-clamp-3">
             {toast.description}
           </p>
         </Show>
-      </div>
+      </Dynamic>
       <IconButton label={t("UI_DISMISS_LABEL")} size="sm" onClick={dismiss}>
         <X class="size-4" />
       </IconButton>

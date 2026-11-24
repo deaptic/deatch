@@ -7,7 +7,7 @@ import {
   leavePage as leaveNavigationPage,
   type Navigation,
   openChannel,
-  openExplore,
+  openPage,
   startNavigation,
   toggleSettings as toggleNavigationSettings,
 } from "./model.ts";
@@ -61,7 +61,12 @@ export function stepVisits(delta: 1 | -1): User | null {
 }
 
 export function showExplore() {
-  setNavigation(openExplore);
+  setNavigation((nav) => openPage(nav, "explore"));
+  setLinkSynced(false);
+}
+
+export function showWhispers() {
+  setNavigation((nav) => openPage(nav, "whispers"));
   setLinkSynced(false);
 }
 

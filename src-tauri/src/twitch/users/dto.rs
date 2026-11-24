@@ -1,5 +1,5 @@
 use crate::twitch::client::ids::UserId;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use twitch_api::helix::users as helix_users;
 use twitch_api::types;
 
@@ -21,7 +21,7 @@ impl From<types::BroadcasterType> for BroadcasterType {
     }
 }
 
-#[derive(Debug, Clone, Serialize, specta::Type)]
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UserRef {
     pub id: UserId,

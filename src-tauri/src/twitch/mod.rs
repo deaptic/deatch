@@ -10,6 +10,7 @@ pub mod client;
 pub mod clips;
 pub mod eventsub;
 pub mod goals;
+pub mod hype_train;
 pub mod moderation;
 pub mod polls;
 pub mod predictions;
@@ -18,6 +19,7 @@ pub mod search;
 pub mod streams;
 pub mod subscriptions;
 pub mod users;
+pub mod whispers;
 
 use crate::platform::error::{Error, Result};
 use crate::platform::lock::lock;

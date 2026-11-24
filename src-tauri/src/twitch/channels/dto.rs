@@ -2,7 +2,7 @@ use crate::twitch::client::game::GameRef;
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::ccls::ContentClassificationLabel as HelixContentLabel;
-use twitch_api::helix::channels::ChannelInformation;
+use twitch_api::helix::channels::{ChannelInformation, Follower as HelixFollower};
 use twitch_api::types::ContentClassificationId;
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
@@ -68,4 +68,28 @@ impl From<HelixContentLabel> for ContentLabel {
             description: l.description,
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct Follower {
+    pub user: UserRef,
+    pub followed_at: String,
+}
+
+impl From<HelixFollower> for Follower {
+    fn from(f: HelixFollower) -> Self {
+        Self {
+            user: UserRef::new(f.user_id, f.user_login, f.user_name),
+            followed_at: f.followed_at.to_string(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FollowersPage {
+    pub followers: Vec<Follower>,
+    pub total: Option<u32>,
+    pub cursor: Option<String>,
 }

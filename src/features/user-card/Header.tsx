@@ -7,7 +7,7 @@ import { knownUser } from "../users/index.ts";
 import { hasPermission } from "../permissions/index.ts";
 import { getSubscription } from "../../platform/twitch/subscriptions.ts";
 import * as browser from "../../platform/browser.ts";
-import { Pin } from "lucide-solid";
+import { Pin, X } from "lucide-solid";
 import { feeds } from "../feed/index.ts";
 import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
 import Avatar from "../../kit/Avatar.tsx";
@@ -26,6 +26,7 @@ type Props = {
   messages: FeedMessage[];
   pinned: boolean;
   onTogglePin: () => void;
+  onClose: () => void;
   onStartDrag: (e: MouseEvent) => void;
   onContextMenu: (x: number, y: number) => void;
   onOpenChannel: (broadcasterId: string) => void;
@@ -105,6 +106,15 @@ export default function Header(props: Props) {
           onClick={props.onTogglePin}
         >
           <Pin class="size-4" fill={props.pinned ? "currentColor" : "none"} />
+        </IconButton>
+        <IconButton
+          label={t("USER_CARD_CLOSE_LABEL")}
+          variant="media"
+          size="sm"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={props.onClose}
+        >
+          <X class="size-4" />
         </IconButton>
       </div>
       <div class="flex flex-col gap-card-gap px-card-pad pb-card-pad contain-inline-size">

@@ -8,6 +8,7 @@ export type Toast = {
   description?: string;
   type: ToastType;
   duration: number;
+  onOpen?: () => void;
 };
 
 const [toasts, setToasts] = createSignal<Toast[]>([]);
@@ -27,11 +28,12 @@ export function addToast(
   title: string,
   type: ToastType = "info",
   description?: string,
+  onOpen?: () => void,
 ) {
   const id = nextId++;
   const duration = TYPE_DURATION[type];
   setToasts((prev) =>
-    [...prev, { id, title, description, type, duration }].slice(-3),
+    [...prev, { id, title, description, type, duration, onOpen }].slice(-3),
   );
 }
 

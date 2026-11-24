@@ -3,7 +3,7 @@ import {
   channelOf,
   leavePage,
   openChannel,
-  openExplore,
+  openPage,
   startNavigation,
   toggleSettings,
 } from "./model.ts";
@@ -12,7 +12,10 @@ const a = { id: "a" };
 const b = { id: "b" };
 
 test("opening channels remembers the last one and Explore keeps it", () => {
-  const nav = openExplore(openChannel(openChannel(startNavigation(), a), b));
+  const nav = openPage(
+    openChannel(openChannel(startNavigation(), a), b),
+    "explore",
+  );
   expect(nav.view).toBe("explore");
   expect(nav.last).toBe(b);
   expect(channelOf(nav.view)).toBeNull();
@@ -26,10 +29,18 @@ test("settings toggles back to where you were", () => {
 });
 
 test("leaving a page goes back from settings, then from Explore to the last channel", () => {
-  const nav = toggleSettings(openExplore(openChannel(startNavigation(), a)));
+  const nav = toggleSettings(
+    openPage(openChannel(startNavigation(), a), "explore"),
+  );
   const back = leavePage(nav);
   expect(back?.view).toBe("explore");
   expect(back && leavePage(back)?.view).toBe(a);
   expect(leavePage(openChannel(startNavigation(), a))).toBeNull();
   expect(leavePage(startNavigation())).toBeNull();
+});
+
+test("whispers is a page like Explore: leaving it returns to the last channel", () => {
+  const nav = openPage(openChannel(startNavigation(), a), "whispers");
+  expect(channelOf(nav.view)).toBeNull();
+  expect(leavePage(nav)?.view).toBe(a);
 });

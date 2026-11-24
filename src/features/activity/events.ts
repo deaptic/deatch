@@ -6,6 +6,7 @@ import type {
   RawAdBreak,
   RawCharityCampaign,
   RawGoal,
+  RawHypeTrain,
   RawPoll,
   RawPrediction,
   RawShieldMode,
@@ -19,6 +20,7 @@ import { selectedChannel } from "../navigation/index.ts";
 import {
   charityFrom,
   goalFrom,
+  hypeTrainFrom,
   pollFrom,
   predictionFrom,
   unbanRequestFrom,
@@ -59,6 +61,9 @@ export function start(): () => void {
   });
   const charity = (raw: RawCharityCampaign) => ({
     charity: charityFrom(raw),
+  });
+  const hypeTrain = (raw: RawHypeTrain) => ({
+    hypeTrain: hypeTrainFrom(raw),
   });
   const prediction = (raw: RawPrediction) => ({
     prediction: predictionFrom(raw),
@@ -103,6 +108,11 @@ export function start(): () => void {
         unbanRequests: withoutUnbanRequest(current.unbanRequests, raw.id),
       }),
     ),
+    listenActivity("channel.hype_train.begin", hypeTrain),
+    listenActivity("channel.hype_train.progress", hypeTrain),
+    listenActivity<RawHypeTrain>("channel.hype_train.end", () => ({
+      hypeTrain: null,
+    })),
     listenActivity("channel.goal.begin", goal),
     listenActivity("channel.goal.progress", goal),
     listenActivity<RawGoal>("channel.goal.end", (raw, current) => ({

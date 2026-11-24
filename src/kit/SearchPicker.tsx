@@ -16,6 +16,7 @@ type Props<T> = {
   onPick: (item: T | null) => void;
   autofocus?: boolean;
   floating?: boolean;
+  clearOnPick?: boolean;
 };
 
 export default function SearchPicker<T>(props: Props<T>) {
@@ -49,7 +50,7 @@ export default function SearchPicker<T>(props: Props<T>) {
 
   function pick(item: T) {
     latest++;
-    setQuery(props.name(item));
+    setQuery(props.clearOnPick ? "" : props.name(item));
     setResults([]);
     props.onPick(item);
   }

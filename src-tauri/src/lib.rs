@@ -43,6 +43,10 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             feedlog::commands::feedlog_page,
             feedlog::commands::feedlog_around,
             feedlog::commands::feedlog_clear,
+            twitch::whispers::commands::send_whisper,
+            twitch::whispers::commands::whispers_save,
+            twitch::whispers::commands::whispers_list,
+            twitch::whispers::commands::whispers_mark_read,
             discord::commands::discord_connect,
             discord::commands::discord_disconnect,
             discord::commands::discord_set_activity,
@@ -100,6 +104,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::chatters::commands::get_channel_moderators,
             twitch::chatters::commands::get_channel_vips,
             twitch::goals::commands::get_goals,
+            twitch::hype_train::commands::get_hype_train,
             twitch::blocks::commands::get_blocked_users,
             twitch::blocks::commands::block_user,
             twitch::blocks::commands::unblock_user,
@@ -121,6 +126,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::clips::commands::create_clip,
             twitch::channels::commands::get_channel_information,
             twitch::channels::commands::get_followed_at,
+            twitch::channels::commands::get_followers,
             twitch::channels::commands::modify_channel_information,
             twitch::channels::commands::start_commercial,
             emotes::commands::bttv_get_global_emotes,
@@ -137,7 +143,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             link::commands::link_close,
             link::commands::link_set_audio,
             link::commands::link_request_state,
-            notifications::commands::set_mentions_badge,
+            notifications::commands::set_taskbar_badge,
+            notifications::commands::flash_taskbar,
             graphics::commands::set_hardware_acceleration,
             diagnostics::commands::get_app_stats,
         ])
@@ -164,7 +171,7 @@ fn bring_to_front(app: &tauri::AppHandle) {
     }
 }
 
-const SCHEMAS: &[platform::db::Schema] = &[feedlog::SCHEMA];
+const SCHEMAS: &[platform::db::Schema] = &[feedlog::SCHEMA, twitch::whispers::SCHEMA];
 
 pub fn run() {
     let bindings = bindings();

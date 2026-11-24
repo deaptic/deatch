@@ -2,7 +2,9 @@ import type { User } from "../shared/types/index.ts";
 import { createChannelNavigation } from "../features/navigation/index.ts";
 import { createLinkControls } from "../features/link/index.ts";
 import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
-import { createMentionsBadge } from "../features/inbox/index.ts";
+import * as inbox from "../features/inbox/index.ts";
+import * as whispers from "../features/whispers/index.ts";
+import { createTaskbarBadge } from "./createTaskbarBadge.ts";
 import { createSystemIntegration } from "./createSystemIntegration.ts";
 import { createSessionLifecycle } from "./createSessionLifecycle.ts";
 import { createAppShortcuts } from "./createAppShortcuts.ts";
@@ -21,7 +23,7 @@ export function createAppController(): AppController {
   const link = createLinkControls(nav);
 
   createSelectedChannelEffects();
-  createMentionsBadge();
+  createTaskbarBadge(() => inbox.unreadCount() + whispers.unreadCount());
   createSystemIntegration();
   createSessionLifecycle();
   createAppShortcuts(nav, link);

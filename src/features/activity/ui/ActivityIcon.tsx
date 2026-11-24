@@ -6,6 +6,7 @@ import {
   Shield,
   Swords,
   Target,
+  TrainFront,
   Trophy,
   Tv,
 } from "lucide-solid";
@@ -18,6 +19,7 @@ const ICONS = {
   shield: Shield,
   unbans: Scale,
   ads: Tv,
+  hypeTrain: TrainFront,
   goals: Target,
   charity: HeartHandshake,
   poll: ChartColumn,

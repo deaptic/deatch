@@ -1,5 +1,5 @@
 import { createEffect, createMemo, For, on, Show } from "solid-js";
-import { Plus, Search, Settings } from "lucide-solid";
+import { MessageCircle, Plus, Search, Settings } from "lucide-solid";
 import * as browser from "../../platform/browser.ts";
 import {
   appearanceRailExpanded,
@@ -7,12 +7,14 @@ import {
 } from "../preferences/index.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
+import * as whispers from "../whispers/index.ts";
 import * as link from "../link/index.ts";
 import {
   activeView,
   isSettingsOpen,
   pendingChannel,
   showExplore,
+  showWhispers,
   toggleSettings,
 } from "../navigation/index.ts";
 import { user } from "../users/index.ts";
@@ -279,6 +281,17 @@ export default function Rail(props: Props) {
           </RailTile>
         </RailRow>
         <RailRow
+          label={t("RAIL_WHISPERS_LABEL")}
+          sub={t("RAIL_WHISPERS_DESCRIPTION")}
+          selected={activeView() === "whispers"}
+          count={whispers.unreadCount()}
+          onClick={showWhispers}
+        >
+          <RailTile active={activeView() === "whispers" && "accent"}>
+            <MessageCircle />
+          </RailTile>
+        </RailRow>
+        <RailRow
           label={t("RAIL_SETTINGS_LABEL")}
           sub={t("RAIL_SETTINGS_DESCRIPTION")}
           selected={isSettingsOpen()}
@@ -299,7 +312,7 @@ export default function Rail(props: Props) {
               sub={t("RAIL_YOUR_CHANNEL_LABEL")}
               selected={pendingChannel()?.id === u().id}
               unread={hasUnread(u().id)}
-              mentions={inbox.unreadCountIn(u().id)}
+              count={inbox.unreadCountIn(u().id)}
               onClick={() => props.onSelect(u())}
               onMiddleClick={() => {
                 if (ownTab()) link.close(u().login);

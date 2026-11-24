@@ -235,7 +235,8 @@ fn notification(metadata: Metadata, event: Option<serde_json::Value>) -> Option<
     let event = event?;
     let broadcaster_id = event
         .get("broadcaster_user_id")
-        .or_else(|| event.get("broadcaster_id"))?
+        .or_else(|| event.get("broadcaster_id"))
+        .or_else(|| event.get("to_user_id"))?
         .as_str()?
         .into();
     Some(Notification {

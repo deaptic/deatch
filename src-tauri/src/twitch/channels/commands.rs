@@ -1,8 +1,8 @@
-use super::dto::{ChannelDetails, ChannelInfo, ContentLabel};
+use super::dto::{ChannelDetails, ChannelInfo, ContentLabel, FollowersPage};
 use crate::platform::error::Result;
 use crate::twitch::channels::{
-    self, GetChannelInformationParams, GetContentLabelsParams, ModifyChannelInformationParams,
-    StartCommercialParams,
+    self, GetChannelInformationParams, GetContentLabelsParams, GetFollowersParams,
+    ModifyChannelInformationParams, StartCommercialParams,
 };
 use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::Twitch;
@@ -96,4 +96,13 @@ pub async fn get_content_labels(
     params: GetContentLabelsParams,
 ) -> Result<Vec<ContentLabel>> {
     channels::get_content_labels(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_followers(
+    twitch: State<'_, Twitch>,
+    params: GetFollowersParams,
+) -> Result<FollowersPage> {
+    channels::get_followers(&twitch.authed().await?, params).await
 }

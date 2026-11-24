@@ -395,6 +395,7 @@ export type RawHypeTrain = {
   total: number;
   progress?: number;
   goal?: number;
+  expires_at?: string;
   top_contributions: RawHypeTrainContribution[];
   type: string;
   is_shared_train: boolean;
@@ -408,6 +409,14 @@ export type RawPoll = {
   started_at: string;
   ends_at?: string;
   status?: "completed" | "terminated" | "archived";
+};
+
+export type RawWhisper = {
+  from_user_id: string;
+  from_user_login: string;
+  from_user_name: string;
+  whisper_id: string;
+  whisper: { text: string };
 };
 
 export type RawShieldMode = {

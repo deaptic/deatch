@@ -1,3 +1,4 @@
+import { Whispers } from "../features/whispers/index.ts";
 import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "./title-bar/TitleBar.tsx";
 import { UpdateBanner } from "../features/updater/index.ts";
@@ -77,6 +78,11 @@ export default function AppLayout(props: AppLayoutProps) {
                 <Show when={activeView() === "explore"}>
                   <Boundary>
                     <Explore onSelectChannel={c.selectChannel} />
+                  </Boundary>
+                </Show>
+                <Show when={activeView() === "whispers"}>
+                  <Boundary>
+                    <Whispers />
                   </Boundary>
                 </Show>
                 <Show when={activeView() === "settings"}>

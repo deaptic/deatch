@@ -55,7 +55,7 @@ export default function ChannelRow(props: Props) {
       )}
       selected={pendingChannel()?.id === props.ch.id}
       unread={hasUnread(props.ch.id)}
-      mentions={inbox.unreadCountIn(props.ch.id)}
+      count={inbox.unreadCountIn(props.ch.id)}
       dimmed={props.dimmed}
       onClick={() => props.onSelect(props.ch)}
       onMiddleClick={() =>

@@ -10,6 +10,7 @@ export function runningActivities(
     unbans: activity.unbanRequests.length > 0,
     pinned: activity.pinned !== null,
     ads: activity.ads?.nextAdMs != null,
+    hypeTrain: activity.hypeTrain !== null,
     goals: activity.goals.length > 0,
     charity: activity.charity !== null,
     poll: activity.poll !== null,

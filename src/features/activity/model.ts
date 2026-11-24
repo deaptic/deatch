@@ -2,6 +2,7 @@ import type {
   CharityCampaign,
   DonationAmount,
   Goal,
+  HypeTrain,
   PinnedMessage,
   Poll,
   Prediction,
@@ -12,6 +13,7 @@ import type {
   RawCampaignAmount,
   RawCharityCampaign,
   RawGoal,
+  RawHypeTrain,
   RawPrediction,
   RawUnbanRequestCreate,
 } from "../../platform/twitch/eventsubPayloads.ts";
@@ -111,4 +113,15 @@ export function secondsLeft(startedAt: number, now: number): number {
 
 export function isPinActive(pin: PinnedMessage, now: number): boolean {
   return pin.endsAt === null || Date.parse(pin.endsAt) > now;
+}
+
+export function hypeTrainFrom(raw: RawHypeTrain): HypeTrain | null {
+  if (!raw.expires_at) return null;
+  return {
+    id: raw.id,
+    level: raw.level,
+    progress: raw.progress ?? 0,
+    goal: raw.goal ?? 0,
+    expiresAt: raw.expires_at,
+  };
 }

@@ -19,6 +19,7 @@ const FEATURES: &[Feature] = &[
         &[Scope::UserReadBlockedUsers, Scope::UserManageBlockedUsers],
     ),
     ("clips", &[Scope::ClipsEdit]),
+    ("whispers", &[Scope::UserManageWhispers]),
     (
         "moderation",
         &[

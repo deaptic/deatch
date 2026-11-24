@@ -16,6 +16,7 @@ export {
   activeView,
   selectedChannel,
   showExplore,
+  showWhispers,
   leavePage,
   toggleSettings,
   resetView,

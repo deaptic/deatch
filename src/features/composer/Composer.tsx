@@ -333,12 +333,14 @@ export default function Composer(props: Props) {
             }
           >
             <ChatAutocomplete
-              broadcasterId={props.broadcasterId}
+              channel={{
+                broadcasterId: props.broadcasterId,
+                onCommandSelected: setCommandMode,
+              }}
               getValue={input}
               getCursor={getCursor}
               setValue={setInput}
               focus={focus}
-              onCommandSelected={setCommandMode}
               ref={setAutocomplete}
             />
             <Show when={isOverlayOpen("emotePicker")}>
