@@ -110,8 +110,8 @@ export default function PeopleDialog(props: Props) {
           <Field
             ref={autofocus}
             icon={<Search class="size-4" />}
-            placeholder={t("CHATTERS_SEARCH_PLACEHOLDER")}
-            aria-label={t("CHATTERS_SEARCH_PLACEHOLDER")}
+            placeholder={t("PEOPLE_SEARCH_PLACEHOLDER")}
+            aria-label={t("PEOPLE_SEARCH_PLACEHOLDER")}
             value={query()}
             onInput={(e) => setQuery(e.currentTarget.value)}
           />
