@@ -42,6 +42,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             feedlog::commands::feedlog_append,
             feedlog::commands::feedlog_page,
             feedlog::commands::feedlog_around,
+            feedlog::commands::feedlog_search,
             feedlog::commands::feedlog_clear,
             twitch::whispers::commands::send_whisper,
             twitch::whispers::commands::whispers_save,

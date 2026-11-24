@@ -4,11 +4,12 @@ import {
   feedlogAround,
   feedlogClear,
   feedlogPage,
+  feedlogSearch,
 } from "../../../platform/feedLog.ts";
 import type { InvokeOptions } from "../../../platform/invoke.ts";
 import { requeueUnlogged, takeUnlogged } from "../store/index.ts";
 import type { Cursor } from "../../../shared/types/index.ts";
-import type { FeedEntry } from "../types.ts";
+import type { FeedEntry, FeedMessage } from "../types.ts";
 import { fromLog, toLogEntry } from "./feedLogPages.ts";
 
 const FLUSH_MS = 5_000;
@@ -69,6 +70,26 @@ export async function page(
     { silent: true },
   );
   return fromLog(lines);
+}
+
+export type SearchResult = { broadcasterId: string; message: FeedMessage };
+
+export async function search(
+  query: string,
+  broadcasterId: string | null,
+  limit: number,
+): Promise<SearchResult[]> {
+  await flush();
+  const hits = await feedlogSearch(
+    { query, broadcasterId, limit },
+    { silent: true },
+  );
+  return hits.flatMap((hit) => {
+    const [entry] = fromLog([hit.entry]);
+    return entry?.kind === "message"
+      ? [{ broadcasterId: hit.broadcasterId, message: entry }]
+      : [];
+  });
 }
 
 export async function around(

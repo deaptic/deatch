@@ -19,6 +19,7 @@
   "ctrl-0": ["view::zoomReset"],
   "ctrl-b": ["rail::toggle"],
   "ctrl-k": ["quickSwitch::toggle"],
+  "ctrl-f": ["search::toggle"],
   "ctrl-shift-e": ["explore::show"],
   "ctrl-1": ["channel::select1"],
   "ctrl-2": ["channel::select2"],

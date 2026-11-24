@@ -5,7 +5,7 @@ use crate::platform::db::{Databases, Schema};
 use crate::platform::error::Result;
 use crate::twitch::client::ids::UserId;
 use rusqlite::{params, Connection, OptionalExtension};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tauri::Manager;
 
@@ -79,6 +79,63 @@ pub struct AroundParams {
     pub broadcaster_id: UserId,
     pub id: String,
     pub limit: usize,
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FeedlogSearchParams {
+    pub query: String,
+    #[serde(default)]
+    pub broadcaster_id: Option<UserId>,
+    pub limit: usize,
+}
+
+#[derive(Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FeedlogHit {
+    pub broadcaster_id: String,
+    pub entry: String,
+}
+
+fn like_pattern(query: &str) -> String {
+    let escaped = query
+        .replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_");
+    format!("%{escaped}%")
+}
+
+pub fn search(db: &Connection, params: FeedlogSearchParams) -> Result<Vec<FeedlogHit>> {
+    let query = params.query.trim();
+    if query.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut statement = db.prepare_cached(
+        "SELECT channel, entry FROM feed_entries
+         WHERE json_valid(entry)
+           AND json_extract(entry, '$.kind') = 'message'
+           AND (?2 IS NULL OR channel = ?2)
+           AND (
+             json_extract(entry, '$.chatter_login') LIKE ?1 ESCAPE '\\'
+             OR json_extract(entry, '$.chatter_name') LIKE ?1 ESCAPE '\\'
+             OR EXISTS (
+               SELECT 1 FROM json_each(entry, '$.fragments') AS fragment
+               WHERE json_extract(fragment.value, '$.text') LIKE ?1 ESCAPE '\\'
+             )
+           )
+         ORDER BY timestamp DESC, rowid DESC
+         LIMIT ?3",
+    )?;
+    let channel = params.broadcaster_id.as_ref().map(|id| id.as_str());
+    let hits = statement
+        .query_map(params![like_pattern(query), channel, params.limit], |row| {
+            Ok(FeedlogHit {
+                broadcaster_id: row.get(0)?,
+                entry: row.get(1)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    Ok(hits)
 }
 
 pub fn append(db: &mut Connection, params: AppendParams) -> Result<()> {
@@ -257,6 +314,47 @@ mod tests {
         )
         .unwrap();
         db
+    }
+
+    #[test]
+    fn search_finds_messages_by_text_or_chatter_newest_first() {
+        let message = |id: &str, ts: u64, login: &str, text: &str| {
+            entry(
+                id,
+                ts,
+                &format!(
+                    r#"{{"kind":"message","message_id":"{id}","timestamp":{ts},"chatter_login":"{login}","chatter_name":"{login}","fragments":[{{"type":"text","text":"{text}"}}]}}"#
+                ),
+            )
+        };
+        let db = log(vec![
+            message("a", 1, "viewer1", "good game"),
+            message("b", 2, "viewer2", "100% sure"),
+            message("c", 3, "gamer", "hello"),
+            entry("d", 4, r#"{"kind":"event","text":"game"}"#),
+        ]);
+        let ids = |query: &str| {
+            search(
+                &db,
+                FeedlogSearchParams {
+                    query: query.into(),
+                    broadcaster_id: None,
+                    limit: 10,
+                },
+            )
+            .unwrap()
+            .into_iter()
+            .map(|hit| {
+                serde_json::from_str::<serde_json::Value>(&hit.entry).unwrap()["message_id"]
+                    .as_str()
+                    .unwrap()
+                    .to_string()
+            })
+            .collect::<Vec<_>>()
+        };
+        assert_eq!(ids("game"), ["c", "a"]);
+        assert_eq!(ids("100%"), ["b"]);
+        assert_eq!(ids("  "), Vec::<String>::new());
     }
 
     #[test]

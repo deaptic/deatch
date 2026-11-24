@@ -64,6 +64,7 @@ export function createAppShortcuts(
       shortcuts.register("quickSwitch::toggle", () =>
         toggleOverlay("quickSwitch"),
       ),
+      shortcuts.register("search::toggle", () => toggleOverlay("search")),
       shortcuts.register("emotePicker::toggle", () =>
         toggleOverlay("emotePicker"),
       ),

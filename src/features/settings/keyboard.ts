@@ -13,6 +13,7 @@ export const ACTION_LABELS: Record<string, MessageKey> = {
   "inbox::toggle": "SETTINGS_KEYBOARD_INBOX_LABEL",
   "emotePicker::toggle": "SETTINGS_KEYBOARD_EMOTE_PICKER_LABEL",
   "quickSwitch::toggle": "SETTINGS_KEYBOARD_QUICK_SWITCH_LABEL",
+  "search::toggle": "SETTINGS_KEYBOARD_SEARCH_LABEL",
   "link::toggle": "SETTINGS_KEYBOARD_LINK_SYNC_LABEL",
   "link::toggleAudioLink": "SETTINGS_KEYBOARD_LINK_AUDIO_LABEL",
   "link::toggleMute": "SETTINGS_KEYBOARD_LINK_MUTE_LABEL",

@@ -8,6 +8,7 @@ export const commands = {
 	feedlogAppend: (params: AppendParams) => __TAURI_INVOKE<null>("feedlog_append", { params }),
 	feedlogPage: (params: PageParams) => __TAURI_INVOKE<string[]>("feedlog_page", { params }),
 	feedlogAround: (params: AroundParams) => __TAURI_INVOKE<string[] | null>("feedlog_around", { params }),
+	feedlogSearch: (params: FeedlogSearchParams) => __TAURI_INVOKE<FeedlogHit[]>("feedlog_search", { params }),
 	feedlogClear: () => __TAURI_INVOKE<null>("feedlog_clear"),
 	sendWhisper: (params: SendWhisperParams) => __TAURI_INVOKE<null>("send_whisper", { params }),
 	whispersSave: (params: SaveWhispersParams) => __TAURI_INVOKE<null>("whispers_save", { params }),
@@ -564,6 +565,17 @@ export type EventSubStats = {
 	waiting: number,
 	capped: number,
 	rejected: number,
+};
+
+export type FeedlogHit = {
+	broadcasterId: string,
+	entry: string,
+};
+
+export type FeedlogSearchParams = {
+	query: string,
+	broadcasterId?: UserId | null,
+	limit: number,
 };
 
 export type Focus = "focused" | "background";

@@ -6,6 +6,7 @@ type Overlay =
   | "emotePicker"
   | "appearance"
   | "quickSwitch"
+  | "search"
   | "composerActions"
   | "chatters";
 

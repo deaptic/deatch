@@ -2,6 +2,8 @@ import { commands } from "./bindings.ts";
 import type {
   AppendParams,
   AroundParams,
+  FeedlogHit,
+  FeedlogSearchParams,
   PageParams,
 } from "../shared/types/index.ts";
 import { invokeCommand, type InvokeOptions } from "./invoke.ts";
@@ -18,6 +20,13 @@ export function feedlogPage(
   options?: InvokeOptions,
 ): Promise<string[]> {
   return invokeCommand(commands.feedlogPage, [params], options);
+}
+
+export function feedlogSearch(
+  params: FeedlogSearchParams,
+  options?: InvokeOptions,
+): Promise<FeedlogHit[]> {
+  return invokeCommand(commands.feedlogSearch, [params], options);
 }
 
 export function feedlogAround(

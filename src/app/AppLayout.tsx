@@ -34,6 +34,11 @@ const QuickSwitch = lazy(() =>
     default: m.QuickSwitch,
   })),
 );
+const SearchPalette = lazy(() =>
+  import("../features/search/index.ts").then((m) => ({
+    default: m.SearchPalette,
+  })),
+);
 
 type AppLayoutProps = {
   controller: AppController;
@@ -103,6 +108,16 @@ export default function AppLayout(props: AppLayoutProps) {
                 </Show>
                 <FlashHost />
               </main>
+              <Show when={isOverlayOpen("search")}>
+                <Boundary silent>
+                  <Suspense>
+                    <SearchPalette
+                      onJump={c.jumpToMessage}
+                      onClose={closeOverlay}
+                    />
+                  </Suspense>
+                </Boundary>
+              </Show>
               <Show when={isOverlayOpen("quickSwitch")}>
                 <Boundary silent>
                   <Suspense>
