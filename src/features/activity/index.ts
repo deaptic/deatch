@@ -3,6 +3,8 @@ export {
   endPrediction,
   forChannel,
   load,
+  pin,
+  unpin,
   refreshAds,
   resolveUnban,
   setShield,

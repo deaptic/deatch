@@ -40,6 +40,15 @@ export const commands = {
 	getCheermotes: (params: BroadcasterParams) => __TAURI_INVOKE<Cheermote[]>("get_cheermotes", { params }),
 	getChatSettings: (params: BroadcasterParams) => __TAURI_INVOKE<ChatSettings>("get_chat_settings", { params }),
 	updateChatSettings: (params: UpdateChatSettingsParams) => __TAURI_INVOKE<null>("update_chat_settings", { params }),
+	getPinnedMessage: (params: BroadcasterParams) => __TAURI_INVOKE<{
+	messageId: MessageId,
+	sender: UserRef,
+	pinnedBy: UserRef,
+	text: string,
+	endsAt: string | null,
+} | null>("get_pinned_message", { params }),
+	pinMessage: (params: PinMessageParams) => __TAURI_INVOKE<null>("pin_message", { params }),
+	unpinMessage: (params: UnpinMessageParams) => __TAURI_INVOKE<null>("unpin_message", { params }),
 	getUserChatColor: (params: GetUserChatColorParams) => __TAURI_INVOKE<string | null>("get_user_chat_color", { params }),
 	updateUserChatColor: (params: UpdateUserChatColorParams) => __TAURI_INVOKE<null>("update_user_chat_color", { params }),
 	getUserEmotes: () => __TAURI_INVOKE<UserEmote[]>("get_user_emotes"),
@@ -683,6 +692,20 @@ export type Pagination = {
 	cursor: string | null,
 };
 
+export type PinMessageParams = {
+	broadcasterId: UserId,
+	messageId: MessageId,
+	durationSeconds?: number | null,
+};
+
+export type PinnedMessage = {
+	messageId: MessageId,
+	sender: UserRef,
+	pinnedBy: UserRef,
+	text: string,
+	endsAt: string | null,
+};
+
 export type Poll = {
 	id: PollId,
 	title: string,
@@ -955,6 +978,11 @@ export type UnbanRequest = {
 };
 
 export type UnbanRequestId = string;
+
+export type UnpinMessageParams = {
+	broadcasterId: UserId,
+	messageId: MessageId,
+};
 
 export type UpdateAutoModParams = {
 	broadcasterId: UserId,

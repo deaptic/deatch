@@ -1,9 +1,10 @@
 use crate::twitch::client::ids::{EmoteId, EmoteSetId, MessageId, UserId};
+use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
 use twitch_api::helix::chat::{
     send_chat_message::{ChatMessageDropCode, ChatMessageDropReason, SendChatMessageResponse},
     BadgeSet as HelixBadgeSet, ChatBadge as HelixChatBadge, ChatSettings as HelixChatSettings,
-    GlobalEmote, UserEmote as HelixUserEmote,
+    GlobalEmote, PinnedChatMessage, UserEmote as HelixUserEmote,
 };
 
 fn emote_url(id: &twitch_api::types::EmoteIdRef) -> String {
@@ -354,5 +355,31 @@ mod tests {
         assert_eq!(value["slowModeSeconds"], json!(null));
         assert_eq!(value["followerModeMinutes"], json!(null));
         assert_eq!(value["subscriberMode"], json!(true));
+    }
+}
+
+#[derive(Debug, Clone, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PinnedMessage {
+    pub message_id: MessageId,
+    pub sender: UserRef,
+    pub pinned_by: UserRef,
+    pub text: String,
+    pub ends_at: Option<String>,
+}
+
+impl From<PinnedChatMessage> for PinnedMessage {
+    fn from(p: PinnedChatMessage) -> Self {
+        Self {
+            message_id: MessageId::from(p.message_id.to_string()),
+            sender: UserRef::new(p.sender_user_id, p.sender_user_login, p.sender_user_name),
+            pinned_by: UserRef::new(
+                p.pinned_by_user_id,
+                p.pinned_by_user_login,
+                p.pinned_by_user_name,
+            ),
+            text: p.message.text,
+            ends_at: p.ends_at.map(|t| t.to_string()),
+        }
     }
 }

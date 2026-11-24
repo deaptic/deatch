@@ -2,6 +2,7 @@ import { expect, test } from "vite-plus/test";
 import {
   charityFrom,
   goalFrom,
+  isPinActive,
   pollFrom,
   predictionFrom,
   unbanRequestFrom,
@@ -135,4 +136,13 @@ test("a goal keeps its place in the list as it progresses", () => {
     ["g2", 100],
   ]);
   expect(progressed[0]?.kind).toBe("new_bit");
+});
+
+test("a pin without an end stays active, a timed pin ends at its end time", () => {
+  const user = { id: "1", login: "a", displayName: "A" };
+  const pin = { messageId: "m", sender: user, pinnedBy: user, text: "t" };
+  const endsAt = new Date(1_000).toISOString();
+  expect(isPinActive({ ...pin, endsAt: null }, 5_000)).toBe(true);
+  expect(isPinActive({ ...pin, endsAt }, 999)).toBe(true);
+  expect(isPinActive({ ...pin, endsAt }, 1_000)).toBe(false);
 });

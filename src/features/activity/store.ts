@@ -12,12 +12,18 @@ import type {
   AdSchedule,
   CharityCampaign,
   Goal,
+  PinnedMessage,
   Poll,
   Prediction,
   PredictionEnd,
   UnbanDecision,
   UnbanRequest,
 } from "../../shared/types/index.ts";
+import {
+  getPinnedMessage,
+  pinMessage,
+  unpinMessage,
+} from "../../platform/twitch/chat.ts";
 import { getCharityCampaign } from "../../platform/twitch/charity.ts";
 import { getGoals } from "../../platform/twitch/goals.ts";
 import { getAdSchedule, snoozeNextAd } from "../../platform/twitch/ads.ts";
@@ -30,6 +36,7 @@ import {
 import { withoutUnbanRequest } from "./model.ts";
 
 export type Activity = {
+  pinned: PinnedMessage | null;
   poll: Poll | null;
   prediction: Prediction | null;
   shield: boolean;
@@ -40,6 +47,7 @@ export type Activity = {
 };
 
 const NONE: Activity = {
+  pinned: null,
   poll: null,
   prediction: null,
   shield: false,
@@ -78,6 +86,11 @@ const silent = { silent: true };
 const of = (broadcasterId: string) => ({ broadcasterId });
 
 const SOURCES = {
+  pinned: {
+    capability: "moderate",
+    load: (id) =>
+      getPinnedMessage(of(id), silent).then((pinned) => ({ pinned })),
+  },
   shield: {
     capability: "moderate",
     load: (id) => getShieldMode(of(id), silent).then((shield) => ({ shield })),
@@ -183,5 +196,25 @@ export function refreshAds(broadcasterId: string): void {
 export function snoozeAd(broadcasterId: string): void {
   snoozeNextAd({ broadcasterId })
     .then(() => refreshAds(broadcasterId))
+    .catch(() => {});
+}
+
+export function refreshPinned(broadcasterId: string): void {
+  refresh(broadcasterId, "pinned");
+}
+
+export function pin(
+  broadcasterId: string,
+  messageId: string,
+  durationSeconds: number | null,
+): void {
+  pinMessage({ broadcasterId, messageId, durationSeconds })
+    .then(() => refreshPinned(broadcasterId))
+    .catch(() => {});
+}
+
+export function unpin(broadcasterId: string, messageId: string): void {
+  unpinMessage({ broadcasterId, messageId })
+    .then(() => update(broadcasterId, { pinned: null }))
     .catch(() => {});
 }

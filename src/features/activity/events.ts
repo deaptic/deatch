@@ -15,6 +15,7 @@ import type {
 } from "../../platform/twitch/eventsubPayloads.ts";
 import { type Activity, clear, forChannel, update } from "./store.ts";
 import * as channels from "../channels/index.ts";
+import { selectedChannel } from "../navigation/index.ts";
 import {
   charityFrom,
   goalFrom,
@@ -48,6 +49,7 @@ function listenCharity(
 }
 
 const AD_REFRESH_MARGIN_MS = 5_000;
+const PIN_POLL_MS = 60_000;
 
 export function start(): () => void {
   const timeouts = createTimeouts();
@@ -111,9 +113,14 @@ export function start(): () => void {
     listenCharity("channel.charity_campaign.stop", () => ({ charity: null })),
   ]);
   const leave = channels.onChannel({ leave: clear });
+  const pinPoll = setInterval(() => {
+    const id = selectedChannel()?.id;
+    if (id) activity.refreshPinned(id);
+  }, PIN_POLL_MS);
   return () => {
     stops();
     leave();
     timeouts.clear();
+    clearInterval(pinPoll);
   };
 }

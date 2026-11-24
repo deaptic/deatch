@@ -1,3 +1,4 @@
+import * as activity from "../activity/index.ts";
 import { For, Show } from "solid-js";
 import Transition from "../../kit/Transition.tsx";
 import type { FeedApi } from "../feed/index.ts";
@@ -47,6 +48,16 @@ export default function ChatOverlays(props: Props) {
             onReply={props.onReply}
             onCopypasta={props.onCopypasta}
             onJumpToMessage={props.onJumpToMessage}
+            pinned={
+              activity.forChannel(props.broadcasterId).pinned?.messageId ===
+              cm().msg.message_id
+            }
+            onPin={(seconds) =>
+              activity.pin(props.broadcasterId, cm().msg.message_id, seconds)
+            }
+            onUnpin={() =>
+              activity.unpin(props.broadcasterId, cm().msg.message_id)
+            }
           />
         )}
       </Show>

@@ -8,14 +8,15 @@ use super::Authed;
 use crate::platform::error::Result;
 use crate::twitch::client::ids::{MessageId, UserId};
 use crate::twitch::client::params::{BroadcasterPairParams, BroadcasterParams};
-use dto::{BadgeSet, ChatSettings, Emote, EmoteType, SendMessageResult, UserEmote};
+use dto::{BadgeSet, ChatSettings, Emote, EmoteType, PinnedMessage, SendMessageResult, UserEmote};
 use serde::Deserialize;
 use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
 use twitch_api::helix::chat::{
     send_a_shoutout::SendAShoutoutRequest,
     send_chat_announcement::{SendChatAnnouncementBody, SendChatAnnouncementRequest},
     update_chat_settings::{UpdateChatSettingsBody, UpdateChatSettingsRequest},
-    GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetUserEmotesRequest,
+    GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetPinnedChatMessageRequest,
+    GetUserEmotesRequest, PinChatMessageRequest, UnpinChatMessageRequest,
 };
 use twitch_api::helix::EmptyBody;
 use twitch_api::types::{IntoCow, NamedUserColor};
@@ -232,9 +233,63 @@ pub async fn update_user_chat_color(
     Ok(())
 }
 
+pub async fn get_pinned_message(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<Option<PinnedMessage>> {
+    let request = GetPinnedChatMessageRequest::new(
+        params.broadcaster_id.as_str(),
+        twitch.token.user_id.as_str(),
+    );
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.map(PinnedMessage::from))
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PinMessageParams {
+    pub broadcaster_id: UserId,
+    pub message_id: MessageId,
+    #[serde(default)]
+    pub duration_seconds: Option<u32>,
+}
+
+pub async fn pin_message(twitch: &Authed<'_>, params: PinMessageParams) -> Result<()> {
+    let request = PinChatMessageRequest::new(
+        params.broadcaster_id.as_str(),
+        twitch.token.user_id.as_str(),
+        params.message_id.as_str(),
+    )
+    .duration_seconds(params.duration_seconds);
+    twitch
+        .helix
+        .req_put(request, EmptyBody, &twitch.token)
+        .await?;
+    Ok(())
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UnpinMessageParams {
+    pub broadcaster_id: UserId,
+    pub message_id: MessageId,
+}
+
+pub async fn unpin_message(twitch: &Authed<'_>, params: UnpinMessageParams) -> Result<()> {
+    let request = UnpinChatMessageRequest::new(
+        params.broadcaster_id.as_str(),
+        twitch.token.user_id.as_str(),
+        params.message_id.as_str(),
+    );
+    twitch.helix.req_delete(request, &twitch.token).await?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{AnnouncementColor, SendChatAnnouncementParams, SendChatMessageParams};
+    use super::{
+        AnnouncementColor, PinMessageParams, SendChatAnnouncementParams, SendChatMessageParams,
+    };
     use serde_json::json;
 
     #[test]
@@ -249,5 +304,12 @@ mod tests {
         let params: SendChatAnnouncementParams =
             serde_json::from_value(json!({ "broadcasterId": "1", "message": "hi" })).unwrap();
         assert!(matches!(params.color, AnnouncementColor::Primary));
+    }
+
+    #[test]
+    fn pin_without_duration_lasts_until_stream_ends() {
+        let params: PinMessageParams =
+            serde_json::from_value(json!({ "broadcasterId": "1", "messageId": "m" })).unwrap();
+        assert!(params.duration_seconds.is_none());
     }
 }

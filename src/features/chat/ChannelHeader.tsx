@@ -41,6 +41,7 @@ import Transition from "../../kit/Transition.tsx";
 type Props = {
   channel: User;
   onOpenChannel: (broadcasterId: string) => void;
+  onJumpToMessage: (messageId: string) => void;
 };
 
 export default function ChannelHeader(props: Props) {
@@ -164,6 +165,7 @@ export default function ChannelHeader(props: Props) {
           <ActivityStrip
             broadcasterId={props.channel.id}
             onOpenChannel={props.onOpenChannel}
+            onJumpToMessage={props.onJumpToMessage}
           />
         </Boundary>
       </Show>

@@ -1,8 +1,8 @@
-use super::dto::{BadgeSet, ChatSettings, Emote, SendMessageResult, UserEmote};
+use super::dto::{BadgeSet, ChatSettings, Emote, PinnedMessage, SendMessageResult, UserEmote};
 use crate::platform::error::Result;
 use crate::twitch::chat::{
-    self, GetUserChatColorParams, SendChatAnnouncementParams, SendChatMessageParams,
-    UpdateChatSettingsParams, UpdateUserChatColorParams,
+    self, GetUserChatColorParams, PinMessageParams, SendChatAnnouncementParams,
+    SendChatMessageParams, UnpinMessageParams, UpdateChatSettingsParams, UpdateUserChatColorParams,
 };
 use crate::twitch::client::params::{BroadcasterPairParams, BroadcasterParams};
 use crate::twitch::Twitch;
@@ -102,4 +102,25 @@ pub async fn update_user_chat_color(
     params: UpdateUserChatColorParams,
 ) -> Result<()> {
     chat::update_user_chat_color(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_pinned_message(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<Option<PinnedMessage>> {
+    chat::get_pinned_message(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn pin_message(twitch: State<'_, Twitch>, params: PinMessageParams) -> Result<()> {
+    chat::pin_message(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn unpin_message(twitch: State<'_, Twitch>, params: UnpinMessageParams) -> Result<()> {
+    chat::unpin_message(&twitch.authed().await?, params).await
 }

@@ -1,6 +1,7 @@
 import {
   ChartColumn,
   HeartHandshake,
+  Pin,
   Scale,
   Shield,
   Swords,
@@ -13,6 +14,7 @@ import { Dynamic } from "solid-js/web";
 import type { ActivityKind } from "../../../shared/activities.ts";
 
 const ICONS = {
+  pinned: Pin,
   shield: Shield,
   unbans: Scale,
   ads: Tv,

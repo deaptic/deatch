@@ -3,6 +3,7 @@ import type { MessageKey } from "./i18n/index.ts";
 export const ACTIVITIES = [
   "shield",
   "unbans",
+  "pinned",
   "ads",
   "goals",
   "charity",
@@ -14,6 +15,7 @@ export const ACTIVITIES = [
 export type ActivityKind = (typeof ACTIVITIES)[number];
 
 export const ACTIVITY_LABELS: Record<ActivityKind, MessageKey> = {
+  pinned: "HEADER_ACTIVITY_PINNED_LABEL",
   shield: "HEADER_ACTIVITY_SHIELD_LABEL",
   goals: "HEADER_ACTIVITY_GOALS_LABEL",
   charity: "HEADER_ACTIVITY_CHARITY_LABEL",

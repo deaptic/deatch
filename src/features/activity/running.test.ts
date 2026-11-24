@@ -2,6 +2,7 @@ import { expect, test } from "vite-plus/test";
 import { runningActivities } from "./running.ts";
 
 const idle = {
+  pinned: null,
   shield: false,
   poll: null,
   prediction: null,

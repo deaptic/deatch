@@ -1,6 +1,6 @@
 import { onMount } from "solid-js";
 import * as raid from "./raid.ts";
-import { secondsLeft } from "./model.ts";
+import { isPinActive, secondsLeft } from "./model.ts";
 import { activityShown } from "../preferences/index.ts";
 import * as activity from "./store.ts";
 import * as clock from "../../shared/clock.ts";
@@ -11,6 +11,7 @@ import { createChannelLink } from "../menus/index.ts";
 import AdsRow from "./ui/rows/AdsRow.tsx";
 import CharityRow from "./ui/rows/CharityRow.tsx";
 import GoalsRow from "./ui/rows/GoalsRow.tsx";
+import PinnedRow from "./ui/rows/PinnedRow.tsx";
 import PollRow from "./ui/rows/PollRow.tsx";
 import PredictionRow from "./ui/rows/PredictionRow.tsx";
 import RaidRow from "./ui/rows/RaidRow.tsx";
@@ -20,10 +21,17 @@ import UnbansRow from "./ui/rows/UnbansRow.tsx";
 type Props = {
   broadcasterId: string;
   onOpenChannel: (broadcasterId: string) => void;
+  onJumpToMessage: (messageId: string) => void;
 };
 
 export default function ActivityStrip(props: Props) {
   const current = () => activity.forChannel(props.broadcasterId);
+  const pinned = () => {
+    const pin = current().pinned;
+    return activityShown("pinned") && pin && isPinActive(pin, clock.now())
+      ? pin
+      : null;
+  };
   const shield = () => activityShown("shield") && current().shield;
   const goals = () => (activityShown("goals") ? current().goals : []);
   const charity = () => (activityShown("charity") ? current().charity : null);
@@ -49,6 +57,7 @@ export default function ActivityStrip(props: Props) {
   return (
     <Transition
       when={
+        pinned() ||
         shield() ||
         goals().length ||
         charity() ||
@@ -76,6 +85,18 @@ export default function ActivityStrip(props: Props) {
                 <UnbansRow
                   count={count()}
                   onReview={() => setChannelForm("unbans")}
+                />
+              )}
+            </Transition>
+            <Transition when={pinned()}>
+              {(pin) => (
+                <PinnedRow
+                  pin={pin()}
+                  now={clock.now()}
+                  onJump={() => props.onJumpToMessage(pin().messageId)}
+                  onUnpin={() =>
+                    activity.unpin(props.broadcasterId, pin().messageId)
+                  }
                 />
               )}
             </Transition>

@@ -21,6 +21,9 @@ function ChannelPane(props: ChatPanesProps & { channel: User }) {
         <ChannelHeader
           channel={props.channel}
           onOpenChannel={props.onOpenChannel}
+          onJumpToMessage={(messageId) =>
+            props.onJumpToMessage(props.channel.id, messageId)
+          }
         />
       </Boundary>
       <Boundary>

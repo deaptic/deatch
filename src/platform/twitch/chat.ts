@@ -7,10 +7,13 @@ import type {
   Emote,
   GetRecentMessagesParams,
   GetUserChatColorParams,
+  PinMessageParams,
+  PinnedMessage,
   RecentHistory,
   SendChatAnnouncementParams,
   SendChatMessageParams,
   SendMessageResult,
+  UnpinMessageParams,
   UpdateChatSettingsParams,
   UpdateUserChatColorParams,
   UserEmote,
@@ -110,6 +113,33 @@ export async function updateUserChatColor(
 ): Promise<void> {
   await invokeCommand(commands.updateUserChatColor, [params], {
     successMessage: t("COMMAND_COLOR_UPDATED_TOAST"),
+    ...options,
+  });
+}
+
+export function getPinnedMessage(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<PinnedMessage | null> {
+  return invokeCommand(commands.getPinnedMessage, [params], options);
+}
+
+export async function pinMessage(
+  params: PinMessageParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.pinMessage, [params], {
+    successMessage: t("FEED_MESSAGE_PINNED_TOAST"),
+    ...options,
+  });
+}
+
+export async function unpinMessage(
+  params: UnpinMessageParams,
+  options?: InvokeOptions,
+): Promise<void> {
+  await invokeCommand(commands.unpinMessage, [params], {
+    successMessage: t("FEED_MESSAGE_UNPINNED_TOAST"),
     ...options,
   });
 }

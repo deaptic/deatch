@@ -2,15 +2,20 @@ import {
   ClipboardPaste,
   Copy,
   CornerUpLeft,
+  Pin,
+  PinOff,
   Reply,
   Trash2,
 } from "lucide-solid";
-import { Show } from "solid-js";
+import { For, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
+import SubMenu from "../../kit/SubMenu.tsx";
+import { formatDuration } from "../../shared/format/duration.ts";
+import { PIN_DURATIONS } from "../../shared/twitch.ts";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import type { FeedMessage } from "../feed/index.ts";
 import { textOf } from "../feed/index.ts";
@@ -24,10 +29,13 @@ type Props = {
   broadcasterId: string;
   developerMode: boolean;
   showCopypasta: boolean;
+  pinned: boolean;
   onClose: () => void;
   onReply: (msg: FeedMessage) => void;
   onCopypasta: (msg: FeedMessage) => void;
   onJumpToMessage: (messageId: string) => void;
+  onPin: (durationSeconds: number | null) => void;
+  onUnpin: () => void;
 };
 
 export default function MessageContextMenu(props: Props) {
@@ -61,6 +69,31 @@ export default function MessageContextMenu(props: Props) {
       </Show>
       <Show when={props.isMod}>
         <MenuDivider />
+        <Show
+          when={!props.pinned}
+          fallback={
+            <MenuItem
+              label={t("MENU_UNPIN_LABEL")}
+              icon={<PinOff />}
+              onClick={() => props.onUnpin()}
+            />
+          }
+        >
+          <SubMenu label={t("MENU_PIN_LABEL")} icon={<Pin />}>
+            <MenuItem
+              label={t("MENU_PIN_UNTIL_END_LABEL")}
+              onClick={() => props.onPin(null)}
+            />
+            <For each={PIN_DURATIONS}>
+              {(seconds) => (
+                <MenuItem
+                  label={formatDuration(seconds)}
+                  onClick={() => props.onPin(seconds)}
+                />
+              )}
+            </For>
+          </SubMenu>
+        </Show>
         <MenuItem
           label={t("MENU_DELETE_MESSAGE_LABEL")}
           tone="negative"

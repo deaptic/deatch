@@ -2,6 +2,7 @@ import type {
   CharityCampaign,
   DonationAmount,
   Goal,
+  PinnedMessage,
   Poll,
   Prediction,
   UnbanRequest,
@@ -106,4 +107,8 @@ export const RAID_DURATION_MS = 90_000;
 
 export function secondsLeft(startedAt: number, now: number): number {
   return Math.max(0, Math.ceil((RAID_DURATION_MS - (now - startedAt)) / 1000));
+}
+
+export function isPinActive(pin: PinnedMessage, now: number): boolean {
+  return pin.endsAt === null || Date.parse(pin.endsAt) > now;
 }

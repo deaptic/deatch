@@ -23,7 +23,7 @@ export default function IconMenuButton(props: Props) {
   function toggle() {
     if (anchor() || !button) return close();
     const r = button.getBoundingClientRect();
-    setAnchor({ x: r.right, y: r.bottom + OVERLAY_GAP });
+    setAnchor({ x: r.left + r.width / 2, y: r.bottom + OVERLAY_GAP });
   }
 
   return (
@@ -48,7 +48,7 @@ export default function IconMenuButton(props: Props) {
           <Menu
             x={a().x}
             y={a().y}
-            align="end"
+            align="center"
             opener={() => button}
             onClose={close}
           >

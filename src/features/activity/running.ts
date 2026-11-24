@@ -8,6 +8,7 @@ export function runningActivities(
   const running: Record<ActivityKind, boolean> = {
     shield: activity.shield,
     unbans: activity.unbanRequests.length > 0,
+    pinned: activity.pinned !== null,
     ads: activity.ads?.nextAdMs != null,
     goals: activity.goals.length > 0,
     charity: activity.charity !== null,
