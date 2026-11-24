@@ -1,7 +1,9 @@
+import { Time } from "../../shared/time.ts";
 import Boundary from "../../kit/Boundary.tsx";
 import {
   Clock,
   Gamepad2,
+  Heart,
   Info,
   Moon,
   Pencil,
@@ -10,11 +12,15 @@ import {
 } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import { channelInfoFor, streamForUserId } from "../channels/index.ts";
+import {
+  channelInfoFor,
+  followerCount,
+  streamForUserId,
+} from "../channels/index.ts";
 import * as clock from "../../shared/clock.ts";
 import {
   formatUptime,
-  formatViewers,
+  formatCount,
   streamDetails,
   streamGame,
   streamTitle,
@@ -47,6 +53,11 @@ type Props = {
 export default function ChannelHeader(props: Props) {
   const stream = () => streamForUserId(props.channel.id);
   const info = () => channelInfoFor(props.channel.id);
+  const followers = () => followerCount(props.channel.id);
+  const details = () => {
+    const s = stream();
+    return s ? streamDetails(s) : "";
+  };
   const title = () => streamTitle(stream(), info());
   const game = () => streamGame(stream(), info());
   const link = createChannelLink(() => props.channel);
@@ -107,12 +118,32 @@ export default function ChannelHeader(props: Props) {
                   <>
                     <Stat
                       icon={<Users />}
-                      value={formatViewers(s().viewerCount)}
+                      value={formatCount(s().viewerCount)}
                       copy={String(s().viewerCount)}
+                      tip={t("HEADER_VIEWERS_STATUS", {
+                        count: s().viewerCount,
+                      })}
                     />
-                    <Stat icon={<Clock />} value={uptime()} copy={uptime()} />
+                    <Stat
+                      icon={<Clock />}
+                      value={uptime()}
+                      copy={uptime()}
+                      tip={t("HEADER_LIVE_SINCE_STATUS", {
+                        time: new Time(s().startedAt, "f").toString(),
+                      })}
+                    />
                   </>
                 )}
+              </Show>
+              <Show when={followers() !== undefined}>
+                <Stat
+                  icon={<Heart />}
+                  value={formatCount(followers() ?? 0)}
+                  copy={String(followers())}
+                  tip={t("HEADER_FOLLOWERS_STATUS", {
+                    count: followers() ?? 0,
+                  })}
+                />
               </Show>
             </div>
           </div>
@@ -130,11 +161,11 @@ export default function ChannelHeader(props: Props) {
                 {title()}
               </p>
               <span class="ml-auto shrink-0 -my-1 flex items-center gap-1">
-                <Show when={stream()}>
-                  {(s) => (
+                <Show when={details()}>
+                  {(tip) => (
                     <IconButton
                       label={t("HEADER_STREAM_DETAILS_LABEL")}
-                      tip={streamDetails(s())}
+                      tip={tip()}
                       size="sm"
                     >
                       <Info class="size-4" />

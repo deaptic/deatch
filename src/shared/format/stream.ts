@@ -1,6 +1,6 @@
 import { formatLocale, t } from "../i18n/index.ts";
 
-export function formatViewers(n: number, locale = formatLocale()): string {
+export function formatCount(n: number, locale = formatLocale()): string {
   return new Intl.NumberFormat(locale, {
     notation: "compact",
     maximumFractionDigits: 1,
@@ -35,17 +35,16 @@ export function streamGame(stream?: Described, info?: Described): string {
 
 export function liveLine(game?: string, viewers?: number): string {
   const parts = [t("UI_STREAM_LIVE_STATUS"), game];
-  if (viewers !== undefined) parts.push(formatViewers(viewers));
+  if (viewers !== undefined) parts.push(formatCount(viewers));
   return parts.filter(Boolean).join(" · ");
 }
 
-type Details = { tags: string[]; isMature: boolean; startedAt: string };
+type Details = { tags: string[]; isMature: boolean };
 
 export function streamDetails(stream: Details): string {
   return [
     stream.tags.join(" · "),
     stream.isMature ? t("HEADER_MATURE_STATUS") : "",
-    t("HEADER_LIVE_SINCE_STATUS", { time: new Date(stream.startedAt) }),
   ]
     .filter(Boolean)
     .join("\n");

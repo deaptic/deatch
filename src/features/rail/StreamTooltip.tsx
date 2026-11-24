@@ -2,7 +2,7 @@ import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
 import { Show } from "solid-js";
 import {
   formatUptime,
-  formatViewers,
+  formatCount,
   streamGame,
   streamTitle,
 } from "../../shared/format/stream.ts";
@@ -22,7 +22,7 @@ export default function StreamTooltip(props: {
     props.stream
       ? t("RAIL_VIEWERS_VALUE", {
           count: props.stream.viewerCount,
-          viewers: formatViewers(props.stream.viewerCount),
+          viewers: formatCount(props.stream.viewerCount),
         })
       : "";
   const uptime = () =>

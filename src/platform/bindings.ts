@@ -148,6 +148,7 @@ export const commands = {
 	getChannelInformation: (params: GetChannelInformationParams) => __TAURI_INVOKE<ChannelInfo[]>("get_channel_information", { params }),
 	getFollowedAt: (params: BroadcasterUserParams) => __TAURI_INVOKE<string | null>("get_followed_at", { params }),
 	getFollowers: (params: GetFollowersParams) => __TAURI_INVOKE<FollowersPage>("get_followers", { params }),
+	getFollowerCount: (params: BroadcasterParams) => __TAURI_INVOKE<number | null>("get_follower_count", { params }),
 	modifyChannelInformation: (params: ModifyChannelInformationParams) => __TAURI_INVOKE<null>("modify_channel_information", { params }),
 	startCommercial: (params: StartCommercialParams) => __TAURI_INVOKE<null>("start_commercial", { params }),
 	bttvGetGlobalEmotes: () => __TAURI_INVOKE<EmoteEntry[]>("bttv_get_global_emotes"),

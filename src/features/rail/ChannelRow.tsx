@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../channels/index.ts";
-import { formatViewers } from "../../shared/format/stream.ts";
+import { formatCount } from "../../shared/format/stream.ts";
 import type { User } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import RailRow from "./RailRow.tsx";
@@ -45,7 +45,7 @@ export default function ChannelRow(props: Props) {
           {(s) => (
             <span class="shrink-0 flex items-center gap-1.5 text-small tabular-nums text-ink-soft">
               <span class="size-1.5 rounded-full bg-live" />
-              {formatViewers(s().viewerCount)}
+              {formatCount(s().viewerCount)}
             </span>
           )}
         </Show>

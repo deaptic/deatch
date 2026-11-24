@@ -10,7 +10,7 @@ import {
 import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import * as chatters from "./store.ts";
 import { hasPermission, type Capability } from "../permissions/index.ts";
-import { formatViewers } from "../../shared/format/stream.ts";
+import { formatCount } from "../../shared/format/stream.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
 import type { UserRef } from "../../shared/types/index.ts";
 import Field from "../../kit/Field.tsx";
@@ -61,7 +61,7 @@ export default function PeopleDialog(props: Props) {
   } | null>(null);
   const count = () => {
     const list = chatters.listFor(props.broadcasterId);
-    if (tab() === "chatters") return formatViewers(list.total);
+    if (tab() === "chatters") return formatCount(list.total);
     if (tab() === "roles") {
       return t("PEOPLE_COUNT_VALUE", {
         count: list.moderators.length + list.vips.length,

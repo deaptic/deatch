@@ -4,7 +4,7 @@ import type {
   Stream,
   User,
 } from "../shared/types/index.ts";
-import { formatViewers } from "../shared/format/stream.ts";
+import { formatCount } from "../shared/format/stream.ts";
 import { categoryUrl, channelUrl } from "../shared/twitchUrl.ts";
 import { type MessageKey, t } from "../shared/i18n/index.ts";
 
@@ -67,7 +67,7 @@ export function buildPresence(
       ? t("PRESENCE_PLAYING_STATUS", {
           game: gameName,
           count: stream.viewerCount,
-          viewers: formatViewers(stream.viewerCount),
+          viewers: formatCount(stream.viewerCount),
         })
       : isOwnChannel
         ? t(session.lurkPhrase)

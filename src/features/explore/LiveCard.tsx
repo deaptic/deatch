@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import { Clock, Users } from "lucide-solid";
 import type { Stream, User } from "../../shared/types/index.ts";
 import { resolveUser } from "../channels/index.ts";
-import { formatUptime, formatViewers } from "../../shared/format/stream.ts";
+import { formatUptime, formatCount } from "../../shared/format/stream.ts";
 import * as clock from "../../shared/clock.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
@@ -41,7 +41,7 @@ export default function LiveCard(props: Props) {
           <Stat
             tone="media"
             icon={<Users />}
-            value={formatViewers(props.stream.viewerCount)}
+            value={formatCount(props.stream.viewerCount)}
           />
           <Stat
             tone="media"

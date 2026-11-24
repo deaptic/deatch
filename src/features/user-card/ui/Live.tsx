@@ -1,7 +1,7 @@
 import { Users } from "lucide-solid";
 import { Show } from "solid-js";
 import type { Stream } from "../../../shared/types/index.ts";
-import { formatViewers } from "../../../shared/format/stream.ts";
+import { formatCount } from "../../../shared/format/stream.ts";
 
 type Props = {
   stream: Stream | undefined;
@@ -23,7 +23,7 @@ export default function Live(props: Props) {
             </span>
             <span class="shrink-0 flex items-center gap-1 tabular-nums">
               <Users class="size-3.5" />
-              {formatViewers(stream().viewerCount)}
+              {formatCount(stream().viewerCount)}
             </span>
           </span>
           <span class="line-clamp-2 wrap-break-word opacity-90">

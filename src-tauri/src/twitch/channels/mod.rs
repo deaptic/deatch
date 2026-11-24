@@ -111,6 +111,16 @@ pub async fn get_followers(
     })
 }
 
+pub async fn get_follower_count(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<Option<u32>> {
+    let request =
+        GetChannelFollowersRequest::broadcaster_id(params.broadcaster_id.as_str()).first(1);
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.get_other("total").ok().flatten())
+}
+
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ModifyChannelInformationParams {

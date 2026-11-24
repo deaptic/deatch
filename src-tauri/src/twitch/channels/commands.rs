@@ -106,3 +106,12 @@ pub async fn get_followers(
 ) -> Result<FollowersPage> {
     channels::get_followers(&twitch.authed().await?, params).await
 }
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_follower_count(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<Option<u32>> {
+    channels::get_follower_count(&twitch.authed().await?, params).await
+}

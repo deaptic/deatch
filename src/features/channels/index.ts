@@ -13,3 +13,4 @@ export {
 } from "./streams.ts";
 export { rankChannels } from "./rank.ts";
 export * as channelSearch from "./search.ts";
+export { followerCount } from "./followers.ts";

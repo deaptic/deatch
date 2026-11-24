@@ -1,4 +1,4 @@
-import { formatViewers } from "../shared/format/stream.ts";
+import { formatCount } from "../shared/format/stream.ts";
 import { t } from "../shared/i18n/index.ts";
 
 type Props = {
@@ -16,7 +16,7 @@ export default function LivePill(props: Props) {
       <span class="size-1.5 rounded-full bg-current" />
       {t("UI_LIVE_STATUS")}
       {props.viewers !== undefined && (
-        <span class="opacity-80">· {formatViewers(props.viewers)}</span>
+        <span class="opacity-80">· {formatCount(props.viewers)}</span>
       )}
     </span>
   );

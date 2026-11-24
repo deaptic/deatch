@@ -2,7 +2,7 @@ import { expect, test } from "vite-plus/test";
 import {
   formatClock,
   formatUptime,
-  formatViewers,
+  formatCount,
   liveLine,
   streamDetails,
   streamGame,
@@ -10,10 +10,10 @@ import {
 } from "./stream.ts";
 
 test("abbreviates viewer counts in the given locale", () => {
-  expect(formatViewers(999, "en-US")).toBe("999");
-  expect(formatViewers(1_000, "en-US")).toBe("1K");
-  expect(formatViewers(12_345, "en-US")).toBe("12.3K");
-  expect(formatViewers(2_500_000, "en-US")).toBe("2.5M");
+  expect(formatCount(999, "en-US")).toBe("999");
+  expect(formatCount(1_000, "en-US")).toBe("1K");
+  expect(formatCount(12_345, "en-US")).toBe("12.3K");
+  expect(formatCount(2_500_000, "en-US")).toBe("2.5M");
 });
 
 test("formats durations as h:mm:ss", () => {
@@ -33,9 +33,7 @@ test("returns empty uptime for an unparseable start", () => {
 });
 
 test("the live line leaves out what is unknown", () => {
-  expect(liveLine("Chess", 1_500)).toBe(
-    `Live · Chess · ${formatViewers(1_500)}`,
-  );
+  expect(liveLine("Chess", 1_500)).toBe(`Live · Chess · ${formatCount(1_500)}`);
   expect(liveLine("")).toBe("Live");
 });
 
@@ -47,22 +45,11 @@ test("a live stream's title wins over the channel's last one", () => {
   expect(streamTitle()).toBe("");
 });
 
-test("lists tags, the mature flag and the start time on separate lines", () => {
-  const details = streamDetails({
-    tags: ["English", "Chill"],
-    isMature: true,
-    startedAt: "2026-01-01T12:00:00Z",
-  }).split("\n");
-  expect(details[0]).toBe("English · Chill");
-  expect(details[1]).toBe("Mature content");
-  expect(details[2]).toMatch(/^Live since /);
+test("lists tags and the mature flag on separate lines", () => {
+  const details = streamDetails({ tags: ["English", "Chill"], isMature: true });
+  expect(details.split("\n")).toEqual(["English · Chill", "Mature content"]);
 });
 
-test("leaves out empty detail lines", () => {
-  const details = streamDetails({
-    tags: [],
-    isMature: false,
-    startedAt: "2026-01-01T12:00:00Z",
-  });
-  expect(details.split("\n")).toHaveLength(1);
+test("is empty when there is nothing to tell", () => {
+  expect(streamDetails({ tags: [], isMature: false })).toBe("");
 });

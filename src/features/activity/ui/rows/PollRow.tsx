@@ -1,5 +1,5 @@
 import { t } from "../../../../shared/i18n/index.ts";
-import { formatViewers } from "../../../../shared/format/stream.ts";
+import { formatCount } from "../../../../shared/format/stream.ts";
 import type { Poll } from "../../../../shared/types/index.ts";
 import Button from "../../../../kit/Button.tsx";
 import ActivityRow from "../ActivityRow.tsx";
@@ -30,7 +30,7 @@ export default function PollRow(props: {
           id: c.id,
           title: c.title,
           value: c.votes,
-          detail: formatViewers(c.votes),
+          detail: formatCount(c.votes),
         }))}
       />
     </ActivityRow>

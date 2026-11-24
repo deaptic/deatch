@@ -9,6 +9,7 @@ import * as link from "../link/index.ts";
 import { channelFocus, diffFocus } from "./model.ts";
 import * as info from "./info.ts";
 import * as livePolling from "./livePolling.ts";
+import * as followers from "./followers.ts";
 import { type ChannelHooks, createHooks } from "./hooks.ts";
 
 const hooks = createHooks();
@@ -32,6 +33,7 @@ function syncEventsub() {
 
 export function start(): () => void {
   const stopPolling = livePolling.start();
+  const stopFollowers = followers.start();
   const stopInfo = onChannel({ leave: info.forget });
   const stopJoining = createRoot((dispose) => {
     createEffect(() => {
@@ -59,6 +61,7 @@ export function start(): () => void {
     stopJoining();
     stopInfo();
     stopPolling();
+    stopFollowers();
   };
 }
 

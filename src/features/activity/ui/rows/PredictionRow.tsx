@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import { t } from "../../../../shared/i18n/index.ts";
-import { formatViewers } from "../../../../shared/format/stream.ts";
+import { formatCount } from "../../../../shared/format/stream.ts";
 import type {
   Prediction,
   PredictionEnd,
@@ -24,7 +24,7 @@ export default function PredictionRow(props: {
       title: o.title,
       value: o.channelPoints,
       detail: t("HEADER_PREDICTION_POINTS_VALUE", {
-        points: formatViewers(o.channelPoints),
+        points: formatCount(o.channelPoints),
       }),
     }));
   const meta = () => {
