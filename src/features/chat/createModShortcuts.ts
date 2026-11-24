@@ -11,7 +11,12 @@ import { t } from "../../shared/i18n/index.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import type { FeedApi, FeedMessage } from "../feed/index.ts";
+import type { QuickTimeout } from "../preferences/index.ts";
 import { showsControls } from "../permissions/index.ts";
+import {
+  moderationKeyboard,
+  moderationQuickTimeout,
+} from "../preferences/index.ts";
 import { bans } from "../user-card/index.ts";
 import { user } from "../users/index.ts";
 
@@ -28,6 +33,7 @@ type Deps = {
 export type ModShortcuts = {
   armed: Accessor<FeedMessage | null>;
   canModerate: (m: FeedMessage) => boolean;
+  keyboardOn: () => boolean;
 };
 
 export function createModShortcuts(deps: Deps): ModShortcuts {
@@ -53,7 +59,7 @@ export function createModShortcuts(deps: Deps): ModShortcuts {
 
   function arm() {
     const m = deps.feed()?.getSelectedMessage();
-    if (!m || !canModerate(m)) return shortcuts.PASS;
+    if (!m || !canModerate(m) || !moderationKeyboard()) return shortcuts.PASS;
     clearTimeout(disarmTimer);
     banPressedAt = null;
     setArmed(m);
@@ -72,7 +78,7 @@ export function createModShortcuts(deps: Deps): ModShortcuts {
       fn(m);
     });
 
-  function removeWithUndo(m: FeedMessage, choice: "10m" | "ban") {
+  function removeWithUndo(m: FeedMessage, choice: QuickTimeout | "ban") {
     bans
       .apply(target(m), choice, undefined, QUIET)
       .then(() =>
@@ -135,7 +141,7 @@ export function createModShortcuts(deps: Deps): ModShortcuts {
       ),
       shortcuts.register(
         "mod::timeout",
-        once((m) => removeWithUndo(m, "10m")),
+        once((m) => removeWithUndo(m, moderationQuickTimeout())),
         ARMED,
       ),
       shortcuts.register("mod::ban", ban, ARMED),
@@ -145,5 +151,5 @@ export function createModShortcuts(deps: Deps): ModShortcuts {
     });
   });
 
-  return { armed, canModerate };
+  return { armed, canModerate, keyboardOn: moderationKeyboard };
 }

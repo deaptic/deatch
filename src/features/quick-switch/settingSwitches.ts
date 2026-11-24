@@ -90,9 +90,9 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
   },
   {
     section: "moderation",
-    label: "SETTINGS_MODERATION_HIDE_ACTIONS_LABEL",
-    get: prefs.moderationActionsDisabled,
-    set: prefs.setModerationActionsDisabled,
+    label: "SETTINGS_MODERATION_MODERATOR_TOOLS_LABEL",
+    get: prefs.moderatorTools,
+    set: prefs.setModeratorTools,
   },
   {
     section: "system",

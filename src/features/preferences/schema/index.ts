@@ -9,6 +9,9 @@ import { CLOCKS } from "../../../shared/time.ts";
 import { LANGUAGES, systemLanguage } from "../../../shared/i18n/index.ts";
 
 export type { BadgePref, EventPref } from "./feed.ts";
+
+export const QUICK_TIMEOUTS = ["1m", "10m", "1h", "1d"] as const;
+export type QuickTimeout = (typeof QUICK_TIMEOUTS)[number];
 export { TIMER_ACTIVITY, TIMER_MINUTES, type Timer } from "./timers.ts";
 export { migrate, PREFERENCES_VERSION } from "./migrations.ts";
 export { changesFrom } from "./changes.ts";
@@ -51,7 +54,10 @@ const SECTIONS = {
   }),
   moderation: object({
     autoShoutoutOnRaid: bool(false),
-    actionsDisabled: bool(false),
+    moderatorTools: bool(true),
+    keyboard: bool(false),
+    quickTimeout: oneOf(QUICK_TIMEOUTS, "10m"),
+    reasons: textList({ nonEmpty: true }),
   }),
   developer: object({ mode: bool(false), showLogs: bool(false) }),
   link: LINK,

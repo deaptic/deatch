@@ -59,12 +59,28 @@ const settingsFollowPages: Migration = (sections) =>
       }),
   ].reduce((current, move) => move(current), sections);
 
+const moderatorToolsOnMeansShown: Migration = (sections) => {
+  const moderation = sections.moderation;
+  if (!isRecord(moderation) || !("actionsDisabled" in moderation)) {
+    return sections;
+  }
+  const { actionsDisabled, ...rest } = moderation;
+  return {
+    ...sections,
+    moderation:
+      typeof actionsDisabled === "boolean"
+        ? { ...rest, moderatorTools: !actionsDisabled }
+        : rest,
+  };
+};
+
 export type Step = { version: number; run: Migration };
 
 export const MIGRATIONS: Step[] = [
   { version: 1, run: windowSettingsToGeneral },
   { version: 2, run: developerSettingsToDeveloper },
   { version: 3, run: settingsFollowPages },
+  { version: 4, run: moderatorToolsOnMeansShown },
 ];
 
 export const PREFERENCES_VERSION = MIGRATIONS.at(-1)?.version ?? 0;

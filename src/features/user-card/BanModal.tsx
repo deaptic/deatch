@@ -1,5 +1,5 @@
 import type { BannedUser } from "../../shared/types/index.ts";
-import { createSignal, onMount, Show } from "solid-js";
+import { createSignal, For, onMount, Show } from "solid-js";
 import { getBan } from "../../platform/twitch/moderation.ts";
 import * as bans from "./bans.ts";
 import { type BanChoice, secondsFor } from "./banDurations.ts";
@@ -12,6 +12,11 @@ import { autofocus } from "../../shared/solid/focus.ts";
 import Textarea from "../../kit/Textarea.tsx";
 import BanChoiceStrip from "./ui/BanChoiceStrip.tsx";
 import { hasPermission } from "../permissions/index.ts";
+import {
+  moderationQuickTimeout,
+  moderationReasons,
+} from "../preferences/index.ts";
+import Chip from "../../kit/Chip.tsx";
 import { t, tRich } from "../../shared/i18n/index.ts";
 
 type Props = {
@@ -21,15 +26,13 @@ type Props = {
   onClose: () => void;
 };
 
-const DEFAULT_CHOICE: BanChoice = "10m";
-
 type BanStatus =
   | { kind: "loading" }
   | { kind: "clear" }
   | { kind: "banned"; ban: BannedUser };
 
 export default function BanModal(props: Props) {
-  const [choice, setChoice] = createSignal<BanChoice>(DEFAULT_CHOICE);
+  const [choice, setChoice] = createSignal<BanChoice>(moderationQuickTimeout());
   const [reason, setReason] = createSignal("");
   const [pending, setPending] = createSignal(false);
   const [status, setStatus] = createSignal<BanStatus>({ kind: "loading" });
@@ -129,6 +132,22 @@ export default function BanModal(props: Props) {
       </Show>
 
       <BanChoiceStrip value={choice()} onChange={setChoice} />
+
+      <Show when={choice() !== "unban" && moderationReasons().length > 0}>
+        <div class="flex flex-wrap gap-1.5">
+          <For each={moderationReasons()}>
+            {(saved) => (
+              <button
+                type="button"
+                class="cursor-pointer"
+                onClick={() => setReason(saved)}
+              >
+                <Chip label={saved} selected={reason() === saved} />
+              </button>
+            )}
+          </For>
+        </div>
+      </Show>
 
       <Textarea
         placeholder={t("BAN_REASON_PLACEHOLDER")}

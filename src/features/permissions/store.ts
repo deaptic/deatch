@@ -5,7 +5,7 @@ import {
   meets,
   roleOf,
 } from "./model.ts";
-import { moderationActionsDisabled } from "../preferences/index.ts";
+import { moderatorTools } from "../preferences/index.ts";
 import { moderatedChannels } from "./moderated.ts";
 import { user } from "../users/index.ts";
 
@@ -22,12 +22,12 @@ export function hasPermission(channelId: string, capability: Capability) {
 }
 
 export function showsControls(channelId: string, capability: Capability) {
-  return !moderationActionsDisabled() && hasPermission(channelId, capability);
+  return moderatorTools() && hasPermission(channelId, capability);
 }
 
 export function showsRole(channelId: string, required: ChannelRole) {
   if (required === "everyone") return true;
-  return !moderationActionsDisabled() && meets(roleIn(channelId), required);
+  return moderatorTools() && meets(roleIn(channelId), required);
 }
 
 export function isOwnChannel(channelId: string): boolean {

@@ -66,3 +66,14 @@ test("migration versions count up from 1 without gaps", () => {
     MIGRATIONS.map((_, i) => i + 1),
   );
 });
+
+test("hidden moderation actions become moderator tools turned off", () => {
+  expect(
+    migrate({ moderation: { actionsDisabled: true, keyboard: true } }, 3),
+  ).toStrictEqual({
+    moderation: { keyboard: true, moderatorTools: false },
+  });
+  expect(migrate({ moderation: { keyboard: true } }, 3)).toStrictEqual({
+    moderation: { keyboard: true },
+  });
+});

@@ -186,7 +186,7 @@ export default function Chat(props: Props) {
         <Show when={feedApi()?.getSelectedMessage()}>
           {(selected) => (
             <SelectionHints
-              moderator={mod.canModerate(selected())}
+              moderator={mod.keyboardOn() && mod.canModerate(selected())}
               moderating={mod.armed()?.chatter_name ?? null}
             />
           )}
