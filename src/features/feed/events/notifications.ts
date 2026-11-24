@@ -5,8 +5,8 @@ import {
   unlistenAll,
 } from "../../../platform/listen.ts";
 import { listenFeed } from "./listenFeed.ts";
+import type { FeedEvent, Redemption } from "../types.ts";
 import type {
-  FeedEvent,
   RawAutomaticRedemption,
   RawBitsUse,
   RawChannelPointsRedemption,
@@ -14,8 +14,7 @@ import type {
   RawNotification,
   RawShoutout,
   RawShoutoutReceive,
-  Redemption,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import { addGiftRecipient, appendItem } from "../store/index.ts";
 import { chatterFields, feedEvent } from "../entries/feedEvent.ts";
 import * as channelPoints from "../channelPoints.ts";

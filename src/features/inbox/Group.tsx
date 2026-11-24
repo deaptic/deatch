@@ -1,5 +1,5 @@
 import { For, Show } from "solid-js";
-import type { Mention } from "../../shared/types/index.ts";
+import type { Mention } from "./types.ts";
 import Item from "./Item.tsx";
 
 type Props = {

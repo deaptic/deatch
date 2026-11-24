@@ -25,3 +25,11 @@ export {
 export { setBadges } from "./store/mutate.ts";
 export { layoutFeed } from "./layout.ts";
 export { default as FeedRow } from "./FeedRow.tsx";
+export type {
+  BadgeMap,
+  FeedEntry,
+  FeedEvent,
+  FeedMessage,
+  Fragment,
+  Person,
+} from "./types.ts";

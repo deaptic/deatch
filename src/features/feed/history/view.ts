@@ -1,4 +1,5 @@
-import type { FeedEntry, HistoryView } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
+import type { HistoryView } from "./types.ts";
 import { getEntryId } from "../store/entryId.ts";
 
 function unique(entries: FeedEntry[]): FeedEntry[] {

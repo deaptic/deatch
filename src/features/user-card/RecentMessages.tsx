@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import { Feed } from "../feed/index.ts";
-import type { FeedMessage } from "../../shared/types/index.ts";
+import type { FeedMessage } from "../feed/index.ts";
 import { type UserActions } from "../message/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 

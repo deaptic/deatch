@@ -1,9 +1,6 @@
 import { t } from "../../../shared/i18n/index.ts";
-import type {
-  FeedEvent,
-  Fragment,
-  RawBitsUse,
-} from "../../../shared/types/index.ts";
+import type { FeedEvent, Fragment } from "../types.ts";
+import type { RawBitsUse } from "../../../platform/twitch/eventsubPayloads.ts";
 import { chatterFields, feedEvent } from "./feedEvent.ts";
 import { BITS_USE } from "../../../shared/moderateActions.ts";
 import { wordsOf } from "./chat.ts";

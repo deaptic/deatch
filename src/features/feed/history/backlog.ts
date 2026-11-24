@@ -14,11 +14,8 @@ import { feedEvent } from "../entries/feedEvent.ts";
 import { LOCAL } from "../../../shared/moderateActions.ts";
 import { mapNotice } from "../entries/notice.ts";
 import { groupGifts } from "../entries/giftGroup.ts";
-import type {
-  FeedEntry,
-  FeedMessage,
-  RecentHistory,
-} from "../../../shared/types/index.ts";
+import type { FeedEntry, FeedMessage } from "../types.ts";
+import type { RecentHistory } from "../../../shared/types/index.ts";
 import { recordChatter, user } from "../../users/index.ts";
 import { appendOlderSentMessage } from "../../composer/index.ts";
 import * as badges from "../../badges/index.ts";

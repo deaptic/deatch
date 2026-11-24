@@ -1,11 +1,8 @@
 import { t } from "../../../shared/i18n/index.ts";
 
-import type {
-  AnnouncementColor,
-  FeedEvent,
-  Person,
-  RawNotification,
-} from "../../../shared/types/index.ts";
+import type { AnnouncementColor } from "../../../shared/types/index.ts";
+import type { FeedEvent, Person } from "../types.ts";
+import type { RawNotification } from "../../../platform/twitch/eventsubPayloads.ts";
 import { feedEvent, person } from "./feedEvent.ts";
 import { isAnnouncementColor } from "../../../shared/twitch.ts";
 import { wordsOf } from "./chat.ts";

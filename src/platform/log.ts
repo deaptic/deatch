@@ -1,5 +1,5 @@
 import * as log from "@tauri-apps/plugin-log";
-import type { LogLevel } from "../shared/types/index.ts";
+import type { LogLevel } from "./logLevel.ts";
 
 export function writeLog(level: LogLevel, message: string): Promise<void> {
   return level === "warn" ? log.warn(message) : log.error(message);

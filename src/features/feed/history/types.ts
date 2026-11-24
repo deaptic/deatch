@@ -1,4 +1,4 @@
-import type { FeedEntry } from "./feed.ts";
+import type { FeedEntry } from "../types.ts";
 
 export type HistoryView = {
   entries: FeedEntry[];

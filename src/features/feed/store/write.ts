@@ -1,7 +1,7 @@
 import { isSilent, toLog, updateFeed } from "./core.ts";
 import { getEntryId } from "./entryId.ts";
 import { append, insert, prepend } from "./ops.ts";
-import type { FeedEntry, NoticeText } from "../../../shared/types/index.ts";
+import type { FeedEntry, NoticeText } from "../types.ts";
 import { feedEvent } from "../entries/feedEvent.ts";
 import { LOCAL } from "../../../shared/moderateActions.ts";
 import { selectedChannel } from "../../navigation/index.ts";

@@ -7,9 +7,8 @@ import {
   unlistenAll,
 } from "../../../platform/listen.ts";
 import { listenFeed } from "./listenFeed.ts";
+import type { AutomodHoldStatus, FeedMessage } from "../types.ts";
 import type {
-  AutomodHoldStatus,
-  FeedMessage,
   RawAutomodMessageHold,
   RawAutomodMessageUpdate,
   RawChatClear,
@@ -23,7 +22,7 @@ import type {
   RawUserMessageHold,
   RawUserMessageUpdate,
   RawWarningAcknowledge,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import {
   appendItem,
   markAllMessagesDeleted,

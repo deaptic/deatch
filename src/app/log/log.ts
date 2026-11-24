@@ -1,5 +1,5 @@
 import { writeLog } from "../../platform/log.ts";
-import type { LogLevel } from "../../shared/types/index.ts";
+import type { LogLevel } from "../../platform/logLevel.ts";
 import { formatLog } from "./formatLog.ts";
 import { createErrorThrottle } from "./errorThrottle.ts";
 import { addToast } from "../../kit/toasts.ts";

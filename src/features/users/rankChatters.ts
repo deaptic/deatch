@@ -1,4 +1,4 @@
-import type { Chatter } from "../../shared/types/index.ts";
+import type { Chatter } from "./types.ts";
 import { rankSuggestions } from "../../shared/rankSuggestions.ts";
 
 const LIMIT = 10;

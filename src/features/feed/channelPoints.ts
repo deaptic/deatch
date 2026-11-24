@@ -1,4 +1,4 @@
-import type { Redemption } from "../../shared/types/index.ts";
+import type { Redemption } from "./types.ts";
 import { setChannelPointsRedemption } from "./store/index.ts";
 import { createTimeouts } from "../../shared/timeouts.ts";
 

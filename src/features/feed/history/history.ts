@@ -2,7 +2,7 @@ import { unwrap } from "solid-js/store";
 import * as feedLog from "./feedLog.ts";
 import { feeds } from "../store/index.ts";
 import { historyViews, setHistoryViews } from "./views.ts";
-import type { FeedEntry } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
 import type { InvokeOptions } from "../../../platform/invoke.ts";
 import { withNewer, withOlder } from "./view.ts";
 import { cursorAt, cursorBeforeNow } from "./feedLogPages.ts";

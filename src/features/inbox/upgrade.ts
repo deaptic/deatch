@@ -1,8 +1,5 @@
-import type {
-  FeedMessage,
-  Fragment,
-  Mention,
-} from "../../shared/types/index.ts";
+import type { FeedMessage, Fragment } from "../feed/index.ts";
+import type { Mention } from "./types.ts";
 
 type Legacy = {
   messageId: string;

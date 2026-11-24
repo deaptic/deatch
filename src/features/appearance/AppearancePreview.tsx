@@ -1,6 +1,6 @@
 import { t } from "../../shared/i18n/index.ts";
 import { createMemo, createResource, For } from "solid-js";
-import type { FeedEntry, FeedMessage } from "../../shared/types/index.ts";
+import type { FeedEntry, FeedMessage } from "../feed/index.ts";
 import * as badges from "../badges/index.ts";
 import {
   feedDensity,

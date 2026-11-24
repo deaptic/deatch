@@ -1,10 +1,10 @@
 import { formatSpan } from "../../../shared/format/duration.ts";
 import { t } from "../../../shared/i18n/index.ts";
+import type { FeedEvent } from "../types.ts";
 import type {
-  FeedEvent,
   RawShoutout,
   RawShoutoutReceive,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import { chatterFields, feedEvent, noticeText, person } from "./feedEvent.ts";
 
 const SHOUTOUT = "shoutout";

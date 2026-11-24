@@ -1,8 +1,5 @@
-import type {
-  FeedEvent,
-  Person,
-  RawNotification,
-} from "../../../shared/types/index.ts";
+import type { FeedEvent, Person } from "../types.ts";
+import type { RawNotification } from "../../../platform/twitch/eventsubPayloads.ts";
 import { detail } from "./noticeMessage.ts";
 
 type GiftGroup =

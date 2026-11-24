@@ -1,5 +1,5 @@
 import { createStore, reconcile } from "solid-js/store";
-import type { BadgeMap } from "../../shared/types/index.ts";
+import type { BadgeMap } from "../feed/index.ts";
 
 export const [sharedChatBadges, setSharedChatBadges] = createStore<
   Record<string, BadgeMap>

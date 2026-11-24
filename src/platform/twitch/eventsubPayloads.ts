@@ -1,4 +1,4 @@
-import type { EventKind } from "../../../platform/bindings.ts";
+import type { EventKind } from "../bindings.ts";
 
 export type { EventKind };
 

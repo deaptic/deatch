@@ -3,7 +3,7 @@ import {
   serverTime,
   unlistenAll,
 } from "../../../platform/listen.ts";
-import type { RawChatMessage } from "../../../shared/types/index.ts";
+import type { RawChatMessage } from "../../../platform/twitch/eventsubPayloads.ts";
 import { appendItem } from "../store/index.ts";
 import { knownUser, recordChatter, user } from "../../users/index.ts";
 import * as inbox from "../../inbox/index.ts";

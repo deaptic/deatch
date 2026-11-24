@@ -6,7 +6,7 @@ import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
 import { notificationsMentionSound } from "../preferences/index.ts";
 import { selectedChannel } from "../navigation/index.ts";
-import type { Mention } from "../../shared/types/index.ts";
+import type { Mention } from "./types.ts";
 import * as storage from "../../platform/storage.ts";
 
 const [mentions, setMentions] = createSignal<Mention[]>([]);

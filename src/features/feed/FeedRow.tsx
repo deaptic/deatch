@@ -1,4 +1,4 @@
-import type { FeedEntry } from "../../shared/types/index.ts";
+import type { FeedEntry } from "./types.ts";
 import type { ItemLayout } from "./ui/item/index.ts";
 import Message, { type MessageOptions } from "./message/Message.tsx";
 import Event, { type EventOptions } from "./event/Event.tsx";

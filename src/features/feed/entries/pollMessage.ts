@@ -1,7 +1,8 @@
 import { formatSpan } from "../../../shared/format/duration.ts";
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { NoticeText, RawPoll } from "../../../shared/types/index.ts";
+import type { NoticeText } from "../types.ts";
+import type { RawPoll } from "../../../platform/twitch/eventsubPayloads.ts";
 
 export function pollBegin(raw: RawPoll): NoticeText {
   return {

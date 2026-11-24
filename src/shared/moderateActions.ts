@@ -1,4 +1,4 @@
-import type { RawModerate } from "./types/index.ts";
+import type { RawModerate } from "../platform/twitch/eventsubPayloads.ts";
 
 const MODERATE_ACTIONS = [
   "clear",

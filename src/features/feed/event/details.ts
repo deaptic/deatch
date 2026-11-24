@@ -30,11 +30,8 @@ import type { Component } from "solid-js";
 import { NOTICE_TO_EVENT } from "../../../shared/moderateActions.ts";
 import { GROUP_COLORS } from "../groups.ts";
 import type { MessageKey } from "../../../shared/i18n/index.ts";
-import type {
-  AnnouncementColor,
-  FeedEvent as Event,
-  Person,
-} from "../../../shared/types/index.ts";
+import type { AnnouncementColor } from "../../../shared/types/index.ts";
+import type { FeedEvent as Event, Person } from "../types.ts";
 
 type Look = {
   color: string;

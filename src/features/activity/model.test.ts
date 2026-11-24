@@ -13,7 +13,7 @@ import type {
   RawCharityCampaign,
   RawPoll,
   RawPrediction,
-} from "../../shared/types/index.ts";
+} from "../../platform/twitch/eventsubPayloads.ts";
 
 const poll: RawPoll = {
   broadcaster_user_id: "1",

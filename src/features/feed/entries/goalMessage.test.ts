@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawGoal } from "../../../shared/types/index.ts";
+import type { RawGoal } from "../../../platform/twitch/eventsubPayloads.ts";
 import { goalBegin, goalEnd } from "./goalMessage.ts";
 
 const goal = (g: Partial<RawGoal> = {}): RawGoal => ({

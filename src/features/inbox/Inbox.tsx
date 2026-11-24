@@ -2,7 +2,7 @@ import { AtSign } from "lucide-solid";
 import { createEffect, Show } from "solid-js";
 import Group from "./Group.tsx";
 import * as inbox from "./store.ts";
-import type { Mention } from "../../shared/types/index.ts";
+import type { Mention } from "./types.ts";
 import { users } from "../users/index.ts";
 import Button from "../../kit/Button.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";

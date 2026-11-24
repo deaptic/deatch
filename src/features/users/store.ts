@@ -10,8 +10,8 @@ import { pinnedChannels } from "../preferences/index.ts";
 import { knownUser, knownUsers, setKnownUsers } from "./known.ts";
 import { user as self } from "./account.ts";
 import { hasPermission } from "../permissions/index.ts";
+import type { FollowStatus } from "./types.ts";
 import type {
-  FollowStatus,
   GetUsersParams,
   User,
   UserRef,

@@ -1,8 +1,4 @@
-import type {
-  FeedEvent,
-  NoticeText,
-  Person,
-} from "../../../shared/types/index.ts";
+import type { FeedEvent, NoticeText, Person } from "../types.ts";
 
 export function noticeText(text: string, detail?: string | null): NoticeText {
   return detail ? { text, detail } : { text };

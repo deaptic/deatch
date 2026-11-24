@@ -12,7 +12,7 @@ import {
   advancedDeveloperMode,
   feedShowCopypasta,
 } from "../preferences/index.ts";
-import type { FeedMessage } from "../../shared/types/index.ts";
+import type { FeedMessage } from "../feed/index.ts";
 import type { ChatOverlays as Overlays } from "./createChatOverlays.ts";
 
 type Props = {

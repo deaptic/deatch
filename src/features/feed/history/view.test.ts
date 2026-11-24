@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedEntry } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
 import { getEntryId } from "../store/entryId.ts";
 import { withLive, withNewer, withOlder } from "./view.ts";
 

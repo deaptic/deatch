@@ -33,8 +33,9 @@ Rules:
 1. Imports flow `app → features → shared, kit, platform`. Features import each
    other only through `index.ts`.
 2. Views in `ui/` never read stores. Only the container does.
-3. State changes only through store actions. Event handling is a pure
-   `apply(state, event)`.
+3. State changes only through store actions. An event handler maps the raw
+   payload with a pure, tested function (`model.ts`, `feed/entries/`) and
+   calls one store action; it keeps only routing and permission checks.
 4. Only `platform/` touches Tauri. The UI never fetches.
 5. Each event kind has one owning feature, which listens in its `events.ts`.
    App events are typed in Rust. EventSub payloads pass through as JSON and are

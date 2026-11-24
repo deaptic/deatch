@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawBitsUse } from "../../../shared/types/index.ts";
+import type { RawBitsUse } from "../../../platform/twitch/eventsubPayloads.ts";
 import { mapBitsUse } from "./bitsUse.ts";
 
 const use = (u: Partial<RawBitsUse>): RawBitsUse => ({

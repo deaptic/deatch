@@ -1,9 +1,8 @@
+import type { NoticeText, Person } from "../types.ts";
 import type {
-  NoticeText,
-  Person,
   RawModerate,
   RawModUser,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import { formatApproxDuration } from "../../../shared/format/duration.ts";
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";

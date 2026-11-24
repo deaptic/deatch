@@ -1,6 +1,6 @@
 import { unlistenAll } from "../../../platform/listen.ts";
 import { listenFeed } from "./listenFeed.ts";
-import type { RawHypeTrain } from "../../../shared/types/index.ts";
+import type { RawHypeTrain } from "../../../platform/twitch/eventsubPayloads.ts";
 import { feedEvent } from "../entries/feedEvent.ts";
 import { HYPE_TRAIN } from "../../../shared/moderateActions.ts";
 import {

@@ -1,8 +1,8 @@
 import { listenEventSub, unlistenAll } from "../../platform/listen.ts";
 import * as activity from "./store.ts";
 import { createTimeouts } from "../../shared/timeouts.ts";
+import type { EventKind } from "../../shared/types/index.ts";
 import type {
-  EventKind,
   RawAdBreak,
   RawCharityCampaign,
   RawGoal,
@@ -12,7 +12,7 @@ import type {
   RawStreamOnline,
   RawUnbanRequestCreate,
   RawUnbanRequestResolve,
-} from "../../shared/types/index.ts";
+} from "../../platform/twitch/eventsubPayloads.ts";
 import { type Activity, clear, forChannel, update } from "./store.ts";
 import * as channels from "../channels/index.ts";
 import {

@@ -1,4 +1,4 @@
-import type { Chatter } from "../../shared/types/index.ts";
+import type { Chatter } from "../users/index.ts";
 
 type Named = Pick<Chatter, "login" | "displayName" | "lastSeen">;
 

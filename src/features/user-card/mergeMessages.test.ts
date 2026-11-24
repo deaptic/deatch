@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { FeedMessage } from "../../shared/types/index.ts";
+import type { FeedMessage } from "../feed/index.ts";
 import { mergeMessages } from "./mergeMessages.ts";
 
 const msg = (message_id: string, chatter_user_id = "a") =>

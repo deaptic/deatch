@@ -22,7 +22,7 @@ import type {
   RawSharedChatSession,
   RawStreamOffline,
   RawStreamOnline,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import {
   applyChannelInfo,
   channelInfoFor,

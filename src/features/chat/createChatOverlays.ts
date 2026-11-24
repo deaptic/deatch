@@ -2,11 +2,8 @@ import { createSignal } from "solid-js";
 import { createPopover } from "../../kit/createPopover.ts";
 import type { ModAction } from "../menus/index.ts";
 import { users } from "../users/index.ts";
-import type {
-  FeedEvent,
-  FeedMessage,
-  UserRef,
-} from "../../shared/types/index.ts";
+import type { FeedEvent, FeedMessage } from "../feed/index.ts";
+import type { UserRef } from "../../shared/types/index.ts";
 import { createUserCards } from "./createUserCards.ts";
 
 export type ModTarget = { action: ModAction; userId: string; userName: string };

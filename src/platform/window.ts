@@ -1,6 +1,7 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import type { ResizeDir, Unlisten } from "../shared/types/index.ts";
+import type { ResizeDir } from "./windowResize.ts";
+import type { Unlisten } from "./unlisten.ts";
 import { invokeCommand, type InvokeOptions, wrapUnlisten } from "./invoke.ts";
 
 const commands = {

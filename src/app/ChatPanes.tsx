@@ -23,7 +23,7 @@ function ChannelPane(props: ChatPanesProps & { channel: User }) {
           onOpenChannel={props.onOpenChannel}
         />
       </Boundary>
-      <Boundary label={t("FEED_BOUNDARY_ERROR")}>
+      <Boundary>
         <Chat
           broadcasterId={props.channel.id}
           broadcasterLogin={props.channel.login}

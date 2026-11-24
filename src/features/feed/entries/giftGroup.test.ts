@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawNotification } from "../../../shared/types/index.ts";
+import type { RawNotification } from "../../../platform/twitch/eventsubPayloads.ts";
 import { giftGroup, groupGifts } from "./giftGroup.ts";
 import { feedEvent } from "./feedEvent.ts";
 import { at } from "../../../shared/at.ts";

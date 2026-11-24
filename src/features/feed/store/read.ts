@@ -3,7 +3,7 @@ import { getEntryId } from "./entryId.ts";
 import { selectedChannel } from "../../navigation/index.ts";
 import { feedEvents, feedShowEvents } from "../../preferences/index.ts";
 import { NOTICE_TO_EVENT } from "../../../shared/moderateActions.ts";
-import type { FeedEntry } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
 import { historyViews } from "../history/views.ts";
 import { withLive } from "../history/view.ts";
 import { isBlocked } from "../../blocks/index.ts";

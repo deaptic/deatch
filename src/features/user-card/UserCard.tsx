@@ -7,7 +7,8 @@ import {
   untrack,
 } from "solid-js";
 import { channelEntries, backlog } from "../feed/index.ts";
-import type { FeedMessage, UserRef } from "../../shared/types/index.ts";
+import type { FeedMessage } from "../feed/index.ts";
+import type { UserRef } from "../../shared/types/index.ts";
 import { Portal } from "solid-js/web";
 import { captureFocusForRestore } from "../../shared/solid/focus.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";

@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawPoll } from "../../../shared/types/index.ts";
+import type { RawPoll } from "../../../platform/twitch/eventsubPayloads.ts";
 import { pollBegin, pollEnd } from "./pollMessage.ts";
 
 const poll = (p: Partial<RawPoll> = {}): RawPoll => ({

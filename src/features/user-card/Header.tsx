@@ -1,8 +1,6 @@
-import type {
-  FeedMessage,
-  FollowStatus,
-  User,
-} from "../../shared/types/index.ts";
+import type { FeedMessage } from "../feed/index.ts";
+import type { FollowStatus } from "../users/index.ts";
+import type { User } from "../../shared/types/index.ts";
 import { createEffect, createMemo, createResource, on, Show } from "solid-js";
 import { users } from "../users/index.ts";
 import { knownUser } from "../users/index.ts";

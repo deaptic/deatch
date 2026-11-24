@@ -1,8 +1,6 @@
-import type {
-  EventKind,
-  FeedEntry,
-  Unlisten,
-} from "../../../shared/types/index.ts";
+import type { EventKind } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
+import type { Unlisten } from "../../../platform/unlisten.ts";
 import { listenEventSub, serverTime } from "../../../platform/listen.ts";
 import { appendItem } from "../store/index.ts";
 

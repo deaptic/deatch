@@ -1,12 +1,9 @@
+import type { Chatter } from "../../users/index.ts";
+import type { FeedMessage, Fragment, MessagePerk, PowerUp } from "../types.ts";
 import type {
-  Chatter,
-  FeedMessage,
-  Fragment,
-  MessagePerk,
-  PowerUp,
   RawChatMessage,
   RawFragment,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 
 const PERKS: Record<string, MessagePerk> = {
   channel_points_highlighted: "highlight",

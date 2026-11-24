@@ -4,11 +4,9 @@ import {
   onAppEvent,
   onEventSub,
 } from "./events.ts";
-import type {
-  EventEnvelope,
-  EventKind,
-  Unlisten,
-} from "../shared/types/index.ts";
+import type { EventEnvelope } from "./twitch/eventsubPayloads.ts";
+import type { EventKind } from "../shared/types/index.ts";
+import type { Unlisten } from "./unlisten.ts";
 
 export function listenApp<K extends AppEventName>(
   name: K,

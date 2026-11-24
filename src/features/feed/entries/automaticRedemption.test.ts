@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import type { RawAutomaticRedemption } from "../../../shared/types/index.ts";
+import type { RawAutomaticRedemption } from "../../../platform/twitch/eventsubPayloads.ts";
 import { mapAutomaticRedemption } from "./automaticRedemption.ts";
 
 const raw = (

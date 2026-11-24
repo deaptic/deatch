@@ -2,7 +2,7 @@ import { ExternalLink, Scale } from "lucide-solid";
 import { Show } from "solid-js";
 import * as browser from "../../../platform/browser.ts";
 import { setChannelForm } from "../../navigation/index.ts";
-import type { FeedEvent } from "../../../shared/types/index.ts";
+import type { FeedEvent } from "../types.ts";
 import { clipUrl } from "../../../shared/twitchUrl.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import Toolbar from "../../../kit/Toolbar.tsx";

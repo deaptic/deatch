@@ -1,8 +1,6 @@
 import { t } from "../../../shared/i18n/index.ts";
-import type {
-  FeedEvent,
-  RawAutomaticRedemption,
-} from "../../../shared/types/index.ts";
+import type { FeedEvent } from "../types.ts";
+import type { RawAutomaticRedemption } from "../../../platform/twitch/eventsubPayloads.ts";
 import { chatterFields, feedEvent } from "./feedEvent.ts";
 import { CHANNEL_POINTS_REDEMPTION } from "../../../shared/moderateActions.ts";
 

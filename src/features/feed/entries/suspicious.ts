@@ -1,11 +1,9 @@
 import { t } from "../../../shared/i18n/index.ts";
+import type { FeedMessage, NoticeText, SuspiciousInfo } from "../types.ts";
 import type {
-  FeedMessage,
-  NoticeText,
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
-  SuspiciousInfo,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import { chatterFields, person } from "./feedEvent.ts";
 import { mapFragment } from "./chat.ts";
 

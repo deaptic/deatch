@@ -10,7 +10,8 @@ import {
   setSharedChatBadges,
   sharedChatBadges,
 } from "./sharedChatBadges.ts";
-import type { BadgeMap, BadgeSet } from "../../shared/types/index.ts";
+import type { BadgeMap } from "../feed/index.ts";
+import type { BadgeSet } from "../../shared/types/index.ts";
 import {
   type ChannelRef,
   channelResource,

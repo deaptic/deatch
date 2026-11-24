@@ -1,9 +1,5 @@
-import type {
-  Cursor,
-  FeedEntry,
-  LogEntry,
-  Side,
-} from "../../../shared/types/index.ts";
+import type { Cursor, LogEntry, Side } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
 import { getEntryId } from "../store/entryId.ts";
 import {
   CHAT_CONNECT_FAILED,

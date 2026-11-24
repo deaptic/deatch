@@ -10,3 +10,4 @@ export {
 } from "./store.ts";
 export { createMentionsBadge } from "./createMentionsBadge.ts";
 export { default as Inbox } from "./Inbox.tsx";
+export type { MentionReason } from "./types.ts";

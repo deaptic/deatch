@@ -1,5 +1,5 @@
 import { startResizeDragging } from "../../platform/window.ts";
-import type { ResizeDir } from "../../shared/types/index.ts";
+import type { ResizeDir } from "../../platform/windowResize.ts";
 
 export default function ResizeHandle(props: { dir: ResizeDir; class: string }) {
   return (

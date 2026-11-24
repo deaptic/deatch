@@ -4,7 +4,7 @@ import type {
   LowTrustStatus,
   MessageBadge,
   RawReply,
-} from "./twitch/eventsub.ts";
+} from "../../platform/twitch/eventsubPayloads.ts";
 
 export type Fragment =
   | { type: "text"; text: string }

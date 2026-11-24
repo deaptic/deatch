@@ -1,7 +1,5 @@
-import type {
-  RawChannelPointsRedemption,
-  Redemption,
-} from "../../../shared/types/index.ts";
+import type { RawChannelPointsRedemption } from "../../../platform/twitch/eventsubPayloads.ts";
+import type { Redemption } from "../types.ts";
 
 export function mapRedemption(raw: RawChannelPointsRedemption): Redemption {
   const input = raw.user_input.trim();

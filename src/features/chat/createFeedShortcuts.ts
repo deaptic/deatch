@@ -2,7 +2,7 @@ import { onCleanup, onMount } from "solid-js";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import * as clipboard from "../../kit/clipboard.ts";
 import { clearDivider, type FeedApi, textOf } from "../feed/index.ts";
-import type { FeedMessage } from "../../shared/types/index.ts";
+import type { FeedMessage } from "../feed/index.ts";
 
 type Deps = {
   broadcasterId: () => string;

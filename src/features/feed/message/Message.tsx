@@ -2,12 +2,8 @@ import { Check, X } from "lucide-solid";
 import { createMemo, Show } from "solid-js";
 import { t } from "../../../shared/i18n/index.ts";
 import { type EmoteMap, type CheermoteMap } from "../../emotes/index.ts";
-import type {
-  AutomodAction,
-  BadgeMap,
-  FeedMessage,
-  Reaction,
-} from "../../../shared/types/index.ts";
+import type { AutomodAction } from "../../../shared/types/index.ts";
+import type { BadgeMap, FeedMessage, Reaction } from "../types.ts";
 import type { Density } from "../../../shared/density.ts";
 import { isMention } from "../entries/mention.ts";
 import { feedShowAvatars } from "../../preferences/index.ts";

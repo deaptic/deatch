@@ -3,7 +3,7 @@ import Suggestions from "../../../kit/Suggestions.tsx";
 import { ChatterRow } from "../../message/index.ts";
 import { chattersIn } from "../../users/index.ts";
 import { rankChatters } from "../../users/index.ts";
-import type { Chatter } from "../../../shared/types/index.ts";
+import type { Chatter } from "../../users/index.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 import { TRIGGERS } from "./detect.ts";
 

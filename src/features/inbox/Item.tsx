@@ -1,5 +1,5 @@
 import { Check, CornerDownRight } from "lucide-solid";
-import type { Mention, MentionReason } from "../../shared/types/index.ts";
+import type { Mention, MentionReason } from "./types.ts";
 import { knownUser, user } from "../users/index.ts";
 import { thirdPartyEmoteMap } from "../emotes/index.ts";
 import { cheermotes } from "../emotes/index.ts";

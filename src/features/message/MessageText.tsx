@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import type { Fragment } from "../../shared/types/index.ts";
+import type { Fragment } from "../feed/index.ts";
 import MessagePart, { type MessagePartContext } from "./MessagePart.tsx";
 
 type Props = MessagePartContext & { fragments: Fragment[] };

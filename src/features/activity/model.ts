@@ -4,14 +4,16 @@ import type {
   Goal,
   Poll,
   Prediction,
+  UnbanRequest,
+} from "../../shared/types/index.ts";
+import type {
   RawPoll,
   RawCampaignAmount,
   RawCharityCampaign,
   RawGoal,
   RawPrediction,
   RawUnbanRequestCreate,
-  UnbanRequest,
-} from "../../shared/types/index.ts";
+} from "../../platform/twitch/eventsubPayloads.ts";
 
 export function pollFrom(raw: RawPoll): Poll {
   return {

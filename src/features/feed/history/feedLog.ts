@@ -7,7 +7,8 @@ import {
 } from "../../../platform/feedLog.ts";
 import type { InvokeOptions } from "../../../platform/invoke.ts";
 import { takeUnlogged } from "../store/index.ts";
-import type { Cursor, FeedEntry } from "../../../shared/types/index.ts";
+import type { Cursor } from "../../../shared/types/index.ts";
+import type { FeedEntry } from "../types.ts";
 import { fromLog, toLogEntry } from "./feedLogPages.ts";
 
 const FLUSH_MS = 5_000;

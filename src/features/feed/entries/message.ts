@@ -1,4 +1,4 @@
-import type { FeedMessage, Fragment } from "../../../shared/types/index.ts";
+import type { FeedMessage, Fragment } from "../types.ts";
 
 export function textOf(msg: Pick<FeedMessage, "fragments">): string {
   return msg.fragments.map((f) => f.text).join("");

@@ -2,7 +2,7 @@ import { expect, test } from "vite-plus/test";
 import type {
   RawSuspiciousUserMessage,
   RawSuspiciousUserUpdate,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import { formatSuspicious } from "./suspiciousText.ts";
 import { suspiciousInfo, suspiciousUpdate } from "./suspicious.ts";
 

@@ -11,7 +11,7 @@ import type { Command, CommandContext, OptionSuggestion } from "./types.ts";
 import Suggestions, { type SuggestionsApi } from "../../kit/Suggestions.tsx";
 import { comboboxFrom } from "../../shared/solid/createListbox.ts";
 import { ChatterRow } from "../message/index.ts";
-import type { Chatter } from "../../shared/types/index.ts";
+import type { Chatter } from "../users/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Chip from "../../kit/Chip.tsx";
 import ComposerBox from "../../kit/ComposerBox.tsx";

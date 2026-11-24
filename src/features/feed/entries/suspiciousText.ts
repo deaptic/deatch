@@ -1,5 +1,5 @@
 import { t } from "../../../shared/i18n/index.ts";
-import type { SuspiciousInfo } from "../../../shared/types/index.ts";
+import type { SuspiciousInfo } from "../types.ts";
 
 export function formatSuspicious(info: SuspiciousInfo): string {
   return t("FEED_SUSPICIOUS_LABEL", {

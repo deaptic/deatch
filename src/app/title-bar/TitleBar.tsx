@@ -1,3 +1,4 @@
+import Boundary from "../../kit/Boundary.tsx";
 import {
   Activity,
   Copy,
@@ -172,28 +173,34 @@ export default function TitleBar(props: Props) {
       </div>
       <Transition when={isOverlayOpen("appearance")}>
         {() => (
-          <AppearancePanel
-            {...below(appearanceBtn)}
-            onClose={() => toggleOverlay("appearance")}
-          />
+          <Boundary silent>
+            <AppearancePanel
+              {...below(appearanceBtn)}
+              onClose={() => toggleOverlay("appearance")}
+            />
+          </Boundary>
         )}
       </Transition>
       <Show when={isOverlayOpen("inbox")}>
-        <Inbox
-          {...below(inboxBtn)}
-          onClose={() => toggleOverlay("inbox")}
-          onJump={props.onJumpToMessage}
-          onOpenChannel={props.onOpenChannel}
-        />
+        <Boundary silent>
+          <Inbox
+            {...below(inboxBtn)}
+            onClose={() => toggleOverlay("inbox")}
+            onJump={props.onJumpToMessage}
+            onOpenChannel={props.onOpenChannel}
+          />
+        </Boundary>
       </Show>
       <Transition
         when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}
       >
         {() => (
-          <Diagnostics
-            {...below(diagnosticsBtn)}
-            onClose={() => toggleOverlay("diagnostics")}
-          />
+          <Boundary silent>
+            <Diagnostics
+              {...below(diagnosticsBtn)}
+              onClose={() => toggleOverlay("diagnostics")}
+            />
+          </Boundary>
         )}
       </Transition>
       {!maximized() && (

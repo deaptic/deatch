@@ -1,7 +1,8 @@
 import { formatSpan } from "../../../shared/format/duration.ts";
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { NoticeText, RawPrediction } from "../../../shared/types/index.ts";
+import type { NoticeText } from "../types.ts";
+import type { RawPrediction } from "../../../platform/twitch/eventsubPayloads.ts";
 
 type Outcome = RawPrediction["outcomes"][number];
 

@@ -1,14 +1,14 @@
+import Boundary from "../../kit/Boundary.tsx";
+import { t } from "../../shared/i18n/index.ts";
 import {
   createEffect,
   createMemo,
   createSignal,
   on,
   onCleanup,
-  onMount,
 } from "solid-js";
 import * as chat from "./send.ts";
 import {
-  backlog,
   mentionsIn,
   textOf,
   withoutReplyMention,
@@ -23,7 +23,7 @@ import {
 import ScrollStatusBar from "./ui/ScrollStatusBar.tsx";
 import { Composer, type ComposerApi, type ReplyTo } from "../composer/index.ts";
 import { showsControls } from "../permissions/index.ts";
-import type { FeedMessage as Message } from "../../shared/types/index.ts";
+import type { FeedMessage as Message } from "../feed/index.ts";
 import {
   feedDensity,
   feedFontSize,
@@ -56,8 +56,6 @@ export default function Chat(props: Props) {
   const isMod = createMemo(() =>
     showsControls(props.broadcasterId, "moderate"),
   );
-
-  onMount(() => backlog.load(props.broadcasterId, props.broadcasterLogin));
 
   createEffect(
     on(
@@ -136,27 +134,31 @@ export default function Chat(props: Props) {
 
   return (
     <div class="relative flex-1 min-h-0 flex flex-col">
-      <Feed
-        broadcasterId={props.broadcasterId}
-        userLogin={props.userLogin}
-        scrollClass="pr-4 py-1 scrollbar-inset"
-        flush
-        density={feedDensity()}
-        class="text-(length:--chat-size)"
-        onWheel={fontSize.onWheel}
-        onContextMenu={(x, y, msg) => overlays.messageMenu.open(x, y, { msg })}
-        onReply={startReply}
-        onReact={react}
-        onCopypasta={copypasta}
-        onJumpToMessage={jumpToMessage}
-        onOpenChannel={props.onOpenChannel}
-        onShowUserCard={overlays.openUserCard}
-        onUserContextMenu={overlays.openUserMenu}
-        onEventContextMenu={(x, y, item) =>
-          overlays.eventMenu.open(x, y, { item })
-        }
-        ref={setFeedApi}
-      />
+      <Boundary label={t("FEED_BOUNDARY_ERROR")}>
+        <Feed
+          broadcasterId={props.broadcasterId}
+          userLogin={props.userLogin}
+          scrollClass="pr-4 py-1 scrollbar-inset"
+          flush
+          density={feedDensity()}
+          class="text-(length:--chat-size)"
+          onWheel={fontSize.onWheel}
+          onContextMenu={(x, y, msg) =>
+            overlays.messageMenu.open(x, y, { msg })
+          }
+          onReply={startReply}
+          onReact={react}
+          onCopypasta={copypasta}
+          onJumpToMessage={jumpToMessage}
+          onOpenChannel={props.onOpenChannel}
+          onShowUserCard={overlays.openUserCard}
+          onUserContextMenu={overlays.openUserMenu}
+          onEventContextMenu={(x, y, item) =>
+            overlays.eventMenu.open(x, y, { item })
+          }
+          ref={setFeedApi}
+        />
+      </Boundary>
 
       <div class="relative z-20 shrink-0 bg-surface border-t border-line-soft">
         <Transition when={feedApi()?.isPaused()}>
@@ -169,44 +171,50 @@ export default function Chat(props: Props) {
             </div>
           )}
         </Transition>
-        <Composer
-          broadcasterId={props.broadcasterId}
-          broadcasterName={props.broadcasterName}
-          replyTo={replyTo}
-          onClearReply={() => setReplyTo(null)}
-          getMentions={getMentions}
-          onReplyMention={startReply}
-          openUserCard={openUserCardFromInput}
-          ref={(api) => {
-            inputApi = api;
-            api.focus();
-          }}
-        />
+        <Boundary>
+          <Composer
+            broadcasterId={props.broadcasterId}
+            broadcasterName={props.broadcasterName}
+            replyTo={replyTo}
+            onClearReply={() => setReplyTo(null)}
+            getMentions={getMentions}
+            onReplyMention={startReply}
+            openUserCard={openUserCardFromInput}
+            ref={(api) => {
+              inputApi = api;
+              api.focus();
+            }}
+          />
+        </Boundary>
       </div>
 
       <Transition when={isMod() && isOverlayOpen("chatters")}>
         {() => (
-          <PeopleDialog
-            broadcasterId={props.broadcasterId}
-            onClose={closeOverlay}
-            onShowUserCard={overlays.openUserCard}
-            onUserContextMenu={overlays.openUserMenu}
-          />
+          <Boundary silent>
+            <PeopleDialog
+              broadcasterId={props.broadcasterId}
+              onClose={closeOverlay}
+              onShowUserCard={overlays.openUserCard}
+              onUserContextMenu={overlays.openUserMenu}
+            />
+          </Boundary>
         )}
       </Transition>
 
-      <ChatOverlays
-        overlays={overlays}
-        broadcasterId={props.broadcasterId}
-        broadcasterLogin={props.broadcasterLogin}
-        isMod={isMod()}
-        feed={feedApi()}
-        onReply={startReply}
-        onCopypasta={copypasta}
-        onMention={(login) => inputApi?.insert(`@${login}`)}
-        onJumpToMessage={jumpToMessage}
-        onOpenChannel={props.onOpenChannel}
-      />
+      <Boundary silent>
+        <ChatOverlays
+          overlays={overlays}
+          broadcasterId={props.broadcasterId}
+          broadcasterLogin={props.broadcasterLogin}
+          isMod={isMod()}
+          feed={feedApi()}
+          onReply={startReply}
+          onCopypasta={copypasta}
+          onMention={(login) => inputApi?.insert(`@${login}`)}
+          onJumpToMessage={jumpToMessage}
+          onOpenChannel={props.onOpenChannel}
+        />
+      </Boundary>
     </div>
   );
 }

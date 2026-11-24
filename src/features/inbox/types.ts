@@ -1,4 +1,4 @@
-import type { FeedMessage } from "./feed.ts";
+import type { FeedMessage } from "../feed/index.ts";
 
 export type MentionReason =
   | { kind: "mention" }

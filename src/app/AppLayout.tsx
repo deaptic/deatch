@@ -62,7 +62,9 @@ export default function AppLayout(props: AppLayoutProps) {
                 </main>
               }
             >
-              <Login />
+              <Boundary>
+                <Login />
+              </Boundary>
             </Show>
           }
         >
@@ -73,7 +75,9 @@ export default function AppLayout(props: AppLayoutProps) {
               </Boundary>
               <main class="relative flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
                 <Show when={activeView() === "explore"}>
-                  <Explore onSelectChannel={c.selectChannel} />
+                  <Boundary>
+                    <Explore onSelectChannel={c.selectChannel} />
+                  </Boundary>
                 </Show>
                 <Show when={activeView() === "settings"}>
                   <Boundary label={t("SETTINGS_BOUNDARY_ERROR")}>
@@ -92,19 +96,25 @@ export default function AppLayout(props: AppLayoutProps) {
                 <FlashHost />
               </main>
               <Show when={isOverlayOpen("quickSwitch")}>
-                <Suspense>
-                  <QuickSwitch
-                    onSelect={c.selectChannel}
-                    onClose={closeOverlay}
-                  />
-                </Suspense>
+                <Boundary silent>
+                  <Suspense>
+                    <QuickSwitch
+                      onSelect={c.selectChannel}
+                      onClose={closeOverlay}
+                    />
+                  </Suspense>
+                </Boundary>
               </Show>
             </>
           )}
         </Show>
         <Toaster toasts={toasts} onDismiss={removeToast} />
-        <HoverZoom />
-        <EmoteCard />
+        <Boundary silent>
+          <HoverZoom />
+        </Boundary>
+        <Boundary silent>
+          <EmoteCard />
+        </Boundary>
         <TooltipHost />
       </div>
     </div>

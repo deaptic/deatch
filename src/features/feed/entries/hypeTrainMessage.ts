@@ -1,6 +1,7 @@
 import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";
-import type { NoticeText, RawHypeTrain } from "../../../shared/types/index.ts";
+import type { NoticeText } from "../types.ts";
+import type { RawHypeTrain } from "../../../platform/twitch/eventsubPayloads.ts";
 import { noticeText } from "./feedEvent.ts";
 
 function contributors(raw: RawHypeTrain): string {

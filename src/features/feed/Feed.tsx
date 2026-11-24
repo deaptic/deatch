@@ -16,7 +16,7 @@ import type {
   FeedEntry,
   FeedEvent as Event,
   FeedMessage as Message,
-} from "../../shared/types/index.ts";
+} from "./types.ts";
 import { channelEntries, feeds, isFeedEntryVisible } from "./store/index.ts";
 import { getEntryId } from "./store/entryId.ts";
 import { historyViews } from "./history/views.ts";

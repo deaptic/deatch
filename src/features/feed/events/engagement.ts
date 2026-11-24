@@ -1,12 +1,12 @@
 import { unlistenAll } from "../../../platform/listen.ts";
 import { listenFeed } from "./listenFeed.ts";
+import type { EventKind } from "../../../shared/types/index.ts";
+import type { NoticeText } from "../types.ts";
 import type {
-  EventKind,
-  NoticeText,
   RawGoal,
   RawPoll,
   RawPrediction,
-} from "../../../shared/types/index.ts";
+} from "../../../platform/twitch/eventsubPayloads.ts";
 import { feedEvent } from "../entries/feedEvent.ts";
 import { GOAL, POLL, PREDICTION } from "../../../shared/moderateActions.ts";
 import { pollBegin, pollEnd } from "../entries/pollMessage.ts";

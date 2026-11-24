@@ -15,7 +15,7 @@ import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import { fieldFrom } from "../../shared/solid/createListbox.ts";
 import { chat } from "../chat/index.ts";
 import { type Command, CommandComposer } from "../commands/index.ts";
-import type { FeedMessage as Message } from "../../shared/types/index.ts";
+import type { FeedMessage as Message } from "../feed/index.ts";
 import * as emotes from "../emotes/index.ts";
 import { pushSentMessage, sentMessages } from "./sentMessages.ts";
 import { getDraft, setDraft } from "./drafts.ts";

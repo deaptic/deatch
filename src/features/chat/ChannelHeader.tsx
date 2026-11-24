@@ -1,3 +1,4 @@
+import Boundary from "../../kit/Boundary.tsx";
 import {
   Clock,
   Gamepad2,
@@ -159,19 +160,23 @@ export default function ChannelHeader(props: Props) {
         {() => <ConnectionBanner />}
       </Transition>
       <Show when={showsControls(props.channel.id, "moderate")}>
-        <ActivityStrip
-          broadcasterId={props.channel.id}
-          onOpenChannel={props.onOpenChannel}
-        />
+        <Boundary silent>
+          <ActivityStrip
+            broadcasterId={props.channel.id}
+            onOpenChannel={props.onOpenChannel}
+          />
+        </Boundary>
       </Show>
       {link.menu()}
       <Show when={channelForm()}>
         {(form) => (
-          <ChannelToolForm
-            form={form()}
-            broadcasterId={props.channel.id}
-            onDone={() => setChannelForm(null)}
-          />
+          <Boundary silent>
+            <ChannelToolForm
+              form={form()}
+              broadcasterId={props.channel.id}
+              onDone={() => setChannelForm(null)}
+            />
+          </Boundary>
         )}
       </Show>
     </header>

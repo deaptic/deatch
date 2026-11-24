@@ -18,8 +18,10 @@ inserted into other text), `_STATUS`. Completed events are past tense
 (`FEED_RAID_CANCELED_LINE`).
 
 A component may call a `platform/` wrapper directly for a plain one-shot call; once
-caching, state, or outcome logic is involved, it belongs in the feature's store. Shared types
-come from `shared/types/`, never re-exported through `platform/`.
+caching, state, or outcome logic is involved, it belongs in the feature's store. Generated Rust
+types come from `shared/types/`; a type one feature owns lives in its
+`types.ts` and leaves only through its `index.ts`; external payload shapes
+(EventSub) live in `platform/`.
 
 Every Tauri call, commands and plugins alike, goes through `invokeCommand`,
 which logs each failure and toasts it unless `silent`; callers never report it

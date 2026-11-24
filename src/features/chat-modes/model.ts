@@ -1,7 +1,5 @@
-import type {
-  ChatSettings,
-  RawChatSettingsUpdate,
-} from "../../shared/types/index.ts";
+import type { ChatSettings } from "../../shared/types/index.ts";
+import type { RawChatSettingsUpdate } from "../../platform/twitch/eventsubPayloads.ts";
 
 export function mapChatSettingsUpdate(
   raw: RawChatSettingsUpdate,

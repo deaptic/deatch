@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
 import { mapChatSettingsUpdate } from "./model.ts";
-import type { RawChatSettingsUpdate } from "../../shared/types/index.ts";
+import type { RawChatSettingsUpdate } from "../../platform/twitch/eventsubPayloads.ts";
 
 const OFF: RawChatSettingsUpdate = {
   broadcaster_user_id: "1",

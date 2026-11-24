@@ -1,8 +1,5 @@
-import type {
-  FeedEntry,
-  FeedMessage,
-  MentionReason,
-} from "../../../shared/types/index.ts";
+import type { FeedEntry, FeedMessage } from "../types.ts";
+import type { MentionReason } from "../../inbox/index.ts";
 import { textOf } from "./message.ts";
 import { matchedKeyword } from "../../../shared/wordMatch.ts";
 
