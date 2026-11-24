@@ -12,12 +12,12 @@ export default function BlockedUsersCard() {
     blocked().toSorted((a, b) => a.login.localeCompare(b.login));
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_BLOCKED_TITLE")}</CardLabel>
+      <CardLabel>{t("SETTINGS_ACCOUNT_BLOCKED_TITLE")}</CardLabel>
       <Show
         when={sorted().length}
         fallback={
           <p class="px-4 pt-1 pb-3 text-body text-ink-soft">
-            {t("SETTINGS_BLOCKED_EMPTY")}
+            {t("SETTINGS_ACCOUNT_BLOCKED_EMPTY")}
           </p>
         }
       >
@@ -29,7 +29,7 @@ export default function BlockedUsersCard() {
                 size="sm"
                 onClick={() => blocks.unblock(blocked.id).catch(() => {})}
               >
-                {t("SETTINGS_BLOCKED_UNBLOCK_LABEL")}
+                {t("SETTINGS_ACCOUNT_UNBLOCK_LABEL")}
               </Button>
             </SettingsRow>
           )}

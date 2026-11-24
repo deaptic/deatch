@@ -18,44 +18,44 @@ import {
 export default function MessagesCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_MESSAGES_TITLE")}</CardLabel>
+      <CardLabel>{t("SETTINGS_MESSAGES_DETAILS_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_TIMESTAMPS_LABEL")}
-        description={t("SETTINGS_APPEARANCE_TIMESTAMPS_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_TIMESTAMPS_LABEL")}
+        description={t("SETTINGS_MESSAGES_TIMESTAMPS_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_TIMESTAMPS_LABEL")}
+          label={t("SETTINGS_MESSAGES_TIMESTAMPS_LABEL")}
           checked={feedShowTimestamp()}
           onChange={setFeedShowTimestamp}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_AVATARS_LABEL")}
-        description={t("SETTINGS_APPEARANCE_AVATARS_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_AVATARS_LABEL")}
+        description={t("SETTINGS_MESSAGES_AVATARS_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_AVATARS_LABEL")}
+          label={t("SETTINGS_MESSAGES_AVATARS_LABEL")}
           disabled={feedDensity() !== "comfortable"}
           checked={feedShowAvatars()}
           onChange={setFeedShowAvatars}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_DELETED_LABEL")}
-        description={t("SETTINGS_APPEARANCE_DELETED_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_DELETED_LABEL")}
+        description={t("SETTINGS_MESSAGES_DELETED_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_DELETED_LABEL")}
+          label={t("SETTINGS_MESSAGES_DELETED_LABEL")}
           checked={feedShowDeletedContent()}
           onChange={setFeedShowDeletedContent}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_COPYPASTA_LABEL")}
-        description={t("SETTINGS_APPEARANCE_COPYPASTA_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_COPYPASTA_LABEL")}
+        description={t("SETTINGS_MESSAGES_COPYPASTA_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_COPYPASTA_LABEL")}
+          label={t("SETTINGS_MESSAGES_COPYPASTA_LABEL")}
           checked={feedShowCopypasta()}
           onChange={setFeedShowCopypasta}
         />

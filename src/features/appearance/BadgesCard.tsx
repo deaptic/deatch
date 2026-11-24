@@ -21,14 +21,14 @@ export default function BadgesCard() {
     }));
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_BADGES_TITLE")}</CardLabel>
+      <CardLabel>{t("SETTINGS_MESSAGES_BADGES_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_BADGES_SHOW_LABEL")}
-        description={t("SETTINGS_APPEARANCE_BADGES_SHOW_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_BADGES_SHOW_LABEL")}
+        description={t("SETTINGS_MESSAGES_BADGES_SHOW_DESCRIPTION")}
         keywords={items().map((i) => i.label)}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_BADGES_SHOW_LABEL")}
+          label={t("SETTINGS_MESSAGES_BADGES_SHOW_LABEL")}
           checked={feedShowBadges()}
           onChange={setFeedShowBadges}
         />

@@ -173,7 +173,7 @@ export default function AppearancePanel(props: Props) {
         <Section label={t("TITLE_BAR_APPEARANCE_CHAT_TITLE")}>
           <div class="flex flex-col gap-2 px-1 pb-1">
             <Segmented
-              label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_LABEL")}
+              label={t("SETTINGS_MESSAGES_LAYOUT_LABEL")}
               value={feedDensity()}
               options={messageLayoutOptions()}
               onChange={setFeedDensity}

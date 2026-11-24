@@ -20,10 +20,10 @@ import { DEFAULT_ACCENT_HEX } from "../../shared/theme.ts";
 export default function ReadabilityCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_TEXT_TITLE")}</CardLabel>
-      <SettingsRow label={t("SETTINGS_APPEARANCE_FONT_SIZE_LABEL")} stacked>
+      <CardLabel>{t("SETTINGS_MESSAGES_TEXT_TITLE")}</CardLabel>
+      <SettingsRow label={t("SETTINGS_MESSAGES_FONT_SIZE_LABEL")} stacked>
         <StepSlider
-          label={t("SETTINGS_APPEARANCE_FONT_SIZE_LABEL")}
+          label={t("SETTINGS_MESSAGES_FONT_SIZE_LABEL")}
           value={feedFontSize()}
           steps={FONT_SIZE_STEPS}
           format={formatPx}
@@ -31,18 +31,18 @@ export default function ReadabilityCard() {
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_LABEL")}
-        description={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_DISPLAY_NAMES_LABEL")}
+        description={t("SETTINGS_MESSAGES_DISPLAY_NAMES_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_DISPLAY_NAMES_LABEL")}
+          label={t("SETTINGS_MESSAGES_DISPLAY_NAMES_LABEL")}
           checked={feedUserShowDisplayName()}
           onChange={setFeedUserShowDisplayName}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_NAME_COLOR_LABEL")}
-        description={t("SETTINGS_APPEARANCE_NAME_COLOR_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_NAME_COLOR_LABEL")}
+        description={t("SETTINGS_MESSAGES_NAME_COLOR_DESCRIPTION")}
       >
         <ColorPicker
           swatchColor={feedUserOverrideNameColor() || "transparent"}

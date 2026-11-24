@@ -13,7 +13,7 @@ export default function MessagesSettings() {
   return (
     <PageBody title={t("SETTINGS_MESSAGES_TITLE")}>
       <Card>
-        <CardLabel>{t("SETTINGS_APPEARANCE_PREVIEW_TITLE")}</CardLabel>
+        <CardLabel>{t("SETTINGS_MESSAGES_PREVIEW_TITLE")}</CardLabel>
         <AppearancePreview />
       </Card>
       <LayoutCard />

@@ -21,36 +21,36 @@ import {
 export default function LayoutCard() {
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_LAYOUT_TITLE")}</CardLabel>
+      <CardLabel>{t("SETTINGS_MESSAGES_LAYOUT_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_LABEL")}
-        description={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_LAYOUT_LABEL")}
+        description={t("SETTINGS_MESSAGES_LAYOUT_DESCRIPTION")}
       >
         <Segmented
-          label={t("SETTINGS_APPEARANCE_MESSAGE_LAYOUT_LABEL")}
+          label={t("SETTINGS_MESSAGES_LAYOUT_LABEL")}
           value={feedDensity()}
           options={messageLayoutOptions()}
           onChange={setFeedDensity}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_GROUPING_LABEL")}
-        description={t("SETTINGS_APPEARANCE_GROUPING_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_GROUPING_LABEL")}
+        description={t("SETTINGS_MESSAGES_GROUPING_DESCRIPTION")}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_GROUPING_LABEL")}
+          label={t("SETTINGS_MESSAGES_GROUPING_LABEL")}
           checked={feedGroupMessages()}
           onChange={setFeedGroupMessages}
           disabled={feedDensity() !== "comfortable" || !feedShowAvatars()}
         />
       </SettingsRow>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_GROUP_SPACING_LABEL")}
-        description={t("SETTINGS_APPEARANCE_GROUP_SPACING_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_GROUP_SPACING_LABEL")}
+        description={t("SETTINGS_MESSAGES_GROUP_SPACING_DESCRIPTION")}
         stacked
       >
         <StepSlider
-          label={t("SETTINGS_APPEARANCE_GROUP_SPACING_LABEL")}
+          label={t("SETTINGS_MESSAGES_GROUP_SPACING_LABEL")}
           disabled={feedDensity() !== "comfortable"}
           value={feedGroupSpacing()}
           steps={GROUP_SPACING_STEPS}

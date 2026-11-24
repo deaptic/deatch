@@ -22,7 +22,7 @@ export async function unblockUser(
   options?: InvokeOptions,
 ): Promise<void> {
   await invokeCommand(commands.unblockUser, [params], {
-    successMessage: t("SETTINGS_BLOCKED_UNBLOCKED_TOAST"),
+    successMessage: t("SETTINGS_ACCOUNT_UNBLOCKED_TOAST"),
     ...options,
   });
 }

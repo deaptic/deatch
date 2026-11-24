@@ -21,14 +21,14 @@ export default function ShownInChatCard() {
     }));
   return (
     <Card>
-      <CardLabel>{t("SETTINGS_APPEARANCE_SHOWN_IN_CHAT_TITLE")}</CardLabel>
+      <CardLabel>{t("SETTINGS_MESSAGES_SHOWN_IN_CHAT_TITLE")}</CardLabel>
       <SettingsRow
-        label={t("SETTINGS_APPEARANCE_EVENTS_SHOW_LABEL")}
-        description={t("SETTINGS_APPEARANCE_EVENTS_SHOW_DESCRIPTION")}
+        label={t("SETTINGS_MESSAGES_EVENTS_SHOW_LABEL")}
+        description={t("SETTINGS_MESSAGES_EVENTS_SHOW_DESCRIPTION")}
         keywords={items().map((i) => i.label)}
       >
         <Toggle
-          label={t("SETTINGS_APPEARANCE_EVENTS_SHOW_LABEL")}
+          label={t("SETTINGS_MESSAGES_EVENTS_SHOW_LABEL")}
           checked={feedShowEvents()}
           onChange={setFeedShowEvents}
         />

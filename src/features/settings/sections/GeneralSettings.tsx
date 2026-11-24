@@ -20,11 +20,11 @@ export default function GeneralSettings() {
     <PageBody title={t("SETTINGS_GENERAL_TITLE")}>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_APPEARANCE_LANGUAGE_LABEL")}
-          description={t("SETTINGS_APPEARANCE_LANGUAGE_DESCRIPTION")}
+          label={t("SETTINGS_GENERAL_LANGUAGE_LABEL")}
+          description={t("SETTINGS_GENERAL_LANGUAGE_DESCRIPTION")}
         >
           <Segmented
-            label={t("SETTINGS_APPEARANCE_LANGUAGE_LABEL")}
+            label={t("SETTINGS_GENERAL_LANGUAGE_LABEL")}
             value={appearanceLanguage()}
             options={LANGUAGES.map((language) => ({
               value: language,
@@ -36,31 +36,31 @@ export default function GeneralSettings() {
       </Card>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_AUTOSTART_LABEL")}
-          description={t("SETTINGS_ADVANCED_AUTOSTART_DESCRIPTION")}
+          label={t("SETTINGS_GENERAL_AUTOSTART_LABEL")}
+          description={t("SETTINGS_GENERAL_AUTOSTART_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_AUTOSTART_LABEL")}
+            label={t("SETTINGS_GENERAL_AUTOSTART_LABEL")}
             checked={advancedAutostart()}
             onChange={setAdvancedAutostart}
           />
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
-          description={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_DESCRIPTION")}
+          label={t("SETTINGS_GENERAL_ALWAYS_ON_TOP_LABEL")}
+          description={t("SETTINGS_GENERAL_ALWAYS_ON_TOP_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
+            label={t("SETTINGS_GENERAL_ALWAYS_ON_TOP_LABEL")}
             checked={advancedAlwaysOnTop()}
             onChange={setAdvancedAlwaysOnTop}
           />
         </SettingsRow>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_LABEL")}
-          description={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_DESCRIPTION")}
+          label={t("SETTINGS_GENERAL_DISCORD_PRESENCE_LABEL")}
+          description={t("SETTINGS_GENERAL_DISCORD_PRESENCE_DESCRIPTION")}
         >
           <Toggle
-            label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_LABEL")}
+            label={t("SETTINGS_GENERAL_DISCORD_PRESENCE_LABEL")}
             checked={advancedDiscordRichPresence()}
             onChange={setAdvancedDiscordRichPresence}
           />
