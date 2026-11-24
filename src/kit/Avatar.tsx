@@ -4,13 +4,13 @@ import { createImageReveal } from "../shared/solid/createImageReveal.ts";
 import { type MessageKey, t } from "../shared/i18n/index.ts";
 
 type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
-type Transition = "on-air" | "live" | "online" | "offline";
+type Status = "on-air" | "live" | "online" | "offline";
 
 type Props = {
   src?: string;
   alt?: string;
   size: AvatarSize;
-  presence?: Transition;
+  presence?: Status;
   dashed?: boolean;
   square?: boolean;
   overlay?: JSX.Element;
@@ -18,7 +18,7 @@ type Props = {
 };
 
 const PRESENCE: Record<
-  Transition,
+  Status,
   { dot: string; label: MessageKey; breathes: boolean }
 > = {
   "on-air": { dot: "bg-live", label: "UI_LIVE_STATUS", breathes: true },

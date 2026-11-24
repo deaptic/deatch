@@ -59,18 +59,9 @@ export default function Rail(props: Props) {
   const linkedOthers = () => link.tabs().filter((c) => !isOwnChannel(c.id));
   const ownTab = () => link.tabs().find((c) => isOwnChannel(c.id));
 
-  const warmedIds = createMemo(() => new Set(link.tabs().map((c) => c.id)));
-
-  const isListed = (id: string) =>
-    new Set(pinnedChannels()).has(id) ||
-    warmedIds().has(id) ||
-    link.activeTab()?.id === id ||
-    channels.isLive(id) ||
-    isOwnChannel(id);
-
   const nowViewing = createMemo(() => {
     const sel = pendingChannel();
-    return sel && !isListed(sel.id) ? sel : null;
+    return sel && !channels.isListed(sel.id) ? sel : null;
   });
 
   const chMenu = createPopover<{ ch: User }>();
@@ -144,7 +135,7 @@ export default function Rail(props: Props) {
               <For each={pinnedChannels()}>
                 {(id, index) => (
                   <Show
-                    when={!warmedIds().has(id) && channels.resolveChannel(id)}
+                    when={!channels.isTab(id) && channels.resolveChannel(id)}
                   >
                     {(c) => (
                       <div
