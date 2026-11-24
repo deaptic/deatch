@@ -4,7 +4,10 @@ import { playNotificationSound } from "../../kit/notificationSound.ts";
 import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
-import { notificationsMentionSound } from "../preferences/index.ts";
+import {
+  notificationsMentionSound,
+  streamerMode,
+} from "../preferences/index.ts";
 import { selectedChannel } from "../navigation/index.ts";
 import { user } from "../users/index.ts";
 import type { Mention } from "./types.ts";
@@ -79,7 +82,7 @@ export function record(m: Omit<Mention, "unread">) {
   const isActive = selectedChannel()?.id === m.broadcasterId;
   const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
   setMentions(save(next.length > MAX ? next.slice(0, MAX) : next));
-  if (notificationsMentionSound()) playNotificationSound();
+  if (notificationsMentionSound() && !streamerMode()) playNotificationSound();
 }
 
 function pruneExpired() {

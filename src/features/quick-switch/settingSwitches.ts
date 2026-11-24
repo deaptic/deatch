@@ -12,6 +12,12 @@ export type SettingSwitch = {
 export const SETTING_SWITCHES: SettingSwitch[] = [
   {
     section: "notifications",
+    label: "SETTINGS_NOTIFICATIONS_STREAMER_MODE_LABEL",
+    get: prefs.streamerMode,
+    set: prefs.setStreamerMode,
+  },
+  {
+    section: "notifications",
     label: "SETTINGS_NOTIFICATIONS_MENTIONS_LABEL",
     get: prefs.notificationsMentionSound,
     set: prefs.setNotificationsMentionSound,

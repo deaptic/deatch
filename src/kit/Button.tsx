@@ -7,7 +7,8 @@ export type ButtonVariant =
   | "ghost"
   | "danger"
   | "media"
-  | "toggle";
+  | "toggle"
+  | "inverse";
 type ButtonShape = "rect" | "pill";
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -27,6 +28,7 @@ const VARIANTS: Record<ButtonVariant, string> = {
   danger: "bg-negative text-on-accent hover:brightness-110 active:opacity-90",
   media: "text-on-accent hover:bg-raised active:bg-overlay",
   toggle: "bg-raised text-ink-soft hover:bg-overlay hover:text-ink",
+  inverse: "bg-on-accent text-accent hover:opacity-90 active:opacity-80",
 };
 
 const SHAPES: Record<ButtonShape, string> = {

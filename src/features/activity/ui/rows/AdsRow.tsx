@@ -1,7 +1,7 @@
 import { t } from "../../../../shared/i18n/index.ts";
 import type { AdSchedule } from "../../../../shared/types/index.ts";
 import Button from "../../../../kit/Button.tsx";
-import ActivityRow from "../ActivityRow.tsx";
+import StripRow from "../../../../kit/StripRow.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 import { untilMs } from "./countdown.ts";
 
@@ -11,7 +11,7 @@ export default function AdsRow(props: {
   onSnooze: () => void;
 }) {
   return (
-    <ActivityRow
+    <StripRow
       icon={<ActivityIcon kind="ads" />}
       title={t("HEADER_AD_NEXT_STATUS", {
         time: untilMs(props.schedule.nextAdMs ?? 0, props.now),

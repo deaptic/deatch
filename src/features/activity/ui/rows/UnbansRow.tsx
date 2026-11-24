@@ -1,6 +1,6 @@
 import { t } from "../../../../shared/i18n/index.ts";
 import Button from "../../../../kit/Button.tsx";
-import ActivityRow from "../ActivityRow.tsx";
+import StripRow from "../../../../kit/StripRow.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 
 export default function UnbansRow(props: {
@@ -8,7 +8,7 @@ export default function UnbansRow(props: {
   onReview: () => void;
 }) {
   return (
-    <ActivityRow
+    <StripRow
       icon={<ActivityIcon kind="unbans" />}
       title={t("HEADER_UNBAN_REQUESTS_STATUS", { count: props.count })}
       actions={

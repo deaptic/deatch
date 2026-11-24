@@ -1,6 +1,9 @@
+import { Download } from "lucide-solid";
 import { Show } from "solid-js";
 import { install, state } from "./store.ts";
 import { t } from "../../shared/i18n/index.ts";
+import Button from "../../kit/Button.tsx";
+import StripRow from "../../kit/StripRow.tsx";
 
 export default function UpdateBanner() {
   const update = () => {
@@ -12,44 +15,30 @@ export default function UpdateBanner() {
     const s = state();
     return s.kind === "failed" ? s.error : null;
   };
+  const title = () => {
+    if (installing()) return t("UPDATE_INSTALLING_STATUS");
+    return error() ? t("UPDATE_FAILED_STATUS") : t("UPDATE_READY_STATUS");
+  };
   return (
     <Show when={update()}>
       {(u) => (
-        <button
-          type="button"
-          onClick={() => void install()}
-          disabled={installing()}
-          data-tip={error() ?? undefined}
-          class="shrink-0 w-full flex items-center gap-2.5 h-9 px-4 bg-accent-soft hover:bg-accent/20 text-small text-left transition-colors duration-snap cursor-pointer disabled:cursor-default disabled:hover:bg-accent-soft"
-        >
-          <span class="relative size-2 rounded-full bg-accent shrink-0">
-            <span
-              aria-hidden
-              class="absolute inset-0 rounded-full bg-accent animate-breathe"
-            />
-          </span>
-          <span class="text-ink truncate">
-            <Show when={!installing()} fallback={t("UPDATE_INSTALLING_STATUS")}>
-              <Show
-                when={error()}
-                fallback={
-                  <span class="font-semibold">{t("UPDATE_READY_STATUS")}</span>
-                }
+        <StripRow
+          tone="accent"
+          icon={<Download />}
+          title={<span data-tip={error() ?? undefined}>{title()}</span>}
+          meta={u().version}
+          actions={
+            <Show when={!installing()}>
+              <Button
+                variant="inverse"
+                size="sm"
+                onClick={() => void install()}
               >
-                <span class="font-semibold text-negative">
-                  {t("UPDATE_FAILED_STATUS")}
-                </span>
-              </Show>
-              <span class="text-ink-soft">
-                {" "}
-                {t("UPDATE_ACTION_HINT", {
-                  version: u().version,
-                  failed: error() ? "yes" : "no",
-                })}
-              </span>
+                {error() ? t("UPDATE_RETRY_LABEL") : t("UPDATE_INSTALL_LABEL")}
+              </Button>
             </Show>
-          </span>
-        </button>
+          }
+        />
       )}
     </Show>
   );

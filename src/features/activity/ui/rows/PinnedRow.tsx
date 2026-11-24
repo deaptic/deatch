@@ -1,7 +1,7 @@
 import { t } from "../../../../shared/i18n/index.ts";
 import Button from "../../../../kit/Button.tsx";
 import type { JSX } from "solid-js";
-import ActivityRow from "../ActivityRow.tsx";
+import StripRow from "../../../../kit/StripRow.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 import { untilIso } from "./countdown.ts";
 
@@ -14,7 +14,7 @@ export default function PinnedRow(props: {
   onUnpin: () => void;
 }) {
   return (
-    <ActivityRow
+    <StripRow
       icon={<ActivityIcon kind="pinned" />}
       title={
         <button

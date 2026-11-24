@@ -33,6 +33,7 @@ const SECTIONS = {
     clock: oneOf(CLOCKS, "auto"),
   }),
   feed: FEED,
+  streamer: object({ on: bool(false), auto: bool(true) }),
   notifications: object({
     mentionSound: bool(true),
     whisperSound: bool(true),

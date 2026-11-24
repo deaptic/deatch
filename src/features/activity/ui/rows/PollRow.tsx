@@ -2,7 +2,7 @@ import { t } from "../../../../shared/i18n/index.ts";
 import { formatCount } from "../../../../shared/format/stream.ts";
 import type { Poll } from "../../../../shared/types/index.ts";
 import Button from "../../../../kit/Button.tsx";
-import ActivityRow from "../ActivityRow.tsx";
+import StripRow from "../../../../kit/StripRow.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 import OptionBars from "../OptionBars.tsx";
 import { untilIso } from "./countdown.ts";
@@ -13,7 +13,7 @@ export default function PollRow(props: {
   onEnd: () => void;
 }) {
   return (
-    <ActivityRow
+    <StripRow
       icon={<ActivityIcon kind="poll" />}
       title={props.poll.title}
       meta={t("HEADER_POLL_ENDS_IN_STATUS", {
@@ -33,6 +33,6 @@ export default function PollRow(props: {
           detail: formatCount(c.votes),
         }))}
       />
-    </ActivityRow>
+    </StripRow>
   );
 }

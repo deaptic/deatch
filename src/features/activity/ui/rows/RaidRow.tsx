@@ -1,7 +1,7 @@
 import { t, tRich } from "../../../../shared/i18n/index.ts";
 import Button from "../../../../kit/Button.tsx";
 import type { ChannelLink } from "../../../menus/index.ts";
-import ActivityRow from "../ActivityRow.tsx";
+import StripRow from "../../../../kit/StripRow.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 
 export default function RaidRow(props: {
@@ -11,7 +11,7 @@ export default function RaidRow(props: {
   onCancel: () => void;
 }) {
   return (
-    <ActivityRow
+    <StripRow
       icon={<ActivityIcon kind="raid" />}
       title={tRich("HEADER_RAID_PENDING_STATUS", {
         name: props.targetName,

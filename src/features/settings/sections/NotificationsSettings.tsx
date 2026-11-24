@@ -15,12 +15,39 @@ import {
   notificationsWhisperSound,
   removeFeedKeyword,
   setNotificationsMentionSound,
+  setStreamerAuto,
+  setStreamerMode,
+  streamerAuto,
+  streamerMode,
   setNotificationsWhisperSound,
 } from "../../preferences/index.ts";
 
 export default function NotificationsSettings() {
   return (
     <PageBody title={t("SETTINGS_NOTIFICATIONS_TITLE")}>
+      <Card>
+        <CardLabel>{t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_TITLE")}</CardLabel>
+        <SettingsRow
+          label={t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_LABEL")}
+          description={t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_DESCRIPTION")}
+        >
+          <Toggle
+            label={t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_LABEL")}
+            checked={streamerMode()}
+            onChange={setStreamerMode}
+          />
+        </SettingsRow>
+        <SettingsRow
+          label={t("SETTINGS_NOTIFICATIONS_STREAMER_AUTO_LABEL")}
+          description={t("SETTINGS_NOTIFICATIONS_STREAMER_AUTO_DESCRIPTION")}
+        >
+          <Toggle
+            label={t("SETTINGS_NOTIFICATIONS_STREAMER_AUTO_LABEL")}
+            checked={streamerAuto()}
+            onChange={setStreamerAuto}
+          />
+        </SettingsRow>
+      </Card>
       <Card>
         <CardLabel>{t("SETTINGS_NOTIFICATIONS_MESSAGES_TITLE")}</CardLabel>
         <SettingsRow

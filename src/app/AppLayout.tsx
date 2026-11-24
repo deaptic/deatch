@@ -2,6 +2,7 @@ import { Whispers } from "../features/whispers/index.ts";
 import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "./title-bar/TitleBar.tsx";
 import { UpdateBanner } from "../features/updater/index.ts";
+import { StreamerModeBanner } from "../features/streamer-mode/index.ts";
 import Toaster from "../kit/Toaster.tsx";
 import { EmoteCard, HoverZoom } from "../features/emotes/index.ts";
 import TooltipHost from "../kit/TooltipHost.tsx";
@@ -51,6 +52,7 @@ export default function AppLayout(props: AppLayoutProps) {
         onOpenChannel={c.openChannel}
       />
       <UpdateBanner />
+      <StreamerModeBanner />
       <div class="relative flex-1 min-h-0 flex overflow-hidden">
         <Show
           when={user()}
