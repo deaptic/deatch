@@ -12,7 +12,7 @@ export type SettingSwitch = {
 export const SETTING_SWITCHES: SettingSwitch[] = [
   {
     section: "notifications",
-    label: "SETTINGS_NOTIFICATIONS_MENTION_SOUND_LABEL",
+    label: "SETTINGS_NOTIFICATIONS_MENTIONS_LABEL",
     get: prefs.notificationsMentionSound,
     set: prefs.setNotificationsMentionSound,
   },

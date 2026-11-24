@@ -11,7 +11,7 @@ import { playNotificationSound } from "../../kit/notificationSound.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { user } from "../users/index.ts";
 import { activeView, showWhispers } from "../navigation/index.ts";
-import { notificationsMentionSound } from "../preferences/index.ts";
+import { notificationsWhisperSound } from "../preferences/index.ts";
 import { whisperFrom } from "./model.ts";
 import * as whispers from "./store.ts";
 
@@ -35,7 +35,7 @@ function arrive(raw: RawWhisper, timestamp: number): void {
       },
     );
   }
-  if (notificationsMentionSound()) playNotificationSound();
+  if (notificationsWhisperSound()) playNotificationSound();
   flashTaskbar({ silent: true }).catch(() => {});
 }
 

@@ -25,6 +25,7 @@ import * as channels from "../features/channels/index.ts";
 import * as people from "../features/people/index.ts";
 import * as blocks from "../features/blocks/index.ts";
 import * as whispers from "../features/whispers/index.ts";
+import * as alerts from "../features/alerts/index.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -55,6 +56,7 @@ export function createServices(): void {
       people.start(),
       blocks.start(),
       whispers.start(),
+      alerts.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

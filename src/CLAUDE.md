@@ -52,10 +52,10 @@ A store is a plain ES module, never a class; the module is the singleton.
 ## Settings
 
 Every stored setting is one line in `preferences/schema/`, which gives its
-default, its checking, and its type. Adding a setting needs no migration.
-Renaming, moving, or removing one needs a new step at the end of
-`schema/migrations.ts` with the next version number; steps are never edited,
-reordered, or removed.
+default, its checking, and its type. Adding or removing a setting needs no
+migration: missing fields load as their default and unknown ones are dropped.
+Renaming or moving one needs a new step at the end of `schema/migrations.ts`
+with the next version number; steps are never edited, reordered, or removed.
 
 ## UI
 
