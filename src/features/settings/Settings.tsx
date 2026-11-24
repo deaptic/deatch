@@ -34,6 +34,7 @@ import ModerationSettings from "./sections/ModerationSettings.tsx";
 import { AppearanceSettings, MessagesSettings } from "../appearance/index.ts";
 import KeyboardSettings from "./sections/KeyboardSettings.tsx";
 import { TriggerSettings } from "../triggers/index.ts";
+import { TimersSettings } from "../timers/index.ts";
 import { LinkSettings } from "../link/index.ts";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
@@ -47,6 +48,7 @@ const BODIES: Record<SettingsSection, () => JSX.Element> = {
   notifications: NotificationsSettings,
   moderation: ModerationSettings,
   triggers: TriggerSettings,
+  timers: TimersSettings,
   developer: DeveloperSettings,
 };
 

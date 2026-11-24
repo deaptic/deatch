@@ -44,6 +44,7 @@ export type SettingsSection =
   | "notifications"
   | "moderation"
   | "triggers"
+  | "timers"
   | "developer";
 
 const [settingsSection, setSettingsSection] =

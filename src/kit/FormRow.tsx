@@ -1,6 +1,6 @@
 import type { JSX } from "solid-js";
 
-export default function TriggerField(props: {
+export default function FormRow(props: {
   label: string;
   children: JSX.Element;
 }) {

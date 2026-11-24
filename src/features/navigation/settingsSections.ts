@@ -9,6 +9,7 @@ import {
   Palette,
   Languages,
   Monitor,
+  Timer,
   UserRound,
   Zap,
 } from "lucide-solid";
@@ -83,6 +84,12 @@ export const SETTINGS_SECTIONS: {
     group: "tools",
     label: "SETTINGS_TRIGGERS_TITLE",
     icon: Zap,
+  },
+  {
+    key: "timers",
+    group: "tools",
+    label: "SETTINGS_TIMERS_TITLE",
+    icon: Timer,
   },
   { key: "link", group: "tools", label: "SETTINGS_LINK_TITLE", icon: Eye },
   {

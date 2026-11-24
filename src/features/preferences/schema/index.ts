@@ -3,11 +3,13 @@ import { APPEARANCE } from "./appearance.ts";
 import { FEED } from "./feed.ts";
 import { LINK } from "./link.ts";
 import { TRIGGERS } from "./triggers.ts";
+import { TIMERS } from "./timers.ts";
 import { bool, object, oneOf, text, textList, type Value } from "./fields.ts";
 import { CLOCKS } from "../../../shared/time.ts";
 import { LANGUAGES, systemLanguage } from "../../../shared/i18n/index.ts";
 
 export type { BadgePref, EventPref } from "./feed.ts";
+export { TIMER_ACTIVITY, TIMER_MINUTES, type Timer } from "./timers.ts";
 export { migrate, PREFERENCES_VERSION } from "./migrations.ts";
 export { changesFrom } from "./changes.ts";
 export {
@@ -59,6 +61,7 @@ const SECTIONS = {
     recent: textList({ limit: RECENT_LIMIT }),
   }),
   triggers: TRIGGERS,
+  timers: TIMERS,
 };
 
 const PREFERENCES = object(SECTIONS);
