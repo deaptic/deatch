@@ -15,6 +15,7 @@ export const APPEARANCE = object({
   theme: oneOf(THEMES, "system"),
   accent: hexColor(),
   railExpanded: bool(false),
+  followedPrompt: bool(true),
   activities: flags(ACTIVITIES, () => true),
   uiDensity: oneOf(UI_DENSITIES, "default"),
   zoom: steps(ZOOM_STEPS, 100),

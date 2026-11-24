@@ -1,7 +1,10 @@
 import { createMemo } from "solid-js";
 import { followedLive, pinsLoaded } from "../channels/index.ts";
 import { knownUser } from "../users/index.ts";
-import { pinnedChannels } from "../preferences/index.ts";
+import {
+  pinnedChannels,
+  systemFollowedChannels,
+} from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import { isOwnChannel } from "../permissions/index.ts";
 import type { User } from "../../shared/types/index.ts";
@@ -10,6 +13,7 @@ type RailChannels = {
   loadingPinned: () => boolean;
   loadingLive: () => boolean;
   onlineList: () => User[];
+  followedLiveCount: () => number;
   resolveChannel: (id: string) => User | undefined;
   isLive: (id: string) => boolean;
   isTab: (id: string) => boolean;
@@ -23,13 +27,15 @@ export function createRailChannels(): RailChannels {
   const tabIds = createMemo(() => new Set(link.tabs().map((ch) => ch.id)));
   const isTab = (id: string) => tabIds().has(id);
   const isLive = (id: string) => liveById().has(id);
-  const onlineList = createMemo(() =>
+  const followedUnlisted = createMemo(() =>
     live().filter((ch) => !pinnedIds().has(ch.id) && !isTab(ch.id)),
   );
+  const onlineList = () => (systemFollowedChannels() ? followedUnlisted() : []);
   return {
     loadingPinned: () => !pinsLoaded(),
     loadingLive: () => followedLive() === null,
     onlineList,
+    followedLiveCount: () => followedUnlisted().length,
     resolveChannel: (id) => liveById().get(id) ?? knownUser(id),
     isLive,
     isTab,
@@ -37,7 +43,7 @@ export function createRailChannels(): RailChannels {
       pinnedIds().has(id) ||
       isTab(id) ||
       link.activeTab()?.id === id ||
-      isLive(id) ||
+      (systemFollowedChannels() && isLive(id)) ||
       isOwnChannel(id),
   };
 }

@@ -11,6 +11,12 @@ export type SettingSwitch = {
 
 export const SETTING_SWITCHES: SettingSwitch[] = [
   {
+    section: "system",
+    label: "SETTINGS_SYSTEM_FOLLOWED_CHANNELS_LABEL",
+    get: prefs.systemFollowedChannels,
+    set: prefs.setSystemFollowedChannels,
+  },
+  {
     section: "notifications",
     label: "SETTINGS_NOTIFICATIONS_STREAMER_MODE_LABEL",
     get: prefs.streamerMode,

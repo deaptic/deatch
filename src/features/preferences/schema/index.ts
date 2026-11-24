@@ -45,6 +45,7 @@ const SECTIONS = {
     alwaysOnTop: bool(false),
     discordRichPresence: bool(false),
     hardwareAcceleration: bool(true),
+    followedChannels: bool(false),
   }),
   moderation: object({
     autoShoutoutOnRaid: bool(false),

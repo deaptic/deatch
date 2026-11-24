@@ -1,9 +1,20 @@
 import { createEffect, createMemo, For, on, Show } from "solid-js";
-import { MessageCircle, Plus, Search, Settings } from "lucide-solid";
+import {
+  EyeOff,
+  MessageCircle,
+  Plus,
+  Radio,
+  Search,
+  Settings,
+} from "lucide-solid";
 import * as browser from "../../platform/browser.ts";
 import {
   appearanceRailExpanded,
   pinnedChannels,
+  systemFollowedChannels,
+  appearanceFollowedPrompt,
+  setAppearanceFollowedPrompt,
+  setSystemFollowedChannels,
 } from "../preferences/index.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
@@ -36,6 +47,8 @@ import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
 import { ChannelContextMenu } from "../menus/index.ts";
 import { createPopover } from "../../kit/createPopover.ts";
+import Menu from "../../kit/Menu.tsx";
+import MenuItem from "../../kit/MenuItem.tsx";
 import * as session from "../login/index.ts";
 import type { User } from "../../shared/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
@@ -68,6 +81,7 @@ export default function Rail(props: Props) {
   const openMenu = (x: number, y: number, ch: User) =>
     chMenu.open(x, y, { ch });
   const addPop = createPopover();
+  const promptMenu = createPopover();
   let addBtn: HTMLButtonElement | undefined;
 
   createEffect(
@@ -171,30 +185,53 @@ export default function Rail(props: Props) {
             </RailRow>
           </div>
 
-          <RailDivider />
+          <Show
+            when={systemFollowedChannels()}
+            fallback={
+              <Show when={appearanceFollowedPrompt()}>
+                <RailDivider />
+                <div class="flex flex-col py-2">
+                  <RailRow
+                    label={t("RAIL_SHOW_FOLLOWED_LABEL")}
+                    sub={t("RAIL_SHOW_FOLLOWED_DESCRIPTION", {
+                      count: channels.followedLiveCount(),
+                    })}
+                    onClick={() => setSystemFollowedChannels(true)}
+                    onContextMenu={(x, y) => promptMenu.open(x, y, {})}
+                  >
+                    <RailTile>
+                      <Radio />
+                    </RailTile>
+                  </RailRow>
+                </div>
+              </Show>
+            }
+          >
+            <RailDivider />
 
-          <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
-            <Show
-              when={!channels.loadingLive()}
-              fallback={
-                <For each={Array.from({ length: PLACEHOLDER_ROWS })}>
-                  {() => <RailRowSkeleton />}
+            <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
+              <Show
+                when={!channels.loadingLive()}
+                fallback={
+                  <For each={Array.from({ length: PLACEHOLDER_ROWS })}>
+                    {() => <RailRowSkeleton />}
+                  </For>
+                }
+              >
+                <For each={channels.onlineList()}>
+                  {(ch) => (
+                    <div data-channel-id={ch.id}>
+                      <ChannelRow
+                        ch={ch}
+                        onSelect={props.onSelect}
+                        onContextMenu={openMenu}
+                      />
+                    </div>
+                  )}
                 </For>
-              }
-            >
-              <For each={channels.onlineList()}>
-                {(ch) => (
-                  <div data-channel-id={ch.id}>
-                    <ChannelRow
-                      ch={ch}
-                      onSelect={props.onSelect}
-                      onContextMenu={openMenu}
-                    />
-                  </div>
-                )}
-              </For>
-            </Show>
-          </div>
+              </Show>
+            </div>
+          </Show>
         </div>
       </div>
 
@@ -340,6 +377,18 @@ export default function Rail(props: Props) {
               isOwnChannel(m().ch.id) ? () => session.logout() : undefined
             }
           />
+        )}
+      </Show>
+
+      <Show when={promptMenu.state()}>
+        {(m) => (
+          <Menu x={m().x} y={m().y} onClose={promptMenu.close}>
+            <MenuItem
+              label={t("RAIL_SHOW_FOLLOWED_HIDE_LABEL")}
+              icon={<EyeOff />}
+              onClick={() => setAppearanceFollowedPrompt(false)}
+            />
+          </Menu>
         )}
       </Show>
 

@@ -2,7 +2,15 @@ import { createEffect, createRoot } from "solid-js";
 import type { Focus } from "../../shared/types/index.ts";
 import { setEventsubChannels } from "../../platform/twitch/eventsub.ts";
 import { lastChannel, selectedChannel } from "../navigation/index.ts";
-import { pinnedChannels } from "../preferences/index.ts";
+import {
+  pinnedChannels,
+  setAppearanceFollowedPrompt,
+  setSystemFollowedChannels,
+  systemFollowedChannels,
+} from "../preferences/index.ts";
+import { listenApp, unlistenAll } from "../../platform/listen.ts";
+import { addToast } from "../../kit/toasts.ts";
+import { t } from "../../shared/i18n/index.ts";
 import { user } from "../users/index.ts";
 import { followedLive } from "./streams.ts";
 import * as link from "../link/index.ts";
@@ -46,7 +54,7 @@ export function start(): () => void {
         pinnedIds: pinnedChannels(),
         tabIds: link.tabs().map((ch) => ch.id),
         selectedId: (selectedChannel() ?? lastChannel())?.id,
-        liveIds: live.map((ch) => ch.id),
+        liveIds: systemFollowedChannels() ? live.map((ch) => ch.id) : [],
       });
       const diff = diffFocus(joined, next);
       joined = next;
@@ -57,7 +65,16 @@ export function start(): () => void {
     });
     return dispose;
   });
+  const stopCapWatch = unlistenAll([
+    listenApp("chatStatus", ({ state }) => {
+      if (state.type !== "capped" || !systemFollowedChannels()) return;
+      setSystemFollowedChannels(false);
+      setAppearanceFollowedPrompt(true);
+      addToast(t("CHANNELS_FOLLOWED_TURNED_OFF_TOAST"), "warn");
+    }),
+  ]);
   return () => {
+    stopCapWatch();
     stopJoining();
     stopInfo();
     stopPolling();

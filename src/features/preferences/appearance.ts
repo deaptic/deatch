@@ -12,6 +12,11 @@ import { prefs, setPrefs } from "./core.ts";
 export const appearanceTheme = () => prefs.appearance.theme;
 export const appearanceAccent = () => prefs.appearance.accent;
 export const appearanceRailExpanded = () => prefs.appearance.railExpanded;
+export const appearanceFollowedPrompt = () => prefs.appearance.followedPrompt;
+
+export function setAppearanceFollowedPrompt(shown: boolean) {
+  setPrefs("appearance", "followedPrompt", shown);
+}
 export const activityShown = (kind: ActivityKind) =>
   prefs.appearance.activities[kind];
 export const appearanceUiDensity = () => prefs.appearance.uiDensity;

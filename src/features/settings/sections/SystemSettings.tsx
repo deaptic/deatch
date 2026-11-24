@@ -1,6 +1,7 @@
 import { t } from "../../../shared/i18n/index.ts";
 import PageBody from "../../../kit/PageBody.tsx";
 import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import AdvancedCard from "./AdvancedCard.tsx";
@@ -11,6 +12,8 @@ import {
   setSystemAlwaysOnTop,
   setSystemAutostart,
   setSystemDiscordRichPresence,
+  setSystemFollowedChannels,
+  systemFollowedChannels,
 } from "../../preferences/index.ts";
 
 export default function SystemSettings() {
@@ -45,6 +48,19 @@ export default function SystemSettings() {
             label={t("SETTINGS_SYSTEM_DISCORD_PRESENCE_LABEL")}
             checked={systemDiscordRichPresence()}
             onChange={setSystemDiscordRichPresence}
+          />
+        </SettingsRow>
+      </Card>
+      <Card>
+        <CardLabel>{t("SETTINGS_SYSTEM_CHANNELS_TITLE")}</CardLabel>
+        <SettingsRow
+          label={t("SETTINGS_SYSTEM_FOLLOWED_CHANNELS_LABEL")}
+          description={t("SETTINGS_SYSTEM_FOLLOWED_CHANNELS_DESCRIPTION")}
+        >
+          <Toggle
+            label={t("SETTINGS_SYSTEM_FOLLOWED_CHANNELS_LABEL")}
+            checked={systemFollowedChannels()}
+            onChange={setSystemFollowedChannels}
           />
         </SettingsRow>
       </Card>

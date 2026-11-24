@@ -5,6 +5,11 @@ export const systemAlwaysOnTop = () => prefs.system.alwaysOnTop;
 export const systemDiscordRichPresence = () => prefs.system.discordRichPresence;
 export const systemHardwareAcceleration = () =>
   prefs.system.hardwareAcceleration;
+export const systemFollowedChannels = () => prefs.system.followedChannels;
+
+export function setSystemFollowedChannels(value: boolean) {
+  setPrefs("system", "followedChannels", value);
+}
 
 export function setSystemAutostart(value: boolean) {
   setPrefs("system", "autostart", value);
