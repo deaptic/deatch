@@ -31,7 +31,7 @@
     "@types/node": "^26.6.6",
     "happy-dom": "^21.0.4",
     "tailwindcss": "^4.3.5",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plugin-solid": "^2.11.17",
     "vite-plus": "catalog:"
