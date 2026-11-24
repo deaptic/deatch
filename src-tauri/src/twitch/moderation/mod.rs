@@ -7,7 +7,7 @@ use crate::platform::error::Result;
 use crate::twitch::client::ids::{MessageId, UnbanRequestId, UserId};
 use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::users::dto::UserRef;
-use dto::{BannedPage, BannedUser, BlockedTerm, UnbanRequest};
+use dto::{AutoModLevels, AutoModSettings, BannedPage, BannedUser, BlockedTerm, UnbanRequest};
 use serde::Deserialize;
 use twitch_api::helix::moderation::{
     add_blocked_term::{AddBlockedTermBody, AddBlockedTermRequest},
@@ -15,9 +15,11 @@ use twitch_api::helix::moderation::{
     manage_held_automod_messages::{
         ManageHeldAutoModMessagesBody, ManageHeldAutoModMessagesRequest,
     },
+    update_automod_settings::{UpdateAutoModSettingsBody, UpdateAutoModSettingsRequest},
     update_shield_mode_status::{UpdateShieldModeStatusBody, UpdateShieldModeStatusRequest},
-    AddedSuspiciousUserStatus, GetBannedUsersRequest, GetShieldModeStatusRequest,
-    GetUnbanRequestsRequest, RemoveBlockedTermRequest, ResolveUnbanRequest, UnbanRequestStatus,
+    AddedSuspiciousUserStatus, GetAutoModSettingsRequest, GetBannedUsersRequest,
+    GetShieldModeStatusRequest, GetUnbanRequestsRequest, RemoveBlockedTermRequest,
+    ResolveUnbanRequest, UnbanRequestStatus,
 };
 use twitch_api::types;
 
@@ -394,13 +396,79 @@ pub async fn update_shield_mode(
     Ok(response.data.is_active)
 }
 
+pub async fn get_automod_settings(
+    twitch: &Authed<'_>,
+    params: BroadcasterParams,
+) -> Result<AutoModSettings> {
+    let request =
+        GetAutoModSettingsRequest::new(params.broadcaster_id.as_str(), &twitch.token.user_id);
+    let response = twitch.helix.req_get(request, &twitch.token).await?;
+    Ok(response.data.into())
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase", tag = "kind")]
+pub enum AutoModChange {
+    Overall { level: u8 },
+    Levels { levels: AutoModLevels },
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateAutoModParams {
+    pub broadcaster_id: UserId,
+    pub change: AutoModChange,
+}
+
+pub async fn update_automod_settings(
+    twitch: &Authed<'_>,
+    params: UpdateAutoModParams,
+) -> Result<AutoModSettings> {
+    let request =
+        UpdateAutoModSettingsRequest::new(params.broadcaster_id.as_str(), &twitch.token.user_id);
+    let body = match params.change {
+        AutoModChange::Overall { level } => UpdateAutoModSettingsBody::overall(level),
+        AutoModChange::Levels { levels } => UpdateAutoModSettingsBody::Individual(levels.into()),
+    };
+    let response = twitch.helix.req_put(request, body, &twitch.token).await?;
+    Ok(response.data.into())
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        AutomodAction, ManageHeldAutomodMessageParams, ResolveUnbanRequestParams,
-        SetSuspiciousStatusParams, SuspiciousStatus, UnbanDecision, UpdateShieldModeParams,
+        AutoModChange, AutomodAction, ManageHeldAutomodMessageParams, ResolveUnbanRequestParams,
+        SetSuspiciousStatusParams, SuspiciousStatus, UnbanDecision, UpdateAutoModParams,
+        UpdateShieldModeParams,
     };
     use serde_json::json;
+
+    #[test]
+    fn automod_change_is_tagged_by_kind() {
+        let overall: UpdateAutoModParams = serde_json::from_value(json!({
+            "broadcasterId": "1",
+            "change": { "kind": "overall", "level": 2 },
+        }))
+        .unwrap();
+        assert!(matches!(
+            overall.change,
+            AutoModChange::Overall { level: 2 }
+        ));
+
+        let levels: UpdateAutoModParams = serde_json::from_value(json!({
+            "broadcasterId": "1",
+            "change": { "kind": "levels", "levels": {
+                "disability": 0, "aggression": 1, "sexualitySexOrGender": 2, "misogyny": 3,
+                "bullying": 4, "swearing": 0, "raceEthnicityOrReligion": 1, "sexBasedTerms": 2,
+            }},
+        }))
+        .unwrap();
+        let AutoModChange::Levels { levels } = levels.change else {
+            panic!("expected levels");
+        };
+        assert_eq!(levels.bullying, 4);
+        assert_eq!(levels.sex_based_terms, 2);
+    }
 
     #[test]
     fn update_shield_mode_params_are_camel_case() {

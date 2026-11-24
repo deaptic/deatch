@@ -43,8 +43,7 @@ accumulates unrelated groups, split it along those seams into a folder with a
 barrel so import sites stay stable. Private helpers live with their only caller.
 Many entries serving one concern is fine; split by concern, not by count.
 
-The folder layout and its import rules live in `docs/ARCHITECTURE.md`. Code
-outside that layout is not yet migrated; new code goes in the new layout.
+The folder layout and its import rules live in `docs/ARCHITECTURE.md`.
 
 ## Boundaries
 

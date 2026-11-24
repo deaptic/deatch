@@ -1,4 +1,4 @@
-import { Clapperboard, Plus, X } from "lucide-solid";
+import { Clapperboard, MessageSquare, Plus, X } from "lucide-solid";
 import { For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { t } from "../../shared/i18n/index.ts";
@@ -70,10 +70,12 @@ export default function Actions(props: Props) {
               <MenuHost>
                 <Overview
                   active={active()}
-                  settingsReady={settings() !== undefined}
                   isMod={isMod()}
                   broadcasterId={props.broadcasterId}
                 />
+                <Show when={isMod()}>
+                  <ChannelToolItems broadcasterId={props.broadcasterId} />
+                </Show>
                 <MenuDivider />
                 <SubMenu
                   label={t("COMPOSER_ACTIONS_CLIP_LABEL")}
@@ -91,9 +93,6 @@ export default function Actions(props: Props) {
                     )}
                   </For>
                 </SubMenu>
-                <Show when={isMod()}>
-                  <ChannelToolItems broadcasterId={props.broadcasterId} />
-                </Show>
               </MenuHost>
             </div>
           </MenuClose.Provider>
@@ -105,7 +104,6 @@ export default function Actions(props: Props) {
 
 function Overview(props: {
   active: ChatMode[];
-  settingsReady: boolean;
   isMod: boolean;
   broadcasterId: string;
 }) {
@@ -129,8 +127,11 @@ function Overview(props: {
           )}
         </For>
       </Show>
-      <Show when={props.isMod && props.settingsReady}>
-        <SubMenu label={t("COMPOSER_ACTIONS_CHANGE_MODES_LABEL")}>
+      <Show when={props.isMod}>
+        <SubMenu
+          label={t("COMPOSER_ACTIONS_CHANGE_MODES_LABEL")}
+          icon={<MessageSquare />}
+        >
           <ChatModesList broadcasterId={props.broadcasterId} />
         </SubMenu>
       </Show>

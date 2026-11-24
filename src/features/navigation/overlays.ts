@@ -24,7 +24,9 @@ export type ChannelForm =
   | "raid"
   | "info"
   | "unbans"
-  | "blockedTerms";
+  | "blockedTerms"
+  | "automod"
+  | "clearChat";
 
 export const [channelForm, setChannelForm] = createSignal<ChannelForm | null>(
   null,

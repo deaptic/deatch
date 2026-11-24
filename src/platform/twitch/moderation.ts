@@ -1,5 +1,6 @@
 import { commands } from "../bindings.ts";
 import type {
+  AutoModSettings,
   AddBlockedTermParams,
   BannedUser,
   BannedPage,
@@ -14,6 +15,7 @@ import type {
   ResolveUnbanRequestParams,
   SetSuspiciousStatusParams,
   UnbanRequest,
+  UpdateAutoModParams,
   UpdateShieldModeParams,
   UserRef,
   WarnUserParams,
@@ -25,6 +27,20 @@ export function getModeratedChannels(
   options?: InvokeOptions,
 ): Promise<UserRef[]> {
   return invokeCommand(commands.getModeratedChannels, [], options);
+}
+
+export function getAutomodSettings(
+  params: BroadcasterParams,
+  options?: InvokeOptions,
+): Promise<AutoModSettings> {
+  return invokeCommand(commands.getAutomodSettings, [params], options);
+}
+
+export function updateAutomodSettings(
+  params: UpdateAutoModParams,
+  options?: InvokeOptions,
+): Promise<AutoModSettings> {
+  return invokeCommand(commands.updateAutomodSettings, [params], options);
 }
 
 export function getShieldMode(

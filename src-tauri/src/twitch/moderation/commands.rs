@@ -1,10 +1,10 @@
-use super::dto::{BannedPage, BannedUser, BlockedTerm, UnbanRequest};
+use super::dto::{AutoModSettings, BannedPage, BannedUser, BlockedTerm, UnbanRequest};
 use crate::platform::error::Result;
 use crate::twitch::client::params::{BroadcasterParams, BroadcasterUserParams};
 use crate::twitch::moderation::{
     self, AddBlockedTermParams, BanUserParams, DeleteChatMessagesParams, GetBannedUsersParams,
     ManageHeldAutomodMessageParams, RemoveBlockedTermParams, ResolveUnbanRequestParams,
-    SetSuspiciousStatusParams, UpdateShieldModeParams, WarnUserParams,
+    SetSuspiciousStatusParams, UpdateAutoModParams, UpdateShieldModeParams, WarnUserParams,
 };
 use crate::twitch::users::dto::UserRef;
 use crate::twitch::Twitch;
@@ -137,4 +137,22 @@ pub async fn update_shield_mode(
 #[specta::specta]
 pub async fn get_moderated_channels(twitch: State<'_, Twitch>) -> Result<Vec<UserRef>> {
     moderation::get_moderated_channels(&twitch.authed().await?).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_automod_settings(
+    twitch: State<'_, Twitch>,
+    params: BroadcasterParams,
+) -> Result<AutoModSettings> {
+    moderation::get_automod_settings(&twitch.authed().await?, params).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn update_automod_settings(
+    twitch: State<'_, Twitch>,
+    params: UpdateAutoModParams,
+) -> Result<AutoModSettings> {
+    moderation::update_automod_settings(&twitch.authed().await?, params).await
 }

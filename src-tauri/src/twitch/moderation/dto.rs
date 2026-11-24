@@ -1,9 +1,11 @@
 use crate::twitch::client::ids::UnbanRequestId;
 use crate::twitch::users::dto::UserRef;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use twitch_api::helix::moderation::{
-    BannedUser as HelixBannedUser, BlockedTerm as HelixBlockedTerm,
-    ModeratedChannel as HelixModeratedChannel, UnbanRequest as HelixUnbanRequest,
+    update_automod_settings::UpdateAutoModSettingsIndividual,
+    AutoModSettings as HelixAutoModSettings, BannedUser as HelixBannedUser,
+    BlockedTerm as HelixBlockedTerm, ModeratedChannel as HelixModeratedChannel,
+    UnbanRequest as HelixUnbanRequest,
 };
 
 #[derive(Debug, Clone, Serialize, specta::Type)]
@@ -73,4 +75,57 @@ impl From<HelixBlockedTerm> for BlockedTerm {
 pub struct BannedPage {
     pub banned: Vec<BannedUser>,
     pub cursor: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AutoModLevels {
+    pub disability: u8,
+    pub aggression: u8,
+    pub sexuality_sex_or_gender: u8,
+    pub misogyny: u8,
+    pub bullying: u8,
+    pub swearing: u8,
+    pub race_ethnicity_or_religion: u8,
+    pub sex_based_terms: u8,
+}
+
+#[derive(Debug, Clone, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AutoModSettings {
+    pub overall_level: Option<u8>,
+    pub levels: AutoModLevels,
+}
+
+impl From<HelixAutoModSettings> for AutoModSettings {
+    fn from(s: HelixAutoModSettings) -> Self {
+        Self {
+            overall_level: s.overall_level,
+            levels: AutoModLevels {
+                disability: s.disability,
+                aggression: s.aggression,
+                sexuality_sex_or_gender: s.sexuality_sex_or_gender,
+                misogyny: s.misogyny,
+                bullying: s.bullying,
+                swearing: s.swearing,
+                race_ethnicity_or_religion: s.race_ethnicity_or_religion,
+                sex_based_terms: s.sex_based_terms,
+            },
+        }
+    }
+}
+
+impl From<AutoModLevels> for UpdateAutoModSettingsIndividual {
+    fn from(l: AutoModLevels) -> Self {
+        let mut body = Self::default();
+        body.disability = Some(l.disability);
+        body.aggression = Some(l.aggression);
+        body.sexuality_sex_or_gender = Some(l.sexuality_sex_or_gender);
+        body.misogyny = Some(l.misogyny);
+        body.bullying = Some(l.bullying);
+        body.swearing = Some(l.swearing);
+        body.race_ethnicity_or_religion = Some(l.race_ethnicity_or_religion);
+        body.sex_based_terms = Some(l.sex_based_terms);
+        body
+    }
 }

@@ -71,6 +71,8 @@ export const commands = {
 	manageHeldAutomodMessage: (params: ManageHeldAutomodMessageParams) => __TAURI_INVOKE<null>("manage_held_automod_message", { params }),
 	getShieldMode: (params: BroadcasterParams) => __TAURI_INVOKE<boolean>("get_shield_mode", { params }),
 	updateShieldMode: (params: UpdateShieldModeParams) => __TAURI_INVOKE<boolean>("update_shield_mode", { params }),
+	getAutomodSettings: (params: BroadcasterParams) => __TAURI_INVOKE<AutoModSettings>("get_automod_settings", { params }),
+	updateAutomodSettings: (params: UpdateAutoModParams) => __TAURI_INVOKE<AutoModSettings>("update_automod_settings", { params }),
 	getAdSchedule: (params: BroadcasterParams) => __TAURI_INVOKE<{
 	nextAdMs: number | null,
 	durationSeconds: number,
@@ -202,6 +204,24 @@ export type AroundParams = {
 export type AuthFailed = Error;
 
 export type AuthSucceeded = User;
+
+export type AutoModChange = { kind: "overall"; level: number } | { kind: "levels"; levels: AutoModLevels };
+
+export type AutoModLevels = {
+	disability: number,
+	aggression: number,
+	sexualitySexOrGender: number,
+	misogyny: number,
+	bullying: number,
+	swearing: number,
+	raceEthnicityOrReligion: number,
+	sexBasedTerms: number,
+};
+
+export type AutoModSettings = {
+	overallLevel: number | null,
+	levels: AutoModLevels,
+};
 
 export type AutomodAction = "allow" | "deny";
 
@@ -935,6 +955,11 @@ export type UnbanRequest = {
 };
 
 export type UnbanRequestId = string;
+
+export type UpdateAutoModParams = {
+	broadcasterId: UserId,
+	change: AutoModChange,
+};
 
 export type UpdateChatSettingsParams = {
 	broadcasterId: UserId,

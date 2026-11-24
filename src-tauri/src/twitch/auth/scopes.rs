@@ -35,6 +35,13 @@ const FEATURES: &[Feature] = &[
         ],
     ),
     ("blocked terms", &[Scope::ModeratorManageBlockedTerms]),
+    (
+        "automod settings",
+        &[
+            Scope::ModeratorReadAutomodSettings,
+            Scope::ModeratorManageAutomodSettings,
+        ],
+    ),
     ("unban requests", &[Scope::ModeratorManageUnbanRequests]),
     (
         "suspicious users",

@@ -19,7 +19,7 @@ export default function StepSlider(props: Props) {
 
   return (
     <div
-      class={`w-full flex flex-col gap-1.5 ${
+      class={`w-full flex flex-col gap-1.5 px-3 ${
         props.disabled ? "opacity-40" : ""
       }`}
     >

@@ -1,4 +1,5 @@
 import {
+  Bot,
   Bookmark,
   ChartColumn,
   Eraser,
@@ -12,7 +13,6 @@ import {
 import { For, Match, Show, Switch } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { startCommercial } from "../../platform/twitch/channels.ts";
-import { deleteChatMessages } from "../../platform/twitch/moderation.ts";
 import { createStreamMarker } from "../../platform/twitch/streams.ts";
 import { AD_LENGTHS } from "../../shared/twitch.ts";
 import { streamForUserId } from "../channels/index.ts";
@@ -27,6 +27,8 @@ import SubMenu from "../../kit/SubMenu.tsx";
 import InfoForm from "./InfoForm.tsx";
 import { RaidForm, VoteForm } from "../activity/index.ts";
 import BlockedTermsForm from "./BlockedTermsForm.tsx";
+import AutoModForm from "./AutoModForm.tsx";
+import ClearChatForm from "./ClearChatForm.tsx";
 import UnbanRequestsForm from "./UnbanRequestsForm.tsx";
 
 type ItemsProps = {
@@ -41,6 +43,41 @@ export function ChannelToolItems(props: ItemsProps) {
 
   return (
     <>
+      <MenuDivider />
+      <MenuItem
+        label={t(
+          shield() ? "HEADER_SHIELD_OFF_LABEL" : "HEADER_SHIELD_ON_LABEL",
+        )}
+        icon={<Shield />}
+        active={shield()}
+        onClick={() => activity.setShield(props.broadcasterId, !shield())}
+      />
+      <MenuItem
+        label={t("HEADER_CLEAR_CHAT_LABEL")}
+        icon={<Eraser />}
+        tone="negative"
+        onClick={() => setChannelForm("clearChat")}
+      />
+      <MenuDivider />
+      <MenuItem
+        label={t("HEADER_AUTOMOD_LABEL")}
+        icon={<Bot />}
+        onClick={() => setChannelForm("automod")}
+      />
+      <MenuItem
+        label={t("HEADER_BLOCKED_TERMS_LABEL")}
+        icon={<ListX />}
+        onClick={() => setChannelForm("blockedTerms")}
+      />
+      <Show when={knownUser(props.broadcasterId)}>
+        {(channel) => (
+          <MenuItem
+            label={t("HEADER_REWARD_QUEUE_LABEL")}
+            icon={<ListChecks />}
+            onClick={() => browser.openRewardQueue(channel().login)}
+          />
+        )}
+      </Show>
       <Show when={isBroadcaster()}>
         <MenuDivider />
         <MenuItem
@@ -58,6 +95,7 @@ export function ChannelToolItems(props: ItemsProps) {
           icon={<Swords />}
           onClick={() => setChannelForm("raid")}
         />
+        <MenuDivider />
         <SubMenu
           label={t("HEADER_RUN_AD_LABEL")}
           icon={<Tv />}
@@ -84,40 +122,6 @@ export function ChannelToolItems(props: ItemsProps) {
           onClick={() => createStreamMarker().catch(() => {})}
         />
       </Show>
-      <MenuDivider />
-      <Show when={knownUser(props.broadcasterId)}>
-        {(channel) => (
-          <MenuItem
-            label={t("HEADER_REWARD_QUEUE_LABEL")}
-            icon={<ListChecks />}
-            onClick={() => browser.openRewardQueue(channel().login)}
-          />
-        )}
-      </Show>
-      <MenuItem
-        label={t("HEADER_BLOCKED_TERMS_LABEL")}
-        icon={<ListX />}
-        onClick={() => setChannelForm("blockedTerms")}
-      />
-      <MenuItem
-        label={t(
-          shield() ? "HEADER_SHIELD_OFF_LABEL" : "HEADER_SHIELD_ON_LABEL",
-        )}
-        icon={<Shield />}
-        active={shield()}
-        onClick={() => activity.setShield(props.broadcasterId, !shield())}
-      />
-      <MenuItem
-        label={t("HEADER_CLEAR_CHAT_LABEL")}
-        icon={<Eraser />}
-        tone="negative"
-        onClick={() =>
-          deleteChatMessages({
-            broadcasterId: props.broadcasterId,
-            messageId: null,
-          }).catch(() => {})
-        }
-      />
     </>
   );
 }
@@ -136,6 +140,18 @@ export function ChannelToolForm(props: FormProps) {
       </Match>
       <Match when={props.form === "blockedTerms"}>
         <BlockedTermsForm
+          broadcasterId={props.broadcasterId}
+          onDone={props.onDone}
+        />
+      </Match>
+      <Match when={props.form === "clearChat"}>
+        <ClearChatForm
+          broadcasterId={props.broadcasterId}
+          onDone={props.onDone}
+        />
+      </Match>
+      <Match when={props.form === "automod"}>
+        <AutoModForm
           broadcasterId={props.broadcasterId}
           onDone={props.onDone}
         />
