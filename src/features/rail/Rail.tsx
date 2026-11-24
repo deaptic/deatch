@@ -171,11 +171,7 @@ export default function Rail(props: Props) {
             </RailRow>
           </div>
 
-          <RailDivider
-            label={t("RAIL_SECTION_LIVE_TITLE", {
-              count: channels.onlineList().length,
-            })}
-          />
+          <RailDivider />
 
           <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
             <Show
@@ -203,7 +199,7 @@ export default function Rail(props: Props) {
       </div>
 
       <Show when={linkedOthers().length > 0}>
-        <RailDivider label={t("RAIL_SECTION_TABS_TITLE")} />
+        <RailDivider />
         <div class="flex flex-col py-2 shrink-0">
           <div class="relative">
             <Show when={linkScroll.canUp()}>
@@ -245,7 +241,7 @@ export default function Rail(props: Props) {
       <Show when={nowViewing()}>
         {(nv) => (
           <>
-            <RailDivider label={t("RAIL_SECTION_VIEWING_TITLE")} />
+            <RailDivider />
             <div class="py-2 shrink-0" data-channel-id={nv().id}>
               <ChannelRow
                 ch={nv()}
