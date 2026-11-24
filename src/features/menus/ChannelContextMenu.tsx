@@ -56,6 +56,7 @@ export default function ChannelContextMenu(props: Props) {
   const selected = () => selectedChannel()?.id === props.ch.id;
   const pinIndex = () => pinnedChannels().indexOf(props.ch.id);
   const movePin = (by: number) => () => pins.move(pinIndex(), pinIndex() + by);
+  const movable = () => props.place === "rail" && !hasTab();
   const unread = () =>
     hasUnread(props.ch.id) || inbox.unreadCountIn(props.ch.id) > 0;
   const self = () => user();
@@ -144,18 +145,14 @@ export default function ChannelContextMenu(props: Props) {
             icon={<PinOff />}
             onClick={() => pins.remove(props.ch.id)}
           />
-          <Show when={props.place === "rail" && pinIndex() > 0}>
+          <Show when={movable() && pinIndex() > 0}>
             <MenuItem
               label={t("UI_MOVE_UP_LABEL")}
               icon={<ArrowUp />}
               onClick={movePin(-1)}
             />
           </Show>
-          <Show
-            when={
-              props.place === "rail" && pinIndex() < pinnedChannels().length - 1
-            }
-          >
+          <Show when={movable() && pinIndex() < pinnedChannels().length - 1}>
             <MenuItem
               label={t("UI_MOVE_DOWN_LABEL")}
               icon={<ArrowDown />}
