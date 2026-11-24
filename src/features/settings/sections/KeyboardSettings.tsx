@@ -28,6 +28,7 @@ const GROUPS: { title: MessageKey; prefix: string[] }[] = [
   { title: "SETTINGS_KEYBOARD_GROUP_LINK_TITLE", prefix: ["link::"] },
   { title: "SETTINGS_KEYBOARD_GROUP_VIEW_TITLE", prefix: ["view::"] },
   { title: "SETTINGS_KEYBOARD_GROUP_CHAT_TITLE", prefix: ["feed::", "chat::"] },
+  { title: "SETTINGS_KEYBOARD_GROUP_MODERATION_TITLE", prefix: ["mod::"] },
 ];
 
 type Row = { combo: string; label: string };

@@ -14,6 +14,7 @@ const KEY_LABELS: Record<string, MessageKey> = {
   enter: "KEY_ENTER_LABEL",
   escape: "KEY_ESCAPE_LABEL",
   tab: "KEY_TAB_LABEL",
+  delete: "KEY_DELETE_LABEL",
   pageup: "KEY_PAGE_UP_LABEL",
   pagedown: "KEY_PAGE_DOWN_LABEL",
 };

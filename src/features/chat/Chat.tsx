@@ -6,6 +6,7 @@ import {
   createSignal,
   on,
   onCleanup,
+  Show,
 } from "solid-js";
 import * as chat from "./send.ts";
 import {
@@ -31,6 +32,8 @@ import {
 } from "../preferences/index.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import { createFeedShortcuts } from "./createFeedShortcuts.ts";
+import { createModShortcuts } from "./createModShortcuts.ts";
+import SelectionHints from "./SelectionHints.tsx";
 import { createChatOverlays } from "./createChatOverlays.ts";
 import ChatOverlays from "./ChatOverlays.tsx";
 import Transition from "../../kit/Transition.tsx";
@@ -92,7 +95,16 @@ export default function Chat(props: Props) {
     broadcasterId: () => props.broadcasterId,
     feed: feedApi,
     reply: startReply,
+    openUserCard: (m, bounds) =>
+      void overlays.openUserCard(bounds.left, bounds.bottom, {
+        id: m.chatter_user_id,
+        login: m.chatter_login,
+      }),
     focusInput: () => inputApi?.focus(),
+  });
+  const mod = createModShortcuts({
+    broadcasterId: () => props.broadcasterId,
+    feed: feedApi,
   });
 
   const getMentions = () =>
@@ -171,6 +183,14 @@ export default function Chat(props: Props) {
             </div>
           )}
         </Transition>
+        <Show when={feedApi()?.getSelectedMessage()}>
+          {(selected) => (
+            <SelectionHints
+              moderator={mod.canModerate(selected())}
+              moderating={mod.armed()?.chatter_name ?? null}
+            />
+          )}
+        </Show>
         <Boundary>
           <Composer
             broadcasterId={props.broadcasterId}

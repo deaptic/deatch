@@ -44,6 +44,12 @@
   "shift-down": ["feed::selectNext"],
   "r": ["feed::reply"],
   "c": ["feed::copy"],
+  "m": ["mod::arm"],
+  "delete": ["mod::delete"],
+  "p": ["mod::purge"],
+  "t": ["mod::timeout"],
+  "b": ["mod::ban"],
+  "u": ["feed::userCard"],
   "ctrl-d": ["emotePicker::favorite"],
   "shift-enter": ["emotePicker::insertKeepOpen"],
   "ctrl-enter": ["quickSwitch::openPinned"]

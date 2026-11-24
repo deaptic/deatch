@@ -8,6 +8,7 @@ type Deps = {
   broadcasterId: () => string;
   feed: () => FeedApi | null;
   reply: (msg: FeedMessage) => void;
+  openUserCard: (msg: FeedMessage, bounds: DOMRect) => void;
   focusInput: () => void;
 };
 
@@ -47,6 +48,14 @@ export function createFeedShortcuts(deps: Deps): void {
       shortcuts.register(
         "feed::reply",
         withSelected(deps.reply),
+        "feedSelected",
+      ),
+      shortcuts.register(
+        "feed::userCard",
+        withSelected((m) => {
+          const bounds = deps.feed()?.getSelectedBounds();
+          if (bounds) deps.openUserCard(m, bounds);
+        }),
         "feedSelected",
       ),
       shortcuts.register(

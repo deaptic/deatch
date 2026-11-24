@@ -55,6 +55,7 @@ export type FeedApi = {
   moveSelection: (direction: 1 | -1) => void;
   clearSelection: () => void;
   getSelectedMessage: () => Message | null;
+  getSelectedBounds: () => DOMRect | null;
 };
 
 type Props = UserActions & {
@@ -332,6 +333,10 @@ export default function Feed(props: Props) {
       moveSelection,
       clearSelection,
       getSelectedMessage: () => selectedMessage(),
+      getSelectedBounds: () => {
+        const id = selectedId();
+        return id ? (itemEl(id)?.getBoundingClientRect() ?? null) : null;
+      },
     });
   });
 
