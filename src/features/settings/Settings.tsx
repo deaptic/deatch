@@ -1,16 +1,6 @@
-import { type MessageKey, t } from "../../shared/i18n/index.ts";
-import {
-  Ban,
-  Eye,
-  Keyboard,
-  Megaphone,
-  Palette,
-  Search,
-  Settings as SettingsIcon,
-  UserX,
-  X,
-  Zap,
-} from "lucide-solid";
+import { t } from "../../shared/i18n/index.ts";
+import { Search, X } from "lucide-solid";
+import { Dynamic } from "solid-js/web";
 import {
   createSignal,
   For,
@@ -28,6 +18,7 @@ import InputPopover from "../../kit/InputPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
 import {
   setSettingsSection,
+  SETTINGS_SECTIONS,
   type SettingsSection,
   settingsSection,
 } from "../navigation/index.ts";
@@ -40,61 +31,21 @@ import { TriggerSettings } from "../triggers/index.ts";
 import { LinkSettings } from "../link/index.ts";
 import { BlockedUsersSettings } from "../blocks/index.ts";
 
-const SECTIONS: {
-  key: SettingsSection;
-  label: MessageKey;
-  Icon: (p: { class?: string }) => JSX.Element;
-  Section: () => JSX.Element;
-}[] = [
-  {
-    key: "notifications",
-    label: "SETTINGS_NOTIFICATIONS_TITLE",
-    Icon: Megaphone,
-    Section: NotificationsSettings,
-  },
-  {
-    key: "appearance",
-    label: "SETTINGS_APPEARANCE_TITLE",
-    Icon: Palette,
-    Section: AppearanceSettings,
-  },
-  {
-    key: "link",
-    label: "SETTINGS_LINK_TITLE",
-    Icon: Eye,
-    Section: LinkSettings,
-  },
-  {
-    key: "moderation",
-    label: "SETTINGS_MODERATION_TITLE",
-    Icon: Ban,
-    Section: ModerationSettings,
-  },
-  {
-    key: "blocked",
-    label: "SETTINGS_BLOCKED_TITLE",
-    Icon: UserX,
-    Section: BlockedUsersSettings,
-  },
-  {
-    key: "triggers",
-    label: "SETTINGS_TRIGGERS_TITLE",
-    Icon: Zap,
-    Section: TriggerSettings,
-  },
-  {
-    key: "keyboard",
-    label: "SETTINGS_KEYBOARD_TITLE",
-    Icon: Keyboard,
-    Section: KeyboardSettings,
-  },
-  {
-    key: "advanced",
-    label: "SETTINGS_ADVANCED_TITLE",
-    Icon: SettingsIcon,
-    Section: AdvancedSettings,
-  },
-];
+const BODIES: Record<SettingsSection, () => JSX.Element> = {
+  notifications: NotificationsSettings,
+  appearance: AppearanceSettings,
+  link: LinkSettings,
+  moderation: ModerationSettings,
+  blocked: BlockedUsersSettings,
+  triggers: TriggerSettings,
+  keyboard: KeyboardSettings,
+  advanced: AdvancedSettings,
+};
+
+const SECTIONS = SETTINGS_SECTIONS.map((s) => ({
+  ...s,
+  Section: BODIES[s.key],
+}));
 
 const LABELLED_NAV_PX = 220;
 const ROW_SIDE_BY_SIDE_PX = 580;
@@ -190,7 +141,7 @@ export default function Settings() {
           {(s) => (
             <NavItem
               label={t(s.label)}
-              icon={<s.Icon />}
+              icon={<Dynamic component={s.icon} />}
               active={!searching() && settingsSection() === s.key}
               collapsed={collapsed()}
               onClick={() => open(s.key)}

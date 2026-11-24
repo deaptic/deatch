@@ -52,3 +52,13 @@ test("actions only show for a typed query, after channels and before search", ()
     { kind: "search", query: "poll" },
   ]);
 });
+
+test("an action also matches on its detail", () => {
+  const action = { label: "Turn off Timestamps", detail: "Appearance" };
+  expect(quickSwitchRows([], [action], "appearance timestamps")).toContainEqual(
+    {
+      kind: "action",
+      action,
+    },
+  );
+});

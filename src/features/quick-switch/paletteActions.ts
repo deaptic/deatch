@@ -24,17 +24,20 @@ import {
   type ChannelForm,
   setChannelForm,
   toggleOverlay,
-  isSettingsOpen,
+  openSettings,
   selectedChannel,
+  settingsSection,
+  SETTINGS_SECTIONS,
   showExplore,
-  toggleSettings,
 } from "../navigation/index.ts";
 import { showsControls } from "../permissions/index.ts";
 import { CHAT_MODES, isOn, presetLabel } from "../chat-modes/index.ts";
+import { SETTING_SWITCHES } from "./settingSwitches.ts";
 
 export type PaletteAction = {
   id: string;
   label: string;
+  detail?: string;
   icon: Component<{ class?: string }>;
   run: () => void;
 };
@@ -48,20 +51,44 @@ function appActions(): PaletteAction[] {
       run: showExplore,
     },
     {
-      id: "settings",
-      label: t("QUICK_SWITCH_OPEN_SETTINGS_LABEL"),
-      icon: Settings,
-      run: () => {
-        if (!isSettingsOpen()) toggleSettings();
-      },
-    },
-    {
       id: "inbox",
       label: t("QUICK_SWITCH_OPEN_INBOX_LABEL"),
       icon: Inbox,
       run: () => toggleOverlay("inbox"),
     },
   ];
+}
+
+function settingsActions(): PaletteAction[] {
+  const open: PaletteAction = {
+    id: "settings",
+    label: t("QUICK_SWITCH_OPEN_SETTINGS_LABEL"),
+    icon: Settings,
+    run: () => openSettings(settingsSection()),
+  };
+  const sections = SETTINGS_SECTIONS.map((section) => ({
+    id: `settings-${section.key}`,
+    label: t("QUICK_SWITCH_OPEN_SETTINGS_SECTION_LABEL", {
+      section: t(section.label),
+    }),
+    icon: section.icon,
+    run: () => openSettings(section.key),
+  }));
+  const switches = SETTING_SWITCHES.map((setting) => {
+    const section = SETTINGS_SECTIONS.find((s) => s.key === setting.section);
+    const on = setting.get();
+    return {
+      id: `setting-${setting.label}`,
+      label: t(
+        on ? "QUICK_SWITCH_SETTING_OFF_LABEL" : "QUICK_SWITCH_SETTING_ON_LABEL",
+        { setting: t(setting.label) },
+      ),
+      detail: section && t(section.label),
+      icon: section?.icon ?? Pencil,
+      run: () => setting.set(!on),
+    };
+  });
+  return [open, ...sections, ...switches];
 }
 
 function chatModeActions(broadcasterId: string): PaletteAction[] {
@@ -163,7 +190,7 @@ function broadcasterActions(broadcasterId: string): PaletteAction[] {
 
 export function paletteActions(): PaletteAction[] {
   const channel = selectedChannel();
-  const app = appActions();
+  const app = [...appActions(), ...settingsActions()];
   if (!channel || !showsControls(channel.id, "moderate")) return app;
   const own = showsControls(channel.id, "manageStream");
   return [

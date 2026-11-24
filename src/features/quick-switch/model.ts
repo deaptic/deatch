@@ -27,7 +27,7 @@ export function matchesWords(text: string, query: string): boolean {
     .every((word) => haystack.includes(word));
 }
 
-export function quickSwitchRows<A extends { label: string }>(
+export function quickSwitchRows<A extends { label: string; detail?: string }>(
   candidates: User[],
   actions: A[],
   query: string,
@@ -40,7 +40,8 @@ export function quickSwitchRows<A extends { label: string }>(
   }));
   if (!q) return rows;
   for (const action of actions) {
-    if (matchesWords(action.label, q)) rows.push({ kind: "action", action });
+    const text = `${action.label} ${action.detail ?? ""}`;
+    if (matchesWords(text, q)) rows.push({ kind: "action", action });
   }
   if (!list.some((u) => u.login === q)) {
     rows.push({ kind: "search", query: q });

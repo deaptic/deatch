@@ -165,6 +165,11 @@ export default function QuickSwitch(props: Props) {
                         <span class="flex-1 min-w-0 text-body font-semibold text-ink truncate">
                           {action().label}
                         </span>
+                        <Show when={action().detail}>
+                          <span class="shrink-0 text-small text-ink-faint">
+                            {action().detail}
+                          </span>
+                        </Show>
                       </>
                     )}
                   </Show>
