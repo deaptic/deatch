@@ -116,16 +116,18 @@ export default function QuickSwitch(props: Props) {
       label={t("QUICK_SWITCH_LABEL")}
       onClose={props.onClose}
     >
-      <Field
-        size="lg"
-        {...listbox.field}
-        icon={<Search />}
-        ref={autofocus}
-        placeholder={t("QUICK_SWITCH_PLACEHOLDER")}
-        value={query()}
-        onInput={(e) => setQuery(e.currentTarget.value)}
-        trailing={<Kbd size="sm" combo="escape" />}
-      />
+      <div class="shrink-0 flex flex-col">
+        <Field
+          size="lg"
+          {...listbox.field}
+          icon={<Search />}
+          ref={autofocus}
+          placeholder={t("QUICK_SWITCH_PLACEHOLDER")}
+          value={query()}
+          onInput={(e) => setQuery(e.currentTarget.value)}
+          trailing={<Kbd size="sm" combo="escape" />}
+        />
+      </div>
       <div
         {...listbox.list}
         class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5"
@@ -152,7 +154,7 @@ export default function QuickSwitch(props: Props) {
                   onClick={(e) => void open(row, e.ctrlKey)}
                   onContextMenu={channelLink.handlers.onContextMenu}
                   onAuxClick={channelLink.handlers.onAuxClick}
-                  class={`flex items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
+                  class={`flex shrink-0 items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
                     listbox.active() === i() ? "bg-raised" : "hover:bg-raised"
                   }`}
                 >
@@ -244,7 +246,7 @@ export default function QuickSwitch(props: Props) {
           </For>
         </Show>
       </div>
-      <div class="flex items-center gap-4 pt-2.5 mt-2 px-1 text-small text-ink-faint">
+      <div class="shrink-0 flex items-center gap-4 pt-2.5 mt-2 px-1 text-small text-ink-faint">
         <span class="flex items-center gap-1.5">
           <Kbd size="sm" combo="up" />
           <Kbd size="sm" combo="down" /> {t("QUICK_SWITCH_MOVE_HINT")}
@@ -262,7 +264,7 @@ export default function QuickSwitch(props: Props) {
 
 function RowIcon(props: { children: JSX.Element }) {
   return (
-    <span class="size-8 shrink-0 rounded-full bg-raised grid place-items-center text-ink-soft">
+    <span class="size-8 shrink-0 rounded-full bg-picture grid place-items-center text-ink-soft">
       {props.children}
     </span>
   );
