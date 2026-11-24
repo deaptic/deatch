@@ -36,14 +36,6 @@ const SECTIONS = {
   notifications: object({
     mentionSound: bool(true),
     whisperSound: bool(true),
-    goingLive: bool(true),
-    raids: bool(true),
-    followsAndSubs: bool(true),
-    adBreaks: bool(true),
-    redemptions: bool(true),
-    automod: bool(true),
-    unbanRequests: bool(true),
-    connection: bool(true),
   }),
   moderation: object({
     autoShoutoutOnRaid: bool(false),

@@ -11,11 +11,9 @@ import Toggle from "../../../kit/Toggle.tsx";
 import {
   addFeedKeyword,
   feedKeywords,
-  alertOn,
   notificationsMentionSound,
   notificationsWhisperSound,
   removeFeedKeyword,
-  setAlertOn,
   setNotificationsMentionSound,
   setNotificationsWhisperSound,
 } from "../../preferences/index.ts";
@@ -77,10 +75,9 @@ export default function NotificationsSettings() {
                   label={t(row.label)}
                   description={t(row.description)}
                 >
-                  <Toggle
-                    label={t(row.label)}
-                    checked={alertOn(row.alert)}
-                    onChange={(on) => setAlertOn(row.alert, on)}
+                  <Chip
+                    variant="label"
+                    label={t("SETTINGS_NOTIFICATIONS_SOON_LABEL")}
                   />
                 </SettingsRow>
               )}
