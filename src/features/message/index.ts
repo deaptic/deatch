@@ -12,3 +12,5 @@ export {
   type UserAction,
 } from "./userLink.ts";
 export { default as ChatterRow } from "./ui/ChatterRow.tsx";
+export { linksIn } from "./textSegments.ts";
+export { joinLinkMentions } from "./linkMentions.ts";

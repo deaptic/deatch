@@ -5,6 +5,9 @@ export type Segment =
 
 const URL_RE = /^https?:\/\/\S+$/;
 
+export const linksIn = (text: string): string[] =>
+  text.split(/\s+/).filter((token) => URL_RE.test(token));
+
 export function textSegments(
   text: string,
   emotes: Record<string, string>,

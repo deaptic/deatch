@@ -4,6 +4,7 @@ import {
   Bell,
   Code,
   Eye,
+  Link2,
   Keyboard,
   MessageSquare,
   Palette,
@@ -54,6 +55,12 @@ export const SETTINGS_SECTIONS: {
     group: "experience",
     label: "SETTINGS_MESSAGES_TITLE",
     icon: MessageSquare,
+  },
+  {
+    key: "embeds",
+    group: "experience",
+    label: "SETTINGS_EMBEDS_TITLE",
+    icon: Link2,
   },
   {
     key: "language",

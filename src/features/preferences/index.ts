@@ -27,6 +27,7 @@ export type {
 export * from "./feed.ts";
 export * from "./users.ts";
 export * from "./keywords.ts";
+export * from "./trustedDomains.ts";
 export * from "./channels.ts";
 export * from "./notifications.ts";
 export * from "./moderation.ts";

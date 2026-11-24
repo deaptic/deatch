@@ -146,6 +146,7 @@ export const commands = {
 	startRaid: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("start_raid", { params }),
 	cancelRaid: (params: BroadcasterParams) => __TAURI_INVOKE<null>("cancel_raid", { params }),
 	createClip: (params: CreateClipParams) => __TAURI_INVOKE<CreatedClip>("create_clip", { params }),
+	linkPreview: (params: LinkPreviewParams) => __TAURI_INVOKE<{ kind: "card"; site: string; title: string; description: string | null; thumbnail: string | null; video: boolean } | { kind: "image"; site: string; url: string } | null>("link_preview", { params }),
 	getChannelInformation: (params: GetChannelInformationParams) => __TAURI_INVOKE<ChannelInfo[]>("get_channel_information", { params }),
 	getFollowedAt: (params: BroadcasterUserParams) => __TAURI_INVOKE<string | null>("get_followed_at", { params }),
 	getFollowers: (params: GetFollowersParams) => __TAURI_INVOKE<FollowersPage>("get_followers", { params }),
@@ -683,6 +684,12 @@ export type LinkChannelParams = {
 };
 
 export type LinkDisconnected = null;
+
+export type LinkPreview = { kind: "card"; site: string; title: string; description: string | null; thumbnail: string | null; video: boolean } | { kind: "image"; site: string; url: string };
+
+export type LinkPreviewParams = {
+	url: string,
+};
 
 export type LinkState = {
 	channels: LinkChannel[],

@@ -6,7 +6,8 @@ import type { AutomodAction } from "../../../shared/types/index.ts";
 import type { BadgeMap, FeedMessage, Reaction } from "../types.ts";
 import type { Density } from "../../../shared/density.ts";
 import { isMention } from "../entries/mention.ts";
-import { feedShowAvatars } from "../../preferences/index.ts";
+import { feedLinkPreviews, feedShowAvatars } from "../../preferences/index.ts";
+import { LinkPreviews, previews } from "../../previews/index.ts";
 import { withoutReplyMention } from "../entries/message.ts";
 import * as automod from "../automod.ts";
 import { formatSuspicious } from "../entries/suspiciousText.ts";
@@ -14,6 +15,8 @@ import {
   Badges,
   type BadgePlacement,
   DisplayName,
+  joinLinkMentions,
+  linksIn,
   MessageText,
   type UserActions,
 } from "../../message/index.ts";
@@ -62,6 +65,14 @@ export default function Message(props: Props) {
 
   const mentioned = createMemo(() =>
     isMention(item, props.userLogin, props.keywords ?? []),
+  );
+
+  const links = createMemo(() =>
+    previews.pick(
+      joinLinkMentions(item.fragments).flatMap((f) =>
+        f.type === "text" ? linksIn(f.text) : [],
+      ),
+    ),
   );
 
   const badges = (placement: BadgePlacement) => (
@@ -271,6 +282,9 @@ export default function Message(props: Props) {
           </Show>
         </Show>
         {body()}
+        <Show when={feedLinkPreviews() && !item.deleted && links().length}>
+          <LinkPreviews urls={links()} />
+        </Show>
       </FeedItem.Content>
     </FeedItem>
   );

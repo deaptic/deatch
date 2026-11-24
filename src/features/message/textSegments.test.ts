@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { textSegments } from "./textSegments.ts";
+import { linksIn, textSegments } from "./textSegments.ts";
 
 const emotes = { Kappa: "https://cdn/kappa" };
 
@@ -21,4 +21,11 @@ test("emotes and links split the text around them", () => {
 
 test("empty text has no segments", () => {
   expect(textSegments("", emotes)).toStrictEqual([]);
+});
+
+test("links are found between words and other text is ignored", () => {
+  expect(linksIn("see https://a.b/c and http://d.e  www.f.g")).toStrictEqual([
+    "https://a.b/c",
+    "http://d.e",
+  ]);
 });

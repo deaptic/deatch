@@ -12,6 +12,7 @@ import { Rail } from "../features/rail/index.ts";
 import { Explore } from "../features/explore/index.ts";
 import ChatPanes from "./ChatPanes.tsx";
 import FlashHost from "../kit/FlashHost.tsx";
+import { LinkPrompt } from "../features/previews/index.ts";
 import {
   closeOverlay,
   isOverlayOpen,
@@ -137,6 +138,9 @@ export default function AppLayout(props: AppLayoutProps) {
         </Boundary>
         <Boundary silent>
           <EmoteCard />
+        </Boundary>
+        <Boundary silent>
+          <LinkPrompt />
         </Boundary>
         <TooltipHost />
       </div>

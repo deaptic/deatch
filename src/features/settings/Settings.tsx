@@ -36,6 +36,7 @@ import KeyboardSettings from "./sections/KeyboardSettings.tsx";
 import { TriggerSettings } from "../triggers/index.ts";
 import { TimersSettings } from "../timers/index.ts";
 import { LinkSettings } from "../link/index.ts";
+import { EmbedsSettings } from "../previews/index.ts";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
   language: LanguageSettings,
@@ -45,6 +46,7 @@ const BODIES: Record<SettingsSection, () => JSX.Element> = {
   link: LinkSettings,
   keyboard: KeyboardSettings,
   messages: MessagesSettings,
+  embeds: EmbedsSettings,
   notifications: NotificationsSettings,
   moderation: ModerationSettings,
   triggers: TriggerSettings,

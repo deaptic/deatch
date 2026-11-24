@@ -1,12 +1,19 @@
 import type { JSX } from "solid-js";
 import { createImageReveal } from "../shared/solid/createImageReveal.ts";
 
-type ThumbnailShape = "boxart" | "video" | "native";
-type ThumbnailFit = "inline" | "fill" | "bleed" | "feed";
+type ThumbnailShape = "boxart" | "video" | "square" | "native";
+type ThumbnailFit =
+  | "inline"
+  | "fill"
+  | "bleed"
+  | "feed"
+  | "lines"
+  | "linesWide";
 
 const SHAPES: Record<ThumbnailShape, string> = {
   boxart: "aspect-3/4",
   video: "aspect-video",
+  square: "aspect-square",
   native: "",
 };
 
@@ -14,6 +21,8 @@ const FITS: Record<ThumbnailFit, string> = {
   inline: "h-7 shrink-0 rounded-xs",
   fill: "w-full rounded-md",
   bleed: "w-full",
+  lines: "size-(--chat-three-lines) shrink-0 rounded-xs",
+  linesWide: "h-(--chat-three-lines) shrink-0 rounded-xs",
   feed: "h-(--chat-gif) w-fit min-w-(--chat-tile) max-w-full rounded-xs",
 };
 

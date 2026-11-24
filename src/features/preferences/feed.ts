@@ -16,6 +16,7 @@ export const feedShowTimestamp = () => prefs.feed.showTimestamp;
 export const feedShowDeletedContent = () => prefs.feed.showDeletedContent;
 export const feedShowCopypasta = () => prefs.feed.showCopypasta;
 export const feedShowAvatars = () => prefs.feed.showAvatars;
+export const feedLinkPreviews = () => prefs.feed.linkPreviews;
 export const feedGroupMessages = () => prefs.feed.groupMessages;
 export const feedShowBadges = () => prefs.feed.showBadges;
 export const feedShowEvents = () => prefs.feed.showEvents;
@@ -82,4 +83,8 @@ export function setFeedBadge(key: BadgeCategoryKey, show: boolean) {
 
 export function setFeedEvent(key: EventKey, show: boolean) {
   setPrefs("feed", "events", key, { show });
+}
+
+export function setFeedLinkPreviews(value: boolean) {
+  setPrefs("feed", "linkPreviews", value);
 }

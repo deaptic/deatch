@@ -59,6 +59,12 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
     set: prefs.setFeedShowCopypasta,
   },
   {
+    section: "embeds",
+    label: "SETTINGS_EMBEDS_PREVIEWS_LABEL",
+    get: prefs.feedLinkPreviews,
+    set: prefs.setFeedLinkPreviews,
+  },
+  {
     section: "messages",
     label: "SETTINGS_MESSAGES_DISPLAY_NAMES_LABEL",
     get: prefs.feedUserShowDisplayName,

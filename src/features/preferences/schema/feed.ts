@@ -13,6 +13,7 @@ import {
   shown,
   steps,
   text,
+  textList,
   type Value,
 } from "./fields.ts";
 
@@ -26,6 +27,8 @@ export const FEED = object({
   showTimestamp: bool(false),
   showDeletedContent: bool(false),
   showCopypasta: bool(false),
+  linkPreviews: bool(true),
+  trustedDomains: textList({ nonEmpty: true }),
   showAvatars: bool(true),
   groupMessages: bool(true),
   showBadges: bool(true),

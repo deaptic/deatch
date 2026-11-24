@@ -41,6 +41,7 @@ export type SettingsSection =
   | "link"
   | "keyboard"
   | "messages"
+  | "embeds"
   | "notifications"
   | "moderation"
   | "triggers"

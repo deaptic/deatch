@@ -7,6 +7,7 @@ mod history;
 mod link;
 mod notifications;
 mod platform;
+mod previews;
 mod twitch;
 
 pub use link::host as browser_host;
@@ -125,6 +126,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::raids::commands::start_raid,
             twitch::raids::commands::cancel_raid,
             twitch::clips::commands::create_clip,
+            previews::commands::link_preview,
             twitch::channels::commands::get_channel_information,
             twitch::channels::commands::get_followed_at,
             twitch::channels::commands::get_followers,

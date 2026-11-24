@@ -1,7 +1,7 @@
 import { For } from "solid-js";
-import * as browser from "../../platform/browser.ts";
 import { type EmoteMap } from "../emotes/index.ts";
 import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
+import { previews } from "../previews/index.ts";
 import { textSegments } from "./textSegments.ts";
 import InlineEmote from "./InlineEmote.tsx";
 
@@ -19,9 +19,9 @@ export default function TextWithEmotes(props: {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              browser.open(segment.url);
+              previews.open(segment.url);
             }}
-            onAuxClick={onMiddleClick(() => browser.open(segment.url))}
+            onAuxClick={onMiddleClick(() => previews.open(segment.url))}
             onMouseDown={preventAutoscroll}
             class="text-accent-ink hover:underline break-all"
           >
