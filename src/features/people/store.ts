@@ -90,6 +90,7 @@ export function loadMore(broadcasterId: string): void {
   loadingMore.add(broadcasterId);
   getChatters({ broadcasterId, cursor }, silent)
     .then((page) => {
+      if (listFor(broadcasterId).chatters !== chatters) return;
       const seen = new Set(ids(chatters));
       update(broadcasterId, {
         chatters: [

@@ -1,11 +1,12 @@
-import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
-import { createEffect, createRoot, createSignal } from "solid-js";
+import { mentionsKey, type StorageKey } from "../../platform/storageKeys.ts";
+import { createEffect, createRoot, createSignal, on } from "solid-js";
 import { playNotificationSound } from "../../kit/notificationSound.ts";
 import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
 import { notificationsMentionSound } from "../preferences/index.ts";
 import { selectedChannel } from "../navigation/index.ts";
+import { user } from "../users/index.ts";
 import type { Mention } from "./types.ts";
 import * as storage from "../../platform/storage.ts";
 
@@ -20,12 +21,22 @@ const MAX = 100;
 const SAVE_DELAY_MS = 1000;
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
-let unsaved: Mention[] | undefined;
+let unsaved: { key: StorageKey; list: Mention[] } | undefined;
+let key: StorageKey | null = null;
 
 export function start(): () => void {
-  setMentions(load());
   let timer: ReturnType<typeof setTimeout> | undefined;
   const dispose = createRoot((dispose) => {
+    createEffect(
+      on(
+        () => user()?.id,
+        (userId) => {
+          flush();
+          key = userId ? mentionsKey(userId) : null;
+          setMentions(key ? load(key) : []);
+        },
+      ),
+    );
     createEffect(() => {
       clearTimeout(timer);
       const delay = msUntilNextExpiry(mentions(), Date.now());
@@ -40,8 +51,8 @@ export function start(): () => void {
   };
 }
 
-function load(): Mention[] {
-  const stored = storage.read(STORAGE_KEYS.mentions);
+function load(from: StorageKey): Mention[] {
+  const stored = storage.read(from);
   if (!Array.isArray(stored)) return [];
   const upgraded = stored.map(upgradeMention).filter((m) => m !== null);
   return fresh(upgraded, Date.now());
@@ -51,12 +62,13 @@ export function flush() {
   clearTimeout(saveTimer);
   saveTimer = undefined;
   if (!unsaved) return;
-  storage.write(STORAGE_KEYS.mentions, unsaved);
+  storage.write(unsaved.key, unsaved.list);
   unsaved = undefined;
 }
 
 function save(list: Mention[]) {
-  unsaved = list;
+  if (!key) return list;
+  unsaved = { key, list };
   saveTimer ??= setTimeout(flush, SAVE_DELAY_MS);
   return list;
 }

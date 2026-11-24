@@ -75,6 +75,12 @@ pub fn save(db: &mut Connection, params: SaveWhispersParams) -> Result<()> {
             ])?;
         }
     }
+    tx.execute(
+        "DELETE FROM whispers WHERE id NOT IN (
+            SELECT id FROM whispers ORDER BY timestamp DESC LIMIT ?1
+        )",
+        [KEPT],
+    )?;
     tx.commit()?;
     Ok(())
 }
@@ -150,6 +156,19 @@ mod tests {
         ]);
         let ids: Vec<_> = list(&db).unwrap().into_iter().map(|w| w.id).collect();
         assert_eq!(ids, ["a", "b"]);
+    }
+
+    #[test]
+    fn saving_drops_whispers_beyond_the_newest_kept() {
+        let whispers = (0..=KEPT as u64)
+            .map(|t| whisper(&t.to_string(), "x", t))
+            .collect();
+        let db = saved(whispers);
+        let count: usize = db
+            .query_row("SELECT COUNT(*) FROM whispers", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, KEPT);
+        assert_eq!(list(&db).unwrap()[0].id, "1");
     }
 
     #[test]

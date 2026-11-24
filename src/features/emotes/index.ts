@@ -1,6 +1,7 @@
 export { start } from "./start.ts";
 export * as cheermotes from "./cheermotes.ts";
 export {
+  emoteMapFor,
   ensureGlobalLoaded,
   ensureUserLoaded,
   resetChannels,

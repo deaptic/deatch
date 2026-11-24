@@ -30,6 +30,19 @@ export function toLog(broadcasterId: string, entries: Iterable<FeedEntry>) {
   }
 }
 
+const REQUEUE_MAX = 2_000;
+
+export function requeueUnlogged(broadcasterId: string, entries: FeedEntry[]) {
+  const channel = new Map<string, FeedEntry>();
+  for (const entry of entries.slice(-REQUEUE_MAX)) {
+    channel.set(getEntryId(entry), entry);
+  }
+  for (const [id, entry] of unlogged.get(broadcasterId) ?? []) {
+    channel.set(id, entry);
+  }
+  unlogged.set(broadcasterId, channel);
+}
+
 export function takeUnlogged(): Map<string, FeedEntry[]> {
   const taken = new Map(
     [...unlogged].map(([id, entries]) => [id, [...entries.values()]]),

@@ -2,6 +2,7 @@ import { Search, Smile } from "lucide-solid";
 import {
   createEffect,
   createMemo,
+  createSelector,
   createSignal,
   For,
   on,
@@ -96,6 +97,7 @@ export default function EmotePicker(props: Props) {
     count: totalItems,
     rowAt: (i) => panelRef?.querySelector(`[data-emote-index="${i}"]`),
   });
+  const isActive = createSelector(activeIndex);
   const activeItem = createMemo(() => itemAt(sections(), activeIndex()));
 
   createEffect(on(emojiView, () => setActiveIndex(0), { defer: true }));
@@ -280,7 +282,7 @@ export default function EmotePicker(props: Props) {
                     setActiveIndex(idx);
                   }}
                   startIndex={section.startIndex}
-                  activeIndex={activeIndex()}
+                  isActive={isActive}
                   keyboard={keyboard()}
                 />
               </Section>

@@ -6,12 +6,14 @@ import {
   feedlogPage,
 } from "../../../platform/feedLog.ts";
 import type { InvokeOptions } from "../../../platform/invoke.ts";
-import { takeUnlogged } from "../store/index.ts";
+import { requeueUnlogged, takeUnlogged } from "../store/index.ts";
 import type { Cursor } from "../../../shared/types/index.ts";
 import type { FeedEntry } from "../types.ts";
 import { fromLog, toLogEntry } from "./feedLogPages.ts";
 
 const FLUSH_MS = 5_000;
+
+let session = 0;
 
 export function start(): () => void {
   const flushNow = () => void flush();
@@ -23,12 +25,15 @@ export function start(): () => void {
 }
 
 function write(broadcasterId: string, entries: FeedEntry[]): Promise<void> {
+  const writing = session;
   return feedlogAppend(
     { broadcasterId, entries: entries.map(toLogEntry) },
     { silent: true },
   ).then(
     () => {},
-    () => {},
+    () => {
+      if (writing === session) requeueUnlogged(broadcasterId, entries);
+    },
   );
 }
 
@@ -44,6 +49,7 @@ export async function flush(): Promise<void> {
 }
 
 export function discard() {
+  session++;
   takeUnlogged();
 }
 

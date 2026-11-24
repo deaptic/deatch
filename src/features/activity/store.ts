@@ -67,7 +67,16 @@ export function forChannel(broadcasterId: string): Activity {
   return byChannel()[broadcasterId] ?? NONE;
 }
 
+let changes = 0;
+const changedAt = new Map<string, number>();
+const fieldKey = (broadcasterId: string, field: string) =>
+  `${broadcasterId}:${field}`;
+
 export function update(broadcasterId: string, change: Partial<Activity>) {
+  changes++;
+  for (const field of Object.keys(change)) {
+    changedAt.set(fieldKey(broadcasterId, field), changes);
+  }
   setByChannel((prev) => ({
     ...prev,
     [broadcasterId]: { ...(prev[broadcasterId] ?? NONE), ...change },
@@ -142,9 +151,16 @@ type SourceName = keyof typeof SOURCES;
 function refresh(broadcasterId: string, name: SourceName): void {
   const source: Source = SOURCES[name];
   if (!hasPermission(broadcasterId, source.capability)) return;
+  const asked = changes;
   source
     .load(broadcasterId)
-    .then((change) => update(broadcasterId, change))
+    .then((change) => {
+      const fresh = Object.entries(change).filter(
+        ([field]) =>
+          (changedAt.get(fieldKey(broadcasterId, field)) ?? 0) <= asked,
+      );
+      if (fresh.length > 0) update(broadcasterId, Object.fromEntries(fresh));
+    })
     .catch(() => {});
 }
 

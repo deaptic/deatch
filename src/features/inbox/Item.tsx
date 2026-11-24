@@ -1,8 +1,8 @@
 import { Check, CornerDownRight } from "lucide-solid";
 import type { Mention, MentionReason } from "./types.ts";
 import { knownUser, user } from "../users/index.ts";
-import { thirdPartyEmoteMap } from "../emotes/index.ts";
-import { cheermotes } from "../emotes/index.ts";
+import { createResource } from "solid-js";
+import { cheermotes, emoteMapFor } from "../emotes/index.ts";
 import { feeds, Message } from "../feed/index.ts";
 import {
   feedDensity,
@@ -34,6 +34,10 @@ export default function Item(props: Props) {
   const m = () => props.mention;
   const channel = () => knownUser(m().broadcasterId);
   const link = createChannelLink(channel, props.onOpenChannel);
+  const [emotes] = createResource(
+    () => ({ id: m().broadcasterId, login: m().broadcasterLogin }),
+    emoteMapFor,
+  );
 
   return (
     <Card tone={m().unread ? "marked" : "plain"}>
@@ -85,7 +89,7 @@ export default function Item(props: Props) {
           density={feedDensity()}
           bare
           showTimestamp={feedShowTimestamp()}
-          emotes={thirdPartyEmoteMap()}
+          emotes={emotes() ?? {}}
           cheermotes={cheermotes.forChannel(m().broadcasterId)}
           badges={feeds[m().broadcasterId]?.badges ?? {}}
           userLogin={user()?.login ?? ""}

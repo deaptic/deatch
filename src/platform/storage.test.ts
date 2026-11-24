@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, expect, test, vi } from "vite-plus/test";
-import { STORAGE_KEYS, userEmotesKey } from "./storageKeys.ts";
+import { mentionsKey, STORAGE_KEYS, userEmotesKey } from "./storageKeys.ts";
 import { prune, read, removeWhere, write } from "./storage.ts";
 
-const KEY = STORAGE_KEYS.mentions;
+const KEY = STORAGE_KEYS.preferences;
 
 let items: Map<string, string>;
 
@@ -51,7 +51,11 @@ test("a failed write is logged, not thrown", () => {
 });
 
 test("prune removes only keys the app no longer reads", () => {
-  const kept = [...Object.values(STORAGE_KEYS), userEmotesKey("42")];
+  const kept = [
+    ...Object.values(STORAGE_KEYS),
+    userEmotesKey("42"),
+    mentionsKey("42"),
+  ];
   for (const key of [...kept, "chat_density", "cache:user_emotes", "badge_x"]) {
     items.set(key, "1");
   }

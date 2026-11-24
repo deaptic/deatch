@@ -89,6 +89,7 @@ pub async fn restore_session(twitch: &Twitch) -> Result<Option<User>> {
 }
 
 async fn start_session(twitch: &Twitch, token: UserToken) -> Result<User> {
+    session::persist(&token);
     let user = users::get_self(&twitch.with_token(token.clone())).await?;
     twitch.session.set(token).await;
     Ok(user)

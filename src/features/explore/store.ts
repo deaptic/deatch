@@ -100,13 +100,14 @@ async function loadPage(first: boolean): Promise<void> {
   const mine = ++generation;
   setPopular("fetching", true);
   try {
-    const { data, pagination } = await getStreams({
+    const page = await getStreams({
       gameIds: filters.category ? [filters.category.id] : undefined,
       language: exploreLanguage() || undefined,
       first: PAGE_SIZE,
       after: first ? undefined : (popular.cursor ?? undefined),
-    });
-    if (mine !== generation) return;
+    }).catch(() => null);
+    if (!page || mine !== generation) return;
+    const { data, pagination } = page;
     if (first) loadedAt = Date.now();
     if (data.length) users.get(data.map((s) => s.user.id)).catch(() => {});
     const streams = first ? data : [...popular.streams, ...data];
@@ -118,8 +119,6 @@ async function loadPage(first: boolean): Promise<void> {
         data.length === 0 ||
         streams.length >= MAX_STREAMS,
     });
-  } catch {
-    if (mine === generation) setPopular("exhausted", true);
   } finally {
     if (mine === generation) setPopular("fetching", false);
   }

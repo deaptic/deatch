@@ -2,7 +2,7 @@
 import { expect, test } from "vite-plus/test";
 import { unwrap } from "solid-js/store";
 import type { FeedEntry, FeedMessage } from "../types.ts";
-import { ensureFeed, takeUnlogged } from "./core.ts";
+import { ensureFeed, requeueUnlogged, takeUnlogged } from "./core.ts";
 import { appendItem } from "./write.ts";
 import { markMessageDeleted } from "./mutate.ts";
 
@@ -23,4 +23,19 @@ test("every added or changed entry waits for the log once, in its latest state",
   ]);
   expect((unwrap(taken[0]) as FeedMessage).deleted).toBe(true);
   expect(takeUnlogged().size).toBe(0);
+});
+
+test("entries from a failed write go back ahead of newer ones, newer state winning", () => {
+  ensureFeed("c1");
+  takeUnlogged();
+  appendItem("c1", message("b"));
+  appendItem("c1", message("c"));
+  requeueUnlogged("c1", [message("a"), message("b")]);
+
+  const taken = takeUnlogged().get("c1") ?? [];
+  expect(taken.map((e) => (e as FeedMessage).message_id)).toStrictEqual([
+    "a",
+    "b",
+    "c",
+  ]);
 });

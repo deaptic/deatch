@@ -101,6 +101,15 @@ pub(super) fn spawn_moderated(
     });
 }
 
+pub(super) fn spawn_token(twitch: Twitch, signals: mpsc::UnboundedSender<Signal>) {
+    tauri::async_runtime::spawn(async move {
+        let token = twitch.authed().await.map(|authed| authed.token);
+        if signals.send(Signal::Token(token)).is_err() {
+            log::debug!("eventsub task stopped, dropping token");
+        }
+    });
+}
+
 pub(super) fn spawn_deletes(twitch: Twitch, stale: Vec<(Subscription, String)>) {
     if stale.is_empty() {
         return;

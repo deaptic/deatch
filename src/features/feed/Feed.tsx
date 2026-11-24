@@ -43,6 +43,7 @@ import type { Density } from "../../shared/density.ts";
 import { dayLabel, layoutFeed } from "./layout.ts";
 import { type UserActions } from "../message/index.ts";
 import { at } from "../../shared/at.ts";
+import * as clock from "../../shared/clock.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 
 const JUMP_ATTEMPTS = 30;
@@ -407,7 +408,7 @@ export default function Feed(props: Props) {
                 <Show when={startsDay(getEntryId(entry))}>
                   <Divider
                     variant="tag"
-                    label={dayLabel(entry.timestamp, Date.now())}
+                    label={dayLabel(entry.timestamp, clock.now())}
                   />
                 </Show>
                 <Show when={hasDividerBefore(getEntryId(entry))}>

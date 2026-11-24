@@ -8,7 +8,14 @@ import { user } from "../users/index.ts";
 import type { UserRef } from "../../shared/types/index.ts";
 
 const [blocked, setBlocked] = createSignal<UserRef[]>([]);
-const blockedIds = () => new Set(blocked().map((u) => u.id));
+let cached: { list: UserRef[]; ids: Set<string> } | undefined;
+function blockedIds(): Set<string> {
+  const list = blocked();
+  if (cached?.list !== list) {
+    cached = { list, ids: new Set(list.map((u) => u.id)) };
+  }
+  return cached.ids;
+}
 export { blocked };
 
 export function isBlocked(userId: string): boolean {

@@ -1,5 +1,20 @@
 import { formatLocale, t } from "./i18n/index.ts";
 
+const dateFormats = new Map<string, Intl.DateTimeFormat>();
+
+export function dateFormat(
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat {
+  const key = `${locale}|${JSON.stringify(options)}`;
+  let format = dateFormats.get(key);
+  if (!format) {
+    format = new Intl.DateTimeFormat(locale, options);
+    dateFormats.set(key, format);
+  }
+  return format;
+}
+
 export type TimeFormat = "t" | "T" | "d" | "D" | "f" | "F" | "r" | "R" | "c";
 
 export class Time {
@@ -22,19 +37,17 @@ export class Time {
   }
 
   private timeShort(date: Date): string {
-    return new Intl.DateTimeFormat(this.locale, { timeStyle: "short" }).format(
-      date,
-    );
+    return dateFormat(this.locale, { timeStyle: "short" }).format(date);
   }
 
   private timeLong(date: Date): string {
-    return new Intl.DateTimeFormat(this.locale, {
+    return dateFormat(this.locale, {
       timeStyle: "medium",
     }).format(date);
   }
 
   private dateShort(date: Date): string {
-    return new Intl.DateTimeFormat(this.locale, {
+    return dateFormat(this.locale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -42,7 +55,7 @@ export class Time {
   }
 
   private dateLong(date: Date): string {
-    return new Intl.DateTimeFormat(this.locale, {
+    return dateFormat(this.locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -57,7 +70,7 @@ export class Time {
   }
 
   private dateTimeLong(date: Date): string {
-    const weekdayDate = new Intl.DateTimeFormat(this.locale, {
+    const weekdayDate = dateFormat(this.locale, {
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -127,7 +140,7 @@ export class Time {
   }
 }
 
-function startOfDay(input: number | Date): number {
+export function startOfDay(input: number | Date): number {
   const d = new Date(input);
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }

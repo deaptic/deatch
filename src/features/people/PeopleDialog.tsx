@@ -102,7 +102,10 @@ export default function PeopleDialog(props: Props) {
           fill
           value={tab()}
           options={tabs().map((x) => ({ value: x.tab, label: t(x.label) }))}
-          onChange={setPicked}
+          onChange={(next) => {
+            setPaged(null);
+            setPicked(next);
+          }}
         />
       </Show>
       <div class="h-112 min-h-0 flex flex-col gap-4">

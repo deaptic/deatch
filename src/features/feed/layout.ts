@@ -1,6 +1,6 @@
 import type { FeedEntry, FeedMessage } from "./types.ts";
 import { formatLocale, t } from "../../shared/i18n/index.ts";
-import { daysBetween } from "../../shared/time.ts";
+import { dateFormat, daysBetween, startOfDay } from "../../shared/time.ts";
 
 export const GROUP_WINDOW_MS = 7 * 60 * 1000;
 
@@ -38,10 +38,12 @@ export function layoutFeed(
   group: boolean,
 ): RowLayout[] {
   let groupStart = 0;
+  let prevDay = 0;
   return items.map((item, i) => {
     const prev = items[i - 1];
-    const dayStart =
-      !!prev && daysBetween(prev.timestamp, item.timestamp) !== 0;
+    const day = startOfDay(item.timestamp);
+    const dayStart = !!prev && day !== prevDay;
+    prevDay = day;
     const continued =
       group && !!prev && !dayStart && continues(prev, item, groupStart);
     if (!continued) groupStart = item.timestamp;
@@ -54,7 +56,7 @@ export function dayLabel(ts: number, now: number): string {
   if (days === 0) return t("FEED_DAY_TODAY_LABEL");
   if (days === 1) return t("FEED_DAY_YESTERDAY_LABEL");
   const sameYear = new Date(ts).getFullYear() === new Date(now).getFullYear();
-  return new Intl.DateTimeFormat(formatLocale(), {
+  return dateFormat(formatLocale(), {
     weekday: sameYear ? "long" : undefined,
     day: "numeric",
     month: "long",

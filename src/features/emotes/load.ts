@@ -52,7 +52,8 @@ import { selectedChannel } from "../navigation/index.ts";
 import type { Emote, EmoteEntry, UserEmote } from "../../shared/types/index.ts";
 import { createBackoff } from "../../shared/backoff.ts";
 import { loadCache, saveCache } from "../../platform/cache.ts";
-import { emoteMap } from "./emoteMap.ts";
+import { type EmoteMap, emoteMap } from "./emoteMap.ts";
+import * as sevenTv from "./sevenTv.ts";
 import { dedupeById } from "./emoteSections.ts";
 import * as storage from "../../platform/storage.ts";
 
@@ -191,6 +192,22 @@ export function loadChannel(channel: ChannelRef) {
   follower.show(channel, setFollowerEmotes);
   bttv.show(channel, setBttvChannel);
   ffz.show(channel, setFfzChannel);
+}
+
+export async function emoteMapFor(channel: ChannelRef): Promise<EmoteMap> {
+  const none = () => [];
+  const [bttvEmotes, ffzEmotes] = await Promise.all([
+    bttv.get(channel).catch(none),
+    ffz.get(channel).catch(none),
+  ]);
+  return emoteMap([
+    sevenTvGlobal(),
+    bttvGlobal(),
+    ffzGlobal(),
+    sevenTv.emotesOf(channel.id),
+    bttvEmotes,
+    ffzEmotes,
+  ]);
 }
 
 export function forgetChannel(channelId: string) {

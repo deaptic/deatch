@@ -25,9 +25,7 @@ impl Session {
     }
 
     pub async fn set(&self, token: UserToken) {
-        let mut slot = self.token.lock().await;
-        persist(&token);
-        *slot = Some(token);
+        *self.token.lock().await = Some(token);
     }
 
     pub async fn user_id(&self) -> Option<UserId> {
@@ -74,7 +72,7 @@ pub(super) fn is_final<E: std::error::Error + Send + Sync + 'static>(
     }
 }
 
-fn persist(token: &UserToken) {
+pub(super) fn persist(token: &UserToken) {
     if let Err(e) = credentials::save(token) {
         log::warn!("credentials not persisted: {e}");
     }

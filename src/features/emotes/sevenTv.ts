@@ -15,7 +15,6 @@ const requests = new Map<string, symbol>();
 const retries = new Map<string, ReturnType<typeof setTimeout>>();
 const RETRY_MS = 60_000;
 const byBroadcaster = new Map<string, Entry>();
-const bySetId = new Map<string, Entry>();
 let activeBroadcasterId: string | null = null;
 
 export async function subscribe(broadcasterId: string): Promise<void> {
@@ -46,9 +45,10 @@ export async function subscribe(broadcasterId: string): Promise<void> {
     setId: channel.emoteSetId,
     emotes: channel.emotes,
   };
+  const shared = usingSet(entry.setId).length > 0;
   byBroadcaster.set(broadcasterId, entry);
-  bySetId.set(entry.setId, entry);
   pushIfActive(entry);
+  if (shared) return;
   seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true }).catch(
     () => {},
   );
@@ -61,14 +61,18 @@ export function unsubscribe(broadcasterId: string): void {
   const entry = byBroadcaster.get(broadcasterId);
   if (!entry) return;
   byBroadcaster.delete(broadcasterId);
-  bySetId.delete(entry.setId);
   if (broadcasterId === activeBroadcasterId) setSevenTvChannel([]);
+  if (usingSet(entry.setId).length > 0) return;
   seventvUnsubscribeEmoteSet(
     { emoteSetId: entry.setId },
     {
       silent: true,
     },
   ).catch(() => {});
+}
+
+export function emotesOf(broadcasterId: string): EmoteEntry[] {
+  return byBroadcaster.get(broadcasterId)?.emotes ?? [];
 }
 
 export function setActive(broadcasterId: string | null): void {
@@ -79,11 +83,15 @@ export function setActive(broadcasterId: string | null): void {
 }
 
 export function applyUpdate(update: EmoteSetUpdated): void {
-  const entry = bySetId.get(update.id);
-  if (!entry) return;
-  entry.emotes = emoteSetUpdate.apply(entry.emotes, update);
-  pushIfActive(entry);
-  announce(entry.broadcasterId, update);
+  for (const entry of usingSet(update.id)) {
+    entry.emotes = emoteSetUpdate.apply(entry.emotes, update);
+    pushIfActive(entry);
+    announce(entry.broadcasterId, update);
+  }
+}
+
+function usingSet(setId: string): Entry[] {
+  return [...byBroadcaster.values()].filter((e) => e.setId === setId);
 }
 
 function pushIfActive(entry: Entry): void {

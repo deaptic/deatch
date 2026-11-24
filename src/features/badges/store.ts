@@ -19,6 +19,9 @@ import {
 import { selectedChannel } from "../navigation/index.ts";
 
 const GLOBAL_BADGES_TTL = 24 * 60 * 60 * 1000;
+const SOURCE_RETRY_MS = 60_000;
+
+const sourceFailedAt = new Map<string, number>();
 
 let globalBadgesPromise: Promise<BadgeSet[]> | null = null;
 
@@ -85,9 +88,11 @@ export function loadChannel(channel: ChannelRef) {
 
 export function loadSource(channel: ChannelRef) {
   if (sharedChatBadges[channel.id]) return;
+  const failedAt = sourceFailedAt.get(channel.id);
+  if (failedAt !== undefined && Date.now() - failedAt < SOURCE_RETRY_MS) return;
   channelBadges.get(channel).then(
     (map) => setSharedChatBadges(channel.id, map),
-    () => {},
+    () => sourceFailedAt.set(channel.id, Date.now()),
   );
 }
 
@@ -97,5 +102,6 @@ export function forgetChannel(channelId: string) {
 
 export function resetChannelCache() {
   channelBadges.clear();
+  sourceFailedAt.clear();
   clearSharedChatBadges();
 }

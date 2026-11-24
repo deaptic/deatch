@@ -14,7 +14,7 @@ type Props = {
   onToggleFavorite: (item: EmoteGridItem) => void;
   onHover: (index: number) => void;
   startIndex: number;
-  activeIndex: number;
+  isActive: (index: number) => boolean;
   keyboard: boolean;
 };
 
@@ -24,7 +24,7 @@ export default function EmoteGrid(props: Props) {
       <For each={props.items}>
         {(item, i) => {
           const idx = () => props.startIndex + i();
-          const active = () => idx() === props.activeIndex;
+          const active = () => props.isActive(idx());
           return (
             <button
               type="button"

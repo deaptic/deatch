@@ -114,8 +114,8 @@ export default function Composer(props: Props) {
         pushSentMessage(props.broadcasterId, text);
         history.reset();
         setMentionIdx(0);
-        setInput("");
-        props.onClearReply();
+        if (outgoing() === text) setInput("");
+        if (props.replyTo() === reply) props.onClearReply();
       }
     } finally {
       setSending(false);

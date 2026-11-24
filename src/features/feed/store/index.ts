@@ -1,4 +1,4 @@
-export { ensureFeed, feeds, takeUnlogged } from "./core.ts";
+export { ensureFeed, feeds, requeueUnlogged, takeUnlogged } from "./core.ts";
 export type { ChannelFeed } from "./core.ts";
 export * from "./read.ts";
 export * from "./write.ts";

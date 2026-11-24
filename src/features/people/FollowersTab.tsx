@@ -3,7 +3,6 @@ import {
   createResource,
   createSignal,
   For,
-  onMount,
   Show,
 } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
@@ -16,8 +15,7 @@ import { type FollowStatus, users } from "../users/index.ts";
 import Button from "../../kit/Button.tsx";
 import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
-
-const LOAD_MORE_PX = 400;
+import { createPaged } from "./createPaged.ts";
 
 type Check =
   | { kind: "missing" }
@@ -32,47 +30,22 @@ type Props = {
 };
 
 export default function FollowersTab(props: Props) {
-  const [followers, setFollowers] = createSignal<Follower[] | null>(null);
-  const [total, setTotal] = createSignal<number | null>(null);
-  const [cursor, setCursor] = createSignal<string | null>(null);
   const [checked, setChecked] = createSignal<string | null>(null);
-  let loading = false;
-
-  function load(after: string | null) {
-    if (loading) return;
-    loading = true;
-    getFollowers({ broadcasterId: props.broadcasterId, cursor: after })
-      .then((page) => {
-        setFollowers((list) => [
-          ...(after ? (list ?? []) : []),
-          ...page.followers,
-        ]);
-        setTotal(page.total);
-        setCursor(page.cursor);
-      })
-      .catch(() => setFollowers((list) => list ?? []))
-      .finally(() => {
-        loading = false;
-      });
-  }
-
-  onMount(() => load(null));
+  const paged = createPaged<Follower>((cursor) =>
+    getFollowers({ broadcasterId: props.broadcasterId, cursor }).then(
+      (page) => ({
+        items: page.followers,
+        cursor: page.cursor,
+        total: page.total,
+      }),
+    ),
+  );
+  const followers = paged.items;
 
   createEffect(() => {
-    const list = followers();
-    if (list)
-      props.onCount(
-        total() ?? list.length,
-        total() === null && cursor() !== null,
-      );
+    const c = paged.count();
+    if (c) props.onCount(c.count, c.more);
   });
-
-  function nearEnd(e: Event & { currentTarget: HTMLDivElement }) {
-    const el = e.currentTarget;
-    const next = cursor();
-    if (next && el.scrollHeight - el.scrollTop - el.clientHeight < LOAD_MORE_PX)
-      load(next);
-  }
 
   const [check] = createResource(checked, async (login): Promise<Check> => {
     const lookup = await users.findByLogin(login, { silent: true });
@@ -105,7 +78,10 @@ export default function FollowersTab(props: Props) {
         : t("USER_CARD_FOLLOW_UNKNOWN_STATUS");
 
   return (
-    <div class="flex-1 min-h-0 overflow-y-auto -mx-2 px-2" onScroll={nearEnd}>
+    <div
+      class="flex-1 min-h-0 overflow-y-auto -mx-2 px-2"
+      onScroll={paged.nearEnd}
+    >
       <Show when={login() && !loaded()}>
         <Show
           when={found()}

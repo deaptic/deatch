@@ -3,12 +3,13 @@ use std::time::{Duration, Instant};
 
 use tauri::async_runtime::JoinHandle;
 use tokio::sync::mpsc;
+use twitch_api::twitch_oauth2::UserToken;
 
 use super::super::moderation::events::ModeratedChannelsChanged;
 use super::super::{Authed, Twitch};
 use super::connection::{self, Notification};
 use super::events::{ChatState, ChatStatus, EventSubConnection, EventSubRecovered};
-use super::helix::{spawn_creates, spawn_deletes, spawn_moderated};
+use super::helix::{spawn_creates, spawn_deletes, spawn_moderated, spawn_token};
 use super::subscriptions::{
     Channels, ConnId, Created, Outcome, Subs, Subscription, Viewer, MAX_CONNECTIONS, PER_CONNECTION,
 };
@@ -38,6 +39,7 @@ pub(super) enum Signal {
         viewer: UserId,
         result: Result<Vec<UserRef>>,
     },
+    Token(Result<UserToken>),
 }
 
 pub(super) async fn run(
@@ -57,6 +59,7 @@ pub(super) async fn run(
         moderated_fetch: ModeratedFetch::Idle,
         connected: true,
         resume_at: None,
+        token_pending: false,
     };
     let mut moderated_refresh = tokio::time::interval_at(
         tokio::time::Instant::now() + MODERATED_REFRESH,
@@ -86,11 +89,16 @@ pub(super) async fn run(
                 Signal::Down { conn } => coordinator.subs.down(conn, Instant::now(), unix_ms()),
                 Signal::Revoked(sub_id) => coordinator.revoke(&sub_id),
                 Signal::Moderated { viewer, result } => coordinator.moderated(viewer, result),
+                Signal::Token(token) => {
+                    coordinator.apply(token);
+                    coordinator.publish();
+                    continue;
+                }
             },
             _ = sleep_until(coordinator.next_wake()) => coordinator.announce_disconnects(),
             _ = moderated_refresh.tick() => coordinator.moderated_stale = true,
         }
-        coordinator.sync().await;
+        coordinator.sync();
         coordinator.publish();
     }
     coordinator.close_all();
@@ -107,6 +115,7 @@ struct Coordinator<'a> {
     moderated_fetch: ModeratedFetch,
     connected: bool,
     resume_at: Option<Instant>,
+    token_pending: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -145,15 +154,31 @@ impl Coordinator<'_> {
         wake_at(due, self.resume_at)
     }
 
-    async fn sync(&mut self) {
-        let twitch = self.twitch;
-        self.resume_at = twitch.rate_limited_for().map(|wait| Instant::now() + wait);
-        if self.resume_at.is_some() {
-            self.report_connection();
+    fn sync(&mut self) {
+        if self.paused() || self.token_pending {
             return;
         }
-        let authed = match twitch.authed().await {
-            Ok(authed) => Some(authed),
+        self.token_pending = true;
+        spawn_token(self.twitch.clone(), self.signals.clone());
+    }
+
+    fn paused(&mut self) -> bool {
+        let wait = self.twitch.rate_limited_for();
+        self.resume_at = wait.map(|wait| Instant::now() + wait);
+        if self.resume_at.is_some() {
+            self.report_connection();
+        }
+        self.resume_at.is_some()
+    }
+
+    fn apply(&mut self, token: Result<UserToken>) {
+        self.token_pending = false;
+        if self.paused() {
+            return;
+        }
+        let twitch = self.twitch;
+        let authed = match token {
+            Ok(token) => Some(twitch.with_token(token)),
             Err(Error::NotAuthenticated) => None,
             Err(e) => {
                 log::warn!("eventsub sync postponed, token refresh failed: {e}");
