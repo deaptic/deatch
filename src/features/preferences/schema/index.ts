@@ -36,11 +36,8 @@ const SECTIONS = {
     autoShoutoutOnRaid: bool(false),
     actionsDisabled: bool(false),
   }),
-  advanced: object({
-    developerMode: bool(false),
-    showLogs: bool(false),
-    hardwareAcceleration: bool(true),
-  }),
+  advanced: object({ hardwareAcceleration: bool(true) }),
+  developer: object({ mode: bool(false), showLogs: bool(false) }),
   appearance: APPEARANCE,
   link: LINK,
   menu: object({ channels: object({ pinned: textList() }) }),

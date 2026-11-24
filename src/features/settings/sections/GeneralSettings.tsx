@@ -4,6 +4,7 @@ import Card from "../../../kit/Card.tsx";
 import Segmented from "../../../kit/Segmented.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
+import AdvancedCard from "./AdvancedCard.tsx";
 import {
   generalAlwaysOnTop,
   generalAutostart,
@@ -66,6 +67,7 @@ export default function GeneralSettings() {
           />
         </SettingsRow>
       </Card>
+      <AdvancedCard />
     </PageBody>
   );
 }

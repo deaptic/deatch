@@ -67,9 +67,9 @@ export default function NavItem(props: Props) {
       >
         <RowIndicator mark={props.active ? "selected" : "none"} />
         <span
-          class={`flex-1 min-w-0 h-10 flex items-center gap-2.5 overflow-hidden text-left rounded-md pressable group-active:pressed ${
+          class={`flex-1 min-w-0 h-10 px-2.5 flex items-center gap-2.5 overflow-hidden text-left rounded-md pressable group-active:pressed ${
             props.collapsed ? "" : "group-hover:bg-raised"
-          } ${props.collapsed ? "justify-center" : "px-2.5"} ${tone()}`}
+          } ${tone()}`}
         >
           {icon("[&>svg]:size-5")}
           <Show when={!props.collapsed}>

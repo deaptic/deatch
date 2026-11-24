@@ -22,7 +22,7 @@ import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import { TabVolume } from "../link/index.ts";
-import { advancedDeveloperMode, pinnedChannels } from "../preferences/index.ts";
+import { developerMode, pinnedChannels } from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import { pins } from "../rail/index.ts";
 import { hasUnread } from "../feed/index.ts";
@@ -200,7 +200,7 @@ export default function ChannelContextMenu(props: Props) {
         </Show>
       </Show>
 
-      <CopyPayloadItem show={advancedDeveloperMode()} data={props.ch} />
+      <CopyPayloadItem show={developerMode()} data={props.ch} />
       <Show when={props.place === "rail" && props.onLogout}>
         {(logout) => (
           <>

@@ -49,6 +49,14 @@ A store is a plain ES module, never a class; the module is the singleton.
   from `vite-plus/test`; they run in plain Node with no DOM, and a call that
   reaches Tauri fails.
 
+## Settings
+
+Every stored setting is one line in `preferences/schema/`, which gives its
+default, its checking, and its type. Adding a setting needs no migration.
+Renaming, moving, or removing one needs a new step at the end of
+`schema/migrations.ts` with the next version number; steps are never edited,
+reordered, or removed.
+
 ## UI
 
 Primitives live in `kit/`; feature components compose them without

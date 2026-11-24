@@ -9,10 +9,7 @@ import {
 } from "../menus/index.ts";
 import { BanModal, UserCard, WarnModal } from "../user-card/index.ts";
 import { users } from "../users/index.ts";
-import {
-  advancedDeveloperMode,
-  feedShowCopypasta,
-} from "../preferences/index.ts";
+import { developerMode, feedShowCopypasta } from "../preferences/index.ts";
 import type { FeedMessage } from "../feed/index.ts";
 import type { ChatOverlays as Overlays } from "./createChatOverlays.ts";
 
@@ -42,7 +39,7 @@ export default function ChatOverlays(props: Props) {
             msg={cm().msg}
             isMod={props.isMod}
             broadcasterId={props.broadcasterId}
-            developerMode={advancedDeveloperMode()}
+            developerMode={developerMode()}
             showCopypasta={feedShowCopypasta()}
             onClose={o().messageMenu.close}
             onReply={props.onReply}
@@ -71,7 +68,7 @@ export default function ChatOverlays(props: Props) {
             userDisplayName={uc().userDisplayName}
             isMod={props.isMod}
             broadcasterId={props.broadcasterId}
-            developerMode={advancedDeveloperMode()}
+            developerMode={developerMode()}
             onClose={o().userMenu.close}
             onModerate={(action, target) =>
               o().setModAction({ action, ...target })
@@ -112,7 +109,7 @@ export default function ChatOverlays(props: Props) {
             x={cm().x}
             y={cm().y}
             item={cm().item}
-            developerMode={advancedDeveloperMode()}
+            developerMode={developerMode()}
             onClose={o().eventMenu.close}
           />
         )}

@@ -1,4 +1,4 @@
-import { advancedShowLogs } from "../features/preferences/index.ts";
+import { developerShowLogs } from "../features/preferences/index.ts";
 import { addToast } from "../kit/toasts.ts";
 import { errorMessage } from "../shared/error.ts";
 import { listSize } from "../shared/listSize.ts";
@@ -22,7 +22,8 @@ export async function invokeCommand<A extends unknown[], T>(
     const ms = Math.round(performance.now() - start);
     if (!options.silent) {
       if (options.successMessage) addToast(options.successMessage, "success");
-      else if (advancedShowLogs()) addToast(name, "log", summarize(result, ms));
+      else if (developerShowLogs())
+        addToast(name, "log", summarize(result, ms));
     }
     return result;
   } catch (e) {

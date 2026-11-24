@@ -223,7 +223,7 @@ export default function AppearancePanel(props: Props) {
           icon={<Settings />}
           onClick={() => {
             props.onClose();
-            openSettings("appearance");
+            openSettings("messages");
           }}
         />
       </div>

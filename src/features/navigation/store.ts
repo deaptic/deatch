@@ -39,11 +39,11 @@ export type SettingsSection =
   | "appearance"
   | "link"
   | "keyboard"
-  | "advanced"
   | "messages"
   | "notifications"
   | "moderation"
-  | "triggers";
+  | "triggers"
+  | "developer";
 
 const [settingsSection, setSettingsSection] =
   createSignal<SettingsSection>("general");

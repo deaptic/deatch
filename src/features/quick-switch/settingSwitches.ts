@@ -101,15 +101,15 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
     set: prefs.setGeneralDiscordRichPresence,
   },
   {
-    section: "advanced",
-    label: "SETTINGS_ADVANCED_DEVELOPER_MODE_LABEL",
-    get: prefs.advancedDeveloperMode,
-    set: prefs.setAdvancedDeveloperMode,
+    section: "developer",
+    label: "SETTINGS_DEVELOPER_MODE_LABEL",
+    get: prefs.developerMode,
+    set: prefs.setDeveloperMode,
   },
   {
-    section: "advanced",
-    label: "SETTINGS_ADVANCED_SHOW_LOGS_LABEL",
-    get: prefs.advancedShowLogs,
-    set: prefs.setAdvancedShowLogs,
+    section: "developer",
+    label: "SETTINGS_DEVELOPER_SHOW_LOGS_LABEL",
+    get: prefs.developerShowLogs,
+    set: prefs.setDeveloperShowLogs,
   },
 ];

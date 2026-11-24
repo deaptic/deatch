@@ -1,23 +1,17 @@
 import { t } from "../../../shared/i18n/index.ts";
 import { createSignal } from "solid-js";
-import PageBody from "../../../kit/PageBody.tsx";
 import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import Dialog from "../../../kit/Dialog.tsx";
 import Button from "../../../kit/Button.tsx";
 import * as graphics from "../graphics.ts";
 import { history } from "../../feed/index.ts";
-import {
-  advancedDeveloperMode,
-  advancedHardwareAcceleration,
-  advancedShowLogs,
-  setAdvancedDeveloperMode,
-  setAdvancedShowLogs,
-} from "../../preferences/index.ts";
+import { advancedHardwareAcceleration } from "../../preferences/index.ts";
 import Transition from "../../../kit/Transition.tsx";
 
-export default function AdvancedSettings() {
+export default function AdvancedCard() {
   const [pendingRestart, setPendingRestart] = createSignal<{
     enabled: boolean;
   } | null>(null);
@@ -50,7 +44,7 @@ export default function AdvancedSettings() {
   }
 
   return (
-    <PageBody title={t("SETTINGS_ADVANCED_TITLE")}>
+    <>
       <Transition when={pendingRestart()}>
         {(pending) => (
           <Dialog
@@ -79,6 +73,7 @@ export default function AdvancedSettings() {
         )}
       </Transition>
       <Card>
+        <CardLabel>{t("SETTINGS_ADVANCED_TITLE")}</CardLabel>
         <SettingsRow
           label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_LABEL")}
           description={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_DESCRIPTION")}
@@ -90,6 +85,14 @@ export default function AdvancedSettings() {
             }
             onChange={(enabled) => setPendingRestart({ enabled })}
           />
+        </SettingsRow>
+        <SettingsRow
+          label={t("SETTINGS_ADVANCED_FEED_HISTORY_LABEL")}
+          description={t("SETTINGS_ADVANCED_FEED_HISTORY_DESCRIPTION")}
+        >
+          <Button variant="danger" onClick={() => setConfirmingClear(true)}>
+            {t("SETTINGS_ADVANCED_CLEAR_HISTORY_LABEL")}
+          </Button>
         </SettingsRow>
       </Card>
       <Transition when={confirmingClear()}>
@@ -120,38 +123,6 @@ export default function AdvancedSettings() {
           />
         )}
       </Transition>
-      <Card>
-        <SettingsRow
-          label={t("SETTINGS_ADVANCED_FEED_HISTORY_LABEL")}
-          description={t("SETTINGS_ADVANCED_FEED_HISTORY_DESCRIPTION")}
-        >
-          <Button variant="danger" onClick={() => setConfirmingClear(true)}>
-            {t("SETTINGS_ADVANCED_CLEAR_HISTORY_LABEL")}
-          </Button>
-        </SettingsRow>
-      </Card>
-      <Card>
-        <SettingsRow
-          label={t("SETTINGS_ADVANCED_DEVELOPER_MODE_LABEL")}
-          description={t("SETTINGS_ADVANCED_DEVELOPER_MODE_DESCRIPTION")}
-        >
-          <Toggle
-            label={t("SETTINGS_ADVANCED_DEVELOPER_MODE_LABEL")}
-            checked={advancedDeveloperMode()}
-            onChange={setAdvancedDeveloperMode}
-          />
-        </SettingsRow>
-        <SettingsRow
-          label={t("SETTINGS_ADVANCED_SHOW_LOGS_LABEL")}
-          description={t("SETTINGS_ADVANCED_SHOW_LOGS_DESCRIPTION")}
-        >
-          <Toggle
-            label={t("SETTINGS_ADVANCED_SHOW_LOGS_LABEL")}
-            checked={advancedShowLogs()}
-            onChange={setAdvancedShowLogs}
-          />
-        </SettingsRow>
-      </Card>
-    </PageBody>
+    </>
   );
 }

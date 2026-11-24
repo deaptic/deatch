@@ -1,7 +1,9 @@
 import { t } from "../../shared/i18n/index.ts";
 import { Search, Settings as SettingsIcon, X } from "lucide-solid";
 import { Dynamic } from "solid-js/web";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import {
+  createEffect,
   createSignal,
   For,
   type JSX,
@@ -23,11 +25,11 @@ import {
 } from "../navigation/index.ts";
 import GeneralSettings from "./sections/GeneralSettings.tsx";
 import AccountSettings from "./sections/AccountSettings.tsx";
+import DeveloperSettings from "./sections/DeveloperSettings.tsx";
 import NotificationsSettings from "./sections/NotificationsSettings.tsx";
 import ModerationSettings from "./sections/ModerationSettings.tsx";
 import { AppearanceSettings, MessagesSettings } from "../appearance/index.ts";
 import KeyboardSettings from "./sections/KeyboardSettings.tsx";
-import AdvancedSettings from "./sections/AdvancedSettings.tsx";
 import { TriggerSettings } from "../triggers/index.ts";
 import { LinkSettings } from "../link/index.ts";
 
@@ -37,11 +39,11 @@ const BODIES: Record<SettingsSection, () => JSX.Element> = {
   appearance: AppearanceSettings,
   link: LinkSettings,
   keyboard: KeyboardSettings,
-  advanced: AdvancedSettings,
   messages: MessagesSettings,
   notifications: NotificationsSettings,
   moderation: ModerationSettings,
   triggers: TriggerSettings,
+  developer: DeveloperSettings,
 };
 
 const SECTIONS = SETTINGS_SECTIONS.map((s) => ({
@@ -58,6 +60,14 @@ export default function Settings() {
   const [measured, setMeasured] = createSignal(false);
   const [query, setQuery] = createSignal("");
   const searching = () => query().trim() !== "";
+  createEffect(() => {
+    if (query())
+      onCleanup(
+        shortcuts.registerLocal("escape", () => {
+          setQuery("");
+        }),
+      );
+  });
   const currentLabel = () =>
     SECTIONS.find((s) => s.key === settingsSection())?.label ??
     "SETTINGS_TITLE";
@@ -93,7 +103,7 @@ export default function Settings() {
             fallback={
               <span
                 aria-label={t("SETTINGS_TITLE")}
-                class="flex-1 flex justify-center text-ink-faint"
+                class="px-2.5 flex text-ink-faint"
               >
                 <SettingsIcon class="size-5" />
               </span>
@@ -107,16 +117,20 @@ export default function Settings() {
         <For each={SETTINGS_GROUPS}>
           {(group) => (
             <div class="flex flex-col pt-2">
-              <Show
-                when={!collapsed()}
-                fallback={
-                  <div aria-hidden class="mx-4 my-1 h-px bg-line-soft" />
-                }
-              >
-                <span class="px-4.5 pt-1.5 pb-1 text-micro uppercase text-ink-faint">
-                  {t(group.label)}
-                </span>
-              </Show>
+              <div class="h-6 flex items-center">
+                <Show
+                  when={!collapsed() && group.label}
+                  fallback={
+                    <div aria-hidden class="flex-1 mx-4 h-px bg-line-soft" />
+                  }
+                >
+                  {(label) => (
+                    <span class="px-4.5 text-micro uppercase text-ink-faint truncate">
+                      {t(label())}
+                    </span>
+                  )}
+                </Show>
+              </div>
               <For each={SECTIONS.filter((s) => s.group === group.key)}>
                 {(s) => (
                   <NavItem

@@ -24,7 +24,7 @@ import {
 } from "../../features/navigation/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
 import {
-  advancedDeveloperMode,
+  developerMode,
   appearanceRailExpanded,
   setAppearanceRailExpanded,
 } from "../../features/preferences/index.ts";
@@ -104,7 +104,7 @@ export default function TitleBar(props: Props) {
         </div>
         <div data-tauri-drag-region class="flex-1 h-full" />
         <div class="flex items-stretch h-full">
-          <Show when={advancedDeveloperMode()}>
+          <Show when={developerMode()}>
             <TitleBarButton
               ref={diagnosticsBtn}
               label={t("TITLE_BAR_DIAGNOSTICS_LABEL")}
@@ -191,9 +191,7 @@ export default function TitleBar(props: Props) {
           />
         </Boundary>
       </Show>
-      <Transition
-        when={advancedDeveloperMode() && isOverlayOpen("diagnostics")}
-      >
+      <Transition when={developerMode() && isOverlayOpen("diagnostics")}>
         {() => (
           <Boundary silent>
             <Diagnostics

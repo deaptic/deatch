@@ -1,6 +1,6 @@
 import { afterEach, expect, test, vi } from "vite-plus/test";
 import { bool, custom, object, text } from "./fields.ts";
-import { migrate, moveFields } from "./migrations.ts";
+import { MIGRATIONS, migrate, moveFields } from "./migrations.ts";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -41,13 +41,28 @@ test("moved fields keep their values and leave the rest behind", () => {
 test("migrations run from the stored version, and a failing one is skipped", () => {
   vi.spyOn(console, "warn").mockImplementation(() => {});
   const steps = [
-    (s: Record<string, unknown>) => ({ ...s, first: true }),
-    () => {
-      throw new Error("bad");
+    {
+      version: 1,
+      run: (s: Record<string, unknown>) => ({ ...s, first: true }),
     },
-    (s: Record<string, unknown>) => ({ ...s, third: true }),
+    {
+      version: 2,
+      run: () => {
+        throw new Error("bad");
+      },
+    },
+    {
+      version: 3,
+      run: (s: Record<string, unknown>) => ({ ...s, third: true }),
+    },
   ];
   expect(migrate({}, 0, steps)).toStrictEqual({ first: true, third: true });
   expect(migrate({}, 2, steps)).toStrictEqual({ third: true });
   expect(migrate({}, 9, steps)).toStrictEqual({});
+});
+
+test("migration versions count up from 1 without gaps", () => {
+  expect(MIGRATIONS.map((step) => step.version)).toStrictEqual(
+    MIGRATIONS.map((_, i) => i + 1),
+  );
 });

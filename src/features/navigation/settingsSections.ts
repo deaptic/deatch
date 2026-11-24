@@ -2,11 +2,11 @@ import type { Component } from "solid-js";
 import {
   Ban,
   Bell,
+  Code,
   Eye,
   Keyboard,
   MessageSquare,
   Palette,
-  Settings2,
   SlidersHorizontal,
   UserRound,
   Zap,
@@ -14,11 +14,12 @@ import {
 import type { MessageKey } from "../../shared/i18n/index.ts";
 import type { SettingsSection } from "./store.ts";
 
-export type SettingsGroup = "app" | "chat";
+export type SettingsGroup = "app" | "chat" | "developer";
 
-export const SETTINGS_GROUPS: { key: SettingsGroup; label: MessageKey }[] = [
+export const SETTINGS_GROUPS: { key: SettingsGroup; label?: MessageKey }[] = [
   { key: "app", label: "SETTINGS_GROUP_APP_TITLE" },
   { key: "chat", label: "SETTINGS_GROUP_CHAT_TITLE" },
+  { key: "developer" },
 ];
 
 export const SETTINGS_SECTIONS: {
@@ -53,12 +54,6 @@ export const SETTINGS_SECTIONS: {
     icon: Keyboard,
   },
   {
-    key: "advanced",
-    group: "app",
-    label: "SETTINGS_ADVANCED_TITLE",
-    icon: Settings2,
-  },
-  {
     key: "messages",
     group: "chat",
     label: "SETTINGS_MESSAGES_TITLE",
@@ -81,5 +76,11 @@ export const SETTINGS_SECTIONS: {
     group: "chat",
     label: "SETTINGS_TRIGGERS_TITLE",
     icon: Zap,
+  },
+  {
+    key: "developer",
+    group: "developer",
+    label: "SETTINGS_DEVELOPER_TITLE",
+    icon: Code,
   },
 ];

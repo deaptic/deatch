@@ -33,13 +33,14 @@ test("the old single block is split into sections and moved settings keep their 
   items.set(
     STORAGE_KEYS.legacyPreferences,
     JSON.stringify({
-      advanced: { autostart: true, developerMode: true },
+      advanced: { autostart: true, developerMode: true, showLogs: true },
       feed: { showTimestamp: true },
     }),
   );
   load();
   expect(prefs.general.autostart).toBe(true);
-  expect(prefs.advanced.developerMode).toBe(true);
+  expect(prefs.developer.mode).toBe(true);
+  expect(prefs.developer.showLogs).toBe(true);
   expect(prefs.feed.showTimestamp).toBe(true);
   expect(items.has(STORAGE_KEYS.legacyPreferences)).toBe(false);
   expect(items.get(STORAGE_KEYS.preferencesVersion)).toBe(
@@ -53,9 +54,9 @@ test("the old single block is split into sections and moved settings keep their 
 test("an unreadable section resets alone and its text is kept aside", () => {
   items.set(STORAGE_KEYS.preferencesVersion, String(PREFERENCES_VERSION));
   items.set(preferencesKey("feed"), "{broken");
-  items.set(preferencesKey("advanced"), JSON.stringify({ showLogs: true }));
+  items.set(preferencesKey("developer"), JSON.stringify({ showLogs: true }));
   load();
-  expect(prefs.advanced.showLogs).toBe(true);
+  expect(prefs.developer.showLogs).toBe(true);
   expect(prefs.feed.showTimestamp).toBe(false);
   expect(items.get(preferencesBackupKey("feed"))).toBe("{broken");
 });
