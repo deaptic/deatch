@@ -20,7 +20,6 @@ import { t } from "../../shared/i18n/index.ts";
 import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
-import SubMenu from "../../kit/SubMenu.tsx";
 import CopyPayloadItem from "./CopyPayloadItem.tsx";
 import { TabVolume } from "../link/index.ts";
 import { advancedDeveloperMode, pinnedChannels } from "../preferences/index.ts";
@@ -31,8 +30,9 @@ import * as inbox from "../inbox/index.ts";
 import { user } from "../users/index.ts";
 import { selectedChannel } from "../navigation/index.ts";
 import { raid } from "../activity/index.ts";
+import { hasPermission } from "../permissions/index.ts";
+import { sendShoutout } from "../../platform/twitch/chat.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
-import ShoutoutSources, { shoutoutSources } from "./ShoutoutSources.tsx";
 import * as clipboard from "../../kit/clipboard.ts";
 import { channelUrl } from "../../shared/twitchUrl.ts";
 import type { User } from "../../shared/types/index.ts";
@@ -61,7 +61,12 @@ export default function ChannelContextMenu(props: Props) {
     hasUnread(props.ch.id) || inbox.unreadCountIn(props.ch.id) > 0;
   const self = () => user();
   const other = () => self() && props.ch.id !== self()?.id;
-  const canShoutout = () => shoutoutSources(props.ch).length > 0;
+  const shoutoutFrom = () => {
+    const from = selectedChannel();
+    return from && from.id !== props.ch.id && hasPermission(from.id, "moderate")
+      ? from
+      : null;
+  };
 
   return (
     <Menu x={props.x} y={props.y} align={props.align} onClose={props.onClose}>
@@ -167,7 +172,7 @@ export default function ChannelContextMenu(props: Props) {
         onClick={() => clipboard.copy(url())}
       />
 
-      <Show when={other() || canShoutout()}>
+      <Show when={other() || shoutoutFrom()}>
         <MenuDivider />
         <Show when={other()}>
           <MenuItem
@@ -179,10 +184,19 @@ export default function ChannelContextMenu(props: Props) {
             }}
           />
         </Show>
-        <Show when={canShoutout()}>
-          <SubMenu label={t("MENU_SHOUTOUT_LABEL")} icon={<Megaphone />}>
-            <ShoutoutSources target={props.ch} />
-          </SubMenu>
+        <Show when={shoutoutFrom()}>
+          {(from) => (
+            <MenuItem
+              label={t("MENU_SHOUTOUT_LABEL")}
+              icon={<Megaphone />}
+              onClick={() => {
+                sendShoutout({
+                  fromBroadcasterId: from().id,
+                  toBroadcasterId: props.ch.id,
+                }).catch(() => {});
+              }}
+            />
+          )}
         </Show>
       </Show>
 
