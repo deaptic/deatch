@@ -14,7 +14,7 @@ function set(broadcasterId: string, count: number): void {
   setCounts((prev) => ({ ...prev, [broadcasterId]: count }));
 }
 
-function load(broadcasterId: string): void {
+export function load(broadcasterId: string): void {
   getFollowerCount({ broadcasterId }, { silent: true })
     .then((count) => {
       if (count !== null) set(broadcasterId, count);

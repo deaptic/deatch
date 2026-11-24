@@ -5,6 +5,7 @@ import {
 } from "../../platform/twitch/streams.ts";
 import { users } from "../users/index.ts";
 import * as channelInfo from "./info.ts";
+import * as followers from "./followers.ts";
 import { user } from "../users/index.ts";
 import {
   followedLive,
@@ -76,6 +77,8 @@ function wantedIds(): (string | undefined)[] {
 }
 
 async function poll(viewerId: string) {
+  const selected = selectedChannel()?.id;
+  if (selected) followers.load(selected);
   const data = await loadLive(viewerId);
   if (user()?.id !== viewerId) return;
   setFollowedLive((prev) => data ?? prev ?? []);
