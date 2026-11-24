@@ -28,7 +28,7 @@ export {
 const SECTIONS = {
   general: object({
     alwaysOnTop: bool(false),
-    autostart: bool(false),
+    autostart: bool(true),
     discordRichPresence: bool(false),
     clock: oneOf(CLOCKS, "auto"),
   }),

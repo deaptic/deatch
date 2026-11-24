@@ -33,12 +33,12 @@ test("the old single block is split into sections and moved settings keep their 
   items.set(
     STORAGE_KEYS.legacyPreferences,
     JSON.stringify({
-      advanced: { autostart: true, developerMode: true, showLogs: true },
+      advanced: { autostart: false, developerMode: true, showLogs: true },
       feed: { showTimestamp: true },
     }),
   );
   load();
-  expect(prefs.general.autostart).toBe(true);
+  expect(prefs.general.autostart).toBe(false);
   expect(prefs.developer.mode).toBe(true);
   expect(prefs.developer.showLogs).toBe(true);
   expect(prefs.feed.showTimestamp).toBe(true);
@@ -47,7 +47,7 @@ test("the old single block is split into sections and moved settings keep their 
     String(PREFERENCES_VERSION),
   );
   expect(JSON.parse(items.get(preferencesKey("general")) ?? "")).toMatchObject({
-    autostart: true,
+    autostart: false,
   });
 });
 

@@ -35,35 +35,35 @@ export const SETTINGS_SECTIONS: {
     icon: SlidersHorizontal,
   },
   {
+    key: "appearance",
+    group: "app",
+    label: "SETTINGS_APPEARANCE_TITLE",
+    icon: Palette,
+  },
+  {
+    key: "notifications",
+    group: "app",
+    label: "SETTINGS_NOTIFICATIONS_TITLE",
+    icon: Bell,
+  },
+  {
     key: "account",
     group: "app",
     label: "SETTINGS_ACCOUNT_TITLE",
     icon: UserRound,
   },
   {
-    key: "appearance",
-    group: "app",
-    label: "SETTINGS_APPEARANCE_TITLE",
-    icon: Palette,
-  },
-  { key: "link", group: "app", label: "SETTINGS_LINK_TITLE", icon: Eye },
-  {
     key: "keyboard",
     group: "app",
     label: "SETTINGS_KEYBOARD_TITLE",
     icon: Keyboard,
   },
+  { key: "link", group: "app", label: "SETTINGS_LINK_TITLE", icon: Eye },
   {
     key: "messages",
     group: "chat",
     label: "SETTINGS_MESSAGES_TITLE",
     icon: MessageSquare,
-  },
-  {
-    key: "notifications",
-    group: "chat",
-    label: "SETTINGS_NOTIFICATIONS_TITLE",
-    icon: Bell,
   },
   {
     key: "moderation",
