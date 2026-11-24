@@ -11,11 +11,14 @@ use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System};
 
 const BROWSER_PID_TIMEOUT: Duration = Duration::from_secs(1);
 
-pub struct Monitor(Mutex<System>);
+pub struct Monitor(Mutex<Option<System>>);
 
 impl Default for Monitor {
     fn default() -> Self {
-        Self(Mutex::new(System::new()))
+        let system = System::new()
+            .inspect_err(|e| log::warn!("process stats unavailable: {e}"))
+            .ok();
+        Self(Mutex::new(system))
     }
 }
 
@@ -30,19 +33,21 @@ pub fn stats(monitor: &Monitor, twitch: &Twitch, browser: Option<u32>) -> AppSta
 
 impl Monitor {
     fn sample(&self, browser: Option<u32>) -> (ProcessStats, ProcessStats) {
-        let mut system = lock(&self.0);
-        let refresh = ProcessRefreshKind::nothing().with_memory().with_cpu();
-        system.refresh_processes_specifics(ProcessesToUpdate::All, true, refresh);
-        let samples: Vec<Sample> = system
-            .processes()
-            .values()
-            .map(|p| Sample {
-                pid: p.pid().as_u32(),
-                parent: p.parent().map(|parent| parent.as_u32()),
-                private_bytes: p.virtual_memory(),
-                cpu: p.cpu_usage(),
-            })
-            .collect();
+        let mut guard = lock(&self.0);
+        let samples: Vec<Sample> = guard.as_mut().map_or_else(Vec::new, |system| {
+            let refresh = ProcessRefreshKind::nothing().with_memory().with_cpu();
+            system.refresh_processes_specifics(ProcessesToUpdate::All, true, refresh);
+            system
+                .processes()
+                .values()
+                .map(|p| Sample {
+                    pid: p.pid().as_u32(),
+                    parent: p.parent().map(|parent| parent.as_u32()),
+                    private_bytes: p.virtual_memory(),
+                    cpu: p.cpu_usage(),
+                })
+                .collect()
+        });
         let cores = std::thread::available_parallelism().map_or(1, |n| n.get());
         split(std::process::id(), browser, &samples, cores as f32)
     }

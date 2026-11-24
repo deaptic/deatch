@@ -139,16 +139,15 @@ function TimerCard(props: {
             timer().enabled ? "" : "opacity-60"
           }`}
         >
-          <div class="relative flex flex-col">
+          <div class="flex flex-col gap-1">
             <Textarea
-              class="pb-7"
               aria-label={t("SETTINGS_TIMERS_MESSAGE_LABEL")}
               placeholder={t("SETTINGS_TIMERS_MESSAGE_PLACEHOLDER")}
               maxLength={MAX_MESSAGE_LENGTH}
               value={timer().message}
               onInput={(e) => update({ message: e.currentTarget.value })}
             />
-            <span class="pointer-events-none absolute bottom-2 right-3 text-micro text-ink-faint tabular-nums">
+            <span class="self-end text-micro text-ink-faint tabular-nums">
               {t("SETTINGS_TIMERS_LENGTH_VALUE", {
                 count: timer().message.length,
                 max: MAX_MESSAGE_LENGTH,

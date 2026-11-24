@@ -237,7 +237,7 @@ fn current_user_only() -> std::io::Result<SecurityDescriptor> {
 
 fn user_of(pid: u32) -> Option<Uid> {
     let pid = sysinfo::Pid::from_u32(pid);
-    let mut system = System::new();
+    let mut system = System::new().ok()?;
     system.refresh_processes_specifics(
         ProcessesToUpdate::Some(&[pid]),
         false,
