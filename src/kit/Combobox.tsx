@@ -20,6 +20,8 @@ type Props = {
   placeholder: string;
   ariaLabel: string;
   icon?: JSX.Element;
+  required?: boolean;
+  size?: "md" | "lg";
   onChange: (value: string) => void;
 };
 
@@ -51,6 +53,14 @@ export default function Combobox(props: Props) {
     setTyped(false);
   }
 
+  function press(e: MouseEvent) {
+    if ((e.target as Element).closest("[role=listbox], button")) return;
+    e.preventDefault();
+    input?.focus();
+    if (open()) hide();
+    else show();
+  }
+
   function pick(value: string) {
     props.onChange(value);
     hide();
@@ -61,10 +71,10 @@ export default function Combobox(props: Props) {
   });
 
   return (
-    <div class="relative">
+    <div class="relative flex flex-col" onMouseDown={press}>
       <Field
         ref={input}
-        size="lg"
+        size={props.size ?? "lg"}
         icon={props.icon}
         aria-label={props.ariaLabel}
         {...listbox.field}
@@ -72,7 +82,7 @@ export default function Combobox(props: Props) {
         value={open() ? query() : text()}
         trailing={
           <Show
-            when={props.value && !open()}
+            when={props.value && !props.required && !open()}
             fallback={<ChevronDown class="size-4 shrink-0 text-ink-soft" />}
           >
             <button
@@ -88,8 +98,6 @@ export default function Combobox(props: Props) {
             </button>
           </Show>
         }
-        onFocus={show}
-        onClick={show}
         onBlur={hide}
         onInput={(e) => {
           show();

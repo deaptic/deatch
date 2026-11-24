@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { daysBetween, Time } from "./time.ts";
+import { daysBetween, setClock, Time } from "./time.ts";
 
 const at = (daysAgo: number, h: number, m: number) => {
   const d = new Date();
@@ -62,4 +62,13 @@ test("long relative format keeps the three largest units", () => {
   expect(new Time(then.epochMilliseconds, "R").toString()).toBe(
     "2 years, 4 days, 5 hours ago",
   );
+});
+
+test("the chosen clock decides between 12 and 24 hour times", () => {
+  const afternoon = at(0, 13, 5);
+  setClock("24h");
+  expect(new Time(afternoon, "t").toString()).toContain("13");
+  setClock("12h");
+  expect(new Time(afternoon, "t").toString()).toMatch(/1.05\s?(pm|PM|p\.m\.)/);
+  setClock("auto");
 });

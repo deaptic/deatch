@@ -1,4 +1,17 @@
+import { createSignal } from "solid-js";
 import { formatLocale, t } from "./i18n/index.ts";
+
+export const CLOCKS = ["auto", "12h", "24h"] as const;
+export type Clock = (typeof CLOCKS)[number];
+
+const [clock, setClock] = createSignal<Clock>("auto");
+export { setClock };
+
+const HOUR_CYCLES: Record<Clock, Intl.DateTimeFormatOptions> = {
+  auto: {},
+  "12h": { hourCycle: "h12" },
+  "24h": { hourCycle: "h23" },
+};
 
 const dateFormats = new Map<string, Intl.DateTimeFormat>();
 
@@ -28,6 +41,7 @@ export class Time {
 
   readonly date: Date;
   readonly locale = formatLocale();
+  readonly hours = HOUR_CYCLES[clock()];
 
   constructor(
     input: number | string | Date,
@@ -37,12 +51,16 @@ export class Time {
   }
 
   private timeShort(date: Date): string {
-    return dateFormat(this.locale, { timeStyle: "short" }).format(date);
+    return dateFormat(this.locale, {
+      timeStyle: "short",
+      ...this.hours,
+    }).format(date);
   }
 
   private timeLong(date: Date): string {
     return dateFormat(this.locale, {
       timeStyle: "medium",
+      ...this.hours,
     }).format(date);
   }
 

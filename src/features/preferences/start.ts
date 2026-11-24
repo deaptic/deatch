@@ -16,6 +16,7 @@ import {
 } from "./schema/index.ts";
 import * as storage from "../../platform/storage.ts";
 import { setLocale } from "../../shared/i18n/index.ts";
+import { setClock } from "../../shared/time.ts";
 import { fromKeys } from "../../shared/fromKeys.ts";
 
 function readKept(key: StorageKey, name: string): unknown {
@@ -65,6 +66,7 @@ export function load(): void {
     storage.removeWhere((key) => key === STORAGE_KEYS.legacyPreferences);
   }
   setLocale(prefs.appearance.language);
+  setClock(prefs.general.clock);
 }
 
 export function start(): () => void {
@@ -73,6 +75,7 @@ export function start(): () => void {
       createEffect(() => saveSection(section));
     }
     createEffect(() => setLocale(prefs.appearance.language));
+    createEffect(() => setClock(prefs.general.clock));
     return dispose;
   });
 }

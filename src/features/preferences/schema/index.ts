@@ -3,7 +3,8 @@ import { APPEARANCE } from "./appearance.ts";
 import { FEED } from "./feed.ts";
 import { LINK } from "./link.ts";
 import { TRIGGERS } from "./triggers.ts";
-import { bool, object, text, textList, type Value } from "./fields.ts";
+import { bool, object, oneOf, text, textList, type Value } from "./fields.ts";
+import { CLOCKS } from "../../../shared/time.ts";
 
 export type { BadgePref, EventPref } from "./feed.ts";
 export { migrate, PREFERENCES_VERSION } from "./migrations.ts";
@@ -29,6 +30,7 @@ const SECTIONS = {
     alwaysOnTop: bool(false),
     autostart: bool(false),
     discordRichPresence: bool(false),
+    clock: oneOf(CLOCKS, "auto"),
   }),
   feed: FEED,
   notifications: object({ mentionSound: bool(true) }),
