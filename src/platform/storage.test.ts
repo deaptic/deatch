@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, test, vi } from "vite-plus/test";
 import { mentionsKey, STORAGE_KEYS, userEmotesKey } from "./storageKeys.ts";
 import { prune, read, removeWhere, write } from "./storage.ts";
 
-const KEY = STORAGE_KEYS.preferences;
+const KEY = STORAGE_KEYS.emoteUsage;
 
 let items: Map<string, string>;
 

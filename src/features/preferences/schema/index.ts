@@ -1,18 +1,13 @@
 import { RECENT_LIMIT } from "../recentChannels.ts";
-import { DEFAULT_COMPRESSOR } from "../../../shared/audio.ts";
-import { DEFAULTS as defaults } from "./defaults.ts";
-import { type AppearancePreferences, readAppearance } from "./appearance.ts";
-import {
-  BADGE_KEYS,
-  EVENT_KEYS,
-  type FeedPreferences,
-  readFeed,
-} from "./feed.ts";
-import { type LinkPreferences, readLink } from "./link.ts";
-import { readTriggers, type TriggerPreferences } from "./triggers.ts";
-import { bools, objectOr, showPrefs, strings } from "./read.ts";
+import { APPEARANCE } from "./appearance.ts";
+import { FEED } from "./feed.ts";
+import { LINK } from "./link.ts";
+import { TRIGGERS } from "./triggers.ts";
+import { bool, object, text, textList, type Value } from "./fields.ts";
 
 export type { BadgePref, EventPref } from "./feed.ts";
+export { migrate, PREFERENCES_VERSION } from "./migrations.ts";
+export { changesFrom } from "./changes.ts";
 export {
   BUILT_IN_TRIGGERS,
   type BuiltInTrigger,
@@ -29,63 +24,43 @@ export {
   TRIGGER_ROLES,
 } from "./triggers.ts";
 
-export type UserPreferences = {
-  feed: FeedPreferences;
-  notifications: { mentionSound: boolean };
-  moderation: { autoShoutoutOnRaid: boolean; actionsDisabled: boolean };
-  advanced: {
-    developerMode: boolean;
-    showLogs: boolean;
-    alwaysOnTop: boolean;
-    autostart: boolean;
-    discordRichPresence: boolean;
-    hardwareAcceleration: boolean;
-  };
-  appearance: AppearancePreferences;
-  link: LinkPreferences;
-  menu: { channels: { pinned: string[] } };
-  explore: { language: string; recent: string[] };
-  triggers: TriggerPreferences;
+const SECTIONS = {
+  general: object({
+    alwaysOnTop: bool(false),
+    autostart: bool(false),
+    discordRichPresence: bool(false),
+  }),
+  feed: FEED,
+  notifications: object({ mentionSound: bool(true) }),
+  moderation: object({
+    autoShoutoutOnRaid: bool(false),
+    actionsDisabled: bool(false),
+  }),
+  advanced: object({
+    developerMode: bool(false),
+    showLogs: bool(false),
+    hardwareAcceleration: bool(true),
+  }),
+  appearance: APPEARANCE,
+  link: LINK,
+  menu: object({ channels: object({ pinned: textList() }) }),
+  explore: object({
+    language: text(),
+    recent: textList({ limit: RECENT_LIMIT }),
+  }),
+  triggers: TRIGGERS,
 };
 
-export const DEFAULT_PREFERENCES: UserPreferences = {
-  ...defaults,
-  feed: {
-    ...defaults.feed,
-    events: showPrefs(EVENT_KEYS, defaults.feed.events),
-    badges: showPrefs(BADGE_KEYS, defaults.feed.badges),
-  },
-  link: { ...defaults.link, compressorSettings: DEFAULT_COMPRESSOR },
-};
+const PREFERENCES = object(SECTIONS);
 
-export function sanitize(raw: unknown): UserPreferences {
-  const stored = objectOr<UserPreferences>(raw);
-  const fallback = DEFAULT_PREFERENCES;
-  return structuredClone<UserPreferences>({
-    feed: readFeed(stored.feed, fallback.feed),
-    notifications: bools(stored.notifications, fallback.notifications),
-    moderation: bools(stored.moderation, fallback.moderation),
-    advanced: bools(stored.advanced, fallback.advanced),
-    appearance: readAppearance(stored.appearance, fallback.appearance),
-    link: readLink(stored.link, fallback.link),
-    menu: {
-      channels: {
-        pinned: strings(
-          stored.menu?.channels?.pinned,
-          fallback.menu.channels.pinned,
-        ),
-      },
-    },
-    explore: {
-      language:
-        typeof stored.explore?.language === "string"
-          ? stored.explore.language
-          : fallback.explore.language,
-      recent: strings(stored.explore?.recent, fallback.explore.recent).slice(
-        0,
-        RECENT_LIMIT,
-      ),
-    },
-    triggers: readTriggers(stored.triggers, fallback.triggers),
-  });
-}
+export type UserPreferences = Value<typeof PREFERENCES>;
+export type PreferencesSection = keyof UserPreferences;
+
+export const PREFERENCES_SECTIONS = Object.keys(
+  SECTIONS,
+) as PreferencesSection[];
+
+export const DEFAULT_PREFERENCES: UserPreferences = PREFERENCES.fallback();
+
+export const sanitize = (raw: unknown): UserPreferences =>
+  PREFERENCES.read(raw);

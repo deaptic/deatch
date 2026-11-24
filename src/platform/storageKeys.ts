@@ -1,5 +1,6 @@
 export const STORAGE_KEYS = {
-  preferences: "user_preferences",
+  legacyPreferences: "user_preferences",
+  preferencesVersion: "prefs:version",
   emoteFavorites: "emote_favorites",
   emoteUsage: "emote_usage",
   users: "cache:users",
@@ -9,20 +10,30 @@ export const STORAGE_KEYS = {
 
 const USER_EMOTES_PREFIX = "cache:user_emotes:";
 const MENTIONS_PREFIX = "mentions:";
+const PREFERENCES_PREFIX = "prefs:";
+const PREFERENCES_BACKUP_PREFIX = "prefs-unreadable:";
 
-type PerUserKey =
+type PrefixedKey =
   | `${typeof USER_EMOTES_PREFIX}${string}`
-  | `${typeof MENTIONS_PREFIX}${string}`;
+  | `${typeof MENTIONS_PREFIX}${string}`
+  | `${typeof PREFERENCES_PREFIX}${string}`
+  | `${typeof PREFERENCES_BACKUP_PREFIX}${string}`;
 
 export type StorageKey =
   | (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]
-  | PerUserKey;
+  | PrefixedKey;
 
 export const userEmotesKey = (userId: string): StorageKey =>
   `${USER_EMOTES_PREFIX}${userId}`;
 
 export const mentionsKey = (userId: string): StorageKey =>
   `${MENTIONS_PREFIX}${userId}`;
+
+export const preferencesKey = (section: string): StorageKey =>
+  `${PREFERENCES_PREFIX}${section}`;
+
+export const preferencesBackupKey = (section: string): StorageKey =>
+  `${PREFERENCES_BACKUP_PREFIX}${section}`;
 
 const fixedKeys: ReadonlySet<string> = new Set(Object.values(STORAGE_KEYS));
 
@@ -37,6 +48,8 @@ export function isStorageKey(key: string): key is StorageKey {
   return (
     fixedKeys.has(key) ||
     isUserEmotesKey(key) ||
-    hasUserId(key, MENTIONS_PREFIX)
+    hasUserId(key, MENTIONS_PREFIX) ||
+    hasUserId(key, PREFERENCES_PREFIX) ||
+    hasUserId(key, PREFERENCES_BACKUP_PREFIX)
   );
 }

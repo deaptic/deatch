@@ -26,6 +26,7 @@ export * from "./channels.ts";
 export * from "./notifications.ts";
 export * from "./moderation.ts";
 export * from "./advanced.ts";
+export * from "./general.ts";
 export * from "./appearance.ts";
 export * from "./explore.ts";
 export * from "./link.ts";

@@ -85,20 +85,20 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
   {
     section: "general",
     label: "SETTINGS_GENERAL_ALWAYS_ON_TOP_LABEL",
-    get: prefs.advancedAlwaysOnTop,
-    set: prefs.setAdvancedAlwaysOnTop,
+    get: prefs.generalAlwaysOnTop,
+    set: prefs.setGeneralAlwaysOnTop,
   },
   {
     section: "general",
     label: "SETTINGS_GENERAL_AUTOSTART_LABEL",
-    get: prefs.advancedAutostart,
-    set: prefs.setAdvancedAutostart,
+    get: prefs.generalAutostart,
+    set: prefs.setGeneralAutostart,
   },
   {
     section: "general",
     label: "SETTINGS_GENERAL_DISCORD_PRESENCE_LABEL",
-    get: prefs.advancedDiscordRichPresence,
-    set: prefs.setAdvancedDiscordRichPresence,
+    get: prefs.generalDiscordRichPresence,
+    set: prefs.setGeneralDiscordRichPresence,
   },
   {
     section: "advanced",

@@ -10,6 +10,23 @@ export function read(key: StorageKey): unknown {
   }
 }
 
+export function readText(key: StorageKey): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch (e) {
+    console.warn(`storage: ${key} not read`, e);
+    return null;
+  }
+}
+
+export function writeText(key: StorageKey, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    console.warn(`storage: ${key} not written`, e);
+  }
+}
+
 export function write(key: StorageKey, value: unknown): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));

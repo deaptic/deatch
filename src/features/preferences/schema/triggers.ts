@@ -1,6 +1,7 @@
 import type { Anchor } from "../../../shared/wordMatch.ts";
-import { fromKeys } from "../../../shared/fromKeys.ts";
-import { bool, objectOr, text } from "./read.ts";
+import { custom, flags, object, type Value } from "./fields.ts";
+
+const text = (raw: unknown) => (typeof raw === "string" ? raw : "");
 
 export const MIN_TRIGGER_COOLDOWN = 5;
 export const MAX_TRIGGER_COOLDOWN = 600;
@@ -56,11 +57,6 @@ export type Trigger = {
   otherwise: string;
   role: TriggerRole;
   count: number;
-};
-
-export type TriggerPreferences = {
-  builtIn: Record<BuiltInTrigger, boolean>;
-  custom: Trigger[];
 };
 
 function conditions(raw: unknown): Condition[] {
@@ -121,15 +117,12 @@ function trigger(item: unknown): Trigger[] {
   ];
 }
 
-export function readTriggers(
-  raw: unknown,
-  fallback: TriggerPreferences,
-): TriggerPreferences {
-  const stored = objectOr<TriggerPreferences>(raw);
-  return {
-    builtIn: fromKeys(BUILT_IN_TRIGGERS, (key) =>
-      bool(stored.builtIn?.[key], fallback.builtIn[key]),
-    ),
-    custom: Array.isArray(stored.custom) ? stored.custom.flatMap(trigger) : [],
-  };
-}
+export const TRIGGERS = object({
+  builtIn: flags(BUILT_IN_TRIGGERS, () => false),
+  custom: custom<Trigger[]>(
+    () => [],
+    (raw) => (Array.isArray(raw) ? raw.flatMap(trigger) : []),
+  ),
+});
+
+export type TriggerPreferences = Value<typeof TRIGGERS>;

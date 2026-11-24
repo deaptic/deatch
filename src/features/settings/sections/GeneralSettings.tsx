@@ -5,13 +5,13 @@ import Segmented from "../../../kit/Segmented.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import {
-  advancedAlwaysOnTop,
-  advancedAutostart,
-  advancedDiscordRichPresence,
+  generalAlwaysOnTop,
+  generalAutostart,
+  generalDiscordRichPresence,
   appearanceLanguage,
-  setAdvancedAlwaysOnTop,
-  setAdvancedAutostart,
-  setAdvancedDiscordRichPresence,
+  setGeneralAlwaysOnTop,
+  setGeneralAutostart,
+  setGeneralDiscordRichPresence,
   setAppearanceLanguage,
 } from "../../preferences/index.ts";
 
@@ -41,8 +41,8 @@ export default function GeneralSettings() {
         >
           <Toggle
             label={t("SETTINGS_GENERAL_AUTOSTART_LABEL")}
-            checked={advancedAutostart()}
-            onChange={setAdvancedAutostart}
+            checked={generalAutostart()}
+            onChange={setGeneralAutostart}
           />
         </SettingsRow>
         <SettingsRow
@@ -51,8 +51,8 @@ export default function GeneralSettings() {
         >
           <Toggle
             label={t("SETTINGS_GENERAL_ALWAYS_ON_TOP_LABEL")}
-            checked={advancedAlwaysOnTop()}
-            onChange={setAdvancedAlwaysOnTop}
+            checked={generalAlwaysOnTop()}
+            onChange={setGeneralAlwaysOnTop}
           />
         </SettingsRow>
         <SettingsRow
@@ -61,8 +61,8 @@ export default function GeneralSettings() {
         >
           <Toggle
             label={t("SETTINGS_GENERAL_DISCORD_PRESENCE_LABEL")}
-            checked={advancedDiscordRichPresence()}
-            onChange={setAdvancedDiscordRichPresence}
+            checked={generalDiscordRichPresence()}
+            onChange={setGeneralDiscordRichPresence}
           />
         </SettingsRow>
       </Card>
