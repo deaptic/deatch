@@ -10,7 +10,7 @@ import {
   warnUser,
 } from "../../../platform/twitch/moderation.ts";
 import { users } from "../../users/index.ts";
-import { raid } from "../../activity/index.ts";
+import { raid, refreshPinned } from "../../activity/index.ts";
 import {
   sendChatAnnouncement,
   sendShoutout,
@@ -167,6 +167,27 @@ export const twitchCommands: Command[] = [
         message: message as string,
         color: (color as AnnouncementColor | null) ?? undefined,
       });
+    },
+  },
+  {
+    name: "pin",
+    description: "COMMAND_PIN_DESCRIPTION",
+    role: "moderator",
+    options: [
+      {
+        name: "message",
+        description: "COMMAND_PIN_MESSAGE_LABEL",
+        type: "string",
+        required: true,
+      },
+    ],
+    execute: async ({ message }, ctx) => {
+      const outcome = await chat.send({
+        broadcasterId: ctx.broadcasterId,
+        message: message as string,
+        pin: true,
+      });
+      if (outcome !== "failed") refreshPinned(ctx.broadcasterId);
     },
   },
   {

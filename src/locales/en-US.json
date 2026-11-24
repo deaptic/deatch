@@ -94,6 +94,8 @@
   "COMMAND_MOD_USERNAME_LABEL": "User to make moderator",
   "COMMAND_MONITOR_DESCRIPTION": "Flag a user's messages for mods",
   "COMMAND_NO_MATCH_EMPTY": "Nothing matches {query}",
+  "COMMAND_PIN_DESCRIPTION": "Send a message and pin it for 20 minutes",
+  "COMMAND_PIN_MESSAGE_LABEL": "Message",
   "COMMAND_PURGE_DESCRIPTION": "Clear a user's messages",
   "COMMAND_PURGE_USERNAME_LABEL": "User to purge",
   "COMMAND_RAID_CHANNEL_LABEL": "Channel to raid",

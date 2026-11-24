@@ -8,6 +8,9 @@ import Transition from "../../kit/Transition.tsx";
 import { setChannelForm } from "../navigation/index.ts";
 import { knownUser } from "../users/index.ts";
 import { createChannelLink } from "../menus/index.ts";
+import { cheermotes, thirdPartyEmoteMap } from "../emotes/index.ts";
+import { mapFragment } from "../feed/index.ts";
+import { MessageText } from "../message/index.ts";
 import AdsRow from "./ui/rows/AdsRow.tsx";
 import CharityRow from "./ui/rows/CharityRow.tsx";
 import GoalsRow from "./ui/rows/GoalsRow.tsx";
@@ -91,7 +94,15 @@ export default function ActivityStrip(props: Props) {
             <Transition when={pinned()}>
               {(pin) => (
                 <PinnedRow
-                  pin={pin()}
+                  sender={pin().sender.displayName}
+                  text={
+                    <MessageText
+                      fragments={pin().fragments.map(mapFragment)}
+                      emotes={thirdPartyEmoteMap()}
+                      cheermotes={cheermotes.forChannel(props.broadcasterId)}
+                    />
+                  }
+                  endsAt={pin().endsAt}
                   now={clock.now()}
                   onJump={() => props.onJumpToMessage(pin().messageId)}
                   onUnpin={() =>

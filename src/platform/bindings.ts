@@ -44,7 +44,7 @@ export const commands = {
 	messageId: MessageId,
 	sender: UserRef,
 	pinnedBy: UserRef,
-	text: string,
+	fragments: MessageFragment[],
 	endsAt: string | null,
 } | null>("get_pinned_message", { params }),
 	pinMessage: (params: PinMessageParams) => __TAURI_INVOKE<null>("pin_message", { params }),
@@ -702,7 +702,7 @@ export type PinnedMessage = {
 	messageId: MessageId,
 	sender: UserRef,
 	pinnedBy: UserRef,
-	text: string,
+	fragments: MessageFragment[],
 	endsAt: string | null,
 };
 
@@ -867,6 +867,7 @@ export type SendChatMessageParams = {
 	broadcasterId: UserId,
 	message: string,
 	replyParentMessageId?: MessageId | null,
+	pin?: boolean,
 };
 
 export type SendMessageResult = {

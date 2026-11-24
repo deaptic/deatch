@@ -6,6 +6,7 @@ export {
   pin,
   unpin,
   refreshAds,
+  refreshPinned,
   resolveUnban,
   setShield,
   snoozeAd,

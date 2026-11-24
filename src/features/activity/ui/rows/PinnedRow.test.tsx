@@ -5,21 +5,14 @@ import PinnedRow from "./PinnedRow.tsx";
 
 afterEach(cleanup);
 
-const user = { id: "1", login: "alice", displayName: "Alice" };
-const pin = {
-  messageId: "m1",
-  sender: user,
-  pinnedBy: user,
-  text: "Hello there",
-  endsAt: null,
-};
-
 test("shows the pinned message and reports jump and unpin", () => {
   let jumped = 0;
   let unpinned = 0;
   const view = render(() => (
     <PinnedRow
-      pin={pin}
+      sender="Alice"
+      text="Hello there"
+      endsAt={null}
       now={0}
       onJump={() => jumped++}
       onUnpin={() => unpinned++}

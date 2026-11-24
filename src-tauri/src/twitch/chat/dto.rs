@@ -1,6 +1,8 @@
+use crate::history::dto::{EmoteRef, MentionRef, MessageFragment};
 use crate::twitch::client::ids::{EmoteId, EmoteSetId, MessageId, UserId};
 use crate::twitch::users::dto::UserRef;
 use serde::Serialize;
+use twitch_api::common::chat::Fragment;
 use twitch_api::helix::chat::{
     send_chat_message::{ChatMessageDropCode, ChatMessageDropReason, SendChatMessageResponse},
     BadgeSet as HelixBadgeSet, ChatBadge as HelixChatBadge, ChatSettings as HelixChatSettings,
@@ -358,13 +360,13 @@ mod tests {
     }
 }
 
-#[derive(Debug, Clone, Serialize, specta::Type)]
+#[derive(Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PinnedMessage {
     pub message_id: MessageId,
     pub sender: UserRef,
     pub pinned_by: UserRef,
-    pub text: String,
+    pub fragments: Vec<MessageFragment>,
     pub ends_at: Option<String>,
 }
 
@@ -378,8 +380,35 @@ impl From<PinnedChatMessage> for PinnedMessage {
                 p.pinned_by_user_login,
                 p.pinned_by_user_name,
             ),
-            text: p.message.text,
+            fragments: p
+                .message
+                .fragments
+                .into_iter()
+                .map(MessageFragment::from)
+                .collect(),
             ends_at: p.ends_at.map(|t| t.to_string()),
+        }
+    }
+}
+
+impl From<Fragment> for MessageFragment {
+    fn from(f: Fragment) -> Self {
+        match f {
+            Fragment::Emote { text, emote } => Self::Emote {
+                text,
+                emote: EmoteRef {
+                    id: EmoteId::from(emote.id.to_string()),
+                },
+            },
+            Fragment::Mention { text, mention } => Self::Mention {
+                text,
+                mention: MentionRef {
+                    user_login: mention.user_login.to_string(),
+                },
+            },
+            other => Self::Text {
+                text: other.text().to_string(),
+            },
         }
     }
 }

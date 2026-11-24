@@ -14,6 +14,7 @@ use twitch_api::extra::AnnouncementColor as HelixAnnouncementColor;
 use twitch_api::helix::chat::{
     send_a_shoutout::SendAShoutoutRequest,
     send_chat_announcement::{SendChatAnnouncementBody, SendChatAnnouncementRequest},
+    send_chat_message::{SendChatMessageBody, SendChatMessageRequest},
     update_chat_settings::{UpdateChatSettingsBody, UpdateChatSettingsRequest},
     GetChannelChatBadgesRequest, GetGlobalChatBadgesRequest, GetPinnedChatMessageRequest,
     GetUserEmotesRequest, PinChatMessageRequest, UnpinChatMessageRequest,
@@ -87,6 +88,8 @@ pub struct SendChatMessageParams {
     pub message: String,
     #[serde(default)]
     pub reply_parent_message_id: Option<MessageId>,
+    #[serde(default)]
+    pub pin: bool,
 }
 
 pub async fn send_chat_message(
@@ -95,27 +98,18 @@ pub async fn send_chat_message(
 ) -> Result<SendMessageResult> {
     let broadcaster_id = params.broadcaster_id.as_str();
     let sender_id = &twitch.token.user_id;
-    let message = params.message.as_str();
-    let response = match &params.reply_parent_message_id {
-        Some(parent) => {
-            twitch
-                .helix
-                .send_chat_message_reply(
-                    broadcaster_id,
-                    sender_id,
-                    parent.as_str(),
-                    message,
-                    &twitch.token,
-                )
-                .await?
-        }
-        None => {
-            twitch
-                .helix
-                .send_chat_message(broadcaster_id, sender_id, message, &twitch.token)
-                .await?
-        }
-    };
+    let mut body = SendChatMessageBody::new(broadcaster_id, sender_id, params.message.as_str());
+    if params.pin {
+        body = body.pin(true);
+    }
+    if let Some(parent) = &params.reply_parent_message_id {
+        body = body.reply_parent_message_id(parent.as_str());
+    }
+    let response = twitch
+        .helix
+        .req_post(SendChatMessageRequest::new(), body, &twitch.token)
+        .await?
+        .data;
     Ok(SendMessageResult::from(response))
 }
 
@@ -297,6 +291,7 @@ mod tests {
         let params: SendChatMessageParams =
             serde_json::from_value(json!({ "broadcasterId": "1", "message": "hi" })).unwrap();
         assert!(params.reply_parent_message_id.is_none());
+        assert!(!params.pin);
     }
 
     #[test]

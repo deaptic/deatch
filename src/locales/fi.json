@@ -94,6 +94,8 @@
   "COMMAND_MOD_USERNAME_LABEL": "Moderaattoriksi tuleva",
   "COMMAND_MONITOR_DESCRIPTION": "Merkitse käyttäjän viestit modeille",
   "COMMAND_NO_MATCH_EMPTY": "Ei osumia haulle {query}",
+  "COMMAND_PIN_DESCRIPTION": "Lähetä viesti ja kiinnitä se 20 minuutiksi",
+  "COMMAND_PIN_MESSAGE_LABEL": "Viesti",
   "COMMAND_PURGE_DESCRIPTION": "Tyhjennä käyttäjän viestit",
   "COMMAND_PURGE_USERNAME_LABEL": "Käyttäjä",
   "COMMAND_RAID_CHANNEL_LABEL": "Raidattava kanava",

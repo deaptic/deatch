@@ -1,6 +1,7 @@
 export { start } from "./start.ts";
 export { connectFailure } from "./entries/connectFailure.ts";
 export { feedEvent } from "./entries/feedEvent.ts";
+export { mapFragment } from "./entries/chat.ts";
 export { mentionsIn } from "./entries/mention.ts";
 export { textOf, withoutReplyMention } from "./entries/message.ts";
 export { default as Feed, type FeedApi } from "./Feed.tsx";
