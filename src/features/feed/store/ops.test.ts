@@ -1,4 +1,5 @@
 import { expect, test } from "vite-plus/test";
+import { FEED_CAP } from "./caps.ts";
 import type { FeedEntry } from "../types.ts";
 import { append, insert, prepend } from "./ops.ts";
 import { getEntryId } from "./entryId.ts";
@@ -10,8 +11,8 @@ const ids = (items: FeedEntry[]) => items.map(getEntryId);
 
 test("append drops duplicates", () => {
   const feed = [message("a", 1)];
-  expect(append(feed, message("a", 2), false)).toBe(false);
-  expect(append(feed, message("b", 2), false)).toBe(true);
+  expect(append(feed, message("a", 2), FEED_CAP)).toBe(false);
+  expect(append(feed, message("b", 2), FEED_CAP)).toBe(true);
   expect(ids(feed)).toStrictEqual(["a", "b"]);
 });
 
@@ -20,7 +21,7 @@ test("insert merges by timestamp and skips known ids", () => {
   const added = insert(
     feed,
     [message("c", 3), message("a", 1), message("b", 2)],
-    false,
+    FEED_CAP,
   );
   expect(ids(added)).toStrictEqual(["b", "c"]);
   expect(ids(feed)).toStrictEqual(["a", "b", "c", "d"]);
@@ -31,7 +32,7 @@ test("prepend puts older entries first, oldest to newest", () => {
   const added = prepend(
     feed,
     [message("b", 2), message("a", 1), message("c", 3)],
-    false,
+    FEED_CAP,
   );
   expect(ids(added)).toStrictEqual(["a", "b"]);
   expect(ids(feed)).toStrictEqual(["a", "b", "c"]);

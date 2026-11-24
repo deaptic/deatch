@@ -17,10 +17,10 @@ test("an older sighting never replaces a newer one", () => {
   expect(bucket.get("a")?.lastSeen).toBe(5);
 });
 
-test("an overflowing bucket keeps its most recent thousand", () => {
+test("an overflowing bucket keeps its most recent three hundred", () => {
   const bucket = new Map<string, Chatter>();
-  for (let i = 0; i <= 1200; i++) recordIn(bucket, chatter(`c${i}`, i));
-  expect(bucket.size).toBe(1000);
-  expect(bucket.has("c1200")).toBe(true);
-  expect(bucket.has("c200")).toBe(false);
+  for (let i = 0; i <= 400; i++) recordIn(bucket, chatter(`c${i}`, i));
+  expect(bucket.size).toBe(300);
+  expect(bucket.has("c400")).toBe(true);
+  expect(bucket.has("c100")).toBe(false);
 });

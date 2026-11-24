@@ -1,7 +1,7 @@
 import type { Chatter } from "./types.ts";
 
-const MAX_PER_CHANNEL = 1000;
-const PRUNE_SLACK = 200;
+const MAX_PER_CHANNEL = 300;
+const PRUNE_SLACK = 100;
 
 export function recordIn(bucket: Map<string, Chatter>, chatter: Chatter): void {
   const existing = bucket.get(chatter.id);

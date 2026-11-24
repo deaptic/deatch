@@ -14,6 +14,10 @@ import { type ChannelHooks, createHooks } from "./hooks.ts";
 const hooks = createHooks();
 let joined = new Map<string, Focus>();
 
+export function isBackground(broadcasterId: string): boolean {
+  return joined.get(broadcasterId) === "background";
+}
+
 export function onChannel(channelHooks: ChannelHooks): () => void {
   return hooks.add(channelHooks, joined.keys());
 }

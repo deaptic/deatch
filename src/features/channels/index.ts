@@ -1,4 +1,4 @@
-export { leaveAll, onChannel, start } from "./store.ts";
+export { isBackground, leaveAll, onChannel, start } from "./store.ts";
 export type { ChannelHooks } from "./hooks.ts";
 export * as channelInfo from "./info.ts";
 export {

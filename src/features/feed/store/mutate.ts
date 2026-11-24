@@ -1,5 +1,5 @@
 import { ensureFeed, feeds, setFeeds, toLog, updateFeed } from "./core.ts";
-import { enforceCaps } from "./caps.ts";
+import { enforceCap, FEED_CAP } from "./caps.ts";
 import type {
   AutomodHoldStatus,
   BadgeMap,
@@ -102,7 +102,7 @@ export function setBadges(broadcasterId: string, badges: BadgeMap) {
 export function trimToLatest(broadcasterId: string) {
   ensureFeed(broadcasterId);
   updateFeed(broadcasterId, (f) => {
-    enforceCaps(f.messages);
+    enforceCap(f.messages, FEED_CAP);
     f.paused = false;
   });
 }
