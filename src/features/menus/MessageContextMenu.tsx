@@ -39,6 +39,9 @@ type Props = {
 };
 
 export default function MessageContextMenu(props: Props) {
+  const pinnable = () =>
+    !props.msg.deleted &&
+    (!props.msg.source || props.msg.source.id === props.broadcasterId);
   return (
     <Menu x={props.x} y={props.y} onClose={props.onClose}>
       <MenuItem
@@ -69,30 +72,33 @@ export default function MessageContextMenu(props: Props) {
       </Show>
       <Show when={props.isMod}>
         <MenuDivider />
-        <Show
-          when={!props.pinned}
-          fallback={
-            <MenuItem
-              label={t("MENU_UNPIN_LABEL")}
-              icon={<PinOff />}
-              onClick={() => props.onUnpin()}
-            />
-          }
-        >
-          <SubMenu label={t("MENU_PIN_LABEL")} icon={<Pin />}>
-            <MenuItem
-              label={t("MENU_PIN_UNTIL_END_LABEL")}
-              onClick={() => props.onPin(null)}
-            />
-            <For each={PIN_DURATIONS}>
-              {(seconds) => (
-                <MenuItem
-                  label={formatDuration(seconds)}
-                  onClick={() => props.onPin(seconds)}
-                />
-              )}
-            </For>
-          </SubMenu>
+        <Show when={pinnable()}>
+          <Show
+            when={!props.pinned}
+            fallback={
+              <MenuItem
+                label={t("MENU_UNPIN_LABEL")}
+                icon={<PinOff />}
+                onClick={() => props.onUnpin()}
+              />
+            }
+          >
+            <SubMenu label={t("MENU_PIN_LABEL")} icon={<Pin />}>
+              <MenuItem
+                label={t("MENU_PIN_UNTIL_END_LABEL")}
+                onClick={() => props.onPin(null)}
+              />
+              <For each={PIN_DURATIONS}>
+                {(seconds) => (
+                  <MenuItem
+                    label={formatDuration(seconds)}
+                    onClick={() => props.onPin(seconds)}
+                  />
+                )}
+              </For>
+            </SubMenu>
+          </Show>
+          <MenuDivider />
         </Show>
         <MenuItem
           label={t("MENU_DELETE_MESSAGE_LABEL")}
