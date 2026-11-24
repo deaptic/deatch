@@ -1,5 +1,4 @@
 import { t } from "../../shared/i18n/index.ts";
-import { For } from "solid-js";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import SettingsRow from "../../kit/SettingsRow.tsx";
@@ -11,14 +10,22 @@ import {
   setFeedEvent,
   setFeedShowEvents,
 } from "../preferences/index.ts";
+import TypeChips from "./TypeChips.tsx";
 
 export default function ShownInChatCard() {
+  const items = () =>
+    EVENTS.map((e) => ({
+      key: e.key,
+      label: t(e.label),
+      description: t(e.description),
+    }));
   return (
     <Card>
       <CardLabel>{t("SETTINGS_APPEARANCE_SHOWN_IN_CHAT_TITLE")}</CardLabel>
       <SettingsRow
         label={t("SETTINGS_APPEARANCE_EVENTS_SHOW_LABEL")}
         description={t("SETTINGS_APPEARANCE_EVENTS_SHOW_DESCRIPTION")}
+        keywords={items().map((i) => i.label)}
       >
         <Toggle
           label={t("SETTINGS_APPEARANCE_EVENTS_SHOW_LABEL")}
@@ -26,18 +33,12 @@ export default function ShownInChatCard() {
           onChange={setFeedShowEvents}
         />
       </SettingsRow>
-      <For each={EVENTS}>
-        {(e) => (
-          <SettingsRow label={t(e.label)} description={t(e.description)}>
-            <Toggle
-              label={t(e.label)}
-              checked={feedEvents()[e.key].show !== false}
-              disabled={e.key !== "message" && !feedShowEvents()}
-              onChange={(v) => setFeedEvent(e.key, v)}
-            />
-          </SettingsRow>
-        )}
-      </For>
+      <TypeChips
+        items={items()}
+        isOn={(key) => feedEvents()[key].show !== false}
+        disabled={(key) => key !== "message" && !feedShowEvents()}
+        onToggle={setFeedEvent}
+      />
     </Card>
   );
 }

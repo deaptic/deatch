@@ -25,7 +25,6 @@ export default function MessagesCard() {
       >
         <Toggle
           label={t("SETTINGS_APPEARANCE_TIMESTAMPS_LABEL")}
-          disabled={feedDensity() === "comfortable"}
           checked={feedShowTimestamp()}
           onChange={setFeedShowTimestamp}
         />

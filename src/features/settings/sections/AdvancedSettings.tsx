@@ -9,16 +9,10 @@ import Button from "../../../kit/Button.tsx";
 import * as graphics from "../graphics.ts";
 import { history } from "../../feed/index.ts";
 import {
-  advancedAlwaysOnTop,
-  advancedAutostart,
   advancedDeveloperMode,
-  advancedDiscordRichPresence,
   advancedHardwareAcceleration,
   advancedShowLogs,
-  setAdvancedAlwaysOnTop,
-  setAdvancedAutostart,
   setAdvancedDeveloperMode,
-  setAdvancedDiscordRichPresence,
   setAdvancedShowLogs,
 } from "../../preferences/index.ts";
 import Transition from "../../../kit/Transition.tsx";
@@ -86,26 +80,6 @@ export default function AdvancedSettings() {
       </Transition>
       <Card>
         <SettingsRow
-          label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
-          description={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_DESCRIPTION")}
-        >
-          <Toggle
-            label={t("SETTINGS_ADVANCED_ALWAYS_ON_TOP_LABEL")}
-            checked={advancedAlwaysOnTop()}
-            onChange={setAdvancedAlwaysOnTop}
-          />
-        </SettingsRow>
-        <SettingsRow
-          label={t("SETTINGS_ADVANCED_AUTOSTART_LABEL")}
-          description={t("SETTINGS_ADVANCED_AUTOSTART_DESCRIPTION")}
-        >
-          <Toggle
-            label={t("SETTINGS_ADVANCED_AUTOSTART_LABEL")}
-            checked={advancedAutostart()}
-            onChange={setAdvancedAutostart}
-          />
-        </SettingsRow>
-        <SettingsRow
           label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_LABEL")}
           description={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_DESCRIPTION")}
         >
@@ -115,16 +89,6 @@ export default function AdvancedSettings() {
               pendingRestart()?.enabled ?? advancedHardwareAcceleration()
             }
             onChange={(enabled) => setPendingRestart({ enabled })}
-          />
-        </SettingsRow>
-        <SettingsRow
-          label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_LABEL")}
-          description={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_DESCRIPTION")}
-        >
-          <Toggle
-            label={t("SETTINGS_ADVANCED_DISCORD_PRESENCE_LABEL")}
-            checked={advancedDiscordRichPresence()}
-            onChange={setAdvancedDiscordRichPresence}
           />
         </SettingsRow>
       </Card>

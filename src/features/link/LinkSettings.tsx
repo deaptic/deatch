@@ -80,7 +80,7 @@ export default function LinkSection() {
           />
         </SettingsRow>
         <Show when={connected() && !hasAudio()}>
-          <p class="px-5 pb-4 text-small text-caution">
+          <p class="px-4 pb-3 text-small text-caution">
             {t("SETTINGS_LINK_UPDATE_EXTENSION_HINT")}
           </p>
         </Show>
@@ -114,7 +114,7 @@ export default function LinkSection() {
               );
             }}
           </For>
-          <div class="px-5 py-3 flex justify-end">
+          <div class="px-4 py-2.5 flex justify-end">
             <Button
               variant="ghost"
               size="sm"

@@ -5,6 +5,7 @@ import { SettingsQuery } from "./settingsQuery.ts";
 type Props = {
   label: string;
   description?: string;
+  keywords?: string[];
   stacked?: boolean;
   children: JSX.Element;
 };
@@ -13,10 +14,17 @@ export default function SettingsRow(props: Props) {
   const query = useContext(SettingsQuery);
 
   return (
-    <Show when={matchesQuery(query(), props.label, props.description)}>
+    <Show
+      when={matchesQuery(
+        query(),
+        props.label,
+        props.description,
+        ...(props.keywords ?? []),
+      )}
+    >
       <div
         data-match
-        class={`flex gap-x-6 gap-y-3 px-5 py-3 min-h-16 ${
+        class={`flex gap-x-6 gap-y-2 px-4 py-2.5 min-h-12 ${
           props.stacked
             ? "flex-col items-stretch"
             : "flex-wrap items-center justify-between"

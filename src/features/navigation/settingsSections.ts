@@ -1,32 +1,85 @@
 import type { Component } from "solid-js";
 import {
   Ban,
+  Bell,
   Eye,
   Keyboard,
-  Megaphone,
+  MessageSquare,
   Palette,
-  Settings,
-  UserX,
+  Settings2,
+  SlidersHorizontal,
+  UserRound,
   Zap,
 } from "lucide-solid";
 import type { MessageKey } from "../../shared/i18n/index.ts";
 import type { SettingsSection } from "./store.ts";
 
+export type SettingsGroup = "app" | "chat";
+
+export const SETTINGS_GROUPS: { key: SettingsGroup; label: MessageKey }[] = [
+  { key: "app", label: "SETTINGS_GROUP_APP_TITLE" },
+  { key: "chat", label: "SETTINGS_GROUP_CHAT_TITLE" },
+];
+
 export const SETTINGS_SECTIONS: {
   key: SettingsSection;
+  group: SettingsGroup;
   label: MessageKey;
   icon: Component<{ class?: string }>;
 }[] = [
   {
-    key: "notifications",
-    label: "SETTINGS_NOTIFICATIONS_TITLE",
-    icon: Megaphone,
+    key: "general",
+    group: "app",
+    label: "SETTINGS_GENERAL_TITLE",
+    icon: SlidersHorizontal,
   },
-  { key: "appearance", label: "SETTINGS_APPEARANCE_TITLE", icon: Palette },
-  { key: "link", label: "SETTINGS_LINK_TITLE", icon: Eye },
-  { key: "moderation", label: "SETTINGS_MODERATION_TITLE", icon: Ban },
-  { key: "blocked", label: "SETTINGS_BLOCKED_TITLE", icon: UserX },
-  { key: "triggers", label: "SETTINGS_TRIGGERS_TITLE", icon: Zap },
-  { key: "keyboard", label: "SETTINGS_KEYBOARD_TITLE", icon: Keyboard },
-  { key: "advanced", label: "SETTINGS_ADVANCED_TITLE", icon: Settings },
+  {
+    key: "account",
+    group: "app",
+    label: "SETTINGS_ACCOUNT_TITLE",
+    icon: UserRound,
+  },
+  {
+    key: "appearance",
+    group: "app",
+    label: "SETTINGS_APPEARANCE_TITLE",
+    icon: Palette,
+  },
+  { key: "link", group: "app", label: "SETTINGS_LINK_TITLE", icon: Eye },
+  {
+    key: "keyboard",
+    group: "app",
+    label: "SETTINGS_KEYBOARD_TITLE",
+    icon: Keyboard,
+  },
+  {
+    key: "advanced",
+    group: "app",
+    label: "SETTINGS_ADVANCED_TITLE",
+    icon: Settings2,
+  },
+  {
+    key: "messages",
+    group: "chat",
+    label: "SETTINGS_MESSAGES_TITLE",
+    icon: MessageSquare,
+  },
+  {
+    key: "notifications",
+    group: "chat",
+    label: "SETTINGS_NOTIFICATIONS_TITLE",
+    icon: Bell,
+  },
+  {
+    key: "moderation",
+    group: "chat",
+    label: "SETTINGS_MODERATION_TITLE",
+    icon: Ban,
+  },
+  {
+    key: "triggers",
+    group: "chat",
+    label: "SETTINGS_TRIGGERS_TITLE",
+    icon: Zap,
+  },
 ];

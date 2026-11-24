@@ -1,5 +1,5 @@
 import { t } from "../../shared/i18n/index.ts";
-import { Search, X } from "lucide-solid";
+import { Search, Settings as SettingsIcon, X } from "lucide-solid";
 import { Dynamic } from "solid-js/web";
 import {
   createSignal,
@@ -14,32 +14,34 @@ import NavItem from "../../kit/NavItem.tsx";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { SettingsQuery } from "../../kit/settingsQuery.ts";
-import InputPopover from "../../kit/InputPopover.tsx";
-import { SIDE_GAP } from "../../kit/Popover.tsx";
 import {
   setSettingsSection,
+  SETTINGS_GROUPS,
   SETTINGS_SECTIONS,
   type SettingsSection,
   settingsSection,
 } from "../navigation/index.ts";
+import GeneralSettings from "./sections/GeneralSettings.tsx";
+import AccountSettings from "./sections/AccountSettings.tsx";
 import NotificationsSettings from "./sections/NotificationsSettings.tsx";
 import ModerationSettings from "./sections/ModerationSettings.tsx";
-import { AppearanceSettings } from "../appearance/index.ts";
+import { AppearanceSettings, MessagesSettings } from "../appearance/index.ts";
 import KeyboardSettings from "./sections/KeyboardSettings.tsx";
 import AdvancedSettings from "./sections/AdvancedSettings.tsx";
 import { TriggerSettings } from "../triggers/index.ts";
 import { LinkSettings } from "../link/index.ts";
-import { BlockedUsersSettings } from "../blocks/index.ts";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
-  notifications: NotificationsSettings,
+  general: GeneralSettings,
+  account: AccountSettings,
   appearance: AppearanceSettings,
   link: LinkSettings,
-  moderation: ModerationSettings,
-  blocked: BlockedUsersSettings,
-  triggers: TriggerSettings,
   keyboard: KeyboardSettings,
   advanced: AdvancedSettings,
+  messages: MessagesSettings,
+  notifications: NotificationsSettings,
+  moderation: ModerationSettings,
+  triggers: TriggerSettings,
 };
 
 const SECTIONS = SETTINGS_SECTIONS.map((s) => ({
@@ -56,16 +58,9 @@ export default function Settings() {
   const [measured, setMeasured] = createSignal(false);
   const [query, setQuery] = createSignal("");
   const searching = () => query().trim() !== "";
-
-  const [searchAt, setSearchAt] = createSignal<{ x: number; y: number }>();
-  let searchButton: HTMLButtonElement | undefined;
-
-  function toggleSearchPopover() {
-    if (searchAt()) return setSearchAt(undefined);
-    if (!searchButton) return;
-    const rect = searchButton.getBoundingClientRect();
-    setSearchAt({ x: rect.right + SIDE_GAP, y: rect.top });
-  }
+  const currentLabel = () =>
+    SECTIONS.find((s) => s.key === settingsSection())?.label ??
+    "SETTINGS_TITLE";
 
   function open(section: SettingsSection) {
     setQuery("");
@@ -92,64 +87,82 @@ export default function Settings() {
           measured() ? "transition-all duration-settle ease-drawer" : ""
         } ${collapsed() ? "w-14" : "w-55"}`}
       >
-        <div class="flex flex-col gap-2 px-2 pt-4 pb-2">
-          <p
-            aria-hidden={collapsed()}
-            class={`px-2.5 text-micro uppercase text-ink-faint truncate whitespace-nowrap transition-opacity duration-settle ${
-              collapsed() ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            {t("SETTINGS_TITLE")}
-          </p>
+        <div class="shrink-0 h-14 px-2 flex items-center border-b border-line-soft">
           <Show
             when={!collapsed()}
             fallback={
-              <IconButton
-                ref={(el) => (searchButton = el)}
-                class="self-center"
-                label={t("SETTINGS_SEARCH_LABEL")}
-                size="sm"
-                pressed={searching()}
-                onClick={toggleSearchPopover}
+              <span
+                aria-label={t("SETTINGS_TITLE")}
+                class="flex-1 flex justify-center text-ink-faint"
               >
-                <Search class="size-4" />
-              </IconButton>
+                <SettingsIcon class="size-5" />
+              </span>
             }
           >
-            <Field
-              size="sm"
-              icon={<Search />}
-              value={query()}
-              onInput={(e) => setQuery(e.currentTarget.value)}
-              placeholder={t("SETTINGS_SEARCH_LABEL")}
-              aria-label={t("SETTINGS_SEARCH_LABEL")}
-              trailing={
-                <Show when={query()}>
-                  <IconButton
-                    label={t("SETTINGS_SEARCH_CLEAR_LABEL")}
-                    size="sm"
-                    onClick={() => setQuery("")}
-                  >
-                    <X class="size-4" />
-                  </IconButton>
-                </Show>
-              }
-            />
+            <p class="px-2.5 text-micro uppercase text-ink-faint truncate whitespace-nowrap">
+              {t("SETTINGS_TITLE")}
+            </p>
           </Show>
         </div>
-        <For each={SECTIONS}>
-          {(s) => (
-            <NavItem
-              label={t(s.label)}
-              icon={<Dynamic component={s.icon} />}
-              active={!searching() && settingsSection() === s.key}
-              collapsed={collapsed()}
-              onClick={() => open(s.key)}
-            />
+        <For each={SETTINGS_GROUPS}>
+          {(group) => (
+            <div class="flex flex-col pt-2">
+              <Show
+                when={!collapsed()}
+                fallback={
+                  <div aria-hidden class="mx-4 my-1 h-px bg-line-soft" />
+                }
+              >
+                <span class="px-4.5 pt-1.5 pb-1 text-micro uppercase text-ink-faint">
+                  {t(group.label)}
+                </span>
+              </Show>
+              <For each={SECTIONS.filter((s) => s.group === group.key)}>
+                {(s) => (
+                  <NavItem
+                    label={t(s.label)}
+                    icon={<Dynamic component={s.icon} />}
+                    active={!searching() && settingsSection() === s.key}
+                    collapsed={collapsed()}
+                    onClick={() => open(s.key)}
+                  />
+                )}
+              </For>
+            </div>
           )}
         </For>
       </nav>
       <div class="flex-1 min-w-0 flex flex-col min-h-0">
+        <header class="shrink-0 h-14 px-5 flex border-b border-line-soft">
+          <div class="w-full max-w-170 mx-auto flex items-center gap-4">
+            <h2 class="flex-1 min-w-0 truncate text-heading text-ink">
+              {searching()
+                ? t("SETTINGS_SEARCH_RESULTS_TITLE", { query: query().trim() })
+                : t(currentLabel())}
+            </h2>
+            <div class="w-64 shrink-0 flex flex-col">
+              <Field
+                size="md"
+                icon={<Search />}
+                value={query()}
+                onInput={(e) => setQuery(e.currentTarget.value)}
+                placeholder={t("SETTINGS_SEARCH_LABEL")}
+                aria-label={t("SETTINGS_SEARCH_LABEL")}
+                trailing={
+                  <Show when={query()}>
+                    <IconButton
+                      label={t("SETTINGS_SEARCH_CLEAR_LABEL")}
+                      size="sm"
+                      onClick={() => setQuery("")}
+                    >
+                      <X class="size-4" />
+                    </IconButton>
+                  </Show>
+                }
+              />
+            </div>
+          </div>
+        </header>
         <SettingsQuery.Provider value={query}>
           <Suspense>
             <Show
@@ -165,7 +178,7 @@ export default function Settings() {
               }
             >
               <div class="group flex-1 min-h-0 overflow-y-auto">
-                <div class="w-full max-w-260 mx-auto px-5 pt-6 pb-12 flex flex-col gap-8">
+                <div class="w-full max-w-180 mx-auto px-5 pt-5 pb-12 flex flex-col gap-6">
                   <For each={SECTIONS}>{(s) => <s.Section />}</For>
                   <p class="hidden group-not-has-data-match:block text-body text-ink-soft">
                     {t("SETTINGS_SEARCH_EMPTY", { query: query().trim() })}
@@ -176,20 +189,6 @@ export default function Settings() {
           </Suspense>
         </SettingsQuery.Provider>
       </div>
-      <Show when={searchAt()}>
-        {(at) => (
-          <InputPopover
-            x={at().x}
-            y={at().y}
-            value={query()}
-            placeholder={t("SETTINGS_SEARCH_LABEL")}
-            opener={() => searchButton}
-            onInput={setQuery}
-            onSubmit={() => setSearchAt(undefined)}
-            onClose={() => setSearchAt(undefined)}
-          />
-        )}
-      </Show>
     </div>
   );
 }

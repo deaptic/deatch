@@ -1,5 +1,4 @@
 import { t } from "../../shared/i18n/index.ts";
-import { For } from "solid-js";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import SettingsRow from "../../kit/SettingsRow.tsx";
@@ -11,14 +10,22 @@ import {
   setFeedBadge,
   setFeedShowBadges,
 } from "../preferences/index.ts";
+import TypeChips from "./TypeChips.tsx";
 
 export default function BadgesCard() {
+  const items = () =>
+    BADGE_CATEGORIES.map((c) => ({
+      key: c.key,
+      label: t(c.label),
+      description: t(c.description),
+    }));
   return (
     <Card>
       <CardLabel>{t("SETTINGS_APPEARANCE_BADGES_TITLE")}</CardLabel>
       <SettingsRow
         label={t("SETTINGS_APPEARANCE_BADGES_SHOW_LABEL")}
         description={t("SETTINGS_APPEARANCE_BADGES_SHOW_DESCRIPTION")}
+        keywords={items().map((i) => i.label)}
       >
         <Toggle
           label={t("SETTINGS_APPEARANCE_BADGES_SHOW_LABEL")}
@@ -26,18 +33,12 @@ export default function BadgesCard() {
           onChange={setFeedShowBadges}
         />
       </SettingsRow>
-      <For each={BADGE_CATEGORIES}>
-        {(c) => (
-          <SettingsRow label={t(c.label)} description={t(c.description)}>
-            <Toggle
-              label={t(c.label)}
-              checked={feedBadges()[c.key].show !== false}
-              disabled={!feedShowBadges()}
-              onChange={(v) => setFeedBadge(c.key, v)}
-            />
-          </SettingsRow>
-        )}
-      </For>
+      <TypeChips
+        items={items()}
+        isOn={(key) => feedBadges()[key].show !== false}
+        disabled={() => !feedShowBadges()}
+        onToggle={setFeedBadge}
+      />
     </Card>
   );
 }

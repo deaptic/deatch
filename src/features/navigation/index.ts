@@ -12,7 +12,7 @@ export {
   channelForm,
 } from "./overlays.ts";
 export * as view from "./start.ts";
-export { SETTINGS_SECTIONS } from "./settingsSections.ts";
+export { SETTINGS_GROUPS, SETTINGS_SECTIONS } from "./settingsSections.ts";
 export {
   activeView,
   selectedChannel,

@@ -34,17 +34,19 @@ export { commitSelectedChannel, selectedChannel };
 export const isSettingsOpen = () => activeView() === "settings";
 
 export type SettingsSection =
-  | "notifications"
-  | "moderation"
-  | "triggers"
+  | "general"
+  | "account"
   | "appearance"
   | "link"
   | "keyboard"
   | "advanced"
-  | "blocked";
+  | "messages"
+  | "notifications"
+  | "moderation"
+  | "triggers";
 
 const [settingsSection, setSettingsSection] =
-  createSignal<SettingsSection>("notifications");
+  createSignal<SettingsSection>("general");
 export { setSettingsSection, settingsSection };
 
 let visits = emptyVisits<User>();

@@ -2,6 +2,7 @@ import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 import { For, Show, useContext } from "solid-js";
 import PageBody from "../../../kit/PageBody.tsx";
 import Card from "../../../kit/Card.tsx";
+import CardLabel from "../../../kit/CardLabel.tsx";
 import Kbd from "../../../kit/Kbd.tsx";
 import { SettingsQuery } from "../../../kit/settingsQuery.ts";
 import { matchesQuery } from "../../../shared/textQuery.ts";
@@ -48,15 +49,13 @@ export default function KeyboardSettings() {
       <For each={GROUPS}>
         {(g) => (
           <Card>
-            <div class="px-5 pt-4 pb-2 text-small text-ink-faint">
-              {t(g.title)}
-            </div>
+            <CardLabel>{t(g.title)}</CardLabel>
             <For each={rowsFor(g.prefix)}>
               {(row) => (
                 <Show when={matchesQuery(query(), row.label, row.combo)}>
                   <div
                     data-match
-                    class="flex items-center justify-between gap-6 px-5 h-11"
+                    class="flex items-center justify-between gap-6 px-4 h-10"
                   >
                     <span class="text-body text-ink">{row.label}</span>
                     <Kbd combo={row.combo} />
