@@ -9,7 +9,12 @@ import {
 } from "../preferences/index.ts";
 import { users } from "../users/index.ts";
 import { user } from "../users/index.ts";
-import { feedEvent, layoutFeed, FeedRow } from "../feed/index.ts";
+import {
+  feedEvent,
+  FeedRow,
+  groupsMessages,
+  layoutFeed,
+} from "../feed/index.ts";
 
 type Me = { id: string; login: string; name: string; color: string };
 
@@ -68,7 +73,7 @@ export default function AppearancePreview() {
     color.loading ? [] : sampleFeed(me(), Date.now()),
   );
   const rows = createMemo(() =>
-    layoutFeed(entries(), feedDensity() === "comfortable"),
+    layoutFeed(entries(), groupsMessages(feedDensity())),
   );
   const [badgeMap] = createResource(badges.loadGlobal, { initialValue: {} });
 

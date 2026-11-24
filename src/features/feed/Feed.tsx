@@ -32,8 +32,6 @@ import {
   feedKeywords,
   feedShowDeletedContent,
   feedShowTimestamp,
-  feedGroupMessages,
-  feedShowAvatars,
 } from "../preferences/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import FeedRow from "./FeedRow.tsx";
@@ -43,6 +41,7 @@ import type { Density } from "../../shared/density.ts";
 import { dayLabel, layoutFeed } from "./layout.ts";
 import { type UserActions } from "../message/index.ts";
 import { at } from "../../shared/at.ts";
+import { groupsMessages } from "./grouping.ts";
 import * as clock from "../../shared/clock.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 
@@ -180,12 +179,7 @@ export default function Feed(props: Props) {
 
   const layout = createMemo(() => {
     const visible = entries().filter(isFeedEntryVisible);
-    const rows = layoutFeed(
-      visible,
-      props.density === "comfortable" &&
-        feedShowAvatars() &&
-        feedGroupMessages(),
-    );
+    const rows = layoutFeed(visible, groupsMessages(props.density));
     const dayStarts = new Set<string>();
     const continued = new Set<string>();
     visible.forEach((item, i) => {

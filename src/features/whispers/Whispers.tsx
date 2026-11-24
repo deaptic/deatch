@@ -8,15 +8,10 @@ import IconButton from "../../kit/IconButton.tsx";
 import { channelSearch } from "../channels/index.ts";
 import { ChatterPicture } from "../message/index.ts";
 import { conversationsOf, feedMessageOf, threadWith } from "./model.ts";
-import { layoutFeed, Message } from "../feed/index.ts";
+import { groupsMessages, layoutFeed, Message } from "../feed/index.ts";
 import { typeableEmotes } from "../emotes/index.ts";
 import { knownChatterColor, user as self } from "../users/index.ts";
-import {
-  feedDensity,
-  feedGroupMessages,
-  feedShowAvatars,
-  feedShowTimestamp,
-} from "../preferences/index.ts";
+import { feedDensity, feedShowTimestamp } from "../preferences/index.ts";
 import ConversationRow from "./ConversationRow.tsx";
 import WhisperComposer from "./WhisperComposer.tsx";
 import * as whispers from "./store.ts";
@@ -40,12 +35,7 @@ export default function Whispers() {
     ),
   );
   const rows = createMemo(() =>
-    layoutFeed(
-      messages(),
-      feedDensity() === "comfortable" &&
-        feedShowAvatars() &&
-        feedGroupMessages(),
-    ),
+    layoutFeed(messages(), groupsMessages(feedDensity())),
   );
 
   onMount(() => {
