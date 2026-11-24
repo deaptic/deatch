@@ -2,11 +2,11 @@ import { Index, Show } from "solid-js";
 import { Plus } from "lucide-solid";
 import Button from "../../kit/Button.tsx";
 import ReplyEditor from "./ReplyEditor.tsx";
-import MethodChips from "./MethodChips.tsx";
+import MethodChips from "./ui/MethodChips.tsx";
 import ResponseField, {
   type Insert,
   type Targeting,
-} from "./ResponseField.tsx";
+} from "./ui/ResponseField.tsx";
 import { BLANK_CONDITION } from "./conditionGroups.ts";
 import { moved } from "../../shared/moved.ts";
 import { removedAt, replacedAt } from "./listEdit.ts";

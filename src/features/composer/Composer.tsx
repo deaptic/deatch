@@ -24,8 +24,8 @@ import {
   isOverlayOpen,
   toggleOverlay,
 } from "../navigation/index.ts";
-import InputField, { type ComposerFieldApi } from "./InputField.tsx";
-import CharCounter from "./CharCounter.tsx";
+import InputField, { type ComposerFieldApi } from "./ui/InputField.tsx";
+import CharCounter from "./ui/CharCounter.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import ComposerCaption from "../../kit/ComposerCaption.tsx";
 const EmotePicker = lazy(emotes.loadEmotePicker);

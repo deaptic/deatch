@@ -3,7 +3,7 @@ import * as bans from "./bans.ts";
 import type { BanChoice } from "./banDurations.ts";
 import { user as currentUser } from "../users/index.ts";
 import { showsControls } from "../permissions/index.ts";
-import BanChoiceStrip from "./BanChoiceStrip.tsx";
+import BanChoiceStrip from "./ui/BanChoiceStrip.tsx";
 
 type Props = {
   chatterId: string;

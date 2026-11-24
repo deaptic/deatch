@@ -1,17 +1,21 @@
 import { onMount } from "solid-js";
 import * as raid from "./raid.ts";
+import { secondsLeft } from "./model.ts";
 import { activityShown } from "../preferences/index.ts";
 import * as activity from "./store.ts";
 import * as clock from "../../shared/clock.ts";
 import Transition from "../../kit/Transition.tsx";
-import AdsRow from "./rows/AdsRow.tsx";
-import CharityRow from "./rows/CharityRow.tsx";
-import GoalsRow from "./rows/GoalsRow.tsx";
-import PollRow from "./rows/PollRow.tsx";
-import PredictionRow from "./rows/PredictionRow.tsx";
-import RaidRow from "./rows/RaidRow.tsx";
-import ShieldRow from "./rows/ShieldRow.tsx";
-import UnbansRow from "./rows/UnbansRow.tsx";
+import { setChannelForm } from "../navigation/index.ts";
+import { knownUser } from "../users/index.ts";
+import { createChannelLink } from "../menus/index.ts";
+import AdsRow from "./ui/rows/AdsRow.tsx";
+import CharityRow from "./ui/rows/CharityRow.tsx";
+import GoalsRow from "./ui/rows/GoalsRow.tsx";
+import PollRow from "./ui/rows/PollRow.tsx";
+import PredictionRow from "./ui/rows/PredictionRow.tsx";
+import RaidRow from "./ui/rows/RaidRow.tsx";
+import ShieldRow from "./ui/rows/ShieldRow.tsx";
+import UnbansRow from "./ui/rows/UnbansRow.tsx";
 
 type Props = {
   broadcasterId: string;
@@ -59,16 +63,28 @@ export default function ActivityStrip(props: Props) {
         <div class="enter-expand">
           <div class="flex flex-col border-t border-line-soft divide-y divide-line-soft">
             <Transition when={shield()}>
-              {() => <ShieldRow broadcasterId={props.broadcasterId} />}
+              {() => (
+                <ShieldRow
+                  onTurnOff={() =>
+                    activity.setShield(props.broadcasterId, false)
+                  }
+                />
+              )}
             </Transition>
             <Transition when={unbans()}>
-              {(count) => <UnbansRow count={count()} />}
+              {(count) => (
+                <UnbansRow
+                  count={count()}
+                  onReview={() => setChannelForm("unbans")}
+                />
+              )}
             </Transition>
             <Transition when={ads()}>
               {(schedule) => (
                 <AdsRow
-                  broadcasterId={props.broadcasterId}
                   schedule={schedule()}
+                  now={clock.now()}
+                  onSnooze={() => activity.snoozeAd(props.broadcasterId)}
                 />
               )}
             </Transition>
@@ -80,21 +96,42 @@ export default function ActivityStrip(props: Props) {
             </Transition>
             <Transition when={poll()}>
               {(p) => (
-                <PollRow broadcasterId={props.broadcasterId} poll={p()} />
+                <PollRow
+                  poll={p()}
+                  now={clock.now()}
+                  onEnd={() => activity.endPoll(props.broadcasterId, p().id)}
+                />
               )}
             </Transition>
             <Transition when={prediction()}>
               {(p) => (
                 <PredictionRow
-                  broadcasterId={props.broadcasterId}
                   prediction={p()}
+                  now={clock.now()}
+                  onEnd={(end) =>
+                    activity.endPrediction(props.broadcasterId, p(), end)
+                  }
                 />
               )}
             </Transition>
             <Transition when={raiding()}>
-              {(r) => (
-                <RaidRow raid={r()} onOpenChannel={props.onOpenChannel} />
-              )}
+              {(r) => {
+                const link = createChannelLink(
+                  () => knownUser(r().target.id),
+                  () => props.onOpenChannel(r().target.id),
+                );
+                return (
+                  <>
+                    <RaidRow
+                      targetName={r().target.displayName}
+                      secondsLeft={secondsLeft(r().startedAt, clock.now())}
+                      targetLink={link}
+                      onCancel={() => raid.cancel().catch(() => {})}
+                    />
+                    {link.menu()}
+                  </>
+                );
+              }}
             </Transition>
           </div>
         </div>

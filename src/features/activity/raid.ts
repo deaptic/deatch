@@ -3,9 +3,8 @@ import { cancelRaid, startRaid } from "../../platform/twitch/raids.ts";
 import { sendShoutout } from "../../platform/twitch/chat.ts";
 import { hasPermission } from "../permissions/index.ts";
 import { moderationAutoShoutoutOnRaid } from "../preferences/index.ts";
+import { RAID_DURATION_MS } from "./model.ts";
 import type { UserRef } from "../../shared/types/index.ts";
-
-export const RAID_DURATION_MS = 90_000;
 
 export type PendingRaid = {
   fromId: string;

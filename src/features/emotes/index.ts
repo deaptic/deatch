@@ -10,7 +10,7 @@ export { type CheermoteMap, cheermoteTier } from "./cheermoteMap.ts";
 export { default as EmoteCard } from "./EmoteCard.tsx";
 export { type EmoteMap } from "./emoteMap.ts";
 export { emoteZoom } from "./emoteZoom.ts";
-export { default as HoverZoom } from "./HoverZoom.tsx";
+export { default as HoverZoom } from "./ui/HoverZoom.tsx";
 export {
   thirdPartyEmoteMap,
   typeableEmotes,

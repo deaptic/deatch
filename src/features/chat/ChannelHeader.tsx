@@ -33,7 +33,7 @@ import {
 } from "../navigation/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
 import { ActivityMenuButton, ActivityStrip } from "../activity/index.ts";
-import ConnectionBanner from "./ConnectionBanner.tsx";
+import ConnectionBanner from "./ui/ConnectionBanner.tsx";
 import { chatConnected } from "./connection.ts";
 import Transition from "../../kit/Transition.tsx";
 

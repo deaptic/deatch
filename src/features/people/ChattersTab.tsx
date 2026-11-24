@@ -4,7 +4,7 @@ import * as chatters from "./store.ts";
 import { groupChatters } from "./model.ts";
 import type { UserRef } from "../../shared/types/index.ts";
 import Loading from "../../kit/Loading.tsx";
-import PersonRow from "./ui/PersonRow.tsx";
+import PersonRow from "./PersonRow.tsx";
 
 const LOAD_MORE_PX = 400;
 

@@ -3,8 +3,8 @@ import { ListFilter, X } from "lucide-solid";
 import IconButton from "../../kit/IconButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import PopoverButton from "../../kit/PopoverButton.tsx";
-import Lead from "./Lead.tsx";
-import ResponseField, { type Targeting } from "./ResponseField.tsx";
+import Lead from "./ui/Lead.tsx";
+import ResponseField, { type Targeting } from "./ui/ResponseField.tsx";
 import { needsValue } from "./conditions.ts";
 import {
   type Condition,

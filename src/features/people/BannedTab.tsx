@@ -7,7 +7,7 @@ import { matchesPerson } from "./model.ts";
 import type { BannedUser, UserRef } from "../../shared/types/index.ts";
 import Button from "../../kit/Button.tsx";
 import Loading from "../../kit/Loading.tsx";
-import PersonRow from "./ui/PersonRow.tsx";
+import PersonRow from "./PersonRow.tsx";
 
 const LOAD_MORE_PX = 400;
 

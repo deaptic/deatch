@@ -52,3 +52,4 @@ export function createChannelLink(
 
   return { handlers, menu, cursor: onOpen ? "cursor-pointer" : "" };
 }
+export type ChannelLink = ReturnType<typeof createChannelLink>;

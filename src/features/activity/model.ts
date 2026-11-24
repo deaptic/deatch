@@ -99,3 +99,9 @@ export function withGoal(list: Goal[], goal: Goal): Goal[] {
   const at = list.findIndex((g) => g.id === goal.id);
   return at < 0 ? [...list, goal] : list.with(at, goal);
 }
+
+export const RAID_DURATION_MS = 90_000;
+
+export function secondsLeft(startedAt: number, now: number): number {
+  return Math.max(0, Math.ceil((RAID_DURATION_MS - (now - startedAt)) / 1000));
+}

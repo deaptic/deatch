@@ -6,7 +6,7 @@ export {
   BUILT_IN_TRIGGERS,
   CONDITION_OPS,
   TRIGGER_ROLES,
-} from "./schema.ts";
+} from "./schema/index.ts";
 export type {
   BadgePref,
   BuiltInTrigger,
@@ -18,7 +18,7 @@ export type {
   TriggerAction,
   TriggerRole,
   UserPreferences,
-} from "./schema.ts";
+} from "./schema/index.ts";
 export * from "./feed.ts";
 export * from "./users.ts";
 export * from "./keywords.ts";

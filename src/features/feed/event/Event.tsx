@@ -10,7 +10,7 @@ import {
   type UserActions,
 } from "../../message/index.ts";
 import Timestamp from "../../../kit/Timestamp.tsx";
-import FeedItem, { type ItemLayout } from "../item/index.ts";
+import FeedItem, { type ItemLayout } from "../ui/item/index.ts";
 import Actions from "./Actions.tsx";
 import * as details from "./details.ts";
 

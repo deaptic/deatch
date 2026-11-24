@@ -16,7 +16,7 @@ import Thumbnail from "../../kit/Thumbnail.tsx";
 import Chip from "../../kit/Chip.tsx";
 import ComposerBox from "../../kit/ComposerBox.tsx";
 import ComposerCaption from "../../kit/ComposerCaption.tsx";
-import CommandComposerSlot from "./CommandComposerSlot.tsx";
+import CommandComposerSlot from "./ui/CommandComposerSlot.tsx";
 import { createCommandComposer } from "./createCommandComposer.ts";
 
 type Popup = {

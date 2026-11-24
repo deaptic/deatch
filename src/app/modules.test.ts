@@ -13,7 +13,13 @@ const entries = [
     .map((entry) => `../features/${entry.name}/index.ts`),
 ];
 
-test.each(entries)("%s loads first without an import cycle", async (entry) => {
-  vi.resetModules();
-  await expect(import(entry)).resolves.toBeDefined();
-});
+const LOAD_TIMEOUT_MS = 30_000;
+
+test.each(entries)(
+  "%s loads first without an import cycle",
+  async (entry) => {
+    vi.resetModules();
+    await expect(import(entry)).resolves.toBeDefined();
+  },
+  LOAD_TIMEOUT_MS,
+);

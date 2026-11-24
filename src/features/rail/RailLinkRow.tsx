@@ -9,7 +9,7 @@ import { SIDE_GAP } from "../../kit/Popover.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";
 import LinkMenu from "./LinkMenu.tsx";
 import RailRow, { type SubTone } from "./RailRow.tsx";
-import RailTile, { type TileTone } from "./RailTile.tsx";
+import RailTile, { type TileTone } from "./ui/RailTile.tsx";
 
 type LinkStatus = {
   sub: string;

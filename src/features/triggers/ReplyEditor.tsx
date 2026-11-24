@@ -3,8 +3,8 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-solid";
 import Button from "../../kit/Button.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import ConditionRow from "./ConditionRow.tsx";
-import Lead from "./Lead.tsx";
-import ResponseField, { type Targeting } from "./ResponseField.tsx";
+import Lead from "./ui/Lead.tsx";
+import ResponseField, { type Targeting } from "./ui/ResponseField.tsx";
 import {
   addCondition,
   addGroup,

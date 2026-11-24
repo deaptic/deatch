@@ -8,7 +8,7 @@ import Textarea from "../../kit/Textarea.tsx";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Segmented from "../../kit/Segmented.tsx";
-import TriggerField from "./TriggerField.tsx";
+import TriggerField from "./ui/TriggerField.tsx";
 import Replies from "./Replies.tsx";
 import TriggerPreview from "./TriggerPreview.tsx";
 import { autofocus } from "../../shared/solid/focus.ts";

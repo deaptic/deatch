@@ -11,7 +11,7 @@ import Chip from "../../kit/Chip.tsx";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SearchPicker from "../../kit/SearchPicker.tsx";
-import PersonRow from "./ui/PersonRow.tsx";
+import PersonRow from "./PersonRow.tsx";
 
 type RoleLook = {
   role: Role;

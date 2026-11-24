@@ -3,7 +3,7 @@ import type { User } from "../../shared/types/index.ts";
 import { streamForUserId } from "../channels/index.ts";
 import { recentChannels } from "../preferences/index.ts";
 import { users } from "../users/index.ts";
-import ChannelTile from "./ui/ChannelTile.tsx";
+import ChannelTile from "./ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
 

@@ -10,7 +10,7 @@ import {
   userLink,
   userLinkHover,
 } from "../../message/index.ts";
-import FeedItem from "../item/index.ts";
+import FeedItem from "../ui/item/index.ts";
 import Source from "./Source.tsx";
 
 type Props = UserActions & {
