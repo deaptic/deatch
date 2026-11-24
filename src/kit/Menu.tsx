@@ -1,4 +1,4 @@
-import type { JSX } from "solid-js";
+import { type JSX, onCleanup, onMount } from "solid-js";
 import Popover from "./Popover.tsx";
 import { MenuClose } from "./menuClose.ts";
 import MenuHost from "./MenuHost.tsx";
@@ -22,6 +22,19 @@ function moveFocus(e: KeyboardEvent & { currentTarget: HTMLElement }) {
   items[step(from, items.length)]?.focus();
 }
 
+const LEAVE_CLOSE_MS = 400;
+const LEAVE_MARGIN_PX = 24;
+
+function isNear(el: HTMLElement, e: PointerEvent): boolean {
+  const r = el.getBoundingClientRect();
+  return (
+    e.clientX >= r.left - LEAVE_MARGIN_PX &&
+    e.clientX <= r.right + LEAVE_MARGIN_PX &&
+    e.clientY >= r.top - LEAVE_MARGIN_PX &&
+    e.clientY <= r.bottom + LEAVE_MARGIN_PX
+  );
+}
+
 export { MenuClose } from "./menuClose.ts";
 
 type Props = {
@@ -34,6 +47,25 @@ type Props = {
 };
 
 export default function Menu(props: Props) {
+  let menu: HTMLDivElement | undefined;
+  let leaving: ReturnType<typeof setTimeout> | undefined;
+
+  function track(e: PointerEvent) {
+    if (!menu) return;
+    if (isNear(menu, e)) {
+      clearTimeout(leaving);
+      leaving = undefined;
+    } else {
+      leaving ??= setTimeout(() => props.onClose(), LEAVE_CLOSE_MS);
+    }
+  }
+
+  onMount(() => window.addEventListener("pointermove", track));
+  onCleanup(() => {
+    window.removeEventListener("pointermove", track);
+    clearTimeout(leaving);
+  });
+
   return (
     <Popover
       x={props.x}
@@ -45,6 +77,7 @@ export default function Menu(props: Props) {
     >
       <MenuClose.Provider value={() => props.onClose()}>
         <div
+          ref={menu}
           role="menu"
           class="min-w-55 max-w-full p-1.5 flex flex-col"
           onKeyDown={moveFocus}
