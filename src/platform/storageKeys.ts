@@ -32,6 +32,13 @@ export const mentionsKey = (userId: string): StorageKey =>
 export const preferencesKey = (section: string): StorageKey =>
   `${PREFERENCES_PREFIX}${section}`;
 
+export function preferencesSectionOf(key: string): string | null {
+  if (key === STORAGE_KEYS.preferencesVersion) return null;
+  return hasUserId(key, PREFERENCES_PREFIX)
+    ? key.slice(PREFERENCES_PREFIX.length)
+    : null;
+}
+
 export const preferencesBackupKey = (section: string): StorageKey =>
   `${PREFERENCES_BACKUP_PREFIX}${section}`;
 

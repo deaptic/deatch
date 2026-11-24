@@ -12,12 +12,12 @@ import {
   type ChannelNavigation,
 } from "../features/navigation/index.ts";
 import {
-  generalAlwaysOnTop,
+  systemAlwaysOnTop,
   appearanceRailExpanded,
   appearanceZoom,
   linkAudioLink,
   resetAppearanceZoom,
-  setGeneralAlwaysOnTop,
+  setSystemAlwaysOnTop,
   setAppearanceRailExpanded,
   setLinkAudioLink,
   stepAppearanceZoom,
@@ -75,7 +75,7 @@ export function createAppShortcuts(
         return shortcuts.passUnless(leavePage());
       }),
       shortcuts.register("view::toggleAlwaysOnTop", () => {
-        setGeneralAlwaysOnTop(!generalAlwaysOnTop());
+        setSystemAlwaysOnTop(!systemAlwaysOnTop());
       }),
       shortcuts.register("feed::toggleDensity", toggleFeedDensity),
       shortcuts.register("view::zoomIn", () =>

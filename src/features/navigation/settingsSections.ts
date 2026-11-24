@@ -7,19 +7,21 @@ import {
   Keyboard,
   MessageSquare,
   Palette,
-  SlidersHorizontal,
+  Languages,
+  Monitor,
   UserRound,
   Zap,
 } from "lucide-solid";
 import type { MessageKey } from "../../shared/i18n/index.ts";
 import type { SettingsSection } from "./store.ts";
 
-export type SettingsGroup = "app" | "chat" | "developer";
+export type SettingsGroup = "you" | "experience" | "tools" | "end";
 
 export const SETTINGS_GROUPS: { key: SettingsGroup; label?: MessageKey }[] = [
-  { key: "app", label: "SETTINGS_GROUP_APP_TITLE" },
-  { key: "chat", label: "SETTINGS_GROUP_CHAT_TITLE" },
-  { key: "developer" },
+  { key: "you" },
+  { key: "experience", label: "SETTINGS_GROUP_EXPERIENCE_TITLE" },
+  { key: "tools", label: "SETTINGS_GROUP_TOOLS_TITLE" },
+  { key: "end" },
 ];
 
 export const SETTINGS_SECTIONS: {
@@ -29,57 +31,63 @@ export const SETTINGS_SECTIONS: {
   icon: Component<{ class?: string }>;
 }[] = [
   {
-    key: "general",
-    group: "app",
-    label: "SETTINGS_GENERAL_TITLE",
-    icon: SlidersHorizontal,
-  },
-  {
-    key: "appearance",
-    group: "app",
-    label: "SETTINGS_APPEARANCE_TITLE",
-    icon: Palette,
-  },
-  {
-    key: "notifications",
-    group: "app",
-    label: "SETTINGS_NOTIFICATIONS_TITLE",
-    icon: Bell,
-  },
-  {
     key: "account",
-    group: "app",
+    group: "you",
     label: "SETTINGS_ACCOUNT_TITLE",
     icon: UserRound,
   },
   {
-    key: "keyboard",
-    group: "app",
-    label: "SETTINGS_KEYBOARD_TITLE",
-    icon: Keyboard,
+    key: "notifications",
+    group: "you",
+    label: "SETTINGS_NOTIFICATIONS_TITLE",
+    icon: Bell,
   },
-  { key: "link", group: "app", label: "SETTINGS_LINK_TITLE", icon: Eye },
+  {
+    key: "appearance",
+    group: "experience",
+    label: "SETTINGS_APPEARANCE_TITLE",
+    icon: Palette,
+  },
   {
     key: "messages",
-    group: "chat",
+    group: "experience",
     label: "SETTINGS_MESSAGES_TITLE",
     icon: MessageSquare,
   },
   {
+    key: "language",
+    group: "experience",
+    label: "SETTINGS_LANGUAGE_TITLE",
+    icon: Languages,
+  },
+  {
+    key: "system",
+    group: "experience",
+    label: "SETTINGS_SYSTEM_TITLE",
+    icon: Monitor,
+  },
+  {
+    key: "keyboard",
+    group: "experience",
+    label: "SETTINGS_KEYBOARD_TITLE",
+    icon: Keyboard,
+  },
+  {
     key: "moderation",
-    group: "chat",
+    group: "tools",
     label: "SETTINGS_MODERATION_TITLE",
     icon: Ban,
   },
   {
     key: "triggers",
-    group: "chat",
+    group: "tools",
     label: "SETTINGS_TRIGGERS_TITLE",
     icon: Zap,
   },
+  { key: "link", group: "tools", label: "SETTINGS_LINK_TITLE", icon: Eye },
   {
     key: "developer",
-    group: "developer",
+    group: "end",
     label: "SETTINGS_DEVELOPER_TITLE",
     icon: Code,
   },

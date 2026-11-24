@@ -1,5 +1,7 @@
 import { t } from "../../shared/i18n/index.ts";
-import { Search, Settings as SettingsIcon, X } from "lucide-solid";
+import { LogOut, Search, Settings as SettingsIcon, X } from "lucide-solid";
+import * as session from "../login/index.ts";
+import { user } from "../users/index.ts";
 import { Dynamic } from "solid-js/web";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import {
@@ -23,7 +25,8 @@ import {
   type SettingsSection,
   settingsSection,
 } from "../navigation/index.ts";
-import GeneralSettings from "./sections/GeneralSettings.tsx";
+import LanguageSettings from "./sections/LanguageSettings.tsx";
+import SystemSettings from "./sections/SystemSettings.tsx";
 import AccountSettings from "./sections/AccountSettings.tsx";
 import DeveloperSettings from "./sections/DeveloperSettings.tsx";
 import NotificationsSettings from "./sections/NotificationsSettings.tsx";
@@ -34,7 +37,8 @@ import { TriggerSettings } from "../triggers/index.ts";
 import { LinkSettings } from "../link/index.ts";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
-  general: GeneralSettings,
+  language: LanguageSettings,
+  system: SystemSettings,
   account: AccountSettings,
   appearance: AppearanceSettings,
   link: LinkSettings,
@@ -115,22 +119,25 @@ export default function Settings() {
           </Show>
         </div>
         <For each={SETTINGS_GROUPS}>
-          {(group) => (
-            <div class="flex flex-col pt-2">
-              <div class="h-6 flex items-center">
-                <Show
-                  when={!collapsed() && group.label}
-                  fallback={
-                    <div aria-hidden class="flex-1 mx-4 h-px bg-line-soft" />
-                  }
-                >
-                  {(label) => (
-                    <span class="px-4.5 text-micro uppercase text-ink-faint truncate">
+          {(group, i) => (
+            <div class="flex flex-col">
+              <Show when={i() > 0} fallback={<div aria-hidden class="h-2" />}>
+                <div aria-hidden class="mx-4 my-2 h-px bg-line-soft" />
+              </Show>
+              <Show when={group.label}>
+                {(label) => (
+                  <div class="h-6 flex items-center">
+                    <span
+                      aria-hidden={collapsed()}
+                      class={`px-4.5 text-micro uppercase text-ink-faint truncate whitespace-nowrap ${
+                        collapsed() ? "opacity-0" : ""
+                      }`}
+                    >
                       {t(label())}
                     </span>
-                  )}
-                </Show>
-              </div>
+                  </div>
+                )}
+              </Show>
               <For each={SECTIONS.filter((s) => s.group === group.key)}>
                 {(s) => (
                   <NavItem
@@ -142,6 +149,16 @@ export default function Settings() {
                   />
                 )}
               </For>
+              <Show when={group.key === "end" && user()}>
+                <NavItem
+                  negative
+                  label={t("SETTINGS_SIGN_OUT_LABEL")}
+                  icon={<LogOut />}
+                  active={false}
+                  collapsed={collapsed()}
+                  onClick={() => void session.logout()}
+                />
+              </Show>
             </div>
           )}
         </For>

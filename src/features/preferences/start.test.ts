@@ -38,7 +38,7 @@ test("the old single block is split into sections and moved settings keep their 
     }),
   );
   load();
-  expect(prefs.general.autostart).toBe(false);
+  expect(prefs.system.autostart).toBe(false);
   expect(prefs.developer.mode).toBe(true);
   expect(prefs.developer.showLogs).toBe(true);
   expect(prefs.feed.showTimestamp).toBe(true);
@@ -46,7 +46,7 @@ test("the old single block is split into sections and moved settings keep their 
   expect(items.get(STORAGE_KEYS.preferencesVersion)).toBe(
     String(PREFERENCES_VERSION),
   );
-  expect(JSON.parse(items.get(preferencesKey("general")) ?? "")).toMatchObject({
+  expect(JSON.parse(items.get(preferencesKey("system")) ?? "")).toMatchObject({
     autostart: false,
   });
 });
@@ -64,5 +64,41 @@ test("an unreadable section resets alone and its text is kept aside", () => {
 test("sections at their defaults are saved empty", () => {
   load();
   expect(items.get(preferencesKey("notifications"))).toBe("{}");
-  expect(items.get(preferencesKey("general"))).toBe("{}");
+  expect(items.get(preferencesKey("system"))).toBe("{}");
+});
+
+test("settings saved before the pages were reorganised move to their pages and old sections go", () => {
+  items.set(STORAGE_KEYS.preferencesVersion, "2");
+  items.set(
+    preferencesKey("general"),
+    JSON.stringify({ alwaysOnTop: true, clock: "24h" }),
+  );
+  items.set(
+    preferencesKey("advanced"),
+    JSON.stringify({ hardwareAcceleration: false }),
+  );
+  items.set(
+    preferencesKey("appearance"),
+    JSON.stringify({ language: "fi", theme: "dark" }),
+  );
+  items.set(
+    preferencesKey("feed"),
+    JSON.stringify({ keywords: ["drop*"], showTimestamp: true }),
+  );
+  items.set(
+    preferencesKey("streamer"),
+    JSON.stringify({ on: true, auto: false }),
+  );
+  load();
+  expect(prefs.system.alwaysOnTop).toBe(true);
+  expect(prefs.system.hardwareAcceleration).toBe(false);
+  expect(prefs.language).toStrictEqual({ app: "fi", clock: "24h" });
+  expect(prefs.appearance.theme).toBe("dark");
+  expect(prefs.notifications.keywords).toStrictEqual(["drop*"]);
+  expect(prefs.feed.showTimestamp).toBe(true);
+  expect(prefs.notifications.streamerMode).toBe(true);
+  expect(prefs.notifications.streamerAuto).toBe(false);
+  for (const retired of ["general", "advanced", "streamer"]) {
+    expect(items.has(preferencesKey(retired))).toBe(false);
+  }
 });

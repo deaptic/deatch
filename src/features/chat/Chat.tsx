@@ -27,7 +27,7 @@ import type { FeedMessage as Message } from "../feed/index.ts";
 import {
   feedDensity,
   feedFontSize,
-  feedKeywords,
+  highlightWords,
 } from "../preferences/index.ts";
 import { createFontSizeWheel } from "./createFontSizeWheel.ts";
 import { createFeedShortcuts } from "./createFeedShortcuts.ts";
@@ -99,7 +99,7 @@ export default function Chat(props: Props) {
     mentionsIn(
       feeds[props.broadcasterId]?.messages ?? [],
       props.userLogin,
-      feedKeywords(),
+      highlightWords(),
     );
 
   function react(msg: Message, value: string) {

@@ -21,8 +21,8 @@ test("keeps valid values and replaces invalid ones field by field", () => {
     feed: {
       density: "comfortable",
       showTimestamp: "false",
-      keywords: ["gg", " ", 3],
     },
+    notifications: { keywords: ["gg", " ", 3] },
     appearance: { theme: "neon", accent: " #ABCDEF " },
     menu: { channels: { pinned: ["1", 2, "3"] } },
   });
@@ -30,7 +30,7 @@ test("keeps valid values and replaces invalid ones field by field", () => {
   expect(prefs.feed.showTimestamp).toStrictEqual(
     DEFAULT_PREFERENCES.feed.showTimestamp,
   );
-  expect(prefs.feed.keywords).toStrictEqual(["gg"]);
+  expect(prefs.notifications.keywords).toStrictEqual(["gg"]);
   expect(prefs.appearance.theme).toStrictEqual(
     DEFAULT_PREFERENCES.appearance.theme,
   );
@@ -123,12 +123,12 @@ test("each result is independent of the defaults", () => {
   const event = first.feed.events.message;
   assert.exists(event);
   const shown = event.show;
-  first.feed.keywords.push("edited");
+  first.notifications.keywords.push("edited");
   first.menu.channels.pinned.push("edited");
   event.show = !shown;
 
   const next = sanitize({});
-  expect(next.feed.keywords.includes("edited")).toBe(false);
+  expect(next.notifications.keywords.includes("edited")).toBe(false);
   expect(next.menu.channels.pinned.includes("edited")).toBe(false);
   expect(next.feed.events.message.show).toStrictEqual(shown);
 });

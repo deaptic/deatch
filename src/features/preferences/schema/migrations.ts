@@ -38,11 +38,33 @@ const developerSettingsToDeveloper: Migration = (sections) =>
     showLogs: "showLogs",
   });
 
+const settingsFollowPages: Migration = (sections) =>
+  [
+    (s: Sections) =>
+      moveFields(s, "general", "system", [
+        "alwaysOnTop",
+        "autostart",
+        "discordRichPresence",
+      ]),
+    (s: Sections) =>
+      moveFields(s, "advanced", "system", ["hardwareAcceleration"]),
+    (s: Sections) => moveFields(s, "general", "language", ["clock"]),
+    (s: Sections) =>
+      moveFields(s, "appearance", "language", { language: "app" }),
+    (s: Sections) => moveFields(s, "feed", "notifications", ["keywords"]),
+    (s: Sections) =>
+      moveFields(s, "streamer", "notifications", {
+        on: "streamerMode",
+        auto: "streamerAuto",
+      }),
+  ].reduce((current, move) => move(current), sections);
+
 export type Step = { version: number; run: Migration };
 
 export const MIGRATIONS: Step[] = [
   { version: 1, run: windowSettingsToGeneral },
   { version: 2, run: developerSettingsToDeveloper },
+  { version: 3, run: settingsFollowPages },
 ];
 
 export const PREFERENCES_VERSION = MIGRATIONS.at(-1)?.version ?? 0;

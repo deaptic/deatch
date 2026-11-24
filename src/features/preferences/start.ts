@@ -1,6 +1,7 @@
 import {
   preferencesBackupKey,
   preferencesKey,
+  preferencesSectionOf,
   STORAGE_KEYS,
   type StorageKey,
 } from "../../platform/storageKeys.ts";
@@ -34,10 +35,21 @@ function readKept(key: StorageKey, name: string): unknown {
 const readSection = (section: string) =>
   readKept(preferencesKey(section), section);
 
+const storedSections = () =>
+  storage.keys().flatMap((key) => preferencesSectionOf(key) ?? []);
+
+const isRetired = (key: string) => {
+  const section = preferencesSectionOf(key);
+  return (
+    section !== null &&
+    !PREFERENCES_SECTIONS.some((current) => current === section)
+  );
+};
+
 function readStored(): { sections: Record<string, unknown>; version: number } {
   const version = storage.read(STORAGE_KEYS.preferencesVersion);
   if (typeof version === "number") {
-    return { sections: fromKeys(PREFERENCES_SECTIONS, readSection), version };
+    return { sections: fromKeys(storedSections(), readSection), version };
   }
   const legacy = readKept(STORAGE_KEYS.legacyPreferences, "all");
   return {
@@ -63,10 +75,12 @@ export function load(): void {
   restorePreferences(migrate(stored.sections, stored.version));
   if (stored.version < PREFERENCES_VERSION) {
     save();
-    storage.removeWhere((key) => key === STORAGE_KEYS.legacyPreferences);
+    storage.removeWhere(
+      (key) => key === STORAGE_KEYS.legacyPreferences || isRetired(key),
+    );
   }
-  setLocale(prefs.appearance.language);
-  setClock(prefs.general.clock);
+  setLocale(prefs.language.app);
+  setClock(prefs.language.clock);
 }
 
 export function start(): () => void {
@@ -74,8 +88,8 @@ export function start(): () => void {
     for (const section of PREFERENCES_SECTIONS) {
       createEffect(() => saveSection(section));
     }
-    createEffect(() => setLocale(prefs.appearance.language));
-    createEffect(() => setClock(prefs.general.clock));
+    createEffect(() => setLocale(prefs.language.app));
+    createEffect(() => setClock(prefs.language.clock));
     return dispose;
   });
 }

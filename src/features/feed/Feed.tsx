@@ -29,7 +29,7 @@ import { jumpTarget, setJumpTarget } from "../navigation/index.ts";
 import { createFeedScroll } from "./createFeedScroll.ts";
 import { createFeedWindow } from "./createFeedWindow.ts";
 import {
-  feedKeywords,
+  highlightWords,
   feedShowDeletedContent,
   feedShowTimestamp,
 } from "../preferences/index.ts";
@@ -348,7 +348,7 @@ export default function Feed(props: Props) {
       badges={badges()}
       userLogin={props.userLogin ?? ""}
       reactions={reactions()}
-      keywords={feedKeywords()}
+      keywords={highlightWords()}
       showDeletedContent={feedShowDeletedContent()}
       showName={props.showName}
       showBadges={props.showBadges}

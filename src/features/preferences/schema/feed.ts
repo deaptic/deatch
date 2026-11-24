@@ -13,7 +13,6 @@ import {
   shown,
   steps,
   text,
-  textList,
   type Value,
 } from "./fields.ts";
 
@@ -31,7 +30,6 @@ export const FEED = object({
   groupMessages: bool(true),
   showBadges: bool(true),
   showEvents: bool(true),
-  keywords: textList({ nonEmpty: true }),
   events: shown(EVENTS.map((e) => e.key)),
   badges: shown(BADGE_CATEGORIES.map((c) => c.key)),
   users: object({

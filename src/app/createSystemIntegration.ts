@@ -2,9 +2,9 @@ import { createEffect } from "solid-js";
 import { isAutostartEnabled, setAutostart } from "../platform/autostart.ts";
 import { setAlwaysOnTop, setZoom } from "../platform/window.ts";
 import {
-  generalAlwaysOnTop,
-  generalAutostart,
-  generalDiscordRichPresence,
+  systemAlwaysOnTop,
+  systemAutostart,
+  systemDiscordRichPresence,
   appearanceAccent,
   appearanceUiDensity,
   appearanceZoom,
@@ -39,14 +39,14 @@ export function createSystemIntegration(): void {
   });
 
   createEffect(() => {
-    setAlwaysOnTop(generalAlwaysOnTop(), {
-      failureMessage: t("SETTINGS_GENERAL_ALWAYS_ON_TOP_ERROR"),
+    setAlwaysOnTop(systemAlwaysOnTop(), {
+      failureMessage: t("SETTINGS_SYSTEM_ALWAYS_ON_TOP_ERROR"),
     }).catch(() => {});
   });
 
   createEffect(() => {
-    const want = generalAutostart();
-    const options = { failureMessage: t("SETTINGS_GENERAL_AUTOSTART_ERROR") };
+    const want = systemAutostart();
+    const options = { failureMessage: t("SETTINGS_SYSTEM_AUTOSTART_ERROR") };
     isAutostartEnabled(options)
       .then((have) => (have === want ? undefined : setAutostart(want, options)))
       .catch(() => {});
@@ -55,7 +55,7 @@ export function createSystemIntegration(): void {
   createEffect(() => {
     const u = user();
     discord.applyPresence({
-      enabled: generalDiscordRichPresence(),
+      enabled: systemDiscordRichPresence(),
       authenticated: u !== null,
       userId: u?.id ?? null,
       channel: selectedChannel(),

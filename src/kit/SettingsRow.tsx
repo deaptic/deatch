@@ -7,7 +7,7 @@ type Props = {
   description?: string;
   keywords?: string[];
   stacked?: boolean;
-  children: JSX.Element;
+  children?: JSX.Element;
 };
 
 export default function SettingsRow(props: Props) {

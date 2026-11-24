@@ -8,7 +8,7 @@ import Dialog from "../../../kit/Dialog.tsx";
 import Button from "../../../kit/Button.tsx";
 import * as graphics from "../graphics.ts";
 import { history } from "../../feed/index.ts";
-import { advancedHardwareAcceleration } from "../../preferences/index.ts";
+import { systemHardwareAcceleration } from "../../preferences/index.ts";
 import Transition from "../../../kit/Transition.tsx";
 
 export default function AdvancedCard() {
@@ -80,9 +80,7 @@ export default function AdvancedCard() {
         >
           <Toggle
             label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_LABEL")}
-            checked={
-              pendingRestart()?.enabled ?? advancedHardwareAcceleration()
-            }
+            checked={pendingRestart()?.enabled ?? systemHardwareAcceleration()}
             onChange={(enabled) => setPendingRestart({ enabled })}
           />
         </SettingsRow>

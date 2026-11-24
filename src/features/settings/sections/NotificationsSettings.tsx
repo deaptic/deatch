@@ -9,11 +9,11 @@ import ChipInput from "../../../kit/ChipInput.tsx";
 import SettingsRow from "../../../kit/SettingsRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import {
-  addFeedKeyword,
-  feedKeywords,
+  addHighlightWord,
+  highlightWords,
   notificationsMentionSound,
   notificationsWhisperSound,
-  removeFeedKeyword,
+  removeHighlightWord,
   setNotificationsMentionSound,
   setStreamerAuto,
   setStreamerMode,
@@ -59,13 +59,13 @@ export default function NotificationsSettings() {
             placeholder={t(
               "SETTINGS_NOTIFICATIONS_HIGHLIGHT_WORDS_PLACEHOLDER",
             )}
-            onAdd={addFeedKeyword}
+            onAdd={addHighlightWord}
           />
-          <Show when={feedKeywords().length > 0}>
+          <Show when={highlightWords().length > 0}>
             <div class="flex flex-wrap gap-1.5">
-              <For each={feedKeywords()}>
+              <For each={highlightWords()}>
                 {(kw) => (
-                  <Chip label={kw} onRemove={() => removeFeedKeyword(kw)} />
+                  <Chip label={kw} onRemove={() => removeHighlightWord(kw)} />
                 )}
               </For>
             </div>

@@ -39,6 +39,17 @@ export function prune(): void {
   removeWhere((key) => !isStorageKey(key));
 }
 
+export function keys(): string[] {
+  try {
+    return Array.from({ length: localStorage.length }, (_, i) =>
+      localStorage.key(i),
+    ).filter((key) => key !== null);
+  } catch (e) {
+    console.warn("storage: keys not listed", e);
+    return [];
+  }
+}
+
 export function removeWhere(match: (key: string) => boolean): void {
   try {
     const keys = Array.from({ length: localStorage.length }, (_, i) =>

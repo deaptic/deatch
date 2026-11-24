@@ -5,6 +5,7 @@ import { LINK } from "./link.ts";
 import { TRIGGERS } from "./triggers.ts";
 import { bool, object, oneOf, text, textList, type Value } from "./fields.ts";
 import { CLOCKS } from "../../../shared/time.ts";
+import { LANGUAGES, systemLanguage } from "../../../shared/i18n/index.ts";
 
 export type { BadgePref, EventPref } from "./feed.ts";
 export { migrate, PREFERENCES_VERSION } from "./migrations.ts";
@@ -26,25 +27,30 @@ export {
 } from "./triggers.ts";
 
 const SECTIONS = {
-  general: object({
-    alwaysOnTop: bool(false),
-    autostart: bool(true),
-    discordRichPresence: bool(false),
-    clock: oneOf(CLOCKS, "auto"),
-  }),
-  feed: FEED,
-  streamer: object({ on: bool(false), auto: bool(true) }),
   notifications: object({
+    keywords: textList({ nonEmpty: true }),
     mentionSound: bool(true),
     whisperSound: bool(true),
+    streamerMode: bool(false),
+    streamerAuto: bool(true),
+  }),
+  appearance: APPEARANCE,
+  feed: FEED,
+  language: object({
+    app: oneOf(LANGUAGES, systemLanguage),
+    clock: oneOf(CLOCKS, "auto"),
+  }),
+  system: object({
+    autostart: bool(true),
+    alwaysOnTop: bool(false),
+    discordRichPresence: bool(false),
+    hardwareAcceleration: bool(true),
   }),
   moderation: object({
     autoShoutoutOnRaid: bool(false),
     actionsDisabled: bool(false),
   }),
-  advanced: object({ hardwareAcceleration: bool(true) }),
   developer: object({ mode: bool(false), showLogs: bool(false) }),
-  appearance: APPEARANCE,
   link: LINK,
   menu: object({ channels: object({ pinned: textList() }) }),
   explore: object({

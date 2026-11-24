@@ -8,14 +8,8 @@ import {
   ZOOM_STEPS,
 } from "../../shared/accessibility.ts";
 import { prefs, setPrefs } from "./core.ts";
-import type { Language } from "../../shared/i18n/index.ts";
 
 export const appearanceTheme = () => prefs.appearance.theme;
-export const appearanceLanguage = () => prefs.appearance.language;
-
-export function setAppearanceLanguage(language: Language) {
-  setPrefs("appearance", "language", language);
-}
 export const appearanceAccent = () => prefs.appearance.accent;
 export const appearanceRailExpanded = () => prefs.appearance.railExpanded;
 export const activityShown = (kind: ActivityKind) =>

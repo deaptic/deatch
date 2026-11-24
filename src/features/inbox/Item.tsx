@@ -6,7 +6,7 @@ import { cheermotes, emoteMapFor } from "../emotes/index.ts";
 import { feeds, Message } from "../feed/index.ts";
 import {
   feedDensity,
-  feedKeywords,
+  highlightWords,
   feedShowTimestamp,
 } from "../preferences/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
@@ -94,7 +94,7 @@ export default function Item(props: Props) {
           badges={feeds[m().broadcasterId]?.badges ?? {}}
           userLogin={user()?.login ?? ""}
           reactions={[]}
-          keywords={feedKeywords()}
+          keywords={highlightWords()}
           showToolbar={false}
           highlightMentions={false}
         />

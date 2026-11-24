@@ -9,16 +9,19 @@ type Props = {
   active: boolean;
   orientation?: "vertical" | "horizontal";
   collapsed?: boolean;
+  negative?: boolean;
   fill?: boolean;
   onClick?: () => void;
 };
 
 export default function NavItem(props: Props) {
   const tip = createSideTip(() => <TipLabel>{props.label}</TipLabel>);
-  const tone = () =>
-    props.active
+  const tone = () => {
+    if (props.negative) return "text-negative";
+    return props.active
       ? "text-ink [&>span:first-child]:text-accent-ink"
       : "text-ink-soft group-hover:text-ink";
+  };
 
   const iconEl = children(() => props.icon);
   const icon = (size: string) => (

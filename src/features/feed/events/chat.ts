@@ -7,7 +7,7 @@ import type { RawChatMessage } from "../../../platform/twitch/eventsubPayloads.t
 import { appendItem } from "../store/index.ts";
 import { knownUser, recordChatter, user } from "../../users/index.ts";
 import * as inbox from "../../inbox/index.ts";
-import { feedKeywords } from "../../preferences/index.ts";
+import { highlightWords } from "../../preferences/index.ts";
 import { mentionReason } from "../entries/mention.ts";
 import { chatterOf, mapChatMessage } from "../entries/chat.ts";
 import * as channelPoints from "../channelPoints.ts";
@@ -67,7 +67,7 @@ export function start(): () => void {
       const me = user();
       if (!me || raw.chatter_user_id === me.id) return;
 
-      const reason = mentionReason(msg, me.login, feedKeywords());
+      const reason = mentionReason(msg, me.login, highlightWords());
       if (!reason) return;
 
       const ch = knownUser(raw.broadcaster_user_id);
