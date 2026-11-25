@@ -1,4 +1,4 @@
-import { isSilent, toLog, updateFeed } from "./core.ts";
+import { isSilent, queueUpdate, toLog, updateFeed } from "./core.ts";
 import { getEntryId } from "./entryId.ts";
 import { append, insert, prepend } from "./ops.ts";
 import { limitFor } from "./caps.ts";
@@ -12,18 +12,27 @@ import { selectedChannel } from "../../navigation/index.ts";
 const limitOf = (broadcasterId: string, f: ChannelFeed) =>
   limitFor(f.paused, isBackground(broadcasterId));
 
-export function appendItem(broadcasterId: string, item: FeedEntry): boolean {
+function appendTo(broadcasterId: string, f: ChannelFeed, item: FeedEntry) {
+  const added = append(f.messages, item, limitOf(broadcasterId, f));
+  if (!added) return false;
+  toLog(broadcasterId, [item]);
   const isActive = selectedChannel()?.id === broadcasterId;
+  if (isActive && !f.paused && !isSilent(item)) {
+    f.lastSeenEntryId = getEntryId(item);
+  }
+  return true;
+}
+
+export function appendItem(broadcasterId: string, item: FeedEntry): boolean {
   let added = false;
   updateFeed(broadcasterId, (f) => {
-    added = append(f.messages, item, limitOf(broadcasterId, f));
-    if (!added) return;
-    toLog(broadcasterId, [item]);
-    if (isActive && !f.paused && !isSilent(item)) {
-      f.lastSeenEntryId = getEntryId(item);
-    }
+    added = appendTo(broadcasterId, f, item);
   });
   return added;
+}
+
+export function queueItem(broadcasterId: string, item: FeedEntry): void {
+  queueUpdate(broadcasterId, (f) => appendTo(broadcasterId, f, item));
 }
 
 export function appendLocalNotice(

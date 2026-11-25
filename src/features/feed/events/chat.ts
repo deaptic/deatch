@@ -4,7 +4,7 @@ import {
   unlistenAll,
 } from "../../../platform/listen.ts";
 import type { RawChatMessage } from "../../../platform/twitch/eventsubPayloads.ts";
-import { appendItem } from "../store/index.ts";
+import { queueItem } from "../store/index.ts";
 import { knownUser, recordChatter, user } from "../../users/index.ts";
 import * as inbox from "../../inbox/index.ts";
 import { highlightWords } from "../../preferences/index.ts";
@@ -41,7 +41,7 @@ export function start(): () => void {
       const msg = mapChatMessage(raw, ts);
       if (msg.source) badges.loadSource(msg.source);
       recordChatter(raw.broadcaster_user_id, chatterOf(msg));
-      appendItem(raw.broadcaster_user_id, msg);
+      queueItem(raw.broadcaster_user_id, msg);
       noteRename(raw);
       if (raw.channel_points_custom_reward_id) {
         channelPoints.noteChatMessage(

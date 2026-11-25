@@ -12,7 +12,7 @@ use tauri::Manager;
 
 const MAX_AGE_MS: u64 = 7 * 24 * 60 * 60 * 1000;
 const MAX_BYTES: u64 = 1 << 30;
-const PRUNE_EVERY: Duration = Duration::from_secs(60 * 60);
+const PRUNE_EVERY: Duration = Duration::from_secs(5 * 60);
 
 pub const SCHEMA: Schema = Schema {
     feature: "feedlog",
@@ -267,7 +267,7 @@ pub fn prune(db: &Connection, now_ms: u64, max_bytes: u64) -> Result<()> {
         let deleted = db.execute(
             "DELETE FROM feed_entries WHERE rowid IN (
                 SELECT rowid FROM feed_entries ORDER BY timestamp
-                LIMIT (SELECT count(*) / 10 + 1 FROM feed_entries)
+                LIMIT (SELECT count(*) / 50 + 1 FROM feed_entries)
             )",
             [],
         )?;

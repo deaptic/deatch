@@ -1,3 +1,4 @@
+import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import type { BadgeMap, FeedEntry } from "../types.ts";
 import { getEntryId } from "./entryId.ts";
@@ -44,6 +45,7 @@ export function requeueUnlogged(broadcasterId: string, entries: FeedEntry[]) {
 }
 
 export function takeUnlogged(): Map<string, FeedEntry[]> {
+  flushQueued();
   const taken = new Map(
     [...unlogged].map(([id, entries]) => [id, [...entries.values()]]),
   );
@@ -60,15 +62,39 @@ const emptyFeed = (): ChannelFeed => ({
   backfilled: false,
 });
 
-export function updateFeed(
-  broadcasterId: string,
-  change: (feed: ChannelFeed) => void,
-): boolean {
+type Change = (feed: ChannelFeed) => void;
+
+const QUEUE_MS = 16;
+const queued = new Map<string, Change[]>();
+let flushTimer: ReturnType<typeof setTimeout> | undefined;
+
+export function queueUpdate(broadcasterId: string, change: Change) {
+  const changes = queued.get(broadcasterId);
+  if (changes) changes.push(change);
+  else queued.set(broadcasterId, [change]);
+  flushTimer ??= setTimeout(flushQueued, QUEUE_MS);
+}
+
+export function flushQueued() {
+  clearTimeout(flushTimer);
+  flushTimer = undefined;
+  batch(() => {
+    for (const broadcasterId of queued.keys()) {
+      updateFeed(broadcasterId, () => {});
+    }
+  });
+}
+
+export function updateFeed(broadcasterId: string, change: Change): boolean {
+  const pending = queued.get(broadcasterId) ?? [];
+  queued.delete(broadcasterId);
   if (!feeds[broadcasterId]) return false;
   setFeeds(
     broadcasterId,
     produce((feed) => {
-      if (feed) change(feed);
+      if (!feed) return;
+      for (const queuedChange of pending) queuedChange(feed);
+      change(feed);
     }),
   );
   return true;
