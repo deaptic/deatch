@@ -4,6 +4,7 @@ export {
   emoteMapFor,
   ensureGlobalLoaded,
   ensureUserLoaded,
+  recordSent,
   resetChannels,
   resetUser,
 } from "./load.ts";

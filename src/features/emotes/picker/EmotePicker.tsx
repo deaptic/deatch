@@ -30,7 +30,7 @@ import {
   type ItemSource,
 } from "./createPickerSections.ts";
 import { createSectionScroll } from "./createSectionScroll.ts";
-import { EMOJI_ITEMS, EMOJI_SECTIONS } from "./emoji.ts";
+import { EMOJI_ITEMS, EMOJI_SECTIONS, EMOJI_VALUES } from "./emoji.ts";
 import Field from "../../../kit/Field.tsx";
 import IconButton from "../../../kit/IconButton.tsx";
 import * as shortcuts from "../../../shared/keyboard/shortcuts.ts";
@@ -129,7 +129,9 @@ export default function EmotePicker(props: Props) {
   }
 
   function choose(item: EmoteGridItem, keepOpen: boolean) {
-    emotes.recordUse({ value: item.value, url: item.url, label: item.label });
+    if (EMOJI_VALUES.has(item.value)) {
+      emotes.recordUse({ value: item.value, url: item.url, label: item.label });
+    }
     props.onSelect(item.value, { keepOpen });
   }
 

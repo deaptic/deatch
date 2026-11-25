@@ -4,7 +4,7 @@ import {
   type StorageKey,
   userEmotesKey,
 } from "../../platform/storageKeys.ts";
-import { type EmoteUse, withUse } from "./emoteUsage.ts";
+import { emotesIn, type EmoteUse, withUse } from "./emoteUsage.ts";
 import {
   bttvGetChannelEmotes,
   bttvGetGlobalEmotes,
@@ -42,6 +42,7 @@ import {
   setUserEmotes,
   sevenTvChannel,
   sevenTvGlobal,
+  typeableEmotes,
 } from "./store.ts";
 import { user } from "../users/index.ts";
 import {
@@ -249,7 +250,19 @@ function isUse(value: unknown): value is EmoteUse {
 }
 
 export function recordUse(emote: FavoriteEmote) {
-  const next = withUse(emoteUses(), emote, Date.now());
+  saveUses(withUse(emoteUses(), emote, Date.now()));
+}
+
+export function recordSent(text: string) {
+  const used = emotesIn(text, typeableEmotes());
+  if (!used.length) return;
+  const now = Date.now();
+  saveUses(
+    used.reduce((list, emote) => withUse(list, emote, now), emoteUses()),
+  );
+}
+
+function saveUses(next: EmoteUse[]) {
   setEmoteUses(next);
   storage.write(STORAGE_KEYS.emoteUsage, next);
 }

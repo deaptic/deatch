@@ -14,3 +14,7 @@ export const EMOJI_SECTIONS: PickerSection[] = emojiGroups.map((g) => ({
 }));
 
 export const EMOJI_ITEMS = EMOJI_SECTIONS.flatMap((s) => s.items);
+
+export const EMOJI_VALUES: ReadonlySet<string> = new Set(
+  EMOJI_ITEMS.map((item) => item.value),
+);

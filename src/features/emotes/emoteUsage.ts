@@ -24,6 +24,20 @@ export function withUse(
     .slice(0, KEPT_USES);
 }
 
+export function emotesIn(
+  text: string,
+  emotes: Readonly<Record<string, { url: string }>>,
+): Saved[] {
+  const names = new Set(
+    text.split(/\s+/).filter((word) => Object.hasOwn(emotes, word)),
+  );
+  return [...names].map((name) => ({
+    value: name,
+    url: emotes[name]!.url,
+    label: name,
+  }));
+}
+
 export function mostUsed(list: readonly EmoteUse[]): EmoteUse[] {
   return [...list].sort(byUse).slice(0, SHOWN_USES);
 }

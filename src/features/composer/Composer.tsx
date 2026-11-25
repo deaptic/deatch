@@ -110,6 +110,7 @@ export default function Composer(props: Props) {
         message: text,
         replyParentMessageId: reply?.messageId ?? null,
       });
+      if (outcome === "sent") emotes.recordSent(text);
       if (outcome !== "failed") {
         pushSentMessage(props.broadcasterId, text);
         history.reset();
