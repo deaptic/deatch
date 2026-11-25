@@ -24,6 +24,9 @@ import Segmented from "../../kit/Segmented.tsx";
 import { feedLog, textOf } from "../feed/index.ts";
 import { selectedChannel } from "../navigation/index.ts";
 import { knownUser } from "../users/index.ts";
+import EmptyState from "../../kit/EmptyState.tsx";
+import OptionRow from "../../kit/OptionRow.tsx";
+import PaletteList from "../../kit/PaletteList.tsx";
 
 const LIMIT = 100;
 const TYPING_PAUSE_MS = 200;
@@ -116,38 +119,29 @@ export default function SearchPalette(props: Props) {
           )}
         </Show>
       </div>
-      <div
-        {...listbox.list}
-        class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5"
-      >
+      <PaletteList {...listbox.list}>
         <Switch>
           <Match when={!settled()}>
-            <p class="py-8 text-center text-body text-ink-soft">
-              {t("SEARCH_HINT")}
-            </p>
+            <EmptyState variant="palette" body={t("SEARCH_HINT")} />
           </Match>
           <Match when={results.loading && results().length === 0}>
-            <div class="py-8 grid place-items-center">
-              <Loading />
-            </div>
+            <Loading block />
           </Match>
           <Match when={results().length === 0}>
-            <p class="py-8 text-center text-body text-ink-soft">
-              {t("SEARCH_EMPTY", { query: settled() })}
-            </p>
+            <EmptyState
+              variant="palette"
+              body={t("SEARCH_EMPTY", { query: settled() })}
+            />
           </Match>
           <Match when={results().length > 0}>
             <For each={results()}>
               {(hit, i) => (
-                <button
-                  type="button"
+                <OptionRow
                   {...listbox.option(i)}
                   onMouseMove={() => listbox.setActive(i())}
-                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => open(i())}
-                  class={`flex shrink-0 flex-col gap-0.5 px-2.5 py-2 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
-                    listbox.active() === i() ? "bg-raised" : "hover:bg-raised"
-                  }`}
+                  size="stack"
+                  active={listbox.active() === i()}
                 >
                   <span class="flex items-baseline gap-2 min-w-0">
                     <span class="shrink-0 text-body font-semibold text-ink">
@@ -165,12 +159,12 @@ export default function SearchPalette(props: Props) {
                       time: new Time(hit.message.timestamp, "c").toString(),
                     })}
                   </span>
-                </button>
+                </OptionRow>
               )}
             </For>
           </Match>
         </Switch>
-      </div>
+      </PaletteList>
     </Modal>
   );
 }

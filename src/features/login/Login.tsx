@@ -15,6 +15,7 @@ import * as browser from "../../platform/browser.ts";
 import { createCopied } from "../../kit/createCopied.ts";
 import { t, tRich } from "../../shared/i18n/index.ts";
 import { formatUrl } from "../../shared/format/url.ts";
+import TextLink from "../../kit/TextLink.tsx";
 
 const RESTORE_FAILURE_TEXT = {
   missingScope: "LOGIN_MISSING_SCOPE_ERROR",
@@ -72,16 +73,14 @@ export default function Login() {
                         {tRich("LOGIN_ENTER_CODE_DESCRIPTION", {
                           site: formatUrl(code().verificationUri),
                           link: (chunks) => (
-                            <a
+                            <TextLink
                               href={code().verificationUri}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                browser.open(code().verificationUri);
-                              }}
-                              class="text-accent-ink hover:underline"
+                              onOpen={() =>
+                                browser.open(code().verificationUri)
+                              }
                             >
                               {chunks}
-                            </a>
+                            </TextLink>
                           ),
                         })}
                       </p>

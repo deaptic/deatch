@@ -8,6 +8,7 @@ import ConnectionSlot from "./ui/ConnectionSlot.tsx";
 import Section from "./ui/Section.tsx";
 import MetricRow from "./ui/MetricRow.tsx";
 import { t } from "../../shared/i18n/index.ts";
+import PanelHeader from "../../kit/PanelHeader.tsx";
 
 type Props = {
   x: number;
@@ -21,17 +22,8 @@ export default function Diagnostics(props: Props) {
   return (
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div class="w-96 max-w-full max-h-160 flex flex-col">
-        <header class="h-header shrink-0 flex items-center pl-5 pr-3">
-          <h2 class="text-title text-ink flex-1">{t("DIAGNOSTICS_TITLE")}</h2>
-        </header>
-        <Show
-          when={sample()}
-          fallback={
-            <div class="grid place-items-center py-10">
-              <Loading />
-            </div>
-          }
-        >
+        <PanelHeader inset title={t("DIAGNOSTICS_TITLE")} />
+        <Show when={sample()} fallback={<Loading block />}>
           {(s) => (
             <div class="flex-1 min-h-0 overflow-y-auto px-5 py-4 flex flex-col gap-5">
               <Section title={t("DIAGNOSTICS_APP_TITLE")}>

@@ -9,6 +9,7 @@ import Skeleton from "../../kit/Skeleton.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
+import SectionTitle from "../../kit/SectionTitle.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -45,7 +46,7 @@ export default function Popular(props: Props) {
   return (
     <section>
       <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 class="text-heading text-ink">{t("EXPLORE_POPULAR_TITLE")}</h2>
+        <SectionTitle>{t("EXPLORE_POPULAR_TITLE")}</SectionTitle>
         <Show when={explore.filters.category}>
           {(category) => (
             <Chip

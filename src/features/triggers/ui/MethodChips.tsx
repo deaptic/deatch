@@ -10,15 +10,11 @@ export default function MethodChips(props: {
     <div class="flex flex-wrap gap-1.5">
       <For each={METHODS}>
         {(method) => (
-          <button
-            type="button"
-            data-tip={t(method.description)}
-            onMouseDown={(e) => e.preventDefault()}
+          <Chip
+            label={methodSyntax(method)}
+            title={t(method.description)}
             onClick={() => props.onPick(method)}
-            class="cursor-pointer pressable active:pressed"
-          >
-            <Chip label={methodSyntax(method)} />
-          </button>
+          />
         )}
       </For>
     </div>

@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 import { type EmoteMap } from "../emotes/index.ts";
-import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
+import TextLink from "../../kit/TextLink.tsx";
 import { previews } from "../previews/index.ts";
 import { textSegments } from "./textSegments.ts";
 import InlineEmote from "./InlineEmote.tsx";
@@ -15,18 +15,9 @@ export default function TextWithEmotes(props: {
         segment.kind === "emote" ? (
           <InlineEmote url={segment.url} name={segment.name} />
         ) : segment.kind === "link" ? (
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              previews.open(segment.url);
-            }}
-            onAuxClick={onMiddleClick(() => previews.open(segment.url))}
-            onMouseDown={preventAutoscroll}
-            class="text-accent-ink hover:underline break-all"
-          >
+          <TextLink breakAll onOpen={() => previews.open(segment.url)}>
             {segment.url}
-          </a>
+          </TextLink>
         ) : (
           segment.text
         )

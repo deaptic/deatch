@@ -3,7 +3,7 @@ import {
   createListbox,
   type ListboxField,
 } from "../shared/solid/createListbox.ts";
-import SuggestionItem from "./SuggestionItem.tsx";
+import OptionRow from "./OptionRow.tsx";
 
 export type SuggestionsApi = {
   handleKey: (e: KeyboardEvent) => boolean;
@@ -65,13 +65,15 @@ export default function Suggestions<T>(props: Props<T>) {
     >
       <For each={props.suggestions()}>
         {(s, i) => (
-          <SuggestionItem
+          <OptionRow
             {...listbox.option(i)}
-            onHover={() => listbox.setActive(i())}
+            size="auto"
+            active={i() === listbox.active()}
+            onMouseMove={() => listbox.setActive(i())}
             onClick={() => props.onSelect(s)}
           >
             {props.renderItem(s)}
-          </SuggestionItem>
+          </OptionRow>
         )}
       </For>
     </div>

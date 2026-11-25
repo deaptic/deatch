@@ -4,7 +4,7 @@ import { avatarZoom } from "../shared/avatar.ts";
 import { createImageReveal } from "../shared/solid/createImageReveal.ts";
 import { type MessageKey, t } from "../shared/i18n/index.ts";
 
-type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
+export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
 type Presence = "live" | "offline";
 type PresenceLook = "dot" | "icon";
 
@@ -18,6 +18,7 @@ type Props = {
   liveRing?: boolean;
   dimmed?: boolean;
   square?: boolean;
+  inherit?: boolean;
   overlay?: JSX.Element;
   children?: JSX.Element;
 };
@@ -66,9 +67,9 @@ export default function Avatar(props: Props) {
 
   return (
     <span
-      class={`relative shrink-0 inline-grid place-items-center bg-picture font-semibold text-ink-soft select-none ${shape()} ${
-        SIZES[props.size].box
-      } ${outline()}`}
+      class={`relative shrink-0 inline-grid place-items-center font-semibold select-none ${
+        props.inherit ? "" : "bg-picture text-ink-soft"
+      } ${shape()} ${SIZES[props.size].box} ${outline()}`}
     >
       <Show when={!failed() && props.src} fallback={initial()}>
         {(src) => (

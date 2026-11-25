@@ -3,6 +3,7 @@ import { createSignal, For, type JSX, onCleanup, Show } from "solid-js";
 import { createListbox } from "../shared/solid/createListbox.ts";
 import { autofocus } from "../shared/solid/focus.ts";
 import Field from "./Field.tsx";
+import OptionRow from "./OptionRow.tsx";
 
 const SEARCH_DELAY_MS = 250;
 
@@ -88,18 +89,15 @@ export default function SearchPicker<T>(props: Props<T>) {
         >
           <For each={results()}>
             {(item, i) => (
-              <div
+              <OptionRow
                 {...listbox.option(i)}
-                class={`h-control-md shrink-0 flex items-center gap-2.5 px-2 rounded-xs text-body text-ink cursor-pointer ${
-                  i() === active() ? "bg-raised" : ""
-                }`}
-                onMouseDown={(e) => e.preventDefault()}
+                active={i() === active()}
                 onMouseEnter={() => setActive(i())}
                 onClick={() => pick(item)}
               >
                 {props.picture(item)}
                 <span class="truncate">{props.name(item)}</span>
-              </div>
+              </OptionRow>
             )}
           </For>
         </div>

@@ -10,7 +10,7 @@ import Avatar from "../../kit/Avatar.tsx";
 import Chip from "../../kit/Chip.tsx";
 import LivePill from "../../kit/LivePill.tsx";
 import Stat from "../../kit/Stat.tsx";
-import { CARD_FRAME } from "../../kit/Card.tsx";
+import CardButton from "../../kit/CardButton.tsx";
 
 const SHOWN_TAGS = 3;
 
@@ -28,11 +28,7 @@ export default function LiveCard(props: Props) {
   const link = createChannelLink(channel, () => props.onSelect(channel()));
 
   return (
-    <button
-      type="button"
-      {...link.handlers}
-      class={`group flex flex-col text-left bg-surface overflow-hidden pressable hover:bg-raised active:pressed ${CARD_FRAME} ${link.cursor}`}
-    >
+    <CardButton look="card" {...link.handlers} cursor={link.cursor}>
       <Thumbnail src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">
           <LivePill solid />
@@ -77,6 +73,6 @@ export default function LiveCard(props: Props) {
         </div>
       </div>
       {link.menu()}
-    </button>
+    </CardButton>
   );
 }

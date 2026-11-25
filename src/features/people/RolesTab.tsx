@@ -12,6 +12,7 @@ import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import SearchPicker from "../../kit/SearchPicker.tsx";
 import PersonRow from "./PersonRow.tsx";
+import EmptyState from "../../kit/EmptyState.tsx";
 
 type RoleLook = {
   role: Role;
@@ -98,9 +99,7 @@ export default function RolesTab(props: Props) {
         <Show
           when={people().length}
           fallback={
-            <p class="py-3 text-body text-ink-faint">
-              {t("PEOPLE_ROLES_EMPTY")}
-            </p>
+            <EmptyState variant="list" body={t("PEOPLE_ROLES_EMPTY")} />
           }
         >
           <For each={people()}>

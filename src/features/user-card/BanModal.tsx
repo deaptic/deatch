@@ -137,13 +137,11 @@ export default function BanModal(props: Props) {
         <div class="flex flex-wrap gap-1.5">
           <For each={moderationReasons()}>
             {(saved) => (
-              <button
-                type="button"
-                class="cursor-pointer"
+              <Chip
+                label={saved}
+                selected={reason() === saved}
                 onClick={() => setReason(saved)}
-              >
-                <Chip label={saved} selected={reason() === saved} />
-              </button>
+              />
             )}
           </For>
         </div>

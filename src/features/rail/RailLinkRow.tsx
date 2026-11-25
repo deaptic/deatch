@@ -9,7 +9,7 @@ import { SIDE_GAP } from "../../kit/Popover.tsx";
 import TipLabel from "../../kit/TipLabel.tsx";
 import LinkMenu from "./LinkMenu.tsx";
 import RailRow, { type SubTone } from "./RailRow.tsx";
-import RailTile, { type TileTone } from "./ui/RailTile.tsx";
+import IconTile, { type TileTone } from "../../kit/IconTile.tsx";
 
 type LinkStatus = {
   sub: string;
@@ -75,9 +75,9 @@ export default function RailLinkRow(props: { onToggleLink: () => void }) {
         onClick={() => status().onClick?.()}
         onContextMenu={openMenu}
       >
-        <RailTile active={status().tile}>
+        <IconTile active={status().tile}>
           <Eye />
-        </RailTile>
+        </IconTile>
       </RailRow>
       <Show when={menu.state()}>
         {(m) => (

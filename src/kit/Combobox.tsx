@@ -11,6 +11,7 @@ import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../shared/solid/createListbox.ts";
 import Field from "./Field.tsx";
 import { t } from "../shared/i18n/index.ts";
+import OptionRow from "./OptionRow.tsx";
 
 type Props = {
   value: string;
@@ -130,13 +131,10 @@ export default function Combobox(props: Props) {
             }
           >
             {(value, i) => (
-              <div
+              <OptionRow
                 {...listbox.option(i)}
                 aria-selected={value === props.value}
-                class={`h-control-md shrink-0 flex items-center gap-2.5 px-2.5 rounded-sm text-body text-ink cursor-pointer ${
-                  i() === active() ? "bg-raised" : ""
-                }`}
-                onMouseDown={(e) => e.preventDefault()}
+                active={i() === active()}
                 onMouseEnter={() => setActive(i())}
                 onClick={() => pick(value)}
               >
@@ -146,7 +144,7 @@ export default function Combobox(props: Props) {
                   </Show>
                 </span>
                 <span class="truncate">{props.label(value)}</span>
-              </div>
+              </OptionRow>
             )}
           </For>
         </div>

@@ -60,6 +60,7 @@ import { type Component, For, type JSX } from "solid-js";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import MenuStepper from "../../kit/MenuStepper.tsx";
+import SectionLabel from "../../kit/SectionLabel.tsx";
 
 type Props = {
   x: number;
@@ -122,9 +123,9 @@ const SHOW_TOGGLES: {
 function Section(props: { label: string; children: JSX.Element }) {
   return (
     <div class="flex flex-col pb-2">
-      <span class="px-2.5 pt-1.5 pb-1 text-micro uppercase text-ink-faint">
-        {props.label}
-      </span>
+      <div class="px-2.5 pt-1.5 pb-1">
+        <SectionLabel>{props.label}</SectionLabel>
+      </div>
       {props.children}
     </div>
   );

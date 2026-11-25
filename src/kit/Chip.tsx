@@ -2,12 +2,11 @@ import { X } from "lucide-solid";
 import { type JSX, Show } from "solid-js";
 import { t } from "../shared/i18n/index.ts";
 
-type Variant = "tag" | "command" | "media" | "label";
+type Variant = "tag" | "command" | "label";
 
 const SHAPES: Record<Variant, string> = {
   tag: "h-control-sm px-3 rounded-sm text-small font-semibold",
   command: "shrink-0 px-2 py-1 rounded-sm text-body font-semibold",
-  media: "px-1.5 py-0.5 rounded-xs text-micro tabular-nums",
   label: "shrink-0 px-1.5 py-0.5 rounded-xs text-micro font-medium",
 };
 
@@ -18,12 +17,12 @@ type Props = {
   title?: string;
   selected?: boolean;
   onRemove?: () => void;
+  onClick?: () => void;
 };
 
 export default function Chip(props: Props) {
   const variant = () => props.variant ?? "tag";
   const tone = () => {
-    if (variant() === "media") return "bg-media-scrim text-on-accent";
     if (variant() === "label") return "bg-line-soft text-ink-soft";
     return props.selected
       ? "bg-accent-soft text-accent-ink"
@@ -36,10 +35,28 @@ export default function Chip(props: Props) {
     <Show
       when={props.onRemove}
       fallback={
-        <span class={base()} data-tip={props.title}>
-          {props.icon}
-          {props.label}
-        </span>
+        <Show
+          when={props.onClick}
+          fallback={
+            <span class={base()} data-tip={props.title}>
+              {props.icon}
+              {props.label}
+            </span>
+          }
+        >
+          {(onClick) => (
+            <button
+              type="button"
+              data-tip={props.title}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => onClick()()}
+              class={`${base()} cursor-pointer hover:text-ink hover:bg-overlay transition-colors duration-snap pressable active:pressed`}
+            >
+              {props.icon}
+              {props.label}
+            </button>
+          )}
+        </Show>
       }
     >
       <button

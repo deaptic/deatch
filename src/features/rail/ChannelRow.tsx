@@ -11,6 +11,7 @@ import * as browser from "../../platform/browser.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import { pendingChannel } from "../navigation/index.ts";
+import Dot from "../../kit/Dot.tsx";
 
 type Props = {
   ch: User;
@@ -44,7 +45,7 @@ export default function ChannelRow(props: Props) {
         >
           {(s) => (
             <span class="shrink-0 flex items-center gap-1.5 text-small tabular-nums text-ink-soft">
-              <span class="size-1.5 rounded-full bg-live" />
+              <Dot tone="live" />
               {formatCount(s().viewerCount)}
             </span>
           )}

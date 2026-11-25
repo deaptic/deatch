@@ -32,6 +32,9 @@ import Kbd from "../../kit/Kbd.tsx";
 import { Dynamic } from "solid-js/web";
 import { type PaletteAction, paletteActions } from "./paletteActions.ts";
 import { t } from "../../shared/i18n/index.ts";
+import EmptyState from "../../kit/EmptyState.tsx";
+import OptionRow from "../../kit/OptionRow.tsx";
+import PaletteList from "../../kit/PaletteList.tsx";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -128,16 +131,11 @@ export default function QuickSwitch(props: Props) {
           trailing={<Kbd size="sm" combo="escape" />}
         />
       </div>
-      <div
-        {...listbox.list}
-        class="flex-1 min-h-0 overflow-y-auto mt-2 flex flex-col gap-0.5"
-      >
+      <PaletteList {...listbox.list}>
         <Show
           when={rows().length > 0}
           fallback={
-            <p class="py-8 text-center text-body text-ink-soft">
-              {t("QUICK_SWITCH_EMPTY")}
-            </p>
+            <EmptyState variant="palette" body={t("QUICK_SWITCH_EMPTY")} />
           }
         >
           <For each={rows()}>
@@ -146,17 +144,14 @@ export default function QuickSwitch(props: Props) {
                 row.kind === "channel" ? row.user : undefined,
               );
               return (
-                <button
-                  type="button"
+                <OptionRow
                   {...listbox.option(i)}
                   onMouseMove={() => listbox.setActive(i())}
-                  onMouseDown={(e) => e.preventDefault()}
                   onClick={(e) => void open(row, e.ctrlKey)}
                   onContextMenu={channelLink.handlers.onContextMenu}
                   onAuxClick={channelLink.handlers.onAuxClick}
-                  class={`flex shrink-0 items-center gap-3 h-13 px-2.5 rounded-sm text-left cursor-pointer transition-colors duration-snap ${
-                    listbox.active() === i() ? "bg-raised" : "hover:bg-raised"
-                  }`}
+                  size="lg"
+                  active={listbox.active() === i()}
                 >
                   <Show when={row.kind === "action" ? row.action : null}>
                     {(action) => (
@@ -240,12 +235,12 @@ export default function QuickSwitch(props: Props) {
                     <Kbd size="sm" combo="enter" />
                   </Show>
                   {channelLink.menu()}
-                </button>
+                </OptionRow>
               );
             }}
           </For>
         </Show>
-      </div>
+      </PaletteList>
       <div class="shrink-0 flex items-center gap-4 pt-2.5 mt-2 px-1 text-small text-ink-faint">
         <span class="flex items-center gap-1.5">
           <Kbd size="sm" combo="up" />

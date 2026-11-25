@@ -1,5 +1,6 @@
 import { formatCount } from "../shared/format/stream.ts";
 import { t } from "../shared/i18n/index.ts";
+import Dot from "./Dot.tsx";
 
 type Props = {
   viewers?: number;
@@ -13,7 +14,7 @@ export default function LivePill(props: Props) {
         props.solid ? "bg-live text-on-accent" : "bg-live/15 text-live"
       }`}
     >
-      <span class="size-1.5 rounded-full bg-current" />
+      <Dot tone="current" />
       {t("UI_LIVE_STATUS")}
       {props.viewers !== undefined && (
         <span class="opacity-80">· {formatCount(props.viewers)}</span>

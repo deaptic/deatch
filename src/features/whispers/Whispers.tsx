@@ -15,6 +15,7 @@ import { feedDensity, feedShowTimestamp } from "../preferences/index.ts";
 import ConversationRow from "./ConversationRow.tsx";
 import WhisperComposer from "./WhisperComposer.tsx";
 import * as whispers from "./store.ts";
+import SectionTitle from "../../kit/SectionTitle.tsx";
 
 export default function Whispers() {
   let thread: HTMLDivElement | undefined;
@@ -57,7 +58,7 @@ export default function Whispers() {
         classList={{ "@max-2xl:hidden": !!whispers.openPeer() }}
       >
         <div class="p-3 flex flex-col gap-3">
-          <h2 class="text-heading text-ink">{t("WHISPERS_TITLE")}</h2>
+          <SectionTitle>{t("WHISPERS_TITLE")}</SectionTitle>
           <SearchPicker
             floating
             clearOnPick
@@ -122,12 +123,11 @@ export default function Whispers() {
                 </IconButton>
               </span>
               <span class="min-h-control-sm min-w-0 flex items-center gap-2.5">
-                <span class="size-6 shrink-0 grid place-items-center rounded-full overflow-hidden bg-raised text-micro">
-                  <ChatterPicture
-                    userId={peer().id}
-                    name={peer().displayName}
-                  />
-                </span>
+                <ChatterPicture
+                  size={24}
+                  userId={peer().id}
+                  name={peer().displayName}
+                />
                 <span class="truncate">{peer().displayName}</span>
               </span>
             </header>

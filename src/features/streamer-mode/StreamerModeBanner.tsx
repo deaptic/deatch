@@ -6,16 +6,12 @@ import IconButton from "../../kit/IconButton.tsx";
 import StripRow from "../../kit/StripRow.tsx";
 import { streamerMode } from "../preferences/index.ts";
 import * as streamer from "./store.ts";
+import Dot from "../../kit/Dot.tsx";
 
 function OnAirDot() {
   return (
     <span class="size-4 grid place-items-center">
-      <span class="relative size-2 rounded-full bg-live">
-        <span
-          aria-hidden
-          class="absolute inset-0 rounded-full bg-live animate-breathe"
-        />
-      </span>
+      <Dot tone="live" size="md" pulse />
     </span>
   );
 }

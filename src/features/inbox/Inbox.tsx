@@ -8,6 +8,7 @@ import Button from "../../kit/Button.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
 import Popover from "../../kit/Popover.tsx";
 import { t } from "../../shared/i18n/index.ts";
+import PanelHeader from "../../kit/PanelHeader.tsx";
 
 type Props = {
   x: number;
@@ -47,14 +48,17 @@ export default function Inbox(props: Props) {
   return (
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div class="w-120 max-w-full max-h-160 min-h-0 flex flex-col">
-        <header class="h-header shrink-0 flex items-center gap-2 pl-5 pr-3">
-          <h2 class="text-title text-ink flex-1">{t("INBOX_TITLE")}</h2>
-          <Show when={inbox.mentions().length > 0}>
-            <Button variant="ghost" size="sm" onClick={inbox.dismissAll}>
-              {t("INBOX_CLEAR_ALL_LABEL")}
-            </Button>
-          </Show>
-        </header>
+        <PanelHeader
+          inset
+          title={t("INBOX_TITLE")}
+          actions={
+            <Show when={inbox.mentions().length > 0}>
+              <Button variant="ghost" size="sm" onClick={inbox.dismissAll}>
+                {t("INBOX_CLEAR_ALL_LABEL")}
+              </Button>
+            </Show>
+          }
+        />
         <Show
           when={inbox.mentions().length > 0}
           fallback={

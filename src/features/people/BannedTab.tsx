@@ -9,6 +9,7 @@ import Button from "../../kit/Button.tsx";
 import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
 import { createPaged } from "./createPaged.ts";
+import EmptyState from "../../kit/EmptyState.tsx";
 
 type Props = {
   onCount: (count: number, more: boolean) => void;
@@ -62,28 +63,12 @@ export default function BannedTab(props: Props) {
       class="flex-1 min-h-0 overflow-y-auto -mx-2 px-2"
       onScroll={paged.nearEnd}
     >
-      <Show
-        when={banned()}
-        fallback={
-          <div class="grid place-items-center py-6">
-            <Loading />
-          </div>
-        }
-      >
+      <Show when={banned()} fallback={<Loading block />}>
         <Show
           when={shown().length}
           fallback={
-            <Show
-              when={!paged.loading()}
-              fallback={
-                <div class="grid place-items-center py-6">
-                  <Loading />
-                </div>
-              }
-            >
-              <p class="py-3 text-body text-ink-faint">
-                {t("PEOPLE_BANNED_EMPTY")}
-              </p>
+            <Show when={!paged.loading()} fallback={<Loading block />}>
+              <EmptyState variant="list" body={t("PEOPLE_BANNED_EMPTY")} />
             </Show>
           }
         >

@@ -10,6 +10,7 @@ import { activityShown, setActivityShown } from "../preferences/index.ts";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import { ActivityIcon } from "./ui/ActivityIcon.tsx";
+import Dot from "../../kit/Dot.tsx";
 
 export default function ActivityMenuButton(props: { broadcasterId: string }) {
   const hidden = () =>
@@ -34,7 +35,9 @@ export default function ActivityMenuButton(props: { broadcasterId: string }) {
       icon={<Layers class="size-4" />}
       marker={
         <Show when={hidden().length}>
-          <span class="pointer-events-none absolute top-1 right-1 size-1.5 rounded-full bg-accent" />
+          <span class="pointer-events-none absolute top-1 right-1 flex">
+            <Dot tone="accent" />
+          </span>
         </Show>
       }
     >

@@ -6,6 +6,7 @@ import { users } from "../users/index.ts";
 import ChannelTile from "./ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
+import SectionTitle from "../../kit/SectionTitle.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -20,7 +21,7 @@ export default function RecentChannels(props: Props) {
   return (
     <Show when={channels()?.length}>
       <section>
-        <h2 class="mb-3 text-heading text-ink">{t("EXPLORE_RECENT_TITLE")}</h2>
+        <SectionTitle class="mb-3">{t("EXPLORE_RECENT_TITLE")}</SectionTitle>
         <div onKeyDown={moveGridFocus} class="-mx-2 grid grid-avatars">
           <For each={channels()}>
             {(channel) => {

@@ -7,6 +7,7 @@ import { byViewers, matchingStreams } from "./model.ts";
 import ChannelTile from "./ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
+import SectionTitle from "../../kit/SectionTitle.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -20,14 +21,9 @@ export default function FollowingLive(props: Props) {
 
   return (
     <section>
-      <h2 class="mb-3 flex items-baseline gap-2 text-heading text-ink">
+      <SectionTitle class="mb-3" count={streams().length}>
         {t("EXPLORE_FOLLOWING_TITLE")}
-        <Show when={streams().length}>
-          <span class="text-body tabular-nums text-ink-faint">
-            {streams().length}
-          </span>
-        </Show>
-      </h2>
+      </SectionTitle>
       <Show
         when={streams().length}
         fallback={

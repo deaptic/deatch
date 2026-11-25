@@ -1,6 +1,7 @@
 import type { User } from "../../shared/types/index.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import CardButton from "../../kit/CardButton.tsx";
 
 type Props = {
   channel: User;
@@ -17,11 +18,11 @@ export default function ChannelTile(props: Props) {
   );
 
   return (
-    <button
-      type="button"
+    <CardButton
+      look="tile"
       {...link.handlers}
       data-tip={props.tip}
-      class={`group flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center pressable hover:bg-surface active:pressed ${link.cursor}`}
+      cursor={link.cursor}
     >
       <Avatar
         src={props.channel.profileImageUrl}
@@ -38,6 +39,6 @@ export default function ChannelTile(props: Props) {
         </span>
       </span>
       {link.menu()}
-    </button>
+    </CardButton>
   );
 }

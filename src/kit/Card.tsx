@@ -14,8 +14,6 @@ type Props = {
   children: JSX.Element;
 };
 
-export const CARD_FRAME = "rounded-lg";
-
 export default function Card(props: Props) {
   const query = useContext(SettingsQuery);
   return (

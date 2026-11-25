@@ -13,6 +13,8 @@ import Dialog from "../../kit/Dialog.tsx";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Loading from "../../kit/Loading.tsx";
+import EmptyState from "../../kit/EmptyState.tsx";
+import ListRow from "../../kit/ListRow.tsx";
 
 const MIN_TERM_LENGTH = 2;
 
@@ -82,39 +84,33 @@ export default function BlockedTermsForm(props: Props) {
         </Button>
       </div>
       <div class="h-72 overflow-y-auto -mx-2 px-2">
-        <Show
-          when={terms()}
-          fallback={
-            <div class="grid place-items-center py-6">
-              <Loading />
-            </div>
-          }
-        >
+        <Show when={terms()} fallback={<Loading block />}>
           {(list) => (
             <Show
               when={list().length}
               fallback={
-                <p class="py-3 text-body text-ink-faint">
-                  {t("BLOCKED_TERMS_EMPTY")}
-                </p>
+                <EmptyState variant="list" body={t("BLOCKED_TERMS_EMPTY")} />
               }
             >
               <For each={list()}>
                 {(term) => (
-                  <div class="flex items-center gap-2 h-9 pl-2 rounded-sm hover:bg-raised">
+                  <ListRow
+                    actions={
+                      <IconButton
+                        label={t("BLOCKED_TERMS_REMOVE_LABEL", {
+                          term: term.text,
+                        })}
+                        size="sm"
+                        onClick={() => remove(term)}
+                      >
+                        <X class="size-4" />
+                      </IconButton>
+                    }
+                  >
                     <span class="flex-1 min-w-0 truncate text-body text-ink">
                       {term.text}
                     </span>
-                    <IconButton
-                      label={t("BLOCKED_TERMS_REMOVE_LABEL", {
-                        term: term.text,
-                      })}
-                      size="sm"
-                      onClick={() => remove(term)}
-                    >
-                      <X class="size-4" />
-                    </IconButton>
-                  </div>
+                  </ListRow>
                 )}
               </For>
             </Show>

@@ -16,6 +16,7 @@ import Button from "../../kit/Button.tsx";
 import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
 import { createPaged } from "./createPaged.ts";
+import EmptyState from "../../kit/EmptyState.tsx";
 
 type Check =
   | { kind: "missing" }
@@ -117,20 +118,11 @@ export default function FollowersTab(props: Props) {
           )}
         </Show>
       </Show>
-      <Show
-        when={followers()}
-        fallback={
-          <div class="grid place-items-center py-6">
-            <Loading />
-          </div>
-        }
-      >
+      <Show when={followers()} fallback={<Loading block />}>
         <Show
           when={shown().length || login()}
           fallback={
-            <p class="py-3 text-body text-ink-faint">
-              {t("PEOPLE_FOLLOWERS_EMPTY")}
-            </p>
+            <EmptyState variant="list" body={t("PEOPLE_FOLLOWERS_EMPTY")} />
           }
         >
           <For each={shown()}>

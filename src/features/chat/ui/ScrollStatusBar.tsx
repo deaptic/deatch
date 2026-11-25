@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../../shared/i18n/index.ts";
+import Dot from "../../../kit/Dot.tsx";
 
 type Props = {
   unseen: number;
@@ -22,7 +23,7 @@ export default function ScrollStatusBar(props: Props) {
           </span>
         }
       >
-        <span class="size-2 shrink-0 rounded-full bg-accent" />
+        <Dot tone="accent" size="md" />
         <span class="flex-1 min-w-0 truncate text-left font-semibold text-accent-ink">
           {t("FEED_UNREAD_COUNT_LABEL", { count: props.unseen })}
         </span>

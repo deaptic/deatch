@@ -5,6 +5,7 @@ import { groupChatters } from "./model.ts";
 import type { UserRef } from "../../shared/types/index.ts";
 import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
+import EmptyState from "../../kit/EmptyState.tsx";
 
 const LOAD_MORE_PX = 400;
 
@@ -43,15 +44,8 @@ export default function ChattersTab(props: Props) {
       <Show
         when={groups().length}
         fallback={
-          <Show
-            when={props.query || list().total}
-            fallback={
-              <div class="grid place-items-center py-6">
-                <Loading />
-              </div>
-            }
-          >
-            <p class="py-3 text-body text-ink-faint">{t("CHATTERS_EMPTY")}</p>
+          <Show when={props.query || list().total} fallback={<Loading block />}>
+            <EmptyState variant="list" body={t("CHATTERS_EMPTY")} />
           </Show>
         }
       >

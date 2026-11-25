@@ -8,7 +8,7 @@ import Textarea from "../../kit/Textarea.tsx";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import Segmented from "../../kit/Segmented.tsx";
-import FormRow from "../../kit/FormRow.tsx";
+import LabeledField from "../../kit/LabeledField.tsx";
 import Replies from "./Replies.tsx";
 import TriggerPreview from "./TriggerPreview.tsx";
 import { autofocus } from "../../shared/solid/focus.ts";
@@ -106,7 +106,7 @@ export default function TriggerCard(props: {
 
       <Show when={expanded()}>
         <div class="flex flex-col gap-3 px-4 pb-4 enter-rise">
-          <FormRow label={t("SETTINGS_TRIGGERS_PHRASE_LABEL")}>
+          <LabeledField inline label={t("SETTINGS_TRIGGERS_PHRASE_LABEL")}>
             <Textarea
               rows={2}
               resizable
@@ -142,18 +142,18 @@ export default function TriggerCard(props: {
                 <CaseSensitive class="size-4" />
               </IconButton>
             </div>
-          </FormRow>
+          </LabeledField>
 
-          <FormRow label={t("SETTINGS_TRIGGERS_REPLY_LABEL")}>
+          <LabeledField inline label={t("SETTINGS_TRIGGERS_REPLY_LABEL")}>
             <Replies
               replies={draft.replies}
               otherwise={draft.otherwise}
               onRepliesChange={(replies) => setDraft("replies", replies)}
               onOtherwiseChange={(v) => setDraft("otherwise", v)}
             />
-          </FormRow>
+          </LabeledField>
 
-          <FormRow label={t("SETTINGS_TRIGGERS_ACTION_LABEL")}>
+          <LabeledField inline label={t("SETTINGS_TRIGGERS_ACTION_LABEL")}>
             <div class="flex items-center gap-2">
               <Segmented
                 label={t("SETTINGS_TRIGGERS_ACTION_LABEL")}
@@ -194,9 +194,9 @@ export default function TriggerCard(props: {
                 class="w-28"
               />
             </div>
-          </FormRow>
+          </LabeledField>
 
-          <FormRow label={t("SETTINGS_TRIGGERS_ROLE_LABEL")}>
+          <LabeledField inline label={t("SETTINGS_TRIGGERS_ROLE_LABEL")}>
             <div>
               <Segmented
                 label={t("SETTINGS_TRIGGERS_ROLE_LABEL")}
@@ -208,11 +208,11 @@ export default function TriggerCard(props: {
                 onChange={(v) => setDraft("role", v)}
               />
             </div>
-          </FormRow>
+          </LabeledField>
 
-          <FormRow label={t("SETTINGS_TRIGGERS_TRY_LABEL")}>
+          <LabeledField inline label={t("SETTINGS_TRIGGERS_TRY_LABEL")}>
             <TriggerPreview trigger={draft} />
-          </FormRow>
+          </LabeledField>
         </div>
       </Show>
     </Card>

@@ -2,7 +2,7 @@ import { t } from "../shared/i18n/index.ts";
 
 type Size = 16 | 20 | 24 | 32;
 
-type Props = { size?: Size };
+type Props = { size?: Size; block?: boolean };
 
 const SIZES: Record<Size, string> = {
   16: "size-4",
@@ -12,7 +12,7 @@ const SIZES: Record<Size, string> = {
 };
 
 export default function Loading(props: Props) {
-  return (
+  const spinner = (
     <span
       role="status"
       aria-label={t("UI_LOADING_STATUS")}
@@ -20,5 +20,10 @@ export default function Loading(props: Props) {
         SIZES[props.size ?? 20]
       }`}
     />
+  );
+  return props.block ? (
+    <div class="grid place-items-center py-6">{spinner}</div>
+  ) : (
+    spinner
   );
 }

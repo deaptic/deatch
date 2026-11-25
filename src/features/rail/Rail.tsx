@@ -34,7 +34,7 @@ import { createScrollAffordance } from "./createScrollAffordance.ts";
 import { createRailChannels } from "./createRailChannels.ts";
 import { createPinDrag } from "./createPinDrag.ts";
 import RailRow from "./RailRow.tsx";
-import RailTile from "./ui/RailTile.tsx";
+import IconTile from "../../kit/IconTile.tsx";
 import RailDivider from "./RailDivider.tsx";
 import RailLinkRow from "./RailLinkRow.tsx";
 import ChannelRow from "./ChannelRow.tsx";
@@ -181,9 +181,9 @@ export default function Rail(props: Props) {
               sub={t("RAIL_PIN_CHANNEL_DESCRIPTION")}
               onClick={toggleAdd}
             >
-              <RailTile>
+              <IconTile>
                 <Plus />
-              </RailTile>
+              </IconTile>
             </RailRow>
           </div>
 
@@ -201,9 +201,9 @@ export default function Rail(props: Props) {
                     onClick={() => setSystemFollowedChannels(true)}
                     onContextMenu={(x, y) => promptMenu.open(x, y, {})}
                   >
-                    <RailTile>
+                    <IconTile>
                       <Radio />
-                    </RailTile>
+                    </IconTile>
                   </RailRow>
                 </div>
               </Show>
@@ -306,9 +306,9 @@ export default function Rail(props: Props) {
           selected={activeView() === "explore"}
           onClick={showExplore}
         >
-          <RailTile active={activeView() === "explore" && "accent"}>
+          <IconTile active={activeView() === "explore" && "accent"}>
             <Search />
-          </RailTile>
+          </IconTile>
         </RailRow>
         <RailRow
           label={t("RAIL_WHISPERS_LABEL")}
@@ -317,9 +317,9 @@ export default function Rail(props: Props) {
           count={whispers.unreadCount()}
           onClick={showWhispers}
         >
-          <RailTile active={activeView() === "whispers" && "accent"}>
+          <IconTile active={activeView() === "whispers" && "accent"}>
             <MessageCircle />
-          </RailTile>
+          </IconTile>
         </RailRow>
         <RailRow
           label={t("RAIL_SETTINGS_LABEL")}
@@ -327,9 +327,9 @@ export default function Rail(props: Props) {
           selected={isSettingsOpen()}
           onClick={toggleSettings}
         >
-          <RailTile active={isSettingsOpen() && "accent"}>
+          <IconTile active={isSettingsOpen() && "accent"}>
             <Settings />
-          </RailTile>
+          </IconTile>
         </RailRow>
       </div>
 

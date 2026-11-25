@@ -29,11 +29,13 @@ import {
   TIMER_MINUTES,
   updateTimer,
 } from "../preferences/index.ts";
+import SectionLabel from "../../kit/SectionLabel.tsx";
+import IconTile from "../../kit/IconTile.tsx";
 
 function Choice(props: { label: string; children: JSX.Element }) {
   return (
     <div class="flex flex-col gap-1.5 min-w-0">
-      <span class="text-micro uppercase text-ink-faint">{props.label}</span>
+      <SectionLabel>{props.label}</SectionLabel>
       {props.children}
     </div>
   );
@@ -57,13 +59,11 @@ function TimerCard(props: {
           tabIndex={-1}
           aria-hidden
           onClick={props.onToggle}
-          class={`size-9 shrink-0 grid place-items-center rounded-md cursor-pointer transition-colors duration-snap [&>svg]:size-4.5 ${
-            timer().enabled
-              ? "bg-accent-soft text-accent-ink"
-              : "bg-raised text-ink-faint"
-          }`}
+          class="group shrink-0 cursor-pointer"
         >
-          <TimerIcon />
+          <IconTile size="md" active={timer().enabled && "accent"}>
+            <TimerIcon />
+          </IconTile>
         </button>
         <Field
           look="inline"

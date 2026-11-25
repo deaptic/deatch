@@ -37,6 +37,8 @@ import { TriggerSettings } from "../triggers/index.ts";
 import { TimersSettings } from "../timers/index.ts";
 import { LinkSettings } from "../link/index.ts";
 import { EmbedsSettings } from "../previews/index.ts";
+import SectionTitle from "../../kit/SectionTitle.tsx";
+import SectionLabel from "../../kit/SectionLabel.tsx";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
   language: LanguageSettings,
@@ -117,9 +119,9 @@ export default function Settings() {
               </span>
             }
           >
-            <p class="px-2.5 text-micro uppercase text-ink-faint truncate whitespace-nowrap">
-              {t("SETTINGS_TITLE")}
-            </p>
+            <div class="px-2.5 min-w-0">
+              <SectionLabel truncate>{t("SETTINGS_TITLE")}</SectionLabel>
+            </div>
           </Show>
         </div>
         <For each={SETTINGS_GROUPS}>
@@ -131,14 +133,11 @@ export default function Settings() {
               <Show when={group.label}>
                 {(label) => (
                   <div class="h-6 flex items-center">
-                    <span
-                      aria-hidden={collapsed()}
-                      class={`px-4.5 text-micro uppercase text-ink-faint truncate whitespace-nowrap ${
-                        collapsed() ? "opacity-0" : ""
-                      }`}
-                    >
-                      {t(label())}
-                    </span>
+                    <div class="px-4.5 min-w-0">
+                      <SectionLabel hidden={collapsed()} truncate>
+                        {t(label())}
+                      </SectionLabel>
+                    </div>
                   </div>
                 )}
               </Show>
@@ -170,11 +169,11 @@ export default function Settings() {
       <div class="flex-1 min-w-0 flex flex-col min-h-0">
         <header class="shrink-0 h-14 px-5 flex border-b border-line-soft">
           <div class="w-full max-w-170 mx-auto flex items-center gap-4">
-            <h2 class="flex-1 min-w-0 truncate text-heading text-ink">
+            <SectionTitle class="flex-1" truncate>
               {searching()
                 ? t("SETTINGS_SEARCH_RESULTS_TITLE", { query: query().trim() })
                 : t(currentLabel())}
-            </h2>
+            </SectionTitle>
             <div class="w-64 shrink-0 flex flex-col">
               <Field
                 size="md"

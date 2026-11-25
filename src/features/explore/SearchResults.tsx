@@ -32,6 +32,8 @@ import Avatar from "../../kit/Avatar.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
 import LivePill from "../../kit/LivePill.tsx";
 import { t } from "../../shared/i18n/index.ts";
+import SectionTitle from "../../kit/SectionTitle.tsx";
+import OptionRow from "../../kit/OptionRow.tsx";
 
 type Props = {
   query: string;
@@ -99,9 +101,9 @@ export default function SearchResults(props: Props) {
     <div class="flex flex-col gap-8">
       <Show when={categories()?.length}>
         <section>
-          <h2 class="mb-3 text-heading text-ink">
+          <SectionTitle class="mb-3">
             {t("EXPLORE_CATEGORIES_TITLE")}
-          </h2>
+          </SectionTitle>
           <CategoryRow
             categories={categories() ?? []}
             onSelect={props.onSelectGame}
@@ -125,9 +127,9 @@ export default function SearchResults(props: Props) {
         }
       >
         <section>
-          <h2 class="mb-3 text-heading text-ink">
+          <SectionTitle class="mb-3">
             {t("EXPLORE_CHANNELS_TITLE")}
-          </h2>
+          </SectionTitle>
           <div {...listbox.list} class="flex flex-col gap-0.5">
             <For each={ranked()}>
               {(channel, index) => {
@@ -136,13 +138,13 @@ export default function SearchResults(props: Props) {
                   () => open(channel),
                 );
                 return (
-                  <button
-                    type="button"
+                  <OptionRow
                     {...listbox.option(index)}
                     {...link.handlers}
                     onMouseMove={() => listbox.setActive(index())}
-                    class={`flex items-center gap-3 h-14 rounded-sm px-3 text-left transition-colors duration-snap ${link.cursor}`}
-                    classList={{ "bg-raised": listbox.active() === index() }}
+                    size="lg"
+                    cursor={link.cursor}
+                    active={listbox.active() === index()}
                   >
                     <Avatar
                       src={channel.profileImageUrl}
@@ -167,7 +169,7 @@ export default function SearchResults(props: Props) {
                       <LivePill />
                     </Show>
                     {link.menu()}
-                  </button>
+                  </OptionRow>
                 );
               }}
             </For>

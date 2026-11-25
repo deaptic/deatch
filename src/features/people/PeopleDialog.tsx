@@ -21,6 +21,7 @@ import BannedTab from "./BannedTab.tsx";
 import ChattersTab from "./ChattersTab.tsx";
 import FollowersTab from "./FollowersTab.tsx";
 import RolesTab from "./RolesTab.tsx";
+import PanelHeader from "../../kit/PanelHeader.tsx";
 
 const REFRESH_MS = 120_000;
 
@@ -83,19 +84,19 @@ export default function PeopleDialog(props: Props) {
 
   return (
     <Modal look="dialog" label={t("PEOPLE_TITLE")} onClose={props.onClose}>
-      <div class="flex items-center gap-2">
-        <h2 class="text-title text-ink">{t("PEOPLE_TITLE")}</h2>
-        <span class="flex-1 text-body text-ink-faint tabular-nums">
-          {count()}
-        </span>
-        <IconButton
-          label={t("CHATTERS_CLOSE_LABEL")}
-          size="sm"
-          onClick={() => props.onClose()}
-        >
-          <X class="size-4" />
-        </IconButton>
-      </div>
+      <PanelHeader
+        title={t("PEOPLE_TITLE")}
+        count={count()}
+        actions={
+          <IconButton
+            label={t("CHATTERS_CLOSE_LABEL")}
+            size="sm"
+            onClick={() => props.onClose()}
+          >
+            <X class="size-4" />
+          </IconButton>
+        }
+      />
       <Show when={tabs().length > 1}>
         <Segmented
           label={t("PEOPLE_TITLE")}

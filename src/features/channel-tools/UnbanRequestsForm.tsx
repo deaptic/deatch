@@ -77,12 +77,11 @@ function RequestCard(props: { broadcasterId: string; request: UnbanRequest }) {
   return (
     <div class="flex flex-col gap-3 p-4 rounded-md bg-raised">
       <div class="flex items-center gap-3">
-        <span class="size-9 shrink-0 grid place-items-center rounded-full overflow-hidden bg-overlay">
-          <ChatterPicture
-            userId={props.request.user.id}
-            name={props.request.user.displayName}
-          />
-        </span>
+        <ChatterPicture
+          size={36}
+          userId={props.request.user.id}
+          name={props.request.user.displayName}
+        />
         <div class="flex-1 min-w-0 flex flex-col">
           <span class="truncate text-body font-semibold text-ink">
             {props.request.user.displayName}
