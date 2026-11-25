@@ -33,7 +33,10 @@ function channel() {
   return /^[a-z0-9_]{3,25}$/.test(name) ? name : null;
 }
 
-const channelGain = () => settings.gains[channel()] ?? 1;
+const channelGain = () => {
+  const ch = channel();
+  return ch && Object.hasOwn(settings.gains, ch) ? settings.gains[ch] : 1;
+};
 const inUse = () => settings.enabled || channelGain() !== 1;
 
 function buildChain(video) {
@@ -110,9 +113,12 @@ const playsStream = (video) => video.src.startsWith("blob:");
 async function attach(video) {
   if (chains.has(video) || failed.has(video) || !playsStream(video)) return;
   ctx ??= new AudioContext();
-  if (ctx.state !== "running") await ctx.resume().catch(() => {});
-  if (ctx.state !== "running") return waitForGesture();
-  if (chains.has(video)) return;
+  if (ctx.state !== "running") {
+    ctx.onstatechange ??= () => void scan();
+    void ctx.resume().catch(() => {});
+    waitForGesture();
+    return;
+  }
   try {
     const chain = buildChain(video);
     chains.set(video, chain);

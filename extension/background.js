@@ -23,6 +23,8 @@ const NON_CHANNEL_PATHS = new Set([
   "logout",
   "moderator",
   "embed",
+  "team",
+  "activate",
 ]);
 
 function channelFromUrl(url) {
@@ -104,7 +106,7 @@ function forgetTab(tabId) {
 
 function applyTab(tab) {
   const ch = channelFromUrl(tab.url || "");
-  if (!ch) return forgetTab(tab.id);
+  if (!ch || tab.incognito) return forgetTab(tab.id);
   if (!tabFocusedAt.has(tab.id)) {
     tabFocusedAt.set(tab.id, tab.lastAccessed ?? 0);
   }
@@ -174,7 +176,11 @@ function connect() {
     scheduleReconnect();
     return;
   }
-  port.onDisconnect.addListener(() => {
+  port.onDisconnect.addListener((p) => {
+    console.warn(
+      "native host disconnected",
+      chrome.runtime.lastError?.message ?? p.error?.message,
+    );
     port = null;
     scheduleReconnect();
   });
@@ -205,6 +211,18 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   forgetTab(tabId);
   if (tabId === activeTabId) activeTabId = null;
   emitState();
+});
+
+chrome.tabs.onReplaced?.addListener((addedId, removedId) => {
+  forgetTab(removedId);
+  if (removedId === activeTabId) activeTabId = addedId;
+  chrome.tabs.get(addedId).then(
+    (tab) => {
+      applyTab(tab);
+      emitState();
+    },
+    () => emitState(),
+  );
 });
 
 chrome.tabs.onUpdated.addListener((tabId, info, tab) => {

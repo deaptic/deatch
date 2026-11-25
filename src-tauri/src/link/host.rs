@@ -52,7 +52,9 @@ pub fn run() {
     loop {
         match read_message(&mut stdin) {
             Ok(Some(text)) => {
-                log(format_args!("<- {text}"));
+                if cfg!(debug_assertions) {
+                    log(format_args!("<- {text}"));
+                }
                 if tx.send(Event::FromBrowser(text)).is_err() {
                     break;
                 }
@@ -161,7 +163,9 @@ fn pump_to_browser(reader: Stream) {
             log(format_args!("reader stdout error: {e}"));
             return;
         }
-        log(format_args!("⇇ {line}"));
+        if cfg!(debug_assertions) {
+            log(format_args!("⇇ {line}"));
+        }
     }
 }
 

@@ -17,9 +17,9 @@
   },
   "permissions": ["nativeMessaging", "storage"],
   "host_permissions": [
-    "*://twitch.tv/*",
-    "*://www.twitch.tv/*",
-    "*://m.twitch.tv/*"
+    "https://twitch.tv/*",
+    "https://www.twitch.tv/*",
+    "https://m.twitch.tv/*"
   ],
   "background": {
     "scripts": ["background.js"],
