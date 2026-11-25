@@ -25,7 +25,7 @@ type Assets = Omit<Extract<Frame, { topic: "assets" }>, "topic">;
 const GROUP_SPACING = 8;
 const THEME = "dark";
 const PERCENT = 100;
-const NO_ASSETS: Assets = { emotes: {}, cheermotes: {}, badges: {} };
+const NO_ASSETS: Assets = { emotes: {}, cheermotes: {}, badges: {}, me: null };
 
 export default function WidgetApp(props: {
   socketUrl: string;
@@ -69,14 +69,19 @@ export default function WidgetApp(props: {
     });
   });
 
-  onMount(() => {
-    if (props.preview) users.set(sampleUsers());
-  });
-
   createEffect(() => {
     const frame = style();
     if (!props.preview || !frame) return;
-    showRows(toRows(streamEntries(sampleMessages(Date.now()), frame.style)));
+    const { me } = assets();
+    users.set(sampleUsers(me));
+    showRows(
+      toRows(streamEntries(sampleMessages(Date.now(), me), frame.style)),
+    );
+    if (frame.style.newest === "bottom") {
+      requestAnimationFrame(() =>
+        scrollTo(0, document.documentElement.scrollHeight),
+      );
+    }
   });
 
   onMount(() => {

@@ -1,13 +1,12 @@
 import { t } from "../../shared/i18n/index.ts";
 import { createMemo, createResource, For } from "solid-js";
-import type { FeedEntry, FeedMessage } from "../feed/index.ts";
+import type { FeedEntry, FeedMessage, Fragment } from "../feed/index.ts";
 import * as badges from "../badges/index.ts";
 import {
   feedDensity,
   feedShowDeletedContent,
   feedShowTimestamp,
   feedShowAvatars,
-  feedLinkPreviews,
 } from "../preferences/index.ts";
 import { users } from "../users/index.ts";
 import { user } from "../users/index.ts";
@@ -22,11 +21,15 @@ type Me = { id: string; login: string; name: string; color: string };
 
 const noop = () => {};
 
+const text = (value: string): Fragment => ({ type: "text", text: value });
+const VIP = { set_id: "vip", id: "1", info: "" };
+const SUBSCRIBER = { set_id: "subscriber", id: "0", info: "" };
+
 function sampleFeed(me: Me, now: number): FeedEntry[] {
   const at = (minutesAgo: number) => now - minutesAgo * 60_000;
   const message = (
     id: string,
-    text: string,
+    fragments: Fragment[],
     minutesAgo: number,
     extra: Partial<FeedMessage> = {},
   ): FeedMessage => ({
@@ -36,24 +39,32 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
     chatter_login: me.login,
     chatter_name: me.name,
     color: me.color,
-    fragments: [{ type: "text", text }],
-    badges: [{ set_id: "broadcaster", id: "1", info: "" }],
+    fragments,
+    badges: [VIP],
     timestamp: at(minutesAgo),
     ...extra,
   });
   return [
-    message("p1", t("SETTINGS_MESSAGES_PREVIEW_WELCOME_LINE"), 12),
-    message("p2", t("SETTINGS_MESSAGES_PREVIEW_START_LINE"), 11.5),
-    message("p3", t("SETTINGS_MESSAGES_PREVIEW_WRONG_TAB_LINE"), 11, {
+    message(
+      "p1",
+      [
+        text(`${t("SETTINGS_MESSAGES_PREVIEW_CAT_LINE")} `),
+        { type: "emote", text: "NotLikeThis", id: "58765" },
+      ],
+      12,
+    ),
+    message("p2", [text(t("SETTINGS_MESSAGES_PREVIEW_KEYBOARD_LINE"))], 11.5, {
       deleted: true,
     }),
-    message("p4", t("SETTINGS_MESSAGES_PREVIEW_THANKS_LINE"), 1),
-    feedEvent("sub", t("FEED_SUB_LINE", { plan: "1" }), at(0.5), {
-      id: "p5",
+    feedEvent("sub", t("FEED_SUB_LINE", { plan: "1" }), at(2), {
+      id: "p3",
       chatter_user_id: me.id,
       chatter_login: me.login,
       chatter_name: me.name,
       color: me.color,
+    }),
+    message("p4", [text(t("SETTINGS_MESSAGES_PREVIEW_SUBBED_LINE"))], 1, {
+      badges: [VIP, SUBSCRIBER],
     }),
   ];
 }
@@ -75,7 +86,14 @@ export default function AppearancePreview() {
   const rows = createMemo(() =>
     layoutFeed(entries(), groupsMessages(feedDensity())),
   );
-  const [badgeMap] = createResource(badges.loadGlobal, { initialValue: {} });
+  const [badgeMap] = createResource(
+    () => ({ own: user() }),
+    ({ own }) =>
+      own
+        ? badges.badgeMapFor({ id: own.id, login: own.login })
+        : badges.loadGlobal(),
+    { initialValue: {} },
+  );
 
   return (
     <div class="px-2 pb-3 pr-4 text-(length:--chat-size)">
@@ -87,7 +105,7 @@ export default function AppearancePreview() {
             continued={rows()[i()]?.continued}
             showTimestamp={feedShowTimestamp()}
             showAvatars={feedShowAvatars()}
-            linkPreviews={feedLinkPreviews()}
+            linkPreviews={false}
             showDeletedContent={feedShowDeletedContent()}
             flush
             emotes={{}}

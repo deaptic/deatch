@@ -1,68 +1,120 @@
 import { t } from "../../shared/i18n/index.ts";
 import type { User } from "../../shared/types/index.ts";
 import type { FeedMessage, Fragment } from "../feed/index.ts";
+import type { MessageBadge } from "../../platform/twitch/eventsubPayloads.ts";
 
-type Chatter = { name: string; color: string; badge?: string };
+export type Me = { user: User; color: string };
+
+type Chatter = {
+  id: string;
+  login: string;
+  name: string;
+  color: string;
+  badges: MessageBadge[];
+  picture: string;
+};
 
 const PICTURE =
   "https://static-cdn.jtvnw.net/user-default-pictures-uv/cdd517fe-def4-11e9-948e-784f43822e80-profile_image-300x300.png";
 const SPACING_MS = 15_000;
 
-const CHATTERS: Chatter[] = [
-  { name: "user1", color: "#ff7f50", badge: "moderator" },
-  { name: "someone", color: "#1e90ff", badge: "vip" },
-  { name: "user3", color: "#9acd32" },
-  { name: "user4", color: "#daa520" },
-  { name: "user5", color: "#ff69b4" },
+const badge = (set_id: string, id = "1"): MessageBadge => ({
+  set_id,
+  id,
+  info: "",
+});
+
+const generic = (
+  index: number,
+  name: string,
+  color: string,
+  badges: MessageBadge[] = [],
+): Chatter => ({
+  id: `preview-${index}`,
+  login: name.toLowerCase(),
+  name,
+  color,
+  badges,
+  picture: PICTURE,
+});
+
+function chatters(me: Me | null): Chatter[] {
+  const you = me
+    ? {
+        id: me.user.id,
+        login: me.user.login,
+        name: me.user.displayName,
+        color: me.color,
+        badges: [badge("broadcaster")],
+        picture: me.user.profileImageUrl,
+      }
+    : generic(2, "QuietHarbor", "#daa520");
+  return [
+    generic(0, "MossyPixel", "#ff7f50", [badge("moderator")]),
+    generic(1, "kettlebrew", "#1e90ff", [
+      badge("vip"),
+      badge("subscriber", "0"),
+    ]),
+    you,
+  ];
+}
+
+const emote = (name: string, id: string): Fragment => ({
+  type: "emote",
+  text: name,
+  id,
+});
+
+const said = (line: string, reaction: Fragment): Fragment[] => [
+  { type: "text", text: `${line} ` },
+  reaction,
 ];
 
-const KAPPA: Fragment = { type: "emote", text: "Kappa", id: "25" };
-
-const text = (value: string): Fragment => ({ type: "text", text: value });
-
-const lines = (): [number, Fragment[]][] => [
-  [0, [text(t("SETTINGS_WIDGETS_PREVIEW_HELLO_LINE"))]],
-  [1, [text(`${t("SETTINGS_WIDGETS_PREVIEW_PLAY_LINE")} `), KAPPA]],
-  [2, [text("!lurk")]],
-  [3, [text(t("SETTINGS_WIDGETS_PREVIEW_LONG_LINE"))]],
-  [4, [text(t("SETTINGS_WIDGETS_PREVIEW_QUESTION_LINE"))]],
-  [2, [text(t("SETTINGS_WIDGETS_PREVIEW_GG_LINE"))]],
-  [0, [text(t("SETTINGS_WIDGETS_PREVIEW_LURK_LINE"))]],
-  [1, [KAPPA]],
+const lines = (people: Chatter[]): Fragment[][] => [
+  said(
+    t("SETTINGS_WIDGETS_PREVIEW_BADGE_LINE"),
+    emote("PogChamp", "305954156"),
+  ),
+  said(t("SETTINGS_WIDGETS_PREVIEW_EMOTE_LINE"), emote("LUL", "425618")),
+  [
+    {
+      type: "text",
+      text: t("SETTINGS_WIDGETS_PREVIEW_WRAP_LINE", {
+        vip: people[1]?.name ?? "",
+      }),
+    },
+  ],
 ];
 
-const idOf = (chatter: number) => `preview-${chatter}`;
-
-export function sampleMessages(now: number): FeedMessage[] {
-  const all = lines();
-  return all.flatMap(([index, fragments], i) => {
-    const chatter = CHATTERS[index];
+export function sampleMessages(now: number, me: Me | null): FeedMessage[] {
+  const people = chatters(me);
+  const all = lines(people);
+  return all.flatMap((fragments, i) => {
+    const chatter = people[i];
     if (!chatter) return [];
     return [
       {
         kind: "message",
         message_id: `preview-message-${i}`,
-        chatter_user_id: idOf(index),
-        chatter_login: chatter.name,
+        chatter_user_id: chatter.id,
+        chatter_login: chatter.login,
         chatter_name: chatter.name,
         color: chatter.color,
         fragments,
-        badges: chatter.badge
-          ? [{ set_id: chatter.badge, id: "1", info: "" }]
-          : [],
+        badges: chatter.badges,
         timestamp: now - (all.length - 1 - i) * SPACING_MS,
       },
     ];
   });
 }
 
-export function sampleUsers(): User[] {
-  return CHATTERS.map((chatter, index) => ({
-    id: idOf(index),
-    login: chatter.name,
+export function sampleUsers(me: Me | null): User[] {
+  return chatters(me).map((chatter) => ({
+    id: chatter.id,
+    login: chatter.login,
     displayName: chatter.name,
     description: "",
-    profileImageUrl: PICTURE,
+    profileImageUrl: chatter.picture,
     offlineImageUrl: null,
     broadcasterType: "normal",
     createdAt: "",

@@ -28,3 +28,21 @@ html[data-preview] body {
 [data-names="regular"] [data-name] {
   font-weight: normal;
 }
+
+html[data-preview] {
+  overflow-y: auto;
+}
+
+html[data-preview] body {
+  overflow: visible;
+}
+
+html[data-preview] #root {
+  height: auto;
+}
+
+html[data-preview] [data-chat] {
+  height: auto;
+  min-height: calc(100vh / var(--widget-scale, 1));
+  overflow: visible;
+}

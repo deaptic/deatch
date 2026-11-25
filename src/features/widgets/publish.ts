@@ -65,6 +65,11 @@ export function start(): () => void {
       return channel && { ...channel, changes: channelEmoteChanges() };
     }, emoteMapFor);
     const [ownBadges] = createResource(ownChannel, badgeMapFor);
+    const [ownColor] = createResource(() => user()?.id, users.chatColor);
+    const me = () => {
+      const own = user();
+      return own ? { user: own, color: ownColor() ?? "" } : null;
+    };
     createEffect(() => {
       const widgets = savedWidgets().map((w) => w.id);
       widgetsRetain({ widgets }, { silent: true }).catch(() => {});
@@ -81,6 +86,7 @@ export function start(): () => void {
         emotes: ownEmotes() ?? {},
         cheermotes: own ? cheermotes.forChannel(own) : {},
         badges: ownBadges() ?? {},
+        me: me(),
       }));
     });
     createEffect(() => {

@@ -6,6 +6,7 @@ import {
   For,
   on,
   onCleanup,
+  onMount,
   untrack,
 } from "solid-js";
 import type { CheermoteMap, EmoteMap } from "../emotes/index.ts";
@@ -13,6 +14,7 @@ import { type BadgeMap, type FeedMessage, FeedRow } from "../feed/index.ts";
 import type { ChatStyle } from "../preferences/index.ts";
 import { appearance } from "../appearance/index.ts";
 import { glide, measure, type Motion, type Spot } from "./glide.ts";
+import { clearHugs, hugTiles } from "./hug.ts";
 import { arrange, isExpired } from "./model.ts";
 
 export type Row = { key: string; entry: FeedMessage };
@@ -108,10 +110,37 @@ export default function ChatWidget(props: Props) {
       });
       const going = new Set(next.leaving.keys());
       queueMicrotask(() => glide(elements, before, going, motion()));
+      refit();
     }),
   );
 
+  let container: HTMLDivElement | undefined;
+  let fitFrame = 0;
+  function refit() {
+    cancelAnimationFrame(fitFrame);
+    fitFrame = requestAnimationFrame(() => {
+      if (!container) return;
+      if (props.chatStyle.width === "fit") hugTiles(container);
+      else clearHugs(container);
+    });
+  }
+
+  createEffect(() => {
+    JSON.stringify(props.chatStyle);
+    refit();
+  });
+
+  onMount(() => {
+    container?.addEventListener("load", refit, true);
+    addEventListener("resize", refit);
+    onCleanup(() => {
+      container?.removeEventListener("load", refit, true);
+      removeEventListener("resize", refit);
+    });
+  });
+
   onCleanup(() => {
+    cancelAnimationFrame(fitFrame);
     for (const timer of timers.values()) clearTimeout(timer);
   });
 
@@ -122,6 +151,8 @@ export default function ChatWidget(props: Props) {
 
   return (
     <div
+      ref={container}
+      data-chat
       class={`relative flex gap-(--widget-gap) h-full overflow-hidden p-(--widget-edge) text-(length:--chat-size) text-shadow-overlay ${
         FLOWS[flow()]
       } ${props.chatStyle.align === "right" ? "items-end" : "items-start"}`}
