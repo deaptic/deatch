@@ -16,6 +16,8 @@ import ConversationRow from "./ConversationRow.tsx";
 import WhisperComposer from "./WhisperComposer.tsx";
 import * as whispers from "./store.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
+import Surface from "../../kit/Surface.tsx";
+import Text from "../../kit/Text.tsx";
 
 export default function Whispers() {
   let thread: HTMLDivElement | undefined;
@@ -82,9 +84,11 @@ export default function Whispers() {
           <For
             each={conversations()}
             fallback={
-              <p class="px-3 py-2 text-small text-ink-faint">
-                {t("WHISPERS_EMPTY")}
-              </p>
+              <div class="px-3 py-2">
+                <Text as="p" size="sm" tone="faint">
+                  {t("WHISPERS_EMPTY")}
+                </Text>
+              </div>
             }
           >
             {(c) => (
@@ -112,32 +116,38 @@ export default function Whispers() {
       >
         {(peer) => (
           <section class="flex-1 min-w-0 min-h-0 flex flex-col">
-            <header class="flex items-center gap-2 px-4 py-2 border-b border-line-soft text-body font-semibold text-ink">
-              <span class="@2xl:hidden">
-                <IconButton
-                  label={t("WHISPERS_BACK_LABEL")}
-                  size="sm"
-                  onClick={whispers.back}
-                >
-                  <ArrowLeft class="size-4" />
-                </IconButton>
-              </span>
-              <span class="min-h-control-sm min-w-0 flex items-center gap-2.5">
-                <ChatterPicture
-                  size={24}
-                  userId={peer().id}
-                  name={peer().displayName}
-                />
-                <span class="truncate">{peer().displayName}</span>
-              </span>
-            </header>
+            <Surface as="header" tone="none" edge="bottom">
+              <Text as="div" size="md" bold tone="primary">
+                <div class="flex items-center gap-2 px-4 py-2">
+                  <span class="@2xl:hidden">
+                    <IconButton
+                      label={t("WHISPERS_BACK_LABEL")}
+                      size="sm"
+                      onClick={whispers.back}
+                    >
+                      <ArrowLeft class="size-4" />
+                    </IconButton>
+                  </span>
+                  <span class="min-h-control-sm min-w-0 flex items-center gap-2.5">
+                    <ChatterPicture
+                      size={24}
+                      userId={peer().id}
+                      name={peer().displayName}
+                    />
+                    <span class="truncate">{peer().displayName}</span>
+                  </span>
+                </div>
+              </Text>
+            </Surface>
             <div
               ref={thread}
               class="flex-1 min-h-0 overflow-y-auto pr-4 py-1 flex flex-col text-(length:--chat-size)"
             >
-              <p class="px-4 py-2 text-center text-small text-ink-faint">
-                {t("WHISPERS_LOCAL_ONLY_HINT")}
-              </p>
+              <div class="px-4 py-2">
+                <Text as="p" align="center" size="sm" tone="faint">
+                  {t("WHISPERS_LOCAL_ONLY_HINT")}
+                </Text>
+              </div>
               <For each={messages()}>
                 {(item, i) => (
                   <Message

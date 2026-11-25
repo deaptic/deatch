@@ -23,10 +23,7 @@ export default function StepSlider(props: Props) {
         props.disabled ? "opacity-40" : ""
       }`}
     >
-      <div
-        aria-hidden
-        class="flex justify-between px-2 text-micro tabular-nums"
-      >
+      <div aria-hidden class="flex justify-between px-2 text-xs tabular-nums">
         <For each={props.steps}>
           {(stop) => (
             <span

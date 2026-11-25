@@ -21,9 +21,9 @@ export default function Dialog(props: Props) {
         }}
       >
         <div class="flex flex-col gap-1">
-          <h2 class="text-title text-ink">{props.title}</h2>
+          <h2 class="text-base font-semibold text-ink">{props.title}</h2>
           <Show when={props.description}>
-            <p class="text-body text-ink-soft">{props.description}</p>
+            <p class="text-base text-ink-soft">{props.description}</p>
           </Show>
         </div>
         {props.children}

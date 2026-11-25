@@ -2,6 +2,9 @@ import { For, type JSX, Show } from "solid-js";
 import { type MessageKey, t } from "../../shared/i18n/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import Kbd from "../../kit/Kbd.tsx";
+import Text from "../../kit/Text.tsx";
+import Divider from "../../kit/Divider.tsx";
+import Surface from "../../kit/Surface.tsx";
 
 type Hint = { action: string; label: MessageKey };
 
@@ -44,28 +47,32 @@ export default function SelectionHints(props: {
   moderating: string | null;
 }) {
   return (
-    <div class="flex items-center gap-3 px-4 py-1.5 overflow-hidden whitespace-nowrap border-b border-line-soft text-small text-ink-soft">
-      <Show
-        when={props.moderating}
-        fallback={
-          <>
-            <Hints hints={EVERYONE} />
-            <Show when={props.moderator}>
-              <span aria-hidden class="shrink-0 w-px h-4 bg-line-soft" />
-              <Hints hints={ARM} />
-            </Show>
-          </>
-        }
-      >
-        {(name) => (
-          <>
-            <span class="shrink-0 font-semibold text-accent-ink">
-              {t("CHAT_HINT_MODERATING_LABEL", { name: name() })}
-            </span>
-            <Hints hints={MODERATE} />
-          </>
-        )}
-      </Show>
-    </div>
+    <Surface tone="none" edge="bottom">
+      <Text as="div" size="sm" tone="soft" nowrap>
+        <div class="flex items-center gap-3 px-4 py-1.5 overflow-hidden">
+          <Show
+            when={props.moderating}
+            fallback={
+              <>
+                <Hints hints={EVERYONE} />
+                <Show when={props.moderator}>
+                  <Divider vertical />
+                  <Hints hints={ARM} />
+                </Show>
+              </>
+            }
+          >
+            {(name) => (
+              <>
+                <Text bold tone="accent" class="shrink-0">
+                  {t("CHAT_HINT_MODERATING_LABEL", { name: name() })}
+                </Text>
+                <Hints hints={MODERATE} />
+              </>
+            )}
+          </Show>
+        </div>
+      </Text>
+    </Surface>
   );
 }

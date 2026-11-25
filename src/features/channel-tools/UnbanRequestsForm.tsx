@@ -13,6 +13,7 @@ import Button from "../../kit/Button.tsx";
 import { ChatterPicture } from "../message/index.ts";
 import Dialog from "../../kit/Dialog.tsx";
 import Field from "../../kit/Field.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   broadcasterId: string;
@@ -35,7 +36,9 @@ export default function UnbanRequestsForm(props: Props) {
       <Show
         when={requests().length}
         fallback={
-          <p class="text-body text-ink-soft">{t("UNBAN_REQUESTS_EMPTY")}</p>
+          <Text as="p" size="md" tone="soft">
+            {t("UNBAN_REQUESTS_EMPTY")}
+          </Text>
         }
       >
         <div class="flex flex-col gap-3 max-h-120 overflow-y-auto -mx-1 px-1">
@@ -83,30 +86,32 @@ function RequestCard(props: { broadcasterId: string; request: UnbanRequest }) {
           name={props.request.user.displayName}
         />
         <div class="flex-1 min-w-0 flex flex-col">
-          <span class="truncate text-body font-semibold text-ink">
+          <Text truncate size="md" bold tone="primary">
             {props.request.user.displayName}
-          </span>
-          <span class="text-small text-ink-faint">
+          </Text>
+          <Text size="sm" tone="faint">
             {t("UNBAN_REQUESTS_SENT_STATUS", {
               time: formatElapsed(
                 Date.parse(props.request.createdAt),
                 clock.now(),
               ),
             })}
-          </span>
+          </Text>
         </div>
       </div>
-      <p class="text-body text-ink whitespace-pre-wrap wrap-break-word">
+      <p class="text-base text-ink whitespace-pre-wrap wrap-break-word">
         {props.request.text}
       </p>
       <Show when={ban()}>
         {(info) => (
-          <p class="text-small text-ink-soft">
+          <Text as="p" size="sm" tone="soft">
             {tRich("BAN_ISSUED_BY_STATUS", {
               status: info().expiresAt ? "timeout" : "ban",
               moderator: info().moderator.displayName,
               name: (chunks) => (
-                <span class="font-semibold text-ink">{chunks}</span>
+                <Text bold tone="primary">
+                  {chunks}
+                </Text>
               ),
             })}
             <Show when={info().reason}>
@@ -117,7 +122,7 @@ function RequestCard(props: { broadcasterId: string; request: UnbanRequest }) {
                 </>
               )}
             </Show>
-          </p>
+          </Text>
         )}
       </Show>
       <div class="flex items-center gap-2">

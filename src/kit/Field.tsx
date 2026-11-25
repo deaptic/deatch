@@ -44,7 +44,7 @@ export default function Field(props: Props) {
       <input
         type="text"
         {...others}
-        class="flex-1 min-w-0 bg-transparent text-body outline-none placeholder:text-ink-faint"
+        class="flex-1 min-w-0 bg-transparent text-base outline-none placeholder:text-ink-faint"
       />
       {local.trailing}
     </label>

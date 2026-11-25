@@ -38,7 +38,7 @@ export default function MenuItem(props: Props) {
       disabled={props.disabled}
       onClick={select}
       onKeyDown={(e) => props.onKeyDown?.(e)}
-      class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-body text-left transition-colors duration-snap ${
+      class={`w-full h-control-md flex items-center gap-2.5 px-2.5 rounded-sm text-base text-left transition-colors duration-snap ${
         props.disabled
           ? "opacity-40 cursor-default"
           : "cursor-pointer hover:bg-raised"
@@ -53,7 +53,7 @@ export default function MenuItem(props: Props) {
       </span>
       <span class="truncate">{props.label}</span>
       <Show when={props.hint || props.shortcut || props.submenu}>
-        <span class="ml-auto pl-4 shrink-0 flex items-center gap-3 text-small text-ink-soft">
+        <span class="ml-auto pl-4 shrink-0 flex items-center gap-3 text-sm text-ink-soft">
           {props.hint}
           <Show when={props.shortcut}>
             {(combo) => <Kbd combo={combo()} />}

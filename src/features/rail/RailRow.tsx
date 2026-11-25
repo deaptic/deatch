@@ -97,7 +97,7 @@ export default function RailRow(props: Props) {
           >
             <span class="flex-1 min-w-0 flex flex-col">
               <span
-                class={`text-body font-semibold truncate ${
+                class={`text-base font-semibold truncate ${
                   props.quiet ? "text-ink-soft" : "text-ink"
                 }`}
               >
@@ -105,7 +105,7 @@ export default function RailRow(props: Props) {
               </span>
               <Show when={props.sub}>
                 <span
-                  class={`text-small truncate ${
+                  class={`text-sm truncate ${
                     SUB_TONES[props.subTone ?? "soft"]
                   }`}
                 >

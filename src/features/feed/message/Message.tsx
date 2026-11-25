@@ -27,6 +27,7 @@ import Avatar from "./Avatar.tsx";
 import Actions from "./Actions.tsx";
 import Reply from "./Reply.tsx";
 import Source from "./Source.tsx";
+import Text from "../../../kit/Text.tsx";
 
 export type MessageOptions = UserActions & {
   emotes: EmoteMap;
@@ -102,9 +103,9 @@ export default function Message(props: Props) {
     <Show
       when={!item.deleted || props.showDeletedContent}
       fallback={
-        <span class="italic text-ink-soft">
+        <Text italic tone="soft">
           {t("FEED_MESSAGE_DELETED_LABEL")}
-        </span>
+        </Text>
       }
     >
       <span
@@ -278,7 +279,7 @@ export default function Message(props: Props) {
           {badges("before")}
           <Show when={props.showName !== false}>
             {name()}
-            <span class="text-ink-soft">:</span>{" "}
+            <Text tone="soft">:</Text>{" "}
           </Show>
         </Show>
         {body()}

@@ -18,6 +18,7 @@ import {
 } from "../preferences/index.ts";
 import Chip from "../../kit/Chip.tsx";
 import { t, tRich } from "../../shared/i18n/index.ts";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   userId: string;
@@ -104,27 +105,27 @@ export default function BanModal(props: Props) {
       <Show when={ban()}>
         {(info) => (
           <Callout tone="negative">
-            <span class="text-ink">
+            <Text tone="primary">
               {tRich("BAN_ISSUED_BY_STATUS", {
                 status: info().expiresAt ? "timeout" : "ban",
                 moderator: info().moderator.displayName,
-                name: (chunks) => <span class="font-semibold">{chunks}</span>,
+                name: (chunks) => <Text bold>{chunks}</Text>,
               })}
-            </span>
+            </Text>
             <Show when={info().reason}>
               {(reason) => (
-                <span class="text-ink-soft">
+                <Text tone="soft">
                   {t("BAN_REASON_STATUS", { reason: reason() })}
-                </span>
+                </Text>
               )}
             </Show>
             <Show when={info().expiresAt}>
               {(expiresAt) => (
-                <span class="text-ink-soft">
+                <Text tone="soft">
                   {t("BAN_EXPIRES_STATUS", {
                     date: new Time(expiresAt(), "f").toString(),
                   })}
-                </span>
+                </Text>
               )}
             </Show>
           </Callout>

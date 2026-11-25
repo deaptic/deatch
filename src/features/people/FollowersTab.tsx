@@ -17,6 +17,7 @@ import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
 import { createPaged } from "./createPaged.ts";
 import EmptyState from "../../kit/EmptyState.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Check =
   | { kind: "missing" }
@@ -102,9 +103,11 @@ export default function FollowersTab(props: Props) {
                 </div>
               }
             >
-              <p class="px-2 py-1 text-body text-ink-faint">
-                {t("PEOPLE_NO_SUCH_USER_STATUS", { name: login() })}
-              </p>
+              <div class="px-2 py-1">
+                <Text as="p" size="md" tone="faint">
+                  {t("PEOPLE_NO_SUCH_USER_STATUS", { name: login() })}
+                </Text>
+              </div>
             </Show>
           }
         >

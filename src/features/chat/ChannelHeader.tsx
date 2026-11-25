@@ -43,6 +43,7 @@ import { ActivityMenuButton, ActivityStrip } from "../activity/index.ts";
 import ConnectionBanner from "./ui/ConnectionBanner.tsx";
 import { chatConnected } from "./connection.ts";
 import Transition from "../../kit/Transition.tsx";
+import Surface from "../../kit/Surface.tsx";
 
 type Props = {
   channel: User;
@@ -82,7 +83,7 @@ export default function ChannelHeader(props: Props) {
   };
 
   return (
-    <header class="shrink-0 flex flex-col bg-surface border-b border-line-soft">
+    <Surface as="header" edge="bottom" class="shrink-0 flex flex-col">
       <div class="flex items-center gap-4 px-4 py-3" {...link.handlers}>
         <Show when={isBroadcaster()} fallback={avatar()}>
           <button
@@ -102,12 +103,12 @@ export default function ChannelHeader(props: Props) {
         <div class="flex-1 min-w-0 flex flex-col">
           <div class="flex items-center gap-4 min-w-0">
             <h1
-              class={`shrink-0 max-w-1/2 text-heading truncate ${name.class()}`}
+              class={`shrink-0 max-w-1/2 text-2xl truncate ${name.class()}`}
               {...name.handlers(() => props.channel.displayName)}
             >
               {props.channel.displayName}
             </h1>
-            <div class="ml-auto min-w-0 flex items-center gap-5 text-body">
+            <div class="ml-auto min-w-0 flex items-center gap-5 text-base">
               <Stat icon={<Gamepad2 />} value={game()} copy={game()} truncate />
               <Show
                 when={stream()}
@@ -155,7 +156,7 @@ export default function ChannelHeader(props: Props) {
           >
             <div class="mt-1 flex items-center gap-2 min-w-0">
               <p
-                class={`min-w-0 text-body truncate ${titleCopy.class()}`}
+                class={`min-w-0 text-base truncate ${titleCopy.class()}`}
                 data-tip={title()}
                 {...titleCopy.handlers(title)}
               >
@@ -213,6 +214,6 @@ export default function ChannelHeader(props: Props) {
           </Boundary>
         )}
       </Show>
-    </header>
+    </Surface>
   );
 }

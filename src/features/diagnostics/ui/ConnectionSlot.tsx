@@ -5,6 +5,7 @@ import type {
 } from "../../../shared/types/index.ts";
 import Meter from "../../../kit/Meter.tsx";
 import { type MessageKey, t } from "../../../shared/i18n/index.ts";
+import Text from "../../../kit/Text.tsx";
 
 type Props = {
   number: number;
@@ -25,29 +26,25 @@ export default function ConnectionSlot(props: Props) {
     <div
       class={`flex flex-col gap-1.5 ${props.connection ? "" : "opacity-40"}`}
     >
-      <div class="flex items-baseline gap-3 text-body">
-        <span class="flex-1 text-ink-soft">
+      <div class="flex items-baseline gap-3 text-base">
+        <Text tone="soft" class="flex-1">
           {t("DIAGNOSTICS_CONNECTION_LABEL", { number: props.number })}
-        </span>
+        </Text>
         <Show
           when={props.connection}
-          fallback={
-            <span class="text-ink-soft">
-              {t("DIAGNOSTICS_NOT_OPEN_STATUS")}
-            </span>
-          }
+          fallback={<Text tone="soft">{t("DIAGNOSTICS_NOT_OPEN_STATUS")}</Text>}
         >
           {(connection) => (
             <>
-              <span class={`text-small ${STATE[connection().state].class}`}>
+              <span class={`text-sm ${STATE[connection().state].class}`}>
                 {t(STATE[connection().state].label)}
               </span>
-              <span class="text-ink tabular-nums">
+              <Text tone="primary" tabular>
                 {t("DIAGNOSTICS_USAGE_VALUE", {
                   used: used(),
                   capacity: props.capacity,
                 })}
-              </span>
+              </Text>
             </>
           )}
         </Show>

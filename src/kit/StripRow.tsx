@@ -35,7 +35,7 @@ export default function StripRow(props: Props) {
   const actions = children(() => props.actions);
   return (
     <div
-      class={`flex flex-col gap-2.5 px-4 py-3 text-small enter-rise ${tone().row}`}
+      class={`flex flex-col gap-2.5 px-4 py-3 text-sm enter-rise ${tone().row}`}
     >
       <div class="flex items-center gap-2.5 min-w-0 h-control-sm">
         <span class={`shrink-0 [&>svg]:size-4 ${tone().icon}`}>

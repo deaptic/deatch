@@ -18,6 +18,7 @@ import ComposerBox from "../../kit/ComposerBox.tsx";
 import ComposerCaption from "../../kit/ComposerCaption.tsx";
 import CommandComposerSlot from "./ui/CommandComposerSlot.tsx";
 import { createCommandComposer } from "./createCommandComposer.ts";
+import Text from "../../kit/Text.tsx";
 
 type Popup = {
   items: () => unknown[];
@@ -31,7 +32,9 @@ function renderSearchItem(s: OptionSuggestion): JSX.Element {
       <Show when={s.image}>
         {(image) => <Thumbnail src={image()} shape="boxart" fit="inline" />}
       </Show>
-      <span class="text-ink truncate">{s.label}</span>
+      <Text tone="primary" truncate>
+        {s.label}
+      </Text>
     </>
   );
 }
@@ -83,7 +86,7 @@ export default function CommandComposer(props: Props) {
           : {
               items: composer.enumSuggestions,
               select: (i) => composer.choose(i as string, i),
-              render: (i) => <span class="text-ink">{i as string}</span>,
+              render: (i) => <Text tone="primary">{i as string}</Text>,
             };
       case "search":
         return composer.searchSuggestions().length === 0

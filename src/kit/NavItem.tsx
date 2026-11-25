@@ -37,7 +37,7 @@ export default function NavItem(props: Props) {
         aria-current={props.active ? "page" : undefined}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => props.onClick?.()}
-        class={`relative h-control-lg px-3 whitespace-nowrap flex items-center gap-2.5 text-body font-semibold cursor-pointer transition-colors duration-snap ${
+        class={`relative h-control-lg px-3 whitespace-nowrap flex items-center gap-2.5 text-base font-semibold cursor-pointer transition-colors duration-snap ${
           props.fill ? "flex-1 min-w-0 justify-center" : "shrink-0"
         } ${props.active ? "text-accent-ink" : "text-ink-soft hover:text-ink"}`}
       >
@@ -66,7 +66,7 @@ export default function NavItem(props: Props) {
           if (props.collapsed) tip.show(e.currentTarget);
         }}
         onMouseLeave={tip.hide}
-        class="group relative w-full flex px-2 text-body font-semibold cursor-pointer"
+        class="group relative w-full flex px-2 text-base font-semibold cursor-pointer"
       >
         <RowIndicator mark={props.active ? "selected" : "none"} />
         <span

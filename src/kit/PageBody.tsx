@@ -14,7 +14,7 @@ export default function PageBody(props: Props) {
       when={!query().trim()}
       fallback={
         <section class="flex flex-col gap-3 not-has-data-match:hidden">
-          <h2 class="text-title text-ink-soft">{props.title}</h2>
+          <h2 class="text-base font-semibold text-ink-soft">{props.title}</h2>
           {props.children}
         </section>
       }

@@ -1,5 +1,6 @@
 import { children, type JSX } from "solid-js";
 import Meter from "../../../kit/Meter.tsx";
+import Text from "../../../kit/Text.tsx";
 
 type Props = {
   label: string;
@@ -15,8 +16,12 @@ export default function LabeledBar(props: Props) {
   return (
     <div class="flex flex-col gap-1.5">
       <div class="flex items-center gap-3 min-w-0">
-        <span class="flex-1 min-w-0 truncate text-ink">{props.label}</span>
-        <span class="shrink-0 text-ink-soft tabular-nums">{props.detail}</span>
+        <Text truncate tone="primary" class="flex-1 min-w-0">
+          {props.label}
+        </Text>
+        <Text tone="soft" tabular class="shrink-0">
+          {props.detail}
+        </Text>
         {action()}
       </div>
       <Meter

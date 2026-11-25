@@ -15,6 +15,7 @@ import IconButton from "../../kit/IconButton.tsx";
 import Loading from "../../kit/Loading.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
 import ListRow from "../../kit/ListRow.tsx";
+import Text from "../../kit/Text.tsx";
 
 const MIN_TERM_LENGTH = 2;
 
@@ -107,9 +108,14 @@ export default function BlockedTermsForm(props: Props) {
                       </IconButton>
                     }
                   >
-                    <span class="flex-1 min-w-0 truncate text-body text-ink">
+                    <Text
+                      truncate
+                      size="md"
+                      tone="primary"
+                      class="flex-1 min-w-0"
+                    >
                       {term.text}
-                    </span>
+                    </Text>
                   </ListRow>
                 )}
               </For>

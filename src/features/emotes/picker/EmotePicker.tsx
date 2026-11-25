@@ -40,6 +40,7 @@ import type { EmoteGridItem } from "./types.ts";
 import { COLUMNS, nextVerticalIndex } from "./helpers.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import { autofocus } from "../../../shared/solid/focus.ts";
+import Surface from "../../../kit/Surface.tsx";
 
 type Props = {
   onSelect: (value: string, opts?: { keepOpen?: boolean }) => void;
@@ -238,25 +239,31 @@ export default function EmotePicker(props: Props) {
           <Smile class="size-5" />
         </IconButton>
       </div>
-      <div class="flex-1 min-h-0 flex border-t border-line-soft">
+      <Surface tone="none" edge="top" class="flex-1 min-h-0 flex">
         <Show when={jumpable().length}>
-          <nav
+          <Surface
+            as="nav"
             ref={scroll.setRail}
-            class="shrink-0 w-14 py-2 flex flex-col items-center gap-1.5 overflow-y-auto scrollbar-none border-r border-line"
+            tone="none"
+            edge="right"
+            strong
+            class="shrink-0 w-14 overflow-y-auto scrollbar-none"
           >
-            <For each={jumpable()}>
-              {(section) => (
-                <RailButton
-                  id={section.id}
-                  label={section.label ?? ""}
-                  active={!search() && scroll.current() === section.id}
-                  onClick={() => openSection(section.id)}
-                >
-                  {iconOf(section)}
-                </RailButton>
-              )}
-            </For>
-          </nav>
+            <div class="py-2 flex flex-col items-center gap-1.5">
+              <For each={jumpable()}>
+                {(section) => (
+                  <RailButton
+                    id={section.id}
+                    label={section.label ?? ""}
+                    active={!search() && scroll.current() === section.id}
+                    onClick={() => openSection(section.id)}
+                  >
+                    {iconOf(section)}
+                  </RailButton>
+                )}
+              </For>
+            </div>
+          </Surface>
         </Show>
         <div
           ref={scroll.setList}
@@ -291,7 +298,7 @@ export default function EmotePicker(props: Props) {
             )}
           </For>
         </div>
-      </div>
+      </Surface>
       <Preview
         item={activeItem()}
         emptyHint={t("EMOTES_KEEP_OPEN_HINT")}

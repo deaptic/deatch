@@ -22,6 +22,7 @@ import {
 import { zoomUrls } from "./emoteZoom.ts";
 import { t } from "../../shared/i18n/index.ts";
 import Transition from "../../kit/Transition.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Opened = { url: string; name: string; x: number; y: number };
 
@@ -52,9 +53,16 @@ function Details(props: { url: string; name: string; source: EmoteSource }) {
       </div>
       <div class="min-w-0 flex-1 flex flex-col">
         <div class="flex items-center gap-2">
-          <p class="min-w-0 flex-1 text-body font-semibold text-ink truncate">
+          <Text
+            as="p"
+            size="md"
+            bold
+            tone="primary"
+            truncate
+            class="min-w-0 flex-1"
+          >
             {props.name}
-          </p>
+          </Text>
           <div class="shrink-0 flex items-center">
             <Show when={props.source.page}>
               {(page) => (
@@ -84,14 +92,14 @@ function Details(props: { url: string; name: string; source: EmoteSource }) {
             </IconButton>
           </div>
         </div>
-        <p class="text-small text-ink-soft truncate">
+        <Text as="p" size="sm" tone="soft" truncate>
           {provider()}
           <Show when={scope()}>
             {(s) =>
               ` · ${t(s() === "channel" ? "EMOTES_CARD_CHANNEL_LABEL" : "EMOTES_CARD_GLOBAL_LABEL")}`
             }
           </Show>
-        </p>
+        </Text>
       </div>
     </div>
   );

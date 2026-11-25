@@ -14,6 +14,7 @@ import Card from "../../kit/Card.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { createChannelLink } from "../menus/index.ts";
 import { t } from "../../shared/i18n/index.ts";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   mention: Mention;
@@ -60,9 +61,9 @@ export default function Item(props: Props) {
           >
             {m().broadcasterName}
           </span>
-          <span class="text-feed-meta text-ink-faint truncate">
+          <Text size="relative" tone="faint" truncate>
             {reasonLabel(m().message.chatter_name, m().reason)}
-          </span>
+          </Text>
         </span>
         <span class="ml-auto flex items-center gap-1">
           <IconButton

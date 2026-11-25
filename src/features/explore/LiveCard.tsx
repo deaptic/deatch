@@ -11,6 +11,7 @@ import Chip from "../../kit/Chip.tsx";
 import LivePill from "../../kit/LivePill.tsx";
 import Stat from "../../kit/Stat.tsx";
 import CardButton from "../../kit/CardButton.tsx";
+import Text from "../../kit/Text.tsx";
 
 const SHOWN_TAGS = 3;
 
@@ -33,7 +34,7 @@ export default function LiveCard(props: Props) {
         <span class="absolute left-2.5 top-2.5">
           <LivePill solid />
         </span>
-        <div class="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-1.5 text-small">
+        <div class="absolute inset-x-2.5 bottom-2.5 flex items-center justify-between gap-1.5 text-sm">
           <Stat
             tone="media"
             icon={<Users />}
@@ -54,15 +55,15 @@ export default function LiveCard(props: Props) {
           size={40}
         />
         <div class="min-w-0 flex-1">
-          <p class="truncate text-body font-semibold text-ink">
+          <Text as="p" truncate size="md" bold tone="primary">
             {props.stream.title}
-          </p>
-          <p class="truncate text-small text-ink-soft">
+          </Text>
+          <Text as="p" truncate size="sm" tone="soft">
             {channel().displayName}
             <Show when={props.stream.game.name}>
-              {(game) => <span class="text-ink-faint"> · {game()}</span>}
+              {(game) => <Text tone="faint"> · {game()}</Text>}
             </Show>
-          </p>
+          </Text>
           <Show when={props.stream.tags.length}>
             <div class="mt-2 flex flex-wrap gap-1 h-5 overflow-hidden">
               <For each={props.stream.tags.slice(0, SHOWN_TAGS)}>

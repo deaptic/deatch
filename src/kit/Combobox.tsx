@@ -125,7 +125,7 @@ export default function Combobox(props: Props) {
           <For
             each={shown()}
             fallback={
-              <p class="px-2.5 py-2 text-small text-ink-faint">
+              <p class="px-2.5 py-2 text-sm text-ink-faint">
                 {t("UI_COMBOBOX_EMPTY")}
               </p>
             }

@@ -2,6 +2,7 @@ import { Show } from "solid-js";
 import type { Subscription, User } from "../../shared/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { DisplayName } from "../message/index.ts";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   chatterId: string;
@@ -16,11 +17,13 @@ const distinctLogin = (user: User | null) =>
 export default function Identity(props: Props) {
   return (
     <div class="min-w-0 flex flex-col leading-tight">
-      <span class="truncate min-w-0 text-card-name">
+      <Text truncate size="lg" class="min-w-0">
         <Show
           when={props.user}
           fallback={
-            <span class="font-semibold text-ink">{props.chatterId}</span>
+            <Text bold tone="primary">
+              {props.chatterId}
+            </Text>
           }
         >
           {(user) => (
@@ -32,21 +35,23 @@ export default function Identity(props: Props) {
             />
           )}
         </Show>
-      </span>
+      </Text>
       <Show when={distinctLogin(props.user)}>
         {(login) => (
-          <span class="truncate text-small text-ink-faint">@{login()}</span>
+          <Text truncate size="sm" tone="faint">
+            @{login()}
+          </Text>
         )}
       </Show>
       <Show when={props.subscription}>
         {(sub) => (
-          <span class="truncate text-small text-ink-soft">
+          <Text truncate size="sm" tone="soft">
             {t("USER_CARD_SUBSCRIBER_STATUS", {
               tier: sub().tier,
               gifter: sub().gifterName ?? "",
               gifted: String(sub().gifterName !== null),
             })}
-          </span>
+          </Text>
         )}
       </Show>
     </div>

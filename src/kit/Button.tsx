@@ -45,9 +45,9 @@ const PRESSED: Partial<Record<ButtonVariant, string>> = {
 };
 
 const SIZES: Record<ButtonSize, { box: string; pad: string; text: string }> = {
-  sm: { box: "h-control-sm", pad: "px-2.5", text: "text-small font-semibold" },
-  md: { box: "h-control-md", pad: "px-3.5", text: "text-body font-semibold" },
-  lg: { box: "h-control-lg", pad: "px-5", text: "text-body font-semibold" },
+  sm: { box: "h-control-sm", pad: "px-2.5", text: "text-sm font-semibold" },
+  md: { box: "h-control-md", pad: "px-3.5", text: "text-base font-semibold" },
+  lg: { box: "h-control-lg", pad: "px-5", text: "text-base font-semibold" },
 };
 
 const SQUARE: Record<ButtonSize, string> = {

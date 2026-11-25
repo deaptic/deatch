@@ -126,9 +126,9 @@ export default function ToasterItem(props: Props) {
           dismiss();
         }}
       >
-        <p class="text-body text-ink break-words">{toast.title}</p>
+        <p class="text-base text-ink break-words">{toast.title}</p>
         <Show when={toast.description}>
-          <p class="text-small text-ink-soft break-words line-clamp-3">
+          <p class="text-sm text-ink-soft break-words line-clamp-3">
             {toast.description}
           </p>
         </Show>

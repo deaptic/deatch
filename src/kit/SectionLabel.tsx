@@ -11,7 +11,7 @@ export default function SectionLabel(props: Props) {
   return (
     <span
       aria-hidden={props.hidden}
-      class={`block text-micro uppercase text-ink-faint ${
+      class={`block text-xs uppercase text-ink-faint ${
         props.truncate ? "truncate whitespace-nowrap" : ""
       } ${props.hidden ? "opacity-0" : ""} ${props.class ?? ""}`}
     >

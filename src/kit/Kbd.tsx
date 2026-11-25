@@ -2,8 +2,8 @@ import { For } from "solid-js";
 import { keyLabels } from "../shared/keyboard/keys.ts";
 
 const SIZE = {
-  md: "min-w-6.5 h-6 text-small text-ink-soft",
-  sm: "min-w-5.5 h-5 text-micro text-ink-faint",
+  md: "min-w-6.5 h-6 text-sm text-ink-soft",
+  sm: "min-w-5.5 h-5 text-xs text-ink-faint",
 };
 
 export default function Kbd(props: {

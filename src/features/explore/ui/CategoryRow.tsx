@@ -2,6 +2,7 @@ import { For } from "solid-js";
 import type { Category } from "../../../shared/types/index.ts";
 import Thumbnail from "../../../kit/Thumbnail.tsx";
 import { moveGridFocus } from "../../../kit/gridKeys.ts";
+import Text from "../../../kit/Text.tsx";
 
 type Props = {
   categories: Category[];
@@ -38,7 +39,9 @@ export default function CategoryRow(props: Props) {
                 interactive
               />
             </span>
-            <p class="mt-1.5 truncate text-small text-ink">{category.name}</p>
+            <Text as="p" truncate size="sm" tone="primary" class="mt-1.5">
+              {category.name}
+            </Text>
           </button>
         )}
       </For>

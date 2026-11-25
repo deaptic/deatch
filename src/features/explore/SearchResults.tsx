@@ -34,6 +34,7 @@ import LivePill from "../../kit/LivePill.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
 import OptionRow from "../../kit/OptionRow.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   query: string;
@@ -153,17 +154,17 @@ export default function SearchResults(props: Props) {
                       presence={channel.isLive ? "live" : "offline"}
                     />
                     <div class="min-w-0 flex-1">
-                      <p class="truncate text-body font-semibold text-ink">
+                      <Text as="p" truncate size="md" bold tone="primary">
                         {channel.user.displayName}
-                      </p>
-                      <p class="truncate text-small text-ink-soft">
+                      </Text>
+                      <Text as="p" truncate size="sm" tone="soft">
                         <Show
                           when={channel.isLive}
                           fallback={t("EXPLORE_OFFLINE_STATUS")}
                         >
                           {liveLine(channel.gameName)}
                         </Show>
-                      </p>
+                      </Text>
                     </div>
                     <Show when={channel.isLive}>
                       <LivePill />

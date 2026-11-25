@@ -39,6 +39,7 @@ import { Diagnostics } from "../../features/diagnostics/index.ts";
 import ResizeHandle from "./ResizeHandle.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import Transition from "../../kit/Transition.tsx";
+import Text from "../../kit/Text.tsx";
 
 function below(button: HTMLElement | undefined) {
   const r = button?.getBoundingClientRect();
@@ -95,11 +96,13 @@ export default function TitleBar(props: Props) {
           data-tauri-drag-region
           class="flex items-center gap-2 pl-1 pointer-events-none"
         >
-          <span class="text-body font-semibold text-ink">Deatch</span>
+          <Text size="md" bold tone="primary">
+            Deatch
+          </Text>
           <Show when={version()}>
-            <span class="text-micro text-ink-faint tabular-nums">
+            <Text size="xs" tone="faint" tabular>
               {version()}
-            </span>
+            </Text>
           </Show>
         </div>
         <div data-tauri-drag-region class="flex-1 h-full" />

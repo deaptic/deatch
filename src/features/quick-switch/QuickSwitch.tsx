@@ -35,6 +35,7 @@ import { t } from "../../shared/i18n/index.ts";
 import EmptyState from "../../kit/EmptyState.tsx";
 import OptionRow from "../../kit/OptionRow.tsx";
 import PaletteList from "../../kit/PaletteList.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -159,13 +160,19 @@ export default function QuickSwitch(props: Props) {
                         <RowIcon>
                           <Dynamic component={action().icon} class="size-4" />
                         </RowIcon>
-                        <span class="flex-1 min-w-0 text-body font-semibold text-ink truncate">
+                        <Text
+                          size="md"
+                          bold
+                          tone="primary"
+                          truncate
+                          class="flex-1 min-w-0"
+                        >
                           {action().label}
-                        </span>
+                        </Text>
                         <Show when={action().detail}>
-                          <span class="shrink-0 text-small text-ink-faint">
+                          <Text size="sm" tone="faint" class="shrink-0">
                             {action().detail}
-                          </span>
+                          </Text>
                         </Show>
                       </>
                     )}
@@ -181,14 +188,14 @@ export default function QuickSwitch(props: Props) {
                         </Show>
                       </RowIcon>
                       <span class="flex-1 min-w-0 flex flex-col">
-                        <span class="text-body font-semibold text-ink truncate">
+                        <Text size="md" bold tone="primary" truncate>
                           {t("QUICK_SWITCH_SEARCH_TWITCH_LABEL", {
                             query: query().trim(),
                           })}
-                        </span>
-                        <span class="text-small text-ink-soft">
+                        </Text>
+                        <Text size="sm" tone="soft">
                           {t("QUICK_SWITCH_NOT_IN_RAIL_LABEL")}
-                        </span>
+                        </Text>
                       </span>
                     </>
                   </Show>
@@ -204,11 +211,11 @@ export default function QuickSwitch(props: Props) {
                             presence={stream() ? "live" : "offline"}
                           />
                           <span class="flex-1 min-w-0 flex flex-col">
-                            <span class="text-body font-semibold text-ink truncate">
+                            <Text size="md" bold tone="primary" truncate>
                               {r().user.displayName}
-                            </span>
+                            </Text>
                             <span
-                              class={`text-small truncate ${
+                              class={`text-sm truncate ${
                                 stream() ? "text-live" : "text-ink-soft"
                               }`}
                             >
@@ -241,7 +248,7 @@ export default function QuickSwitch(props: Props) {
           </For>
         </Show>
       </PaletteList>
-      <div class="shrink-0 flex items-center gap-4 pt-2.5 mt-2 px-1 text-small text-ink-faint">
+      <div class="shrink-0 flex items-center gap-4 pt-2.5 mt-2 px-1 text-sm text-ink-faint">
         <span class="flex items-center gap-1.5">
           <Kbd size="sm" combo="up" />
           <Kbd size="sm" combo="down" /> {t("QUICK_SWITCH_MOVE_HINT")}

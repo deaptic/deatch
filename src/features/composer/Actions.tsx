@@ -24,6 +24,7 @@ import SubMenu from "../../kit/SubMenu.tsx";
 import { ChatModesList } from "../chat-modes/index.ts";
 import { ChannelToolItems } from "../channel-tools/index.ts";
 import { activeModes, type ChatMode } from "../chat-modes/index.ts";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   broadcasterId: string;
@@ -112,9 +113,11 @@ function Overview(props: {
       <Show
         when={props.active.length > 0}
         fallback={
-          <p class="px-2.5 py-2 text-small text-ink-soft">
-            {t("COMPOSER_ACTIONS_NO_MODES_EMPTY")}
-          </p>
+          <div class="px-2.5 py-2">
+            <Text as="p" size="sm" tone="soft">
+              {t("COMPOSER_ACTIONS_NO_MODES_EMPTY")}
+            </Text>
+          </div>
         }
       >
         <For each={props.active}>
@@ -161,12 +164,12 @@ function ModeDetail(props: {
           <Icon class="size-4 mt-0.5 shrink-0 text-accent-ink group-enabled:group-hover:hidden" />
           <X class="size-4 mt-0.5 shrink-0 text-negative hidden group-enabled:group-hover:block" />
           <span class="min-w-0 flex flex-col">
-            <span class="text-body text-ink transition-colors duration-snap group-enabled:group-hover:text-negative">
+            <span class="text-base text-ink transition-colors duration-snap group-enabled:group-hover:text-negative">
               {t(props.mode.label)}
             </span>
-            <span class="text-small text-ink-soft">
+            <Text size="sm" tone="soft">
               {props.mode.description(s())}
-            </span>
+            </Text>
           </span>
         </button>
       )}

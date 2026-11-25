@@ -6,6 +6,7 @@ import Button from "../../kit/Button.tsx";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import SettingsRow from "../../kit/SettingsRow.tsx";
+import Text from "../../kit/Text.tsx";
 
 export default function BlockedUsersCard() {
   const sorted = () =>
@@ -16,9 +17,11 @@ export default function BlockedUsersCard() {
       <Show
         when={sorted().length}
         fallback={
-          <p class="px-4 pt-1 pb-3 text-body text-ink-soft">
-            {t("SETTINGS_ACCOUNT_BLOCKED_EMPTY")}
-          </p>
+          <div class="px-4 pt-1 pb-3">
+            <Text as="p" size="md" tone="soft">
+              {t("SETTINGS_ACCOUNT_BLOCKED_EMPTY")}
+            </Text>
+          </div>
         }
       >
         <For each={sorted()}>

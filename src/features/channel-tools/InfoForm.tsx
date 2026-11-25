@@ -18,6 +18,7 @@ import Toggle from "../../kit/Toggle.tsx";
 import LabeledField from "../../kit/LabeledField.tsx";
 import SearchPicker from "../../kit/SearchPicker.tsx";
 import FormDialog from "../../kit/FormDialog.tsx";
+import Text from "../../kit/Text.tsx";
 
 const TITLE_LENGTH = 140;
 const AUTOMATIC_LABEL = "MatureGame";
@@ -152,7 +153,7 @@ export default function InfoForm(props: Props) {
               onAdd={addTag}
             />
             <span
-              class={`text-small ${tagError() ? "text-negative" : "text-ink-faint"}`}
+              class={`text-sm ${tagError() ? "text-negative" : "text-ink-faint"}`}
             >
               {tagError()
                 ? t("HEADER_TAG_ERROR", { reason: tagError() ?? "" })
@@ -166,10 +167,12 @@ export default function InfoForm(props: Props) {
                   {(label) => (
                     <div class="flex items-start gap-3">
                       <div class="flex-1 min-w-0 flex flex-col">
-                        <span class="text-body text-ink">{label.name}</span>
-                        <span class="text-small text-ink-faint">
+                        <Text size="md" tone="primary">
+                          {label.name}
+                        </Text>
+                        <Text size="sm" tone="faint">
                           {label.description}
-                        </span>
+                        </Text>
                       </div>
                       <Toggle
                         label={label.name}
@@ -184,12 +187,12 @@ export default function InfoForm(props: Props) {
           </Show>
           <div class="flex items-start gap-3">
             <div class="flex-1 min-w-0 flex flex-col">
-              <span class="text-body text-ink">
+              <Text size="md" tone="primary">
                 {t("HEADER_BRANDED_CONTENT_LABEL")}
-              </span>
-              <span class="text-small text-ink-faint">
+              </Text>
+              <Text size="sm" tone="faint">
                 {t("HEADER_BRANDED_CONTENT_DESCRIPTION")}
-              </span>
+              </Text>
             </div>
             <Toggle
               label={t("HEADER_BRANDED_CONTENT_LABEL")}

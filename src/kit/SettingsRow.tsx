@@ -35,9 +35,9 @@ export default function SettingsRow(props: Props) {
             props.stacked ? "" : "flex-1 basis-56"
           }`}
         >
-          <span class="text-body font-semibold text-ink">{props.label}</span>
+          <span class="text-base font-semibold text-ink">{props.label}</span>
           <Show when={props.description}>
-            <span class="text-small text-ink-soft mt-0.5">
+            <span class="text-sm text-ink-soft mt-0.5">
               {props.description}
             </span>
           </Show>

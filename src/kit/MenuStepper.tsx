@@ -17,7 +17,7 @@ type Props = {
 export default function MenuStepper(props: Props) {
   return (
     <div
-      class={`h-control-md flex items-center gap-2.5 pl-2.5 text-body text-ink ${
+      class={`h-control-md flex items-center gap-2.5 pl-2.5 text-base text-ink ${
         props.disabled ? "opacity-40" : ""
       }`}
     >
@@ -34,7 +34,7 @@ export default function MenuStepper(props: Props) {
         >
           <Minus class="size-4" />
         </IconButton>
-        <span class="w-10 text-center text-small text-ink-soft tabular-nums">
+        <span class="w-10 text-center text-sm text-ink-soft tabular-nums">
           {props.value}
         </span>
         <IconButton

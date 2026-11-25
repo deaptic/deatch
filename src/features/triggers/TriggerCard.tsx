@@ -22,6 +22,7 @@ import {
   type TriggerRole,
 } from "../preferences/index.ts";
 import { sameTriggerSettings } from "./saved.ts";
+import Text from "../../kit/Text.tsx";
 
 const ROLE_LABELS: Record<TriggerRole, MessageKey> = {
   everyone: "SETTINGS_TRIGGERS_ROLE_EVERYONE_LABEL",
@@ -170,9 +171,9 @@ export default function TriggerCard(props: {
                 ]}
                 onChange={(v) => setDraft("action", v)}
               />
-              <span class="ml-auto text-small text-ink-soft">
+              <Text size="sm" tone="soft" class="ml-auto">
                 {t("SETTINGS_TRIGGERS_COOLDOWN_LABEL")}
-              </span>
+              </Text>
               <Field
                 type="number"
                 aria-label={t("SETTINGS_TRIGGERS_COOLDOWN_LABEL")}
@@ -187,9 +188,9 @@ export default function TriggerCard(props: {
                   setDraft("cooldown", clampCooldown(draft.cooldown))
                 }
                 trailing={
-                  <span class="text-small text-ink-soft">
+                  <Text size="sm" tone="soft">
                     {t("SETTINGS_TRIGGERS_SECONDS_VALUE")}
-                  </span>
+                  </Text>
                 }
                 class="w-28"
               />

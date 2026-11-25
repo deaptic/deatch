@@ -39,6 +39,8 @@ import { LinkSettings } from "../link/index.ts";
 import { EmbedsSettings } from "../previews/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
 import SectionLabel from "../../kit/SectionLabel.tsx";
+import Divider from "../../kit/Divider.tsx";
+import Surface from "../../kit/Surface.tsx";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
   language: LanguageSettings,
@@ -107,28 +109,30 @@ export default function Settings() {
           measured() ? "transition-all duration-settle ease-drawer" : ""
         } ${collapsed() ? "w-14" : "w-55"}`}
       >
-        <div class="shrink-0 h-14 px-2 flex items-center border-b border-line-soft">
-          <Show
-            when={!collapsed()}
-            fallback={
-              <span
-                aria-label={t("SETTINGS_TITLE")}
-                class="px-2.5 flex text-ink-faint"
-              >
-                <SettingsIcon class="size-5" />
-              </span>
-            }
-          >
-            <div class="px-2.5 min-w-0">
-              <SectionLabel truncate>{t("SETTINGS_TITLE")}</SectionLabel>
-            </div>
-          </Show>
-        </div>
+        <Surface tone="none" edge="bottom" class="shrink-0">
+          <div class="h-14 px-2 flex items-center">
+            <Show
+              when={!collapsed()}
+              fallback={
+                <span
+                  aria-label={t("SETTINGS_TITLE")}
+                  class="px-2.5 flex text-ink-faint"
+                >
+                  <SettingsIcon class="size-5" />
+                </span>
+              }
+            >
+              <div class="px-2.5 min-w-0">
+                <SectionLabel truncate>{t("SETTINGS_TITLE")}</SectionLabel>
+              </div>
+            </Show>
+          </div>
+        </Surface>
         <For each={SETTINGS_GROUPS}>
           {(group, i) => (
             <div class="flex flex-col">
               <Show when={i() > 0} fallback={<div aria-hidden class="h-2" />}>
-                <div aria-hidden class="mx-4 my-2 h-px bg-line-soft" />
+                <Divider class="mx-4 my-2" />
               </Show>
               <Show when={group.label}>
                 {(label) => (
@@ -167,36 +171,40 @@ export default function Settings() {
         </For>
       </nav>
       <div class="flex-1 min-w-0 flex flex-col min-h-0">
-        <header class="shrink-0 h-14 px-5 flex border-b border-line-soft">
-          <div class="w-full max-w-170 mx-auto flex items-center gap-4">
-            <SectionTitle class="flex-1" truncate>
-              {searching()
-                ? t("SETTINGS_SEARCH_RESULTS_TITLE", { query: query().trim() })
-                : t(currentLabel())}
-            </SectionTitle>
-            <div class="w-64 shrink-0 flex flex-col">
-              <Field
-                size="md"
-                icon={<Search />}
-                value={query()}
-                onInput={(e) => setQuery(e.currentTarget.value)}
-                placeholder={t("SETTINGS_SEARCH_LABEL")}
-                aria-label={t("SETTINGS_SEARCH_LABEL")}
-                trailing={
-                  <Show when={query()}>
-                    <IconButton
-                      label={t("SETTINGS_SEARCH_CLEAR_LABEL")}
-                      size="sm"
-                      onClick={() => setQuery("")}
-                    >
-                      <X class="size-4" />
-                    </IconButton>
-                  </Show>
-                }
-              />
+        <Surface as="header" tone="none" edge="bottom" class="shrink-0">
+          <div class="h-14 px-5 flex">
+            <div class="w-full max-w-170 mx-auto flex items-center gap-4">
+              <SectionTitle class="flex-1" truncate>
+                {searching()
+                  ? t("SETTINGS_SEARCH_RESULTS_TITLE", {
+                      query: query().trim(),
+                    })
+                  : t(currentLabel())}
+              </SectionTitle>
+              <div class="w-64 shrink-0 flex flex-col">
+                <Field
+                  size="md"
+                  icon={<Search />}
+                  value={query()}
+                  onInput={(e) => setQuery(e.currentTarget.value)}
+                  placeholder={t("SETTINGS_SEARCH_LABEL")}
+                  aria-label={t("SETTINGS_SEARCH_LABEL")}
+                  trailing={
+                    <Show when={query()}>
+                      <IconButton
+                        label={t("SETTINGS_SEARCH_CLEAR_LABEL")}
+                        size="sm"
+                        onClick={() => setQuery("")}
+                      >
+                        <X class="size-4" />
+                      </IconButton>
+                    </Show>
+                  }
+                />
+              </div>
             </div>
           </div>
-        </header>
+        </Surface>
         <SettingsQuery.Provider value={query}>
           <Suspense>
             <Show
@@ -214,7 +222,7 @@ export default function Settings() {
               <div class="group flex-1 min-h-0 overflow-y-auto">
                 <div class="w-full max-w-180 mx-auto px-5 pt-5 pb-12 flex flex-col gap-6">
                   <For each={SECTIONS}>{(s) => <s.Section />}</For>
-                  <p class="hidden group-not-has-data-match:block text-body text-ink-soft">
+                  <p class="hidden group-not-has-data-match:block text-base text-ink-soft">
                     {t("SETTINGS_SEARCH_EMPTY", { query: query().trim() })}
                   </p>
                 </div>

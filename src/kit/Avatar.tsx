@@ -36,12 +36,12 @@ const PRESENCE: Record<
 };
 
 const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
-  24: { box: "size-6 text-micro", dot: "size-1.5" },
-  32: { box: "size-8 text-small", dot: "size-2" },
-  36: { box: "size-9 text-small", dot: "size-2.5" },
-  40: { box: "size-10 text-body", dot: "size-2.5" },
-  64: { box: "size-16 text-heading", dot: "size-3" },
-  80: { box: "size-20 text-heading", dot: "size-4" },
+  24: { box: "size-6 text-xs", dot: "size-1.5" },
+  32: { box: "size-8 text-sm", dot: "size-2" },
+  36: { box: "size-9 text-sm", dot: "size-2.5" },
+  40: { box: "size-10 text-base", dot: "size-2.5" },
+  64: { box: "size-16 text-2xl", dot: "size-3" },
+  80: { box: "size-20 text-2xl", dot: "size-4" },
   fill: { box: "size-full", dot: "size-2" },
 };
 

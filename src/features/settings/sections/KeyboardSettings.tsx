@@ -8,6 +8,7 @@ import { SettingsQuery } from "../../../kit/settingsQuery.ts";
 import { matchesQuery } from "../../../shared/textQuery.ts";
 import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
 import { ACTION_LABELS, CHANNEL_SELECT } from "../keyboard.ts";
+import Text from "../../../kit/Text.tsx";
 
 const GROUPS: { title: MessageKey; prefix: string[] }[] = [
   {
@@ -65,7 +66,9 @@ export default function KeyboardSettings() {
                     data-match
                     class="flex items-center justify-between gap-6 px-4 h-10"
                   >
-                    <span class="text-body text-ink">{row.label}</span>
+                    <Text size="md" tone="primary">
+                      {row.label}
+                    </Text>
                     <Kbd combo={row.combo} />
                   </div>
                 </Show>

@@ -29,7 +29,7 @@ export default function CommandComposerSlot(props: Props) {
             e.preventDefault();
             props.onActivate();
           }}
-          class={`inline-flex items-center px-2 py-1 rounded-sm text-body transition-colors duration-snap cursor-pointer ${
+          class={`inline-flex items-center px-2 py-1 rounded-sm text-base transition-colors duration-snap cursor-pointer ${
             text()
               ? "bg-raised text-ink hover:bg-raised/80"
               : "bg-raised/30 text-ink-faint hover:bg-raised/50"
@@ -40,7 +40,7 @@ export default function CommandComposerSlot(props: Props) {
       }
     >
       <span
-        class={`inline-grid items-center px-2 py-1 rounded-sm text-body bg-raised ring-1 ${
+        class={`inline-grid items-center px-2 py-1 rounded-sm text-base bg-raised ring-1 ${
           props.errored ? "ring-negative" : "ring-accent/60"
         }`}
       >

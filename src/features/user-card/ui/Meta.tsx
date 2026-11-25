@@ -12,7 +12,7 @@ type Props = {
 };
 
 const CHIP =
-  "shrink-0 flex items-center gap-1.5 h-control-sm px-2.5 rounded-sm bg-media-scrim text-small tabular-nums whitespace-nowrap";
+  "shrink-0 flex items-center gap-1.5 h-control-sm px-2.5 rounded-sm bg-media-scrim text-sm tabular-nums whitespace-nowrap";
 
 const day = (at: string) => new Time(at, "D").toString();
 

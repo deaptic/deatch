@@ -23,10 +23,10 @@ export default function Boundary(props: Props) {
         }
         return (
           <div class="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center">
-            <p class="text-title text-ink">
+            <p class="text-base font-semibold text-ink">
               {props.label ?? t("UI_BOUNDARY_ERROR")}
             </p>
-            <p class="text-small text-ink-soft max-w-90 break-words">
+            <p class="text-sm text-ink-soft max-w-90 break-words">
               {messageOf(err)}
             </p>
             <Button variant="neutral" size="sm" class="mt-2" onClick={reset}>

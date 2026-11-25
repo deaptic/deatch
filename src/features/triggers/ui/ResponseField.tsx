@@ -10,6 +10,7 @@ import {
   type TriggerMethod,
 } from "../methods.ts";
 import { t } from "../../../shared/i18n/index.ts";
+import Text from "../../../kit/Text.tsx";
 
 export type Insert = (method: TriggerMethod) => void;
 
@@ -79,10 +80,12 @@ export default function ResponseField(props: Props) {
             ref={setApi}
             renderItem={(m) => (
               <span class="flex items-baseline gap-2 min-w-0">
-                <span class="font-semibold text-ink">{methodSyntax(m)}</span>
-                <span class="truncate text-small text-ink-soft">
+                <Text bold tone="primary">
+                  {methodSyntax(m)}
+                </Text>
+                <Text truncate size="sm" tone="soft">
                   {t(m.description)}
-                </span>
+                </Text>
               </span>
             )}
           />
@@ -109,12 +112,12 @@ export default function ResponseField(props: Props) {
       </div>
       <For each={found()}>
         {(problem) => (
-          <p class="text-small text-negative">
+          <Text as="p" size="sm" tone="negative">
             {t("SETTINGS_TRIGGERS_PROBLEM_ERROR", {
               kind: problem.kind,
               raw: problem.raw,
             })}
-          </p>
+          </Text>
         )}
       </For>
     </div>

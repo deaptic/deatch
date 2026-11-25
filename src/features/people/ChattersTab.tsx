@@ -52,7 +52,7 @@ export default function ChattersTab(props: Props) {
         <For each={groups()}>
           {(group) => (
             <section>
-              <h3 class="px-2 pt-3 pb-1 text-small text-ink-faint">
+              <h3 class="px-2 pt-3 pb-1 text-sm text-ink-faint">
                 {t("CHATTERS_GROUP_TITLE", {
                   kind: group.kind,
                   count: group.users.length,

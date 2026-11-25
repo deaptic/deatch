@@ -21,6 +21,7 @@ import PredictionRow from "./ui/rows/PredictionRow.tsx";
 import RaidRow from "./ui/rows/RaidRow.tsx";
 import ShieldRow from "./ui/rows/ShieldRow.tsx";
 import UnbansRow from "./ui/rows/UnbansRow.tsx";
+import Surface from "../../kit/Surface.tsx";
 
 type Props = {
   broadcasterId: string;
@@ -83,7 +84,7 @@ export default function ActivityStrip(props: Props) {
     >
       {() => (
         <div class="enter-expand">
-          <div class="flex flex-col border-t border-line-soft divide-y divide-line-soft">
+          <Surface tone="none" edge="top" divided class="flex flex-col">
             <Transition when={shield()}>
               {() => (
                 <ShieldRow
@@ -178,7 +179,7 @@ export default function ActivityStrip(props: Props) {
                 );
               }}
             </Transition>
-          </div>
+          </Surface>
         </div>
       )}
     </Transition>

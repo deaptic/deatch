@@ -8,6 +8,7 @@ import ChannelTile from "./ChannelTile.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -27,11 +28,11 @@ export default function FollowingLive(props: Props) {
       <Show
         when={streams().length}
         fallback={
-          <p class="text-body text-ink-soft">
+          <Text as="p" size="md" tone="soft">
             {liveStreams().length
               ? t("EXPLORE_NO_MATCHES_EMPTY")
               : t("EXPLORE_NONE_LIVE_EMPTY")}
-          </p>
+          </Text>
         }
       >
         <div onKeyDown={moveGridFocus} class="-mx-2 grid grid-avatars">

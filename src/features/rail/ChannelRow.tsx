@@ -12,6 +12,7 @@ import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import { pendingChannel } from "../navigation/index.ts";
 import Dot from "../../kit/Dot.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   ch: User;
@@ -38,13 +39,13 @@ export default function ChannelRow(props: Props) {
         <Show
           when={stream()}
           fallback={
-            <span class="shrink-0 text-small text-ink-faint">
+            <Text size="sm" tone="faint" class="shrink-0">
               {t("RAIL_OFFLINE_STATUS")}
-            </span>
+            </Text>
           }
         >
           {(s) => (
-            <span class="shrink-0 flex items-center gap-1.5 text-small tabular-nums text-ink-soft">
+            <span class="shrink-0 flex items-center gap-1.5 text-sm tabular-nums text-ink-soft">
               <Dot tone="live" />
               {formatCount(s().viewerCount)}
             </span>

@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+import Text from "../../../kit/Text.tsx";
 
 type Tone = "default" | "caution" | "negative";
 
@@ -17,12 +18,14 @@ const VALUE: Record<Tone, string> = {
 
 export default function MetricRow(props: Props) {
   return (
-    <div class="flex items-baseline gap-3 text-body">
-      <span class="flex-1 min-w-0 truncate text-ink-soft">{props.label}</span>
+    <div class="flex items-baseline gap-3 text-base">
+      <Text truncate tone="soft" class="flex-1 min-w-0">
+        {props.label}
+      </Text>
       <Show when={props.detail}>
-        <span class="text-small text-ink-soft tabular-nums">
+        <Text size="sm" tone="soft" tabular>
           {props.detail}
-        </span>
+        </Text>
       </Show>
       <span class={`tabular-nums ${VALUE[props.tone ?? "default"]}`}>
         {props.value}

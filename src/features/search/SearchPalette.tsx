@@ -27,6 +27,7 @@ import { knownUser } from "../users/index.ts";
 import EmptyState from "../../kit/EmptyState.tsx";
 import OptionRow from "../../kit/OptionRow.tsx";
 import PaletteList from "../../kit/PaletteList.tsx";
+import Text from "../../kit/Text.tsx";
 
 const LIMIT = 100;
 const TYPING_PAUSE_MS = 200;
@@ -144,21 +145,21 @@ export default function SearchPalette(props: Props) {
                   active={listbox.active() === i()}
                 >
                   <span class="flex items-baseline gap-2 min-w-0">
-                    <span class="shrink-0 text-body font-semibold text-ink">
+                    <Text size="md" bold tone="primary" class="shrink-0">
                       {hit.message.chatter_name}
-                    </span>
-                    <span class="min-w-0 truncate text-body text-ink-soft">
+                    </Text>
+                    <Text truncate size="md" tone="soft" class="min-w-0">
                       {textOf(hit.message)}
-                    </span>
+                    </Text>
                   </span>
-                  <span class="text-small text-ink-faint">
+                  <Text size="sm" tone="faint">
                     {t("SEARCH_RESULT_META_VALUE", {
                       channel:
                         knownUser(hit.broadcasterId)?.displayName ??
                         hit.broadcasterId,
                       time: new Time(hit.message.timestamp, "c").toString(),
                     })}
-                  </span>
+                  </Text>
                 </OptionRow>
               )}
             </For>

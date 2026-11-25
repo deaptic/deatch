@@ -2,6 +2,7 @@ import type { User } from "../../shared/types/index.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import CardButton from "../../kit/CardButton.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   channel: User;
@@ -31,10 +32,10 @@ export default function ChannelTile(props: Props) {
         liveRing={props.live}
       />
       <span class="w-full min-w-0">
-        <span class="block truncate text-small text-ink">
+        <Text as="p" truncate size="sm" tone="primary">
           {props.channel.displayName}
-        </span>
-        <span class="block truncate text-micro font-normal text-ink-faint">
+        </Text>
+        <span class="block truncate text-xs font-normal text-ink-faint">
           {props.detail}
         </span>
       </span>

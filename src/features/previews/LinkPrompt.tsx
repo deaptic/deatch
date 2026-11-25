@@ -37,7 +37,7 @@ function Prompt(props: { url: string }) {
         {(domain) => (
           <>
             <LinkTarget domain={domain()} url={props.url} />
-            <label class="flex items-center justify-between gap-3 text-body text-ink-soft">
+            <label class="flex items-center justify-between gap-3 text-base text-ink-soft">
               {t("FEED_LINK_PROMPT_TRUST_LABEL")}
               <Toggle
                 checked={previews.isTrusted(props.url)}

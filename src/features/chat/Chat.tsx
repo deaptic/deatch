@@ -39,6 +39,7 @@ import ChatOverlays from "./ChatOverlays.tsx";
 import Transition from "../../kit/Transition.tsx";
 import { PeopleDialog } from "../people/index.ts";
 import { closeOverlay, isOverlayOpen } from "../navigation/index.ts";
+import Surface from "../../kit/Surface.tsx";
 
 type Props = {
   broadcasterId: string;
@@ -172,7 +173,7 @@ export default function Chat(props: Props) {
         />
       </Boundary>
 
-      <div class="relative z-20 shrink-0 bg-surface border-t border-line-soft">
+      <Surface edge="top" class="relative z-20 shrink-0">
         <Transition when={feedApi()?.isPaused()}>
           {() => (
             <div class="absolute inset-x-0 bottom-full enter-rise">
@@ -206,7 +207,7 @@ export default function Chat(props: Props) {
             }}
           />
         </Boundary>
-      </div>
+      </Surface>
 
       <Transition when={isMod() && isOverlayOpen("chatters")}>
         {() => (

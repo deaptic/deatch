@@ -4,6 +4,7 @@ import { createDebounced } from "../../shared/solid/createDebounced.ts";
 import * as triggers from "./store.ts";
 import type { Trigger } from "../preferences/index.ts";
 import { t } from "../../shared/i18n/index.ts";
+import Text from "../../kit/Text.tsx";
 
 const SETTLE_MS = 300;
 
@@ -36,9 +37,9 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
         <Show
           when={response.latest}
           fallback={
-            <p class="text-small text-ink-soft">
+            <Text as="p" size="sm" tone="soft">
               {t("SETTINGS_TRIGGERS_TRY_NO_MATCH_HINT")}
-            </p>
+            </Text>
           }
         >
           {(preview) => (
@@ -46,19 +47,21 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
               <Show
                 when={preview().text}
                 fallback={
-                  <p class="text-small text-ink-soft">
+                  <Text as="p" size="sm" tone="soft">
                     {t("SETTINGS_TRIGGERS_TRY_SILENT_HINT")}
-                  </p>
+                  </Text>
                 }
               >
-                <p class="px-3 py-2 rounded-sm bg-raised text-body text-ink break-words">
+                <p class="px-3 py-2 rounded-sm bg-raised text-base text-ink break-words">
                   {preview().text}
                 </p>
               </Show>
               <For each={preview().filled}>
                 {([syntax, value]) => (
-                  <p class="flex gap-2 text-small min-w-0">
-                    <span class="font-semibold text-ink-soft">{syntax}</span>
+                  <p class="flex gap-2 text-sm min-w-0">
+                    <Text bold tone="soft">
+                      {syntax}
+                    </Text>
                     <span class={value ? "text-ink truncate" : "text-ink-soft"}>
                       {value || t("SETTINGS_TRIGGERS_TRY_EMPTY_VALUE")}
                     </span>

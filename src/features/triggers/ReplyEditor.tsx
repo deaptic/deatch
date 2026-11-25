@@ -13,6 +13,8 @@ import {
 } from "./conditionGroups.ts";
 import type { Condition, ConditionalReply } from "../preferences/index.ts";
 import { t } from "../../shared/i18n/index.ts";
+import Text from "../../kit/Text.tsx";
+import Divider from "../../kit/Divider.tsx";
 
 type Props = Targeting & {
   reply: ConditionalReply;
@@ -26,10 +28,12 @@ type Props = Targeting & {
 
 function OrDivider() {
   return (
-    <div class="flex items-center gap-2 text-small font-semibold text-ink-soft">
-      {t("SETTINGS_TRIGGERS_JOIN_OR_VALUE")}
-      <span class="flex-1 border-t border-line" />
-    </div>
+    <Text as="div" size="sm" bold tone="soft">
+      <div class="flex items-center gap-2">
+        {t("SETTINGS_TRIGGERS_JOIN_OR_VALUE")}
+        <Divider strong class="flex-1" />
+      </div>
+    </Text>
   );
 }
 
@@ -42,9 +46,9 @@ export default function ReplyEditor(props: Props) {
   return (
     <div class="flex flex-col gap-2 pl-3 border-l-2 border-line enter-rise">
       <div class="flex items-center gap-1">
-        <span class="flex-1 text-small font-semibold text-ink-soft">
+        <Text size="sm" bold tone="soft" class="flex-1">
           {t("SETTINGS_TRIGGERS_REPLY_NUMBER_LABEL", { number: props.number })}
-        </span>
+        </Text>
         <IconButton
           label={t("UI_MOVE_UP_LABEL")}
           disabled={props.first}

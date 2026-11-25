@@ -28,7 +28,7 @@ export default function OptionRow(props: Props) {
       tabIndex={-1}
       onMouseDown={(e) => e.preventDefault()}
       {...others}
-      class={`w-full shrink-0 flex px-2.5 rounded-sm text-body text-ink text-left transition-colors duration-snap ${
+      class={`w-full shrink-0 flex px-2.5 rounded-sm text-base text-ink text-left transition-colors duration-snap ${
         SIZES[local.size ?? "md"]
       } ${local.active ? "bg-raised" : "hover:bg-raised"} ${
         local.cursor ?? "cursor-pointer"

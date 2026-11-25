@@ -10,6 +10,7 @@ import Segmented from "../../kit/Segmented.tsx";
 import { moveGridFocus } from "../../kit/gridKeys.ts";
 import { t } from "../../shared/i18n/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   onSelect: (channel: User) => void;
@@ -116,9 +117,11 @@ export default function Popular(props: Props) {
         <Show
           when={explore.popular.fetching && explore.popular.streams.length > 0}
         >
-          <p class="py-4 text-center text-small text-ink-soft">
-            {t("EXPLORE_LOADING_MORE_STATUS")}
-          </p>
+          <div class="py-4">
+            <Text as="p" align="center" size="sm" tone="soft">
+              {t("EXPLORE_LOADING_MORE_STATUS")}
+            </Text>
+          </div>
         </Show>
       </Show>
     </section>

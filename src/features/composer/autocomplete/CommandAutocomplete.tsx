@@ -5,6 +5,7 @@ import { commands, type Command, commandUsage } from "../../commands/index.ts";
 import { showsRole } from "../../permissions/index.ts";
 import { rankSuggestions } from "../../../shared/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
+import Text from "../../../kit/Text.tsx";
 
 type CommandSuggestion = {
   name: string;
@@ -50,12 +51,18 @@ export default function CommandAutocomplete(props: Props) {
   const render = (s: CommandSuggestion) => (
     <div class="flex flex-col flex-1 min-w-0 text-left">
       <div class="flex items-baseline gap-2 min-w-0">
-        <span class="font-semibold text-ink truncate">/{s.name}</span>
+        <Text bold tone="primary" truncate>
+          /{s.name}
+        </Text>
         <Show when={s.usage}>
-          <span class="text-small text-ink-soft truncate">{s.usage}</span>
+          <Text size="sm" tone="soft" truncate>
+            {s.usage}
+          </Text>
         </Show>
       </div>
-      <span class="text-small text-ink-soft truncate">{s.description}</span>
+      <Text size="sm" tone="soft" truncate>
+        {s.description}
+      </Text>
     </div>
   );
 

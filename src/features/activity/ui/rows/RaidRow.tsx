@@ -3,6 +3,7 @@ import Button from "../../../../kit/Button.tsx";
 import type { ChannelLink } from "../../../menus/index.ts";
 import StripRow from "../../../../kit/StripRow.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
+import Text from "../../../../kit/Text.tsx";
 
 export default function RaidRow(props: {
   targetName: string;
@@ -25,7 +26,9 @@ export default function RaidRow(props: {
           </b>
         ),
         time: (chunks) => (
-          <span class="font-semibold tabular-nums">{chunks}</span>
+          <Text bold tabular>
+            {chunks}
+          </Text>
         ),
       })}
       actions={

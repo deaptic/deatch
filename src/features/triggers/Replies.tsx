@@ -12,6 +12,7 @@ import { moved } from "../../shared/moved.ts";
 import { removedAt, replacedAt } from "./listEdit.ts";
 import type { ConditionalReply } from "../preferences/index.ts";
 import { t } from "../../shared/i18n/index.ts";
+import Text from "../../kit/Text.tsx";
 
 const BLANK_REPLY: ConditionalReply = { when: [[BLANK_CONDITION]], text: "" };
 
@@ -59,9 +60,14 @@ export default function Replies(props: Props) {
         class={`flex flex-col gap-2 ${hasReplies() ? "pl-3 border-l-2 border-line" : ""}`}
       >
         <Show when={hasReplies()}>
-          <span class="h-control-sm flex items-center text-small font-semibold text-ink-soft">
+          <Text
+            size="sm"
+            bold
+            tone="soft"
+            class="h-control-sm flex items-center"
+          >
             {t("SETTINGS_TRIGGERS_OTHERWISE_LABEL")}
-          </span>
+          </Text>
         </Show>
         <ResponseField
           value={props.otherwise}

@@ -7,6 +7,7 @@ import StripRow from "../../kit/StripRow.tsx";
 import { streamerMode } from "../preferences/index.ts";
 import * as streamer from "./store.ts";
 import Dot from "../../kit/Dot.tsx";
+import Surface from "../../kit/Surface.tsx";
 
 function OnAirDot() {
   return (
@@ -19,7 +20,7 @@ function OnAirDot() {
 export default function StreamerModeBanner() {
   return (
     <Show when={streamerMode() && !streamer.dismissed()}>
-      <div class="shrink-0 bg-surface border-b border-line-soft">
+      <Surface edge="bottom" class="shrink-0">
         <StripRow
           icon={<OnAirDot />}
           title={t("STREAMER_MODE_ON_STATUS")}
@@ -39,7 +40,7 @@ export default function StreamerModeBanner() {
             </>
           }
         />
-      </div>
+      </Surface>
     </Show>
   );
 }

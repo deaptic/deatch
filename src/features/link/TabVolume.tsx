@@ -9,12 +9,15 @@ type Props = {
 };
 
 import { formatWholePercent } from "../../shared/format/units.ts";
+import Text from "../../kit/Text.tsx";
 export default function TabVolume(props: Props) {
   const gain = () => channelGain(props.login);
 
   return (
     <div class="px-2.5 pt-2 pb-1 flex flex-col gap-1">
-      <span class="text-small text-ink-soft">{t("MENU_TAB_VOLUME_LABEL")}</span>
+      <Text size="sm" tone="soft">
+        {t("MENU_TAB_VOLUME_LABEL")}
+      </Text>
       <Slider
         label={t("MENU_TAB_VOLUME_LABEL")}
         value={gain()}
@@ -24,9 +27,9 @@ export default function TabVolume(props: Props) {
         onChange={(value) => setChannelGain(props.login, value)}
       />
       <div class="h-control-sm flex items-center justify-between">
-        <span class="text-small tabular-nums text-ink">
+        <Text size="sm" tabular tone="primary">
           {formatWholePercent(gain())}
-        </span>
+        </Text>
         <Button
           variant="ghost"
           size="sm"

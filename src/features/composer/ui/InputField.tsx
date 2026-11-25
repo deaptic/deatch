@@ -59,7 +59,7 @@ export default function InputField(props: Props) {
         rows={1}
         value={local.value}
         onInput={(e) => local.onInput(e.currentTarget.value)}
-        class="flex-1 self-stretch content-center bg-transparent text-body text-ink placeholder:text-ink-faint py-2 pr-1 outline-none resize-none overflow-y-auto field-sizing-content max-h-27.5"
+        class="flex-1 self-stretch content-center bg-transparent text-base text-ink placeholder:text-ink-faint py-2 pr-1 outline-none resize-none overflow-y-auto field-sizing-content max-h-27.5"
       />
       {local.addons}
     </ComposerBox>

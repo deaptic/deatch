@@ -35,7 +35,6 @@ import { createRailChannels } from "./createRailChannels.ts";
 import { createPinDrag } from "./createPinDrag.ts";
 import RailRow from "./RailRow.tsx";
 import IconTile from "../../kit/IconTile.tsx";
-import RailDivider from "./RailDivider.tsx";
 import RailLinkRow from "./RailLinkRow.tsx";
 import ChannelRow from "./ChannelRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
@@ -56,6 +55,7 @@ import type { User } from "../../shared/types/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 import Transition from "../../kit/Transition.tsx";
+import Divider from "../../kit/Divider.tsx";
 
 type Props = {
   onSelect: (ch: User) => void;
@@ -191,7 +191,7 @@ export default function Rail(props: Props) {
             when={systemFollowedChannels()}
             fallback={
               <Show when={appearanceFollowedPrompt()}>
-                <RailDivider />
+                <Divider class="mx-4" />
                 <div class="flex flex-col py-2">
                   <RailRow
                     label={t("RAIL_SHOW_FOLLOWED_LABEL")}
@@ -209,7 +209,7 @@ export default function Rail(props: Props) {
               </Show>
             }
           >
-            <RailDivider />
+            <Divider class="mx-4" />
 
             <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
               <Show
@@ -238,7 +238,7 @@ export default function Rail(props: Props) {
       </div>
 
       <Show when={linkedOthers().length > 0}>
-        <RailDivider />
+        <Divider class="mx-4" />
         <div class="flex flex-col py-2 shrink-0">
           <div class="relative">
             <Show when={linkScroll.canUp()}>
@@ -284,7 +284,7 @@ export default function Rail(props: Props) {
       <Show when={nowViewing()}>
         {(nv) => (
           <>
-            <RailDivider />
+            <Divider class="mx-4" />
             <div class="py-2 shrink-0" data-channel-id={nv().id}>
               <ChannelRow
                 ch={nv()}
@@ -297,7 +297,7 @@ export default function Rail(props: Props) {
         )}
       </Show>
 
-      <RailDivider />
+      <Divider class="mx-4" />
       <div class={`flex flex-col py-2 shrink-0 ${RAIL_GAP}`}>
         <RailLinkRow onToggleLink={props.onToggleLink} />
         <RailRow
@@ -333,7 +333,7 @@ export default function Rail(props: Props) {
         </RailRow>
       </div>
 
-      <RailDivider />
+      <Divider class="mx-4" />
       <div class="flex flex-col py-2 shrink-0">
         <Show when={user()}>
           {(u) => (

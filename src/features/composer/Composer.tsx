@@ -38,6 +38,7 @@ import Actions from "./Actions.tsx";
 import ComposerSlot from "../../kit/ComposerSlot.tsx";
 import Transition from "../../kit/Transition.tsx";
 import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
+import Text from "../../kit/Text.tsx";
 
 const SEND_ACTION = "chat::send";
 
@@ -268,7 +269,9 @@ export default function Composer(props: Props) {
               {tRich("COMPOSER_REPLYING_TO_LABEL", {
                 user: reply().name,
                 name: (chunks) => (
-                  <span class="font-semibold text-ink">{chunks}</span>
+                  <Text bold tone="primary">
+                    {chunks}
+                  </Text>
                 ),
               })}
             </span>

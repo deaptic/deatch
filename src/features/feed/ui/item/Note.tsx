@@ -1,6 +1,7 @@
 import { For, type JSX, Show } from "solid-js";
 import Toolbar from "../../../../kit/Toolbar.tsx";
 import ToolbarItem, { type ToolbarTone } from "../../../../kit/ToolbarItem.tsx";
+import Text from "../../../../kit/Text.tsx";
 
 export type NoteAction = {
   title: string;
@@ -24,7 +25,7 @@ export default function Note(props: Props) {
       >
         {props.label}
         <Show when={props.suffix}>
-          <span class="text-ink-soft font-medium">{` · ${props.suffix}`}</span>
+          <Text tone="soft" bold>{` · ${props.suffix}`}</Text>
         </Show>
       </div>
       <Show when={props.actions?.length}>

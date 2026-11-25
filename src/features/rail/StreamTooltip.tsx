@@ -10,6 +10,7 @@ import * as clock from "../../shared/clock.ts";
 import type { ChannelInfo, Stream, User } from "../../shared/types/index.ts";
 import Stat from "../../kit/Stat.tsx";
 import { t } from "../../shared/i18n/index.ts";
+import Text from "../../kit/Text.tsx";
 
 export default function StreamTooltip(props: {
   user: User;
@@ -30,9 +31,11 @@ export default function StreamTooltip(props: {
 
   return (
     <div class="flex flex-col gap-2 max-w-72 px-0.5 py-0.5">
-      <p class="text-body font-semibold truncate">{props.user.displayName}</p>
+      <Text as="p" size="md" bold truncate>
+        {props.user.displayName}
+      </Text>
       <Show when={title()}>
-        <p class="text-body leading-relaxed text-ink wrap-break-word line-clamp-3">
+        <p class="text-base leading-relaxed text-ink wrap-break-word line-clamp-3">
           {title()}
         </p>
       </Show>

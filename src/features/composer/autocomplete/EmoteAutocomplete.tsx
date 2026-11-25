@@ -8,6 +8,7 @@ import {
 } from "../../emotes/index.ts";
 import { rankSuggestions } from "../../../shared/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
+import Text from "../../../kit/Text.tsx";
 
 type EmoteSuggestion = { name: string; url: string; source: EmoteProvider };
 
@@ -46,10 +47,12 @@ export default function EmoteAutocomplete(props: Props) {
         alt={s.name}
         class="size-6 object-contain shrink-0"
       />
-      <span class="text-ink flex-1 text-left truncate">{s.name}</span>
-      <span class="text-small font-semibold shrink-0 text-ink-soft">
+      <Text tone="primary" align="left" truncate class="flex-1">
+        {s.name}
+      </Text>
+      <Text size="sm" bold tone="soft" class="shrink-0">
         {s.source}
-      </span>
+      </Text>
     </>
   );
 

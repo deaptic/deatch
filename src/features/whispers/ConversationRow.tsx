@@ -7,6 +7,7 @@ import Timestamp from "../../kit/Timestamp.tsx";
 import { ChatterPicture } from "../message/index.ts";
 import type { Conversation } from "./model.ts";
 import ListRow from "../../kit/ListRow.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   conversation: Conversation;
@@ -48,21 +49,21 @@ export default function ConversationRow(props: Props) {
       />
       <span class="flex-1 min-w-0 flex flex-col">
         <span class="flex items-center gap-2 min-w-0">
-          <span class="flex-1 min-w-0 truncate text-body font-semibold text-ink">
+          <Text truncate size="md" bold tone="primary" class="flex-1 min-w-0">
             {c().peer.displayName}
-          </span>
+          </Text>
           <Show when={c().last}>
             {(last) => (
-              <span class="shrink-0 text-small text-ink-faint">
+              <Text size="sm" tone="faint" class="shrink-0">
                 <Timestamp ts={last().timestamp} />
-              </span>
+              </Text>
             )}
           </Show>
         </span>
         <span class="flex items-center gap-2 min-w-0">
-          <span class="flex-1 min-w-0 truncate text-small text-ink-soft">
+          <Text truncate size="sm" tone="soft" class="flex-1 min-w-0">
             {preview()}
-          </span>
+          </Text>
           <Show when={c().unread}>
             <Badge count={c().unread} />
           </Show>

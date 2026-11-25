@@ -14,9 +14,9 @@ type Props =
 
 const TEXT: Record<TextVariant, string> = {
   inline:
-    "rounded-lg bg-surface px-4 py-10 text-center text-body text-ink-soft",
-  list: "py-3 text-body text-ink-faint",
-  palette: "py-8 text-center text-body text-ink-soft",
+    "rounded-lg bg-surface px-4 py-10 text-center text-base text-ink-soft",
+  list: "py-3 text-base text-ink-faint",
+  palette: "py-8 text-center text-base text-ink-soft",
 };
 
 export default function EmptyState(props: Props) {
@@ -29,8 +29,8 @@ export default function EmptyState(props: Props) {
     <div class="flex flex-1 items-center justify-center p-6">
       <div class="flex flex-col items-center text-center gap-3 max-w-90 enter-rise">
         <span class="text-ink-faint [&>svg]:size-6">{page.icon}</span>
-        <h2 class="text-title text-ink">{page.title}</h2>
-        <p class="text-body text-ink-soft">{page.body}</p>
+        <h2 class="text-base font-semibold text-ink">{page.title}</h2>
+        <p class="text-base text-ink-soft">{page.body}</p>
         <Show when={action.toArray().length}>
           <div class="pt-2">{action()}</div>
         </Show>

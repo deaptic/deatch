@@ -2,6 +2,7 @@ import { type JSX, Show } from "solid-js";
 import type { UserRef } from "../../shared/types/index.ts";
 import { ChatterPicture } from "../message/index.ts";
 import ListRow from "../../kit/ListRow.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   user: UserRef;
@@ -26,11 +27,13 @@ export default function PersonRow(props: Props) {
         name={props.user.displayName}
       />
       <span class="min-w-0 flex flex-col">
-        <span class="truncate text-body text-ink">
+        <Text truncate size="md" tone="primary">
           {props.user.displayName}
-        </span>
+        </Text>
         <Show when={props.detail}>
-          <span class="truncate text-small text-ink-faint">{props.detail}</span>
+          <Text truncate size="sm" tone="faint">
+            {props.detail}
+          </Text>
         </Show>
       </span>
     </ListRow>

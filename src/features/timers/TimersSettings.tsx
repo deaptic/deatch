@@ -31,6 +31,7 @@ import {
 } from "../preferences/index.ts";
 import SectionLabel from "../../kit/SectionLabel.tsx";
 import IconTile from "../../kit/IconTile.tsx";
+import Text from "../../kit/Text.tsx";
 
 function Choice(props: { label: string; children: JSX.Element }) {
   return (
@@ -127,7 +128,7 @@ function TimerCard(props: {
           type="button"
           tabIndex={-1}
           onClick={props.onToggle}
-          class="w-full -mt-1 pb-3 pl-18.5 pr-4 truncate text-small text-ink-faint text-left cursor-pointer"
+          class="w-full -mt-1 pb-3 pl-18.5 pr-4 truncate text-sm text-ink-faint text-left cursor-pointer"
         >
           {timer().message}
         </button>
@@ -147,12 +148,12 @@ function TimerCard(props: {
               value={timer().message}
               onInput={(e) => update({ message: e.currentTarget.value })}
             />
-            <span class="self-end text-micro text-ink-faint tabular-nums">
+            <Text size="xs" tone="faint" tabular class="self-end">
               {t("SETTINGS_TIMERS_LENGTH_VALUE", {
                 count: timer().message.length,
                 max: MAX_MESSAGE_LENGTH,
               })}
-            </span>
+            </Text>
           </div>
           <div class="grid grid-cols-2 gap-4 @max-lg:grid-cols-1">
             <Choice label={t("SETTINGS_TIMERS_EVERY_LABEL")}>

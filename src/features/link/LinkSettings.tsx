@@ -21,6 +21,7 @@ import {
   setCompressorControl,
   setLinkCompressor,
 } from "../preferences/index.ts";
+import Text from "../../kit/Text.tsx";
 
 const db = (value: number) => `${value} dB`;
 const ms = (value: number) => `${value} ms`;
@@ -80,9 +81,11 @@ export default function LinkSection() {
           />
         </SettingsRow>
         <Show when={connected() && !hasAudio()}>
-          <p class="px-4 pb-3 text-small text-caution">
-            {t("SETTINGS_LINK_UPDATE_EXTENSION_HINT")}
-          </p>
+          <div class="px-4 pb-3">
+            <Text as="p" size="sm" tone="caution">
+              {t("SETTINGS_LINK_UPDATE_EXTENSION_HINT")}
+            </Text>
+          </div>
         </Show>
         <Disclosure label={t("SETTINGS_LINK_ADVANCED_TITLE")}>
           <For each={COMPRESSOR_CONTROLS}>
@@ -106,9 +109,15 @@ export default function LinkSection() {
                       format={format}
                       onChange={(v) => setCompressorControl(control, v)}
                     />
-                    <span class="w-16 shrink-0 text-right text-small tabular-nums text-ink">
+                    <Text
+                      align="right"
+                      size="sm"
+                      tabular
+                      tone="primary"
+                      class="w-16 shrink-0"
+                    >
                       {format(value())}
-                    </span>
+                    </Text>
                   </div>
                 </SettingsRow>
               );

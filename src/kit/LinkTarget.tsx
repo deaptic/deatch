@@ -12,10 +12,10 @@ export default function LinkTarget(props: Props) {
         <Globe class="size-4" />
       </span>
       <span class="flex min-w-0 flex-col gap-0.5">
-        <span class="truncate text-body font-semibold text-ink">
+        <span class="truncate text-base font-semibold text-ink">
           {props.domain}
         </span>
-        <span class="line-clamp-2 break-all text-small text-ink-faint">
+        <span class="line-clamp-2 break-all text-sm text-ink-faint">
           {props.url}
         </span>
       </span>

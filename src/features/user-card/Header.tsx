@@ -136,7 +136,7 @@ export default function Header(props: Props) {
               size={80}
             />
           </button>
-          <div class="ml-auto flex items-center pt-card-gap text-card-name">
+          <div class="ml-auto flex items-center pt-card-gap text-2xl">
             <Badges
               badges={latestBadges()}
               channelBadges={channelBadges()}
@@ -157,7 +157,7 @@ export default function Header(props: Props) {
         <Show when={user()?.description}>
           {(bio) => (
             <p
-              class="text-small text-ink-soft line-clamp-3 wrap-break-word"
+              class="text-sm text-ink-soft line-clamp-3 wrap-break-word"
               data-tip={bio()}
             >
               {bio()}

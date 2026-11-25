@@ -16,6 +16,7 @@ import { createCopied } from "../../kit/createCopied.ts";
 import { t, tRich } from "../../shared/i18n/index.ts";
 import { formatUrl } from "../../shared/format/url.ts";
 import TextLink from "../../kit/TextLink.tsx";
+import Text from "../../kit/Text.tsx";
 
 const RESTORE_FAILURE_TEXT = {
   missingScope: "LOGIN_MISSING_SCOPE_ERROR",
@@ -28,13 +29,15 @@ export default function Login() {
   return (
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
-        <h1 class="text-hero text-ink">{t("LOGIN_WELCOME_TITLE")}</h1>
-        <p class="text-body text-ink-soft">{t("LOGIN_TAGLINE_DESCRIPTION")}</p>
+        <h1 class="text-4xl text-ink">{t("LOGIN_WELCOME_TITLE")}</h1>
+        <Text as="p" size="md" tone="soft">
+          {t("LOGIN_TAGLINE_DESCRIPTION")}
+        </Text>
         <Show when={restoreFailure()}>
           {(failure) => (
-            <p class="text-small text-caution">
+            <Text as="p" size="sm" tone="caution">
               {t(RESTORE_FAILURE_TEXT[failure()])}
-            </p>
+            </Text>
           )}
         </Show>
 
@@ -61,15 +64,15 @@ export default function Login() {
                   fallback={
                     <>
                       <Loading size={24} />
-                      <p class="text-small text-ink-soft">
+                      <Text as="p" size="sm" tone="soft">
                         {t("LOGIN_REQUESTING_CODE_STATUS")}
-                      </p>
+                      </Text>
                     </>
                   }
                 >
                   {(code) => (
                     <>
-                      <p class="text-small text-ink-soft">
+                      <Text as="p" size="sm" tone="soft">
                         {tRich("LOGIN_ENTER_CODE_DESCRIPTION", {
                           site: formatUrl(code().verificationUri),
                           link: (chunks) => (
@@ -83,8 +86,8 @@ export default function Login() {
                             </TextLink>
                           ),
                         })}
-                      </p>
-                      <p class="font-mono text-hero text-ink">
+                      </Text>
+                      <p class="font-mono text-4xl text-ink">
                         {code().userCode}
                       </p>
                       <Button

@@ -14,9 +14,7 @@ export default function Group(props: Props) {
   return (
     <Show when={props.mentions.length > 0}>
       <section class="flex flex-col gap-2">
-        <h3 class="px-1 text-small font-semibold text-ink-soft">
-          {props.label}
-        </h3>
+        <h3 class="px-1 text-sm font-semibold text-ink-soft">{props.label}</h3>
         <For each={props.mentions}>
           {(m) => (
             <Item
