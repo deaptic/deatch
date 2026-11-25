@@ -77,6 +77,7 @@ export default function ResponseField(props: Props) {
             suggestions={matching}
             onSelect={pick}
             onDismiss={() => setDismissed(true)}
+            ownsEscape
             ref={setApi}
             renderItem={(m) => (
               <span class="flex items-baseline gap-2 min-w-0">

@@ -135,7 +135,7 @@ export default function AppearancePanel(props: Props) {
   return (
     <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
       <div
-        role="menu"
+        role="dialog"
         aria-label={t("TITLE_BAR_APPEARANCE_LABEL")}
         class="w-72 p-1.5 flex flex-col"
       >

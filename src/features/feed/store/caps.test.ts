@@ -1,6 +1,12 @@
 import { expect, test } from "vite-plus/test";
 import type { FeedEntry } from "../types.ts";
-import { BACKGROUND_CAP, enforceCap, FEED_CAP, limitFor } from "./caps.ts";
+import {
+  BACKGROUND_CAP,
+  enforceCap,
+  enforceCapLoosely,
+  FEED_CAP,
+  limitFor,
+} from "./caps.ts";
 
 const message = (n: number): FeedEntry =>
   ({ kind: "message", message_id: `m${n}` }) as unknown as FeedEntry;
@@ -28,4 +34,13 @@ test("paused feeds keep more but still have a ceiling", () => {
 test("background channels keep only the latest few", () => {
   expect(limitFor(false, true)).toBe(BACKGROUND_CAP);
   expect(limitFor(true, true)).toBe(BACKGROUND_CAP);
+});
+
+test("appending trims in batches, never past an eighth over the limit", () => {
+  const items = Array.from({ length: FEED_CAP + 50 }, (_, i) => message(i));
+  enforceCapLoosely(items, FEED_CAP);
+  expect(items.length).toBe(FEED_CAP + 50);
+  items.push(message(FEED_CAP + 50));
+  enforceCapLoosely(items, FEED_CAP);
+  expect(items.length).toBe(FEED_CAP);
 });

@@ -27,7 +27,9 @@ export default function ChipInput(props: Props) {
         value={value()}
         onInput={(e) => setValue(e.currentTarget.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") submit();
+          if (e.key !== "Enter") return;
+          e.preventDefault();
+          submit();
         }}
       />
       <IconButton

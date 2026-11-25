@@ -1,5 +1,5 @@
 import type { FeedEntry } from "../types.ts";
-import { enforceCap } from "./caps.ts";
+import { enforceCap, enforceCapLoosely } from "./caps.ts";
 import { getEntryId } from "./entryId.ts";
 
 export function append(
@@ -10,7 +10,7 @@ export function append(
   const id = getEntryId(item);
   if (messages.some((m) => getEntryId(m) === id)) return false;
   messages.push(item);
-  enforceCap(messages, limit);
+  enforceCapLoosely(messages, limit);
   return true;
 }
 

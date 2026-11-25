@@ -28,8 +28,16 @@ export function createFeedShortcuts(deps: Deps): void {
         clearDivider(deps.broadcasterId());
         return shortcuts.PASS;
       }),
-      shortcuts.register("feed::selectPrev", move(-1)),
-      shortcuts.register("feed::selectNext", move(1)),
+      shortcuts.register(
+        "feed::selectPrev",
+        move(-1),
+        "chat:focused || feedSelected",
+      ),
+      shortcuts.register(
+        "feed::selectNext",
+        move(1),
+        "chat:focused || feedSelected",
+      ),
       shortcuts.registerLocal("up", move(-1), "feedSelected"),
       shortcuts.registerLocal("down", move(1), "feedSelected"),
       shortcuts.registerLocal(

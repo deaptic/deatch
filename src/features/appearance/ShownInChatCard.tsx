@@ -34,6 +34,8 @@ export default function ShownInChatCard() {
         />
       </SettingsRow>
       <TypeChips
+        label={t("SETTINGS_MESSAGES_EVENTS_SHOW_LABEL")}
+        description={t("SETTINGS_MESSAGES_EVENTS_SHOW_DESCRIPTION")}
         items={items()}
         isOn={(key) => feedEvents()[key].show !== false}
         disabled={(key) => key !== "message" && !feedShowEvents()}

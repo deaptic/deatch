@@ -12,3 +12,7 @@ export function limitFor(paused: boolean, background: boolean): number {
 export function enforceCap(entries: FeedEntry[], limit: number) {
   entries.splice(0, Math.max(0, entries.length - limit));
 }
+
+export function enforceCapLoosely(entries: FeedEntry[], limit: number) {
+  if (entries.length > limit + Math.ceil(limit / 8)) enforceCap(entries, limit);
+}

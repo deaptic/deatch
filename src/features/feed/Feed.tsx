@@ -306,6 +306,19 @@ export default function Feed(props: Props) {
     ),
   );
 
+  createEffect(
+    on(
+      () => scroll.isPaused(),
+      (paused) => {
+        const view = historyViews[props.broadcasterId];
+        if (!paused && ownsHistory() && view?.atLive) {
+          history.close(props.broadcasterId);
+        }
+      },
+      { defer: true },
+    ),
+  );
+
   createEffect(on(() => entries().at(-1), scroll.keep));
 
   createEffect(

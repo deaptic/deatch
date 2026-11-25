@@ -34,6 +34,8 @@ export default function BadgesCard() {
         />
       </SettingsRow>
       <TypeChips
+        label={t("SETTINGS_MESSAGES_BADGES_SHOW_LABEL")}
+        description={t("SETTINGS_MESSAGES_BADGES_SHOW_DESCRIPTION")}
         items={items()}
         isOn={(key) => feedBadges()[key].show !== false}
         disabled={() => !feedShowBadges()}

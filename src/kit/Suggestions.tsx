@@ -1,4 +1,5 @@
-import { createEffect, For, type JSX, on, onMount } from "solid-js";
+import { createEffect, For, type JSX, on, onCleanup, onMount } from "solid-js";
+import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import {
   createListbox,
   type ListboxField,
@@ -17,11 +18,15 @@ type Props<T> = {
   onDismiss: () => void;
   renderItem: (item: T) => JSX.Element;
   selectOnSpace?: boolean;
+  ownsEscape?: boolean;
   ref?: (api: SuggestionsApi) => void;
 };
 
 export default function Suggestions<T>(props: Props<T>) {
   const listbox = createListbox({ count: () => props.suggestions().length });
+  if (props.ownsEscape) {
+    onCleanup(shortcuts.registerLocal("escape", () => props.onDismiss()));
+  }
 
   createEffect(
     on(props.suggestions, () => listbox.setActive(0), { defer: true }),

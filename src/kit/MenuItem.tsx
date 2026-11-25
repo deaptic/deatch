@@ -25,8 +25,9 @@ export default function MenuItem(props: Props) {
   const close = useContext(MenuClose);
 
   function select() {
-    props.onClick?.();
+    const onClick = props.onClick;
     if (!props.submenu && !props.keepOpen) close?.();
+    onClick?.();
   }
 
   return (
