@@ -38,6 +38,8 @@ import RailTile from "./ui/RailTile.tsx";
 import RailDivider from "./RailDivider.tsx";
 import RailLinkRow from "./RailLinkRow.tsx";
 import ChannelRow from "./ChannelRow.tsx";
+import StreamTooltip from "./StreamTooltip.tsx";
+import { channelInfoFor, streamForUserId } from "../channels/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import ScrollChevron from "./ui/ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
@@ -338,6 +340,13 @@ export default function Rail(props: Props) {
             <RailRow
               label={u().displayName}
               sub={t("RAIL_YOUR_CHANNEL_LABEL")}
+              card={() => (
+                <StreamTooltip
+                  user={u()}
+                  stream={streamForUserId(u().id)}
+                  info={channelInfoFor(u().id)}
+                />
+              )}
               selected={pendingChannel()?.id === u().id}
               unread={hasUnread(u().id)}
               count={inbox.unreadCountIn(u().id)}
@@ -353,6 +362,7 @@ export default function Rail(props: Props) {
                 alt={u().displayName}
                 size={40}
                 square
+                liveRing={!!streamForUserId(u().id)}
               >
                 <Show when={link.hasAudio() && ownTab()}>
                   {(tab) => (
