@@ -5,7 +5,10 @@ import type {
   User,
   UserRef,
 } from "../../shared/types/index.ts";
-import { pinnedChannels } from "../preferences/index.ts";
+import {
+  pinnedChannels,
+  systemFollowedChannels,
+} from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import { knownUser, user } from "../users/index.ts";
 import { orderChannels } from "./order.ts";
@@ -59,10 +62,15 @@ export function streamForUserId(userId: string): Stream | undefined {
 }
 
 export function channelsInOrder(): User[] {
+  const shown = new Set(
+    systemFollowedChannels() ? (followedLive() ?? []).map((c) => c.id) : [],
+  );
   return orderChannels({
     pinnedIds: pinnedChannels(),
     tabIds: new Set(link.tabs().map((c) => c.id)),
-    streams: liveStreams().filter((s) => s.user.id !== user()?.id),
+    streams: liveStreams().filter(
+      (s) => shown.has(s.user.id) && s.user.id !== user()?.id,
+    ),
     knownUser,
   });
 }

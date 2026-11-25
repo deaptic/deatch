@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { createEffect, on } from "solid-js";
 import * as raid from "./raid.ts";
 import { isPinActive, secondsLeft } from "./model.ts";
 import { activityShown } from "../preferences/index.ts";
@@ -7,6 +7,7 @@ import * as clock from "../../shared/clock.ts";
 import Transition from "../../kit/Transition.tsx";
 import { setChannelForm } from "../navigation/index.ts";
 import { knownUser } from "../users/index.ts";
+import { hasPermission } from "../permissions/index.ts";
 import { createChannelLink } from "../menus/index.ts";
 import { cheermotes, thirdPartyEmoteMap } from "../emotes/index.ts";
 import { mapFragment } from "../feed/index.ts";
@@ -65,7 +66,12 @@ export default function ActivityStrip(props: Props) {
   const prediction = () =>
     activityShown("prediction") ? current().prediction : null;
 
-  onMount(() => activity.load(props.broadcasterId));
+  createEffect(
+    on(
+      () => hasPermission(props.broadcasterId, "moderate"),
+      () => activity.load(props.broadcasterId),
+    ),
+  );
 
   return (
     <Transition

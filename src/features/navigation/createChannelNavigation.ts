@@ -5,6 +5,7 @@ import { users } from "../users/index.ts";
 import {
   stepVisits,
   linkSynced,
+  pendingChannel,
   recordVisit,
   selectedChannel,
   setJumpTarget,
@@ -47,7 +48,7 @@ export function createChannelNavigation(): ChannelNavigation {
           return addToast(t("ERROR_CHANNEL_NOT_FOUND_ERROR"), "error");
         }
         then?.();
-        if (selectedChannel()?.id !== broadcasterId) selectChannel(ch);
+        if (pendingChannel()?.id !== broadcasterId) selectChannel(ch);
       },
       (e: unknown) => {
         reportFailure(e);

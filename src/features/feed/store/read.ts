@@ -1,4 +1,4 @@
-import { feeds, isSilent, lastVisible, setFeeds } from "./core.ts";
+import { type ChannelFeed, feeds, isSilent, setFeeds } from "./core.ts";
 import { getEntryId } from "./entryId.ts";
 import { selectedChannel } from "../../navigation/index.ts";
 import { feedEvents, feedShowEvents } from "../../preferences/index.ts";
@@ -20,7 +20,7 @@ export function hasUnread(broadcasterId: string): boolean {
   if (selectedChannel()?.id === broadcasterId) return false;
   const last = lastVisible(feed);
   if (!last) return false;
-  const marker = feed.dividerAtEntryId ?? feed.lastSeenEntryId;
+  const marker = feed.lastSeenEntryId;
   if (!marker) return true;
   return getEntryId(last) !== marker;
 }
@@ -30,7 +30,7 @@ export function unseenCount(broadcasterId: string): number {
   const seen = feed?.lastSeenEntryId;
   if (!feed || !seen) return 0;
   const from = feed.messages.findLastIndex((e) => getEntryId(e) === seen);
-  return feed.messages.slice(from + 1).filter((e) => !isSilent(e)).length;
+  return feed.messages.slice(from + 1).filter(countsAsNew).length;
 }
 
 export function markSeen(broadcasterId: string) {
@@ -54,6 +54,14 @@ export function snapshotDivider(broadcasterId: string) {
   if (feed?.lastSeenEntryId) {
     setFeeds(broadcasterId, "dividerAtEntryId", feed.lastSeenEntryId);
   }
+}
+
+function countsAsNew(item: FeedEntry): boolean {
+  return !isSilent(item) && isFeedEntryVisible(item);
+}
+
+function lastVisible(feed: ChannelFeed): FeedEntry | undefined {
+  return feed.messages.findLast(countsAsNew);
 }
 
 export function isFeedEntryVisible(item: FeedEntry): boolean {

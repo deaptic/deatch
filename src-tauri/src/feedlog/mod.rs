@@ -291,7 +291,9 @@ pub fn spawn_pruning(app: tauri::AppHandle) {
             let pruned = crate::platform::blocking::run(app.clone(), |app| {
                 let dbs = app.state::<Databases>();
                 for account in dbs.accounts()? {
-                    dbs.upkeep(&account, |db| prune(db, unix_ms(), MAX_BYTES))?;
+                    if let Err(e) = dbs.upkeep(&account, |db| prune(db, unix_ms(), MAX_BYTES)) {
+                        log::warn!("feed log prune for {account} failed: {e}");
+                    }
                 }
                 Ok(())
             })

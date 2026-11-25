@@ -78,10 +78,6 @@ export function isSilent(item: FeedEntry): boolean {
   return item.kind === "event" && item.silent === true;
 }
 
-export function lastVisible(feed: ChannelFeed): FeedEntry | undefined {
-  return feed.messages.findLast((item) => !isSilent(item));
-}
-
 export function ensureFeed(broadcasterId: string) {
   if (!feeds[broadcasterId]) setFeeds(broadcasterId, emptyFeed());
 }

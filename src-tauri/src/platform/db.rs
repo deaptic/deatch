@@ -126,7 +126,7 @@ fn prepare(conn: &mut Connection, schemas: &[Schema]) -> Result<()> {
         )",
     )?;
     for schema in schemas {
-        let tx = conn.transaction()?;
+        let tx = conn.transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)?;
         let version: i64 = tx
             .query_row(
                 "SELECT version FROM schema WHERE feature = ?1",

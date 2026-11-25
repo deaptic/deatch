@@ -14,10 +14,7 @@ pub fn retry_delay(method: &Method, status: StatusCode, attempt: u32) -> Option<
 }
 
 fn is_idempotent(method: &Method) -> bool {
-    matches!(
-        *method,
-        Method::GET | Method::PUT | Method::PATCH | Method::DELETE
-    )
+    matches!(*method, Method::GET | Method::PUT)
 }
 
 #[cfg(test)]
@@ -51,11 +48,13 @@ mod tests {
     }
 
     #[test]
-    fn never_replays_post_after_server_error() {
-        assert_eq!(
-            retry_delay(&Method::POST, StatusCode::INTERNAL_SERVER_ERROR, 0),
-            None
-        );
+    fn never_replays_writes_after_server_error() {
+        for method in [Method::POST, Method::PATCH, Method::DELETE] {
+            assert_eq!(
+                retry_delay(&method, StatusCode::INTERNAL_SERVER_ERROR, 0),
+                None
+            );
+        }
     }
 
     #[test]

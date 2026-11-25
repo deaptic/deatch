@@ -70,10 +70,12 @@ test("the open channel and a missing feed are never unread", () => {
   expect(hasUnread("missing")).toBe(false);
 });
 
-test("the divider marks what was seen while it stands", () => {
+test("marking a channel read clears it even with a divider standing", () => {
   ensureFeed("u3");
   appendItem("u3", message("a"));
+  appendItem("u3", message("b"));
   setFeeds("u3", "dividerAtEntryId", "a");
+  setFeeds("u3", "lastSeenEntryId", "b");
   expect(hasUnread("u3")).toBe(false);
 });
 
