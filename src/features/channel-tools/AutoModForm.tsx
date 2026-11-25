@@ -92,7 +92,7 @@ export default function AutoModForm(props: Props) {
       submitLabel={t("HEADER_SAVE_AUTOMOD_LABEL")}
       canSubmit={settings() !== null && !saving()}
       onSubmit={save}
-      onCancel={props.onDone}
+      onClose={props.onDone}
     >
       <Show when={settings()} fallback={<Loading />}>
         {(s) => (

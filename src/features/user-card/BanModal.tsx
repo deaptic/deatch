@@ -93,7 +93,7 @@ export default function BanModal(props: Props) {
             {t("BAN_CANCEL_LABEL")}
           </Button>
           <Button
-            variant={choice() === "unban" ? "accent" : "danger"}
+            variant={choice() === "unban" ? "accent" : "negative"}
             onClick={confirm}
             loading={pending() || status().kind === "loading"}
           >

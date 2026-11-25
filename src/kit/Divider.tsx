@@ -1,6 +1,6 @@
 type DividerVariant = "accent" | "tag";
 
-const LOOKS: Record<
+const VARIANTS: Record<
   DividerVariant,
   { box: string; rule: string; label: string }
 > = {
@@ -34,15 +34,15 @@ export default function Divider(props: Props) {
     );
   }
   const labelled = props as Extract<Props, { label: string }>;
-  const look = () => LOOKS[labelled.variant];
+  const variant = () => VARIANTS[labelled.variant];
   return (
     <div
       role="separator"
-      class={`flex items-center gap-3 pl-3 select-none pointer-events-none ${look().box}`}
+      class={`flex items-center gap-3 pl-3 select-none pointer-events-none ${variant().box}`}
     >
-      <div class={`flex-1 border-t ${look().rule}`} />
-      <span class={look().label}>{labelled.label}</span>
-      <div class={`flex-1 border-t ${look().rule}`} />
+      <div class={`flex-1 border-t ${variant().rule}`} />
+      <span class={variant().label}>{labelled.label}</span>
+      <div class={`flex-1 border-t ${variant().rule}`} />
     </div>
   );
 }

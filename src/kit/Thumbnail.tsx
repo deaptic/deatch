@@ -12,7 +12,7 @@ const SHAPES: Record<ThumbnailShape, string> = {
 };
 
 const FITS: Record<ThumbnailFit, string> = {
-  inline: "h-7 shrink-0 rounded-xs",
+  inline: "h-control-xs shrink-0 rounded-xs",
   fill: "w-full rounded-md",
   bleed: "w-full",
   lines: "h-lines-3 shrink-0 rounded-xs",

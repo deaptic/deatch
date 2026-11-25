@@ -71,7 +71,7 @@ export default function CommandAutocomplete(props: Props) {
       <Suggestions<CommandSuggestion>
         suggestions={suggestions}
         onSelect={select}
-        onDismiss={props.controller.dismiss}
+        onClose={props.controller.dismiss}
         renderItem={render}
         selectOnSpace
         ref={(api) => {

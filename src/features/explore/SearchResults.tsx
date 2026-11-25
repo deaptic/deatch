@@ -151,7 +151,7 @@ export default function SearchResults(props: Props) {
                       src={channel.profileImageUrl}
                       zoom={avatarZoom(channel.profileImageUrl)}
                       alt={channel.user.displayName}
-                      size={36}
+                      size="md"
                     >
                       <LiveBadge live={channel.isLive} size="lg" />
                     </Avatar>

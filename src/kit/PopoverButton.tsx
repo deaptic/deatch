@@ -5,12 +5,12 @@ import Menu from "./Menu.tsx";
 import Popover, { OVERLAY_GAP } from "./Popover.tsx";
 import Transition from "./Transition.tsx";
 
-type Look = "menu" | "panel";
+type Variant = "menu" | "panel";
 
 type Props = {
   label: string;
   icon: JSX.Element;
-  look: Look;
+  variant: Variant;
   value?: string;
   tip?: string;
   pressed?: boolean;
@@ -43,7 +43,7 @@ export default function PopoverButton(props: Props) {
         data-tip={props.tip ?? props.label}
         pressed={props.pressed || anchor() !== null}
         disabled={props.disabled}
-        aria-haspopup={props.look === "menu" ? "menu" : "dialog"}
+        aria-haspopup={props.variant === "menu" ? "menu" : "dialog"}
         aria-expanded={anchor() !== null}
         onMouseDown={(e) => e.preventDefault()}
         onClick={toggle}
@@ -55,7 +55,7 @@ export default function PopoverButton(props: Props) {
       </Button>
       <Transition when={anchor()}>
         {(a) =>
-          props.look === "menu" ? (
+          props.variant === "menu" ? (
             <Menu x={a().x} y={a().y} opener={() => button} onClose={close}>
               {props.children(close)}
             </Menu>

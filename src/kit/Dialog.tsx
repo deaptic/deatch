@@ -12,7 +12,7 @@ type Props = {
 
 export default function Dialog(props: Props) {
   return (
-    <Modal look="dialog" label={props.title} onClose={props.onClose}>
+    <Modal variant="dialog" label={props.title} onClose={props.onClose}>
       <form
         class="contents"
         onSubmit={(e) => {

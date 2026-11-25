@@ -14,7 +14,7 @@ export default function ScrollStatusBar(props: Props) {
     <button
       type="button"
       onClick={props.onJump}
-      class="w-full flex items-center gap-2 pl-4 pr-1.5 py-1 min-h-strip min-w-0 text-sm bg-surface cursor-pointer transition-colors duration-snap hover:bg-raised"
+      class="w-full flex items-center gap-2 pl-4 pr-1.5 py-1 min-h-control-lg min-w-0 text-sm bg-surface cursor-pointer transition-colors duration-snap hover:bg-raised"
     >
       <Show
         when={props.unseen > 0}

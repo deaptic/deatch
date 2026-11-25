@@ -67,7 +67,7 @@ export default function AppLayout(props: AppLayoutProps) {
               when={authChecked()}
               fallback={
                 <main class="flex-1 flex items-center justify-center">
-                  <Loading size={32} />
+                  <Loading size="lg" />
                 </main>
               }
             >

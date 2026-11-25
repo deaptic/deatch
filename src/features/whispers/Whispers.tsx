@@ -64,7 +64,7 @@ export default function Whispers() {
           <SectionTitle>{t("WHISPERS_TITLE")}</SectionTitle>
           <SearchPicker
             floating
-            clearOnPick
+            clearOnSelect
             label={t("WHISPERS_NEW_PLACEHOLDER")}
             placeholder={t("WHISPERS_NEW_PLACEHOLDER")}
             search={(query) => channelSearch.find(query)}
@@ -74,10 +74,10 @@ export default function Whispers() {
                 src={c.profileImageUrl}
                 zoom={avatarZoom(c.profileImageUrl)}
                 alt={c.user.displayName}
-                size={24}
+                size="xs"
               />
             )}
-            onPick={(c) => {
+            onSelect={(c) => {
               if (c) whispers.open(c.user);
             }}
           />
@@ -131,7 +131,7 @@ export default function Whispers() {
                 </span>
                 <span class="min-h-control-sm min-w-0 flex items-center gap-2.5">
                   <ChatterPicture
-                    size={24}
+                    size="xs"
                     userId={peer().id}
                     name={peer().displayName}
                   />

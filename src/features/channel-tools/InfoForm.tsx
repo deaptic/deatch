@@ -105,7 +105,7 @@ export default function InfoForm(props: Props) {
       submitLabel={t("HEADER_SAVE_INFO_LABEL")}
       canSubmit={title().trim().length > 0}
       onSubmit={submit}
-      onCancel={props.onDone}
+      onClose={props.onDone}
     >
       <div class="max-h-130 overflow-y-auto -mx-1 px-1 flex flex-col gap-4">
         <LabeledField label={t("HEADER_STREAM_TITLE_LABEL")}>
@@ -129,7 +129,7 @@ export default function InfoForm(props: Props) {
             picture={(c) => (
               <Thumbnail src={c.boxArtUrl} shape="portrait" fit="inline" />
             )}
-            onPick={(c: Category | null) => setCategory(c)}
+            onSelect={(c: Category | null) => setCategory(c)}
           />
         </LabeledField>
         <Show when={loaded()}>

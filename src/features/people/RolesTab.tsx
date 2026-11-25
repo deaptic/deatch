@@ -94,10 +94,10 @@ export default function RolesTab(props: Props) {
             src={c.profileImageUrl}
             zoom={avatarZoom(c.profileImageUrl)}
             alt={c.user.displayName}
-            size={24}
+            size="xs"
           />
         )}
-        onPick={(c: SearchChannel | null) => {
+        onSelect={(c: SearchChannel | null) => {
           if (c) setPicked(c.user);
         }}
       />

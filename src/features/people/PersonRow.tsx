@@ -22,7 +22,7 @@ export default function PersonRow(props: Props) {
       }
     >
       <ChatterPicture
-        size={24}
+        size="xs"
         userId={props.user.id}
         name={props.user.displayName}
       />

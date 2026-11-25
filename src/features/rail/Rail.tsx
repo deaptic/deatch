@@ -361,7 +361,7 @@ export default function Rail(props: Props) {
                 src={u().profileImageUrl}
                 zoom={avatarZoom(u().profileImageUrl)}
                 alt={u().displayName}
-                size={40}
+                size="md"
                 square
                 ring={streamForUserId(u().id) ? "negative" : undefined}
               >

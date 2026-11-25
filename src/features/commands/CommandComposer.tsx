@@ -136,7 +136,7 @@ export default function CommandComposer(props: Props) {
         <Suggestions<unknown>
           suggestions={() => activePopup()?.items() ?? []}
           onSelect={(i) => activePopup()?.select(i)}
-          onDismiss={props.onCancel}
+          onClose={props.onCancel}
           renderItem={(i) => <>{activePopup()?.render(i)}</>}
           ref={(api) => {
             setPopup(api);

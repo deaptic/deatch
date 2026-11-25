@@ -13,8 +13,8 @@ type Option<T> = { value: T; label: string; icon?: JSX.Element };
 type SegmentedSize = "md" | "lg";
 
 const OPTION_HEIGHT: Record<SegmentedSize, string> = {
-  md: "h-7",
-  lg: "h-control-sm",
+  md: "h-7.5",
+  lg: "h-8.5",
 };
 
 type Props<T extends string> = {

@@ -74,7 +74,7 @@ export default function ChannelRow(props: Props) {
         src={props.ch.profileImageUrl}
         zoom={avatarZoom(props.ch.profileImageUrl)}
         alt={props.ch.displayName}
-        size={40}
+        size="md"
         square
         ring={props.ephemeral ? "dashed" : undefined}
         dimmed={!stream()}

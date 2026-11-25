@@ -65,7 +65,7 @@ export default function Login() {
                   when={deviceCode()}
                   fallback={
                     <>
-                      <Loading size={24} />
+                      <Loading size="md" />
                       <Text as="p" size="sm" tone="soft">
                         {t("LOGIN_REQUESTING_CODE_STATUS")}
                       </Text>

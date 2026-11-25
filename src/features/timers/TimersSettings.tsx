@@ -67,7 +67,7 @@ function TimerCard(props: {
           </IconTile>
         </button>
         <Field
-          look="inline"
+          variant="inline"
           size="sm"
           class="flex-1 min-w-0"
           ref={props.isNew ? autofocus : undefined}

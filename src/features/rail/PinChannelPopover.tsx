@@ -48,14 +48,14 @@ export default function PinChannelPopover(props: Props) {
               src={channel.profileImageUrl}
               zoom={avatarZoom(channel.profileImageUrl)}
               alt={channel.user.displayName}
-              size={24}
+              size="xs"
             >
               <Show when={channel.isLive}>
                 <LiveBadge live size="sm" />
               </Show>
             </Avatar>
           )}
-          onPick={pin}
+          onSelect={pin}
         />
       </div>
     </Popover>

@@ -1,24 +1,24 @@
 import { type JSX, splitProps } from "solid-js";
 
-type Look = "card" | "tile";
+type Variant = "card" | "tile";
 
-const LOOKS: Record<Look, string> = {
+const VARIANTS: Record<Variant, string> = {
   card: "flex flex-col text-left rounded-lg overflow-hidden bg-surface hover:bg-raised",
   tile: "flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center hover:bg-surface",
 };
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
-  look: Look;
+  variant: Variant;
   cursor?: string;
 };
 
 export default function CardButton(props: Props) {
-  const [local, others] = splitProps(props, ["look", "cursor", "class"]);
+  const [local, others] = splitProps(props, ["variant", "cursor", "class"]);
   return (
     <button
       type="button"
       {...others}
-      class={`group pressable active:pressed ${LOOKS[local.look]} ${
+      class={`group pressable active:pressed ${VARIANTS[local.variant]} ${
         local.cursor ?? "cursor-pointer"
       } ${local.class ?? ""}`}
     />

@@ -15,7 +15,7 @@ export type SuggestionsApi = {
 type Props<T> = {
   suggestions: () => T[];
   onSelect: (item: T) => void;
-  onDismiss: () => void;
+  onClose: () => void;
   renderItem: (item: T) => JSX.Element;
   selectOnSpace?: boolean;
   ownsEscape?: boolean;
@@ -25,7 +25,7 @@ type Props<T> = {
 export default function Suggestions<T>(props: Props<T>) {
   const listbox = createListbox({ count: () => props.suggestions().length });
   if (props.ownsEscape) {
-    onCleanup(shortcuts.registerLocal("escape", () => props.onDismiss()));
+    onCleanup(shortcuts.registerLocal("escape", () => props.onClose()));
   }
 
   createEffect(
@@ -57,7 +57,7 @@ export default function Suggestions<T>(props: Props<T>) {
         }
         if (e.key === "Escape") {
           e.preventDefault();
-          props.onDismiss();
+          props.onClose();
           return true;
         }
         return false;

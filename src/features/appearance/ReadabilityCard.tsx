@@ -47,7 +47,7 @@ export default function ReadabilityCard() {
         <ColorPicker
           swatchColor={feedUserOverrideNameColor() || "transparent"}
           value={feedUserOverrideNameColor() || DEFAULT_ACCENT_HEX}
-          onInput={setFeedUserOverrideNameColor}
+          onChange={setFeedUserOverrideNameColor}
           onReset={() => setFeedUserOverrideNameColor("")}
           resetDisabled={!feedUserOverrideNameColor()}
         />

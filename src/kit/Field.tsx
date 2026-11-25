@@ -1,16 +1,16 @@
 import { children, type JSX, Show, splitProps } from "solid-js";
 
 type Size = "sm" | "md" | "lg";
-type Look = "boxed" | "inline";
+type Variant = "boxed" | "inline";
 
 type Props = Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "size"> & {
   size?: Size;
-  look?: Look;
+  variant?: Variant;
   icon?: JSX.Element;
   trailing?: JSX.Element;
 };
 
-const LOOKS: Record<Look, string> = {
+const VARIANTS: Record<Variant, string> = {
   boxed:
     "bg-surface border border-line hover:border-ink-faint focus-within:border-accent!",
   inline:
@@ -27,7 +27,7 @@ export default function Field(props: Props) {
   const [local, others] = splitProps(props, [
     "class",
     "size",
-    "look",
+    "variant",
     "icon",
     "trailing",
   ]);
@@ -35,7 +35,7 @@ export default function Field(props: Props) {
   return (
     <label
       class={`inline-flex items-center gap-2.5 text-ink transition duration-snap focus-within:ring-3 focus-within:ring-accent-soft has-[:disabled]:opacity-40 ${
-        LOOKS[local.look ?? "boxed"]
+        VARIANTS[local.variant ?? "boxed"]
       } ${SIZES[local.size ?? "md"]} ${local.class ?? ""}`}
     >
       <Show when={icon.toArray().length}>

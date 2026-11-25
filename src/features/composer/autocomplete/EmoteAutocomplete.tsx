@@ -61,7 +61,7 @@ export default function EmoteAutocomplete(props: Props) {
       <Suggestions<EmoteSuggestion>
         suggestions={suggestions}
         onSelect={select}
-        onDismiss={props.controller.dismiss}
+        onClose={props.controller.dismiss}
         renderItem={render}
         ref={(api) => {
           props.controller.register("emote", api);

@@ -29,7 +29,7 @@ export default function LiveCard(props: Props) {
   const link = createChannelLink(channel, () => props.onSelect(channel()));
 
   return (
-    <CardButton look="card" {...link.handlers} cursor={link.cursor}>
+    <CardButton variant="card" {...link.handlers} cursor={link.cursor}>
       <Thumbnail src={thumbnail()} shape="video" fit="bleed">
         <span class="absolute left-2.5 top-2.5">
           <LivePill solid />
@@ -53,7 +53,7 @@ export default function LiveCard(props: Props) {
           src={channel().profileImageUrl}
           zoom={avatarZoom(channel().profileImageUrl)}
           alt={channel().displayName}
-          size={40}
+          size="md"
         />
         <div class="min-w-0 flex-1">
           <Text as="p" truncate size="md" bold tone="primary">

@@ -76,7 +76,7 @@ export default function ResponseField(props: Props) {
           <Suggestions
             suggestions={matching}
             onSelect={pick}
-            onDismiss={() => setDismissed(true)}
+            onClose={() => setDismissed(true)}
             ownsEscape
             ref={setApi}
             renderItem={(m) => (

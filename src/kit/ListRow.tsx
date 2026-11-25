@@ -9,7 +9,8 @@ type Props = {
   children: JSX.Element;
 };
 
-const MAIN = "flex-1 min-w-0 min-h-9 flex items-center gap-2.5 px-2.5 py-1.5";
+const MAIN =
+  "flex-1 min-w-0 min-h-control-md flex items-center gap-2.5 px-2.5 py-1.5";
 
 export default function ListRow(props: Props) {
   const actions = children(() => props.actions);

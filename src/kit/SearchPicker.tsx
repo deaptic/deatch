@@ -14,10 +14,10 @@ type Props<T> = {
   search: (query: string) => Promise<T[]>;
   name: (item: T) => string;
   picture: (item: T) => JSX.Element;
-  onPick: (item: T | null) => void;
+  onSelect: (item: T | null) => void;
   autofocus?: boolean;
   floating?: boolean;
-  clearOnPick?: boolean;
+  clearOnSelect?: boolean;
 };
 
 export default function SearchPicker<T>(props: Props<T>) {
@@ -32,7 +32,7 @@ export default function SearchPicker<T>(props: Props<T>) {
 
   function type(value: string) {
     setQuery(value);
-    props.onPick(null);
+    props.onSelect(null);
     clearTimeout(timer);
     const q = value.trim();
     if (!q) return setResults([]);
@@ -51,9 +51,9 @@ export default function SearchPicker<T>(props: Props<T>) {
 
   function pick(item: T) {
     latest++;
-    setQuery(props.clearOnPick ? "" : props.name(item));
+    setQuery(props.clearOnSelect ? "" : props.name(item));
     setResults([]);
-    props.onPick(item);
+    props.onSelect(item);
   }
 
   return (

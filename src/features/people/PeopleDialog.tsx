@@ -83,7 +83,7 @@ export default function PeopleDialog(props: Props) {
   });
 
   return (
-    <Modal look="dialog" label={t("PEOPLE_TITLE")} onClose={props.onClose}>
+    <Modal variant="dialog" label={t("PEOPLE_TITLE")} onClose={props.onClose}>
       <PanelHeader
         title={t("PEOPLE_TITLE")}
         count={count()}

@@ -135,7 +135,7 @@ export default function Header(props: Props) {
               src={user()?.profileImageUrl}
               zoom={avatarZoom(user()?.profileImageUrl)}
               alt={user()?.displayName ?? ""}
-              size={80}
+              size="xl"
             />
           </button>
           <div class="ml-auto flex items-center pt-card-gap text-2xl">

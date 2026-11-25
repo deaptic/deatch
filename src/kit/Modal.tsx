@@ -5,20 +5,20 @@ import { trapFocus } from "../shared/solid/trapFocus.ts";
 import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { createExitTarget, ExitScope } from "./Transition.tsx";
 
-type ModalLook = "dialog" | "palette";
+type ModalVariant = "dialog" | "palette";
 
-const SCRIM: Record<ModalLook, string> = {
+const SCRIM: Record<ModalVariant, string> = {
   dialog: "items-center p-4",
   palette: "items-start px-4 pt-40",
 };
 
-const PANEL: Record<ModalLook, string> = {
+const PANEL: Record<ModalVariant, string> = {
   dialog: "w-110 bg-surface elevation-3 p-6 gap-4",
   palette: "w-140 max-h-3/5 material-thick p-2.5",
 };
 
 type Props = {
-  look: ModalLook;
+  variant: ModalVariant;
   label: string;
   onClose: () => void;
   children: JSX.Element;
@@ -34,7 +34,7 @@ export default function Modal(props: Props) {
     <Portal>
       <div
         ref={exitTarget}
-        class={`fixed inset-x-0 bottom-0 top-safe-top z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 data-closing:opacity-0 data-closing:duration-snap data-closing:pointer-events-none ${SCRIM[props.look]}`}
+        class={`fixed inset-x-0 bottom-0 top-safe-top z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 data-closing:opacity-0 data-closing:duration-snap data-closing:pointer-events-none ${SCRIM[props.variant]}`}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget) props.onClose();
         }}
@@ -45,7 +45,7 @@ export default function Modal(props: Props) {
           role="dialog"
           aria-modal="true"
           aria-label={props.label}
-          class={`max-w-full flex flex-col outline-none rounded-lg enter-pop ${PANEL[props.look]}`}
+          class={`max-w-full flex flex-col outline-none rounded-lg enter-pop ${PANEL[props.variant]}`}
         >
           <ExitScope>{props.children}</ExitScope>
         </div>

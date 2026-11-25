@@ -1,6 +1,6 @@
 import type { JSX } from "solid-js";
 
-export type ToolbarTone = "default" | "success" | "danger";
+export type ToolbarTone = "neutral" | "positive" | "negative";
 
 type Props = {
   title: string;
@@ -11,9 +11,9 @@ type Props = {
 };
 
 const TONES: Record<ToolbarTone, string> = {
-  default: "text-ink-soft hover:text-ink hover:bg-raised",
-  success: "text-positive hover:bg-positive/15",
-  danger: "text-negative hover:bg-negative/15",
+  neutral: "text-ink-soft hover:text-ink hover:bg-raised",
+  positive: "text-positive hover:bg-positive/15",
+  negative: "text-negative hover:bg-negative/15",
 };
 
 export default function ToolbarItem(props: Props) {
@@ -29,7 +29,7 @@ export default function ToolbarItem(props: Props) {
         props.onClick(e);
       }}
       class={`size-control-sm grid place-items-center rounded-xs pressable enabled:active:pressed cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed [&>svg]:size-4 ${
-        TONES[props.tone ?? "default"]
+        TONES[props.tone ?? "neutral"]
       }`}
     >
       {props.children}

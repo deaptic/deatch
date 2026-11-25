@@ -44,7 +44,7 @@ export default function WarnModal(props: Props) {
             {t("WARN_CANCEL_LABEL")}
           </Button>
           <Button
-            variant="danger"
+            variant="negative"
             onClick={warn}
             loading={pending()}
             disabled={!reason().trim()}

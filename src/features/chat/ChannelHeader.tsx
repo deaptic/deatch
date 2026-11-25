@@ -73,11 +73,11 @@ export default function ChannelHeader(props: Props) {
       src={props.channel.profileImageUrl}
       zoom={avatarZoom(props.channel.profileImageUrl)}
       alt={props.channel.displayName}
-      size={64}
+      size="lg"
       square
       overlay={overlay}
     >
-      <LiveBadge live={!!stream()} look="icon" />
+      <LiveBadge live={!!stream()} variant="icon" />
     </Avatar>
   );
   const uptime = () => {

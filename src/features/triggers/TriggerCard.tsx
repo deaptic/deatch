@@ -56,7 +56,7 @@ export default function TriggerCard(props: {
           onChange={(v) => setDraft("enabled", v)}
         />
         <Field
-          look="inline"
+          variant="inline"
           class="flex-1 min-w-0"
           ref={props.persisted ? undefined : autofocus}
           aria-label={t("SETTINGS_TRIGGERS_NAME_LABEL")}
@@ -82,7 +82,7 @@ export default function TriggerCard(props: {
           </IconButton>
         </Show>
         <IconButton
-          variant="danger"
+          variant="negative"
           label={t("SETTINGS_TRIGGERS_DELETE_LABEL")}
           onClick={props.onDelete}
         >

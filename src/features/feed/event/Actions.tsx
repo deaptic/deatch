@@ -15,7 +15,7 @@ export default function Actions(props: { item: FeedEvent }) {
         {(clip) => (
           <ToolbarItem
             title={t("FEED_VIEW_CLIP_LABEL")}
-            tone="success"
+            tone="positive"
             onClick={() => browser.open(clipUrl(clip().id))}
           >
             <ExternalLink />

@@ -32,7 +32,7 @@ export default function RaidForm(props: Props) {
       submitLabel={t("HEADER_SUBMIT_RAID_LABEL")}
       canSubmit={target() !== null}
       onSubmit={submit}
-      onCancel={props.onDone}
+      onClose={props.onDone}
     >
       <SearchPicker
         autofocus
@@ -45,10 +45,10 @@ export default function RaidForm(props: Props) {
             src={c.profileImageUrl}
             zoom={avatarZoom(c.profileImageUrl)}
             alt={c.user.displayName}
-            size={24}
+            size="xs"
           />
         )}
-        onPick={(c: SearchChannel | null) => setTarget(c)}
+        onSelect={(c: SearchChannel | null) => setTarget(c)}
       />
     </FormDialog>
   );

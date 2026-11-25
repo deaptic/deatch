@@ -4,7 +4,7 @@ import { t } from "../shared/i18n/index.ts";
 type Props = {
   swatchColor: string;
   value: string;
-  onInput: (hex: string) => void;
+  onChange: (hex: string) => void;
   onReset: () => void;
   resetDisabled: boolean;
 };
@@ -22,7 +22,7 @@ export default function ColorPicker(props: Props) {
           aria-label={t("UI_PICK_COLOR_LABEL")}
           class="absolute inset-0 opacity-0 cursor-pointer"
           value={props.value}
-          onInput={(e) => props.onInput(e.currentTarget.value)}
+          onInput={(e) => props.onChange(e.currentTarget.value)}
         />
       </label>
       <Button

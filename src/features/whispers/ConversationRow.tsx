@@ -43,7 +43,7 @@ export default function ConversationRow(props: Props) {
       onClick={() => props.onSelect()}
     >
       <ChatterPicture
-        size={32}
+        size="sm"
         userId={c().peer.id}
         name={c().peer.displayName}
       />

@@ -12,7 +12,7 @@ const DOTS: Record<Size, string> = {
 
 type Props = {
   live: boolean;
-  look?: "dot" | "icon";
+  variant?: "dot" | "icon";
   size?: Size;
 };
 
@@ -20,7 +20,7 @@ export default function LiveBadge(props: Props) {
   const label = () => t(props.live ? "UI_LIVE_STATUS" : "UI_OFFLINE_STATUS");
   return (
     <Show
-      when={props.look === "icon"}
+      when={props.variant === "icon"}
       fallback={
         <span
           data-tip={label()}

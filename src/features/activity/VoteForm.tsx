@@ -76,7 +76,7 @@ export default function VoteForm(props: Props) {
           .then(props.onDone)
           .catch(() => {})
       }
-      onCancel={props.onDone}
+      onClose={props.onDone}
     >
       <LabeledField label={t("HEADER_QUESTION_LABEL")}>
         <Field

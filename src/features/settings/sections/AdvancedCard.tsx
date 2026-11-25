@@ -88,7 +88,7 @@ export default function AdvancedCard() {
           label={t("SETTINGS_ADVANCED_FEED_HISTORY_LABEL")}
           description={t("SETTINGS_ADVANCED_FEED_HISTORY_DESCRIPTION")}
         >
-          <Button variant="danger" onClick={() => setConfirmingClear(true)}>
+          <Button variant="negative" onClick={() => setConfirmingClear(true)}>
             {t("SETTINGS_ADVANCED_CLEAR_HISTORY_LABEL")}
           </Button>
         </FormRow>
@@ -110,7 +110,7 @@ export default function AdvancedCard() {
                   {t("SETTINGS_ADVANCED_CANCEL_LABEL")}
                 </Button>
                 <Button
-                  variant="danger"
+                  variant="negative"
                   onClick={clearHistory}
                   loading={clearing()}
                 >

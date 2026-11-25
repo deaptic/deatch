@@ -1,8 +1,8 @@
-type Tone = "alert" | "accent";
+type Tone = "negative" | "accent";
 import { Show } from "solid-js";
 
 const TONES: Record<Tone, string> = {
-  alert: "bg-negative",
+  negative: "bg-negative",
   accent: "bg-accent",
 };
 
@@ -18,7 +18,7 @@ export default function Badge(props: Props) {
     <Show when={label()} keyed>
       {(text) => (
         <span
-          class={`animate-bump inline-flex items-center justify-center min-w-4.5 h-4.5 px-1.5 rounded-full ${TONES[props.tone ?? "alert"]} text-on-accent text-xs font-bold tabular-nums leading-none ${
+          class={`animate-bump inline-flex items-center justify-center min-w-4.5 h-4.5 px-1.5 rounded-full ${TONES[props.tone ?? "negative"]} text-on-accent text-xs font-bold tabular-nums leading-none ${
             props.floating ? "ring-2 ring-surface" : ""
           }`}
         >

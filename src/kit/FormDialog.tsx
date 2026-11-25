@@ -9,7 +9,7 @@ type Props = {
   submitLabel: string;
   canSubmit: boolean;
   onSubmit: () => void;
-  onCancel: () => void;
+  onClose: () => void;
   children: JSX.Element;
 };
 
@@ -18,13 +18,13 @@ export default function FormDialog(props: Props) {
     <Dialog
       title={props.title}
       description={props.description}
-      onClose={props.onCancel}
+      onClose={props.onClose}
       onSubmit={() => {
         if (props.canSubmit) props.onSubmit();
       }}
       actions={
         <>
-          <Button variant="neutral" onClick={() => props.onCancel()}>
+          <Button variant="neutral" onClick={() => props.onClose()}>
             {t("UI_CANCEL_LABEL")}
           </Button>
           <Button type="submit" disabled={!props.canSubmit}>

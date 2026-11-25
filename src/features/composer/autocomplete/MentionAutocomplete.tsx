@@ -31,7 +31,7 @@ export default function MentionAutocomplete(props: Props) {
       <Suggestions<Chatter>
         suggestions={suggestions}
         onSelect={select}
-        onDismiss={props.controller.dismiss}
+        onClose={props.controller.dismiss}
         renderItem={(s) => <ChatterRow chatter={s} />}
         ref={(api) => {
           props.controller.register("mention", api);

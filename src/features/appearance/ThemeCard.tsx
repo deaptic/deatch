@@ -35,7 +35,7 @@ export default function ThemeCard() {
         <ColorPicker
           swatchColor="var(--color-accent)"
           value={appearanceAccent() ?? DEFAULT_ACCENT_HEX}
-          onInput={setAppearanceAccent}
+          onChange={setAppearanceAccent}
           onReset={() => setAppearanceAccent(null)}
           resetDisabled={appearanceAccent() === null}
         />

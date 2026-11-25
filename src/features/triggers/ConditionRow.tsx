@@ -48,7 +48,7 @@ export default function ConditionRow(props: Props) {
       />
       <div class="h-control-md flex items-center">
         <PopoverButton
-          look="menu"
+          variant="menu"
           label={t("SETTINGS_TRIGGERS_COMPARISON_LABEL")}
           icon={<ListFilter class="size-4" />}
           value={t(OP_LABELS[props.condition.op])}

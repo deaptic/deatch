@@ -214,13 +214,13 @@ export default function Message(props: Props) {
                       {
                         title: t("FEED_AUTOMOD_ALLOW_LABEL"),
                         icon: () => <Check class="size-4" />,
-                        tone: "success",
+                        tone: "positive",
                         onClick: () => handleHold("allow"),
                       },
                       {
                         title: t("FEED_AUTOMOD_DENY_LABEL"),
                         icon: () => <X class="size-4" />,
-                        tone: "danger",
+                        tone: "negative",
                         onClick: () => handleHold("deny"),
                       },
                     ]

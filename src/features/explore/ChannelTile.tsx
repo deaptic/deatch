@@ -21,7 +21,7 @@ export default function ChannelTile(props: Props) {
 
   return (
     <CardButton
-      look="tile"
+      variant="tile"
       {...link.handlers}
       data-tip={props.tip}
       cursor={link.cursor}
@@ -30,7 +30,7 @@ export default function ChannelTile(props: Props) {
         src={props.channel.profileImageUrl}
         zoom={avatarZoom(props.channel.profileImageUrl)}
         alt={props.channel.displayName}
-        size={64}
+        size="lg"
         ring={props.live ? "negative" : undefined}
       />
       <span class="w-full min-w-0">

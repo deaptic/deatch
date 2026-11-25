@@ -81,7 +81,7 @@ function RequestCard(props: { broadcasterId: string; request: UnbanRequest }) {
     <div class="flex flex-col gap-3 p-4 rounded-md bg-raised">
       <div class="flex items-center gap-3">
         <ChatterPicture
-          size={36}
+          size="md"
           userId={props.request.user.id}
           name={props.request.user.displayName}
         />

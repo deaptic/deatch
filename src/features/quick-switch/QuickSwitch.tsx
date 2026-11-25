@@ -121,7 +121,7 @@ export default function QuickSwitch(props: Props) {
 
   return (
     <Modal
-      look="palette"
+      variant="palette"
       label={t("QUICK_SWITCH_LABEL")}
       onClose={props.onClose}
     >
@@ -187,7 +187,7 @@ export default function QuickSwitch(props: Props) {
                       <RowIcon>
                         <Show
                           when={!searching()}
-                          fallback={<Loading size={16} />}
+                          fallback={<Loading size="xs" />}
                         >
                           <Search class="size-4" />
                         </Show>
@@ -213,7 +213,7 @@ export default function QuickSwitch(props: Props) {
                             src={r().user.profileImageUrl}
                             zoom={avatarZoom(r().user.profileImageUrl)}
                             alt={r().user.displayName}
-                            size={32}
+                            size="sm"
                           >
                             <LiveBadge live={!!stream()} />
                           </Avatar>

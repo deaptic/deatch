@@ -1,7 +1,7 @@
 import { createEffect, createSignal, type JSX, on, Show } from "solid-js";
 import { createImageReveal } from "../shared/solid/createImageReveal.ts";
 
-export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
+export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "fill";
 type Ring = "dashed" | "negative";
 
 type Props = {
@@ -18,12 +18,11 @@ type Props = {
 };
 
 const SIZES: Record<AvatarSize, string> = {
-  24: "size-6 text-xs",
-  32: "size-8 text-sm",
-  36: "size-9 text-sm",
-  40: "size-10 text-base",
-  64: "size-16 text-2xl",
-  80: "size-20 text-2xl",
+  xs: "size-6 text-xs",
+  sm: "size-8 text-sm",
+  md: "size-10 text-base",
+  lg: "size-16 text-2xl",
+  xl: "size-20 text-2xl",
   fill: "size-full",
 };
 
