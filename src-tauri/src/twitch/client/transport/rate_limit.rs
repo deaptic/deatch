@@ -5,6 +5,8 @@ use std::time::Duration;
 
 use super::HELIX_HOST;
 
+const MAX_PAUSE: Duration = Duration::from_secs(60);
+
 #[derive(Default)]
 pub struct RateLimit {
     resets_at: Mutex<Option<u64>>,
@@ -43,7 +45,7 @@ fn now() -> u64 {
 }
 
 fn until(at: u64, now: u64) -> Option<Duration> {
-    (at > now).then(|| Duration::from_secs(at - now))
+    (at > now).then(|| Duration::from_secs(at - now).min(MAX_PAUSE))
 }
 
 #[cfg(test)]
@@ -91,6 +93,7 @@ mod tests {
     #[test]
     fn measures_time_until_reset() {
         assert_eq!(until(110, 100), Some(Duration::from_secs(10)));
+        assert_eq!(until(100_000, 100), Some(MAX_PAUSE));
         assert_eq!(until(100, 100), None);
         assert_eq!(until(90, 100), None);
     }

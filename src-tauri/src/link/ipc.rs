@@ -8,8 +8,9 @@ use std::sync::Arc;
 use std::time::Duration;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, Uid, UpdateKind};
 
-const PIPE_NAME: &str = "deatch-bridge";
+const PIPE_PREFIX: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
+const LISTEN_RETRY: Duration = Duration::from_secs(5);
 const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 
 #[derive(Clone, Serialize, Deserialize, specta::Type)]
@@ -50,10 +51,11 @@ enum HostMessage {
 
 pub fn connect_to_gui() -> std::io::Result<interprocess::local_socket::Stream> {
     use interprocess::local_socket::{prelude::*, GenericNamespaced, Stream, ToNsName};
-    let name = PIPE_NAME.to_ns_name::<GenericNamespaced>()?;
+    let own = current_user()?;
+    let name = pipe_name(&own).to_ns_name::<GenericNamespaced>()?;
     let stream = Stream::connect(name)?;
     let server = stream.peer_creds()?.pid().and_then(user_of);
-    same_user(user_of(std::process::id()).as_ref(), server.as_ref())?;
+    same_user(Some(&own), server.as_ref())?;
     Ok(stream)
 }
 
@@ -195,8 +197,11 @@ fn emit_merged(app: &tauri::AppHandle, hosts: &BTreeMap<u64, Host>) {
 
 pub fn start_server(app: tauri::AppHandle, hosts: Hosts) {
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = run_server(app, hosts).await {
-            log::error!("ipc server stopped: {e}");
+        loop {
+            if let Err(e) = run_server(app.clone(), hosts.clone()).await {
+                log::warn!("ipc server not listening, retrying: {e}");
+            }
+            tokio::time::sleep(LISTEN_RETRY).await;
         }
     });
 }
@@ -208,10 +213,11 @@ async fn run_server(app: tauri::AppHandle, hosts: Hosts) -> std::io::Result<()> 
 
     use interprocess::os::windows::local_socket::ListenerOptionsExt;
 
-    let name = PIPE_NAME.to_ns_name::<GenericNamespaced>()?;
+    let own = current_user()?;
+    let name = pipe_name(&own).to_ns_name::<GenericNamespaced>()?;
     let listener = ListenerOptions::new()
         .name(name)
-        .security_descriptor(current_user_only()?)
+        .security_descriptor(only_for(&own)?)
         .create_tokio()?;
 
     loop {
@@ -227,11 +233,18 @@ async fn run_server(app: tauri::AppHandle, hosts: Hosts) -> std::io::Result<()> 
     }
 }
 
-fn current_user_only() -> std::io::Result<SecurityDescriptor> {
-    let user =
-        user_of(std::process::id()).ok_or_else(|| std::io::Error::other("current user unknown"))?;
-    let sddl = widestring::U16CString::from_str(format!("D:P(A;;GA;;;{})", *user))
-        .map_err(std::io::Error::other)?;
+fn current_user() -> std::io::Result<Uid> {
+    user_of(std::process::id()).ok_or_else(|| std::io::Error::other("current user unknown"))
+}
+
+fn pipe_name(user: &Uid) -> String {
+    format!("{PIPE_PREFIX}-{}", **user)
+}
+
+fn only_for(user: &Uid) -> std::io::Result<SecurityDescriptor> {
+    let sddl =
+        widestring::U16CString::from_str(format!("D:P(A;;GA;;;{})S:(ML;;NWNRNX;;;ME)", **user))
+            .map_err(std::io::Error::other)?;
     SecurityDescriptor::deserialize(&sddl)
 }
 
@@ -354,8 +367,8 @@ async fn handle_connection(
 #[cfg(test)]
 mod tests {
     use super::{
-        current_user_only, merge, read_line, same_user, Compressor, HostCommand, Hosts,
-        LinkChannel, LinkState, MAX_MESSAGE_SIZE,
+        current_user, merge, only_for, pipe_name, read_line, same_user, Compressor, HostCommand,
+        Hosts, LinkChannel, LinkState, MAX_MESSAGE_SIZE,
     };
     use serde_json::json;
     use sysinfo::Uid;
@@ -371,10 +384,51 @@ mod tests {
     }
 
     #[test]
+    fn each_user_gets_their_own_pipe() {
+        let me: Uid = "S-1-5-21-1-2-3-1001".parse().unwrap();
+        let other: Uid = "S-1-5-21-1-2-3-1002".parse().unwrap();
+        assert_eq!(pipe_name(&me), "deatch-bridge-S-1-5-21-1-2-3-1001");
+        assert_ne!(pipe_name(&me), pipe_name(&other));
+    }
+
+    #[test]
+    fn lower_integrity_processes_cannot_use_the_pipe() {
+        use interprocess::os::windows::security_descriptor::AsSecurityDescriptorExt;
+
+        const LABEL_SECURITY_INFORMATION: u32 = 0x10;
+        let sddl = only_for(&current_user().unwrap())
+            .unwrap()
+            .serialize(LABEL_SECURITY_INFORMATION, |s| s.to_string_lossy())
+            .unwrap();
+        assert!(sddl.contains("ML;;NWNRNX;;;ME"), "{sddl}");
+    }
+
+    #[test]
+    fn a_labelled_pipe_can_be_created_and_joined_by_its_owner() {
+        use interprocess::local_socket::{
+            prelude::*, GenericNamespaced, ListenerOptions, Stream, ToNsName,
+        };
+        use interprocess::os::windows::local_socket::ListenerOptionsExt;
+
+        let own = current_user().unwrap();
+        let name = format!("deatch-test-{}", std::process::id());
+        let listener = ListenerOptions::new()
+            .name(name.clone().to_ns_name::<GenericNamespaced>().unwrap())
+            .security_descriptor(only_for(&own).unwrap())
+            .create_sync()
+            .unwrap();
+        let client = std::thread::spawn(move || {
+            Stream::connect(name.to_ns_name::<GenericNamespaced>().unwrap()).is_ok()
+        });
+        assert!(listener.accept().is_ok());
+        assert!(client.join().unwrap());
+    }
+
+    #[test]
     fn pipe_access_is_limited_to_the_current_user() {
         use interprocess::os::windows::security_descriptor::AsSecurityDescriptorExt;
 
-        let sddl = current_user_only()
+        let sddl = only_for(&current_user().unwrap())
             .unwrap()
             .serialize(4, |s| s.to_string_lossy())
             .unwrap();

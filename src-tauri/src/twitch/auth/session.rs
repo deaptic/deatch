@@ -65,7 +65,7 @@ pub(super) fn is_final<E: std::error::Error + Send + Sync + 'static>(
 ) -> bool {
     match e {
         RefreshTokenError::RequestParseError(RequestParseError::TwitchError(r)) => {
-            r.status.is_client_error()
+            matches!(r.status.as_u16(), 400 | 401)
         }
         RefreshTokenError::NoRefreshToken => true,
         _ => false,
@@ -108,6 +108,8 @@ mod tests {
         assert!(is_final(
             &RefreshTokenError::<std::io::Error>::NoRefreshToken
         ));
+        assert!(is_final(&twitch_said(StatusCode::UNAUTHORIZED)));
+        assert!(!is_final(&twitch_said(StatusCode::TOO_MANY_REQUESTS)));
         assert!(!is_final(&twitch_said(StatusCode::SERVICE_UNAVAILABLE)));
         assert!(!is_final(&RefreshTokenError::RequestError(
             std::io::Error::other("offline")
