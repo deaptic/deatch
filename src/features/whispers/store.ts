@@ -7,6 +7,7 @@ import {
 } from "../../platform/twitch/whispers.ts";
 import type { UserRef, Whisper } from "../../shared/types/index.ts";
 import { countUnread, withSaved } from "./model.ts";
+import { user } from "../users/index.ts";
 
 const [whispers, setWhispers] = createSignal<Whisper[]>([]);
 const [openPeer, setOpenPeer] = createSignal<UserRef | null>(null);
@@ -16,8 +17,12 @@ export { drafts, openPeer, whispers };
 export const unreadCount = () => countUnread(whispers());
 
 export function load(): void {
+  const id = user()?.id;
   listWhispers({ silent: true })
-    .then((saved) => setWhispers((arrived) => withSaved(saved, arrived)))
+    .then((saved) => {
+      if (user()?.id !== id) return;
+      setWhispers((arrived) => withSaved(saved, arrived));
+    })
     .catch(() => {});
 }
 

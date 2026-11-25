@@ -167,12 +167,14 @@ export default function Whispers() {
                 )}
               </For>
             </div>
-            <WhisperComposer
-              placeholder={t("WHISPERS_MESSAGE_PLACEHOLDER", {
-                name: peer().displayName,
-              })}
-              onSend={(text) => whispers.send(peer(), text)}
-            />
+            <Show when={peer().id} keyed>
+              <WhisperComposer
+                placeholder={t("WHISPERS_MESSAGE_PLACEHOLDER", {
+                  name: peer().displayName,
+                })}
+                onSend={(text) => whispers.send(peer(), text)}
+              />
+            </Show>
           </section>
         )}
       </Show>

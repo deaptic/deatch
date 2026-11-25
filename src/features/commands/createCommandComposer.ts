@@ -101,11 +101,13 @@ export function createCommandComposer(opts: Options) {
   });
 
   async function resolveUser(idx: number): Promise<boolean> {
-    const login = slotAt(idx).raw.replace(/^@/, "").trim().toLowerCase();
+    const raw = slotAt(idx).raw;
+    const login = raw.replace(/^@/, "").trim().toLowerCase();
     if (!login) return false;
     setResolving(true);
     const lookup = await users.findByLogin(login, { silent: true });
     setResolving(false);
+    if (slotAt(idx).raw !== raw) return false;
     if (lookup.status === "found") {
       setSlot(idx, chosenSlot(lookup.user.displayName, lookup.user.id));
       return true;
@@ -121,11 +123,13 @@ export function createCommandComposer(opts: Options) {
 
   async function resolveSearch(idx: number): Promise<boolean> {
     const opt = options[idx];
-    const query = slotAt(idx).raw.trim();
+    const raw = slotAt(idx).raw;
+    const query = raw.trim();
     if (opt?.type !== "search" || !query) return false;
     setResolving(true);
     const matches = await opt.search(query).catch(() => null);
     setResolving(false);
+    if (slotAt(idx).raw !== raw) return false;
     const match = matches?.[0];
     if (!match) {
       markInvalid(

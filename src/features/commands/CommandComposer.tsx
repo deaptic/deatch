@@ -104,8 +104,24 @@ export default function CommandComposer(props: Props) {
     }
   });
 
+  function typedUserWins(e: KeyboardEvent): boolean {
+    if (e.key !== "Enter" || activeOption()?.type !== "user") return false;
+    if (popup()?.active() !== 0) return false;
+    const first = composer.userSuggestions()[0];
+    const typed = composer
+      .slotAt(composer.activeIdx())
+      .raw.replace(/^@/, "")
+      .trim()
+      .toLowerCase();
+    return (
+      !!first &&
+      first.login.toLowerCase() !== typed &&
+      first.displayName.toLowerCase() !== typed
+    );
+  }
+
   function onKeyDown(e: KeyboardEvent) {
-    if (popup()?.handleKey(e)) return;
+    if (!typedUserWins(e) && popup()?.handleKey(e)) return;
     composer.handleKey(e);
   }
 

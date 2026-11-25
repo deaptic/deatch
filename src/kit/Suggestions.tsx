@@ -7,6 +7,7 @@ import OptionRow from "./OptionRow.tsx";
 
 export type SuggestionsApi = {
   handleKey: (e: KeyboardEvent) => boolean;
+  active: () => number;
   field: ListboxField;
 };
 
@@ -29,6 +30,7 @@ export default function Suggestions<T>(props: Props<T>) {
   onMount(() => {
     props.ref?.({
       field: listbox.field,
+      active: listbox.active,
       handleKey: (e) => {
         const s = props.suggestions();
         if (s.length === 0) return false;

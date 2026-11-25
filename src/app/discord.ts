@@ -62,12 +62,20 @@ const UPDATE_DEBOUNCE_MS = 1500;
 function scheduleActivity(activity: SetActivityParams): void {
   pendingActivity = activity;
   if (pendingTimer !== undefined) return;
-  pendingTimer = setTimeout(() => {
-    pendingTimer = undefined;
-    const next = pendingActivity;
-    pendingActivity = null;
-    if (next) void flush(next);
-  }, UPDATE_DEBOUNCE_MS);
+  const timer = setTimeout(() => void flushPending(timer), UPDATE_DEBOUNCE_MS);
+  pendingTimer = timer;
+}
+
+async function flushPending(
+  timer: ReturnType<typeof setTimeout>,
+): Promise<void> {
+  const next = pendingActivity;
+  if (next) await flush(next);
+  if (pendingTimer !== timer) return;
+  pendingTimer = undefined;
+  const queued = pendingActivity;
+  pendingActivity = null;
+  if (queued && queued !== next) scheduleActivity(queued);
 }
 
 async function flush(activity: SetActivityParams): Promise<void> {

@@ -36,6 +36,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             twitch::eventsub::events::ChatStatus,
             twitch::moderation::events::ModeratedChannelsChanged,
             emotes::events::EmoteSetUpdated,
+            emotes::events::SevenTvReconnected,
             link::events::LinkState,
             link::events::LinkDisconnected,
         ])

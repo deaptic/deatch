@@ -185,6 +185,7 @@ export const events = {
 	linkState: makeEvent<LinkState>("link-state"),
 	moderatedChannelsChanged: makeEvent<ModeratedChannelsChanged>("moderated-channels-changed"),
 	sessionEnded: makeEvent<SessionEnded>("session-ended"),
+	sevenTvReconnected: makeEvent<SevenTvReconnected>("seven-tv-reconnected"),
 };
 
 /* Constants */
@@ -993,6 +994,8 @@ export type SetTaskbarBadgeParams = {
 };
 
 export type SevenTvEmoteSetId = string;
+
+export type SevenTvReconnected = null;
 
 export type Side = "before" | "after";
 

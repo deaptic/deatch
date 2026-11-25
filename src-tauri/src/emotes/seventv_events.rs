@@ -10,7 +10,7 @@ use tokio::time::Instant;
 use tokio_tungstenite::tungstenite::{Error as WsError, Message};
 
 use super::dto::{EmoteEntry, StvEmote};
-use super::events::{EmoteSetUpdated, Rename};
+use super::events::{EmoteSetUpdated, Rename, SevenTvReconnected};
 use crate::platform::emit::emit;
 use crate::platform::ws::{self, Socket};
 use crate::twitch::client::ids::SevenTvEmoteSetId;
@@ -77,6 +77,9 @@ async fn serve(
         if send(&mut write, OP_SUBSCRIBE, id).await.is_err() {
             return End::Lost;
         }
+    }
+    if !active.is_empty() {
+        emit(app, SevenTvReconnected);
     }
     let silence = tokio::time::sleep(READ_TIMEOUT);
     tokio::pin!(silence);

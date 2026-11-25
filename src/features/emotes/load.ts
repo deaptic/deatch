@@ -98,6 +98,7 @@ export async function ensureUserLoaded(): Promise<void> {
 
   try {
     const all = await getUserEmotes({ silent: true });
+    if (user()?.id !== u.id) return;
     setUserEmotes(dedupeById(all));
     saveCache(key, all);
   } catch {

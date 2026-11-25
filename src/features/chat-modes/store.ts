@@ -17,15 +17,21 @@ const [byChannel, setByChannel] = createSignal<Record<string, ChatSettings>>(
   {},
 );
 
+const versions = new Map<string, number>();
+const bump = (broadcasterId: string) =>
+  versions.set(broadcasterId, (versions.get(broadcasterId) ?? 0) + 1);
+
 export function forChannel(broadcasterId: string): ChatSettings | undefined {
   return byChannel()[broadcasterId];
 }
 
 export function set(broadcasterId: string, settings: ChatSettings) {
+  bump(broadcasterId);
   setByChannel((prev) => ({ ...prev, [broadcasterId]: settings }));
 }
 
 export function clear(broadcasterId: string) {
+  bump(broadcasterId);
   setByChannel((prev) => {
     const { [broadcasterId]: _, ...rest } = prev;
     return rest;
@@ -33,8 +39,11 @@ export function clear(broadcasterId: string) {
 }
 
 export function load(broadcasterId: string): Promise<void> {
+  const version = versions.get(broadcasterId);
   return getChatSettings({ broadcasterId }, { silent: true }).then(
-    (settings) => set(broadcasterId, settings),
+    (settings) => {
+      if (versions.get(broadcasterId) === version) set(broadcasterId, settings);
+    },
     () => {},
   );
 }

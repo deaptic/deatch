@@ -16,3 +16,6 @@ pub struct Rename {
     pub from: String,
     pub to: String,
 }
+
+#[derive(Serialize, Clone, specta::Type, tauri_specta::Event)]
+pub struct SevenTvReconnected;

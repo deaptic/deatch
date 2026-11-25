@@ -90,6 +90,22 @@ export function applyUpdate(update: EmoteSetUpdated): void {
   }
 }
 
+export function refresh(): void {
+  for (const entry of byBroadcaster.values()) {
+    seventvGetChannelEmotes(
+      { broadcasterId: entry.broadcasterId },
+      { silent: true },
+    )
+      .then((channel) => {
+        if (byBroadcaster.get(entry.broadcasterId) !== entry) return;
+        if (channel.emoteSetId !== entry.setId) return;
+        entry.emotes = channel.emotes;
+        pushIfActive(entry);
+      })
+      .catch(() => {});
+  }
+}
+
 function usingSet(setId: string): Entry[] {
   return [...byBroadcaster.values()].filter((e) => e.setId === setId);
 }

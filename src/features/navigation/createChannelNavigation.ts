@@ -16,6 +16,7 @@ import { rememberChannel } from "../preferences/index.ts";
 import { linkFocus } from "../../platform/link.ts";
 import { reportFailure } from "../../platform/invoke.ts";
 import { ensureFeed } from "../feed/index.ts";
+import { setChannelForm } from "./overlays.ts";
 import * as inbox from "../inbox/index.ts";
 import { t } from "../../shared/i18n/index.ts";
 
@@ -64,6 +65,14 @@ export function createChannelNavigation(): ChannelNavigation {
     const ch = stepVisits(delta);
     if (ch) selectChannel(ch);
   }
+
+  createEffect(
+    on(
+      () => selectedChannel()?.id,
+      () => setChannelForm(null),
+      { defer: true },
+    ),
+  );
 
   createEffect(
     on(selectedChannel, (ch) => {

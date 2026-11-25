@@ -146,8 +146,15 @@ pub async fn get_unban_requests(
         UnbanRequestStatus::Pending,
     );
     request.first = Some(UNBAN_REQUESTS_PAGE);
-    let response = twitch.helix.req_get(request, &twitch.token).await?;
-    Ok(response.data.into_iter().map(UnbanRequest::from).collect())
+    let mut requests = Vec::new();
+    loop {
+        let response = twitch.helix.req_get(request.clone(), &twitch.token).await?;
+        requests.extend(response.data.into_iter().map(UnbanRequest::from));
+        match response.pagination_data.cursor {
+            Some(next) => request.after = Some(next.into()),
+            None => return Ok(requests),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Deserialize, specta::Type)]

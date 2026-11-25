@@ -18,7 +18,7 @@ import { type Command, CommandComposer } from "../commands/index.ts";
 import type { FeedMessage as Message } from "../feed/index.ts";
 import * as emotes from "../emotes/index.ts";
 import { pushSentMessage, sentMessages } from "./sentMessages.ts";
-import { getDraft, setDraft } from "./drafts.ts";
+import { clearDraft, getDraft, setDraft } from "./drafts.ts";
 import {
   closeOverlay,
   isOverlayOpen,
@@ -103,6 +103,7 @@ export default function Composer(props: Props) {
   async function sendMessage() {
     const text = outgoing();
     if (!text || tooLong() || sending()) return;
+    const typed = input();
     setSending(true);
     try {
       const reply = props.replyTo();
@@ -114,6 +115,8 @@ export default function Composer(props: Props) {
       if (outcome === "sent") emotes.recordSent(text);
       if (outcome !== "failed") {
         pushSentMessage(props.broadcasterId, text);
+        if (getDraft(props.broadcasterId) === typed)
+          clearDraft(props.broadcasterId);
         history.reset();
         setMentionIdx(0);
         if (outgoing() === text) setInput("");

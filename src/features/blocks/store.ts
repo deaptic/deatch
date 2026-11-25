@@ -31,7 +31,9 @@ export function start(): () => void {
           setBlocked([]);
           if (!id) return;
           getBlockedUsers({ silent: true })
-            .then(setBlocked)
+            .then((list) => {
+              if (user()?.id === id) setBlocked(list);
+            })
             .catch(() => {});
         },
       ),
