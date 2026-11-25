@@ -2,7 +2,7 @@ import { For, Show } from "solid-js";
 import { goalProgress, goalsTitle, goalTitle } from "./goalText.ts";
 import type { Goal } from "../../../../shared/types/index.ts";
 import Meter from "../../../../kit/Meter.tsx";
-import StripRow from "../../../../kit/StripRow.tsx";
+import Banner from "../../../../kit/Banner.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 import LabeledBar from "../LabeledBar.tsx";
 
@@ -13,7 +13,7 @@ export default function GoalsRow(props: { goals: Goal[] }) {
     return goal ? goalProgress(goal) : undefined;
   };
   return (
-    <StripRow
+    <Banner
       icon={<ActivityIcon kind="goals" />}
       title={goalsTitle(props.goals)}
       meta={meta()}
@@ -45,6 +45,6 @@ export default function GoalsRow(props: { goals: Goal[] }) {
           />
         )}
       </Show>
-    </StripRow>
+    </Banner>
   );
 }

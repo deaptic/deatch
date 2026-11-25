@@ -1,6 +1,6 @@
 import { For, Show, useContext } from "solid-js";
 import Button from "../../kit/Button.tsx";
-import { SettingsQuery } from "../../kit/settingsQuery.ts";
+import { FilterQuery } from "../../kit/filterQuery.ts";
 import { matchesQuery } from "../../shared/textQuery.ts";
 
 type Props<K extends string> = {
@@ -13,7 +13,7 @@ type Props<K extends string> = {
 };
 
 export default function TypeChips<K extends string>(props: Props<K>) {
-  const query = useContext(SettingsQuery);
+  const query = useContext(FilterQuery);
   const matches = () =>
     matchesQuery(
       query(),

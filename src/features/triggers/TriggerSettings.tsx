@@ -1,7 +1,7 @@
 import { t } from "../../shared/i18n/index.ts";
 import { Plus } from "lucide-solid";
 import { createSignal, For } from "solid-js";
-import PageBody from "../../kit/PageBody.tsx";
+import Page from "../../kit/Page.tsx";
 import Button from "../../kit/Button.tsx";
 import TriggerCard from "./TriggerCard.tsx";
 import BuiltIns from "./BuiltIns.tsx";
@@ -37,7 +37,7 @@ export default function TriggerSettings() {
   };
 
   return (
-    <PageBody title={t("SETTINGS_TRIGGERS_TITLE")}>
+    <Page title={t("SETTINGS_TRIGGERS_TITLE")}>
       <BuiltIns />
       <For each={customTriggers()}>
         {(trigger) => (
@@ -71,6 +71,6 @@ export default function TriggerSettings() {
       >
         {t("SETTINGS_TRIGGERS_ADD_LABEL")}
       </Button>
-    </PageBody>
+    </Page>
   );
 }

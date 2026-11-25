@@ -4,6 +4,7 @@ import { channelSearch } from "../channels/index.ts";
 import * as raid from "./raid.ts";
 import type { SearchChannel } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import SearchPicker from "../../kit/SearchPicker.tsx";
 import FormDialog from "../../kit/FormDialog.tsx";
 
@@ -40,7 +41,12 @@ export default function RaidForm(props: Props) {
         search={(query) => channelSearch.find(query, (c) => c.isLive)}
         name={(c) => c.user.displayName}
         picture={(c) => (
-          <Avatar src={c.profileImageUrl} alt={c.user.displayName} size={24} />
+          <Avatar
+            src={c.profileImageUrl}
+            zoom={avatarZoom(c.profileImageUrl)}
+            alt={c.user.displayName}
+            size={24}
+          />
         )}
         onPick={(c: SearchChannel | null) => setTarget(c)}
       />

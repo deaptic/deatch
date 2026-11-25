@@ -27,7 +27,7 @@ import {
 import InputField, { type ComposerFieldApi } from "./ui/InputField.tsx";
 import CharCounter from "./ui/CharCounter.tsx";
 import IconButton from "../../kit/IconButton.tsx";
-import ComposerCaption from "../../kit/ComposerCaption.tsx";
+import InputCaption from "../../kit/InputCaption.tsx";
 const EmotePicker = lazy(emotes.loadEmotePicker);
 import ChatAutocomplete, {
   type ChatAutocompleteHandle,
@@ -35,7 +35,7 @@ import ChatAutocomplete, {
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 import Actions from "./Actions.tsx";
-import ComposerSlot from "../../kit/ComposerSlot.tsx";
+import InputGroupSlot from "../../kit/InputGroupSlot.tsx";
 import Transition from "../../kit/Transition.tsx";
 import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
 import Text from "../../kit/Text.tsx";
@@ -267,7 +267,7 @@ export default function Composer(props: Props) {
     <div class="p-2">
       <Transition when={props.replyTo()}>
         {(reply) => (
-          <ComposerCaption>
+          <InputCaption>
             <span class="shrink-0">
               {tRich("COMPOSER_REPLYING_TO_LABEL", {
                 user: reply().name,
@@ -286,7 +286,7 @@ export default function Composer(props: Props) {
             >
               <X class="size-4" />
             </IconButton>
-          </ComposerCaption>
+          </InputCaption>
         )}
       </Transition>
       <Show
@@ -318,15 +318,15 @@ export default function Composer(props: Props) {
               });
             }}
             leading={
-              <ComposerSlot>
+              <InputGroupSlot>
                 <Actions
                   broadcasterId={props.broadcasterId}
                   anchorEl={() => textAreaApi?.anchorEl()}
                 />
-              </ComposerSlot>
+              </InputGroupSlot>
             }
             addons={
-              <ComposerSlot>
+              <InputGroupSlot>
                 <CharCounter value={input} max={MAX_MESSAGE_LENGTH} />
                 <IconButton
                   label={t("COMPOSER_EMOTE_PICKER_LABEL")}
@@ -336,7 +336,7 @@ export default function Composer(props: Props) {
                 >
                   <Smile class="size-5" />
                 </IconButton>
-              </ComposerSlot>
+              </InputGroupSlot>
             }
           >
             <ChatAutocomplete

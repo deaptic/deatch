@@ -10,6 +10,7 @@ import {
   feedShowTimestamp,
 } from "../preferences/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import Card from "../../kit/Card.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { createChannelLink } from "../menus/index.ts";
@@ -49,6 +50,7 @@ export default function Item(props: Props) {
         >
           <Avatar
             src={channel()?.profileImageUrl}
+            zoom={avatarZoom(channel()?.profileImageUrl)}
             alt={m().broadcasterName}
             size="fill"
             square

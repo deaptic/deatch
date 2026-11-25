@@ -1,13 +1,13 @@
 import { type JSX, Show, useContext } from "solid-js";
-import { SettingsQuery } from "./settingsQuery.ts";
+import { FilterQuery } from "./filterQuery.ts";
 
 type Props = {
   title?: string;
   children: JSX.Element;
 };
 
-export default function PageBody(props: Props) {
-  const query = useContext(SettingsQuery);
+export default function Page(props: Props) {
+  const query = useContext(FilterQuery);
 
   return (
     <Show

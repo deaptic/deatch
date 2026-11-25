@@ -1,7 +1,7 @@
 import { t } from "../../../shared/i18n/index.ts";
-import PageBody from "../../../kit/PageBody.tsx";
+import Page from "../../../kit/Page.tsx";
 import Card from "../../../kit/Card.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
+import FormRow from "../../../kit/FormRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import {
   developerMode,
@@ -12,9 +12,9 @@ import {
 
 export default function DeveloperSettings() {
   return (
-    <PageBody title={t("SETTINGS_DEVELOPER_TITLE")}>
+    <Page title={t("SETTINGS_DEVELOPER_TITLE")}>
       <Card>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_DEVELOPER_MODE_LABEL")}
           description={t("SETTINGS_DEVELOPER_MODE_DESCRIPTION")}
         >
@@ -23,8 +23,8 @@ export default function DeveloperSettings() {
             checked={developerMode()}
             onChange={setDeveloperMode}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_DEVELOPER_SHOW_LOGS_LABEL")}
           description={t("SETTINGS_DEVELOPER_SHOW_LOGS_DESCRIPTION")}
         >
@@ -33,8 +33,8 @@ export default function DeveloperSettings() {
             checked={developerShowLogs()}
             onChange={setDeveloperShowLogs}
           />
-        </SettingsRow>
+        </FormRow>
       </Card>
-    </PageBody>
+    </Page>
   );
 }

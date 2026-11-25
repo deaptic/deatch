@@ -66,7 +66,6 @@ export function applyFeedSizing({ fontSize, groupSpacing }: FeedSizing): void {
   style.setProperty("--chat-tile", `${fontSize * TILE_SCALE}px`);
   style.setProperty("--chat-gif", `${fontSize * GIF_SCALE}px`);
   style.setProperty("--chat-two-lines", "2lh");
-  style.setProperty("--chat-three-lines", "3lh");
   style.setProperty("--feed-group-gap", `${groupSpacing}px`);
 }
 

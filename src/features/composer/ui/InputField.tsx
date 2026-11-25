@@ -1,5 +1,5 @@
 import { type JSX, onMount, splitProps } from "solid-js";
-import ComposerBox from "../../../kit/ComposerBox.tsx";
+import InputGroup from "../../../kit/InputGroup.tsx";
 
 export type ComposerFieldApi = {
   focus: () => void;
@@ -51,7 +51,7 @@ export default function InputField(props: Props) {
   });
 
   return (
-    <ComposerBox ref={(el) => (rowRef = el)} leading={local.leading}>
+    <InputGroup ref={(el) => (rowRef = el)} leading={local.leading}>
       {local.children}
       <textarea
         {...textareaProps}
@@ -62,6 +62,6 @@ export default function InputField(props: Props) {
         class="flex-1 self-stretch content-center bg-transparent text-base text-ink placeholder:text-ink-faint py-2 pr-1 outline-none resize-none overflow-y-auto field-sizing-content max-h-27.5"
       />
       {local.addons}
-    </ComposerBox>
+    </InputGroup>
   );
 }

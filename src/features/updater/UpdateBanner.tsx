@@ -3,7 +3,7 @@ import { Show } from "solid-js";
 import { install, state } from "./store.ts";
 import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
-import StripRow from "../../kit/StripRow.tsx";
+import Banner from "../../kit/Banner.tsx";
 
 export default function UpdateBanner() {
   const update = () => {
@@ -22,7 +22,7 @@ export default function UpdateBanner() {
   return (
     <Show when={update()}>
       {(u) => (
-        <StripRow
+        <Banner
           tone="accent"
           icon={<Download />}
           title={<span data-tip={error() ?? undefined}>{title()}</span>}

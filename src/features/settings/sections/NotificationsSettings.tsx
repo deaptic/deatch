@@ -1,12 +1,12 @@
 import { t } from "../../../shared/i18n/index.ts";
 import { For, Show } from "solid-js";
-import PageBody from "../../../kit/PageBody.tsx";
+import Page from "../../../kit/Page.tsx";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
 import { ALERT_GROUPS } from "./alertGroups.ts";
 import Chip from "../../../kit/Chip.tsx";
 import ChipInput from "../../../kit/ChipInput.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
+import FormRow from "../../../kit/FormRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import {
   addHighlightWord,
@@ -24,10 +24,10 @@ import {
 
 export default function NotificationsSettings() {
   return (
-    <PageBody title={t("SETTINGS_NOTIFICATIONS_TITLE")}>
+    <Page title={t("SETTINGS_NOTIFICATIONS_TITLE")}>
       <Card>
         <CardLabel>{t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_TITLE")}</CardLabel>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_STREAMER_MODE_DESCRIPTION")}
         >
@@ -36,8 +36,8 @@ export default function NotificationsSettings() {
             checked={streamerMode()}
             onChange={setStreamerMode}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_NOTIFICATIONS_STREAMER_AUTO_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_STREAMER_AUTO_DESCRIPTION")}
         >
@@ -46,14 +46,14 @@ export default function NotificationsSettings() {
             checked={streamerAuto()}
             onChange={setStreamerAuto}
           />
-        </SettingsRow>
+        </FormRow>
       </Card>
       <Card>
         <CardLabel>{t("SETTINGS_NOTIFICATIONS_MESSAGES_TITLE")}</CardLabel>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_NOTIFICATIONS_HIGHLIGHT_WORDS_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_HIGHLIGHT_WORDS_DESCRIPTION")}
-          stacked
+          layout="stacked"
         >
           <ChipInput
             placeholder={t(
@@ -70,8 +70,8 @@ export default function NotificationsSettings() {
               </For>
             </div>
           </Show>
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_NOTIFICATIONS_MENTIONS_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_MENTIONS_DESCRIPTION")}
         >
@@ -80,8 +80,8 @@ export default function NotificationsSettings() {
             checked={notificationsMentionSound()}
             onChange={setNotificationsMentionSound}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_NOTIFICATIONS_WHISPERS_LABEL")}
           description={t("SETTINGS_NOTIFICATIONS_WHISPERS_DESCRIPTION")}
         >
@@ -90,7 +90,7 @@ export default function NotificationsSettings() {
             checked={notificationsWhisperSound()}
             onChange={setNotificationsWhisperSound}
           />
-        </SettingsRow>
+        </FormRow>
       </Card>
       <For each={ALERT_GROUPS}>
         {(group) => (
@@ -98,20 +98,17 @@ export default function NotificationsSettings() {
             <CardLabel>{t(group.title)}</CardLabel>
             <For each={group.rows}>
               {(row) => (
-                <SettingsRow
-                  label={t(row.label)}
-                  description={t(row.description)}
-                >
+                <FormRow label={t(row.label)} description={t(row.description)}>
                   <Chip
                     variant="label"
                     label={t("SETTINGS_NOTIFICATIONS_SOON_LABEL")}
                   />
-                </SettingsRow>
+                </FormRow>
               )}
             </For>
           </Card>
         )}
       </For>
-    </PageBody>
+    </Page>
   );
 }

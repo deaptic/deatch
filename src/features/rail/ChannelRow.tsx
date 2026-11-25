@@ -3,6 +3,7 @@ import { channelInfoFor, streamForUserId } from "../channels/index.ts";
 import { formatCount } from "../../shared/format/stream.ts";
 import type { User } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import RailRow from "./RailRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
 import { TabMuteBadge } from "../link/index.ts";
@@ -71,6 +72,7 @@ export default function ChannelRow(props: Props) {
     >
       <Avatar
         src={props.ch.profileImageUrl}
+        zoom={avatarZoom(props.ch.profileImageUrl)}
         alt={props.ch.displayName}
         size={40}
         square

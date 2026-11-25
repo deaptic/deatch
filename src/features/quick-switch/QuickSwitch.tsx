@@ -27,6 +27,7 @@ import type { JSX } from "solid-js";
 import type { User } from "../../shared/types/index.ts";
 import { type QuickSwitchRow, quickSwitchRows, uniqueUsers } from "./model.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Field from "../../kit/Field.tsx";
 import Loading from "../../kit/Loading.tsx";
@@ -210,6 +211,7 @@ export default function QuickSwitch(props: Props) {
                         <>
                           <Avatar
                             src={r().user.profileImageUrl}
+                            zoom={avatarZoom(r().user.profileImageUrl)}
                             alt={r().user.displayName}
                             size={32}
                           >

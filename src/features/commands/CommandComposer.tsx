@@ -14,8 +14,8 @@ import { ChatterRow } from "../message/index.ts";
 import type { Chatter } from "../users/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Chip from "../../kit/Chip.tsx";
-import ComposerBox from "../../kit/ComposerBox.tsx";
-import ComposerCaption from "../../kit/ComposerCaption.tsx";
+import InputGroup from "../../kit/InputGroup.tsx";
+import InputCaption from "../../kit/InputCaption.tsx";
 import CommandComposerSlot from "./ui/CommandComposerSlot.tsx";
 import { createCommandComposer } from "./createCommandComposer.ts";
 import Text from "../../kit/Text.tsx";
@@ -30,7 +30,7 @@ function renderSearchItem(s: OptionSuggestion): JSX.Element {
   return (
     <>
       <Show when={s.image}>
-        {(image) => <Thumbnail src={image()} shape="boxart" fit="inline" />}
+        {(image) => <Thumbnail src={image()} shape="portrait" fit="inline" />}
       </Show>
       <Text tone="primary" truncate>
         {s.label}
@@ -144,7 +144,7 @@ export default function CommandComposer(props: Props) {
           }}
         />
       </Show>
-      <ComposerCaption>
+      <InputCaption>
         <span class="truncate">
           /{props.command.name}
           <Show when={activeOption()?.name}>
@@ -168,8 +168,8 @@ export default function CommandComposer(props: Props) {
             </span>
           </Show>
         </span>
-      </ComposerCaption>
-      <ComposerBox>
+      </InputCaption>
+      <InputGroup>
         <div class="flex-1 self-center flex items-center flex-wrap gap-2 min-h-9 py-0.5 min-w-0">
           <Chip variant="command" label={`/${props.command.name}`} selected />
           <For each={options}>
@@ -198,7 +198,7 @@ export default function CommandComposer(props: Props) {
             }}
           </For>
         </div>
-      </ComposerBox>
+      </InputGroup>
     </div>
   );
 }

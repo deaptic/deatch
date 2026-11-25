@@ -3,6 +3,7 @@ import { createEffect, createMemo, For, on, onMount, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import EmptyState from "../../kit/EmptyState.tsx";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import SearchPicker from "../../kit/SearchPicker.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { channelSearch } from "../channels/index.ts";
@@ -71,6 +72,7 @@ export default function Whispers() {
             picture={(c) => (
               <Avatar
                 src={c.profileImageUrl}
+                zoom={avatarZoom(c.profileImageUrl)}
                 alt={c.user.displayName}
                 size={24}
               />

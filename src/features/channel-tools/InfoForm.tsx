@@ -127,7 +127,7 @@ export default function InfoForm(props: Props) {
             }
             name={(c) => c.name}
             picture={(c) => (
-              <Thumbnail src={c.boxArtUrl} shape="boxart" fit="inline" />
+              <Thumbnail src={c.boxArtUrl} shape="portrait" fit="inline" />
             )}
             onPick={(c: Category | null) => setCategory(c)}
           />

@@ -34,7 +34,7 @@ export default function Modal(props: Props) {
     <Portal>
       <div
         ref={exitTarget}
-        class={`fixed inset-x-0 bottom-0 top-titlebar z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 data-closing:opacity-0 data-closing:duration-snap data-closing:pointer-events-none ${SCRIM[props.look]}`}
+        class={`fixed inset-x-0 bottom-0 top-safe-top z-50 flex justify-center bg-scrim transition-opacity duration-quick ease-out starting:opacity-0 data-closing:opacity-0 data-closing:duration-snap data-closing:pointer-events-none ${SCRIM[props.look]}`}
         onMouseDown={(e) => {
           if (e.target === e.currentTarget) props.onClose();
         }}

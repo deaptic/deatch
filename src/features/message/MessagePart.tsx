@@ -37,7 +37,7 @@ export default function MessagePart(
             alt={frag.text}
             tip={frag.text}
             shape="native"
-            fit="feed"
+            fit="media"
           />
         </span>
       );

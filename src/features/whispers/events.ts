@@ -7,7 +7,7 @@ import {
 import type { RawWhisper } from "../../platform/twitch/eventsubPayloads.ts";
 import { flashTaskbar } from "../../platform/notifications.ts";
 import { addToast } from "../../kit/toasts.ts";
-import { playNotificationSound } from "../../kit/notificationSound.ts";
+import { playNotificationSound } from "../../platform/notifications.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { user } from "../users/index.ts";
 import { activeView, showWhispers } from "../navigation/index.ts";

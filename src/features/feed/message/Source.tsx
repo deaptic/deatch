@@ -39,7 +39,8 @@ export default function Source(props: {
         {(src) => (
           <img
             src={src()}
-            {...avatarZoom(src())}
+            data-zoom-src={avatarZoom(src())?.src}
+            data-zoom-fallback={avatarZoom(src())?.fallback}
             alt={name()}
             class="size-full object-cover"
           />

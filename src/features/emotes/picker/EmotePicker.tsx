@@ -34,7 +34,7 @@ import { EMOJI_ITEMS, EMOJI_SECTIONS, EMOJI_VALUES } from "./emoji.ts";
 import Field from "../../../kit/Field.tsx";
 import IconButton from "../../../kit/IconButton.tsx";
 import * as shortcuts from "../../../shared/keyboard/shortcuts.ts";
-import ComposerPanel from "../../../kit/ComposerPanel.tsx";
+import AnchoredPanel from "../../../kit/AnchoredPanel.tsx";
 import { createListNavigation } from "../../../shared/solid/createListNavigation.ts";
 import type { EmoteGridItem } from "./types.ts";
 import { COLUMNS, nextVerticalIndex } from "./helpers.ts";
@@ -211,12 +211,12 @@ export default function EmotePicker(props: Props) {
   };
 
   return (
-    <ComposerPanel
+    <AnchoredPanel
       side="end"
       label={t("EMOTES_PICKER_LABEL")}
       anchorEl={props.anchorEl}
       onClose={props.onClose}
-      size="picker"
+      size="lg"
       ref={(el) => (panelRef = el)}
     >
       <div class="px-3 pt-3 pb-3 shrink-0 flex gap-2">
@@ -309,6 +309,6 @@ export default function EmotePicker(props: Props) {
         }
         icon={activeSource() ? iconOf(activeSource()!.section) : undefined}
       />
-    </ComposerPanel>
+    </AnchoredPanel>
   );
 }

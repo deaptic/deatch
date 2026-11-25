@@ -4,8 +4,8 @@ import { For, Show } from "solid-js";
 import Button from "../../kit/Button.tsx";
 import Card from "../../kit/Card.tsx";
 import Disclosure from "../../kit/Disclosure.tsx";
-import PageBody from "../../kit/PageBody.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import Page from "../../kit/Page.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import Slider from "../../kit/Slider.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import {
@@ -68,9 +68,9 @@ const isDefault = () =>
 
 export default function LinkSection() {
   return (
-    <PageBody title={t("SETTINGS_LINK_TITLE")}>
+    <Page title={t("SETTINGS_LINK_TITLE")}>
       <Card>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_LINK_COMPRESSOR_LABEL")}
           description={t("SETTINGS_LINK_COMPRESSOR_DESCRIPTION")}
         >
@@ -79,7 +79,7 @@ export default function LinkSection() {
             checked={linkCompressor()}
             onChange={setLinkCompressor}
           />
-        </SettingsRow>
+        </FormRow>
         <Show when={connected() && !hasAudio()}>
           <div class="px-4 pb-3">
             <Text as="p" size="sm" tone="caution">
@@ -94,10 +94,10 @@ export default function LinkSection() {
               const range = COMPRESSOR[control];
               const value = () => compressorSettings()[control];
               return (
-                <SettingsRow
+                <FormRow
                   label={t(label)}
                   description={t(description)}
-                  stacked
+                  layout="stacked"
                 >
                   <div class="flex items-center gap-3">
                     <Slider
@@ -119,7 +119,7 @@ export default function LinkSection() {
                       {format(value())}
                     </Text>
                   </div>
-                </SettingsRow>
+                </FormRow>
               );
             }}
           </For>
@@ -135,6 +135,6 @@ export default function LinkSection() {
           </div>
         </Disclosure>
       </Card>
-    </PageBody>
+    </Page>
   );
 }

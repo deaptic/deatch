@@ -1,17 +1,18 @@
 import { type JSX, Show, useContext } from "solid-js";
 import { matchesQuery } from "../shared/textQuery.ts";
-import { SettingsQuery } from "./settingsQuery.ts";
+import { FilterQuery } from "./filterQuery.ts";
 
 type Props = {
   label: string;
   description?: string;
   keywords?: string[];
-  stacked?: boolean;
+  layout?: "inline" | "stacked";
   children?: JSX.Element;
 };
 
-export default function SettingsRow(props: Props) {
-  const query = useContext(SettingsQuery);
+export default function FormRow(props: Props) {
+  const stacked = () => props.layout === "stacked";
+  const query = useContext(FilterQuery);
 
   return (
     <Show
@@ -25,15 +26,13 @@ export default function SettingsRow(props: Props) {
       <div
         data-match
         class={`flex gap-x-6 gap-y-2 px-4 py-2.5 min-h-12 ${
-          props.stacked
+          stacked()
             ? "flex-col items-stretch"
             : "flex-wrap items-center justify-between"
         }`}
       >
         <div
-          class={`flex flex-col min-w-0 ${
-            props.stacked ? "" : "flex-1 basis-56"
-          }`}
+          class={`flex flex-col min-w-0 ${stacked() ? "" : "flex-1 basis-56"}`}
         >
           <span class="text-base font-semibold text-ink">{props.label}</span>
           <Show when={props.description}>
@@ -42,7 +41,7 @@ export default function SettingsRow(props: Props) {
             </span>
           </Show>
         </div>
-        <div class={props.stacked ? "flex flex-col gap-2" : "shrink-0"}>
+        <div class={stacked() ? "flex flex-col gap-2" : "shrink-0"}>
           {props.children}
         </div>
       </div>

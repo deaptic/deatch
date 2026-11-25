@@ -27,7 +27,7 @@ export default function ClearChatForm(props: Props) {
       actions={
         <>
           <Button variant="neutral" onClick={() => props.onDone()}>
-            {t("HEADER_CANCEL_LABEL")}
+            {t("UI_CANCEL_LABEL")}
           </Button>
           <Button variant="danger" onClick={clear} loading={clearing()}>
             {t("HEADER_CLEAR_CHAT_LABEL")}

@@ -1,10 +1,10 @@
 import { For, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import PageBody from "../../kit/PageBody.tsx";
+import Page from "../../kit/Page.tsx";
 import Card from "../../kit/Card.tsx";
 import Chip from "../../kit/Chip.tsx";
 import ChipInput from "../../kit/ChipInput.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import {
   addTrustedDomain,
@@ -16,9 +16,9 @@ import {
 
 export default function EmbedsSettings() {
   return (
-    <PageBody title={t("SETTINGS_EMBEDS_TITLE")}>
+    <Page title={t("SETTINGS_EMBEDS_TITLE")}>
       <Card>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_EMBEDS_PREVIEWS_LABEL")}
           description={t("SETTINGS_EMBEDS_PREVIEWS_DESCRIPTION")}
         >
@@ -27,11 +27,11 @@ export default function EmbedsSettings() {
             checked={feedLinkPreviews()}
             onChange={setFeedLinkPreviews}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_EMBEDS_TRUSTED_SITES_LABEL")}
           description={t("SETTINGS_EMBEDS_TRUSTED_SITES_DESCRIPTION")}
-          stacked
+          layout="stacked"
         >
           <ChipInput
             placeholder={t("SETTINGS_EMBEDS_TRUSTED_SITES_PLACEHOLDER")}
@@ -49,8 +49,8 @@ export default function EmbedsSettings() {
               </For>
             </div>
           </Show>
-        </SettingsRow>
+        </FormRow>
       </Card>
-    </PageBody>
+    </Page>
   );
 }

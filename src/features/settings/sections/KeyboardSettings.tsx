@@ -1,10 +1,10 @@
 import { type MessageKey, t } from "../../../shared/i18n/index.ts";
 import { For, Show, useContext } from "solid-js";
-import PageBody from "../../../kit/PageBody.tsx";
+import Page from "../../../kit/Page.tsx";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
 import Kbd from "../../../kit/Kbd.tsx";
-import { SettingsQuery } from "../../../kit/settingsQuery.ts";
+import { FilterQuery } from "../../../kit/filterQuery.ts";
 import { matchesQuery } from "../../../shared/textQuery.ts";
 import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
 import { ACTION_LABELS, CHANNEL_SELECT } from "../keyboard.ts";
@@ -51,10 +51,10 @@ function rowsFor(prefixes: string[]): Row[] {
 }
 
 export default function KeyboardSettings() {
-  const query = useContext(SettingsQuery);
+  const query = useContext(FilterQuery);
 
   return (
-    <PageBody title={t("SETTINGS_KEYBOARD_TITLE")}>
+    <Page title={t("SETTINGS_KEYBOARD_TITLE")}>
       <For each={GROUPS}>
         {(g) => (
           <Card>
@@ -77,6 +77,6 @@ export default function KeyboardSettings() {
           </Card>
         )}
       </For>
-    </PageBody>
+    </Page>
   );
 }

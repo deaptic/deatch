@@ -1,6 +1,6 @@
 import { mentionsKey, type StorageKey } from "../../platform/storageKeys.ts";
 import { createEffect, createRoot, createSignal, on } from "solid-js";
-import { playNotificationSound } from "../../kit/notificationSound.ts";
+import { playNotificationSound } from "../../platform/notifications.ts";
 import { markSeen } from "../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";

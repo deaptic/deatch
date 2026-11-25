@@ -2,8 +2,8 @@ import { createResource, For, Match, Switch } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { domainOf } from "../../shared/domain.ts";
 import { addTrustedDomain } from "../preferences/index.ts";
-import HiddenImage from "../../kit/HiddenImage.tsx";
-import LinkCard from "../../kit/LinkCard.tsx";
+import RevealImage from "../../kit/RevealImage.tsx";
+import PreviewCard from "../../kit/PreviewCard.tsx";
 import Button from "../../kit/Button.tsx";
 import * as previews from "./store.ts";
 
@@ -39,7 +39,7 @@ function LinkPreview(props: { url: string }) {
     <Switch>
       <Match when={untrustedDomain()}>
         {(domain) => (
-          <LinkCard
+          <PreviewCard
             site={domain()}
             title={bareLink()}
             onOpen={() => previews.open(props.url)}
@@ -57,7 +57,7 @@ function LinkPreview(props: { url: string }) {
       </Match>
       <Match when={card()}>
         {(card) => (
-          <LinkCard
+          <PreviewCard
             site={card().site}
             title={card().title}
             description={card().description}
@@ -69,7 +69,7 @@ function LinkPreview(props: { url: string }) {
       </Match>
       <Match when={bareDomain()}>
         {(domain) => (
-          <LinkCard
+          <PreviewCard
             site={domain()}
             title={bareLink()}
             onOpen={() => previews.open(props.url)}
@@ -78,7 +78,7 @@ function LinkPreview(props: { url: string }) {
       </Match>
       <Match when={image()}>
         {(image) => (
-          <HiddenImage
+          <RevealImage
             src={image().url}
             label={t("FEED_LINK_IMAGE_SHOW_LABEL", { site: image().site })}
           />

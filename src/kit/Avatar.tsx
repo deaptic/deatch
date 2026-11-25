@@ -1,5 +1,4 @@
 import { createEffect, createSignal, type JSX, on, Show } from "solid-js";
-import { avatarZoom } from "../shared/avatar.ts";
 import { createImageReveal } from "../shared/solid/createImageReveal.ts";
 
 export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
@@ -7,6 +6,7 @@ type Ring = "dashed" | "negative";
 
 type Props = {
   src?: string;
+  zoom?: { src: string; fallback: string };
   alt?: string;
   size: AvatarSize;
   ring?: Ring;
@@ -55,7 +55,8 @@ export default function Avatar(props: Props) {
         {(src) => (
           <img
             src={src()}
-            {...avatarZoom(src())}
+            data-zoom-src={props.zoom?.src}
+            data-zoom-fallback={props.zoom?.fallback}
             alt={props.alt ?? ""}
             loading="lazy"
             decoding="async"

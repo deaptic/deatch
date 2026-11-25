@@ -1,5 +1,5 @@
 import { t } from "../../shared/i18n/index.ts";
-import PageBody from "../../kit/PageBody.tsx";
+import Page from "../../kit/Page.tsx";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import AppearancePreview from "./AppearancePreview.tsx";
@@ -11,7 +11,7 @@ import ShownInChatCard from "./ShownInChatCard.tsx";
 
 export default function MessagesSettings() {
   return (
-    <PageBody title={t("SETTINGS_MESSAGES_TITLE")}>
+    <Page title={t("SETTINGS_MESSAGES_TITLE")}>
       <Card>
         <CardLabel>{t("SETTINGS_MESSAGES_PREVIEW_TITLE")}</CardLabel>
         <AppearancePreview />
@@ -21,6 +21,6 @@ export default function MessagesSettings() {
       <MessagesCard />
       <BadgesCard />
       <ShownInChatCard />
-    </PageBody>
+    </Page>
   );
 }

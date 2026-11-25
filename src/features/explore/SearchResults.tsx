@@ -29,6 +29,7 @@ import { liveLine } from "../../shared/format/stream.ts";
 import { createChannelLink } from "../menus/index.ts";
 import CategoryRow from "./ui/CategoryRow.tsx";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import EmptyState from "../../kit/EmptyState.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
@@ -148,6 +149,7 @@ export default function SearchResults(props: Props) {
                   >
                     <Avatar
                       src={channel.profileImageUrl}
+                      zoom={avatarZoom(channel.profileImageUrl)}
                       alt={channel.user.displayName}
                       size={36}
                     >

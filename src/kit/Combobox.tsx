@@ -89,7 +89,7 @@ export default function Combobox(props: Props) {
             <button
               type="button"
               aria-label={t("UI_CLEAR_FIELD_LABEL", {
-                field: props.ariaLabel.toLowerCase(),
+                field: props.ariaLabel,
               })}
               class="shrink-0 grid place-items-center text-ink-soft hover:text-ink cursor-pointer"
               onMouseDown={(e) => e.preventDefault()}

@@ -6,6 +6,7 @@ import { pinnedChannels } from "../preferences/index.ts";
 import { user } from "../users/index.ts";
 import { userFromSearch } from "../../shared/user.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import Popover from "../../kit/Popover.tsx";
 import SearchPicker from "../../kit/SearchPicker.tsx";
 import { t } from "../../shared/i18n/index.ts";
@@ -45,6 +46,7 @@ export default function PinChannelPopover(props: Props) {
           picture={(channel) => (
             <Avatar
               src={channel.profileImageUrl}
+              zoom={avatarZoom(channel.profileImageUrl)}
               alt={channel.user.displayName}
               size={24}
             >

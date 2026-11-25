@@ -2,7 +2,7 @@ import { t } from "../../../shared/i18n/index.ts";
 import { createSignal } from "solid-js";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
+import FormRow from "../../../kit/FormRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import Dialog from "../../../kit/Dialog.tsx";
 import Button from "../../../kit/Button.tsx";
@@ -74,7 +74,7 @@ export default function AdvancedCard() {
       </Transition>
       <Card>
         <CardLabel>{t("SETTINGS_ADVANCED_TITLE")}</CardLabel>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_LABEL")}
           description={t("SETTINGS_ADVANCED_HARDWARE_ACCELERATION_DESCRIPTION")}
         >
@@ -83,15 +83,15 @@ export default function AdvancedCard() {
             checked={pendingRestart()?.enabled ?? systemHardwareAcceleration()}
             onChange={(enabled) => setPendingRestart({ enabled })}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_ADVANCED_FEED_HISTORY_LABEL")}
           description={t("SETTINGS_ADVANCED_FEED_HISTORY_DESCRIPTION")}
         >
           <Button variant="danger" onClick={() => setConfirmingClear(true)}>
             {t("SETTINGS_ADVANCED_CLEAR_HISTORY_LABEL")}
           </Button>
-        </SettingsRow>
+        </FormRow>
       </Card>
       <Transition when={confirmingClear()}>
         {() => (

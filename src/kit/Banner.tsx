@@ -29,7 +29,7 @@ type Props = {
   children?: JSX.Element;
 };
 
-export default function StripRow(props: Props) {
+export default function Banner(props: Props) {
   const tone = () => TONES[props.tone ?? "plain"];
   const body = children(() => props.children);
   const actions = children(() => props.actions);

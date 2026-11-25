@@ -40,9 +40,9 @@ import ChannelRow from "./ChannelRow.tsx";
 import StreamTooltip from "./StreamTooltip.tsx";
 import { channelInfoFor, streamForUserId } from "../channels/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import ScrollChevron from "./ui/ScrollChevron.tsx";
 import RailRowSkeleton from "./RailRowSkeleton.tsx";
-import { RAIL_GAP } from "../../kit/density.ts";
 import { TabMuteBadge } from "../link/index.ts";
 import PinChannelPopover from "./PinChannelPopover.tsx";
 import { SIDE_GAP } from "../../kit/Popover.tsx";
@@ -141,7 +141,7 @@ export default function Rail(props: Props) {
           onScroll={main.update}
           class="flex flex-col h-full overflow-y-auto scrollbar-none"
         >
-          <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
+          <div class={`flex flex-col py-2 gap-row-gap`}>
             <Show
               when={!channels.loadingPinned()}
               fallback={
@@ -211,7 +211,7 @@ export default function Rail(props: Props) {
           >
             <Divider class="mx-4" />
 
-            <div class={`flex flex-col py-2 ${RAIL_GAP}`}>
+            <div class={`flex flex-col py-2 gap-row-gap`}>
               <Show
                 when={!channels.loadingLive()}
                 fallback={
@@ -256,7 +256,7 @@ export default function Rail(props: Props) {
             <div
               ref={linkScroll.setRef}
               onScroll={linkScroll.update}
-              class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none ${RAIL_GAP}`}
+              class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none gap-row-gap`}
             >
               <For each={linkedOthers()}>
                 {(ch) => (
@@ -298,7 +298,7 @@ export default function Rail(props: Props) {
       </Show>
 
       <Divider class="mx-4" />
-      <div class={`flex flex-col py-2 shrink-0 ${RAIL_GAP}`}>
+      <div class={`flex flex-col py-2 shrink-0 gap-row-gap`}>
         <RailLinkRow onToggleLink={props.onToggleLink} />
         <RailRow
           label={t("RAIL_EXPLORE_LABEL")}
@@ -359,6 +359,7 @@ export default function Rail(props: Props) {
             >
               <Avatar
                 src={u().profileImageUrl}
+                zoom={avatarZoom(u().profileImageUrl)}
                 alt={u().displayName}
                 size={40}
                 square

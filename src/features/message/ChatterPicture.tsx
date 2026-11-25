@@ -1,7 +1,7 @@
 import { createEffect, createMemo, on } from "solid-js";
 import { users } from "../users/index.ts";
 import { knownUser } from "../users/index.ts";
-import { sizedAvatarUrl } from "../../shared/avatar.ts";
+import { avatarZoom, sizedAvatarUrl } from "../../shared/avatar.ts";
 import { hueOf } from "../../shared/color.ts";
 import Avatar, { type AvatarSize } from "../../kit/Avatar.tsx";
 
@@ -35,6 +35,7 @@ export default function ChatterPicture(props: Props) {
   return (
     <Avatar
       src={url()}
+      zoom={avatarZoom(url())}
       alt={props.name}
       size={props.size ?? "fill"}
       inherit={!props.size}

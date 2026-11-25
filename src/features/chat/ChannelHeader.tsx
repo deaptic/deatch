@@ -29,6 +29,7 @@ import {
 import { createCopyable } from "../../kit/copyable.ts";
 import type { User } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import Stat from "../../kit/Stat.tsx";
 import { createChannelLink } from "../menus/index.ts";
 import { hasPermission, showsControls } from "../permissions/index.ts";
@@ -70,6 +71,7 @@ export default function ChannelHeader(props: Props) {
   const avatar = (overlay?: JSX.Element) => (
     <Avatar
       src={props.channel.profileImageUrl}
+      zoom={avatarZoom(props.channel.profileImageUrl)}
       alt={props.channel.displayName}
       size={64}
       square

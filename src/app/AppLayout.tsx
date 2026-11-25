@@ -107,7 +107,9 @@ export default function AppLayout(props: AppLayoutProps) {
                     onJumpToMessage={c.jumpToMessage}
                   />
                 </Show>
-                <FlashHost />
+                <div class="absolute top-3 right-4 z-20 pointer-events-none">
+                  <FlashHost />
+                </div>
               </main>
               <Show when={isOverlayOpen("search")}>
                 <Boundary silent>
@@ -132,7 +134,9 @@ export default function AppLayout(props: AppLayoutProps) {
             </>
           )}
         </Show>
-        <Toaster toasts={toasts} onDismiss={removeToast} />
+        <div class="absolute bottom-20 right-4 z-50 pointer-events-none">
+          <Toaster toasts={toasts} onDismiss={removeToast} />
+        </div>
         <Boundary silent>
           <HoverZoom />
         </Boundary>

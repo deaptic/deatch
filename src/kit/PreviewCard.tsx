@@ -13,7 +13,7 @@ type Props = {
   onOpen: () => void;
 };
 
-export default function LinkCard(props: Props) {
+export default function PreviewCard(props: Props) {
   return (
     <div class="@container group flex max-w-sm items-start rounded-sm border-l-3 border-line bg-raised transition-colors duration-snap hover:border-accent hover:bg-overlay">
       <a
@@ -46,7 +46,7 @@ export default function LinkCard(props: Props) {
             <Thumbnail
               src={src()}
               shape={props.video ? "video" : "square"}
-              fit={props.video ? "linesWide" : "lines"}
+              fit="lines"
             >
               <Show when={props.video}>
                 <span class="absolute inset-0 grid place-items-center">

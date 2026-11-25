@@ -1,6 +1,7 @@
 import type { User } from "../../shared/types/index.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import CardButton from "../../kit/CardButton.tsx";
 import Text from "../../kit/Text.tsx";
 
@@ -27,6 +28,7 @@ export default function ChannelTile(props: Props) {
     >
       <Avatar
         src={props.channel.profileImageUrl}
+        zoom={avatarZoom(props.channel.profileImageUrl)}
         alt={props.channel.displayName}
         size={64}
         ring={props.live ? "negative" : undefined}

@@ -2,7 +2,7 @@ import { t } from "../../shared/i18n/index.ts";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import ColorPicker from "../../kit/ColorPicker.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import StepSlider from "../../kit/StepSlider.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import { FONT_SIZE_STEPS } from "../../shared/accessibility.ts";
@@ -21,7 +21,7 @@ export default function ReadabilityCard() {
   return (
     <Card>
       <CardLabel>{t("SETTINGS_MESSAGES_TEXT_TITLE")}</CardLabel>
-      <SettingsRow label={t("SETTINGS_MESSAGES_FONT_SIZE_LABEL")} stacked>
+      <FormRow label={t("SETTINGS_MESSAGES_FONT_SIZE_LABEL")} layout="stacked">
         <StepSlider
           label={t("SETTINGS_MESSAGES_FONT_SIZE_LABEL")}
           value={feedFontSize()}
@@ -29,8 +29,8 @@ export default function ReadabilityCard() {
           format={formatPx}
           onChange={setFeedFontSize}
         />
-      </SettingsRow>
-      <SettingsRow
+      </FormRow>
+      <FormRow
         label={t("SETTINGS_MESSAGES_DISPLAY_NAMES_LABEL")}
         description={t("SETTINGS_MESSAGES_DISPLAY_NAMES_DESCRIPTION")}
       >
@@ -39,8 +39,8 @@ export default function ReadabilityCard() {
           checked={feedUserShowDisplayName()}
           onChange={setFeedUserShowDisplayName}
         />
-      </SettingsRow>
-      <SettingsRow
+      </FormRow>
+      <FormRow
         label={t("SETTINGS_MESSAGES_NAME_COLOR_LABEL")}
         description={t("SETTINGS_MESSAGES_NAME_COLOR_DESCRIPTION")}
       >
@@ -51,7 +51,7 @@ export default function ReadabilityCard() {
           onReset={() => setFeedUserOverrideNameColor("")}
           resetDisabled={!feedUserOverrideNameColor()}
         />
-      </SettingsRow>
+      </FormRow>
     </Card>
   );
 }

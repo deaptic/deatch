@@ -11,6 +11,7 @@ import { Pin, X } from "lucide-solid";
 import { feeds } from "../feed/index.ts";
 import { onMiddleClick, preventAutoscroll } from "../../kit/middleClick.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import { Badges } from "../message/index.ts";
 import IconButton from "../../kit/IconButton.tsx";
 import Identity from "./Identity.tsx";
@@ -132,6 +133,7 @@ export default function Header(props: Props) {
           >
             <Avatar
               src={user()?.profileImageUrl}
+              zoom={avatarZoom(user()?.profileImageUrl)}
               alt={user()?.displayName ?? ""}
               size={80}
             />

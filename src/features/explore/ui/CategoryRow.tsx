@@ -34,7 +34,7 @@ export default function CategoryRow(props: Props) {
               <Thumbnail
                 src={category.boxArtUrl}
                 alt={category.name}
-                shape="boxart"
+                shape="portrait"
                 fit="fill"
                 interactive
               />

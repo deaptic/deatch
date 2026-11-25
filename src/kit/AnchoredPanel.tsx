@@ -5,11 +5,11 @@ import { captureFocusForRestore } from "../shared/solid/focus.ts";
 
 const GAP = 8;
 
-type PanelSize = "picker" | "menu";
+type PanelSize = "sm" | "lg";
 
 const SIZES: Record<PanelSize, string> = {
-  picker: "w-120 h-130",
-  menu: "w-72 p-1.5",
+  sm: "w-72 p-1.5",
+  lg: "w-120 h-130",
 };
 
 type Side = "start" | "end";
@@ -29,7 +29,7 @@ type Props = {
   children: JSX.Element;
 };
 
-export default function ComposerPanel(props: Props) {
+export default function AnchoredPanel(props: Props) {
   captureFocusForRestore();
   const [bottom, setBottom] = createSignal(64);
   const [edge, setEdge] = createSignal(GAP);

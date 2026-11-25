@@ -4,7 +4,7 @@ import { t } from "../../shared/i18n/index.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
 import IconButton from "../../kit/IconButton.tsx";
-import ComposerSlot from "../../kit/ComposerSlot.tsx";
+import InputGroupSlot from "../../kit/InputGroupSlot.tsx";
 import * as emotes from "../emotes/index.ts";
 import {
   CharCounter,
@@ -73,7 +73,7 @@ export default function WhisperComposer(props: Props) {
           api.focus();
         }}
         addons={
-          <ComposerSlot>
+          <InputGroupSlot>
             <CharCounter value={input} max={MAX_MESSAGE_LENGTH} />
             <IconButton
               label={t("COMPOSER_EMOTE_PICKER_LABEL")}
@@ -83,7 +83,7 @@ export default function WhisperComposer(props: Props) {
             >
               <Smile class="size-5" />
             </IconButton>
-          </ComposerSlot>
+          </InputGroupSlot>
         }
       >
         <ChatAutocomplete

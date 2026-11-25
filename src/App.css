@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant compact (&:where([data-density="compact"] *));
-@custom-variant spacious (&:where([data-density="spacious"] *));
-
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
   font-style: normal;
@@ -96,6 +93,13 @@
   --spacing-rail-expanded: 280px;
   --spacing-header: 56px;
   --spacing-titlebar: 40px;
+  --spacing-safe-top: var(--spacing-titlebar);
+  --spacing-row: 56px;
+  --spacing-row-content: calc(var(--spacing-row) - 10px);
+  --spacing-row-gap: 4px;
+  --spacing-lines-3: 3lh;
+  --spacing-media: 6em;
+  --spacing-media-min: 2.5em;
 
   --spacing-card-width: 24rem;
   --spacing-card-height: 35rem;
@@ -184,6 +188,11 @@
   --color-event-announce-green: oklch(0.78 0.15 150);
   --color-event-announce-orange: oklch(0.76 0.16 55);
   --color-event-announce-purple: oklch(0.72 0.17 305);
+}
+
+[data-density="compact"] {
+  --spacing-row: 48px;
+  --spacing-row-gap: 0px;
 }
 
 [data-theme="light"] {

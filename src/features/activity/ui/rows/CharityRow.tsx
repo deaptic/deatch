@@ -3,7 +3,7 @@ import { t } from "../../../../shared/i18n/index.ts";
 import { formatMoney } from "../../../../shared/format/currency.ts";
 import type { CharityCampaign } from "../../../../shared/types/index.ts";
 import Meter from "../../../../kit/Meter.tsx";
-import StripRow from "../../../../kit/StripRow.tsx";
+import Banner from "../../../../kit/Banner.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 
 export default function CharityRow(props: { charity: CharityCampaign }) {
@@ -19,7 +19,7 @@ export default function CharityRow(props: { charity: CharityCampaign }) {
       : t("HEADER_CHARITY_RAISED_STATUS", { current: raised() });
   };
   return (
-    <StripRow
+    <Banner
       icon={<ActivityIcon kind="charity" />}
       title={props.charity.charityName}
       meta={meta()}
@@ -34,6 +34,6 @@ export default function CharityRow(props: { charity: CharityCampaign }) {
           />
         )}
       </Show>
-    </StripRow>
+    </Banner>
   );
 }

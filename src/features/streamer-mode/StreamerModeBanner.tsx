@@ -3,7 +3,7 @@ import { Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
 import IconButton from "../../kit/IconButton.tsx";
-import StripRow from "../../kit/StripRow.tsx";
+import Banner from "../../kit/Banner.tsx";
 import { streamerMode } from "../preferences/index.ts";
 import * as streamer from "./store.ts";
 import Dot from "../../kit/Dot.tsx";
@@ -21,7 +21,7 @@ export default function StreamerModeBanner() {
   return (
     <Show when={streamerMode() && !streamer.dismissed()}>
       <Surface edge="bottom" class="shrink-0">
-        <StripRow
+        <Banner
           icon={<OnAirDot />}
           title={t("STREAMER_MODE_ON_STATUS")}
           meta={t("STREAMER_MODE_SILENCED_STATUS")}

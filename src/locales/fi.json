@@ -484,7 +484,7 @@
   "HEADER_BLOCKED_TERMS_LABEL": "Estetyt sanat",
   "HEADER_BRANDED_CONTENT_DESCRIPTION": "Ota käyttöön, kun striimi on sponsoroitu tai mainostaa tuotetta.",
   "HEADER_BRANDED_CONTENT_LABEL": "Kaupallinen sisältö",
-  "HEADER_CANCEL_LABEL": "Peruuta",
+  "UI_CANCEL_LABEL": "Peruuta",
   "HEADER_CANCEL_RAID_LABEL": "Peruuta raidi",
   "HEADER_CATEGORY_LABEL": "Kategoria",
   "HEADER_CATEGORY_PLACEHOLDER": "Hae kategorioita",

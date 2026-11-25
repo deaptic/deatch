@@ -17,7 +17,7 @@ import {
 import NavItem from "../../kit/NavItem.tsx";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
-import { SettingsQuery } from "../../kit/settingsQuery.ts";
+import { FilterQuery } from "../../kit/filterQuery.ts";
 import {
   setSettingsSection,
   SETTINGS_GROUPS,
@@ -206,7 +206,7 @@ export default function Settings() {
             </div>
           </div>
         </Surface>
-        <SettingsQuery.Provider value={query}>
+        <FilterQuery.Provider value={query}>
           <Suspense>
             <Show
               when={searching()}
@@ -232,7 +232,7 @@ export default function Settings() {
               </div>
             </Show>
           </Suspense>
-        </SettingsQuery.Provider>
+        </FilterQuery.Provider>
       </div>
     </div>
   );

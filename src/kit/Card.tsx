@@ -1,5 +1,5 @@
 import { type JSX, useContext } from "solid-js";
-import { SettingsQuery } from "./settingsQuery.ts";
+import { FilterQuery } from "./filterQuery.ts";
 
 type Tone = "plain" | "marked" | "edited";
 
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function Card(props: Props) {
-  const query = useContext(SettingsQuery);
+  const query = useContext(FilterQuery);
   return (
     <section
       class={`rounded-lg ${TONES[props.tone ?? "plain"]} ${

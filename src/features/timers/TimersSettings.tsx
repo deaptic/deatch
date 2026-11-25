@@ -10,7 +10,7 @@ import { createSignal, For, type JSX, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
 import { autofocus } from "../../shared/solid/focus.ts";
-import PageBody from "../../kit/PageBody.tsx";
+import Page from "../../kit/Page.tsx";
 import Card from "../../kit/Card.tsx";
 import Chip from "../../kit/Chip.tsx";
 import Button from "../../kit/Button.tsx";
@@ -208,7 +208,7 @@ export default function TimersSettings() {
   );
 
   return (
-    <PageBody title={t("SETTINGS_TIMERS_TITLE")}>
+    <Page title={t("SETTINGS_TIMERS_TITLE")}>
       <Show
         when={savedTimers().length > 0}
         fallback={
@@ -232,6 +232,6 @@ export default function TimersSettings() {
         </For>
         <div class="self-start">{addButton}</div>
       </Show>
-    </PageBody>
+    </Page>
   );
 }

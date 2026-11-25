@@ -23,10 +23,10 @@ type Placed = { x: number; y: number; points: Points; arrow: number };
 const along = (target: number, start: number, length: number) =>
   Math.max(ARROW_INSET, Math.min(target - start, length - ARROW_INSET));
 
-const titleBarBottom = () =>
+const safeTop = () =>
   parseFloat(
     getComputedStyle(document.documentElement).getPropertyValue(
-      "--spacing-titlebar",
+      "--spacing-safe-top",
     ),
   ) || 0;
 
@@ -37,7 +37,7 @@ export default function Tooltip(props: Props) {
   createEffect(() => {
     if (!ref) return;
     const { offsetWidth: width, offsetHeight: height } = ref;
-    const top = titleBarBottom() + MARGIN;
+    const top = safeTop() + MARGIN;
     const maxY = globalThis.innerHeight - height - MARGIN;
     if (props.side === "right") {
       const y = Math.max(top, Math.min(props.y - height / 2, maxY));

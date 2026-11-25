@@ -1,8 +1,9 @@
+import { Globe } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
 import Dialog from "../../kit/Dialog.tsx";
-import LinkTarget from "../../kit/LinkTarget.tsx";
+import SummaryCard from "../../kit/SummaryCard.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import * as previews from "./store.ts";
 import Text from "../../kit/Text.tsx";
@@ -33,11 +34,13 @@ function Prompt(props: { url: string }) {
     >
       <Show
         when={previews.pendingDomain()}
-        fallback={<LinkTarget domain={props.url} url={props.url} />}
+        fallback={
+          <SummaryCard icon={<Globe />} title={props.url} detail={props.url} />
+        }
       >
         {(domain) => (
           <>
-            <LinkTarget domain={domain()} url={props.url} />
+            <SummaryCard icon={<Globe />} title={domain()} detail={props.url} />
             <label class="flex items-center justify-between gap-3">
               <Text size="md" tone="soft">
                 {t("FEED_LINK_PROMPT_TRUST_LABEL")}

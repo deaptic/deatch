@@ -5,7 +5,7 @@ import { blocked } from "./store.ts";
 import Button from "../../kit/Button.tsx";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import Text from "../../kit/Text.tsx";
 
 export default function BlockedUsersCard() {
@@ -26,7 +26,7 @@ export default function BlockedUsersCard() {
       >
         <For each={sorted()}>
           {(blocked) => (
-            <SettingsRow label={blocked.displayName}>
+            <FormRow label={blocked.displayName}>
               <Button
                 variant="neutral"
                 size="sm"
@@ -34,7 +34,7 @@ export default function BlockedUsersCard() {
               >
                 {t("SETTINGS_ACCOUNT_UNBLOCK_LABEL")}
               </Button>
-            </SettingsRow>
+            </FormRow>
           )}
         </For>
       </Show>

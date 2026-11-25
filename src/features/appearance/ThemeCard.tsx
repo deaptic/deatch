@@ -3,7 +3,7 @@ import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import ColorPicker from "../../kit/ColorPicker.tsx";
 import Segmented from "../../kit/Segmented.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import { DEFAULT_ACCENT_HEX } from "../../shared/theme.ts";
 import { themeOptions } from "./options.ts";
 import {
@@ -17,7 +17,7 @@ export default function ThemeCard() {
   return (
     <Card>
       <CardLabel>{t("SETTINGS_APPEARANCE_THEME_LABEL")}</CardLabel>
-      <SettingsRow
+      <FormRow
         label={t("SETTINGS_APPEARANCE_THEME_LABEL")}
         description={t("SETTINGS_APPEARANCE_THEME_DESCRIPTION")}
       >
@@ -27,8 +27,8 @@ export default function ThemeCard() {
           options={themeOptions()}
           onChange={setAppearanceTheme}
         />
-      </SettingsRow>
-      <SettingsRow
+      </FormRow>
+      <FormRow
         label={t("SETTINGS_APPEARANCE_ACCENT_LABEL")}
         description={t("SETTINGS_APPEARANCE_ACCENT_DESCRIPTION")}
       >
@@ -39,7 +39,7 @@ export default function ThemeCard() {
           onReset={() => setAppearanceAccent(null)}
           resetDisabled={appearanceAccent() === null}
         />
-      </SettingsRow>
+      </FormRow>
     </Card>
   );
 }

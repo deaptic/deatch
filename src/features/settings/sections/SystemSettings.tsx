@@ -1,8 +1,8 @@
 import { t } from "../../../shared/i18n/index.ts";
-import PageBody from "../../../kit/PageBody.tsx";
+import Page from "../../../kit/Page.tsx";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
+import FormRow from "../../../kit/FormRow.tsx";
 import Toggle from "../../../kit/Toggle.tsx";
 import AdvancedCard from "./AdvancedCard.tsx";
 import {
@@ -18,9 +18,9 @@ import {
 
 export default function SystemSettings() {
   return (
-    <PageBody title={t("SETTINGS_SYSTEM_TITLE")}>
+    <Page title={t("SETTINGS_SYSTEM_TITLE")}>
       <Card>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_SYSTEM_AUTOSTART_LABEL")}
           description={t("SETTINGS_SYSTEM_AUTOSTART_DESCRIPTION")}
         >
@@ -29,8 +29,8 @@ export default function SystemSettings() {
             checked={systemAutostart()}
             onChange={setSystemAutostart}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_SYSTEM_ALWAYS_ON_TOP_LABEL")}
           description={t("SETTINGS_SYSTEM_ALWAYS_ON_TOP_DESCRIPTION")}
         >
@@ -39,8 +39,8 @@ export default function SystemSettings() {
             checked={systemAlwaysOnTop()}
             onChange={setSystemAlwaysOnTop}
           />
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_SYSTEM_DISCORD_PRESENCE_LABEL")}
           description={t("SETTINGS_SYSTEM_DISCORD_PRESENCE_DESCRIPTION")}
         >
@@ -49,11 +49,11 @@ export default function SystemSettings() {
             checked={systemDiscordRichPresence()}
             onChange={setSystemDiscordRichPresence}
           />
-        </SettingsRow>
+        </FormRow>
       </Card>
       <Card>
         <CardLabel>{t("SETTINGS_SYSTEM_CHANNELS_TITLE")}</CardLabel>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_SYSTEM_FOLLOWED_CHANNELS_LABEL")}
           description={t("SETTINGS_SYSTEM_FOLLOWED_CHANNELS_DESCRIPTION")}
         >
@@ -62,9 +62,9 @@ export default function SystemSettings() {
             checked={systemFollowedChannels()}
             onChange={setSystemFollowedChannels}
           />
-        </SettingsRow>
+        </FormRow>
       </Card>
       <AdvancedCard />
-    </PageBody>
+    </Page>
   );
 }

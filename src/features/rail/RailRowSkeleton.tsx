@@ -1,11 +1,10 @@
 import { Show } from "solid-js";
 import { appearanceRailExpanded } from "../preferences/index.ts";
 import Skeleton from "../../kit/Skeleton.tsx";
-import { RAIL_ROW_HEIGHT } from "../../kit/density.ts";
 
 export default function RailRowSkeleton() {
   return (
-    <div class={`${RAIL_ROW_HEIGHT} flex items-center gap-3 px-4`}>
+    <div class={`h-row flex items-center gap-3 px-4`}>
       <Skeleton class="size-10 shrink-0" />
       <Show when={appearanceRailExpanded()}>
         <div class="flex-1 flex flex-col gap-1.5">

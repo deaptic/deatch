@@ -7,6 +7,7 @@ import type { Role } from "./store.ts";
 import { feeds } from "../feed/index.ts";
 import type { SearchChannel, UserRef } from "../../shared/types/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import Chip from "../../kit/Chip.tsx";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
@@ -89,7 +90,12 @@ export default function RolesTab(props: Props) {
         search={(query) => channelSearch.find(query)}
         name={(c) => c.user.displayName}
         picture={(c) => (
-          <Avatar src={c.profileImageUrl} alt={c.user.displayName} size={24} />
+          <Avatar
+            src={c.profileImageUrl}
+            zoom={avatarZoom(c.profileImageUrl)}
+            alt={c.user.displayName}
+            size={24}
+          />
         )}
         onPick={(c: SearchChannel | null) => {
           if (c) setPicked(c.user);

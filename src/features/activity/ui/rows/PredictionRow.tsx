@@ -6,7 +6,7 @@ import type {
   PredictionEnd,
 } from "../../../../shared/types/index.ts";
 import Button from "../../../../kit/Button.tsx";
-import StripRow from "../../../../kit/StripRow.tsx";
+import Banner from "../../../../kit/Banner.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 import OptionBars from "../OptionBars.tsx";
 import { untilIso } from "./countdown.ts";
@@ -37,7 +37,7 @@ export default function PredictionRow(props: {
   };
 
   return (
-    <StripRow
+    <Banner
       icon={<ActivityIcon kind="prediction" />}
       title={props.prediction.title}
       meta={meta()}
@@ -80,6 +80,6 @@ export default function PredictionRow(props: {
             : undefined
         }
       />
-    </StripRow>
+    </Banner>
   );
 }

@@ -8,10 +8,10 @@ import {
 import { type Clock, CLOCKS } from "../../../shared/time.ts";
 import { matchesQuery } from "../../../shared/textQuery.ts";
 import Combobox from "../../../kit/Combobox.tsx";
-import PageBody from "../../../kit/PageBody.tsx";
+import Page from "../../../kit/Page.tsx";
 import Card from "../../../kit/Card.tsx";
 import Segmented from "../../../kit/Segmented.tsx";
-import SettingsRow from "../../../kit/SettingsRow.tsx";
+import FormRow from "../../../kit/FormRow.tsx";
 import {
   appLanguage,
   timeFormat,
@@ -27,9 +27,9 @@ const CLOCK_LABELS: Record<Clock, MessageKey> = {
 
 export default function LanguageSettings() {
   return (
-    <PageBody title={t("SETTINGS_LANGUAGE_TITLE")}>
+    <Page title={t("SETTINGS_LANGUAGE_TITLE")}>
       <Card>
-        <SettingsRow
+        <FormRow
           label={t("SETTINGS_LANGUAGE_LANGUAGE_LABEL")}
           description={t("SETTINGS_LANGUAGE_LANGUAGE_DESCRIPTION")}
         >
@@ -56,8 +56,8 @@ export default function LanguageSettings() {
               }}
             />
           </div>
-        </SettingsRow>
-        <SettingsRow
+        </FormRow>
+        <FormRow
           label={t("SETTINGS_LANGUAGE_CLOCK_LABEL")}
           description={t("SETTINGS_LANGUAGE_CLOCK_DESCRIPTION")}
         >
@@ -70,8 +70,8 @@ export default function LanguageSettings() {
             }))}
             onChange={setTimeFormat}
           />
-        </SettingsRow>
+        </FormRow>
       </Card>
-    </PageBody>
+    </Page>
   );
 }

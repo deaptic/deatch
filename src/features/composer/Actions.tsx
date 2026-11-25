@@ -16,7 +16,7 @@ import {
 } from "../navigation/index.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import Badge from "../../kit/Badge.tsx";
-import ComposerPanel from "../../kit/ComposerPanel.tsx";
+import AnchoredPanel from "../../kit/AnchoredPanel.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { MenuClose } from "../../kit/Menu.tsx";
 import MenuHost from "../../kit/MenuHost.tsx";
@@ -59,9 +59,9 @@ export default function Actions(props: Props) {
         </Show>
       </span>
       <Show when={open()}>
-        <ComposerPanel
+        <AnchoredPanel
           side="start"
-          size="menu"
+          size="sm"
           label={t("COMPOSER_ACTIONS_LABEL")}
           anchorEl={props.anchorEl()}
           onClose={closeOverlay}
@@ -97,7 +97,7 @@ export default function Actions(props: Props) {
               </MenuHost>
             </div>
           </MenuClose.Provider>
-        </ComposerPanel>
+        </AnchoredPanel>
       </Show>
     </>
   );

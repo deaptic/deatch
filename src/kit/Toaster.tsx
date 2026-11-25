@@ -11,7 +11,7 @@ export default function Toaster(props: Props) {
   return (
     <div
       aria-live="polite"
-      class="absolute bottom-20 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none [&>*]:pointer-events-auto"
+      class="flex flex-col gap-2 items-end pointer-events-none [&>*]:pointer-events-auto"
     >
       <For each={props.toasts()}>
         {(toast) => <ToasterItem toast={toast} onDismiss={props.onDismiss} />}

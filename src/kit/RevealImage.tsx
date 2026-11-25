@@ -8,7 +8,7 @@ type Props = {
   label: string;
 };
 
-export default function HiddenImage(props: Props) {
+export default function RevealImage(props: Props) {
   const [shown, setShown] = createSignal(false);
   return (
     <span class="block">
@@ -25,7 +25,7 @@ export default function HiddenImage(props: Props) {
           </Button>
         }
       >
-        <Thumbnail src={props.src} shape="native" fit="feed" />
+        <Thumbnail src={props.src} shape="native" fit="media" />
       </Show>
     </span>
   );

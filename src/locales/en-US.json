@@ -484,7 +484,7 @@
   "HEADER_BLOCKED_TERMS_LABEL": "Blocked terms",
   "HEADER_BRANDED_CONTENT_DESCRIPTION": "Turn on when the stream is sponsored or promotes a product.",
   "HEADER_BRANDED_CONTENT_LABEL": "Branded content",
-  "HEADER_CANCEL_LABEL": "Cancel",
+  "UI_CANCEL_LABEL": "Cancel",
   "HEADER_CANCEL_RAID_LABEL": "Cancel raid",
   "HEADER_CATEGORY_LABEL": "Category",
   "HEADER_CATEGORY_PLACEHOLDER": "Search categories",

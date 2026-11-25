@@ -2,7 +2,7 @@ import { t } from "../../shared/i18n/index.ts";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
 import Segmented from "../../kit/Segmented.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import StepSlider from "../../kit/StepSlider.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import { GROUP_SPACING_STEPS } from "../../shared/accessibility.ts";
@@ -22,7 +22,7 @@ export default function LayoutCard() {
   return (
     <Card>
       <CardLabel>{t("SETTINGS_MESSAGES_LAYOUT_TITLE")}</CardLabel>
-      <SettingsRow
+      <FormRow
         label={t("SETTINGS_MESSAGES_LAYOUT_LABEL")}
         description={t("SETTINGS_MESSAGES_LAYOUT_DESCRIPTION")}
       >
@@ -32,8 +32,8 @@ export default function LayoutCard() {
           options={messageLayoutOptions()}
           onChange={setFeedDensity}
         />
-      </SettingsRow>
-      <SettingsRow
+      </FormRow>
+      <FormRow
         label={t("SETTINGS_MESSAGES_GROUPING_LABEL")}
         description={t("SETTINGS_MESSAGES_GROUPING_DESCRIPTION")}
       >
@@ -43,11 +43,11 @@ export default function LayoutCard() {
           onChange={setFeedGroupMessages}
           disabled={feedDensity() !== "comfortable" || !feedShowAvatars()}
         />
-      </SettingsRow>
-      <SettingsRow
+      </FormRow>
+      <FormRow
         label={t("SETTINGS_MESSAGES_GROUP_SPACING_LABEL")}
         description={t("SETTINGS_MESSAGES_GROUP_SPACING_DESCRIPTION")}
-        stacked
+        layout="stacked"
       >
         <StepSlider
           label={t("SETTINGS_MESSAGES_GROUP_SPACING_LABEL")}
@@ -57,7 +57,7 @@ export default function LayoutCard() {
           format={formatPx}
           onChange={setFeedGroupSpacing}
         />
-      </SettingsRow>
+      </FormRow>
     </Card>
   );
 }

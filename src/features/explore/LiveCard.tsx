@@ -7,6 +7,7 @@ import * as clock from "../../shared/clock.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Avatar from "../../kit/Avatar.tsx";
+import { avatarZoom } from "../../shared/avatar.ts";
 import Chip from "../../kit/Chip.tsx";
 import Stat from "../../kit/Stat.tsx";
 import CardButton from "../../kit/CardButton.tsx";
@@ -50,6 +51,7 @@ export default function LiveCard(props: Props) {
       <div class="flex gap-3 px-3.5 pt-3 pb-3.5 items-start">
         <Avatar
           src={channel().profileImageUrl}
+          zoom={avatarZoom(channel().profileImageUrl)}
           alt={channel().displayName}
           size={40}
         />

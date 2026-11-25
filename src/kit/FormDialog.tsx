@@ -25,7 +25,7 @@ export default function FormDialog(props: Props) {
       actions={
         <>
           <Button variant="neutral" onClick={() => props.onCancel()}>
-            {t("HEADER_CANCEL_LABEL")}
+            {t("UI_CANCEL_LABEL")}
           </Button>
           <Button type="submit" disabled={!props.canSubmit}>
             {props.submitLabel}

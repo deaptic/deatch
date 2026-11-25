@@ -1,11 +1,11 @@
 import { t } from "../../../../shared/i18n/index.ts";
 import Button from "../../../../kit/Button.tsx";
-import StripRow from "../../../../kit/StripRow.tsx";
+import Banner from "../../../../kit/Banner.tsx";
 import { ActivityIcon } from "../ActivityIcon.tsx";
 
 export default function ShieldRow(props: { onTurnOff: () => void }) {
   return (
-    <StripRow
+    <Banner
       icon={<ActivityIcon kind="shield" />}
       title={t("HEADER_SHIELD_ACTIVE_STATUS")}
       actions={

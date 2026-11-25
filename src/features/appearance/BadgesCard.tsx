@@ -1,7 +1,7 @@
 import { t } from "../../shared/i18n/index.ts";
 import Card from "../../kit/Card.tsx";
 import CardLabel from "../../kit/CardLabel.tsx";
-import SettingsRow from "../../kit/SettingsRow.tsx";
+import FormRow from "../../kit/FormRow.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import { BADGE_CATEGORIES } from "../../shared/badges.ts";
 import {
@@ -22,7 +22,7 @@ export default function BadgesCard() {
   return (
     <Card>
       <CardLabel>{t("SETTINGS_MESSAGES_BADGES_TITLE")}</CardLabel>
-      <SettingsRow
+      <FormRow
         label={t("SETTINGS_MESSAGES_BADGES_SHOW_LABEL")}
         description={t("SETTINGS_MESSAGES_BADGES_SHOW_DESCRIPTION")}
         keywords={items().map((i) => i.label)}
@@ -32,7 +32,7 @@ export default function BadgesCard() {
           checked={feedShowBadges()}
           onChange={setFeedShowBadges}
         />
-      </SettingsRow>
+      </FormRow>
       <TypeChips
         label={t("SETTINGS_MESSAGES_BADGES_SHOW_LABEL")}
         description={t("SETTINGS_MESSAGES_BADGES_SHOW_DESCRIPTION")}
