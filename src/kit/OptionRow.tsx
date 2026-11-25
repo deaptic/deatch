@@ -30,7 +30,7 @@ export default function OptionRow(props: Props) {
       {...others}
       class={`w-full shrink-0 flex px-2.5 rounded-sm text-base text-ink text-left transition-colors duration-snap ${
         SIZES[local.size ?? "md"]
-      } ${local.active ? "bg-raised" : "hover:bg-raised"} ${
+      } ${local.active ? "bg-raised" : ""} ${
         local.cursor ?? "cursor-pointer"
       } ${local.class ?? ""}`}
     />

@@ -25,7 +25,10 @@ export const isTrusted = (url: string) => isOnDomain(url, trustedDomains());
 export function get(url: string): Promise<LinkPreview | null> {
   const cached = cache.get(url);
   if (cached) return cached;
-  const fetched = linkPreview(url, { silent: true }).catch(() => null);
+  const fetched = linkPreview(url, { silent: true }).catch(() => {
+    cache.delete(url);
+    return null;
+  });
   cache.set(url, fetched);
   if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value!);
   return fetched;

@@ -30,7 +30,7 @@ export default function ConversationRow(props: Props) {
       selected={props.selected}
       revealActions
       actions={
-        !c().last && (
+        c().last ? undefined : (
           <IconButton
             label={t("WHISPERS_DISCARD_LABEL")}
             size="sm"

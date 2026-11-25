@@ -1,10 +1,10 @@
 use super::dto::LinkPreview;
 use super::entities;
 use crate::platform::error::Result;
+use crate::platform::public_net::is_local;
 use reqwest::header::{ACCEPT, CONTENT_TYPE};
 use reqwest::Url;
 use std::collections::HashMap;
-use url::Host;
 
 const MAX_PAGE_BYTES: usize = 2 * 1024 * 1024;
 
@@ -46,26 +46,6 @@ pub async fn fetch(http: &reqwest::Client, url: Url) -> Result<Option<LinkPrevie
     Ok(preview(&String::from_utf8_lossy(&body), response.url()))
 }
 
-fn is_local(url: &Url) -> bool {
-    match url.host() {
-        Some(Host::Domain(domain)) => {
-            let domain = domain.to_ascii_lowercase();
-            domain == "localhost" || domain.ends_with(".localhost") || domain.ends_with(".local")
-        }
-        Some(Host::Ipv4(ip)) => {
-            ip.is_private() || ip.is_loopback() || ip.is_link_local() || ip.is_unspecified()
-        }
-        Some(Host::Ipv6(ip)) => {
-            let first = ip.segments()[0];
-            ip.is_loopback()
-                || ip.is_unspecified()
-                || first & 0xfe00 == 0xfc00
-                || first & 0xffc0 == 0xfe80
-        }
-        None => true,
-    }
-}
-
 pub fn preview(html: &str, url: &Url) -> Option<LinkPreview> {
     let meta = meta_tags(html);
     let pick = |keys: &[&str]| {
@@ -75,7 +55,7 @@ pub fn preview(html: &str, url: &Url) -> Option<LinkPreview> {
     let title = pick(&["og:title", "twitter:title"]).or_else(|| title_tag(html))?;
     let thumbnail = pick(&["og:image", "og:image:url", "twitter:image"])
         .and_then(|src| url.join(&src).ok())
-        .filter(|image| matches!(image.scheme(), "https" | "http"))
+        .filter(|image| matches!(image.scheme(), "https" | "http") && !is_local(image))
         .map(String::from);
     let site = pick(&["og:site_name"]).unwrap_or_else(|| site_name(url));
     Some(LinkPreview::Card {
@@ -217,8 +197,8 @@ mod tests {
     }
 
     #[test]
-    fn images_must_be_web_links() {
-        let html = r#"<meta property="og:title" content="T"><meta property="og:image" content="javascript:alert(1)">"#;
+    fn images_on_local_addresses_are_dropped() {
+        let html = r#"<meta property="og:title" content="T"><meta property="og:image" content="https://192.168.1.10/cam.jpg">"#;
         assert!(matches!(
             page(html),
             Some(LinkPreview::Card {
@@ -229,17 +209,14 @@ mod tests {
     }
 
     #[test]
-    fn local_addresses_are_never_fetched() {
-        for raw in [
-            "http://localhost:8080/",
-            "http://127.0.0.1/",
-            "http://192.168.1.1/",
-            "http://10.0.0.2/",
-            "http://[::1]/",
-            "http://printer.local/",
-        ] {
-            assert!(is_local(&Url::parse(raw).unwrap()), "{raw}");
-        }
-        assert!(!is_local(&Url::parse("https://example.com/").unwrap()));
+    fn images_must_be_web_links() {
+        let html = r#"<meta property="og:title" content="T"><meta property="og:image" content="javascript:alert(1)">"#;
+        assert!(matches!(
+            page(html),
+            Some(LinkPreview::Card {
+                thumbnail: None,
+                ..
+            })
+        ));
     }
 }

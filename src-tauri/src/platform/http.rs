@@ -1,7 +1,9 @@
 use crate::platform::error::{Error, Result};
+use crate::platform::public_net::{self, PublicOnly};
 use reqwest::{IntoUrl, Method, StatusCode, Url};
 use serde::de::DeserializeOwned;
 use std::fmt::Display;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 const TIMEOUT: Duration = Duration::from_secs(15);
@@ -12,6 +14,8 @@ pub fn client() -> reqwest::Result<reqwest::Client> {
         .timeout(TIMEOUT)
         .connect_timeout(CONNECT_TIMEOUT)
         .user_agent(concat!("Deatch/", env!("CARGO_PKG_VERSION")))
+        .dns_resolver(Arc::new(PublicOnly))
+        .redirect(public_net::redirects())
         .build()
 }
 

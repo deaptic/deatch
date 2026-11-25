@@ -1,4 +1,4 @@
-import { type JSX, Show } from "solid-js";
+import { children, type JSX, Show } from "solid-js";
 
 type Props = {
   selected?: boolean;
@@ -12,6 +12,7 @@ type Props = {
 const MAIN = "flex-1 min-w-0 min-h-9 flex items-center gap-2.5 px-2.5 py-1.5";
 
 export default function ListRow(props: Props) {
+  const actions = children(() => props.actions);
   return (
     <div
       class={`group flex items-center gap-1 pr-1 rounded-sm hover:bg-raised ${
@@ -38,7 +39,7 @@ export default function ListRow(props: Props) {
           </button>
         )}
       </Show>
-      <Show when={props.actions}>
+      <Show when={actions.toArray().length}>
         <span
           class={`flex shrink-0 items-center ${
             props.revealActions
@@ -46,7 +47,7 @@ export default function ListRow(props: Props) {
               : ""
           }`}
         >
-          {props.actions}
+          {actions()}
         </span>
       </Show>
     </div>

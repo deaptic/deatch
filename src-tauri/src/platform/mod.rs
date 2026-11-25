@@ -7,4 +7,5 @@ pub mod http;
 pub mod keyring;
 pub mod local_dir;
 pub mod lock;
+pub mod public_net;
 pub mod ws;

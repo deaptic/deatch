@@ -73,6 +73,7 @@ function wantedIds(): (string | undefined)[] {
     ...link.tabs().map((ch) => ch.id),
     link.activeTab()?.id,
     selectedChannel()?.id,
+    user()?.id,
   ];
 }
 
