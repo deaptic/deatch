@@ -116,7 +116,10 @@ export default function Composer(props: Props) {
         replyParentMessageId: reply?.messageId ?? null,
       });
       if (outcome === "failed") {
-        if (input() === "") setInput(typed);
+        if (input() === "") {
+          setInput(typed);
+          setDraft(props.broadcasterId, typed);
+        }
         return;
       }
       if (outcome === "sent") emotes.recordSent(text);

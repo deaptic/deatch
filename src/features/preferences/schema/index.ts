@@ -19,7 +19,6 @@ export {
   type ChatWidget,
   newChatStyle,
   type Widget,
-  type WidgetKind,
   WIDGET_FADE_SECONDS,
   WIDGET_ALIGNS,
   WIDGET_LINES,

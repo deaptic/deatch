@@ -7,7 +7,8 @@ import {
   emoteMapFor,
 } from "../emotes/index.ts";
 import { badgeMapFor } from "../badges/index.ts";
-import { feeds, isFeedEntryVisible } from "../feed/index.ts";
+import { type FeedEntry, feeds } from "../feed/index.ts";
+import { isBlocked } from "../blocks/index.ts";
 import { savedWidgets } from "../preferences/index.ts";
 import { knownUser, user, users } from "../users/index.ts";
 import type { User } from "../../shared/types/index.ts";
@@ -15,6 +16,9 @@ import type { Frame } from "./frames.ts";
 import { chatterIds, streamEntries } from "./model.ts";
 
 const FLUSH_MS = 100;
+
+const notBlocked = (entry: FeedEntry) =>
+  entry.kind !== "message" || !isBlocked(entry.chatter_user_id);
 
 function pictured(ids: string[]): User[] {
   users.get(ids).catch(() => {});
@@ -81,8 +85,7 @@ export function start(): () => void {
     });
     createEffect(() => {
       const own = user()?.id;
-      const visible =
-        (own && feeds[own]?.messages.filter(isFeedEntryVisible)) || [];
+      const visible = (own && feeds[own]?.messages.filter(notBlocked)) || [];
       for (const w of savedWidgets()) {
         const shown = streamEntries(visible, w.style);
         publish(w.id, {

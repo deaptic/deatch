@@ -22,7 +22,6 @@ export {
   hasUnread,
   channelEntries,
   ensureFeed,
-  isFeedEntryVisible,
 } from "./store/index.ts";
 export { setBadges } from "./store/mutate.ts";
 export { getEntryId } from "./store/entryId.ts";

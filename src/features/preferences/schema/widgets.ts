@@ -58,7 +58,6 @@ const CHAT_STYLE = object({
 export type ChatStyle = Value<typeof CHAT_STYLE>;
 export type ChatWidget = { id: string; kind: "chat"; style: ChatStyle };
 export type Widget = ChatWidget;
-export type WidgetKind = Widget["kind"];
 
 export const newChatStyle = (): ChatStyle => CHAT_STYLE.fallback();
 

@@ -6,7 +6,7 @@ import Card from "../../kit/Card.tsx";
 import Disclosure from "../../kit/Disclosure.tsx";
 import Page from "../../kit/Page.tsx";
 import FormRow from "../../kit/FormRow.tsx";
-import Slider from "../../kit/Slider.tsx";
+import SliderRow from "../../kit/SliderRow.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import {
   COMPRESSOR,
@@ -94,32 +94,17 @@ export default function LinkSection() {
               const range = COMPRESSOR[control];
               const value = () => compressorSettings()[control];
               return (
-                <FormRow
+                <SliderRow
                   label={t(label)}
                   description={t(description)}
                   layout="stacked"
-                >
-                  <div class="flex items-center gap-3">
-                    <Slider
-                      label={t(label)}
-                      value={value()}
-                      min={range.min}
-                      max={range.max}
-                      step={range.step}
-                      format={format}
-                      onChange={(v) => setCompressorControl(control, v)}
-                    />
-                    <Text
-                      align="right"
-                      size="sm"
-                      tabular
-                      tone="primary"
-                      class="w-16 shrink-0"
-                    >
-                      {format(value())}
-                    </Text>
-                  </div>
-                </FormRow>
+                  value={value()}
+                  min={range.min}
+                  max={range.max}
+                  step={range.step}
+                  format={format}
+                  onChange={(v) => setCompressorControl(control, v)}
+                />
               );
             }}
           </For>

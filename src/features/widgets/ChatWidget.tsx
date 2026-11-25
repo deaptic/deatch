@@ -13,7 +13,7 @@ import { type BadgeMap, type FeedMessage, FeedRow } from "../feed/index.ts";
 import type { ChatStyle } from "../preferences/index.ts";
 import { appearance } from "../appearance/index.ts";
 import { glide, measure, type Motion, type Spot } from "./glide.ts";
-import { isExpired, withLeaving } from "./model.ts";
+import { arrange, isExpired } from "./model.ts";
 
 export type Row = { key: string; entry: FeedMessage };
 
@@ -48,7 +48,7 @@ function motion(): Motion {
 
 export default function ChatWidget(props: Props) {
   const elements = new Map<string, HTMLElement>();
-  const timers = new Set<ReturnType<typeof setTimeout>>();
+  const timers = new Map<string, ReturnType<typeof setTimeout>>();
   const [rendered, setRendered] = createSignal<Row[]>([]);
   const [leaving, setLeaving] = createSignal<ReadonlyMap<string, Spot>>(
     new Map(),
@@ -78,39 +78,41 @@ export default function ChatWidget(props: Props) {
     });
   }
 
+  function syncTimers(spots: ReadonlyMap<string, Spot>) {
+    for (const [key, timer] of timers) {
+      if (spots.has(key)) continue;
+      clearTimeout(timer);
+      timers.delete(key);
+    }
+    for (const key of spots.keys()) {
+      if (timers.has(key)) continue;
+      const exitMs = parseFloat(appearance.token("duration-settle"));
+      const timer = setTimeout(() => {
+        timers.delete(key);
+        drop(key);
+      }, exitMs);
+      timers.set(key, timer);
+    }
+  }
+
   createEffect(
     on(visible, (rows) => {
       const before = measure(elements);
-      const spots = new Map(untrack(leaving));
-      const merged = withLeaving(
-        untrack(rendered).map((row) => ({ row, leaving: spots.has(row.key) })),
-        rows,
-      ).filter(({ row, leaving: going }) => {
-        if (!going || spots.has(row.key)) return true;
-        const spot = before.get(row.key);
-        if (!spot) return false;
-        spots.set(row.key, spot);
-        const timer = setTimeout(
-          () => {
-            timers.delete(timer);
-            drop(row.key);
-          },
-          parseFloat(appearance.token("duration-settle")),
-        );
-        timers.add(timer);
-        return true;
-      });
+      const next = arrange(untrack(rendered), untrack(leaving), rows, (key) =>
+        before.get(key),
+      );
+      syncTimers(next.leaving);
       batch(() => {
-        setRendered(merged.map(({ row }) => row));
-        setLeaving(spots);
+        setRendered(next.rows);
+        setLeaving(next.leaving);
       });
-      const going = new Set(spots.keys());
+      const going = new Set(next.leaving.keys());
       queueMicrotask(() => glide(elements, before, going, motion()));
     }),
   );
 
   onCleanup(() => {
-    for (const timer of timers) clearTimeout(timer);
+    for (const timer of timers.values()) clearTimeout(timer);
   });
 
   const flow = (): Flow => {

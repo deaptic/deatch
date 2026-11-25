@@ -1,6 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import type { FeedEntry, FeedEvent, FeedMessage } from "../feed/index.ts";
 import {
+  arrange,
   chatterIds,
   isExpired,
   streamEntries,
@@ -146,4 +147,40 @@ test("stores hidden users once, lower-case and without @", () => {
   expect(withUser([], " @Nightbot ")).toEqual(["nightbot"]);
   expect(withUser(["nightbot"], "NightBot")).toEqual(["nightbot"]);
   expect(withUser(["nightbot"], "  ")).toEqual(["nightbot"]);
+});
+
+const row = (key: string) => ({ key });
+const keysOf = (rows: { key: string }[]) => rows.map((r) => r.key);
+
+test("a leaving row keeps its spot while it fades out", () => {
+  const { rows, leaving } = arrange(
+    [row("a"), row("b")],
+    new Map(),
+    [row("b")],
+    (key) => `spot-${key}`,
+  );
+  expect(keysOf(rows)).toEqual(["a", "b"]);
+  expect([...leaving]).toEqual([["a", "spot-a"]]);
+});
+
+test("a row that comes back while fading is shown again", () => {
+  const { rows, leaving } = arrange(
+    [row("a"), row("b")],
+    new Map([["a", "spot-a"]]),
+    [row("a"), row("b")],
+    () => "unused",
+  );
+  expect(keysOf(rows)).toEqual(["a", "b"]);
+  expect(leaving.size).toBe(0);
+});
+
+test("a row leaves at once when it was never measured", () => {
+  const { rows, leaving } = arrange(
+    [row("a"), row("b")],
+    new Map(),
+    [row("b")],
+    () => undefined,
+  );
+  expect(keysOf(rows)).toEqual(["b"]);
+  expect(leaving.size).toBe(0);
 });

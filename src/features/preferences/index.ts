@@ -28,7 +28,6 @@ export type {
   ChatStyle,
   ChatWidget,
   Widget,
-  WidgetKind,
   Trigger,
   TriggerAction,
   TriggerRole,

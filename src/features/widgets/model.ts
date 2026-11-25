@@ -88,3 +88,24 @@ export function withLeaving<T extends Keyed>(
     result.push({ row: next[i] as T, leaving: false });
   return result;
 }
+
+export function arrange<T extends Keyed, S>(
+  rendered: readonly T[],
+  leaving: ReadonlyMap<string, S>,
+  next: readonly T[],
+  spotOf: (key: string) => S | undefined,
+): { rows: T[]; leaving: Map<string, S> } {
+  const spots = new Map<string, S>();
+  const merged = withLeaving(
+    rendered.map((row) => ({ row, leaving: leaving.has(row.key) })),
+    next,
+  );
+  const rows = merged.flatMap(({ row, leaving: going }) => {
+    if (!going) return [row];
+    const spot = leaving.get(row.key) ?? spotOf(row.key);
+    if (spot === undefined) return [];
+    spots.set(row.key, spot);
+    return [row];
+  });
+  return { rows, leaving: spots };
+}

@@ -10,8 +10,7 @@ import Avatar from "../../kit/Avatar.tsx";
 import ColorPicker from "../../kit/ColorPicker.tsx";
 import FormRow from "../../kit/FormRow.tsx";
 import Segmented from "../../kit/Segmented.tsx";
-import Slider from "../../kit/Slider.tsx";
-import Text from "../../kit/Text.tsx";
+import SliderRow from "../../kit/SliderRow.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import {
   type ChatStyle,
@@ -76,40 +75,6 @@ function ChoiceRow<T extends string | number>(props: {
           if (value !== undefined) props.onChange(value);
         }}
       />
-    </FormRow>
-  );
-}
-
-function RangeRow(props: {
-  label: string;
-  description?: string;
-  range: { min: number; max: number; step: number };
-  value: number;
-  format: (value: number) => string;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <FormRow label={props.label} description={props.description}>
-      <div class="flex items-center gap-3 w-64">
-        <Slider
-          label={props.label}
-          value={props.value}
-          min={props.range.min}
-          max={props.range.max}
-          step={props.range.step}
-          format={props.format}
-          onChange={props.onChange}
-        />
-        <Text
-          align="right"
-          size="sm"
-          tabular
-          tone="primary"
-          class="w-12 shrink-0"
-        >
-          {props.format(props.value)}
-        </Text>
-      </div>
     </FormRow>
   );
 }
@@ -273,16 +238,16 @@ function StyleSection(props: Props) {
         value={props.chatStyle.backgroundColor}
         onChange={(backgroundColor) => props.onChange({ backgroundColor })}
       />
-      <RangeRow
+      <SliderRow
         label={t("SETTINGS_WIDGETS_BACKGROUND_LABEL")}
-        range={WIDGET_RANGES.backgroundOpacity}
+        {...WIDGET_RANGES.backgroundOpacity}
         value={props.chatStyle.backgroundOpacity}
         format={formatWholePercent}
         onChange={(backgroundOpacity) => props.onChange({ backgroundOpacity })}
       />
-      <RangeRow
+      <SliderRow
         label={t("SETTINGS_WIDGETS_RADIUS_LABEL")}
-        range={WIDGET_RANGES.radius}
+        {...WIDGET_RANGES.radius}
         value={props.chatStyle.radius}
         format={formatPx}
         onChange={(radius) => props.onChange({ radius })}
@@ -312,32 +277,32 @@ function StyleSection(props: Props) {
 function SizeSection(props: Props) {
   return (
     <Section>
-      <RangeRow
+      <SliderRow
         label={t("SETTINGS_WIDGETS_SCALE_LABEL")}
         description={t("SETTINGS_WIDGETS_SCALE_DESCRIPTION")}
-        range={WIDGET_RANGES.scale}
+        {...WIDGET_RANGES.scale}
         value={props.chatStyle.scale}
         format={formatWholePercent}
         onChange={(scale) => props.onChange({ scale })}
       />
-      <RangeRow
+      <SliderRow
         label={t("SETTINGS_WIDGETS_TEXT_SIZE_LABEL")}
         description={t("SETTINGS_WIDGETS_TEXT_SIZE_DESCRIPTION")}
-        range={WIDGET_RANGES.textSize}
+        {...WIDGET_RANGES.textSize}
         value={props.chatStyle.textSize}
         format={formatPx}
         onChange={(textSize) => props.onChange({ textSize })}
       />
-      <RangeRow
+      <SliderRow
         label={t("SETTINGS_WIDGETS_EDGE_LABEL")}
-        range={WIDGET_RANGES.edge}
+        {...WIDGET_RANGES.edge}
         value={props.chatStyle.edge}
         format={formatPx}
         onChange={(edge) => props.onChange({ edge })}
       />
-      <RangeRow
+      <SliderRow
         label={t("SETTINGS_WIDGETS_GAP_LABEL")}
-        range={WIDGET_RANGES.gap}
+        {...WIDGET_RANGES.gap}
         value={props.chatStyle.gap}
         format={formatPx}
         onChange={(gap) => props.onChange({ gap })}
