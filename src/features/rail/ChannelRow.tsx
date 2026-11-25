@@ -74,7 +74,7 @@ export default function ChannelRow(props: Props) {
         alt={props.ch.displayName}
         size={40}
         square
-        dashed={props.ephemeral}
+        ring={props.ephemeral ? "dashed" : undefined}
         dimmed={!stream()}
       >
         <Show when={props.onToggleMute}>

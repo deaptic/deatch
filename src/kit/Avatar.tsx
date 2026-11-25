@@ -1,21 +1,15 @@
-import { Radio } from "lucide-solid";
 import { createEffect, createSignal, type JSX, on, Show } from "solid-js";
 import { avatarZoom } from "../shared/avatar.ts";
 import { createImageReveal } from "../shared/solid/createImageReveal.ts";
-import { type MessageKey, t } from "../shared/i18n/index.ts";
 
 export type AvatarSize = 24 | 32 | 36 | 40 | 64 | 80 | "fill";
-type Presence = "live" | "offline";
-type PresenceLook = "dot" | "icon";
+type Ring = "dashed" | "negative";
 
 type Props = {
   src?: string;
   alt?: string;
   size: AvatarSize;
-  presence?: Presence;
-  presenceLook?: PresenceLook;
-  dashed?: boolean;
-  liveRing?: boolean;
+  ring?: Ring;
   dimmed?: boolean;
   square?: boolean;
   inherit?: boolean;
@@ -23,26 +17,19 @@ type Props = {
   children?: JSX.Element;
 };
 
-const PRESENCE: Record<
-  Presence,
-  { dot: string; icon: string; label: MessageKey }
-> = {
-  live: { dot: "bg-live", icon: "text-live", label: "UI_LIVE_STATUS" },
-  offline: {
-    dot: "bg-ink-faint",
-    icon: "text-ink-faint",
-    label: "UI_OFFLINE_STATUS",
-  },
+const SIZES: Record<AvatarSize, string> = {
+  24: "size-6 text-xs",
+  32: "size-8 text-sm",
+  36: "size-9 text-sm",
+  40: "size-10 text-base",
+  64: "size-16 text-2xl",
+  80: "size-20 text-2xl",
+  fill: "size-full",
 };
 
-const SIZES: Record<AvatarSize, { box: string; dot: string }> = {
-  24: { box: "size-6 text-xs", dot: "size-1.5" },
-  32: { box: "size-8 text-sm", dot: "size-2" },
-  36: { box: "size-9 text-sm", dot: "size-2.5" },
-  40: { box: "size-10 text-base", dot: "size-2.5" },
-  64: { box: "size-16 text-2xl", dot: "size-3" },
-  80: { box: "size-20 text-2xl", dot: "size-4" },
-  fill: { box: "size-full", dot: "size-2" },
+const RINGS: Record<Ring, string> = {
+  dashed: "outline-2 outline-offset-2 outline-dashed outline-line",
+  negative: "outline-2 outline-offset-2 outline-negative",
 };
 
 export default function Avatar(props: Props) {
@@ -58,18 +45,11 @@ export default function Avatar(props: Props) {
     ),
   );
 
-  const outline = () => {
-    if (!props.liveRing && !props.dashed) return "";
-    const style = props.dashed ? "outline-dashed" : "";
-    const color = props.liveRing ? "outline-live" : "outline-line";
-    return `outline-2 outline-offset-2 ${style} ${color}`;
-  };
-
   return (
     <span
       class={`relative shrink-0 inline-grid place-items-center font-semibold select-none ${
         props.inherit ? "" : "bg-picture text-ink-soft"
-      } ${shape()} ${SIZES[props.size].box} ${outline()}`}
+      } ${shape()} ${SIZES[props.size]} ${props.ring ? RINGS[props.ring] : ""}`}
     >
       <Show when={!failed() && props.src} fallback={initial()}>
         {(src) => (
@@ -89,36 +69,6 @@ export default function Avatar(props: Props) {
         )}
       </Show>
       {props.overlay}
-      <Show when={props.presence}>
-        {(presence) => (
-          <Show
-            when={props.presenceLook === "icon"}
-            fallback={
-              <span
-                data-tip={t(PRESENCE[presence()].label)}
-                class={`absolute -bottom-px -right-px rounded-full ring-2 ring-surface ${
-                  PRESENCE[presence()].dot
-                } ${SIZES[props.size].dot}`}
-              />
-            }
-          >
-            <span
-              data-tip={t(PRESENCE[presence()].label)}
-              class={`absolute -bottom-0.5 -right-0.5 size-5 rounded-full ring-2 ring-surface bg-surface grid place-items-center ${
-                PRESENCE[presence()].icon
-              }`}
-            >
-              <Show when={presence() === "live"}>
-                <span
-                  aria-hidden
-                  class="absolute size-2 rounded-full bg-live animate-breathe"
-                />
-              </Show>
-              <Radio class="relative size-3.5" />
-            </span>
-          </Show>
-        )}
-      </Show>
       {props.children}
     </span>
   );

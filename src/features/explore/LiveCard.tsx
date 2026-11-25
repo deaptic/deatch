@@ -1,14 +1,13 @@
 import { For, Show } from "solid-js";
 import { Clock, Users } from "lucide-solid";
 import type { Stream, User } from "../../shared/types/index.ts";
-import { resolveUser } from "../channels/index.ts";
+import { LivePill, resolveUser } from "../channels/index.ts";
 import { formatUptime, formatCount } from "../../shared/format/stream.ts";
 import * as clock from "../../shared/clock.ts";
 import { createChannelLink } from "../menus/index.ts";
 import Thumbnail from "../../kit/Thumbnail.tsx";
 import Avatar from "../../kit/Avatar.tsx";
 import Chip from "../../kit/Chip.tsx";
-import LivePill from "../../kit/LivePill.tsx";
 import Stat from "../../kit/Stat.tsx";
 import CardButton from "../../kit/CardButton.tsx";
 import Text from "../../kit/Text.tsx";

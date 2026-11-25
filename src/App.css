@@ -172,7 +172,6 @@
   --color-accent-soft: oklch(0.58 0.18 287.5 / 0.14);
   --color-on-accent: oklch(0.99 0 0);
 
-  --color-live: oklch(0.7 0.2 25);
   --color-positive: oklch(0.77 0.16 155);
   --color-caution: oklch(0.83 0.15 82);
   --color-negative: oklch(0.7 0.19 20);
@@ -211,7 +210,6 @@
   --color-accent-ink: oklch(0.46 0.18 287.5);
   --color-accent-soft: oklch(0.54 0.18 287.5 / 0.12);
 
-  --color-live: oklch(0.53 0.2 25);
   --color-positive: oklch(0.47 0.13 152);
   --color-caution: oklch(0.5 0.12 70);
   --color-negative: oklch(0.51 0.2 22);

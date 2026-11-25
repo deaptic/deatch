@@ -15,3 +15,5 @@ export { rankChannels } from "./rank.ts";
 export * as channelSearch from "./search.ts";
 export { followerCount } from "./followers.ts";
 export { ownLive } from "./ownStream.ts";
+export { default as LiveBadge } from "./ui/LiveBadge.tsx";
+export { default as LivePill } from "./ui/LivePill.tsx";

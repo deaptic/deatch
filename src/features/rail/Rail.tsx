@@ -362,7 +362,7 @@ export default function Rail(props: Props) {
                 alt={u().displayName}
                 size={40}
                 square
-                liveRing={!!streamForUserId(u().id)}
+                ring={streamForUserId(u().id) ? "negative" : undefined}
               >
                 <Show when={link.hasAudio() && ownTab()}>
                   {(tab) => (

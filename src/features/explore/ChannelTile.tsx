@@ -29,7 +29,7 @@ export default function ChannelTile(props: Props) {
         src={props.channel.profileImageUrl}
         alt={props.channel.displayName}
         size={64}
-        liveRing={props.live}
+        ring={props.live ? "negative" : undefined}
       />
       <span class="w-full min-w-0">
         <Text as="p" truncate size="sm" tone="primary">

@@ -13,6 +13,7 @@ import {
 import { type JSX, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import {
+  LiveBadge,
   channelInfoFor,
   followerCount,
   streamForUserId,
@@ -72,10 +73,10 @@ export default function ChannelHeader(props: Props) {
       alt={props.channel.displayName}
       size={64}
       square
-      presence={stream() ? "live" : "offline"}
-      presenceLook="icon"
       overlay={overlay}
-    />
+    >
+      <LiveBadge live={!!stream()} look="icon" />
+    </Avatar>
   );
   const uptime = () => {
     const s = stream();

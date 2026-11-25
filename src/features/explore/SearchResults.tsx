@@ -23,14 +23,13 @@ import {
   createListbox,
   type ListboxField,
 } from "../../shared/solid/createListbox.ts";
-import { rankChannels } from "../channels/index.ts";
+import { LiveBadge, LivePill, rankChannels } from "../channels/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { liveLine } from "../../shared/format/stream.ts";
 import { createChannelLink } from "../menus/index.ts";
 import CategoryRow from "./ui/CategoryRow.tsx";
 import Avatar from "../../kit/Avatar.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
-import LivePill from "../../kit/LivePill.tsx";
 import { t } from "../../shared/i18n/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
 import OptionRow from "../../kit/OptionRow.tsx";
@@ -151,8 +150,9 @@ export default function SearchResults(props: Props) {
                       src={channel.profileImageUrl}
                       alt={channel.user.displayName}
                       size={36}
-                      presence={channel.isLive ? "live" : "offline"}
-                    />
+                    >
+                      <LiveBadge live={channel.isLive} size="lg" />
+                    </Avatar>
                     <div class="min-w-0 flex-1">
                       <Text as="p" truncate size="md" bold tone="primary">
                         {channel.user.displayName}

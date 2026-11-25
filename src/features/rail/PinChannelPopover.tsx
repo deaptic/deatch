@@ -1,4 +1,5 @@
-import { channelSearch } from "../channels/index.ts";
+import { Show } from "solid-js";
+import { LiveBadge, channelSearch } from "../channels/index.ts";
 import type { SearchChannel } from "../../shared/types/index.ts";
 import * as pins from "./pins.ts";
 import { pinnedChannels } from "../preferences/index.ts";
@@ -46,8 +47,11 @@ export default function PinChannelPopover(props: Props) {
               src={channel.profileImageUrl}
               alt={channel.user.displayName}
               size={24}
-              presence={channel.isLive ? "live" : undefined}
-            />
+            >
+              <Show when={channel.isLive}>
+                <LiveBadge live size="sm" />
+              </Show>
+            </Avatar>
           )}
           onPick={pin}
         />

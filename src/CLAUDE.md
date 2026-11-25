@@ -70,6 +70,8 @@ only `material-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
   lines through `Divider`, list rows through `OptionRow` or `ListRow`, headings
   through `SectionTitle`, `SectionLabel`, or `PanelHeader`. Add an option to a
   kit component only when a view needs it; remove options nothing uses.
+  `features/styling.test.ts` holds the remaining hand styling per file; its
+  numbers only go down.
 - Text sizes follow the 4px grid: font sizes even, line heights multiples of 4.
 - Surfaces are solid. No glass: no `backdrop-blur`, no translucent chrome.
   Only media scrims over images (`bg-media-scrim`) may be see-through.

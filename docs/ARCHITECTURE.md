@@ -50,12 +50,14 @@ Rules:
 10. Pure modules import `shared/`, never a feature index: an index also loads
     that feature's UI.
 
-Three tests guard the layout:
+Four tests guard the layout:
 
 - `features/boundaries.test.ts` fails when a feature imports another feature
   past its `index.ts`.
 - `features/purity.test.ts` fails when a file in `ui/` reads state, directly or
   through another file.
+- `features/styling.test.ts` counts hand-written visual classes per view and
+  fails when a file gains any; when a file loses some, lower its number.
 - `app/modules.test.ts` loads every feature index as the first module, so an
   import cycle that reads a value too early fails there instead of at startup.
 

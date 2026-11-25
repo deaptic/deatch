@@ -12,7 +12,11 @@ import {
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../../shared/solid/createListbox.ts";
 import { users } from "../users/index.ts";
-import { channelsInOrder, streamForUserId } from "../channels/index.ts";
+import {
+  LiveBadge,
+  channelsInOrder,
+  streamForUserId,
+} from "../channels/index.ts";
 import { pinnedChannels } from "../preferences/index.ts";
 import { pins } from "../rail/index.ts";
 import * as link from "../link/index.ts";
@@ -208,8 +212,9 @@ export default function QuickSwitch(props: Props) {
                             src={r().user.profileImageUrl}
                             alt={r().user.displayName}
                             size={32}
-                            presence={stream() ? "live" : "offline"}
-                          />
+                          >
+                            <LiveBadge live={!!stream()} />
+                          </Avatar>
                           <span class="flex-1 min-w-0 flex flex-col">
                             <Text size="md" bold tone="primary" truncate>
                               {r().user.displayName}
