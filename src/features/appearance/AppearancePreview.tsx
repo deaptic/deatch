@@ -6,6 +6,8 @@ import {
   feedDensity,
   feedShowDeletedContent,
   feedShowTimestamp,
+  feedShowAvatars,
+  feedLinkPreviews,
 } from "../preferences/index.ts";
 import { users } from "../users/index.ts";
 import { user } from "../users/index.ts";
@@ -84,6 +86,8 @@ export default function AppearancePreview() {
             density={feedDensity()}
             continued={rows()[i()]?.continued}
             showTimestamp={feedShowTimestamp()}
+            showAvatars={feedShowAvatars()}
+            linkPreviews={feedLinkPreviews()}
             showDeletedContent={feedShowDeletedContent()}
             flush
             emotes={{}}

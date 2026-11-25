@@ -1,0 +1,30 @@
+@import "../App.css";
+
+html,
+html[data-theme] {
+  zoom: var(--widget-scale, 1);
+  color-scheme: normal;
+}
+
+html,
+body {
+  background: transparent;
+  overflow: hidden;
+}
+
+#root {
+  height: calc(100vh / var(--widget-scale, 1));
+}
+
+html[data-preview] body {
+  background: var(--color-raised);
+}
+
+[data-leaving] {
+  opacity: 0;
+  translate: 0 calc(var(--spacing) * -1.5 * var(--flow, 1));
+}
+
+[data-names="regular"] [data-name] {
+  font-weight: normal;
+}

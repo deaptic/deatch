@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { emoteZoom } from "./emoteZoom.ts";
+import { emoteSrcset, emoteZoom } from "./emoteZoom.ts";
 
 test("zooms each provider's emote to its largest size", () => {
   expect(
@@ -26,4 +26,17 @@ test("zooms each provider's emote to its largest size", () => {
 
 test("leaves unknown emote URLs without zoom", () => {
   expect(emoteZoom("https://example.com/emoji.png")).toStrictEqual({});
+});
+
+test("offers each provider's larger sizes for sharp screens", () => {
+  expect(emoteSrcset("https://cdn.7tv.app/emote/e1/1x.webp")).toBe(
+    "https://cdn.7tv.app/emote/e1/1x.webp 1x, https://cdn.7tv.app/emote/e1/2x.webp 2x, https://cdn.7tv.app/emote/e1/4x.webp 3x",
+  );
+  expect(emoteSrcset("https://example.com/emoji.png")).toBeUndefined();
+});
+
+test("a zoomed widget asks for the larger sizes at normal density", () => {
+  expect(emoteSrcset("https://cdn.betterttv.net/emote/b1/1x", 2)).toBe(
+    "https://cdn.betterttv.net/emote/b1/1x 0.5x, https://cdn.betterttv.net/emote/b1/2x 1x, https://cdn.betterttv.net/emote/b1/3x 1.5x",
+  );
 });

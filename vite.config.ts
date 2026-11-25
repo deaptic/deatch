@@ -95,6 +95,9 @@ export default defineConfig({
     // WebView2 is evergreen Chromium, and the app already relies on Temporal.
     target: "esnext",
     sourcemap: true,
+    rollupOptions: {
+      input: { app: "index.html", widget: "widget.html" },
+    },
   },
   server: {
     // devUrl in tauri.conf.json points here.

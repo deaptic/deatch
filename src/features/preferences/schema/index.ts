@@ -4,6 +4,7 @@ import { FEED } from "./feed.ts";
 import { LINK } from "./link.ts";
 import { TRIGGERS } from "./triggers.ts";
 import { TIMERS } from "./timers.ts";
+import { WIDGETS } from "./widgets.ts";
 import { bool, object, oneOf, text, textList, type Value } from "./fields.ts";
 import { CLOCKS } from "../../../shared/time.ts";
 import { LANGUAGES, systemLanguage } from "../../../shared/i18n/index.ts";
@@ -13,6 +14,19 @@ export type { BadgePref, EventPref } from "./feed.ts";
 export const QUICK_TIMEOUTS = ["1m", "10m", "1h", "1d"] as const;
 export type QuickTimeout = (typeof QUICK_TIMEOUTS)[number];
 export { TIMER_ACTIVITY, TIMER_MINUTES, type Timer } from "./timers.ts";
+export {
+  type ChatStyle,
+  type ChatWidget,
+  newChatStyle,
+  type Widget,
+  type WidgetKind,
+  WIDGET_FADE_SECONDS,
+  WIDGET_ALIGNS,
+  WIDGET_LINES,
+  WIDGET_SIDES,
+  WIDGET_RANGES,
+  WIDGET_WIDTHS,
+} from "./widgets.ts";
 export { migrate, PREFERENCES_VERSION } from "./migrations.ts";
 export { changesFrom } from "./changes.ts";
 export {
@@ -68,6 +82,7 @@ const SECTIONS = {
   }),
   triggers: TRIGGERS,
   timers: TIMERS,
+  widgets: WIDGETS,
 };
 
 const PREFERENCES = object(SECTIONS);

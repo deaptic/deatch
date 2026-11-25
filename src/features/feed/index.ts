@@ -22,8 +22,10 @@ export {
   hasUnread,
   channelEntries,
   ensureFeed,
+  isFeedEntryVisible,
 } from "./store/index.ts";
 export { setBadges } from "./store/mutate.ts";
+export { getEntryId } from "./store/entryId.ts";
 export { layoutFeed } from "./layout.ts";
 export { groupsMessages } from "./grouping.ts";
 export { default as FeedRow } from "./FeedRow.tsx";

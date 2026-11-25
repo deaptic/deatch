@@ -46,9 +46,11 @@ export default function Avatar(props: Props) {
 
   return (
     <span
-      class={`relative shrink-0 inline-grid place-items-center font-semibold select-none ${
+      class={`relative shrink-0 inline-grid place-items-center font-semibold select-none transition duration-settle ${
         props.inherit ? "" : "bg-picture text-ink-soft"
-      } ${shape()} ${SIZES[props.size]} ${props.ring ? RINGS[props.ring] : ""}`}
+      } ${shape()} ${SIZES[props.size]} ${props.ring ? RINGS[props.ring] : ""} ${
+        props.dimmed ? "grayscale opacity-50" : ""
+      }`}
     >
       <Show when={!failed() && props.src} fallback={initial()}>
         {(src) => (
@@ -62,9 +64,7 @@ export default function Avatar(props: Props) {
             ref={reveal.mount}
             onLoad={reveal.load}
             onError={() => setFailed(true)}
-            class={`absolute inset-0 size-full object-cover transition duration-settle ${shape()} ${reveal.fade()} ${
-              props.dimmed ? "grayscale opacity-50" : ""
-            }`}
+            class={`absolute inset-0 size-full object-cover ${shape()} ${reveal.fade()}`}
           />
         )}
       </Show>

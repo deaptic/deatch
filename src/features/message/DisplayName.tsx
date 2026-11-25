@@ -21,6 +21,7 @@ export default function DisplayName(props: Props) {
 
   return (
     <span
+      data-name
       class={`font-semibold text-(--name) ${userLinkHover(props)} ${
         props.truncate ? "truncate min-w-0" : ""
       }`}

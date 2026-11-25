@@ -10,6 +10,7 @@ import {
   Palette,
   Languages,
   Monitor,
+  MonitorPlay,
   Timer,
   UserRound,
   Zap,
@@ -97,6 +98,12 @@ export const SETTINGS_SECTIONS: {
     group: "tools",
     label: "SETTINGS_TIMERS_TITLE",
     icon: Timer,
+  },
+  {
+    key: "widgets",
+    group: "tools",
+    label: "SETTINGS_WIDGETS_TITLE",
+    icon: MonitorPlay,
   },
   { key: "link", group: "tools", label: "SETTINGS_LINK_TITLE", icon: Eye },
   {

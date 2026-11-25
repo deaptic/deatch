@@ -12,7 +12,12 @@ import { conversationsOf, feedMessageOf, threadWith } from "./model.ts";
 import { groupsMessages, layoutFeed, Message } from "../feed/index.ts";
 import { typeableEmotes } from "../emotes/index.ts";
 import { knownChatterColor, user as self } from "../users/index.ts";
-import { feedDensity, feedShowTimestamp } from "../preferences/index.ts";
+import {
+  feedDensity,
+  feedLinkPreviews,
+  feedShowAvatars,
+  feedShowTimestamp,
+} from "../preferences/index.ts";
 import ConversationRow from "./ConversationRow.tsx";
 import WhisperComposer from "./WhisperComposer.tsx";
 import * as whispers from "./store.ts";
@@ -158,6 +163,8 @@ export default function Whispers() {
                     continued={rows()[i()]?.continued}
                     flush
                     showTimestamp={feedShowTimestamp()}
+                    showAvatars={feedShowAvatars()}
+                    linkPreviews={feedLinkPreviews()}
                     emotes={emoteMap()}
                     cheermotes={{}}
                     badges={{}}

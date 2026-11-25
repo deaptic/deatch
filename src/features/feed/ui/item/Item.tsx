@@ -9,6 +9,7 @@ export type ItemLayout = {
   selected?: boolean;
   flush?: boolean;
   bare?: boolean;
+  tiled?: boolean;
   showTimestamp?: boolean;
 };
 
@@ -33,6 +34,12 @@ const PLAIN = {
   edge: "border-transparent",
   rest: "hover:bg-raised",
   selected: "bg-raised",
+};
+
+const TILE = {
+  edge: "rounded-(--tile-radius) border border-line-soft/(--tile-alpha)",
+  rest: "bg-(--tile-color)/(--tile-alpha)",
+  selected: "bg-(--tile-color)/(--tile-alpha)",
 };
 
 export const DensityContext = createContext<() => Density>(
@@ -85,16 +92,21 @@ export default function Item(props: Props) {
     </Show>
   );
 
-  const look = () => (props.toneColor ? TINTED : PLAIN);
+  const look = () => (props.tiled ? TILE : props.toneColor ? TINTED : PLAIN);
+
+  const box = () =>
+    props.bare
+      ? "p-2"
+      : props.tiled
+        ? "w-(--tile-width) max-w-full px-3.5 py-2"
+        : `pl-3 pr-2 border-l-3 ${spacing()}`;
 
   return (
     <DensityContext.Provider value={() => props.density}>
       <div
         data-item-id={props.id}
         tabIndex={-1}
-        class={`relative group grid grid-cols-(--feed-columns) leading-normal wrap-break-word ${
-          props.bare ? "p-2" : `pl-3 pr-2 border-l-3 ${spacing()}`
-        } ${props.flush && !props.selected ? "rounded-r-md" : "rounded-md"} ${look().edge} ${
+        class={`relative group grid grid-cols-(--feed-columns) leading-normal wrap-break-word ${box()} ${props.tiled ? "" : props.flush && !props.selected ? "rounded-r-md" : "rounded-md"} ${look().edge} ${
           props.selected
             ? `${look().selected} outline-3 -outline-offset-3 outline-accent`
             : `${look().rest} outline-none`

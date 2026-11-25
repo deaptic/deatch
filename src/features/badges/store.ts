@@ -105,3 +105,7 @@ export function resetChannelCache() {
   sourceFailedAt.clear();
   clearSharedChatBadges();
 }
+
+export function badgeMapFor(channel: ChannelRef): Promise<BadgeMap> {
+  return channelBadges.get(channel).catch(loadGlobal);
+}

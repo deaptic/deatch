@@ -21,3 +21,16 @@ export function emoteZoom(url: string) {
   if (large === url) return {};
   return { "data-zoom-src": large, "data-zoom-fallback": fallback };
 }
+
+const density = (times: number, scale: number) =>
+  `${Number((times / scale).toFixed(3))}x`;
+
+export function emoteSrcset(url: string, scale = 1): string | undefined {
+  const { large, fallback } = zoomUrls(url);
+  if (large === url) return undefined;
+  return [
+    `${url} ${density(1, scale)}`,
+    `${fallback} ${density(2, scale)}`,
+    `${large} ${density(3, scale)}`,
+  ].join(", ");
+}

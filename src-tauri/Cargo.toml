@@ -48,6 +48,7 @@ tauri-plugin-single-instance = "2"
 widestring = "1"
 webview2-com = "0.39"
 windows-core = "0.62"
+axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "ws"] }
 
 [profile.dev.package."*"]
 debug = false

@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import { seventvGetChannelEmotes } from "../../platform/emotes/seventv.ts";
 import {
   seventvSubscribeEmoteSet,
@@ -16,6 +17,9 @@ const retries = new Map<string, ReturnType<typeof setTimeout>>();
 const RETRY_MS = 60_000;
 const byBroadcaster = new Map<string, Entry>();
 let activeBroadcasterId: string | null = null;
+const [changes, setChanges] = createSignal(0);
+
+export { changes };
 
 export async function subscribe(broadcasterId: string): Promise<void> {
   if (requests.has(broadcasterId)) return;
@@ -47,7 +51,7 @@ export async function subscribe(broadcasterId: string): Promise<void> {
   };
   const shared = usingSet(entry.setId).length > 0;
   byBroadcaster.set(broadcasterId, entry);
-  pushIfActive(entry);
+  changed(entry);
   if (shared) return;
   seventvSubscribeEmoteSet({ emoteSetId: entry.setId }, { silent: true }).catch(
     () => {},
@@ -61,6 +65,7 @@ export function unsubscribe(broadcasterId: string): void {
   const entry = byBroadcaster.get(broadcasterId);
   if (!entry) return;
   byBroadcaster.delete(broadcasterId);
+  setChanges((n) => n + 1);
   if (broadcasterId === activeBroadcasterId) setSevenTvChannel([]);
   if (usingSet(entry.setId).length > 0) return;
   seventvUnsubscribeEmoteSet(
@@ -85,7 +90,7 @@ export function setActive(broadcasterId: string | null): void {
 export function applyUpdate(update: EmoteSetUpdated): void {
   for (const entry of usingSet(update.id)) {
     entry.emotes = emoteSetUpdate.apply(entry.emotes, update);
-    pushIfActive(entry);
+    changed(entry);
     announce(entry.broadcasterId, update);
   }
 }
@@ -100,7 +105,7 @@ export function refresh(): void {
         if (byBroadcaster.get(entry.broadcasterId) !== entry) return;
         if (channel.emoteSetId !== entry.setId) return;
         entry.emotes = channel.emotes;
-        pushIfActive(entry);
+        changed(entry);
       })
       .catch(() => {});
   }
@@ -110,7 +115,8 @@ function usingSet(setId: string): Entry[] {
   return [...byBroadcaster.values()].filter((e) => e.setId === setId);
 }
 
-function pushIfActive(entry: Entry): void {
+function changed(entry: Entry): void {
+  setChanges((n) => n + 1);
   if (entry.broadcasterId === activeBroadcasterId)
     setSevenTvChannel(entry.emotes);
 }

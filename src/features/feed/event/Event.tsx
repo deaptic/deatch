@@ -96,6 +96,7 @@ export default function Event(props: Props) {
       continued={props.continued}
       selected={props.selected}
       flush={props.flush}
+      tiled={props.tiled}
       bare={props.bare}
       showTimestamp={props.showTimestamp}
       toneColor={look().color}

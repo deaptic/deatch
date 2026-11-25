@@ -7,6 +7,12 @@ export {
   QUICK_TIMEOUTS,
   TIMER_ACTIVITY,
   TIMER_MINUTES,
+  WIDGET_FADE_SECONDS,
+  WIDGET_ALIGNS,
+  WIDGET_LINES,
+  WIDGET_SIDES,
+  WIDGET_RANGES,
+  WIDGET_WIDTHS,
   CONDITION_OPS,
   TRIGGER_ROLES,
 } from "./schema/index.ts";
@@ -19,6 +25,10 @@ export type {
   EventPref,
   QuickTimeout,
   Timer,
+  ChatStyle,
+  ChatWidget,
+  Widget,
+  WidgetKind,
   Trigger,
   TriggerAction,
   TriggerRole,
@@ -36,6 +46,7 @@ export * from "./language.ts";
 export * from "./developer.ts";
 export * from "./streamer.ts";
 export * from "./timers.ts";
+export * from "./widgets.ts";
 export * from "./appearance.ts";
 export * from "./explore.ts";
 export * from "./link.ts";

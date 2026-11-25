@@ -13,6 +13,7 @@ src/
   kit/         design system, toasts, clipboard; imports only kit and shared
   shared/      pure helpers used everywhere: i18n, format, keyboard, time
   features/    one folder per feature
+  widget/      the OBS widget page, a second entry served by the widget server
   locales/
 ```
 
@@ -76,6 +77,7 @@ src-tauri/src/
     hype_train/ moderation/ polls/ predictions/ raids/ search/ streams/
     subscriptions/ users/ whispers/
   emotes/ history/ feedlog/ link/ discord/ notifications/ diagnostics/ graphics/
+  widgets/         local server for OBS widgets
 ```
 
 A feature: `mod.rs` (the service), `dto.rs` (its types, exported to TS;
@@ -93,6 +95,12 @@ By default `main.rs` runs the GUI. When a browser launches the exe for the Link
 extension it runs as a native-messaging host instead and only relays frames to
 the GUI pipe. `--export-bindings` writes the bindings and exits.
 
+The GUI also serves OBS widgets on `127.0.0.1:47820`. `features/widgets`
+publishes each widget's style, emotes and feed tail to Rust, which keeps the
+latest frame per topic and pushes it to `widget.html` over a WebSocket. The
+page renders `FeedRow`, so widgets look like the app. In dev, `/w/<id>`
+redirects to the Vite server.
+
 ## Where things live
 
 | What                       | Where                                              |
@@ -103,3 +111,4 @@ the GUI pipe. `--export-bindings` writes the bindings and exits.
 | App logs                   | `%LOCALAPPDATA%\com.deaptic.deatch\logs`           |
 | Host logs                  | `%TEMP%\deatch-host.log`                           |
 | Host manifests             | `%LOCALAPPDATA%\Deatch\` and their `HKCU` keys     |
+| Widget server              | `http://127.0.0.1:47820`, `/w/<id>` and `/ws/<id>` |

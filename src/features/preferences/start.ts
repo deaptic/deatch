@@ -6,7 +6,7 @@ import {
   type StorageKey,
 } from "../../platform/storageKeys.ts";
 import { createEffect, createRoot } from "solid-js";
-import { prefs, restorePreferences } from "./core.ts";
+import { isRestored, prefs, restorePreferences } from "./core.ts";
 import {
   changesFrom,
   DEFAULT_PREFERENCES,
@@ -92,6 +92,7 @@ export function load(): void {
 }
 
 export function start(): () => void {
+  if (!isRestored()) load();
   return createRoot((dispose) => {
     for (const section of PREFERENCES_SECTIONS) {
       createEffect(() => saveSection(section));

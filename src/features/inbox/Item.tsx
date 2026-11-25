@@ -8,6 +8,8 @@ import {
   feedDensity,
   highlightWords,
   feedShowTimestamp,
+  feedShowAvatars,
+  feedLinkPreviews,
 } from "../preferences/index.ts";
 import Avatar from "../../kit/Avatar.tsx";
 import { avatarZoom } from "../../shared/avatar.ts";
@@ -92,6 +94,8 @@ export default function Item(props: Props) {
           density={feedDensity()}
           bare
           showTimestamp={feedShowTimestamp()}
+          showAvatars={feedShowAvatars()}
+          linkPreviews={feedLinkPreviews()}
           emotes={emotes() ?? {}}
           cheermotes={cheermotes.forChannel(m().broadcasterId)}
           badges={feeds[m().broadcasterId]?.badges ?? {}}

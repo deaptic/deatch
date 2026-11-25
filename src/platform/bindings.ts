@@ -171,6 +171,9 @@ export const commands = {
 	flashTaskbar: () => __TAURI_INVOKE<null>("flash_taskbar"),
 	setHardwareAcceleration: (params: SetHardwareAccelerationParams) => __TAURI_INVOKE<null>("set_hardware_acceleration", { params }),
 	getAppStats: () => __TAURI_INVOKE<AppStats>("get_app_stats"),
+	widgetsPublish: (params: PublishParams) => __TAURI_INVOKE<null>("widgets_publish", { params }),
+	widgetsRetain: (params: RetainParams) => __TAURI_INVOKE<null>("widgets_retain", { params }),
+	widgetsAddress: () => __TAURI_INVOKE<string>("widgets_address"),
 };
 
 /** Events */
@@ -815,6 +818,12 @@ export type ProcessStats = {
 	processes: number,
 };
 
+export type PublishParams = {
+	widget: string,
+	topic: Topic,
+	frame: string,
+};
+
 export type RaidNotice = {
 	user_name: string,
 	viewer_count: number,
@@ -902,6 +911,10 @@ export type ResubNotice = {
 	is_prime: boolean,
 	cumulative_months: number,
 	streak_months: number | null,
+};
+
+export type RetainParams = {
+	widgets: string[],
 };
 
 export type RewardId = string;
@@ -1041,6 +1054,8 @@ export type Subscription = {
 };
 
 export type SuspiciousStatus = "none" | "active_monitoring" | "restricted";
+
+export type Topic = "style" | "assets" | "entries";
 
 export type UnbanDecision = "approve" | "deny";
 

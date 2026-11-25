@@ -6,7 +6,6 @@ import type { AutomodAction } from "../../../shared/types/index.ts";
 import type { BadgeMap, FeedMessage, Reaction } from "../types.ts";
 import type { Density } from "../../../shared/density.ts";
 import { isMention } from "../entries/mention.ts";
-import { feedLinkPreviews, feedShowAvatars } from "../../preferences/index.ts";
 import { LinkPreviews, previews } from "../../previews/index.ts";
 import { withoutReplyMention } from "../entries/message.ts";
 import * as automod from "../automod.ts";
@@ -37,6 +36,8 @@ export type MessageOptions = UserActions & {
   reactions: Reaction[];
   keywords?: string[];
   showDeletedContent?: boolean;
+  showAvatars: boolean;
+  linkPreviews: boolean;
   showName?: boolean;
   showBadges?: boolean;
   showToolbar?: boolean;
@@ -168,6 +169,7 @@ export default function Message(props: Props) {
       continued={props.continued}
       selected={props.selected}
       flush={props.flush}
+      tiled={props.tiled}
       bare={props.bare}
       showTimestamp={props.showTimestamp}
       toneColor={details.toneColor(
@@ -175,7 +177,7 @@ export default function Message(props: Props) {
         props.highlightMentions !== false && mentioned(),
       )}
       dimmed={details.isHoldResolved(item)}
-      tile={comfortable() && feedShowAvatars() ? avatar : undefined}
+      tile={comfortable() && props.showAvatars ? avatar : undefined}
       overlay={toolbar}
       onContextMenu={
         props.onContextMenu && ((x, y) => props.onContextMenu?.(x, y, item))
@@ -186,7 +188,7 @@ export default function Message(props: Props) {
           item.reply && (
             <Reply
               reply={item.reply}
-              showAvatar={comfortable() && feedShowAvatars()}
+              showAvatar={comfortable() && props.showAvatars}
               onJump={props.onJumpToMessage}
               onShowUserCard={props.onShowUserCard}
               onUserContextMenu={props.onUserContextMenu}
@@ -279,11 +281,13 @@ export default function Message(props: Props) {
           {badges("before")}
           <Show when={props.showName !== false}>
             {name()}
-            <Text tone="soft">:</Text>{" "}
+            <Show when={!props.tiled}>
+              <Text tone="soft">:</Text>
+            </Show>{" "}
           </Show>
         </Show>
         {body()}
-        <Show when={feedLinkPreviews() && !item.deleted && links().length}>
+        <Show when={props.linkPreviews && !item.deleted && links().length}>
           <LinkPreviews urls={links()} />
         </Show>
       </FeedItem.Content>

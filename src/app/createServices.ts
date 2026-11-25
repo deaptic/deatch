@@ -27,6 +27,7 @@ import * as blocks from "../features/blocks/index.ts";
 import * as whispers from "../features/whispers/index.ts";
 import * as streamerMode from "../features/streamer-mode/index.ts";
 import * as timers from "../features/timers/index.ts";
+import * as widgets from "../features/widgets/index.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -59,6 +60,7 @@ export function createServices(): void {
       whispers.start(),
       streamerMode.start(),
       timers.start(),
+      widgets.start(),
     ];
     onCleanup(() => {
       for (const stop of stops) stop();

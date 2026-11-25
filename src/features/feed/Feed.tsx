@@ -32,6 +32,8 @@ import {
   highlightWords,
   feedShowDeletedContent,
   feedShowTimestamp,
+  feedShowAvatars,
+  feedLinkPreviews,
 } from "../preferences/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import FeedRow from "./FeedRow.tsx";
@@ -361,6 +363,8 @@ export default function Feed(props: Props) {
       selected={entry.kind === "message" && selectedId() === entry.message_id}
       flush={props.flush}
       showTimestamp={feedShowTimestamp()}
+      showAvatars={feedShowAvatars()}
+      linkPreviews={feedLinkPreviews()}
       emotes={thirdPartyEmoteMap()}
       cheermotes={cheermotes.forChannel(props.broadcasterId)}
       badges={badges()}

@@ -140,3 +140,9 @@ export const numberMap = (clamp: (value: number) => number) =>
           )
         : {},
   );
+
+export const choice = <T extends number>(values: readonly T[], initial: T) =>
+  custom<T>(
+    () => initial,
+    (raw, fallback) => values.find((v) => v === raw) ?? fallback(),
+  );

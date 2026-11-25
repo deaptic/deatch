@@ -125,3 +125,17 @@ test("the old block is kept when the new sections could not be saved", () => {
   expect(prefs.feed.showTimestamp).toBe(true);
   expect(items.get(STORAGE_KEYS.legacyPreferences)).toBe(legacy);
 });
+
+test("a fresh store that was never loaded reads storage before saving over it", async () => {
+  items.set(STORAGE_KEYS.preferencesVersion, String(PREFERENCES_VERSION));
+  items.set(preferencesKey("feed"), JSON.stringify({ showTimestamp: true }));
+  vi.resetModules();
+  const fresh = await import("./start.ts");
+  const { prefs: freshPrefs } = await import("./core.ts");
+  const stop = fresh.start();
+  expect(freshPrefs.feed.showTimestamp).toBe(true);
+  expect(JSON.parse(items.get(preferencesKey("feed")) ?? "")).toMatchObject({
+    showTimestamp: true,
+  });
+  stop();
+});

@@ -1,4 +1,4 @@
-import { custom, object, type Value } from "./fields.ts";
+import { choice, custom, object, type Value } from "./fields.ts";
 
 export const TIMER_MINUTES = [5, 10, 15, 30, 60] as const;
 export const TIMER_ACTIVITY = [0, 10, 25, 50, 100] as const;
@@ -12,9 +12,6 @@ export type Timer = {
   minMessages: number;
 };
 
-const pick = (values: readonly number[], raw: unknown, fallback: number) =>
-  values.find((v) => v === raw) ?? fallback;
-
 function timer(item: unknown): Timer[] {
   if (!item || typeof item !== "object") return [];
   const t = item as Partial<Timer>;
@@ -25,8 +22,8 @@ function timer(item: unknown): Timer[] {
       enabled: t.enabled !== false,
       name: typeof t.name === "string" ? t.name : "",
       message: typeof t.message === "string" ? t.message : "",
-      minutes: pick(TIMER_MINUTES, t.minutes, 15),
-      minMessages: pick(TIMER_ACTIVITY, t.minMessages, 25),
+      minutes: choice(TIMER_MINUTES, 15).read(t.minutes),
+      minMessages: choice(TIMER_ACTIVITY, 25).read(t.minMessages),
     },
   ];
 }

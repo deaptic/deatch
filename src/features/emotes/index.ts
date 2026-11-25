@@ -1,5 +1,6 @@
 export { start } from "./start.ts";
 export * as cheermotes from "./cheermotes.ts";
+export { changes as channelEmoteChanges } from "./sevenTv.ts";
 export {
   emoteMapFor,
   ensureGlobalLoaded,
@@ -11,7 +12,7 @@ export {
 export { type CheermoteMap, cheermoteTier } from "./cheermoteMap.ts";
 export { default as EmoteCard } from "./EmoteCard.tsx";
 export { type EmoteMap } from "./emoteMap.ts";
-export { emoteZoom } from "./emoteZoom.ts";
+export { emoteSrcset, emoteZoom } from "./emoteZoom.ts";
 export { default as HoverZoom } from "./ui/HoverZoom.tsx";
 export {
   thirdPartyEmoteMap,

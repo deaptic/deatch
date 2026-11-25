@@ -104,24 +104,26 @@ export default function Composer(props: Props) {
     const text = outgoing();
     if (!text || tooLong() || sending()) return;
     const typed = input();
+    const reply = props.replyTo();
     setSending(true);
+    setInput("");
+    history.reset();
+    setMentionIdx(0);
     try {
-      const reply = props.replyTo();
       const outcome = await chat.send({
         broadcasterId: props.broadcasterId,
         message: text,
         replyParentMessageId: reply?.messageId ?? null,
       });
-      if (outcome === "sent") emotes.recordSent(text);
-      if (outcome !== "failed") {
-        pushSentMessage(props.broadcasterId, text);
-        if (getDraft(props.broadcasterId) === typed)
-          clearDraft(props.broadcasterId);
-        history.reset();
-        setMentionIdx(0);
-        if (outgoing() === text) setInput("");
-        if (props.replyTo() === reply) props.onClearReply();
+      if (outcome === "failed") {
+        if (input() === "") setInput(typed);
+        return;
       }
+      if (outcome === "sent") emotes.recordSent(text);
+      pushSentMessage(props.broadcasterId, text);
+      if (getDraft(props.broadcasterId) === typed)
+        clearDraft(props.broadcasterId);
+      if (props.replyTo() === reply) props.onClearReply();
     } finally {
       setSending(false);
     }

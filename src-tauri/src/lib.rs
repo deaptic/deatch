@@ -9,6 +9,7 @@ mod notifications;
 mod platform;
 mod previews;
 mod twitch;
+mod widgets;
 
 pub use link::host as browser_host;
 
@@ -152,6 +153,9 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             notifications::commands::flash_taskbar,
             graphics::commands::set_hardware_acceleration,
             diagnostics::commands::get_app_stats,
+            widgets::commands::widgets_publish,
+            widgets::commands::widgets_retain,
+            widgets::commands::widgets_address,
         ])
 }
 
@@ -230,6 +234,12 @@ pub fn run() {
             app.manage(emotes::seventv_events::spawn(app.handle().clone()));
             app.manage(platform::db::Databases::open(SCHEMAS)?);
             feedlog::spawn_pruning(app.handle().clone());
+            let page_origin = if cfg!(debug_assertions) {
+                app.config().build.dev_url.clone()
+            } else {
+                None
+            };
+            app.manage(widgets::start(app.asset_resolver(), page_origin));
 
             Ok(())
         })
