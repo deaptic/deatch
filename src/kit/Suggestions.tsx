@@ -4,6 +4,7 @@ import {
   createListbox,
   type ListboxField,
 } from "../shared/solid/createListbox.ts";
+import ListPanel from "./ListPanel.tsx";
 import OptionRow from "./OptionRow.tsx";
 
 export type SuggestionsApi = {
@@ -66,10 +67,7 @@ export default function Suggestions<T>(props: Props<T>) {
   });
 
   return (
-    <div
-      {...listbox.list}
-      class="absolute bottom-full inset-x-0 mb-2 z-30 p-1.5 material-regular rounded-md overflow-y-auto max-h-60 enter-pop origin-bottom"
-    >
+    <ListPanel {...listbox.list} placement="above">
       <For each={props.suggestions()}>
         {(s, i) => (
           <OptionRow
@@ -83,6 +81,6 @@ export default function Suggestions<T>(props: Props<T>) {
           </OptionRow>
         )}
       </For>
-    </div>
+    </ListPanel>
   );
 }

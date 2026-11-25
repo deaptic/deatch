@@ -1,8 +1,9 @@
 import { ChevronDown } from "lucide-solid";
-import { createSignal, type JSX, Show } from "solid-js";
+import { type JSX, Show } from "solid-js";
 import Button from "./Button.tsx";
 import Menu from "./Menu.tsx";
-import Popover, { OVERLAY_GAP } from "./Popover.tsx";
+import Popover from "./Popover.tsx";
+import { createAnchoredToggle } from "./createPopover.ts";
 import Transition from "./Transition.tsx";
 
 type Variant = "menu" | "panel";
@@ -19,18 +20,8 @@ type Props = {
 };
 
 export default function PopoverButton(props: Props) {
-  const [anchor, setAnchor] = createSignal<{ x: number; y: number } | null>(
-    null,
-  );
+  const { anchor, toggle, close } = createAnchoredToggle("start");
   let button: HTMLButtonElement | undefined;
-
-  const close = () => setAnchor(null);
-
-  function toggle() {
-    if (anchor() || !button) return close();
-    const r = button.getBoundingClientRect();
-    setAnchor({ x: r.left, y: r.bottom + OVERLAY_GAP });
-  }
 
   return (
     <>
@@ -46,7 +37,7 @@ export default function PopoverButton(props: Props) {
         aria-haspopup={props.variant === "menu" ? "menu" : "dialog"}
         aria-expanded={anchor() !== null}
         onMouseDown={(e) => e.preventDefault()}
-        onClick={toggle}
+        onClick={() => toggle(button)}
       >
         <Show when={props.value}>
           <span class="tabular-nums">{props.value}</span>

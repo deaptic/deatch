@@ -1,7 +1,7 @@
-import { createSignal, type JSX } from "solid-js";
+import type { JSX } from "solid-js";
 import IconButton from "./IconButton.tsx";
 import Menu from "./Menu.tsx";
-import { OVERLAY_GAP } from "./Popover.tsx";
+import { createAnchoredToggle } from "./createPopover.ts";
 import Transition from "./Transition.tsx";
 
 type Props = {
@@ -13,18 +13,8 @@ type Props = {
 };
 
 export default function IconMenuButton(props: Props) {
-  const [anchor, setAnchor] = createSignal<{ x: number; y: number } | null>(
-    null,
-  );
+  const { anchor, toggle, close } = createAnchoredToggle("center");
   let button: HTMLButtonElement | undefined;
-
-  const close = () => setAnchor(null);
-
-  function toggle() {
-    if (anchor() || !button) return close();
-    const r = button.getBoundingClientRect();
-    setAnchor({ x: r.left + r.width / 2, y: r.bottom + OVERLAY_GAP });
-  }
 
   return (
     <>
@@ -37,7 +27,7 @@ export default function IconMenuButton(props: Props) {
           pressed={anchor() !== null}
           aria-haspopup="menu"
           aria-expanded={anchor() !== null}
-          onClick={toggle}
+          onClick={() => toggle(button)}
         >
           {props.icon}
         </IconButton>

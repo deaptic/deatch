@@ -31,7 +31,7 @@ import {
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
 import Badge from "../../kit/Badge.tsx";
 import TitleBarButton from "../../kit/TitleBarButton.tsx";
-import ToolbarDivider from "../../kit/ToolbarDivider.tsx";
+import Divider from "../../kit/Divider.tsx";
 import { OVERLAY_GAP } from "../../kit/Popover.tsx";
 import { Inbox } from "../../features/inbox/index.ts";
 import { AppearancePanel } from "../../features/appearance/index.ts";
@@ -144,7 +144,7 @@ export default function TitleBar(props: Props) {
               </span>
             </Show>
           </TitleBarButton>
-          <ToolbarDivider in="titleBar" />
+          <Divider vertical class="self-center mx-1" />
           <TitleBarButton
             label={t("TITLE_BAR_MINIMIZE_LABEL")}
             onClick={() => minimizeWindow().catch(() => {})}

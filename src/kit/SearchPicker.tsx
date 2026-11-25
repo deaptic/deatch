@@ -3,6 +3,7 @@ import { createSignal, For, type JSX, onCleanup, Show } from "solid-js";
 import { createListbox } from "../shared/solid/createListbox.ts";
 import { autofocus } from "../shared/solid/focus.ts";
 import Field from "./Field.tsx";
+import ListPanel from "./ListPanel.tsx";
 import OptionRow from "./OptionRow.tsx";
 
 const SEARCH_DELAY_MS = 250;
@@ -79,13 +80,9 @@ export default function SearchPicker<T>(props: Props<T>) {
         }}
       />
       <Show when={results().length > 0}>
-        <div
+        <ListPanel
           {...listbox.list}
-          class={`max-h-60 overflow-y-auto p-1 flex flex-col ${
-            props.floating
-              ? "absolute top-full inset-x-0 mt-1 z-30 material-regular rounded-md enter-pop origin-top"
-              : "rounded-sm"
-          }`}
+          placement={props.floating ? "below" : "inline"}
         >
           <For each={results()}>
             {(item, i) => (
@@ -100,7 +97,7 @@ export default function SearchPicker<T>(props: Props<T>) {
               </OptionRow>
             )}
           </For>
-        </div>
+        </ListPanel>
       </Show>
     </div>
   );

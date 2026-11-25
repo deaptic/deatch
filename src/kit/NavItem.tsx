@@ -1,6 +1,4 @@
 import { children, type JSX, Show } from "solid-js";
-import { createSideTip } from "./createSideTip.tsx";
-import TipLabel from "./TipLabel.tsx";
 import RowIndicator from "./RowIndicator.tsx";
 
 type Props = {
@@ -15,7 +13,6 @@ type Props = {
 };
 
 export default function NavItem(props: Props) {
-  const tip = createSideTip(() => <TipLabel>{props.label}</TipLabel>);
   const tone = () => {
     if (props.negative) return "text-negative";
     return props.active
@@ -62,10 +59,8 @@ export default function NavItem(props: Props) {
         aria-label={props.collapsed ? props.label : undefined}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => props.onClick?.()}
-        onMouseEnter={(e) => {
-          if (props.collapsed) tip.show(e.currentTarget);
-        }}
-        onMouseLeave={tip.hide}
+        data-tip={props.collapsed ? props.label : undefined}
+        data-tip-side="right"
         class="group relative w-full flex px-2 text-base font-semibold cursor-pointer"
       >
         <RowIndicator mark={props.active ? "selected" : "none"} />
@@ -80,7 +75,6 @@ export default function NavItem(props: Props) {
           </Show>
         </span>
       </button>
-      {tip.view()}
     </>
   );
 }

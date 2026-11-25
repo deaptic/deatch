@@ -11,6 +11,7 @@ import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { createListbox } from "../shared/solid/createListbox.ts";
 import Field from "./Field.tsx";
 import { t } from "../shared/i18n/index.ts";
+import ListPanel from "./ListPanel.tsx";
 import OptionRow from "./OptionRow.tsx";
 
 type Props = {
@@ -118,10 +119,7 @@ export default function Combobox(props: Props) {
         }}
       />
       <Show when={open()}>
-        <div
-          {...listbox.list}
-          class="absolute right-0 top-full mt-1 z-30 w-full min-w-55 max-h-80 overflow-y-auto p-1.5 flex flex-col material-regular rounded-md enter-pop origin-top"
-        >
+        <ListPanel {...listbox.list} placement="below">
           <For
             each={shown()}
             fallback={
@@ -147,7 +145,7 @@ export default function Combobox(props: Props) {
               </OptionRow>
             )}
           </For>
-        </div>
+        </ListPanel>
       </Show>
     </div>
   );
