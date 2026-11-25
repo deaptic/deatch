@@ -40,7 +40,12 @@ function isFeedEntry(value: unknown): value is FeedEntry {
   }
   if (!("kind" in value)) return false;
   if (value.kind === "message") {
-    return "message_id" in value && typeof value.message_id === "string";
+    return (
+      "message_id" in value &&
+      typeof value.message_id === "string" &&
+      "fragments" in value &&
+      Array.isArray(value.fragments)
+    );
   }
   return (
     value.kind === "event" && "id" in value && typeof value.id === "string"

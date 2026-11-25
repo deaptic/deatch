@@ -27,11 +27,13 @@ export function writeText(key: StorageKey, value: string): void {
   }
 }
 
-export function write(key: StorageKey, value: unknown): void {
+export function write(key: StorageKey, value: unknown): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch (e) {
     console.warn(`storage: ${key} not written`, e);
+    return false;
   }
 }
 

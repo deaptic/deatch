@@ -24,6 +24,9 @@ const contexts = new Map<string, boolean>();
 const localBindings = new Map<string, Set<ActionEntry>>();
 let pending: { seq: string; timer: ReturnType<typeof setTimeout> } | null =
   null;
+let repeating = false;
+
+export const isKeyRepeat = () => repeating;
 
 export function keyFor(action: string): string | undefined {
   for (const [combo, names] of keymap) if (names.includes(action)) return combo;
@@ -86,6 +89,7 @@ export function setContext(name: string, value: boolean): void {
 export function start(): () => void {
   const onKey = (e: KeyboardEvent) => {
     if (e.isComposing || MODIFIER_KEYS.has(e.key)) return;
+    repeating = e.repeat;
     const combo = comboFor(e);
     const seq = pending ? `${pending.seq} ${combo}` : combo;
     if (dispatch(seq) || armIfPrefix(seq)) {

@@ -96,6 +96,7 @@ export function createModShortcuts(deps: Deps): ModShortcuts {
   }
 
   const ban = whenArmed((m) => {
+    if (shortcuts.isKeyRepeat()) return;
     const now = Date.now();
     if (banPressedAt !== null && now - banPressedAt < BAN_CONFIRM_MS) {
       disarm();

@@ -6,6 +6,7 @@ const message = {
   kind: "message",
   message_id: "m1",
   timestamp: 5,
+  fragments: [],
 } as unknown as FeedEntry;
 const event = {
   kind: "event",
@@ -27,6 +28,7 @@ test("lines that are not feed entries are dropped", () => {
     fromLog([
       "{not json",
       '{"kind":"message","timestamp":1}',
+      '{"kind":"message","message_id":"m","timestamp":1}',
       '{"kind":"other","id":"x","timestamp":1}',
       "null",
     ]),

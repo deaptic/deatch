@@ -4,6 +4,7 @@ use crate::platform::clock::unix_ms;
 use crate::platform::db::{Databases, Schema};
 use crate::platform::error::Result;
 use crate::twitch::client::ids::UserId;
+use rusqlite::functions::FunctionFlags;
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -106,21 +107,31 @@ fn like_pattern(query: &str) -> String {
 }
 
 pub fn search(db: &Connection, params: FeedlogSearchParams) -> Result<Vec<FeedlogHit>> {
-    let query = params.query.trim();
+    let query = params.query.trim().to_lowercase();
     if query.is_empty() {
         return Ok(Vec::new());
     }
+    db.create_scalar_function(
+        "fold",
+        1,
+        FunctionFlags::SQLITE_UTF8 | FunctionFlags::SQLITE_DETERMINISTIC,
+        |ctx| {
+            Ok(ctx
+                .get::<Option<String>>(0)?
+                .map(|text| text.to_lowercase()))
+        },
+    )?;
     let mut statement = db.prepare_cached(
         "SELECT channel, entry FROM feed_entries
          WHERE json_valid(entry)
            AND json_extract(entry, '$.kind') = 'message'
            AND (?2 IS NULL OR channel = ?2)
            AND (
-             json_extract(entry, '$.chatter_login') LIKE ?1 ESCAPE '\\'
-             OR json_extract(entry, '$.chatter_name') LIKE ?1 ESCAPE '\\'
+             fold(json_extract(entry, '$.chatter_login')) LIKE ?1 ESCAPE '\\'
+             OR fold(json_extract(entry, '$.chatter_name')) LIKE ?1 ESCAPE '\\'
              OR EXISTS (
                SELECT 1 FROM json_each(entry, '$.fragments') AS fragment
-               WHERE json_extract(fragment.value, '$.text') LIKE ?1 ESCAPE '\\'
+               WHERE fold(json_extract(fragment.value, '$.text')) LIKE ?1 ESCAPE '\\'
              )
            )
          ORDER BY timestamp DESC, rowid DESC
@@ -128,12 +139,15 @@ pub fn search(db: &Connection, params: FeedlogSearchParams) -> Result<Vec<Feedlo
     )?;
     let channel = params.broadcaster_id.as_ref().map(|id| id.as_str());
     let hits = statement
-        .query_map(params![like_pattern(query), channel, params.limit], |row| {
-            Ok(FeedlogHit {
-                broadcaster_id: row.get(0)?,
-                entry: row.get(1)?,
-            })
-        })?
+        .query_map(
+            params![like_pattern(&query), channel, params.limit],
+            |row| {
+                Ok(FeedlogHit {
+                    broadcaster_id: row.get(0)?,
+                    entry: row.get(1)?,
+                })
+            },
+        )?
         .collect::<rusqlite::Result<Vec<_>>>()?;
     Ok(hits)
 }
@@ -331,6 +345,7 @@ mod tests {
             message("a", 1, "viewer1", "good game"),
             message("b", 2, "viewer2", "100% sure"),
             message("c", 3, "gamer", "hello"),
+            message("e", 5, "Äiti", "Привет KAIKKI"),
             entry("d", 4, r#"{"kind":"event","text":"game"}"#),
         ]);
         let ids = |query: &str| {
@@ -355,6 +370,9 @@ mod tests {
         assert_eq!(ids("game"), ["c", "a"]);
         assert_eq!(ids("100%"), ["b"]);
         assert_eq!(ids("  "), Vec::<String>::new());
+        assert_eq!(ids("äiti"), ["e"]);
+        assert_eq!(ids("привет"), ["e"]);
+        assert_eq!(ids("Kaikki"), ["e"]);
     }
 
     #[test]

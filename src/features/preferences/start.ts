@@ -51,6 +51,13 @@ function readStored(): { sections: Record<string, unknown>; version: number } {
   if (typeof version === "number") {
     return { sections: fromKeys(storedSections(), readSection), version };
   }
+  const sections = storedSections();
+  if (sections.length > 0) {
+    return {
+      sections: fromKeys(sections, readSection),
+      version: PREFERENCES_VERSION,
+    };
+  }
   const legacy = readKept(STORAGE_KEYS.legacyPreferences, "all");
   return {
     sections: legacy && typeof legacy === "object" ? { ...legacy } : {},
@@ -58,23 +65,24 @@ function readStored(): { sections: Record<string, unknown>; version: number } {
   };
 }
 
-function saveSection(section: PreferencesSection): void {
-  storage.write(
+function saveSection(section: PreferencesSection): boolean {
+  return storage.write(
     preferencesKey(section),
     changesFrom(prefs[section], DEFAULT_PREFERENCES[section]) ?? {},
   );
 }
 
-function save(): void {
-  for (const section of PREFERENCES_SECTIONS) saveSection(section);
-  storage.write(STORAGE_KEYS.preferencesVersion, PREFERENCES_VERSION);
+function save(): boolean {
+  const saved = PREFERENCES_SECTIONS.map(saveSection).every(Boolean);
+  return (
+    storage.write(STORAGE_KEYS.preferencesVersion, PREFERENCES_VERSION) && saved
+  );
 }
 
 export function load(): void {
   const stored = readStored();
   restorePreferences(migrate(stored.sections, stored.version));
-  if (stored.version < PREFERENCES_VERSION) {
-    save();
+  if (stored.version < PREFERENCES_VERSION && save()) {
     storage.removeWhere(
       (key) => key === STORAGE_KEYS.legacyPreferences || isRetired(key),
     );

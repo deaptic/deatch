@@ -43,7 +43,7 @@ http = "1"
 sysinfo = { version = "0.40", default-features = false, features = ["system"] }
 winreg = "0.56"
 windows-native-keyring-store = "1"
-rusqlite = { version = "0.43", features = ["bundled", "fallible_uint"] }
+rusqlite = { version = "0.43", features = ["bundled", "fallible_uint", "functions"] }
 tauri-plugin-single-instance = "2"
 widestring = "1"
 webview2-com = "0.39"

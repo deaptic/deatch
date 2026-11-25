@@ -26,7 +26,11 @@ export function start(): () => void {
     const own = user()?.id;
     if (!own || !ownLive() || posting) return;
     const now = Date.now();
-    const due = savedTimers()
+    const enabled = savedTimers().filter((t) => t.enabled);
+    for (const id of runs.keys()) {
+      if (!enabled.some((t) => t.id === id)) runs.delete(id);
+    }
+    const due = enabled
       .filter((t) => isDue(t, runOf(t.id, now), now))
       .toSorted(
         (a, b) => runOf(a.id, now).lastPostedAt - runOf(b.id, now).lastPostedAt,
@@ -40,6 +44,7 @@ export function start(): () => void {
     );
     posting = false;
     if (outcome === "sent") {
+      for (const run of runs.values()) run.messagesSince = 0;
       runs.set(next.id, { lastPostedAt: Date.now(), messagesSince: 0 });
     }
   }

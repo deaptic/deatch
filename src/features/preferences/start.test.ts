@@ -102,3 +102,26 @@ test("settings saved before the pages were reorganised move to their pages and o
     expect(items.has(preferencesKey(retired))).toBe(false);
   }
 });
+
+test("saved sections survive a lost version number", () => {
+  items.set(preferencesKey("developer"), JSON.stringify({ showLogs: true }));
+  items.set(preferencesKey("feed"), JSON.stringify({ showTimestamp: true }));
+  load();
+  expect(prefs.developer.showLogs).toBe(true);
+  expect(prefs.feed.showTimestamp).toBe(true);
+  expect(JSON.parse(items.get(preferencesKey("feed")) ?? "")).toMatchObject({
+    showTimestamp: true,
+  });
+});
+
+test("the old block is kept when the new sections could not be saved", () => {
+  const legacy = JSON.stringify({ feed: { showTimestamp: true } });
+  items.set(STORAGE_KEYS.legacyPreferences, legacy);
+  const full = vi.spyOn(localStorage, "setItem").mockImplementation(() => {
+    throw new Error("quota");
+  });
+  load();
+  full.mockRestore();
+  expect(prefs.feed.showTimestamp).toBe(true);
+  expect(items.get(STORAGE_KEYS.legacyPreferences)).toBe(legacy);
+});
