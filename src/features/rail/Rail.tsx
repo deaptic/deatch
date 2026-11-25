@@ -379,16 +379,16 @@ export default function Rail(props: Props) {
         </Show>
       </div>
 
-      <Show when={chMenu.state()}>
+      <Show when={chMenu.state()} keyed>
         {(m) => (
           <ChannelContextMenu
-            x={m().x}
-            y={m().y}
-            ch={m().ch}
+            x={m.x}
+            y={m.y}
+            ch={m.ch}
             place="rail"
             onClose={chMenu.close}
             onLogout={
-              isOwnChannel(m().ch.id) ? () => session.logout() : undefined
+              isOwnChannel(m.ch.id) ? () => session.logout() : undefined
             }
           />
         )}

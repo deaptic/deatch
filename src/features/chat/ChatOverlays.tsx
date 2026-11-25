@@ -31,12 +31,12 @@ export default function ChatOverlays(props: Props) {
   const closeModAction = () => o().setModAction(null);
   return (
     <>
-      <Show when={o().messageMenu.state()}>
+      <Show when={o().messageMenu.state()} keyed>
         {(cm) => (
           <MessageContextMenu
-            x={cm().x}
-            y={cm().y}
-            msg={cm().msg}
+            x={cm.x}
+            y={cm.y}
+            msg={cm.msg}
             isMod={props.isMod}
             broadcasterId={props.broadcasterId}
             developerMode={developerMode()}
@@ -47,25 +47,25 @@ export default function ChatOverlays(props: Props) {
             onJumpToMessage={props.onJumpToMessage}
             pinned={
               activity.forChannel(props.broadcasterId).pinned?.messageId ===
-              cm().msg.message_id
+              cm.msg.message_id
             }
             onPin={(seconds) =>
-              activity.pin(props.broadcasterId, cm().msg.message_id, seconds)
+              activity.pin(props.broadcasterId, cm.msg.message_id, seconds)
             }
             onUnpin={() =>
-              activity.unpin(props.broadcasterId, cm().msg.message_id)
+              activity.unpin(props.broadcasterId, cm.msg.message_id)
             }
           />
         )}
       </Show>
-      <Show when={o().userMenu.state()}>
+      <Show when={o().userMenu.state()} keyed>
         {(uc) => (
           <UserContextMenu
-            x={uc().x}
-            y={uc().y}
-            userId={uc().userId}
-            userLogin={uc().userLogin}
-            userDisplayName={uc().userDisplayName}
+            x={uc.x}
+            y={uc.y}
+            userId={uc.userId}
+            userLogin={uc.userLogin}
+            userDisplayName={uc.userDisplayName}
             isMod={props.isMod}
             broadcasterId={props.broadcasterId}
             developerMode={developerMode()}
@@ -103,12 +103,12 @@ export default function ChatOverlays(props: Props) {
           />
         )}
       </For>
-      <Show when={o().eventMenu.state()}>
+      <Show when={o().eventMenu.state()} keyed>
         {(cm) => (
           <EventContextMenu
-            x={cm().x}
-            y={cm().y}
-            item={cm().item}
+            x={cm.x}
+            y={cm.y}
+            item={cm.item}
             developerMode={developerMode()}
             onClose={o().eventMenu.close}
           />

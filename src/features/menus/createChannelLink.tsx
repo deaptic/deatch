@@ -36,12 +36,12 @@ export function createChannelLink(
   };
 
   const menu = () => (
-    <Show when={popover.state()}>
+    <Show when={popover.state()} keyed>
       {(m) => (
         <ChannelContextMenu
-          x={m().x}
-          y={m().y}
-          ch={m().ch}
+          x={m.x}
+          y={m.y}
+          ch={m.ch}
           place="link"
           onOpen={onOpen}
           onClose={popover.close}
