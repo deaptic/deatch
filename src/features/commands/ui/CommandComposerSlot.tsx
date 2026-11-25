@@ -41,7 +41,7 @@ export default function CommandComposerSlot(props: Props) {
     >
       <span
         class={`inline-grid items-center px-2 py-1 rounded-sm text-base bg-raised ring-1 ${
-          props.errored ? "ring-negative" : "ring-accent/60"
+          props.errored ? "ring-negative" : "ring-accent-line"
         }`}
       >
         <span class="invisible whitespace-pre col-start-1 row-start-1 min-w-16">

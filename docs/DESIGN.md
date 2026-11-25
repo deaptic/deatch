@@ -8,9 +8,9 @@ theme tokens; code follows this document, and when they disagree, fix the code.
 
 - **Content first.** The interface is quiet so content can be loud. If a choice
   makes the main content harder to read, it is wrong.
-- **Flat ground, floating materials.** The base layers step between tones, with
+- **Flat ground, floating layers.** The base layers step between tones, with
   a 1px line only where a step alone is ambiguous, and cast no shadows. Only
-  what floats over content is a material, so it is always clear what sits above
+  what floats over content casts a shadow, so it is always clear what sits above
   and what is underneath.
 - **Neutral structure, chromatic signals.** Neutrals build the layout; anything
   with colour means something: selected, status, a category.
@@ -52,16 +52,16 @@ signals share a hue, shape tells them apart. Category colours mark with a thin
 bar or a light tint, never a full fill. Colours that come from outside (user-
 or data-chosen) are lightness-clamped per theme so they always read.
 
-### Materials and elevation
+### Floating layers and elevation
 
-A floating layer wears a material: a translucent `material` fill with a
-backdrop blur, a 1px `line` and its elevation. Bigger layers read thicker:
+A floating layer is solid: an `overlay` fill and its elevation, never
+translucent or blurred. Bigger layers cast deeper shadows:
 
-- `material-thin`: tooltips, hover toolbars, transient readouts.
-- `material-regular`: menus, popovers, dropdown lists, toasts.
-- `material-thick`: command palettes.
+- `floating-sm`: tooltips, hover toolbars, transient readouts.
+- `floating-md`: menus, popovers, dropdown lists, toasts.
+- `floating-lg`: command palettes.
 
-Never stack one material on another.
+Never stack one floating layer on another.
 
 A solid element lifted off what is under it takes an elevation alone:
 `elevation-1` (a segment thumb, a toggle knob), `elevation-2` (a pill floating
@@ -89,7 +89,7 @@ setting is sized in `em`, so everything in it scales together.
 Space is the 4px scale. Radius grows with the element: `xs` (nested inside
 `sm`, thin things like meters), `sm` (controls), `md` (popovers, cards,
 inputs), `lg` (dialogs, big cards), `round` (avatars, dots, badges, toggles,
-pills floating over content). Control heights are `control-sm/md/lg`.
+pills floating over content). Control heights are `control-xs/sm/md/lg` (28/32/36/40).
 Icon-only controls are square, with a hit target of at least 32px.
 
 ### Motion
@@ -128,7 +128,7 @@ platform.
 ## Building
 
 - Tokens and Tailwind only: no raw hex, shadows, blur, gradients or arbitrary
-  values. Depth is only ever `material-*` or `elevation-*`; Tailwind's own
+  values. Depth is only ever `floating-*` or `elevation-*`; Tailwind's own
   `shadow-*` inlines its value and would ignore a theme switch.
 - A custom `@utility` is for a recipe several primitives share, not a one-off.
 - Values that must follow runtime state (a user's text size) are CSS variables,
@@ -201,6 +201,6 @@ one word per concept, everywhere.
   information also available another way.
 - Colour is never the only signal.
 - Every image has `alt`.
-- Reduced motion turns transitions and idle animation off; reduced transparency
-  and more contrast turn materials solid.
+- Reduced motion keeps fades and colour changes but drops movement, scaling and
+  idle animation.
 - Everything works from the keyboard.

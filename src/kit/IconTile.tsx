@@ -5,8 +5,8 @@ type Size = "md" | "lg";
 
 const TONES: Record<TileTone, string> = {
   accent: "bg-accent-soft text-accent-ink",
-  positive: "bg-positive/15 text-positive",
-  caution: "bg-caution/15 text-caution",
+  positive: "bg-positive-soft text-positive",
+  caution: "bg-caution-soft text-caution",
 };
 
 const SIZES: Record<Size, string> = {

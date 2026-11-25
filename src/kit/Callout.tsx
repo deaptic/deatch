@@ -3,7 +3,7 @@ import type { JSX } from "solid-js";
 type Tone = "negative";
 
 const TONES: Record<Tone, string> = {
-  negative: "bg-negative/10 border-negative",
+  negative: "bg-negative-soft border-negative",
 };
 
 export default function Callout(props: { tone: Tone; children: JSX.Element }) {

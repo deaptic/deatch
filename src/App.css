@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./theme/app.css";
 
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
@@ -65,21 +66,6 @@
   --text-xs--font-weight: 600;
   --text-xs--letter-spacing: 0.02em;
 
-  --feed-meta-scale: 0.85;
-  --text-feed-meta: calc(var(--feed-meta-scale) * 1em);
-  --text-feed-timestamp: 0.8em;
-  --spacing-feed-emote: 1.7em;
-  --spacing-feed-emote-max: 4.5em;
-  --spacing-feed-emote-bleed: 0.35em;
-  --spacing-feed-timestamp-nudge: 0.18em;
-  --spacing-feed-badge: 1.25em;
-  --spacing-feed-badge-gap: 0.2em;
-  --spacing-feed-badge-drop: -0.15em;
-  --spacing-feed-icon: 1.1em;
-  --spacing-feed-hook: 0.625em;
-  --spacing-feed-meta-tile: calc(var(--chat-tile) * var(--feed-meta-scale));
-  --feed-columns: auto minmax(0, 1fr);
-
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -89,11 +75,6 @@
   --spacing-control-sm: 32px;
   --spacing-control-md: 36px;
   --spacing-control-lg: 40px;
-  --spacing-rail: 72px;
-  --spacing-rail-expanded: 280px;
-  --spacing-header: 56px;
-  --spacing-titlebar: 40px;
-  --spacing-safe-top: var(--spacing-titlebar);
   --spacing-row: 56px;
   --spacing-row-content: calc(var(--spacing-row) - 10px);
   --spacing-row-gap: 4px;
@@ -101,17 +82,8 @@
   --spacing-media: 6em;
   --spacing-media-min: 2.5em;
 
-  --spacing-card-width: 24rem;
-  --spacing-card-height: 35rem;
-  --spacing-card-max-width: 40rem;
-  --spacing-card-max-height: 50rem;
-  --spacing-card-pad: 1.25rem;
-  --spacing-card-gap: 0.625rem;
-  --spacing-card-avatar-lift: 2.5rem;
-  --spacing-card-avatar-clear: 6.75rem;
-  --spacing-card-feed-min: calc(3lh + 0.5rem);
-
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --duration-snap: 100ms;
   --duration-quick: 160ms;
@@ -167,7 +139,7 @@
   --color-ink-soft: oklch(0.79 0.012 262);
   --color-ink-faint: oklch(0.66 0.014 262);
 
-  --color-line-soft: oklch(0.255 0.012 262);
+  --color-line-soft: oklch(0.28 0.012 262);
   --color-line: oklch(0.33 0.014 262);
 
   --color-accent: oklch(0.58 0.18 287.5);
@@ -175,19 +147,36 @@
   --color-accent-ink: oklch(0.68 0.18 287.5);
   --color-accent-soft: oklch(0.58 0.18 287.5 / 0.14);
   --color-on-accent: oklch(0.99 0 0);
+  --color-accent-line: color-mix(
+    in oklab,
+    var(--color-accent) 40%,
+    transparent
+  );
+  --color-on-accent-soft: color-mix(
+    in oklab,
+    var(--color-on-accent) 80%,
+    transparent
+  );
 
   --color-positive: oklch(0.77 0.16 155);
   --color-caution: oklch(0.83 0.15 82);
   --color-negative: oklch(0.7 0.19 20);
   --color-info: oklch(0.77 0.12 245);
-
-  --color-event-support: oklch(0.84 0.15 85);
-  --color-event-community: oklch(0.76 0.17 350);
-  --color-event-engagement: oklch(0.8 0.12 195);
-  --color-event-announce-blue: oklch(0.74 0.13 255);
-  --color-event-announce-green: oklch(0.78 0.15 150);
-  --color-event-announce-orange: oklch(0.76 0.16 55);
-  --color-event-announce-purple: oklch(0.72 0.17 305);
+  --color-positive-soft: color-mix(
+    in oklab,
+    var(--color-positive) 15%,
+    transparent
+  );
+  --color-negative-soft: color-mix(
+    in oklab,
+    var(--color-negative) 14%,
+    transparent
+  );
+  --color-caution-soft: color-mix(
+    in oklab,
+    var(--color-caution) 15%,
+    transparent
+  );
 }
 
 [data-density="compact"] {
@@ -223,14 +212,6 @@
   --color-caution: oklch(0.5 0.12 70);
   --color-negative: oklch(0.51 0.2 22);
   --color-info: oklch(0.49 0.13 250);
-
-  --color-event-support: oklch(0.52 0.12 75);
-  --color-event-community: oklch(0.55 0.2 350);
-  --color-event-engagement: oklch(0.5 0.1 200);
-  --color-event-announce-blue: oklch(0.52 0.14 255);
-  --color-event-announce-green: oklch(0.54 0.15 150);
-  --color-event-announce-orange: oklch(0.58 0.16 55);
-  --color-event-announce-purple: oklch(0.52 0.18 305);
 }
 
 @utility scrollbar-inset {
@@ -260,14 +241,6 @@
   scrollbar-width: none;
 }
 
-@utility grid-avatars {
-  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
-}
-
-@utility grid-cards {
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-}
-
 @utility elevation-1 {
   box-shadow: var(--elevation-1);
 }
@@ -280,17 +253,17 @@
   box-shadow: var(--elevation-3);
 }
 
-@utility material-thin {
+@utility floating-sm {
   background-color: var(--color-overlay);
   box-shadow: var(--elevation-1);
 }
 
-@utility material-regular {
+@utility floating-md {
   background-color: var(--color-overlay);
   box-shadow: var(--elevation-2);
 }
 
-@utility material-thick {
+@utility floating-lg {
   background-color: var(--color-overlay);
   box-shadow: var(--elevation-3);
 }
@@ -370,7 +343,7 @@
   transition-timing-function: var(--ease-out);
   @starting-style {
     opacity: 0;
-    scale: 0.6;
+    scale: 0.9;
   }
 }
 
@@ -433,7 +406,8 @@
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-property:
+      opacity, color, background-color, border-color, outline-color, box-shadow !important;
     scroll-behavior: auto !important;
   }
 }

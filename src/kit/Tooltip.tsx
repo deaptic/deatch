@@ -69,7 +69,7 @@ export default function Tooltip(props: Props) {
           "--y": `${pos()?.y ?? 0}px`,
           "--arrow": `${pos()?.arrow ?? 0}px`,
         }}
-        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 w-max max-w-75 whitespace-pre-line rounded-sm material-thin px-2.5 py-2 text-sm text-ink ${
+        class={`pointer-events-none fixed left-(--x) top-(--y) z-50 w-max max-w-75 whitespace-pre-line rounded-sm floating-sm px-2.5 py-2 text-sm text-ink ${
           props.side === "over" ? "text-center" : ""
         } ${props.instant ? "" : "enter-pop"} ${
           pos() ? ARROW[pos()?.points ?? "down"].tip : "invisible"

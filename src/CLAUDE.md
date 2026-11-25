@@ -61,8 +61,9 @@ with the next version number; steps are never edited, reordered, or removed.
 
 Primitives live in `kit/`; feature components compose them without
 restyling, and a missing look is a new variant on the primitive. Colours, type,
-radii, sizes, and motion come from the `@theme` tokens in `App.css`; depth is
-only `material-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
+radii, sizes, and motion come from the `@theme` tokens in `App.css` (design system) and
+`theme/app.css` (app layout: feed, rail, header, user card, event colours); depth is
+only `floating-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
 
 - Views are kit components plus layout classes (flex, grid, gap, padding,
   margin, size, position). Text goes through `Text` (`size` xs/sm/md/lg/xl or

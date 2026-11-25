@@ -7,7 +7,7 @@ const CLASS_VALUE =
   /\bclass(?:List)?=(?:"([^"]*)"|\{`([\s\S]*?)`\}|\{"([^"]*)"\})/g;
 
 const VISUAL =
-  /^(?:[a-z-]+:)*(?:text-(?:xs|sm|base|lg|xl|[2-9]xl|ink(?:-soft|-faint)?|accent(?:-ink)?|positive|negative|caution|live|on-accent|feed-meta|\(--[a-z-]+\))|font-(?:medium|semibold|bold|normal|mono)|bg-|border-(?:line|line-soft|accent|negative|ink-faint)|rounded|shadow|ring-|opacity-|elevation-|material-|underline|italic)/;
+  /^(?:[a-z-]+:)*(?:text-(?:xs|sm|base|lg|xl|[2-9]xl|ink(?:-soft|-faint)?|accent(?:-ink)?|positive|negative|caution|live|on-accent|feed-meta|\(--[a-z-]+\))|font-(?:medium|semibold|bold|normal|mono)|bg-|border-(?:line|line-soft|accent|negative|ink-faint)|rounded|shadow|ring-|opacity-|elevation-|floating-|underline|italic)/;
 
 function visualClasses(source: string): string[] {
   const found: string[] = [];

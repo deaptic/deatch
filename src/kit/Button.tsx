@@ -39,9 +39,8 @@ const SHAPES: Record<ButtonShape, string> = {
 const PRESSED: Partial<Record<ButtonVariant, string>> = {
   ghost: "bg-raised text-ink",
   media: "bg-raised text-on-accent",
-  toggle: "bg-positive/15 text-positive hover:bg-positive/20",
-  neutral:
-    "bg-accent-soft text-accent-ink border border-accent/40 hover:bg-accent/18",
+  toggle: "bg-positive-soft text-positive",
+  neutral: "bg-accent-soft text-accent-ink border border-accent-line",
 };
 
 const SIZES: Record<ButtonSize, { box: string; pad: string; text: string }> = {

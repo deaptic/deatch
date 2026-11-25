@@ -12,8 +12,8 @@ type Props = {
 
 const TONES: Record<ToolbarTone, string> = {
   neutral: "text-ink-soft hover:text-ink hover:bg-raised",
-  positive: "text-positive hover:bg-positive/15",
-  negative: "text-negative hover:bg-negative/15",
+  positive: "text-positive hover:bg-positive-soft",
+  negative: "text-negative hover:bg-negative-soft",
 };
 
 export default function ToolbarItem(props: Props) {

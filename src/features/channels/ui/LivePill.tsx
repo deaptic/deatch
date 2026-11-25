@@ -13,7 +13,7 @@ export default function LivePill(props: Props) {
       class={`inline-flex items-center gap-1.5 h-5.5 pl-2 pr-2.5 rounded-xs text-xs tabular-nums whitespace-nowrap ${
         props.solid
           ? "bg-negative text-on-accent"
-          : "bg-negative/15 text-negative"
+          : "bg-negative-soft text-negative"
       }`}
     >
       <Dot tone="current" />

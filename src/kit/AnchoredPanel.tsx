@@ -64,7 +64,7 @@ export default function AnchoredPanel(props: Props) {
         }}
         role="dialog"
         aria-label={props.label}
-        class={`fixed bottom-(--bottom) z-40 max-w-full material-regular rounded-lg flex flex-col overflow-hidden enter-pop ${
+        class={`fixed bottom-(--bottom) z-40 max-w-full floating-md rounded-lg flex flex-col overflow-hidden enter-pop ${
           SIDES[props.side]
         } ${SIZES[props.size]}`}
         style={{ "--bottom": `${bottom()}px`, "--edge": `${edge()}px` }}

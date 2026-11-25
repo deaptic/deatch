@@ -7,7 +7,7 @@ export default function FlashHost() {
       {(text) => (
         <div
           role="status"
-          class="material-thin text-ink text-base font-semibold px-3 py-1.5 rounded-md pointer-events-none"
+          class="floating-sm text-ink text-base font-semibold px-3 py-1.5 rounded-md pointer-events-none"
         >
           {text()}
         </div>

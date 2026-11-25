@@ -95,7 +95,7 @@ export default function Popover(props: Props) {
           "--max-h": `${maxHeight()}px`,
           "--max-w": `${maxWidth()}px`,
         }}
-        class={`fixed left-(--x) top-(--y) max-h-(--max-h) max-w-(--max-w) z-50 flex flex-col outline-none material-regular rounded-md overflow-hidden enter-pop ${ORIGIN[props.align ?? "start"]}`}
+        class={`fixed left-(--x) top-(--y) max-h-(--max-h) max-w-(--max-w) z-50 flex flex-col outline-none floating-md rounded-md overflow-hidden enter-pop ${ORIGIN[props.align ?? "start"]}`}
         onClick={(e) => e.stopPropagation()}
         onContextMenu={(e) => e.stopPropagation()}
       >

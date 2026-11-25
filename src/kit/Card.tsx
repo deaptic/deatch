@@ -5,8 +5,8 @@ type Tone = "plain" | "marked" | "edited";
 
 const TONES: Record<Tone, string> = {
   plain: "bg-surface",
-  marked: "bg-accent/10 border-l-3 border-accent rounded-l-none",
-  edited: "bg-surface border border-accent/40",
+  marked: "bg-accent-soft border-l-3 border-accent rounded-l-none",
+  edited: "bg-surface border border-accent-line",
 };
 
 type Props = {

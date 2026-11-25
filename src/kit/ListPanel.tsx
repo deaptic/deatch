@@ -4,9 +4,9 @@ type Placement = "below" | "above" | "inline";
 
 const PLACEMENTS: Record<Placement, string> = {
   below:
-    "absolute top-full right-0 w-full min-w-55 mt-1 z-30 max-h-80 material-regular rounded-md enter-pop origin-top",
+    "absolute top-full right-0 w-full min-w-55 mt-1 z-30 max-h-80 floating-md rounded-md enter-pop origin-top",
   above:
-    "absolute bottom-full inset-x-0 mb-2 z-30 max-h-60 material-regular rounded-md enter-pop origin-bottom",
+    "absolute bottom-full inset-x-0 mb-2 z-30 max-h-60 floating-md rounded-md enter-pop origin-bottom",
   inline: "max-h-60 rounded-sm",
 };
 

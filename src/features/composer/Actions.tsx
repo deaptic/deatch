@@ -159,7 +159,7 @@ function ModeDetail(props: {
           disabled={!props.canTurnOff}
           aria-label={props.canTurnOff ? turnOff() : undefined}
           onClick={() => chatModes.update(props.broadcasterId, props.mode.off)}
-          class="group w-full flex items-start gap-2.5 px-2.5 py-2 rounded-sm text-left transition-colors duration-snap enabled:cursor-pointer enabled:hover:bg-negative/10"
+          class="group w-full flex items-start gap-2.5 px-2.5 py-2 rounded-sm text-left transition-colors duration-snap enabled:cursor-pointer enabled:hover:bg-negative-soft"
         >
           <Icon class="size-4 mt-0.5 shrink-0 text-accent-ink group-enabled:group-hover:hidden" />
           <X class="size-4 mt-0.5 shrink-0 text-negative hidden group-enabled:group-hover:block" />

@@ -14,7 +14,7 @@ const SCRIM: Record<ModalVariant, string> = {
 
 const PANEL: Record<ModalVariant, string> = {
   dialog: "w-110 bg-surface elevation-3 p-6 gap-4",
-  palette: "w-140 max-h-3/5 material-thick p-2.5",
+  palette: "w-140 max-h-3/5 floating-lg p-2.5",
 };
 
 type Props = {

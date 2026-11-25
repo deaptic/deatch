@@ -44,7 +44,7 @@ export default function Badges(props: Props) {
           {(b) => (
             <span
               data-tip={`${b.title}${b.info ? ` (${b.info})` : ""}`}
-              class="size-feed-badge grid place-items-center rounded-xs bg-ink/15"
+              class="size-feed-badge grid place-items-center rounded-xs bg-raised"
             >
               <img src={b.url} alt={b.title} class="size-3/4 object-contain" />
             </span>

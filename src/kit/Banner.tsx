@@ -16,7 +16,7 @@ const TONES: Record<
     row: "bg-accent text-on-accent",
     icon: "text-on-accent",
     title: "text-on-accent",
-    meta: "text-on-accent/80",
+    meta: "text-on-accent-soft",
   },
 };
 
