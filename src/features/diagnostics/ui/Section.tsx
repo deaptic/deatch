@@ -1,4 +1,5 @@
 import type { JSX } from "solid-js";
+import Text from "../../../kit/Text.tsx";
 
 type Props = {
   title: string;
@@ -8,7 +9,9 @@ type Props = {
 export default function Section(props: Props) {
   return (
     <section class="flex flex-col gap-2">
-      <h3 class="text-sm text-ink">{props.title}</h3>
+      <Text as="h3" size="sm" tone="primary">
+        {props.title}
+      </Text>
       {props.children}
     </section>
   );

@@ -43,7 +43,8 @@ Rules:
 6. Per-channel state starts and ends through `channels.onChannel({ join,
    focus, leave })`, registered in the feature's own `start()`, never on mount.
    `app/createServices.ts` calls each feature's `start()` once.
-7. kit owns visuals. Features use layout utilities only.
+7. kit owns visuals. Features use layout utilities only; text, colour,
+   borders, and backgrounds come from kit components (`Text`, `Surface`, ...).
 8. Permissions are asked one way: `hasPermission(channelId, capability)`.
 9. Every screen region sits in an error boundary.
 10. Pure modules import `shared/`, never a feature index: an index also loads

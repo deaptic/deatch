@@ -58,13 +58,17 @@ export default function TriggerPreview(props: { trigger: Trigger }) {
               </Show>
               <For each={preview().filled}>
                 {([syntax, value]) => (
-                  <p class="flex gap-2 text-sm min-w-0">
-                    <Text bold tone="soft">
+                  <p class="flex gap-2 min-w-0">
+                    <Text size="sm" bold tone="soft">
                       {syntax}
                     </Text>
-                    <span class={value ? "text-ink truncate" : "text-ink-soft"}>
+                    <Text
+                      size="sm"
+                      tone={value ? "primary" : "soft"}
+                      truncate={!!value}
+                    >
                       {value || t("SETTINGS_TRIGGERS_TRY_EMPTY_VALUE")}
-                    </span>
+                    </Text>
                   </p>
                 )}
               </For>

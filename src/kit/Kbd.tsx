@@ -15,7 +15,7 @@ export default function Kbd(props: {
       <For each={keyLabels(props.combo)}>
         {(k) => (
           <kbd
-            class={`px-1.5 inline-grid place-items-center rounded-xs bg-raised font-sans ${SIZE[props.size ?? "md"]}`}
+            class={`px-1.5 inline-grid place-items-center rounded-xs bg-raised text-ink-soft font-sans ${SIZE[props.size ?? "md"]}`}
           >
             {k}
           </kbd>

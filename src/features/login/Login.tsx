@@ -29,7 +29,9 @@ export default function Login() {
   return (
     <main class="flex-1 flex items-center justify-center px-6">
       <div class="w-100 max-w-full flex flex-col items-center text-center gap-4">
-        <h1 class="text-4xl text-ink">{t("LOGIN_WELCOME_TITLE")}</h1>
+        <Text as="h1" size="xl" tone="primary">
+          {t("LOGIN_WELCOME_TITLE")}
+        </Text>
         <Text as="p" size="md" tone="soft">
           {t("LOGIN_TAGLINE_DESCRIPTION")}
         </Text>

@@ -123,9 +123,9 @@ export default function Message(props: Props) {
         />
       </span>
       <Show when={item.deleted}>
-        <span class="ml-1.5 text-feed-meta text-ink-faint select-none">
+        <Text size="relative" tone="faint" class="ml-1.5 select-none">
           {t("FEED_DELETED_MARK_LABEL")}
-        </span>
+        </Text>
       </Show>
     </Show>
   );

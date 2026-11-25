@@ -28,12 +28,12 @@ type Props = Targeting & {
 
 function OrDivider() {
   return (
-    <Text as="div" size="sm" bold tone="soft">
-      <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2">
+      <Text size="sm" bold tone="soft">
         {t("SETTINGS_TRIGGERS_JOIN_OR_VALUE")}
-        <Divider strong class="flex-1" />
-      </div>
-    </Text>
+      </Text>
+      <Divider strong class="flex-1" />
+    </div>
   );
 }
 

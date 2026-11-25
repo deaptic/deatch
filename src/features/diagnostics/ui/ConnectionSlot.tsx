@@ -5,7 +5,7 @@ import type {
 } from "../../../shared/types/index.ts";
 import Meter from "../../../kit/Meter.tsx";
 import { type MessageKey, t } from "../../../shared/i18n/index.ts";
-import Text from "../../../kit/Text.tsx";
+import Text, { type TextTone } from "../../../kit/Text.tsx";
 
 type Props = {
   number: number;
@@ -13,10 +13,10 @@ type Props = {
   capacity: number;
 };
 
-const STATE: Record<ConnectionState, { label: MessageKey; class: string }> = {
-  up: { label: "DIAGNOSTICS_CONNECTED_STATUS", class: "text-positive" },
-  connecting: { label: "DIAGNOSTICS_CONNECTING_STATUS", class: "text-caution" },
-  lost: { label: "DIAGNOSTICS_DISCONNECTED_STATUS", class: "text-negative" },
+const STATE: Record<ConnectionState, { label: MessageKey; tone: TextTone }> = {
+  up: { label: "DIAGNOSTICS_CONNECTED_STATUS", tone: "positive" },
+  connecting: { label: "DIAGNOSTICS_CONNECTING_STATUS", tone: "caution" },
+  lost: { label: "DIAGNOSTICS_DISCONNECTED_STATUS", tone: "negative" },
 };
 
 export default function ConnectionSlot(props: Props) {
@@ -36,9 +36,9 @@ export default function ConnectionSlot(props: Props) {
         >
           {(connection) => (
             <>
-              <span class={`text-sm ${STATE[connection().state].class}`}>
+              <Text size="sm" tone={STATE[connection().state].tone}>
                 {t(STATE[connection().state].label)}
-              </span>
+              </Text>
               <Text tone="primary" tabular>
                 {t("DIAGNOSTICS_USAGE_VALUE", {
                   used: used(),

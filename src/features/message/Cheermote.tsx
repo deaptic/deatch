@@ -5,6 +5,7 @@ import { readableColor } from "../../shared/color.ts";
 import { formatLocale } from "../../shared/i18n/index.ts";
 import { REDUCED_MOTION } from "../../shared/accessibility.ts";
 import { INLINE_EMOTE } from "./InlineEmote.tsx";
+import Text from "../../kit/Text.tsx";
 
 export default function Cheermote(props: {
   text: string;
@@ -30,12 +31,9 @@ export default function Cheermote(props: {
                 class={INLINE_EMOTE}
               />
             </picture>
-            <span
-              class="font-semibold text-(--bits)"
-              style={{ "--bits": readableColor(tier().color, resolvedTheme()) }}
-            >
+            <Text bold color={readableColor(tier().color, resolvedTheme())}>
               {props.bits.toLocaleString(formatLocale())}
-            </span>
+            </Text>
           </span>
         );
       }}

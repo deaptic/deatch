@@ -6,6 +6,7 @@ import type { UserRef } from "../../shared/types/index.ts";
 import Loading from "../../kit/Loading.tsx";
 import PersonRow from "./PersonRow.tsx";
 import EmptyState from "../../kit/EmptyState.tsx";
+import Text from "../../kit/Text.tsx";
 
 const LOAD_MORE_PX = 400;
 
@@ -52,12 +53,14 @@ export default function ChattersTab(props: Props) {
         <For each={groups()}>
           {(group) => (
             <section>
-              <h3 class="px-2 pt-3 pb-1 text-sm text-ink-faint">
-                {t("CHATTERS_GROUP_TITLE", {
-                  kind: group.kind,
-                  count: group.users.length,
-                })}
-              </h3>
+              <div class="px-2 pt-3 pb-1">
+                <Text as="h3" size="sm" tone="faint">
+                  {t("CHATTERS_GROUP_TITLE", {
+                    kind: group.kind,
+                    count: group.users.length,
+                  })}
+                </Text>
+              </div>
               <For each={group.users}>
                 {(user) => (
                   <PersonRow

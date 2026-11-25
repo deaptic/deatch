@@ -13,6 +13,7 @@ import Timestamp from "../../../kit/Timestamp.tsx";
 import FeedItem, { type ItemLayout } from "../ui/item/index.ts";
 import Actions from "./Actions.tsx";
 import * as details from "./details.ts";
+import Text from "../../../kit/Text.tsx";
 
 export type EventOptions = UserActions & {
   emotes: EmoteMap;
@@ -55,7 +56,9 @@ export default function Event(props: Props) {
     >
       <Show when={props.density === "comfortable"}>
         <FeedItem.Title>
-          <span class="font-semibold text-(--tone)">{t(look().title)}</span>
+          <Text bold color="var(--tone)">
+            {t(look().title)}
+          </Text>
           <Show when={props.showTimestamp}>
             <Timestamp ts={item.timestamp} format="c" variant="inline" />
           </Show>

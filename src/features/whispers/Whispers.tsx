@@ -117,27 +117,27 @@ export default function Whispers() {
         {(peer) => (
           <section class="flex-1 min-w-0 min-h-0 flex flex-col">
             <Surface as="header" tone="none" edge="bottom">
-              <Text as="div" size="md" bold tone="primary">
-                <div class="flex items-center gap-2 px-4 py-2">
-                  <span class="@2xl:hidden">
-                    <IconButton
-                      label={t("WHISPERS_BACK_LABEL")}
-                      size="sm"
-                      onClick={whispers.back}
-                    >
-                      <ArrowLeft class="size-4" />
-                    </IconButton>
-                  </span>
-                  <span class="min-h-control-sm min-w-0 flex items-center gap-2.5">
-                    <ChatterPicture
-                      size={24}
-                      userId={peer().id}
-                      name={peer().displayName}
-                    />
-                    <span class="truncate">{peer().displayName}</span>
-                  </span>
-                </div>
-              </Text>
+              <div class="flex items-center gap-2 px-4 py-2">
+                <span class="@2xl:hidden">
+                  <IconButton
+                    label={t("WHISPERS_BACK_LABEL")}
+                    size="sm"
+                    onClick={whispers.back}
+                  >
+                    <ArrowLeft class="size-4" />
+                  </IconButton>
+                </span>
+                <span class="min-h-control-sm min-w-0 flex items-center gap-2.5">
+                  <ChatterPicture
+                    size={24}
+                    userId={peer().id}
+                    name={peer().displayName}
+                  />
+                  <Text size="md" bold tone="primary" truncate>
+                    {peer().displayName}
+                  </Text>
+                </span>
+              </div>
             </Surface>
             <div
               ref={thread}

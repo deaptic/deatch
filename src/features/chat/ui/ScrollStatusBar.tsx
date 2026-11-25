@@ -29,8 +29,10 @@ export default function ScrollStatusBar(props: Props) {
           {t("FEED_UNREAD_COUNT_LABEL", { count: props.unseen })}
         </Text>
       </Show>
-      <span class="shrink-0 px-2.5 flex items-center gap-1 font-semibold text-ink">
-        {t("FEED_JUMP_TO_LATEST_LABEL")}
+      <span class="shrink-0 px-2.5 flex items-center gap-1">
+        <Text bold tone="primary">
+          {t("FEED_JUMP_TO_LATEST_LABEL")}
+        </Text>
         <ChevronDown class="size-4" />
       </span>
     </button>

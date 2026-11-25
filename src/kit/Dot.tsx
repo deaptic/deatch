@@ -1,11 +1,11 @@
 import { Show } from "solid-js";
 
-type Tone = "accent" | "live" | "current";
+type Tone = "accent" | "negative" | "current";
 type Size = "sm" | "md";
 
 const TONES: Record<Tone, string> = {
   accent: "bg-accent",
-  live: "bg-live",
+  negative: "bg-negative",
   current: "bg-current",
 };
 

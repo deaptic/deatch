@@ -45,9 +45,11 @@ export default function ChannelRow(props: Props) {
           }
         >
           {(s) => (
-            <span class="shrink-0 flex items-center gap-1.5 text-sm tabular-nums text-ink-soft">
-              <Dot tone="live" />
-              {formatCount(s().viewerCount)}
+            <span class="shrink-0 flex items-center gap-1.5">
+              <Dot tone="negative" />
+              <Text size="sm" tone="soft" tabular>
+                {formatCount(s().viewerCount)}
+              </Text>
             </span>
           )}
         </Show>

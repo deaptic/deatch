@@ -12,7 +12,7 @@ import Surface from "../../kit/Surface.tsx";
 function OnAirDot() {
   return (
     <span class="size-4 grid place-items-center">
-      <Dot tone="live" size="md" pulse />
+      <Dot tone="negative" size="md" pulse />
     </span>
   );
 }

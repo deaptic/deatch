@@ -1,6 +1,7 @@
 import { For, Show } from "solid-js";
 import type { Mention } from "./types.ts";
 import Item from "./Item.tsx";
+import Text from "../../kit/Text.tsx";
 
 type Props = {
   label: string;
@@ -14,7 +15,11 @@ export default function Group(props: Props) {
   return (
     <Show when={props.mentions.length > 0}>
       <section class="flex flex-col gap-2">
-        <h3 class="px-1 text-sm font-semibold text-ink-soft">{props.label}</h3>
+        <div class="px-1">
+          <Text as="h3" size="sm" bold tone="soft">
+            {props.label}
+          </Text>
+        </div>
         <For each={props.mentions}>
           {(m) => (
             <Item

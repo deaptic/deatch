@@ -41,6 +41,7 @@ import SectionTitle from "../../kit/SectionTitle.tsx";
 import SectionLabel from "../../kit/SectionLabel.tsx";
 import Divider from "../../kit/Divider.tsx";
 import Surface from "../../kit/Surface.tsx";
+import Text from "../../kit/Text.tsx";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
   language: LanguageSettings,
@@ -222,9 +223,11 @@ export default function Settings() {
               <div class="group flex-1 min-h-0 overflow-y-auto">
                 <div class="w-full max-w-180 mx-auto px-5 pt-5 pb-12 flex flex-col gap-6">
                   <For each={SECTIONS}>{(s) => <s.Section />}</For>
-                  <p class="hidden group-not-has-data-match:block text-base text-ink-soft">
-                    {t("SETTINGS_SEARCH_EMPTY", { query: query().trim() })}
-                  </p>
+                  <div class="hidden group-not-has-data-match:block">
+                    <Text as="p" size="md" tone="soft">
+                      {t("SETTINGS_SEARCH_EMPTY", { query: query().trim() })}
+                    </Text>
+                  </div>
                 </div>
               </div>
             </Show>

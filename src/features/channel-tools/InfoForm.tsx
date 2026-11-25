@@ -152,13 +152,11 @@ export default function InfoForm(props: Props) {
               placeholder={t("HEADER_TAGS_PLACEHOLDER")}
               onAdd={addTag}
             />
-            <span
-              class={`text-sm ${tagError() ? "text-negative" : "text-ink-faint"}`}
-            >
+            <Text size="sm" tone={tagError() ? "negative" : "faint"}>
               {tagError()
                 ? t("HEADER_TAG_ERROR", { reason: tagError() ?? "" })
                 : t("HEADER_TAGS_HINT")}
-            </span>
+            </Text>
           </LabeledField>
           <Show when={labels().length}>
             <LabeledField label={t("HEADER_CONTENT_LABELS_LABEL")}>

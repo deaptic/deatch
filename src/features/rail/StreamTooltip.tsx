@@ -35,9 +35,9 @@ export default function StreamTooltip(props: {
         {props.user.displayName}
       </Text>
       <Show when={title()}>
-        <p class="text-base leading-relaxed text-ink wrap-break-word line-clamp-3">
+        <Text as="p" size="md" tone="primary" wrap="words" clamp={3}>
           {title()}
-        </p>
+        </Text>
       </Show>
       <div class="pt-1 flex flex-col gap-1">
         <Stat icon={<Gamepad2 />} value={game()} truncate />

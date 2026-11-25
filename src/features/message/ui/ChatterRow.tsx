@@ -7,12 +7,9 @@ export default function ChatterRow(props: {
 }) {
   return (
     <>
-      <span
-        class="font-semibold text-left truncate text-(--name)"
-        style={{ "--name": nameColor(props.chatter.color) }}
-      >
+      <Text bold truncate align="left" color={nameColor(props.chatter.color)}>
         {props.chatter.displayName}
-      </span>
+      </Text>
       <span class="flex-1" />
       <Text size="sm" bold tone="soft" class="shrink-0">
         {props.chatter.displayName.toLowerCase() !== props.chatter.login

@@ -5,6 +5,7 @@ import Dialog from "../../kit/Dialog.tsx";
 import LinkTarget from "../../kit/LinkTarget.tsx";
 import Toggle from "../../kit/Toggle.tsx";
 import * as previews from "./store.ts";
+import Text from "../../kit/Text.tsx";
 
 export default function LinkPrompt() {
   return (
@@ -37,8 +38,10 @@ function Prompt(props: { url: string }) {
         {(domain) => (
           <>
             <LinkTarget domain={domain()} url={props.url} />
-            <label class="flex items-center justify-between gap-3 text-base text-ink-soft">
-              {t("FEED_LINK_PROMPT_TRUST_LABEL")}
+            <label class="flex items-center justify-between gap-3">
+              <Text size="md" tone="soft">
+                {t("FEED_LINK_PROMPT_TRUST_LABEL")}
+              </Text>
               <Toggle
                 checked={previews.isTrusted(props.url)}
                 onChange={(on) => previews.setTrusted(props.url, on)}

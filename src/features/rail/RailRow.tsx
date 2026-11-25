@@ -7,13 +7,9 @@ import { appearanceRailExpanded } from "../preferences/index.ts";
 import { RAIL_ROW_HEIGHT } from "../../kit/density.ts";
 import { onMiddleClick } from "../../kit/middleClick.ts";
 import { openMenuAt } from "../../kit/contextMenu.ts";
+import Text from "../../kit/Text.tsx";
 
 export type SubTone = "soft" | "positive";
-
-const SUB_TONES: Record<SubTone, string> = {
-  soft: "text-ink-soft",
-  positive: "text-positive",
-};
 
 type Props = {
   label: string;
@@ -96,21 +92,18 @@ export default function RailRow(props: Props) {
             }`}
           >
             <span class="flex-1 min-w-0 flex flex-col">
-              <span
-                class={`text-base font-semibold truncate ${
-                  props.quiet ? "text-ink-soft" : "text-ink"
-                }`}
+              <Text
+                size="md"
+                bold
+                truncate
+                tone={props.quiet ? "soft" : "primary"}
               >
                 {props.label}
-              </span>
+              </Text>
               <Show when={props.sub}>
-                <span
-                  class={`text-sm truncate ${
-                    SUB_TONES[props.subTone ?? "soft"]
-                  }`}
-                >
+                <Text size="sm" truncate tone={props.subTone ?? "soft"}>
                   {props.sub}
-                </span>
+                </Text>
               </Show>
             </span>
             <Show when={expanded()}>

@@ -8,12 +8,13 @@ export type TextTone =
   | "soft"
   | "faint"
   | "accent"
+  | "positive"
   | "negative"
   | "caution"
   | "inverse";
 
 type Clamp = 1 | 2 | 3;
-type Wrap = "words" | "all";
+type Wrap = "words" | "all" | "pre";
 type Align = "left" | "center" | "right";
 
 const SIZES: Record<TextSize, string> = {
@@ -30,6 +31,7 @@ const TONES: Record<TextTone, string> = {
   soft: "text-ink-soft",
   faint: "text-ink-faint",
   accent: "text-accent-ink",
+  positive: "text-positive",
   negative: "text-negative",
   caution: "text-caution",
   inverse: "text-on-accent",
@@ -44,6 +46,7 @@ const CLAMPS: Record<Clamp, string> = {
 const WRAPS: Record<Wrap, string> = {
   words: "wrap-break-word",
   all: "break-all",
+  pre: "whitespace-pre-wrap wrap-break-word",
 };
 
 const ALIGNS: Record<Align, string> = {
@@ -53,7 +56,7 @@ const ALIGNS: Record<Align, string> = {
 };
 
 type Props = Omit<JSX.HTMLAttributes<HTMLElement>, "style"> & {
-  as?: "span" | "p" | "div";
+  as?: "span" | "p" | `h${1 | 2 | 3 | 4 | 5 | 6}`;
   size?: TextSize;
   tone?: TextTone;
   bold?: boolean;
@@ -64,6 +67,7 @@ type Props = Omit<JSX.HTMLAttributes<HTMLElement>, "style"> & {
   tabular?: boolean;
   italic?: boolean;
   nowrap?: boolean;
+  color?: string;
 };
 
 export default function Text(props: Props) {
@@ -79,6 +83,7 @@ export default function Text(props: Props) {
     "tabular",
     "italic",
     "nowrap",
+    "color",
     "class",
   ]);
   const classes = () =>
@@ -93,11 +98,17 @@ export default function Text(props: Props) {
       local.tabular && "tabular-nums",
       local.italic && "italic",
       local.nowrap && "whitespace-nowrap",
+      local.color && "text-(--text-color)",
       local.class,
     ]
       .filter(Boolean)
       .join(" ");
   return (
-    <Dynamic component={local.as ?? "span"} {...others} class={classes()} />
+    <Dynamic
+      component={local.as ?? "span"}
+      {...others}
+      class={classes()}
+      style={local.color ? { "--text-color": local.color } : undefined}
+    />
   );
 }

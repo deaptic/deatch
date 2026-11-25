@@ -99,9 +99,9 @@ function RequestCard(props: { broadcasterId: string; request: UnbanRequest }) {
           </Text>
         </div>
       </div>
-      <p class="text-base text-ink whitespace-pre-wrap wrap-break-word">
+      <Text as="p" size="md" tone="primary" wrap="pre">
         {props.request.text}
-      </p>
+      </Text>
       <Show when={ban()}>
         {(info) => (
           <Text as="p" size="sm" tone="soft">

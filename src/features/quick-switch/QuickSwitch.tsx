@@ -214,10 +214,10 @@ export default function QuickSwitch(props: Props) {
                             <Text size="md" bold tone="primary" truncate>
                               {r().user.displayName}
                             </Text>
-                            <span
-                              class={`text-sm truncate ${
-                                stream() ? "text-live" : "text-ink-soft"
-                              }`}
+                            <Text
+                              size="sm"
+                              truncate
+                              tone={stream() ? "negative" : "soft"}
                             >
                               <Show
                                 when={stream()}
@@ -232,7 +232,7 @@ export default function QuickSwitch(props: Props) {
                               >
                                 {` · ${t("QUICK_SWITCH_PINNED_LABEL")}`}
                               </Show>
-                            </span>
+                            </Text>
                           </span>
                         </>
                       );

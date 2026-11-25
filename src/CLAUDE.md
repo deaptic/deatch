@@ -64,6 +64,13 @@ restyling, and a missing look is a new variant on the primitive. Colours, type,
 radii, sizes, and motion come from the `@theme` tokens in `App.css`; depth is
 only `material-*` or `elevation-*`. No raw hex, shadows, or arbitrary values.
 
+- Views are kit components plus layout classes (flex, grid, gap, padding,
+  margin, size, position). Text goes through `Text` (`size` xs/sm/md/lg/xl or
+  `relative`, `tone`, `bold`, `truncate`), panels and bars through `Surface`,
+  lines through `Divider`, list rows through `OptionRow` or `ListRow`, headings
+  through `SectionTitle`, `SectionLabel`, or `PanelHeader`. Add an option to a
+  kit component only when a view needs it; remove options nothing uses.
+- Text sizes follow the 4px grid: font sizes even, line heights multiples of 4.
 - Surfaces are solid. No glass: no `backdrop-blur`, no translucent chrome.
   Only media scrims over images (`bg-media-scrim`) may be see-through.
 - Press feedback is `pressable` plus one trigger: `active:pressed`,

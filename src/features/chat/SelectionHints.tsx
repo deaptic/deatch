@@ -35,7 +35,9 @@ function Hints(props: { hints: Hint[] }): JSX.Element {
       {(hint) => (
         <span class="shrink-0 flex items-center gap-1.5">
           <Kbd size="sm" combo={hint.combo} />
-          {t(hint.label)}
+          <Text size="sm" tone="soft" nowrap>
+            {t(hint.label)}
+          </Text>
         </span>
       )}
     </For>
@@ -48,31 +50,29 @@ export default function SelectionHints(props: {
 }) {
   return (
     <Surface tone="none" edge="bottom">
-      <Text as="div" size="sm" tone="soft" nowrap>
-        <div class="flex items-center gap-3 px-4 py-1.5 overflow-hidden">
-          <Show
-            when={props.moderating}
-            fallback={
-              <>
-                <Hints hints={EVERYONE} />
-                <Show when={props.moderator}>
-                  <Divider vertical />
-                  <Hints hints={ARM} />
-                </Show>
-              </>
-            }
-          >
-            {(name) => (
-              <>
-                <Text bold tone="accent" class="shrink-0">
-                  {t("CHAT_HINT_MODERATING_LABEL", { name: name() })}
-                </Text>
-                <Hints hints={MODERATE} />
-              </>
-            )}
-          </Show>
-        </div>
-      </Text>
+      <div class="flex items-center gap-3 px-4 py-1.5 overflow-hidden">
+        <Show
+          when={props.moderating}
+          fallback={
+            <>
+              <Hints hints={EVERYONE} />
+              <Show when={props.moderator}>
+                <Divider vertical />
+                <Hints hints={ARM} />
+              </Show>
+            </>
+          }
+        >
+          {(name) => (
+            <>
+              <Text size="sm" bold tone="accent" nowrap class="shrink-0">
+                {t("CHAT_HINT_MODERATING_LABEL", { name: name() })}
+              </Text>
+              <Hints hints={MODERATE} />
+            </>
+          )}
+        </Show>
+      </div>
     </Surface>
   );
 }
