@@ -223,6 +223,7 @@ type RawModerateBase = {
   moderator_user_login: string;
   moderator_user_name: string;
   source_broadcaster_user_id?: string | null;
+  source_broadcaster_user_login?: string | null;
   source_broadcaster_user_name?: string | null;
 };
 
@@ -383,6 +384,8 @@ export type RawSharedChatSession = RawSharedChatEnd & {
 };
 
 type RawHypeTrainContribution = {
+  user_id: string;
+  user_login: string;
   user_name: string;
   type: "bits" | "subscription" | "other";
   total: number;

@@ -43,10 +43,7 @@ test("describes a mod changing a chatter's status", () => {
     low_trust_status: "active_monitoring",
   };
   expect(suspiciousUpdate(raw)).toStrictEqual({
-    text: "Mod started monitoring Viewer1",
-    people: [
-      { id: "9", login: "mod", name: "Mod" },
-      { id: "2", login: "viewer1", name: "Viewer1" },
-    ],
+    text: "Started monitoring Viewer1",
+    people: [{ id: "2", login: "viewer1", name: "Viewer1" }],
   });
 });

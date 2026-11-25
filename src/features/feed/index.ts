@@ -1,6 +1,6 @@
 export { start } from "./start.ts";
 export { connectFailure } from "./entries/connectFailure.ts";
-export { feedEvent } from "./entries/feedEvent.ts";
+export { eventText, feedEvent } from "./entries/feedEvent.ts";
 export { mapFragment } from "./entries/chat.ts";
 export { mentionsIn } from "./entries/mention.ts";
 export { textOf, withoutReplyMention } from "./entries/message.ts";

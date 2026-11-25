@@ -22,23 +22,12 @@ import { raid } from "../../activity/index.ts";
 import { createTimeouts } from "../../../shared/timeouts.ts";
 import { mapRedemption } from "../entries/redemption.ts";
 import { mapNotice } from "../entries/notice.ts";
+import { mapFollow } from "../entries/follow.ts";
 import { mapAutomaticRedemption } from "../entries/automaticRedemption.ts";
 import { mapBitsUse } from "../entries/bitsUse.ts";
 import { giftGroup } from "../entries/giftGroup.ts";
 import { mapShoutout, mapShoutoutReceive } from "../entries/shoutout.ts";
-import {
-  CHANNEL_POINTS_REDEMPTION,
-  FOLLOW,
-} from "../../../shared/moderateActions.ts";
-
-function mapFollow(raw: RawFollow, timestamp: number): FeedEvent {
-  return feedEvent(
-    FOLLOW,
-    t("FEED_FOLLOWED_LINE", { user: raw.user_name }),
-    timestamp,
-    chatterFields(raw.user_id, raw.user_login, raw.user_name),
-  );
-}
+import { CHANNEL_POINTS_REDEMPTION } from "../../../shared/moderateActions.ts";
 
 function redemptionEvent(
   raw: RawChannelPointsRedemption,
@@ -48,7 +37,6 @@ function redemptionEvent(
   return feedEvent(
     CHANNEL_POINTS_REDEMPTION,
     t("FEED_REDEMPTION_LINE", {
-      user: raw.user_name,
       reward: raw.reward.title,
       cost: raw.reward.cost,
     }),

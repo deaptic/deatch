@@ -33,6 +33,7 @@
   --color-event-support: oklch(0.84 0.15 85);
   --color-event-community: oklch(0.76 0.17 350);
   --color-event-engagement: oklch(0.8 0.12 195);
+  --color-event-moderation: oklch(0.74 0.14 38);
   --color-event-announce-blue: oklch(0.74 0.13 255);
   --color-event-announce-green: oklch(0.78 0.15 150);
   --color-event-announce-orange: oklch(0.76 0.16 55);
@@ -40,9 +41,10 @@
 }
 
 [data-theme="light"] {
-  --color-event-support: oklch(0.52 0.12 75);
+  --color-event-support: oklch(0.56 0.14 70);
   --color-event-community: oklch(0.55 0.2 350);
   --color-event-engagement: oklch(0.5 0.1 200);
+  --color-event-moderation: oklch(0.56 0.17 35);
   --color-event-announce-blue: oklch(0.52 0.14 255);
   --color-event-announce-green: oklch(0.54 0.15 150);
   --color-event-announce-orange: oklch(0.58 0.16 55);
@@ -55,4 +57,43 @@
 
 @utility grid-cards {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+
+:root {
+  --tint-rest-lightness: 0.23;
+  --tint-rest-chroma: 0.2;
+  --tint-strong-lightness: 0.26;
+  --tint-strong-chroma: 0.25;
+  --tint-tile-lightness: 0.3;
+  --tint-tile-chroma: 0.35;
+}
+
+[data-theme="light"] {
+  --tint-rest-lightness: 0.955;
+  --tint-rest-chroma: 0.3;
+  --tint-strong-lightness: 0.93;
+  --tint-strong-chroma: 0.4;
+  --tint-tile-lightness: 0.9;
+  --tint-tile-chroma: 0.5;
+}
+
+@utility tint-rest {
+  background-color: oklch(
+    from var(--tone) var(--tint-rest-lightness)
+      calc(c * var(--tint-rest-chroma)) h
+  );
+}
+
+@utility tint-strong {
+  background-color: oklch(
+    from var(--tone) var(--tint-strong-lightness)
+      calc(c * var(--tint-strong-chroma)) h
+  );
+}
+
+@utility tint-tile {
+  background-color: oklch(
+    from var(--tile) var(--tint-tile-lightness)
+      calc(c * var(--tint-tile-chroma)) h
+  );
 }

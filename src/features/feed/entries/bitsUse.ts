@@ -28,7 +28,6 @@ export function mapBitsUse(
   return feedEvent(
     BITS_USE,
     t("FEED_BITS_USED_LINE", {
-      user: raw.user_name,
       bits: raw.bits,
       kind: raw.type === "power_up" ? (raw.power_up?.type ?? "") : raw.type,
       title: raw.custom_power_up?.title ?? "",

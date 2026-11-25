@@ -1,3 +1,5 @@
+import { textOf } from "./message.ts";
+import { formatList } from "../../../shared/format/list.ts";
 import type { FeedEvent, NoticeText, Person } from "../types.ts";
 
 export function noticeText(text: string, detail?: string | null): NoticeText {
@@ -40,4 +42,22 @@ export function feedEvent(
     timestamp,
     ...extras,
   };
+}
+
+export function lineOf(item: FeedEvent): string {
+  const lead = `${item.chatter_name} `;
+  const text = item.system_message;
+  if (!item.chatter_name || !text.startsWith(lead)) return text;
+  const rest = text.slice(lead.length);
+  return rest.charAt(0).toLocaleUpperCase() + rest.slice(1);
+}
+
+export function eventText(item: FeedEvent): string {
+  const line = lineOf(item);
+  const said = textOf({ fragments: item.message ?? [] });
+  const recipients = formatList((item.recipients ?? []).map((p) => p.name));
+  const body = [line || said, line && said, item.detail, recipients]
+    .filter(Boolean)
+    .join(" · ");
+  return [item.chatter_name, body].filter(Boolean).join(": ");
 }

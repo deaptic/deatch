@@ -26,7 +26,7 @@ test("names the reward, its cost and the unlocked emote", () => {
     0,
   );
   expect(item?.system_message).toBe(
-    "Viewer1 redeemed Choose an Emote to Unlock for 300 points",
+    "Redeemed Choose an Emote to Unlock for 300 points",
   );
   expect(item?.message).toStrictEqual([
     { type: "emote", text: "Kappa", id: "e1" },
@@ -45,5 +45,5 @@ test("leaves message rewards to their chat message", () => {
 test("names an On-Screen Celebration", () => {
   expect(
     mapAutomaticRedemption(raw({ type: "celebration" }), 0)?.system_message,
-  ).toBe("Viewer1 redeemed an On-Screen Celebration for 300 points");
+  ).toBe("Redeemed an On-Screen Celebration for 300 points");
 });

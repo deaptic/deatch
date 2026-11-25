@@ -46,15 +46,13 @@ function sampleFeed(me: Me, now: number): FeedEntry[] {
       deleted: true,
     }),
     message("p4", t("SETTINGS_MESSAGES_PREVIEW_THANKS_LINE"), 1),
-    feedEvent(
-      "sub",
-      t("SETTINGS_MESSAGES_PREVIEW_SUB_LINE", { name: me.name }),
-      at(0.5),
-      {
-        id: "p5",
-        chatter_name: me.name,
-      },
-    ),
+    feedEvent("sub", t("FEED_SUB_LINE", { plan: "1" }), at(0.5), {
+      id: "p5",
+      chatter_user_id: me.id,
+      chatter_login: me.login,
+      chatter_name: me.name,
+      color: me.color,
+    }),
   ];
 }
 

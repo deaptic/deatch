@@ -14,7 +14,6 @@ export function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
     SHOUTOUT,
     noticeText(
       t("FEED_SHOUTOUT_SENT_LINE", {
-        mod: raw.moderator_user_name,
         channel: raw.to_broadcaster_user_name,
         count: raw.viewer_count,
       }),
@@ -27,14 +26,14 @@ export function mapShoutout(raw: RawShoutout, timestamp: number): FeedEvent {
     timestamp,
     {
       ...chatterFields(
-        raw.to_broadcaster_user_id,
-        raw.to_broadcaster_user_login,
-        raw.to_broadcaster_user_name,
-      ),
-      people: person(
         raw.moderator_user_id,
         raw.moderator_user_login,
         raw.moderator_user_name,
+      ),
+      people: person(
+        raw.to_broadcaster_user_id,
+        raw.to_broadcaster_user_login,
+        raw.to_broadcaster_user_name,
       ),
     },
   );
@@ -47,7 +46,6 @@ export function mapShoutoutReceive(
   return feedEvent(
     SHOUTOUT,
     t("FEED_SHOUTOUT_RECEIVED_LINE", {
-      channel: raw.from_broadcaster_user_name,
       count: raw.viewer_count,
     }),
     timestamp,

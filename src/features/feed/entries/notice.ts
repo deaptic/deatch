@@ -39,17 +39,19 @@ export function mapNotice(
   raw: RawNotification,
   timestamp: number,
 ): FeedEvent | null {
-  const system_message = noticeMessage(raw) ?? raw.system_message;
-  if (!system_message.trim()) return null;
-  return feedEvent(raw.notice_type, system_message, timestamp, {
+  const text = noticeMessage(raw) ?? raw.system_message;
+  const message = wordsOf(raw.message);
+  if (!text.trim() && !message) return null;
+  const anonymous = raw.chatter_is_anonymous || !raw.chatter_user_name;
+  return feedEvent(raw.notice_type, text, timestamp, {
     id: raw.message_id,
-    chatter_user_id: raw.chatter_is_anonymous ? undefined : raw.chatter_user_id,
-    chatter_login: raw.chatter_is_anonymous
-      ? undefined
-      : raw.chatter_user_login,
-    chatter_name: raw.chatter_user_name ?? t("FEED_ANONYMOUS_VALUE"),
+    chatter_user_id: anonymous ? undefined : raw.chatter_user_id,
+    chatter_login: anonymous ? undefined : raw.chatter_user_login,
+    chatter_name: anonymous
+      ? t("FEED_ANONYMOUS_GIFTER_VALUE")
+      : (raw.chatter_user_name ?? ""),
     color: raw.color ?? "",
-    message: wordsOf(raw.message),
+    message,
     announcement_color: announcementColor(raw),
     people: namedIn(raw),
   });

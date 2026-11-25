@@ -8,7 +8,7 @@ export default function Tile(props: Props) {
       aria-hidden="true"
       class={`size-(--chat-tile) shrink-0 grid place-items-center overflow-hidden select-none ${
         props.round ? "rounded-full" : "rounded-sm"
-      } ${props.color ? "bg-(--tile)/16 text-(--tile)" : "bg-raised"}`}
+      } ${props.color ? "tint-tile text-(--tile)" : "bg-raised"}`}
       style={props.color ? { "--tile": props.color } : undefined}
     >
       {props.children}

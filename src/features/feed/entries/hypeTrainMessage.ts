@@ -2,7 +2,7 @@ import { formatList } from "../../../shared/format/list.ts";
 import { t } from "../../../shared/i18n/index.ts";
 import type { NoticeText } from "../types.ts";
 import type { RawHypeTrain } from "../../../platform/twitch/eventsubPayloads.ts";
-import { noticeText } from "./feedEvent.ts";
+import { noticeText, person } from "./feedEvent.ts";
 
 function contributors(raw: RawHypeTrain): string {
   return formatList(
@@ -33,10 +33,15 @@ export function hypeTrainProgress(
 }
 
 export function hypeTrainEnd(raw: RawHypeTrain): NoticeText {
-  return noticeText(
-    t("FEED_HYPE_TRAIN_ENDED_LINE", { level: raw.level, total: raw.total }),
-    raw.top_contributions.length
-      ? t("FEED_HYPE_TRAIN_TOP_LINE", { contributors: contributors(raw) })
-      : null,
-  );
+  return {
+    ...noticeText(
+      t("FEED_HYPE_TRAIN_ENDED_LINE", { level: raw.level, total: raw.total }),
+      raw.top_contributions.length
+        ? t("FEED_HYPE_TRAIN_TOP_LINE", { contributors: contributors(raw) })
+        : null,
+    ),
+    people: raw.top_contributions.flatMap((c) =>
+      person(c.user_id, c.user_login, c.user_name),
+    ),
+  };
 }

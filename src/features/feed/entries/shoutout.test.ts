@@ -18,9 +18,11 @@ const shoutout: RawShoutout = {
 
 test("names who shouted out whom, the reach and the cooldowns", () => {
   const item = mapShoutout(shoutout, 0);
-  expect(item.system_message).toBe("Mod shouted out Viewer1 to 120 viewers");
+  expect(item.system_message).toBe("Shouted out Viewer1 to 120 viewers");
   expect(item.detail).toBe("Next shoutout in 2m, Viewer1 again in 1h");
-  expect(item.chatter_user_id).toBe("9");
-  expect(item.chatter_login).toBe("viewer1");
-  expect(item.people).toStrictEqual([{ id: "2", login: "mod", name: "Mod" }]);
+  expect(item.chatter_user_id).toBe("2");
+  expect(item.chatter_login).toBe("mod");
+  expect(item.people).toStrictEqual([
+    { id: "9", login: "viewer1", name: "Viewer1" },
+  ]);
 });

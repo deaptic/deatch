@@ -3,7 +3,7 @@ import { formatList } from "../../../shared/format/list.ts";
 import { listenEventSub, unlistenAll } from "../../../platform/listen.ts";
 import { listenFeed } from "./listenFeed.ts";
 import { formatApproxDuration } from "../../../shared/format/duration.ts";
-import { feedEvent, person } from "../entries/feedEvent.ts";
+import { chatterFields, feedEvent, person } from "../entries/feedEvent.ts";
 import { formatMoney } from "../../../shared/format/currency.ts";
 import {
   AD_BREAK,
@@ -129,21 +129,18 @@ export function start(): () => void {
     listenFeed<RawAdBreak>("channel.ad_break.begin", (raw, timestamp) =>
       feedEvent(
         AD_BREAK,
-        {
-          text: t("FEED_AD_BREAK_STARTED_LINE", {
-            duration: formatApproxDuration(raw.duration_seconds),
-            automatic: String(raw.is_automatic),
-            requester: raw.requester_user_name,
-          }),
-          people: raw.is_automatic
-            ? []
-            : person(
-                raw.requester_user_id,
-                raw.requester_user_login,
-                raw.requester_user_name,
-              ),
-        },
+        t("FEED_AD_BREAK_STARTED_LINE", {
+          duration: formatApproxDuration(raw.duration_seconds),
+          automatic: String(raw.is_automatic),
+        }),
         timestamp,
+        raw.is_automatic
+          ? {}
+          : chatterFields(
+              raw.requester_user_id,
+              raw.requester_user_login,
+              raw.requester_user_name,
+            ),
       ),
     ),
     listenCharity(
@@ -156,7 +153,6 @@ export function start(): () => void {
       appendLocalNotice(
         raw.broadcaster_user_id,
         t("FEED_STREAM_ONLINE_LINE", {
-          channel: raw.broadcaster_user_name,
           type: raw.type,
         }),
         STREAM_ONLINE,
@@ -166,7 +162,7 @@ export function start(): () => void {
       const raw = e.event;
       appendLocalNotice(
         raw.broadcaster_user_id,
-        t("FEED_STREAM_OFFLINE_LINE", { channel: raw.broadcaster_user_name }),
+        t("FEED_STREAM_OFFLINE_LINE"),
         STREAM_OFFLINE,
       );
     }),

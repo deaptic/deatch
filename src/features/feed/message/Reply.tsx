@@ -61,9 +61,7 @@ export default function Reply(
           return (
             <span
               class={`h-lh aspect-square shrink-0 grid overflow-hidden rounded-full ${
-                tint()
-                  ? "bg-(--tile)/16 text-(--tile)"
-                  : "bg-raised text-ink-soft"
+                tint() ? "tint-tile text-(--tile)" : "bg-raised text-ink-soft"
               } ${userLinkHover(props)}`}
               style={tint() ? { "--tile": tint() } : undefined}
               {...userLink(parent, props)}

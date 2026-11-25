@@ -22,7 +22,7 @@ test("shows a celebration with its emote", () => {
     0,
   );
   expect(item?.system_message).toBe(
-    "Viewer1 used 500 Bits on an On-Screen Celebration",
+    "Used 500 Bits on an On-Screen Celebration",
   );
   expect(item?.message).toStrictEqual([
     { type: "emote", text: "Kappa", id: "e1" },
@@ -35,7 +35,7 @@ test("names a custom Power-up", () => {
       use({ type: "custom_power_up", custom_power_up: { title: "Hydrate" } }),
       0,
     )?.system_message,
-  ).toBe("Viewer1 used 500 Bits on Hydrate");
+  ).toBe("Used 500 Bits on Hydrate");
 });
 
 test("leaves cheers and message Power-ups to their chat message", () => {

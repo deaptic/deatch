@@ -38,17 +38,9 @@ export function suspiciousMessage(
 export function suspiciousUpdate(raw: RawSuspiciousUserUpdate): NoticeText {
   return {
     text: t("FEED_SUSPICIOUS_UPDATED_LINE", {
-      mod: raw.moderator_user_name,
       user: raw.user_name,
       status: raw.low_trust_status,
     }),
-    people: [
-      ...person(
-        raw.moderator_user_id,
-        raw.moderator_user_login,
-        raw.moderator_user_name,
-      ),
-      ...person(raw.user_id, raw.user_login, raw.user_name),
-    ],
+    people: person(raw.user_id, raw.user_login, raw.user_name),
   };
 }

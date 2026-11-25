@@ -27,7 +27,7 @@ test("removes, renames, then appends added emotes", () => {
   expect(at(next, 0).url).toBe("https://cdn/Old");
 });
 
-test("describes each change, crediting Someone without an actor", () => {
+test("describes each change", () => {
   expect(
     emoteSetUpdate.describe(
       update({
@@ -38,8 +38,12 @@ test("describes each change, crediting Someone without an actor", () => {
       }),
     ),
   ).toStrictEqual([
-    "Someone added 7TV emote A",
-    "Someone removed 7TV emote B",
-    "Someone renamed 7TV emote C to D",
+    "Added the emote A",
+    "Removed the emote B",
+    "Renamed the emote C to D",
   ]);
+});
+
+test("credits Someone without an actor", () => {
+  expect(emoteSetUpdate.actor(update({ actor: null }))).toBe("Someone");
 });

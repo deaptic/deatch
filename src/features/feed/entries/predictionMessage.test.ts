@@ -21,11 +21,11 @@ const prediction = (p: Partial<RawPrediction> = {}): RawPrediction => ({
 
 test("describes the start and the locked stakes", () => {
   expect(predictionBegin(prediction())).toStrictEqual({
-    text: "Prediction “Win?” started for 5m",
+    text: "“Win?” started for 5m",
     detail: "Outcomes: Yes and No",
   });
   expect(predictionLock(prediction())).toStrictEqual({
-    text: "Prediction “Win?” locked",
+    text: "“Win?” locked",
     detail: "Yes 1,000 points from 4 viewers and No 500 points from 1 viewer",
   });
 });
@@ -34,10 +34,10 @@ test("names the winner and the pot, or the refund", () => {
   expect(
     predictionEnd(prediction({ status: "resolved", winning_outcome_id: "a" })),
   ).toStrictEqual({
-    text: "Prediction “Win?”: Yes won",
+    text: "“Win?”: Yes won",
     detail: "1,500 points split between 4 viewers",
   });
   expect(predictionEnd(prediction({ status: "canceled" }))).toStrictEqual({
-    text: "Prediction “Win?” cancelled, points refunded",
+    text: "“Win?” cancelled, points refunded",
   });
 });

@@ -14,11 +14,11 @@ const goal = (g: Partial<RawGoal> = {}): RawGoal => ({
 
 test("describes a new goal with its progress", () => {
   expect(goalBegin(goal())).toStrictEqual({
-    text: "New sub goal (40/100)",
+    text: "Sub goal started (40/100)",
     detail: "Road to 100",
   });
   expect(goalBegin(goal({ description: "" }))).toStrictEqual({
-    text: "New sub goal (40/100)",
+    text: "Sub goal started (40/100)",
   });
 });
 

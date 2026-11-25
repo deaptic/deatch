@@ -16,17 +16,15 @@ export function apply(
 }
 
 export function describe(update: EmoteSetUpdated): string[] {
-  const who = actor(update);
   return [
     ...update.added.map((e) =>
-      t("FEED_SEVENTV_EMOTE_ADDED_LINE", { actor: who, emote: e.name }),
+      t("FEED_SEVENTV_EMOTE_ADDED_LINE", { emote: e.name }),
     ),
     ...update.removed.map((n) =>
-      t("FEED_SEVENTV_EMOTE_REMOVED_LINE", { actor: who, emote: n }),
+      t("FEED_SEVENTV_EMOTE_REMOVED_LINE", { emote: n }),
     ),
     ...update.renamed.map((r) =>
       t("FEED_SEVENTV_EMOTE_RENAMED_LINE", {
-        actor: who,
         from: r.from,
         to: r.to,
       }),

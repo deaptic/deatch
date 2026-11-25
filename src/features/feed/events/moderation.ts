@@ -36,7 +36,7 @@ import { chatterFields, feedEvent, noticeText } from "../entries/feedEvent.ts";
 import { setModeratedChannels } from "../../permissions/index.ts";
 import { hasPermission } from "../../permissions/index.ts";
 import { mapFragment } from "../entries/chat.ts";
-import { moderateMessage } from "../entries/moderateMessage.ts";
+import { moderateEvent } from "../entries/moderateMessage.ts";
 import { automodReason } from "../entries/automodReason.ts";
 import {
   suspiciousInfo,
@@ -45,7 +45,6 @@ import {
 } from "../entries/suspicious.ts";
 import {
   CHAT_CLEARED,
-  moderateNoticeType,
   SUSPICIOUS_USER,
   UNBAN_REQUEST,
   WARNING_ACKNOWLEDGED,
@@ -106,25 +105,15 @@ export function start(): () => void {
     listenEventSub<RawModerate>("channel.moderate", (e) => {
       const payload = e.event;
       applySharedChatAction(payload);
-      const now = serverTime(e);
-      const msg = moderateMessage(payload, now);
-      if (!msg) return;
-      appendItem(
-        payload.broadcaster_user_id,
-        feedEvent(moderateNoticeType(payload.action), msg, now, {
-          chatter_name: payload.moderator_user_name,
-        }),
-      );
+      const item = moderateEvent(payload, serverTime(e));
+      if (item) appendItem(payload.broadcaster_user_id, item);
     }),
     listenFeed<RawUnbanRequestCreate>(
       "channel.unban_request.create",
       (raw, timestamp) =>
         feedEvent(
           UNBAN_REQUEST,
-          noticeText(
-            t("FEED_UNBAN_REQUEST_SENT_LINE", { user: raw.user_name }),
-            raw.text,
-          ),
+          noticeText(t("FEED_UNBAN_REQUEST_SENT_LINE"), raw.text),
           timestamp,
           {
             id: `unban-request-${raw.id}`,
@@ -139,7 +128,7 @@ export function start(): () => void {
         raw.status === "canceled"
           ? feedEvent(
               UNBAN_REQUEST,
-              t("FEED_UNBAN_REQUEST_WITHDRAWN_LINE", { user: raw.user_name }),
+              t("FEED_UNBAN_REQUEST_WITHDRAWN_LINE"),
               timestamp,
               {
                 ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
@@ -152,7 +141,7 @@ export function start(): () => void {
       (raw, timestamp) =>
         feedEvent(
           WARNING_ACKNOWLEDGED,
-          t("FEED_WARNING_ACKNOWLEDGED_LINE", { user: raw.user_name }),
+          t("FEED_WARNING_ACKNOWLEDGED_LINE"),
           timestamp,
           {
             ...chatterFields(raw.user_id, raw.user_login, raw.user_name),
@@ -176,7 +165,11 @@ export function start(): () => void {
       "channel.suspicious_user.update",
       (raw, timestamp) =>
         feedEvent(SUSPICIOUS_USER, suspiciousUpdate(raw), timestamp, {
-          chatter_name: raw.moderator_user_name,
+          ...chatterFields(
+            raw.moderator_user_id,
+            raw.moderator_user_login,
+            raw.moderator_user_name,
+          ),
         }),
     ),
     listenFeed<RawAutomodMessageHold>(

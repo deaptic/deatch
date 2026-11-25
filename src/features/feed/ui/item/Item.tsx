@@ -25,8 +25,8 @@ type Props = ItemLayout & {
 
 const TINTED = {
   edge: "border-(--tone)",
-  rest: "bg-(--tone)/10 hover:bg-(--tone)/14",
-  selected: "bg-(--tone)/14",
+  rest: "tint-rest hover:tint-strong",
+  selected: "tint-strong",
 };
 
 const PLAIN = {
