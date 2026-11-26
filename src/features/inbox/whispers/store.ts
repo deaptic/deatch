@@ -6,7 +6,7 @@ import {
   sendWhisper,
 } from "../../../platform/twitch/whispers.ts";
 import type { UserRef, Whisper } from "../../../shared/types/index.ts";
-import { countUnread, withSaved } from "./model.ts";
+import { conversationsOf, countUnread, withSaved } from "./model.ts";
 import { user } from "../../users/index.ts";
 
 const [whispers, setWhispers] = createSignal<Whisper[]>([]);
@@ -15,6 +15,7 @@ const [drafts, setDrafts] = createSignal<UserRef[]>([]);
 export { drafts, openPeer, whispers };
 
 export const unreadCount = () => countUnread(whispers());
+export const conversations = () => conversationsOf(whispers(), drafts());
 
 export function load(): void {
   const id = user()?.id;

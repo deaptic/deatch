@@ -13,7 +13,6 @@ import { createPopover } from "../../../kit/createPopover.ts";
 import ConversationRow from "./ConversationRow.tsx";
 import NewWhisperPopover from "./NewWhisperPopover.tsx";
 import WhisperThread from "./WhisperThread.tsx";
-import { conversationsOf } from "./model.ts";
 import * as whispers from "./store.ts";
 
 const LIST_PX = 280;
@@ -26,9 +25,6 @@ export default function Whispers() {
   const picker = createPopover();
   let root: HTMLDivElement | undefined;
   let newButton: HTMLButtonElement | undefined;
-
-  const conversations = () =>
-    conversationsOf(whispers.whispers(), whispers.drafts());
 
   onMount(() => {
     if (!root) return;
@@ -70,7 +66,7 @@ export default function Whispers() {
           <Divider class="mx-4" />
           <div class="flex-1 min-h-0 overflow-y-auto py-2 flex flex-col gap-row-gap">
             <For
-              each={conversations()}
+              each={whispers.conversations()}
               fallback={
                 <Show when={expanded()}>
                   <div class="px-4 py-2">

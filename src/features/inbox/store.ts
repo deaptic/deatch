@@ -14,6 +14,10 @@ export const unreadCount = () =>
 
 export const openWhisper = (peer: UserRef): void => whispers.open(peer);
 
+export const newMentions = () => mentions.mentions().filter((m) => m.unread);
+export const earlierMentions = () =>
+  mentions.mentions().filter((m) => !m.unread);
+
 export function start(): () => void {
   const stops = [mentions.start(), whisperEvents.start()];
   const dispose = createRoot((dispose) => {

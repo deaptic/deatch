@@ -1,29 +1,87 @@
-import { onCleanup, onMount, Show } from "solid-js";
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
+import {
+  createListNavigation,
+  wrapIndex,
+} from "../../shared/solid/createListNavigation.ts";
 import Button from "../../kit/Button.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import SectionTitle from "../../kit/SectionTitle.tsx";
 import Surface from "../../kit/Surface.tsx";
 import Mentions from "./mentions/Mentions.tsx";
 import * as mentions from "./mentions/store.ts";
+import type { Mention } from "./mentions/types.ts";
 import Whispers from "./whispers/Whispers.tsx";
 import * as whispers from "./whispers/store.ts";
-import { setTab, tab } from "./store.ts";
+import { earlierMentions, newMentions, setTab, tab } from "./store.ts";
 
 type Props = {
   onJump: (broadcasterId: string, messageId: string) => void;
   onOpenChannel: (broadcasterId: string) => void;
 };
 
+const { unlessTyping } = shortcuts;
+
+function switchTab() {
+  setTab(tab() === "mentions" ? "whispers" : "mentions");
+}
+
+function stepWhisper(delta: 1 | -1) {
+  const list = whispers.conversations();
+  const at = list.findIndex((c) => c.peer.id === whispers.openPeer()?.id);
+  const next = list[at === -1 ? 0 : wrapIndex(at, delta, list.length)];
+  if (next) whispers.open(next.peer);
+}
+
 export default function Inbox(props: Props) {
+  const ordered = () => [...newMentions(), ...earlierMentions()];
+  const [navigating, setNavigating] = createSignal(false);
+  const nav = createListNavigation({
+    count: () => ordered().length,
+    rowAt: (i) => {
+      const id = ordered()[i]?.id;
+      return id
+        ? document.querySelector(`[data-mention-id="${CSS.escape(id)}"]`)
+        : null;
+    },
+  });
+  const highlighted = (): Mention | undefined =>
+    navigating() ? ordered()[nav.active()] : undefined;
+
+  function jump(m: Mention) {
+    mentions.markRead(m.id);
+    props.onJump(m.broadcasterId, m.message.message_id);
+  }
+
+  const onMentions = (action: (m: Mention) => void) =>
+    unlessTyping(() => {
+      const m = tab() === "mentions" ? highlighted() : undefined;
+      if (!m) return shortcuts.PASS;
+      action(m);
+    });
+
+  const step = (delta: 1 | -1) =>
+    unlessTyping(() => {
+      if (tab() === "whispers") return stepWhisper(delta);
+      if (navigating()) nav.move(delta);
+      else setNavigating(true);
+    });
+
   onMount(() => {
     onCleanup(
-      shortcuts.registerLocal("escape", () => {
-        if (tab() !== "whispers" || !whispers.openPeer()) {
-          return shortcuts.PASS;
-        }
-        whispers.back();
+      shortcuts.bindScope("inboxOpen", {
+        tab: unlessTyping(switchTab),
+        "shift-tab": unlessTyping(switchTab),
+        up: step(-1),
+        down: step(1),
+        enter: onMentions(jump),
+        delete: onMentions((m) => mentions.dismiss(m.id)),
+        escape: () => {
+          if (tab() !== "whispers" || !whispers.openPeer())
+            return shortcuts.PASS;
+          whispers.back();
+        },
       }),
     );
   });
@@ -61,6 +119,7 @@ export default function Inbox(props: Props) {
       </Surface>
       <Show when={tab() === "mentions"} fallback={<Whispers />}>
         <Mentions
+          selectedId={highlighted()?.id ?? null}
           onJump={(m, messageId) => {
             mentions.markRead(m.id);
             props.onJump(m.broadcasterId, messageId);

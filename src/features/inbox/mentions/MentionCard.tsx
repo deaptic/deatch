@@ -15,6 +15,7 @@ import type { Mention } from "./types.ts";
 
 type Props = {
   mention: Mention;
+  selected: boolean;
   onJump: (messageId: string) => void;
   onOpenChannel: () => void;
 };
@@ -36,8 +37,11 @@ export default function MentionCard(props: Props) {
   );
 
   return (
-    <Card tone={m().unread ? "tinted" : "plain"}>
-      <header class="flex items-center gap-2 px-4 pt-3 pb-1 text-(length:--chat-size)">
+    <Card tone={m().unread ? "tinted" : "plain"} selected={props.selected}>
+      <header
+        data-mention-id={m().id}
+        class="flex items-center gap-2 px-4 pt-3 pb-1 text-(length:--chat-size)"
+      >
         <span class="flex-1 min-w-0 flex items-center gap-1.5">
           <Text
             size="relative"

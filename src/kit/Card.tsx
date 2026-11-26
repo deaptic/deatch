@@ -12,6 +12,7 @@ const TONES: Record<Tone, string> = {
 
 type Props = {
   tone?: Tone;
+  selected?: boolean;
   children: JSX.Element;
 };
 
@@ -20,8 +21,8 @@ export default function Card(props: Props) {
   return (
     <section
       class={`rounded-lg ${TONES[props.tone ?? "plain"]} ${
-        query().trim() ? "not-has-data-match:hidden" : ""
-      }`}
+        props.selected ? "ring-2 ring-accent" : ""
+      } ${query().trim() ? "not-has-data-match:hidden" : ""}`}
     >
       {props.children}
     </section>
