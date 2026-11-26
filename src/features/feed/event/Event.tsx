@@ -141,8 +141,13 @@ export default function Event(props: Props) {
       </Show>
       <FeedItem.Content>
         <Show when={!comfortable()}>
-          <span class="*:size-feed-icon inline-grid align-text-bottom mr-1.5 text-(--tone)">
-            {icon()}
+          <span
+            class="inline-grid align-(--spacing-feed-badge-drop) mr-1.5"
+            data-tip={t(look().title)}
+          >
+            <FeedItem.Tile color={look().color} shape="badge">
+              <span class="*:size-full grid size-3/4">{icon()}</span>
+            </FeedItem.Tile>
           </span>
           <Show when={author()}>
             {(who) => (

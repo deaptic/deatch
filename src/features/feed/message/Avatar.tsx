@@ -24,7 +24,7 @@ export default function Avatar(props: Props) {
       class={`relative shrink-0 grid ${userLinkHover(props)}`}
       {...userLink(() => props.chatter, props)}
     >
-      <FeedItem.Tile round color={chatterTint(props.color)}>
+      <FeedItem.Tile shape="round" color={chatterTint(props.color)}>
         <ChatterPicture
           userId={props.chatter.id}
           name={props.chatter.displayName}
