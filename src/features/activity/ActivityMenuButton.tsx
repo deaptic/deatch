@@ -46,8 +46,7 @@ export default function ActivityMenuButton(props: { broadcasterId: string }) {
           <MenuItem
             label={t(ACTIVITY_LABELS[kind])}
             icon={<ActivityIcon kind={kind} />}
-            active={activityShown(kind)}
-            keepOpen
+            checked={activityShown(kind)}
             onClick={() => setActivityShown(kind, !activityShown(kind))}
           />
         )}

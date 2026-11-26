@@ -5,6 +5,7 @@ import { markSeen } from "../../feed/index.ts";
 import { countUnread, fresh, msUntilNextExpiry } from "./model.ts";
 import { upgradeMention } from "./upgrade.ts";
 import {
+  inboxShows,
   notificationsMentionSound,
   streamerMode,
 } from "../../preferences/index.ts";
@@ -16,9 +17,10 @@ import * as storage from "../../../platform/storage.ts";
 const [mentions, setMentions] = createSignal<Mention[]>([]);
 export { mentions };
 
-export const unreadCount = () => countUnread(mentions());
+export const shown = () => mentions().filter((m) => inboxShows(m.reason.kind));
+export const unreadCount = () => countUnread(shown());
 export const unreadCountIn = (broadcasterId: string) =>
-  countUnread(mentions(), broadcasterId);
+  countUnread(shown(), broadcasterId);
 
 const MAX = 100;
 const SAVE_DELAY_MS = 1000;
@@ -82,7 +84,12 @@ export function record(m: Omit<Mention, "unread">) {
   const isActive = selectedChannel()?.id === m.broadcasterId;
   const next = [{ ...m, unread: !isActive }, ...fresh(prev, Date.now())];
   setMentions(save(next.length > MAX ? next.slice(0, MAX) : next));
-  if (notificationsMentionSound() && !streamerMode()) playNotificationSound();
+  if (
+    notificationsMentionSound() &&
+    inboxShows(m.reason.kind) &&
+    !streamerMode()
+  )
+    playNotificationSound();
 }
 
 function pruneExpired() {
@@ -111,5 +118,3 @@ export function dismiss(id: string) {
     return next.length === prev.length ? prev : save(next);
   });
 }
-
-export const dismissAll = () => setMentions(save([]));

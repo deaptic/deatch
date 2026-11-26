@@ -5,7 +5,16 @@ import { LINK } from "./link.ts";
 import { TRIGGERS } from "./triggers.ts";
 import { TIMERS } from "./timers.ts";
 import { WIDGETS } from "./widgets.ts";
-import { bool, object, oneOf, text, textList, type Value } from "./fields.ts";
+import {
+  bool,
+  flags,
+  object,
+  oneOf,
+  text,
+  textList,
+  type Value,
+} from "./fields.ts";
+import { MENTION_KINDS } from "../../../shared/mentions.ts";
 import { CLOCKS } from "../../../shared/time.ts";
 import { LANGUAGES, systemLanguage } from "../../../shared/i18n/index.ts";
 
@@ -52,6 +61,7 @@ const SECTIONS = {
     streamerMode: bool(false),
     streamerAuto: bool(true),
   }),
+  inbox: object({ shows: flags(MENTION_KINDS, () => true) }),
   appearance: APPEARANCE,
   feed: FEED,
   language: object({

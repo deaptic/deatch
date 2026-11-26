@@ -1,8 +1,8 @@
 import type { FeedMessage } from "../../feed/index.ts";
+import type { MentionKind } from "../../../shared/mentions.ts";
 
 export type MentionReason =
-  | { kind: "mention" }
-  | { kind: "reply" }
+  | { kind: Exclude<MentionKind, "keyword"> }
   | { kind: "keyword"; term: string };
 
 export type Mention = {

@@ -3,6 +3,7 @@ import { For, Show } from "solid-js";
 import { t, type MessageKey } from "../../../shared/i18n/index.ts";
 import EmptyState from "../../../kit/EmptyState.tsx";
 import SectionLabel from "../../../kit/SectionLabel.tsx";
+import Text from "../../../kit/Text.tsx";
 import { users } from "../../users/index.ts";
 import MentionCard from "./MentionCard.tsx";
 import { earlierMentions, newMentions } from "../store.ts";
@@ -57,12 +58,21 @@ export default function Mentions(props: Actions) {
     >
       <div class="flex-1 min-h-0 overflow-y-auto">
         <div class="w-full max-w-180 mx-auto px-5 py-5 flex flex-col gap-8">
-          <Section {...props} label="INBOX_NEW_TITLE" list={newMentions()} />
-          <Section
-            {...props}
-            label="INBOX_EARLIER_TITLE"
-            list={earlierMentions()}
-          />
+          <Show
+            when={mentions.shown().length}
+            fallback={
+              <Text as="p" size="sm" tone="faint">
+                {t("INBOX_FILTERED_EMPTY")}
+              </Text>
+            }
+          >
+            <Section {...props} label="INBOX_NEW_TITLE" list={newMentions()} />
+            <Section
+              {...props}
+              label="INBOX_EARLIER_TITLE"
+              list={earlierMentions()}
+            />
+          </Show>
         </div>
       </div>
     </Show>

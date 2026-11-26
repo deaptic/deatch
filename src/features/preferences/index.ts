@@ -49,4 +49,5 @@ export * from "./widgets.ts";
 export * from "./appearance.ts";
 export * from "./explore.ts";
 export * from "./link.ts";
+export * from "./inbox.ts";
 export { load, start } from "./start.ts";

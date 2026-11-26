@@ -6,10 +6,10 @@ import {
   createListNavigation,
   wrapIndex,
 } from "../../shared/solid/createListNavigation.ts";
-import Button from "../../kit/Button.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import SectionTitle from "../../kit/SectionTitle.tsx";
 import Surface from "../../kit/Surface.tsx";
+import MentionFilter from "./mentions/MentionFilter.tsx";
 import Mentions from "./mentions/Mentions.tsx";
 import * as mentions from "./mentions/store.ts";
 import type { Mention } from "./mentions/types.ts";
@@ -117,11 +117,9 @@ export default function Inbox(props: Props) {
             ]}
             onChange={setTab}
           />
-          <Show when={tab() === "mentions" && mentions.mentions().length}>
+          <Show when={tab() === "mentions"}>
             <span class="ml-auto">
-              <Button variant="ghost" size="sm" onClick={mentions.dismissAll}>
-                {t("INBOX_CLEAR_ALL_LABEL")}
-              </Button>
+              <MentionFilter />
             </span>
           </Show>
         </div>

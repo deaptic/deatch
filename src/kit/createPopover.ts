@@ -20,12 +20,17 @@ export function createPopover<T extends object = Record<string, never>>() {
   return { state, open, close, update };
 }
 
-export function createAnchoredToggle(align: "start" | "center") {
+export function createAnchoredToggle(align: "start" | "center" | "end") {
   const popover = createPopover();
   function toggle(el: HTMLElement | undefined) {
     if (popover.state() || !el) return popover.close();
     const r = el.getBoundingClientRect();
-    const x = align === "center" ? r.left + r.width / 2 : r.left;
+    const x =
+      align === "center"
+        ? r.left + r.width / 2
+        : align === "end"
+          ? r.right
+          : r.left;
     popover.open(x, r.bottom + OVERLAY_GAP, {});
   }
   return { anchor: popover.state, toggle, close: popover.close };

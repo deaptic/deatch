@@ -5,6 +5,7 @@ import { createAnchoredToggle } from "./createPopover.ts";
 import Transition from "./Transition.tsx";
 
 type Props = {
+  align?: "center" | "end";
   label: string;
   tip?: string | false;
   icon: JSX.Element;
@@ -13,7 +14,9 @@ type Props = {
 };
 
 export default function IconMenuButton(props: Props) {
-  const { anchor, toggle, close } = createAnchoredToggle("center");
+  const { anchor, toggle, close } = createAnchoredToggle(
+    props.align ?? "center",
+  );
   let button: HTMLButtonElement | undefined;
 
   return (
@@ -38,7 +41,7 @@ export default function IconMenuButton(props: Props) {
           <Menu
             x={a().x}
             y={a().y}
-            align="center"
+            align={props.align ?? "center"}
             opener={() => button}
             onClose={close}
           >
