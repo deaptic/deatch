@@ -17,9 +17,14 @@ import {
 } from "../../preferences/index.ts";
 import { whisperFrom } from "./model.ts";
 import * as whispers from "./store.ts";
+import { tab } from "../tab.ts";
 
 function viewing(peerId: string): boolean {
-  return activeView() === "inbox" && whispers.openPeer()?.id === peerId;
+  return (
+    activeView() === "inbox" &&
+    tab() === "whispers" &&
+    whispers.openPeer()?.id === peerId
+  );
 }
 
 function arrive(raw: RawWhisper, timestamp: number): void {

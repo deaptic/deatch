@@ -1,13 +1,12 @@
-import { createEffect, createRoot, createSignal, on } from "solid-js";
+import { createEffect, createRoot, on } from "solid-js";
 import * as mentions from "./mentions/store.ts";
 import * as whispers from "./whispers/store.ts";
 import * as whisperEvents from "./whispers/events.ts";
 import type { UserRef } from "../../shared/types/index.ts";
 
-export type Tab = "mentions" | "whispers";
+import { setTab } from "./tab.ts";
 
-const [tab, setTab] = createSignal<Tab>("mentions");
-export { setTab, tab };
+export { setTab, tab, type Tab } from "./tab.ts";
 
 export const unreadCount = () =>
   mentions.unreadCount() + whispers.unreadCount();
