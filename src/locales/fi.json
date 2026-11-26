@@ -848,6 +848,8 @@
   "SETTINGS_LINK_ATTACK_LABEL": "Nousuaika",
   "SETTINGS_LINK_COMPRESSOR_DESCRIPTION": "Tasaa äänenvoimakkuutta Twitch-välilehtien välillä.",
   "SETTINGS_LINK_COMPRESSOR_LABEL": "Kompressori",
+  "SETTINGS_LINK_ENABLED_DESCRIPTION": "Ohjaa Twitch-selainvälilehtiäsi kanavalistasta.",
+  "SETTINGS_LINK_ENABLED_LABEL": "Link",
   "SETTINGS_LINK_GAIN_DESCRIPTION": "Taso kompressoinnin jälkeen.",
   "SETTINGS_LINK_GAIN_LABEL": "Vahvistus",
   "SETTINGS_LINK_RATIO_DESCRIPTION": "Kuinka voimakkaasti se kompressoi kynnyksen yläpuolella.",

@@ -848,6 +848,8 @@
   "SETTINGS_LINK_ATTACK_LABEL": "Attack",
   "SETTINGS_LINK_COMPRESSOR_DESCRIPTION": "Evens out volume across Twitch tabs.",
   "SETTINGS_LINK_COMPRESSOR_LABEL": "Compressor",
+  "SETTINGS_LINK_ENABLED_DESCRIPTION": "Control your Twitch browser tabs from the channel list.",
+  "SETTINGS_LINK_ENABLED_LABEL": "Link",
   "SETTINGS_LINK_GAIN_DESCRIPTION": "Level after compression.",
   "SETTINGS_LINK_GAIN_LABEL": "Gain",
   "SETTINGS_LINK_RATIO_DESCRIPTION": "How hard it compresses above the threshold.",

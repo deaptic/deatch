@@ -10,6 +10,7 @@ import {
 import * as browser from "../../platform/browser.ts";
 import {
   appearanceRailExpanded,
+  linkEnabled,
   pinnedChannels,
   systemFollowedChannels,
   appearanceFollowedPrompt,
@@ -299,7 +300,9 @@ export default function Rail(props: Props) {
 
       <Divider class="mx-4" />
       <div class={`flex flex-col py-2 shrink-0 gap-row-gap`}>
-        <RailLinkRow onToggleLink={props.onToggleLink} />
+        <Show when={linkEnabled()}>
+          <RailLinkRow onToggleLink={props.onToggleLink} />
+        </Show>
         <RailRow
           label={t("RAIL_EXPLORE_LABEL")}
           sub={t("RAIL_EXPLORE_DESCRIPTION")}

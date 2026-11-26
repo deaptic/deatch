@@ -1,6 +1,7 @@
 import { createEffect, createRoot, createSignal, on } from "solid-js";
 import { selectedChannel } from "../navigation/index.ts";
 import { user } from "../users/index.ts";
+import { linkEnabled } from "../preferences/index.ts";
 import {
   linkClose,
   linkFocus,
@@ -24,10 +25,15 @@ import { t } from "../../shared/i18n/index.ts";
 import { createBackoff } from "../../shared/backoff.ts";
 import { planState } from "./model.ts";
 
-const [connected, setConnected] = createSignal(false);
-const [hasAudio, setHasAudio] = createSignal(false);
-const [activeTab, setActiveTab] = createSignal<User | null>(null);
-const [tabs, setTabs] = createSignal<User[]>([]);
+const [hostConnected, setConnected] = createSignal(false);
+const [hostHasAudio, setHasAudio] = createSignal(false);
+const [hostActiveTab, setActiveTab] = createSignal<User | null>(null);
+const [hostTabs, setTabs] = createSignal<User[]>([]);
+
+const connected = () => linkEnabled() && hostConnected();
+const hasAudio = () => linkEnabled() && hostHasAudio();
+const activeTab = () => (linkEnabled() ? hostActiveTab() : null);
+const tabs = (): User[] => (linkEnabled() ? hostTabs() : []);
 const [mutedByLogin, setMutedByLogin] = createSignal<Record<string, boolean>>(
   {},
 );
@@ -202,12 +208,12 @@ let pendingCurrent: string | null = null;
 const retry = createBackoff(RETRY_MIN_MS, RETRY_MAX_MS);
 
 async function drainPending() {
-  if (!connected() || !user()) return;
+  if (!hostConnected() || !user()) return;
   if (pendingFetch.size > 0) await drainTabs();
   if (pendingCurrent) await drainCurrent(pendingCurrent);
 
   if (pendingFetch.size > 0 || pendingCurrent) {
-    if (connected()) retry.schedule(() => void drainPending());
+    if (hostConnected()) retry.schedule(() => void drainPending());
   } else {
     retry.succeeded();
   }
@@ -221,7 +227,7 @@ async function drainTabs() {
   if (!fetched) return;
   const stillOpen = fetched.filter((u) => pendingFetch.has(u.login));
   for (const login of toFetch) pendingFetch.delete(login);
-  const current = tabs();
+  const current = hostTabs();
   const known = new Set(current.map((c) => c.login));
   setTabs([...current, ...stillOpen.filter((u) => !known.has(u.login))]);
 }
@@ -234,15 +240,15 @@ async function drainCurrent(slug: string) {
   if (pendingCurrent !== slug) return;
   pendingCurrent = null;
   const [ch] = found;
-  if (ch && activeTab()?.id !== ch.id) setActiveTab(ch);
+  if (ch && hostActiveTab()?.id !== ch.id) setActiveTab(ch);
 }
 
 export async function applyState(state: LinkState) {
   setConnected(true);
   setHasAudio(state.audio === true);
 
-  const warmed = tabs();
-  const plan = planState(state, warmed, activeTab()?.login ?? null);
+  const warmed = hostTabs();
+  const plan = planState(state, warmed, hostActiveTab()?.login ?? null);
   setMutedByLogin(plan.muted);
   if (plan.keep.length !== warmed.length) setTabs(plan.keep);
   pendingFetch = plan.fetch;

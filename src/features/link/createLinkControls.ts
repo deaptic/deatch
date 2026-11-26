@@ -13,6 +13,7 @@ import {
   linkAudioLink,
   linkChannelGains,
   linkCompressor,
+  linkEnabled,
 } from "../preferences/index.ts";
 import * as link from "./store.ts";
 import { at } from "../../shared/at.ts";
@@ -35,7 +36,11 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
   );
 
   createEffect(() =>
-    link.sendAudio(linkCompressor(), compressorSettings(), linkChannelGains()),
+    link.sendAudio(
+      linkEnabled() && linkCompressor(),
+      compressorSettings(),
+      linkEnabled() ? linkChannelGains() : {},
+    ),
   );
 
   createEffect(

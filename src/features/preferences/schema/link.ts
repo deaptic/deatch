@@ -24,6 +24,7 @@ const compressorSettings = custom<CompressorSettings>(
 );
 
 export const LINK = object({
+  enabled: bool(true),
   audioLink: bool(false),
   compressor: bool(false),
   compressorSettings,
