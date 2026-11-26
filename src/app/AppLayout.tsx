@@ -2,6 +2,7 @@ import { Whispers } from "../features/whispers/index.ts";
 import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "./title-bar/TitleBar.tsx";
 import { UpdateBanner } from "../features/updater/index.ts";
+import { Changelog, UpdateNotes } from "../features/changelog/index.ts";
 import { StreamerModeBanner } from "../features/streamer-mode/index.ts";
 import Toaster from "../kit/Toaster.tsx";
 import { EmoteCard, HoverZoom } from "../features/emotes/index.ts";
@@ -93,6 +94,11 @@ export default function AppLayout(props: AppLayoutProps) {
                     <Whispers />
                   </Boundary>
                 </Show>
+                <Show when={activeView() === "changelog"}>
+                  <Boundary>
+                    <Changelog />
+                  </Boundary>
+                </Show>
                 <Show when={activeView() === "settings"}>
                   <Boundary label={t("SETTINGS_BOUNDARY_ERROR")}>
                     <Suspense>
@@ -145,6 +151,9 @@ export default function AppLayout(props: AppLayoutProps) {
         </Boundary>
         <Boundary silent>
           <LinkPrompt />
+        </Boundary>
+        <Boundary silent>
+          <UpdateNotes />
         </Boundary>
         <TooltipHost />
       </div>

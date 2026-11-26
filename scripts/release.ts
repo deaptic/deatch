@@ -3,10 +3,13 @@ import { readFile, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import { branchBlocker, parseSync, syncBlocker } from "./branch.ts";
 import { setLockedVersion } from "./cargo-lock.ts";
+import { notesFor } from "../src/shared/changelog.ts";
 import { type Command, run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
 const execFileAsync = promisify(execFile);
+
+const CHANGELOG = "CHANGELOG.md";
 
 const FILES = {
   pkg: "package.json",
@@ -85,6 +88,12 @@ if (syncProblem) fail(syncProblem);
 const tag = `v${next}`;
 if (await captureStdout(["git", "tag", "--list", tag])) {
   fail(`tag ${tag} already exists`);
+}
+
+if (!notesFor(await readFile(CHANGELOG, "utf8"), next)) {
+  fail(
+    `${CHANGELOG} has no notes for ${tag} — add a "## ${tag}" section first`,
+  );
 }
 
 console.log(`bumping ${current} → ${next}`);

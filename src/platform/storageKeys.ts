@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   users: "cache:users",
   globalBadges: "cache:global_badges",
   globalEmotes: "cache:global_emotes",
+  seenVersion: "app:seen_version",
 } as const;
 
 const USER_EMOTES_PREFIX = "cache:user_emotes:";

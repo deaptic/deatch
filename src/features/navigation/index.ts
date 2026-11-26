@@ -18,6 +18,7 @@ export {
   selectedChannel,
   showExplore,
   showWhispers,
+  showChangelog,
   leavePage,
   toggleSettings,
   resetView,

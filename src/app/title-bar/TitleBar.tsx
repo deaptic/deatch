@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   Square,
   X,
+  Sparkles,
 } from "lucide-solid";
 import { createSignal, onMount, Show } from "solid-js";
 import { appVersion } from "../../platform/app.ts";
@@ -19,10 +20,13 @@ import {
 } from "../../platform/window.ts";
 import { windowMaximized as maximized } from "../../platform/windowState.ts";
 import {
+  activeView,
   isOverlayOpen,
+  showChangelog,
   toggleOverlay,
 } from "../../features/navigation/index.ts";
 import * as inbox from "../../features/inbox/index.ts";
+import { user } from "../../features/users/index.ts";
 import {
   developerMode,
   appearanceRailExpanded,
@@ -117,6 +121,16 @@ export default function TitleBar(props: Props) {
               onClick={() => toggleOverlay("diagnostics")}
             >
               <Activity class="size-4" />
+            </TitleBarButton>
+          </Show>
+          <Show when={user()}>
+            <TitleBarButton
+              label={t("TITLE_BAR_CHANGELOG_LABEL")}
+              data-tip={t("TITLE_BAR_CHANGELOG_LABEL")}
+              pressed={activeView() === "changelog"}
+              onClick={showChangelog}
+            >
+              <Sparkles class="size-4" />
             </TitleBarButton>
           </Show>
           <TitleBarButton

@@ -5,6 +5,27 @@ together.
 
 ## App
 
+First add a `## vX.Y.Z — D Month YYYY` section to `CHANGELOG.md` (the
+`changelog` skill drafts it) and commit it. The release script refuses a version
+without one, and the workflow puts the section on the GitHub Release page. The
+app bundles `CHANGELOG.md` and shows every release on its "What's new" page,
+opened from the title bar. The first time an updated copy starts, a popup shows
+the summary and the `New` and `Improved` lines, with a button to that page; new
+installs skip it.
+
+Write for streamers and mods, not developers:
+
+- Open with one sentence that sums up the release.
+- Group changes under `### New`, `### Improved`, `### Fixed` and `### Removed`,
+  using only the groups the release needs.
+- One line per feature, not per commit, starting with what the user sees, most
+  important first.
+- Call buttons and settings what the screen calls them.
+- Plain words: no code names, file names or technical terms.
+- Plain text only in the lines: no bold, code marks or links. The app shows
+  them as written.
+- Leave out what nobody would notice: refactors, tests, CI, dependency updates.
+
 ```powershell
 vp run release           # patch
 vp run release minor | major | 1.2.3

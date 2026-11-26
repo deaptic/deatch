@@ -28,6 +28,7 @@ import * as whispers from "../features/whispers/index.ts";
 import * as streamerMode from "../features/streamer-mode/index.ts";
 import * as timers from "../features/timers/index.ts";
 import * as widgets from "../features/widgets/index.ts";
+import * as changelog from "../features/changelog/index.ts";
 
 export function createServices(): void {
   onMount(() => {
@@ -46,6 +47,7 @@ export function createServices(): void {
       login.start(),
       shortcuts.start(),
       updater.start(),
+      changelog.start(),
       clock.start(),
       emotes.start(),
       badges.start(),

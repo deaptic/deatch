@@ -76,6 +76,11 @@ export function showWhispers() {
   setLinkSynced(false);
 }
 
+export function showChangelog() {
+  setNavigation((nav) => openPage(nav, "changelog"));
+  setLinkSynced(false);
+}
+
 export function resetView() {
   visits = emptyVisits();
   setNavigation(startNavigation<User>());

@@ -24,6 +24,18 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: release notes
+        id: notes
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          {
+            echo "body<<RELEASE_NOTES"
+            node scripts/release-notes.ts "$TAG"
+            echo "RELEASE_NOTES"
+          } >> "$GITHUB_OUTPUT"
+
       - name: build and release
         uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0.6.2
         env:
@@ -33,6 +45,7 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Deatch ${{ github.ref_name }}"
+          releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: false
           prerelease: false
           updaterJsonPreferNsis: false
