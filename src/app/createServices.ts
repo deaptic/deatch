@@ -24,7 +24,6 @@ import * as explore from "../features/explore/index.ts";
 import * as channels from "../features/channels/index.ts";
 import * as people from "../features/people/index.ts";
 import * as blocks from "../features/blocks/index.ts";
-import * as whispers from "../features/whispers/index.ts";
 import * as streamerMode from "../features/streamer-mode/index.ts";
 import * as timers from "../features/timers/index.ts";
 import * as widgets from "../features/widgets/index.ts";
@@ -59,7 +58,6 @@ export function createServices(): void {
       channels.start(),
       people.start(),
       blocks.start(),
-      whispers.start(),
       streamerMode.start(),
       timers.start(),
       widgets.start(),

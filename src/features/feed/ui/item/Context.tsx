@@ -1,5 +1,6 @@
 import { type JSX, Show, useContext } from "solid-js";
 import { DensityContext } from "./Item.tsx";
+import Hook from "./Hook.tsx";
 
 type Props = { children?: JSX.Element; thread?: JSX.Element };
 
@@ -29,13 +30,5 @@ export default function Context(props: Props) {
         )}
       </Show>
     </div>
-  );
-}
-
-function Hook(props: { class: string }) {
-  return (
-    <span
-      class={`absolute top-1/2 left-1/2 -ml-px h-feed-hook border-l-2 border-t-2 border-ink-faint rounded-tl-sm ${props.class}`}
-    />
   );
 }

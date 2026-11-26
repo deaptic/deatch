@@ -1,4 +1,4 @@
-export type Page = "explore" | "whispers" | "changelog";
+export type Page = "explore" | "inbox" | "changelog";
 
 export type View<C extends object> = Page | "settings" | C;
 

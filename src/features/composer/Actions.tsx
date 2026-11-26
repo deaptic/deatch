@@ -53,7 +53,7 @@ export default function Actions(props: Props) {
           />
         </IconButton>
         <Show when={active().length > 1}>
-          <span class="absolute -top-1 -right-1 pointer-events-none">
+          <span class="absolute -top-1 -right-1 pointer-events-none flex">
             <Badge count={active().length} tone="accent" floating />
           </span>
         </Show>

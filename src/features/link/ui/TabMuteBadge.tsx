@@ -19,7 +19,7 @@ export default function TabMuteBadge(props: Props) {
         props.onToggle();
       }}
       onMouseDown={(e) => e.stopPropagation()}
-      class={`absolute -top-1 -right-1 size-5 rounded-full ring-2 ring-surface grid place-items-center cursor-pointer transition-colors duration-snap ${
+      class={`absolute -bottom-1 -right-1 size-5 rounded-full ring-2 ring-surface grid place-items-center cursor-pointer transition-colors duration-snap ${
         props.muted
           ? "bg-surface text-negative hover:bg-raised"
           : "bg-surface text-positive hover:bg-raised"

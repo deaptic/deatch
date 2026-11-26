@@ -67,6 +67,7 @@ type Props = Omit<JSX.HTMLAttributes<HTMLElement>, "style"> & {
   tabular?: boolean;
   italic?: boolean;
   nowrap?: boolean;
+  interactive?: boolean;
   color?: string;
 };
 
@@ -83,6 +84,7 @@ export default function Text(props: Props) {
     "tabular",
     "italic",
     "nowrap",
+    "interactive",
     "color",
     "class",
   ]);
@@ -98,6 +100,8 @@ export default function Text(props: Props) {
       local.tabular && "tabular-nums",
       local.italic && "italic",
       local.nowrap && "whitespace-nowrap",
+      local.interactive &&
+        "cursor-pointer transition-colors duration-snap hover:text-ink hover:underline",
       local.color && "text-(--text-color)",
       local.class,
     ]

@@ -1,7 +1,15 @@
 import { children, type JSX, Show } from "solid-js";
 
+type Align = "center" | "start";
+
+const ALIGNS: Record<Align, string> = {
+  center: "items-center",
+  start: "items-start",
+};
+
 type Props = {
   selected?: boolean;
+  align?: Align;
   actions?: JSX.Element;
   revealActions?: boolean;
   onClick?: (e: MouseEvent) => void;
@@ -9,8 +17,7 @@ type Props = {
   children: JSX.Element;
 };
 
-const MAIN =
-  "flex-1 min-w-0 min-h-control-md flex items-center gap-2.5 px-2.5 py-1.5";
+const MAIN = "flex-1 min-w-0 min-h-control-md flex gap-2.5 px-2.5 py-1.5";
 
 export default function ListRow(props: Props) {
   const actions = children(() => props.actions);
@@ -22,13 +29,17 @@ export default function ListRow(props: Props) {
     >
       <Show
         when={props.onClick}
-        fallback={<div class={MAIN}>{props.children}</div>}
+        fallback={
+          <div class={`${MAIN} ${ALIGNS[props.align ?? "center"]}`}>
+            {props.children}
+          </div>
+        }
       >
         {(onClick) => (
           <button
             type="button"
             aria-current={props.selected}
-            class={`${MAIN} text-left cursor-pointer`}
+            class={`${MAIN} ${ALIGNS[props.align ?? "center"]} text-left cursor-pointer`}
             onClick={(e) => onClick()(e)}
             onContextMenu={(e) => {
               if (!props.onContextMenu) return;

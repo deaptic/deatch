@@ -1,4 +1,5 @@
-import { For, type JSX } from "solid-js";
+import { For, type JSX, Show } from "solid-js";
+import Badge from "./Badge.tsx";
 import { wrapIndex } from "../shared/solid/createListNavigation.ts";
 
 const STEPS: Record<string, 1 | -1> = {
@@ -8,7 +9,12 @@ const STEPS: Record<string, 1 | -1> = {
   ArrowUp: -1,
 };
 
-type Option<T> = { value: T; label: string; icon?: JSX.Element };
+type Option<T> = {
+  value: T;
+  label: string;
+  icon?: JSX.Element;
+  count?: number;
+};
 
 type SegmentedSize = "md" | "lg";
 
@@ -65,7 +71,7 @@ export default function Segmented<T extends string>(props: Props<T>) {
             aria-label={o.icon ? o.label : undefined}
             data-tip={o.icon ? o.label : undefined}
             onClick={() => props.onChange(o.value)}
-            class={`${OPTION_HEIGHT[props.size ?? "md"]} rounded-xs text-sm font-semibold cursor-pointer grid place-items-center transition-colors duration-snap [&>svg]:size-4 ${
+            class={`${OPTION_HEIGHT[props.size ?? "md"]} rounded-xs text-sm font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-colors duration-snap [&>svg]:size-4 ${
               props.fill ? "flex-1 min-w-0 px-1" : "px-3"
             } ${
               props.value === o.value
@@ -74,6 +80,7 @@ export default function Segmented<T extends string>(props: Props<T>) {
             }`}
           >
             {o.icon ?? o.label}
+            <Show when={o.count}>{(count) => <Badge count={count()} />}</Show>
           </button>
         )}
       </For>

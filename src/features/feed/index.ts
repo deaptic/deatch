@@ -10,6 +10,8 @@ export * as feedLog from "./history/feedLog.ts";
 export * as history from "./history/history.ts";
 export * as recovery from "./history/recovery.ts";
 export { default as Message } from "./message/Message.tsx";
+export { default as Reply } from "./message/Reply.tsx";
+export { default as ReplyHook } from "./ui/item/Hook.tsx";
 export {
   clearDivider,
   feeds,

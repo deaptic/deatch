@@ -1,24 +1,24 @@
 import { Smile } from "lucide-solid";
 import { createSignal, lazy, onMount, Show, Suspense } from "solid-js";
-import { t } from "../../shared/i18n/index.ts";
-import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
-import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
-import IconButton from "../../kit/IconButton.tsx";
-import InputGroupSlot from "../../kit/InputGroupSlot.tsx";
-import * as emotes from "../emotes/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
+import { POPOVER_TOGGLE } from "../../../shared/solid/dismissOnOutside.ts";
+import { MAX_MESSAGE_LENGTH } from "../../../shared/twitch.ts";
+import IconButton from "../../../kit/IconButton.tsx";
+import InputGroupSlot from "../../../kit/InputGroupSlot.tsx";
+import * as emotes from "../../emotes/index.ts";
 import {
   CharCounter,
   ChatAutocomplete,
   type ChatAutocompleteHandle,
   type ComposerFieldApi,
   InputField,
-} from "../composer/index.ts";
-import { fieldFrom } from "../../shared/solid/createListbox.ts";
+} from "../../composer/index.ts";
+import { fieldFrom } from "../../../shared/solid/createListbox.ts";
 import {
   closeOverlay,
   isOverlayOpen,
   toggleOverlay,
-} from "../navigation/index.ts";
+} from "../../navigation/index.ts";
 const EmotePicker = lazy(emotes.loadEmotePicker);
 
 type Props = {

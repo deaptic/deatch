@@ -1,6 +1,6 @@
-import type { UserRef, Whisper } from "../../shared/types/index.ts";
-import type { RawWhisper } from "../../platform/twitch/eventsubPayloads.ts";
-import type { FeedMessage } from "../feed/index.ts";
+import type { UserRef, Whisper } from "../../../shared/types/index.ts";
+import type { RawWhisper } from "../../../platform/twitch/eventsubPayloads.ts";
+import type { FeedMessage } from "../../feed/index.ts";
 
 export type Conversation = {
   peer: UserRef;

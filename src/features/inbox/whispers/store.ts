@@ -4,10 +4,10 @@ import {
   markWhispersRead,
   saveWhispers,
   sendWhisper,
-} from "../../platform/twitch/whispers.ts";
-import type { UserRef, Whisper } from "../../shared/types/index.ts";
+} from "../../../platform/twitch/whispers.ts";
+import type { UserRef, Whisper } from "../../../shared/types/index.ts";
 import { countUnread, withSaved } from "./model.ts";
-import { user } from "../users/index.ts";
+import { user } from "../../users/index.ts";
 
 const [whispers, setWhispers] = createSignal<Whisper[]>([]);
 const [openPeer, setOpenPeer] = createSignal<UserRef | null>(null);

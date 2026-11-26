@@ -1,92 +1,73 @@
-import { AtSign } from "lucide-solid";
-import { createEffect, Show } from "solid-js";
-import Group from "./Group.tsx";
-import * as inbox from "./store.ts";
-import type { Mention } from "./types.ts";
-import { users } from "../users/index.ts";
-import Button from "../../kit/Button.tsx";
-import EmptyState from "../../kit/EmptyState.tsx";
-import Popover from "../../kit/Popover.tsx";
+import { onCleanup, onMount, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
-import PanelHeader from "../../kit/PanelHeader.tsx";
+import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
+import Button from "../../kit/Button.tsx";
+import Segmented from "../../kit/Segmented.tsx";
+import SectionTitle from "../../kit/SectionTitle.tsx";
+import Surface from "../../kit/Surface.tsx";
+import Mentions from "./mentions/Mentions.tsx";
+import * as mentions from "./mentions/store.ts";
+import Whispers from "./whispers/Whispers.tsx";
+import * as whispers from "./whispers/store.ts";
+import { setTab, tab } from "./store.ts";
 
 type Props = {
-  x: number;
-  y: number;
-  onClose: () => void;
   onJump: (broadcasterId: string, messageId: string) => void;
   onOpenChannel: (broadcasterId: string) => void;
 };
 
 export default function Inbox(props: Props) {
-  createEffect(() => {
-    const ids = [
-      ...new Set(
-        inbox
-          .mentions()
-          .flatMap((m) => [m.message.chatter_user_id, m.broadcasterId]),
-      ),
-    ];
-    if (ids.length) users.get(ids).catch(() => {});
+  onMount(() => {
+    onCleanup(
+      shortcuts.registerLocal("escape", () => {
+        if (tab() !== "whispers" || !whispers.openPeer()) {
+          return shortcuts.PASS;
+        }
+        whispers.back();
+      }),
+    );
   });
 
-  const unread = () => inbox.mentions().filter((m) => m.unread);
-  const seen = () => inbox.mentions().filter((m) => !m.unread);
-
-  function jump(m: Mention) {
-    props.onJump(m.broadcasterId, m.message.message_id);
-    props.onClose();
-  }
-
-  function openChannel(m: Mention) {
-    props.onOpenChannel(m.broadcasterId);
-    props.onClose();
-  }
-
-  const clear = (m: Mention) => inbox.dismiss(m.id);
-
   return (
-    <Popover x={props.x} y={props.y} align="center" onClose={props.onClose}>
-      <div class="w-120 max-w-full max-h-160 min-h-0 flex flex-col">
-        <PanelHeader
-          inset
-          title={t("INBOX_TITLE")}
-          actions={
-            <Show when={inbox.mentions().length > 0}>
-              <Button variant="ghost" size="sm" onClick={inbox.dismissAll}>
+    <div class="flex-1 min-h-0 flex flex-col">
+      <Surface as="header" tone="none" edge="bottom" class="shrink-0">
+        <div class="h-14 px-5 flex items-center gap-4">
+          <SectionTitle>{t("INBOX_TITLE")}</SectionTitle>
+          <Segmented
+            label={t("INBOX_TITLE")}
+            value={tab()}
+            options={[
+              {
+                value: "mentions",
+                label: t("INBOX_MENTIONS_TAB_LABEL"),
+                count: mentions.unreadCount(),
+              },
+              {
+                value: "whispers",
+                label: t("INBOX_WHISPERS_TAB_LABEL"),
+                count: whispers.unreadCount(),
+              },
+            ]}
+            onChange={setTab}
+          />
+          <Show when={tab() === "mentions" && mentions.mentions().length}>
+            <span class="ml-auto">
+              <Button variant="ghost" size="sm" onClick={mentions.dismissAll}>
                 {t("INBOX_CLEAR_ALL_LABEL")}
               </Button>
-            </Show>
-          }
+            </span>
+          </Show>
+        </div>
+      </Surface>
+      <Show when={tab() === "mentions"} fallback={<Whispers />}>
+        <Mentions
+          onJump={(m, messageId) => {
+            mentions.markRead(m.id);
+            props.onJump(m.broadcasterId, messageId);
+          }}
+          onOpenChannel={(m) => props.onOpenChannel(m.broadcasterId)}
         />
-        <Show
-          when={inbox.mentions().length > 0}
-          fallback={
-            <EmptyState
-              icon={<AtSign />}
-              title={t("INBOX_EMPTY")}
-              body={t("INBOX_EMPTY_DESCRIPTION")}
-            />
-          }
-        >
-          <div class="flex-1 min-h-0 overflow-y-auto p-3 flex flex-col gap-4">
-            <Group
-              label={t("INBOX_NEW_TITLE")}
-              mentions={unread()}
-              onJump={jump}
-              onOpenChannel={openChannel}
-              onClear={clear}
-            />
-            <Group
-              label={t("INBOX_EARLIER_TITLE")}
-              mentions={seen()}
-              onJump={jump}
-              onOpenChannel={openChannel}
-              onClear={clear}
-            />
-          </div>
-        </Show>
-      </div>
-    </Popover>
+      </Show>
+    </div>
   );
 }

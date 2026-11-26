@@ -23,12 +23,12 @@ import { streamForUserId } from "../channels/index.ts";
 import {
   type ChannelForm,
   setChannelForm,
-  toggleOverlay,
   openSettings,
   selectedChannel,
   settingsSection,
   SETTINGS_SECTIONS,
   showExplore,
+  showInbox,
 } from "../navigation/index.ts";
 import { showsControls } from "../permissions/index.ts";
 import { CHAT_MODES, isOn, presetLabel } from "../chat-modes/index.ts";
@@ -54,7 +54,7 @@ function appActions(): PaletteAction[] {
       id: "inbox",
       label: t("QUICK_SWITCH_OPEN_INBOX_LABEL"),
       icon: Inbox,
-      run: () => toggleOverlay("inbox"),
+      run: showInbox,
     },
   ];
 }

@@ -1,3 +1,4 @@
+import { Users } from "lucide-solid";
 import { Show } from "solid-js";
 import { channelInfoFor, streamForUserId } from "../channels/index.ts";
 import { formatCount } from "../../shared/format/stream.ts";
@@ -12,7 +13,6 @@ import * as browser from "../../platform/browser.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
 import { pendingChannel } from "../navigation/index.ts";
-import Dot from "../../kit/Dot.tsx";
 import Text from "../../kit/Text.tsx";
 
 type Props = {
@@ -47,7 +47,9 @@ export default function ChannelRow(props: Props) {
         >
           {(s) => (
             <span class="shrink-0 flex items-center gap-1.5">
-              <Dot tone="negative" />
+              <Text size="sm" tone="negative" class="flex">
+                <Users class="size-3.5" />
+              </Text>
               <Text size="sm" tone="soft" tabular>
                 {formatCount(s().viewerCount)}
               </Text>

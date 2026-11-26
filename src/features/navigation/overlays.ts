@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 
 type Overlay =
-  | "inbox"
   | "diagnostics"
   | "emotePicker"
   | "appearance"

@@ -2,7 +2,6 @@ import Boundary from "../../kit/Boundary.tsx";
 import {
   Activity,
   Copy,
-  Inbox as InboxIcon,
   Minus,
   PanelLeftClose,
   PanelLeftOpen,
@@ -25,7 +24,6 @@ import {
   showChangelog,
   toggleOverlay,
 } from "../../features/navigation/index.ts";
-import * as inbox from "../../features/inbox/index.ts";
 import { user } from "../../features/users/index.ts";
 import {
   developerMode,
@@ -33,11 +31,9 @@ import {
   setAppearanceRailExpanded,
 } from "../../features/preferences/index.ts";
 import { POPOVER_TOGGLE } from "../../shared/solid/dismissOnOutside.ts";
-import Badge from "../../kit/Badge.tsx";
 import TitleBarButton from "../../kit/TitleBarButton.tsx";
 import Divider from "../../kit/Divider.tsx";
 import { OVERLAY_GAP } from "../../kit/Popover.tsx";
-import { Inbox } from "../../features/inbox/index.ts";
 import { AppearancePanel } from "../../features/appearance/index.ts";
 import { Diagnostics } from "../../features/diagnostics/index.ts";
 import ResizeHandle from "./ResizeHandle.tsx";
@@ -52,14 +48,8 @@ function below(button: HTMLElement | undefined) {
     : { x: 0, y: 0 };
 }
 
-type Props = {
-  onJumpToMessage: (broadcasterId: string, messageId: string) => void;
-  onOpenChannel: (broadcasterId: string) => void;
-};
-
-export default function TitleBar(props: Props) {
+export default function TitleBar() {
   const [version, setVersion] = createSignal("");
-  let inboxBtn: HTMLButtonElement | undefined;
   let appearanceBtn: HTMLButtonElement | undefined;
   let diagnosticsBtn: HTMLButtonElement | undefined;
 
@@ -143,21 +133,6 @@ export default function TitleBar(props: Props) {
           >
             <SlidersHorizontal class="size-4" />
           </TitleBarButton>
-          <TitleBarButton
-            ref={inboxBtn}
-            label={t("TITLE_BAR_INBOX_LABEL")}
-            data-tip={t("TITLE_BAR_INBOX_LABEL")}
-            pressed={isOverlayOpen("inbox")}
-            {...{ [POPOVER_TOGGLE]: "" }}
-            onClick={() => toggleOverlay("inbox")}
-          >
-            <InboxIcon class="size-4" />
-            <Show when={inbox.unreadCount() > 0}>
-              <span class="absolute top-1 right-1.5">
-                <Badge count={inbox.unreadCount()} />
-              </span>
-            </Show>
-          </TitleBarButton>
           <Divider vertical class="self-center mx-1" />
           <TitleBarButton
             label={t("TITLE_BAR_MINIMIZE_LABEL")}
@@ -198,16 +173,6 @@ export default function TitleBar(props: Props) {
           </Boundary>
         )}
       </Transition>
-      <Show when={isOverlayOpen("inbox")}>
-        <Boundary silent>
-          <Inbox
-            {...below(inboxBtn)}
-            onClose={() => toggleOverlay("inbox")}
-            onJump={props.onJumpToMessage}
-            onOpenChannel={props.onOpenChannel}
-          />
-        </Boundary>
-      </Show>
       <Transition when={developerMode() && isOverlayOpen("diagnostics")}>
         {() => (
           <Boundary silent>

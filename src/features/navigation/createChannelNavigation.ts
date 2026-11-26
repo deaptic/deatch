@@ -11,6 +11,7 @@ import {
   setJumpTarget,
   setLinkSynced,
   setSelectedChannel,
+  showPage,
 } from "./store.ts";
 import * as link from "../link/index.ts";
 import { rememberChannel } from "../preferences/index.ts";
@@ -63,8 +64,9 @@ export function createChannelNavigation(): ChannelNavigation {
   }
 
   function stepHistory(delta: 1 | -1) {
-    const ch = stepVisits(delta);
-    if (ch) selectChannel(ch);
+    const place = stepVisits(delta);
+    if (typeof place === "string") showPage(place);
+    else if (place) selectChannel(place);
   }
 
   createEffect(

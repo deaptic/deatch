@@ -39,8 +39,8 @@ test("leaving a page goes back from settings, then from Explore to the last chan
   expect(leavePage(startNavigation())).toBeNull();
 });
 
-test("whispers is a page like Explore: leaving it returns to the last channel", () => {
-  const nav = openPage(openChannel(startNavigation(), a), "whispers");
+test("inbox is a page like Explore: leaving it returns to the last channel", () => {
+  const nav = openPage(openChannel(startNavigation(), a), "inbox");
   expect(channelOf(nav.view)).toBeNull();
   expect(leavePage(nav)?.view).toBe(a);
 });

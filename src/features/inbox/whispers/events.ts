@@ -3,23 +3,23 @@ import {
   listenEventSub,
   serverTime,
   unlistenAll,
-} from "../../platform/listen.ts";
-import type { RawWhisper } from "../../platform/twitch/eventsubPayloads.ts";
-import { flashTaskbar } from "../../platform/notifications.ts";
-import { addToast } from "../../kit/toasts.ts";
-import { playNotificationSound } from "../../platform/notifications.ts";
-import { t } from "../../shared/i18n/index.ts";
-import { user } from "../users/index.ts";
-import { activeView, showWhispers } from "../navigation/index.ts";
+} from "../../../platform/listen.ts";
+import type { RawWhisper } from "../../../platform/twitch/eventsubPayloads.ts";
+import { flashTaskbar } from "../../../platform/notifications.ts";
+import { addToast } from "../../../kit/toasts.ts";
+import { playNotificationSound } from "../../../platform/notifications.ts";
+import { t } from "../../../shared/i18n/index.ts";
+import { user } from "../../users/index.ts";
+import { activeView, showInbox } from "../../navigation/index.ts";
 import {
   notificationsWhisperSound,
   streamerMode,
-} from "../preferences/index.ts";
+} from "../../preferences/index.ts";
 import { whisperFrom } from "./model.ts";
 import * as whispers from "./store.ts";
 
 function viewing(peerId: string): boolean {
-  return activeView() === "whispers" && whispers.openPeer()?.id === peerId;
+  return activeView() === "inbox" && whispers.openPeer()?.id === peerId;
 }
 
 function arrive(raw: RawWhisper, timestamp: number): void {
@@ -34,7 +34,7 @@ function arrive(raw: RawWhisper, timestamp: number): void {
       whisper.text,
       () => {
         whispers.open(whisper.peer);
-        showWhispers();
+        showInbox();
       },
     );
   }

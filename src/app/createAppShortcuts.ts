@@ -8,6 +8,7 @@ import {
   toggleOverlay,
   leavePage,
   showExplore,
+  showInbox,
   toggleSettings,
   type ChannelNavigation,
 } from "../features/navigation/index.ts";
@@ -60,7 +61,7 @@ export function createAppShortcuts(
       shortcuts.register("rail::toggle", () =>
         setAppearanceRailExpanded(!appearanceRailExpanded()),
       ),
-      shortcuts.register("inbox::toggle", () => toggleOverlay("inbox")),
+      shortcuts.register("inbox::toggle", showInbox),
       shortcuts.register("quickSwitch::toggle", () =>
         toggleOverlay("quickSwitch"),
       ),

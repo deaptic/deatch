@@ -1,4 +1,3 @@
-import { Whispers } from "../features/whispers/index.ts";
 import { lazy, Show, Suspense } from "solid-js";
 import TitleBar from "./title-bar/TitleBar.tsx";
 import { UpdateBanner } from "../features/updater/index.ts";
@@ -21,7 +20,7 @@ import {
 } from "../features/navigation/index.ts";
 import { user } from "../features/users/index.ts";
 import { authChecked, Login } from "../features/login/index.ts";
-import * as inbox from "../features/inbox/index.ts";
+import { Inbox } from "../features/inbox/index.ts";
 import { removeToast, toasts } from "../kit/toasts.ts";
 import type { AppController } from "./createAppController.ts";
 import { t } from "../shared/i18n/index.ts";
@@ -51,13 +50,7 @@ export default function AppLayout(props: AppLayoutProps) {
 
   return (
     <div class="flex flex-col h-screen bg-canvas relative">
-      <TitleBar
-        onJumpToMessage={(broadcasterId, messageId) => {
-          inbox.markRead(messageId);
-          c.jumpToMessage(broadcasterId, messageId);
-        }}
-        onOpenChannel={c.openChannel}
-      />
+      <TitleBar />
       <UpdateBanner />
       <StreamerModeBanner />
       <div class="relative flex-1 min-h-0 flex overflow-hidden">
@@ -89,9 +82,12 @@ export default function AppLayout(props: AppLayoutProps) {
                     <Explore onSelectChannel={c.selectChannel} />
                   </Boundary>
                 </Show>
-                <Show when={activeView() === "whispers"}>
+                <Show when={activeView() === "inbox"}>
                   <Boundary>
-                    <Whispers />
+                    <Inbox
+                      onJump={c.jumpToMessage}
+                      onOpenChannel={c.openChannel}
+                    />
                   </Boundary>
                 </Show>
                 <Show when={activeView() === "changelog"}>

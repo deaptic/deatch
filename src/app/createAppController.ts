@@ -3,7 +3,6 @@ import { createChannelNavigation } from "../features/navigation/index.ts";
 import { createLinkControls } from "../features/link/index.ts";
 import { createSelectedChannelEffects } from "./createSelectedChannelEffects.ts";
 import * as inbox from "../features/inbox/index.ts";
-import * as whispers from "../features/whispers/index.ts";
 import { createTaskbarBadge } from "./createTaskbarBadge.ts";
 import { createSystemIntegration } from "./createSystemIntegration.ts";
 import { createSessionLifecycle } from "./createSessionLifecycle.ts";
@@ -23,7 +22,7 @@ export function createAppController(): AppController {
   const link = createLinkControls(nav);
 
   createSelectedChannelEffects();
-  createTaskbarBadge(() => inbox.unreadCount() + whispers.unreadCount());
+  createTaskbarBadge(inbox.unreadCount);
   createSystemIntegration();
   createSessionLifecycle();
   createAppShortcuts(nav, link);

@@ -8,6 +8,7 @@ import {
   type Navigation,
   openChannel,
   openPage,
+  type Page,
   startNavigation,
   toggleSettings as toggleNavigationSettings,
 } from "./model.ts";
@@ -53,33 +54,36 @@ const [settingsSection, setSettingsSection] =
   createSignal<SettingsSection>("account");
 export { setSettingsSection, settingsSection };
 
-let visits = emptyVisits<User>();
+export type Place = Page | User;
+type Visit = { id: string; place: Place };
+
+const visitOf = (place: Place): Visit => ({
+  id: typeof place === "string" ? `page:${place}` : place.id,
+  place,
+});
+
+let visits = emptyVisits<Visit>();
 
 export function recordVisit(channel: User) {
-  visits = visit(visits, channel);
+  visits = visit(visits, visitOf(channel));
 }
 
-export function stepVisits(delta: 1 | -1): User | null {
+export function stepVisits(delta: 1 | -1): Place | null {
   const next = step(visits, delta);
   if (!next) return null;
   visits = next;
-  return at(next.entries, next.index);
+  return at(next.entries, next.index).place;
 }
 
-export function showExplore() {
-  setNavigation((nav) => openPage(nav, "explore"));
+export function showPage(page: Page) {
+  setNavigation((nav) => openPage(nav, page));
   setLinkSynced(false);
+  visits = visit(visits, visitOf(page));
 }
 
-export function showWhispers() {
-  setNavigation((nav) => openPage(nav, "whispers"));
-  setLinkSynced(false);
-}
-
-export function showChangelog() {
-  setNavigation((nav) => openPage(nav, "changelog"));
-  setLinkSynced(false);
-}
+export const showExplore = () => showPage("explore");
+export const showInbox = () => showPage("inbox");
+export const showChangelog = () => showPage("changelog");
 
 export function resetView() {
   visits = emptyVisits();

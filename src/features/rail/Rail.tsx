@@ -1,7 +1,7 @@
 import { createEffect, createMemo, For, on, Show } from "solid-js";
 import {
   EyeOff,
-  MessageCircle,
+  Inbox as InboxIcon,
   Plus,
   Radio,
   Search,
@@ -19,14 +19,13 @@ import {
 } from "../preferences/index.ts";
 import { hasUnread } from "../feed/index.ts";
 import * as inbox from "../inbox/index.ts";
-import * as whispers from "../whispers/index.ts";
 import * as link from "../link/index.ts";
 import {
   activeView,
   isSettingsOpen,
   pendingChannel,
   showExplore,
-  showWhispers,
+  showInbox,
   toggleSettings,
 } from "../navigation/index.ts";
 import { user } from "../users/index.ts";
@@ -314,14 +313,14 @@ export default function Rail(props: Props) {
           </IconTile>
         </RailRow>
         <RailRow
-          label={t("RAIL_WHISPERS_LABEL")}
-          sub={t("RAIL_WHISPERS_DESCRIPTION")}
-          selected={activeView() === "whispers"}
-          count={whispers.unreadCount()}
-          onClick={showWhispers}
+          label={t("RAIL_INBOX_LABEL")}
+          sub={t("RAIL_INBOX_DESCRIPTION")}
+          selected={activeView() === "inbox"}
+          count={inbox.unreadCount()}
+          onClick={showInbox}
         >
-          <IconTile active={activeView() === "whispers" && "accent"}>
-            <MessageCircle />
+          <IconTile active={activeView() === "inbox" && "accent"}>
+            <InboxIcon />
           </IconTile>
         </RailRow>
         <RailRow

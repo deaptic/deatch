@@ -59,12 +59,11 @@ const ALLOWED: Record<string, number> = {
   "feed/message/Reply.tsx": 7,
   "feed/message/Source.tsx": 3,
   "feed/ui/item/Content.tsx": 1,
-  "feed/ui/item/Context.tsx": 2,
   "feed/ui/item/Detail.tsx": 1,
+  "feed/ui/item/Hook.tsx": 2,
   "feed/ui/item/Item.tsx": 3,
   "feed/ui/item/Note.tsx": 2,
   "feed/ui/item/Tile.tsx": 1,
-  "inbox/Item.tsx": 4,
   "link/ui/TabMuteBadge.tsx": 9,
   "login/Login.tsx": 4,
   "message/Badges.tsx": 2,
@@ -73,7 +72,6 @@ const ALLOWED: Record<string, number> = {
   "message/NameList.tsx": 1,
   "quick-switch/QuickSwitch.tsx": 5,
   "rail/Rail.tsx": 3,
-  "rail/RailRow.tsx": 5,
   "rail/ui/ScrollChevron.tsx": 3,
   "settings/Settings.tsx": 1,
   "timers/TimersSettings.tsx": 3,
@@ -86,7 +84,6 @@ const ALLOWED: Record<string, number> = {
   "user-card/ui/BanChoiceStrip.tsx": 2,
   "user-card/ui/Live.tsx": 5,
   "user-card/ui/Meta.tsx": 4,
-  "whispers/Whispers.tsx": 1,
 };
 
 test("views style through kit components; hand styling only shrinks", () => {

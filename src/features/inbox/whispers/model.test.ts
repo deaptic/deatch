@@ -7,7 +7,7 @@ import {
   whisperFrom,
   withSaved,
 } from "./model.ts";
-import type { Whisper } from "../../shared/types/index.ts";
+import type { Whisper } from "../../../shared/types/index.ts";
 
 const peer = (id: string) => ({ id, login: id, displayName: id.toUpperCase() });
 
