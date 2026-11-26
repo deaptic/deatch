@@ -2,6 +2,27 @@
 
 What's new in each version of Deatch, newest first.
 
+## v0.4.5 — 26 November 2026
+
+Mentions and whispers now share one Inbox, and Deatch is easier to use from the keyboard.
+
+### New
+
+- The Inbox brings mentions and whispers together on one page, with unread counts on each tab.
+- Press Ctrl+/ to see the keyboard shortcuts for where you are.
+- Link can be turned off in Settings > Link, which hides it from the channel list.
+
+### Improved
+
+- Mentions show replies and follow your chat text size, pictures and timestamps settings.
+- The whisper list shrinks to pictures when the window is narrow.
+- Live channels show their viewer count next to the name, leaving room for the game.
+- Focus outlines only appear when you use the keyboard.
+
+### Fixed
+
+- Message search shows channel names instead of numbers.
+
 ## v0.4.4 — 26 November 2026
 
 See what's new in each update, right in the app.
