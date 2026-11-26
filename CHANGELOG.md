@@ -2,6 +2,19 @@
 
 What's new in each version of Deatch, newest first.
 
+## v0.4.4 — 26 November 2026
+
+See what's new in each update, right in the app.
+
+### New
+
+- A What's new page lists every release. Open it from the sparkle button in the title bar.
+- After an update, a popup shows its highlights, with a link to the full list.
+
+### Improved
+
+- Release pages on GitHub include these notes too.
+
 ## v0.4.3 — 26 November 2026
 
 Right-click menus work properly again, and event icons in compact mode look tidier.
