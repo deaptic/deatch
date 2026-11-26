@@ -84,6 +84,7 @@ export default function TriggerCard(props: {
         <IconButton
           variant="negative"
           label={t("SETTINGS_TRIGGERS_DELETE_LABEL")}
+          tip={false}
           onClick={props.onDelete}
         >
           <Trash2 class="size-4" />

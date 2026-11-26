@@ -228,6 +228,7 @@ export default function Settings() {
                     <Show when={query()}>
                       <IconButton
                         label={t("SETTINGS_SEARCH_CLEAR_LABEL")}
+                        tip={false}
                         size="sm"
                         onClick={() => setQuery("")}
                       >

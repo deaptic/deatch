@@ -79,6 +79,7 @@ export default function ConditionRow(props: Props) {
       <Show when={props.removable}>
         <IconButton
           label={t("SETTINGS_TRIGGERS_REMOVE_CONDITION_LABEL")}
+          tip={false}
           onClick={props.onRemove}
         >
           <X class="size-4" />

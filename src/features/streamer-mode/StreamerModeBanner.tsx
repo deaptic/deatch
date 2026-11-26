@@ -32,6 +32,7 @@ export default function StreamerModeBanner() {
               </Button>
               <IconButton
                 label={t("STREAMER_MODE_DISMISS_LABEL")}
+                tip={false}
                 size="sm"
                 onClick={streamer.dismiss}
               >

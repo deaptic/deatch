@@ -52,6 +52,7 @@ export default function ExploreBar(props: Props) {
             <Show when={props.query}>
               <IconButton
                 label={t("EXPLORE_CLEAR_SEARCH_LABEL")}
+                tip={false}
                 size="sm"
                 onClick={() => props.onQuery("")}
               >

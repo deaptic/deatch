@@ -100,6 +100,7 @@ function TimerCard(props: {
         />
         <IconButton
           label={t("SETTINGS_TIMERS_DELETE_LABEL")}
+          tip={false}
           size="sm"
           onClick={() => removeTimer(timer().id)}
         >

@@ -110,6 +110,7 @@ export default function Header(props: Props) {
         </IconButton>
         <IconButton
           label={t("USER_CARD_CLOSE_LABEL")}
+          tip={false}
           variant="media"
           size="sm"
           onMouseDown={(e) => e.stopPropagation()}

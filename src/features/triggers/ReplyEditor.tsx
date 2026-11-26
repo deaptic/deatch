@@ -65,6 +65,7 @@ export default function ReplyEditor(props: Props) {
         </IconButton>
         <IconButton
           label={t("SETTINGS_TRIGGERS_REMOVE_REPLY_LABEL")}
+          tip={false}
           onClick={props.onRemove}
         >
           <Trash2 class="size-4" />

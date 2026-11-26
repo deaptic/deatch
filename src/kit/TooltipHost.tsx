@@ -1,9 +1,7 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import Tooltip, { type TooltipPlace } from "./Tooltip.tsx";
 import { SIDE_GAP } from "./Popover.tsx";
-
-const DELAY_MS = 300;
-const STAYS_WARM_MS = 400;
+import { coolDown, isWarm, TOOLTIP_DELAY_MS } from "./tooltipTiming.ts";
 
 type Tip = TooltipPlace & { text: string; instant: boolean };
 
@@ -11,10 +9,9 @@ export default function TooltipHost() {
   const [tip, setTip] = createSignal<Tip | null>(null);
   let anchor: HTMLElement | null = null;
   let timer: ReturnType<typeof setTimeout> | undefined;
-  let warmUntil = 0;
 
   function hide() {
-    if (tip()) warmUntil = performance.now() + STAYS_WARM_MS;
+    if (tip()) coolDown();
     clearTimeout(timer);
     anchor = null;
     setTip(null);
@@ -54,8 +51,8 @@ export default function TooltipHost() {
     hide();
     if (!el) return;
     anchor = el;
-    if (performance.now() < warmUntil) return show(el, true);
-    timer = setTimeout(() => show(el, false), DELAY_MS);
+    if (isWarm()) return show(el, true);
+    timer = setTimeout(() => show(el, false), TOOLTIP_DELAY_MS);
   }
 
   const onOver = (e: MouseEvent) => arm(e.target as Element);

@@ -90,6 +90,7 @@ export default function PeopleDialog(props: Props) {
         actions={
           <IconButton
             label={t("CHATTERS_CLOSE_LABEL")}
+            tip={false}
             size="sm"
             onClick={() => props.onClose()}
           >

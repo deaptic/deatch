@@ -286,6 +286,7 @@ export default function Composer(props: Props) {
             <span class="flex-1 min-w-0 truncate">{reply().text}</span>
             <IconButton
               label={t("COMPOSER_CANCEL_REPLY_LABEL")}
+              tip={false}
               size="sm"
               onClick={props.onClearReply}
             >

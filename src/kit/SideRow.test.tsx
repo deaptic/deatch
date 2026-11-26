@@ -1,11 +1,18 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render } from "@solidjs/testing-library";
-import { afterEach, expect, test, vi } from "vite-plus/test";
+import { afterEach, beforeEach, expect, test, vi } from "vite-plus/test";
 import SideRow from "./SideRow.tsx";
+import { TOOLTIP_DELAY_MS } from "./tooltipTiming.ts";
 
-afterEach(cleanup);
+beforeEach(() => vi.useFakeTimers());
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
-test("builds the hover card only when it is shown", () => {
+const settle = () => vi.advanceTimersByTime(TOOLTIP_DELAY_MS * 2);
+
+test("opens the hover card only after resting on the row", () => {
   const card = vi.fn(() => <span>card</span>);
   const view = render(() => (
     <SideRow expanded label="viewer1" card={card}>
@@ -13,11 +20,14 @@ test("builds the hover card only when it is shown", () => {
     </SideRow>
   ));
   const row = view.getByRole("button");
-  expect(card).not.toHaveBeenCalled();
   fireEvent.mouseOver(row);
+  expect(card).not.toHaveBeenCalled();
+  vi.advanceTimersByTime(TOOLTIP_DELAY_MS);
   expect(card).toHaveBeenCalledTimes(1);
   fireEvent.mouseLeave(row);
+  settle();
   fireEvent.mouseOver(row);
+  settle();
   expect(card).toHaveBeenCalledTimes(2);
 });
 
@@ -29,7 +39,9 @@ test("leaves the hover card closed while the pointer is on an inner tooltip", ()
     </SideRow>
   ));
   fireEvent.mouseOver(view.getByText("mute"));
+  settle();
   expect(card).not.toHaveBeenCalled();
   fireEvent.mouseOver(view.getByRole("button"));
+  settle();
   expect(card).toHaveBeenCalledTimes(1);
 });

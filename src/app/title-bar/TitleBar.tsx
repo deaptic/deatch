@@ -71,11 +71,6 @@ export default function TitleBar() {
               ? "RAIL_COLLAPSE_LABEL"
               : "RAIL_EXPAND_LABEL",
           )}
-          data-tip={t(
-            appearanceRailExpanded()
-              ? "RAIL_COLLAPSE_LABEL"
-              : "RAIL_EXPAND_LABEL",
-          )}
           aria-expanded={appearanceRailExpanded()}
           onClick={() => setAppearanceRailExpanded(!appearanceRailExpanded())}
         >
