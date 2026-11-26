@@ -23,7 +23,7 @@ import Modal from "../../kit/Modal.tsx";
 import Segmented from "../../kit/Segmented.tsx";
 import { feedLog, textOf } from "../feed/index.ts";
 import { selectedChannel } from "../navigation/index.ts";
-import { knownUser } from "../users/index.ts";
+import { knownUser, users } from "../users/index.ts";
 import EmptyState from "../../kit/EmptyState.tsx";
 import OptionRow from "../../kit/OptionRow.tsx";
 import PaletteList from "../../kit/PaletteList.tsx";
@@ -61,6 +61,8 @@ export default function SearchPalette(props: Props) {
       q ? feedLog.search(q, channel, LIMIT).catch(() => []) : [],
     { initialValue: [] },
   );
+
+  users.ensure(() => results().map((hit) => hit.broadcasterId));
 
   const listbox = createListbox({ count: () => results().length });
   createEffect(on(results, () => listbox.setActive(0)));

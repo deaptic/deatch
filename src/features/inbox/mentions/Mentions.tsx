@@ -1,5 +1,5 @@
 import { AtSign } from "lucide-solid";
-import { createEffect, For, Show } from "solid-js";
+import { For, Show } from "solid-js";
 import { t, type MessageKey } from "../../../shared/i18n/index.ts";
 import EmptyState from "../../../kit/EmptyState.tsx";
 import SectionLabel from "../../../kit/SectionLabel.tsx";
@@ -38,16 +38,11 @@ function Section(props: Actions & { label: MessageKey; list: Mention[] }) {
 }
 
 export default function Mentions(props: Actions) {
-  createEffect(() => {
-    const ids = [
-      ...new Set(
-        mentions
-          .mentions()
-          .flatMap((m) => [m.message.chatter_user_id, m.broadcasterId]),
-      ),
-    ];
-    if (ids.length) users.get(ids).catch(() => {});
-  });
+  users.ensure(() =>
+    mentions
+      .mentions()
+      .flatMap((m) => [m.message.chatter_user_id, m.broadcasterId]),
+  );
 
   return (
     <Show

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, on, useContext } from "solid-js";
+import { createMemo, useContext } from "solid-js";
 import { ImageScale } from "../../shared/solid/imageScale.ts";
 import { users } from "../users/index.ts";
 import { knownUser } from "../users/index.ts";
@@ -28,14 +28,7 @@ export default function ChatterPicture(props: Props) {
       : undefined;
   });
 
-  createEffect(
-    on(
-      () => props.userId,
-      (id) => {
-        users.get([id]).catch(() => {});
-      },
-    ),
-  );
+  users.ensure(() => [props.userId]);
 
   return (
     <Avatar

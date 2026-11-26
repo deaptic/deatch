@@ -1,7 +1,7 @@
 import { userRefOf } from "../../shared/user.ts";
 import * as chatters from "./chatters.ts";
 import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
-import { untrack } from "solid-js";
+import { createEffect, untrack } from "solid-js";
 import { produce, reconcile, unwrap } from "solid-js/store";
 import { getUsers } from "../../platform/twitch/users.ts";
 import { getFollowedAt } from "../../platform/twitch/channels.ts";
@@ -180,6 +180,13 @@ export function get(ids: string[]): Promise<User[]> {
     return Promise.all(pending).then(() =>
       wanted.map(knownUser).filter((u): u is User => !!u),
     );
+  });
+}
+
+export function ensure(ids: () => string[]): void {
+  createEffect(() => {
+    const wanted = ids();
+    if (wanted.length) get(wanted).catch(() => {});
   });
 }
 

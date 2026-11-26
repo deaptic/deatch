@@ -1,4 +1,4 @@
-import { createEffect, Show } from "solid-js";
+import { Show } from "solid-js";
 import { t } from "../../../shared/i18n/index.ts";
 import type { FeedMessage as Message } from "../types.ts";
 import { users } from "../../users/index.ts";
@@ -11,9 +11,7 @@ export default function Source(props: {
   round?: boolean;
   onOpen?: (broadcasterId: string) => void;
 }) {
-  createEffect(() => {
-    users.get([props.source.id]).catch(() => {});
-  });
+  users.ensure(() => [props.source.id]);
 
   const channel = () => knownUser(props.source.id);
   const name = () =>
