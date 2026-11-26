@@ -1,4 +1,5 @@
-import type { MessageKey } from "../../shared/i18n/index.ts";
+import defaultKeymap from "../../default-keymap.json" with { type: "json" };
+import { type MessageKey, t } from "../../shared/i18n/index.ts";
 
 export const CHANNEL_SELECT = /^channel::select(\d)$/;
 
@@ -11,6 +12,17 @@ export const ACTION_LABELS: Record<string, MessageKey> = {
   "settings::toggle": "SETTINGS_KEYBOARD_SETTINGS_LABEL",
   "rail::toggle": "SETTINGS_KEYBOARD_RAIL_LABEL",
   "inbox::toggle": "SETTINGS_KEYBOARD_INBOX_LABEL",
+  "inbox::whispers": "SETTINGS_KEYBOARD_WHISPERS_LABEL",
+  "appearance::toggle": "SETTINGS_KEYBOARD_APPEARANCE_LABEL",
+  "changelog::show": "SETTINGS_KEYBOARD_CHANGELOG_LABEL",
+  "help::shortcuts": "SETTINGS_KEYBOARD_SHORTCUTS_LABEL",
+  "inboxPage::switchTab": "SETTINGS_KEYBOARD_INBOX_SWITCH_TAB_LABEL",
+  "inboxPage::selectPrev": "SETTINGS_KEYBOARD_INBOX_SELECT_PREVIOUS_LABEL",
+  "inboxPage::selectNext": "SETTINGS_KEYBOARD_INBOX_SELECT_NEXT_LABEL",
+  "inboxPage::open": "SETTINGS_KEYBOARD_INBOX_OPEN_LABEL",
+  "inboxPage::markRead": "SETTINGS_KEYBOARD_INBOX_MARK_READ_LABEL",
+  "settingsPage::sectionPrev": "SETTINGS_KEYBOARD_SETTINGS_PREVIOUS_LABEL",
+  "settingsPage::sectionNext": "SETTINGS_KEYBOARD_SETTINGS_NEXT_LABEL",
   "emotePicker::toggle": "SETTINGS_KEYBOARD_EMOTE_PICKER_LABEL",
   "quickSwitch::toggle": "SETTINGS_KEYBOARD_QUICK_SWITCH_LABEL",
   "mod::arm": "SETTINGS_KEYBOARD_MOD_ARM_LABEL",
@@ -45,3 +57,63 @@ export const ACTION_LABELS: Record<string, MessageKey> = {
   "emotePicker::insertKeepOpen": "SETTINGS_KEYBOARD_EMOTE_KEEP_OPEN_LABEL",
   "quickSwitch::openPinned": "SETTINGS_KEYBOARD_QUICK_SWITCH_PIN_LABEL",
 };
+
+export type ShortcutGroup = { title: MessageKey; prefix: string[] };
+
+export const SHORTCUT_GROUPS = {
+  navigation: {
+    title: "SETTINGS_KEYBOARD_GROUP_NAVIGATION_TITLE",
+    prefix: ["channel::", "explore::", "settings::", "changelog::"],
+  },
+  panels: {
+    title: "SETTINGS_KEYBOARD_GROUP_PANELS_TITLE",
+    prefix: [
+      "rail::",
+      "inbox::",
+      "appearance::",
+      "emotePicker::",
+      "quickSwitch::",
+      "search::",
+      "panel::",
+      "help::",
+    ],
+  },
+  link: { title: "SETTINGS_KEYBOARD_GROUP_LINK_TITLE", prefix: ["link::"] },
+  view: { title: "SETTINGS_KEYBOARD_GROUP_VIEW_TITLE", prefix: ["view::"] },
+  chat: {
+    title: "SETTINGS_KEYBOARD_GROUP_CHAT_TITLE",
+    prefix: ["feed::", "chat::"],
+  },
+  moderation: {
+    title: "SETTINGS_KEYBOARD_GROUP_MODERATION_TITLE",
+    prefix: ["mod::"],
+  },
+  inbox: {
+    title: "SETTINGS_KEYBOARD_GROUP_INBOX_TITLE",
+    prefix: ["inboxPage::"],
+  },
+  settings: {
+    title: "SETTINGS_KEYBOARD_GROUP_SETTINGS_TITLE",
+    prefix: ["settingsPage::"],
+  },
+} satisfies Record<string, ShortcutGroup>;
+
+export type ShortcutRow = { combo: string; label: string };
+
+function actionLabel(action: string): string {
+  const slot = CHANNEL_SELECT.exec(action)?.[1];
+  if (slot) return t("SETTINGS_KEYBOARD_CHANNEL_SELECT_LABEL", { slot });
+  const key = ACTION_LABELS[action];
+  return key ? t(key) : action;
+}
+
+export function shortcutRows(group: ShortcutGroup): ShortcutRow[] {
+  return Object.entries(defaultKeymap as Record<string, string[]>).flatMap(
+    ([combo, actions]) => {
+      const action = actions.find((a) =>
+        group.prefix.some((p) => a.startsWith(p)),
+      );
+      return action ? [{ combo, label: actionLabel(action) }] : [];
+    },
+  );
+}

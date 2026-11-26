@@ -13,19 +13,22 @@ export function passUnless(handled: boolean): void | typeof PASS {
   return handled ? undefined : PASS;
 }
 
-function typing(): boolean {
+const OWNS_KEYS = '[role="radiogroup"], [role="listbox"], [role="menu"]';
+
+function focusHandlesKeys(): boolean {
   const el = document.activeElement;
   return (
     el instanceof HTMLInputElement ||
     el instanceof HTMLTextAreaElement ||
-    (el instanceof HTMLElement && el.isContentEditable)
+    (el instanceof HTMLElement &&
+      (el.isContentEditable || el.closest(OWNS_KEYS) !== null))
   );
 }
 
-export const unlessTyping =
+export const unlessFocusHandlesKeys =
   (handler: Handler): Handler =>
   () =>
-    typing() ? PASS : handler();
+    focusHandlesKeys() ? PASS : handler();
 type ActionEntry = { handler: Handler; when?: WhenFn };
 
 const CHORD_TIMEOUT_MS = 1000;

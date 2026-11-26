@@ -3,6 +3,7 @@ import * as log from "./log/log.ts";
 import { users } from "../features/users/index.ts";
 import * as login from "../features/login/index.ts";
 import * as shortcuts from "../shared/keyboard/shortcuts.ts";
+import * as modality from "../shared/keyboard/modality.ts";
 import * as updater from "../features/updater/index.ts";
 import * as inbox from "../features/inbox/index.ts";
 import * as clock from "../shared/clock.ts";
@@ -45,6 +46,7 @@ export function createServices(): void {
       users.start(),
       login.start(),
       shortcuts.start(),
+      modality.start(),
       updater.start(),
       changelog.start(),
       clock.start(),

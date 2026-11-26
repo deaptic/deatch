@@ -30,6 +30,11 @@ const Settings = lazy(() =>
     default: m.Settings,
   })),
 );
+const ShortcutSheet = lazy(() =>
+  import("../features/settings/index.ts").then((m) => ({
+    default: m.ShortcutSheet,
+  })),
+);
 const QuickSwitch = lazy(() =>
   import("../features/quick-switch/index.ts").then((m) => ({
     default: m.QuickSwitch,
@@ -120,6 +125,13 @@ export default function AppLayout(props: AppLayoutProps) {
                       onJump={c.jumpToMessage}
                       onClose={closeOverlay}
                     />
+                  </Suspense>
+                </Boundary>
+              </Show>
+              <Show when={isOverlayOpen("shortcuts")}>
+                <Boundary silent>
+                  <Suspense>
+                    <ShortcutSheet onClose={closeOverlay} />
                   </Suspense>
                 </Boundary>
               </Show>

@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 
 type Overlay =
   | "diagnostics"
+  | "shortcuts"
   | "emotePicker"
   | "appearance"
   | "quickSwitch"

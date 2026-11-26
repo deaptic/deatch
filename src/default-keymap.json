@@ -35,22 +35,35 @@
   "ctrl-w": ["link::closeTab", "link::openTab"],
   "alt-t": ["view::toggleAlwaysOnTop"],
   "alt-d": ["feed::toggleDensity"],
-  "down": ["chat::recallNext"],
-  "enter": ["chat::send"],
+  "down": [
+    "chat::recallNext",
+    "inboxPage::selectNext",
+    "settingsPage::sectionNext"
+  ],
+  "enter": ["chat::send", "inboxPage::open"],
   "escape": ["panel::close"],
-  "tab": ["chat::tabComplete"],
-  "up": ["chat::recallPrev"],
+  "tab": ["chat::tabComplete", "inboxPage::switchTab"],
+  "up": [
+    "chat::recallPrev",
+    "inboxPage::selectPrev",
+    "settingsPage::sectionPrev"
+  ],
   "shift-up": ["feed::selectPrev"],
   "shift-down": ["feed::selectNext"],
   "r": ["feed::reply"],
   "c": ["feed::copy"],
   "m": ["mod::arm"],
-  "delete": ["mod::delete"],
+  "delete": ["mod::delete", "inboxPage::markRead"],
   "p": ["mod::purge"],
   "t": ["mod::timeout"],
   "b": ["mod::ban"],
   "u": ["feed::userCard"],
   "ctrl-d": ["emotePicker::favorite"],
   "shift-enter": ["emotePicker::insertKeepOpen"],
-  "ctrl-enter": ["quickSwitch::openPinned"]
+  "ctrl-enter": ["quickSwitch::openPinned"],
+  "ctrl-shift-i": ["inbox::whispers"],
+  "ctrl-shift-a": ["appearance::toggle"],
+  "ctrl-shift-n": ["changelog::show"],
+  "shift-tab": ["inboxPage::switchTab"],
+  "ctrl-/": ["help::shortcuts"]
 }

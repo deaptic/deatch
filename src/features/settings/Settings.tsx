@@ -15,6 +15,7 @@ import {
   Suspense,
 } from "solid-js";
 import NavItem from "../../kit/NavItem.tsx";
+import { wrapIndex } from "../../shared/solid/createListNavigation.ts";
 import Field from "../../kit/Field.tsx";
 import IconButton from "../../kit/IconButton.tsx";
 import { FilterQuery } from "../../kit/filterQuery.ts";
@@ -66,6 +67,10 @@ const SECTIONS = SETTINGS_SECTIONS.map((s) => ({
   Section: BODIES[s.key],
 }));
 
+const ORDER = SETTINGS_GROUPS.flatMap((g) =>
+  SECTIONS.filter((s) => s.group === g.key).map((s) => s.key),
+);
+
 const LABELLED_NAV_PX = 220;
 const ROW_SIDE_BY_SIDE_PX = 580;
 const COLLAPSE_BELOW_PX = LABELLED_NAV_PX + ROW_SIDE_BY_SIDE_PX;
@@ -92,6 +97,33 @@ export default function Settings() {
     setSettingsSection(section);
   }
   let root: HTMLDivElement | undefined;
+
+  const stepSection = (delta: 1 | -1) =>
+    shortcuts.unlessFocusHandlesKeys(() => {
+      const at = ORDER.indexOf(settingsSection());
+      const next = ORDER[wrapIndex(at, delta, ORDER.length)];
+      if (next) open(next);
+    });
+
+  onMount(() => {
+    shortcuts.setContext("settingsOpen", true);
+    const stops = [
+      shortcuts.register(
+        "settingsPage::sectionPrev",
+        stepSection(-1),
+        "settingsOpen",
+      ),
+      shortcuts.register(
+        "settingsPage::sectionNext",
+        stepSection(1),
+        "settingsOpen",
+      ),
+    ];
+    onCleanup(() => {
+      for (const stop of stops) stop();
+      shortcuts.setContext("settingsOpen", false);
+    });
+  });
 
   onMount(() => {
     if (!root) return;

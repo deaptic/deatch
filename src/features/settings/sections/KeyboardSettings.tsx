@@ -1,76 +1,26 @@
-import { type MessageKey, t } from "../../../shared/i18n/index.ts";
+import { t } from "../../../shared/i18n/index.ts";
 import { For, Show, useContext } from "solid-js";
 import Page from "../../../kit/Page.tsx";
 import Card from "../../../kit/Card.tsx";
 import CardLabel from "../../../kit/CardLabel.tsx";
-import Kbd from "../../../kit/Kbd.tsx";
 import { FilterQuery } from "../../../kit/filterQuery.ts";
 import { matchesQuery } from "../../../shared/textQuery.ts";
-import defaultKeymap from "../../../default-keymap.json" with { type: "json" };
-import { ACTION_LABELS, CHANNEL_SELECT } from "../keyboard.ts";
-import Text from "../../../kit/Text.tsx";
-
-const GROUPS: { title: MessageKey; prefix: string[] }[] = [
-  {
-    title: "SETTINGS_KEYBOARD_GROUP_NAVIGATION_TITLE",
-    prefix: ["channel::", "explore::", "settings::"],
-  },
-  {
-    title: "SETTINGS_KEYBOARD_GROUP_PANELS_TITLE",
-    prefix: [
-      "rail::",
-      "inbox::",
-      "emotePicker::",
-      "quickSwitch::",
-      "search::",
-      "panel::",
-    ],
-  },
-  { title: "SETTINGS_KEYBOARD_GROUP_LINK_TITLE", prefix: ["link::"] },
-  { title: "SETTINGS_KEYBOARD_GROUP_VIEW_TITLE", prefix: ["view::"] },
-  { title: "SETTINGS_KEYBOARD_GROUP_CHAT_TITLE", prefix: ["feed::", "chat::"] },
-  { title: "SETTINGS_KEYBOARD_GROUP_MODERATION_TITLE", prefix: ["mod::"] },
-];
-
-type Row = { combo: string; label: string };
-
-function actionLabel(action: string): string {
-  const slot = CHANNEL_SELECT.exec(action)?.[1];
-  if (slot) return t("SETTINGS_KEYBOARD_CHANNEL_SELECT_LABEL", { slot });
-  const key = ACTION_LABELS[action];
-  return key ? t(key) : action;
-}
-
-function rowsFor(prefixes: string[]): Row[] {
-  return Object.entries(defaultKeymap as Record<string, string[]>).flatMap(
-    ([combo, actions]) => {
-      const action = actions.find((a) => prefixes.some((p) => a.startsWith(p)));
-      return action ? [{ combo, label: actionLabel(action) }] : [];
-    },
-  );
-}
+import { SHORTCUT_GROUPS, shortcutRows } from "../keyboard.ts";
+import ShortcutRow from "../ShortcutRow.tsx";
 
 export default function KeyboardSettings() {
   const query = useContext(FilterQuery);
 
   return (
     <Page title={t("SETTINGS_KEYBOARD_TITLE")}>
-      <For each={GROUPS}>
+      <For each={Object.values(SHORTCUT_GROUPS)}>
         {(g) => (
           <Card>
             <CardLabel>{t(g.title)}</CardLabel>
-            <For each={rowsFor(g.prefix)}>
+            <For each={shortcutRows(g)}>
               {(row) => (
                 <Show when={matchesQuery(query(), row.label, row.combo)}>
-                  <div
-                    data-match
-                    class="flex items-center justify-between gap-6 px-4 h-10"
-                  >
-                    <Text size="md" tone="primary">
-                      {row.label}
-                    </Text>
-                    <Kbd combo={row.combo} />
-                  </div>
+                  <ShortcutRow row={row} />
                 </Show>
               )}
             </For>

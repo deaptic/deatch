@@ -1,6 +1,7 @@
 import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
+import { usingKeyboard } from "../../shared/keyboard/modality.ts";
 import {
   createListNavigation,
   wrapIndex,
@@ -21,7 +22,7 @@ type Props = {
   onOpenChannel: (broadcasterId: string) => void;
 };
 
-const { unlessTyping } = shortcuts;
+const { unlessFocusHandlesKeys } = shortcuts;
 
 function switchTab() {
   setTab(tab() === "mentions" ? "whispers" : "mentions");
@@ -47,7 +48,7 @@ export default function Inbox(props: Props) {
     },
   });
   const highlighted = (): Mention | undefined =>
-    navigating() ? ordered()[nav.active()] : undefined;
+    navigating() && usingKeyboard() ? ordered()[nav.active()] : undefined;
 
   function jump(m: Mention) {
     mentions.markRead(m.id);
@@ -55,35 +56,43 @@ export default function Inbox(props: Props) {
   }
 
   const onMentions = (action: (m: Mention) => void) =>
-    unlessTyping(() => {
+    unlessFocusHandlesKeys(() => {
       const m = tab() === "mentions" ? highlighted() : undefined;
       if (!m) return shortcuts.PASS;
       action(m);
     });
 
   const step = (delta: 1 | -1) =>
-    unlessTyping(() => {
+    unlessFocusHandlesKeys(() => {
       if (tab() === "whispers") return stepWhisper(delta);
-      if (navigating()) nav.move(delta);
+      if (highlighted()) nav.move(delta);
       else setNavigating(true);
     });
 
   onMount(() => {
-    onCleanup(
-      shortcuts.bindScope("inboxOpen", {
-        tab: unlessTyping(switchTab),
-        "shift-tab": unlessTyping(switchTab),
-        up: step(-1),
-        down: step(1),
-        enter: onMentions(jump),
-        delete: onMentions((m) => mentions.dismiss(m.id)),
-        escape: () => {
-          if (tab() !== "whispers" || !whispers.openPeer())
-            return shortcuts.PASS;
-          whispers.back();
-        },
+    shortcuts.setContext("inboxOpen", true);
+    const actions: [string, () => void | typeof shortcuts.PASS][] = [
+      ["inboxPage::switchTab", unlessFocusHandlesKeys(switchTab)],
+      ["inboxPage::selectPrev", step(-1)],
+      ["inboxPage::selectNext", step(1)],
+      ["inboxPage::open", onMentions(jump)],
+      ["inboxPage::markRead", onMentions((m) => mentions.dismiss(m.id))],
+    ];
+    const stops = actions.map(([name, handler]) =>
+      shortcuts.register(name, handler, "inboxOpen"),
+    );
+    stops.push(
+      shortcuts.registerLocal("escape", () => {
+        if (tab() !== "whispers" || !whispers.openPeer()) {
+          return shortcuts.PASS;
+        }
+        whispers.back();
       }),
     );
+    onCleanup(() => {
+      for (const stop of stops) stop();
+      shortcuts.setContext("inboxOpen", false);
+    });
   });
 
   return (

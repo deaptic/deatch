@@ -2,6 +2,7 @@ import { onCleanup, onMount } from "solid-js";
 import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import * as flash from "../kit/flash.ts";
 import * as link from "../features/link/index.ts";
+import * as inbox from "../features/inbox/index.ts";
 import {
   closeOverlay,
   openOverlay,
@@ -9,6 +10,7 @@ import {
   leavePage,
   showExplore,
   showInbox,
+  showChangelog,
   toggleSettings,
   type ChannelNavigation,
 } from "../features/navigation/index.ts";
@@ -62,6 +64,15 @@ export function createAppShortcuts(
         setAppearanceRailExpanded(!appearanceRailExpanded()),
       ),
       shortcuts.register("inbox::toggle", showInbox),
+      shortcuts.register("inbox::whispers", () => {
+        inbox.setTab("whispers");
+        showInbox();
+      }),
+      shortcuts.register("appearance::toggle", () =>
+        toggleOverlay("appearance"),
+      ),
+      shortcuts.register("changelog::show", showChangelog),
+      shortcuts.register("help::shortcuts", () => toggleOverlay("shortcuts")),
       shortcuts.register("quickSwitch::toggle", () =>
         toggleOverlay("quickSwitch"),
       ),
