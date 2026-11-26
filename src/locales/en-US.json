@@ -568,7 +568,7 @@
   "INBOX_MARK_READ_LABEL": "Mark as read",
   "INBOX_MENTIONS_TAB_LABEL": "Mentions",
   "INBOX_NEW_TITLE": "New",
-  "INBOX_REASON_LABEL": "{reason, select, mention {mentioned you} reply {replied to you} other {matched {term}}}",
+  "INBOX_REASON_LABEL": "{reason, select, mention {Mention} reply {Reply} other {Matched “{term}”}}",
   "INBOX_TITLE": "Inbox",
   "INBOX_WHISPERS_TAB_LABEL": "Whispers",
   "KEY_ALT_LABEL": "Alt",
