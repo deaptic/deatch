@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
 
 type ScrollAffordance = {
@@ -36,6 +36,9 @@ export function createScrollAffordance(): ScrollAffordance {
     canDown,
     setRef: (e) => {
       el = e;
+      const observer = new ResizeObserver(update);
+      observer.observe(e);
+      onCleanup(() => observer.disconnect());
     },
     update,
     scrollByOne,

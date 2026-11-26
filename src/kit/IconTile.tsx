@@ -16,6 +16,7 @@ const SIZES: Record<Size, string> = {
 
 type Props = {
   active?: TileTone | false;
+  color?: string | null;
   size?: Size;
   children: JSX.Element;
 };
@@ -26,10 +27,13 @@ export default function IconTile(props: Props) {
       class={`grid shrink-0 place-items-center transition-colors duration-snap ${
         SIZES[props.size ?? "lg"]
       } ${
-        props.active
-          ? TONES[props.active]
-          : "bg-raised text-ink-soft group-hover:bg-overlay group-hover:text-ink"
+        props.color
+          ? "bg-(--tile) text-on-accent"
+          : props.active
+            ? TONES[props.active]
+            : "bg-raised text-ink-soft group-hover:bg-overlay group-hover:text-ink"
       }`}
+      style={props.color ? { "--tile": props.color } : undefined}
     >
       {props.children}
     </span>

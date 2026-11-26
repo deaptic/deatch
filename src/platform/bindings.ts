@@ -165,7 +165,11 @@ export const commands = {
 	linkSetMuted: (params: SetMutedParams) => __TAURI_INVOKE<null>("link_set_muted", { params }),
 	linkFocus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_focus", { params }),
 	linkClose: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_close", { params }),
-	linkSetAudio: (params: SetAudioParams) => __TAURI_INVOKE<null>("link_set_audio", { params }),
+	linkSetGain: (params: SetGainParams) => __TAURI_INVOKE<null>("link_set_gain", { params }),
+	linkSetCompressor: (params: SetCompressorParams) => __TAURI_INVOKE<null>("link_set_compressor", { params }),
+	linkClaimBonus: (params: LinkChannelParams) => __TAURI_INVOKE<null>("link_claim_bonus", { params }),
+	linkRedeem: (params: RedeemParams) => __TAURI_INVOKE<null>("link_redeem", { params }),
+	linkClaimDrops: (params: ClaimDropsParams) => __TAURI_INVOKE<null>("link_claim_drops", { params }),
 	linkRequestState: () => __TAURI_INVOKE<null>("link_request_state"),
 	setTaskbarBadge: (params: SetTaskbarBadgeParams) => __TAURI_INVOKE<null>("set_taskbar_badge", { params }),
 	flashTaskbar: () => __TAURI_INVOKE<null>("flash_taskbar"),
@@ -184,8 +188,9 @@ export const events = {
 	emoteSetUpdated: makeEvent<EmoteSetUpdated>("emote-set-updated"),
 	eventSubConnection: makeEvent<EventSubConnection>("event-sub-connection"),
 	eventSubRecovered: makeEvent<EventSubRecovered>("event-sub-recovered"),
+	linkAnswer: makeEvent<LinkAnswer>("link-answer"),
 	linkDisconnected: makeEvent<LinkDisconnected>("link-disconnected"),
-	linkState: makeEvent<LinkState>("link-state"),
+	linkState: makeEvent<LinkState_Deserialize>("link-state"),
 	moderatedChannelsChanged: makeEvent<ModeratedChannelsChanged>("moderated-channels-changed"),
 	sessionEnded: makeEvent<SessionEnded>("session-ended"),
 	sevenTvReconnected: makeEvent<SevenTvReconnected>("seven-tv-reconnected"),
@@ -416,6 +421,11 @@ export type CheermoteTier = {
 	light: CheermoteImage,
 };
 
+export type ClaimDropsParams = {
+	channel: string,
+	request: string,
+};
+
 export type CommunityGiftId = string;
 
 export type CommunitySubGiftNotice = {
@@ -423,14 +433,6 @@ export type CommunitySubGiftNotice = {
 	sub_tier: SubTier,
 	total: number,
 	cumulative_total: number | null,
-};
-
-export type Compressor = {
-	threshold: number | null,
-	ratio: number | null,
-	attack: number | null,
-	release: number | null,
-	gain: number | null,
 };
 
 export type ConnectionState = "connecting" | "up" | "lost";
@@ -678,6 +680,11 @@ export type HypeTrain = {
 	expiresAt: string,
 };
 
+export type LinkAnswer = {
+	request: string,
+	error: string | null,
+};
+
 export type LinkChannel = {
 	login: string,
 	muted?: boolean,
@@ -689,16 +696,65 @@ export type LinkChannelParams = {
 
 export type LinkDisconnected = null;
 
+export type LinkDrop = {
+	game: string,
+	watched: number,
+	required: number,
+	reward?: string | null,
+	image?: string | null,
+};
+
 export type LinkPreview = { kind: "card"; site: string; title: string; description: string | null; thumbnail: string | null; video: boolean } | { kind: "image"; site: string; url: string };
 
 export type LinkPreviewParams = {
 	url: string,
 };
 
-export type LinkState = {
+export type LinkReward = {
+	id: string,
+	title: string,
+	prompt?: string | null,
+	cost: number,
+	color?: string | null,
+	image?: string | null,
+	input?: boolean,
+	status: LinkRewardStatus,
+	cooldownEndsAt?: string | null,
+	perUserLimit?: number | null,
+	redeemedThisStream?: number | null,
+	subOnly?: boolean,
+};
+
+export type LinkRewardStatus = "available" | "paused" | "sold_out";
+
+export type LinkState = LinkState_Serialize | LinkState_Deserialize;
+
+export type LinkState_Deserialize = {
 	channels: LinkChannel[],
 	current: string | null,
 	audio?: boolean,
+	gains?: { [key in string]: number | null } | null,
+	balances?: { [key in string]: number } | null,
+	bonusReady?: string[],
+	subscribed?: { [key in string]: boolean } | null,
+	drops?: { [key in string]: LinkDrop } | null,
+	earnedAt?: { [key in string]: string } | null,
+	compressorOn?: boolean | null,
+	rewards?: { [key in string]: LinkReward[] } | null,
+};
+
+export type LinkState_Serialize = {
+	channels: LinkChannel[],
+	current: string | null,
+	audio: boolean,
+	gains: { [key in string]: number | null } | null,
+	balances: { [key in string]: number } | null,
+	bonusReady: string[],
+	subscribed: { [key in string]: boolean } | null,
+	drops: { [key in string]: LinkDrop } | null,
+	earnedAt: { [key in string]: string } | null,
+	compressorOn: boolean | null,
+	rewards: { [key in string]: LinkReward[] } | null,
 };
 
 export type LogEntry = {
@@ -879,6 +935,14 @@ export type RecentNotice = {
 	watch_streak: WatchStreakNotice | null,
 };
 
+export type RedeemParams = {
+	channel: string,
+	reward: string,
+	cost: number,
+	text: string | null,
+	request: string,
+};
+
 export type RemoveBlockedTermParams = {
 	broadcasterId: UserId,
 	termId: string,
@@ -976,14 +1040,17 @@ export type SetActivityParams = {
 	buttons?: Button[],
 };
 
-export type SetAudioParams = {
-	enabled: boolean,
-	compressor: Compressor,
-	gains: { [key in string]: number | null },
-};
-
 export type SetChannelsParams = {
 	channels: ChannelFocus[],
+};
+
+export type SetCompressorParams = {
+	on: boolean,
+};
+
+export type SetGainParams = {
+	channel: string,
+	gain: number | null,
 };
 
 export type SetHardwareAccelerationParams = {

@@ -127,7 +127,7 @@ export default function ChannelContextMenu(props: Props) {
           shortcut={selected() ? shortcuts.keyFor("link::closeTab") : undefined}
           onClick={() => link.close(props.ch.login)}
         />
-        <Show when={link.hasAudio()}>
+        <Show when={link.gains()}>
           <MenuDivider />
           <TabVolume login={props.ch.login} />
         </Show>

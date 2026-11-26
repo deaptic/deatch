@@ -64,7 +64,6 @@ const ALLOWED: Record<string, number> = {
   "feed/ui/item/Item.tsx": 3,
   "feed/ui/item/Note.tsx": 2,
   "feed/ui/item/Tile.tsx": 1,
-  "link/ui/TabMuteBadge.tsx": 9,
   "login/Login.tsx": 4,
   "message/Badges.tsx": 2,
   "message/DisplayName.tsx": 1,

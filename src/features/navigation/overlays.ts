@@ -8,6 +8,7 @@ type Overlay =
   | "quickSwitch"
   | "search"
   | "composerActions"
+  | "channelRewards"
   | "chatters";
 
 const [openOverlay, setOpenOverlay] = createSignal<Overlay | null>(null);

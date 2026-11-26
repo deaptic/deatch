@@ -14,7 +14,9 @@ const idle = {
 };
 
 test("nothing runs on an idle channel", () => {
-  expect(runningActivities(idle, false)).toEqual([]);
+  expect(runningActivities(idle, { raiding: false, dropping: false })).toEqual(
+    [],
+  );
 });
 
 test("lists what runs in the strip's order", () => {
@@ -26,6 +28,9 @@ test("lists what runs in the strip's order", () => {
     target: 2,
   };
   expect(
-    runningActivities({ ...idle, shield: true, goals: [goal] }, true),
-  ).toEqual(["shield", "goals", "raid"]);
+    runningActivities(
+      { ...idle, shield: true, goals: [goal] },
+      { raiding: true, dropping: true },
+    ),
+  ).toEqual(["shield", "goals", "drops", "raid"]);
 });

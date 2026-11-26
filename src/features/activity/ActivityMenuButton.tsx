@@ -5,19 +5,23 @@ import { formatList } from "../../shared/format/list.ts";
 import * as activity from "./store.ts";
 import * as raid from "./raid.ts";
 import { runningActivities } from "./running.ts";
-import { ACTIVITIES, ACTIVITY_LABELS } from "../../shared/activities.ts";
+import { dropOf } from "./drops.ts";
+import { ACTIVITY_LABELS, activitiesFor } from "../../shared/activities.ts";
 import { activityShown, setActivityShown } from "../preferences/index.ts";
 import IconMenuButton from "../../kit/IconMenuButton.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import { ActivityIcon } from "./ui/ActivityIcon.tsx";
 import Dot from "../../kit/Dot.tsx";
 
-export default function ActivityMenuButton(props: { broadcasterId: string }) {
+type Props = { broadcasterId: string; moderating: boolean };
+
+export default function ActivityMenuButton(props: Props) {
+  const kinds = () => activitiesFor(props.moderating);
   const hidden = () =>
-    runningActivities(
-      activity.forChannel(props.broadcasterId),
-      raid.pending()?.fromId === props.broadcasterId,
-    ).filter((kind) => !activityShown(kind));
+    runningActivities(activity.forChannel(props.broadcasterId), {
+      raiding: raid.pending()?.fromId === props.broadcasterId,
+      dropping: dropOf(props.broadcasterId) !== null,
+    }).filter((kind) => kinds().includes(kind) && !activityShown(kind));
   const tip = () => {
     const names = hidden().map((kind) => t(ACTIVITY_LABELS[kind]));
     const label = t("HEADER_ACTIVITIES_LABEL");
@@ -41,7 +45,7 @@ export default function ActivityMenuButton(props: { broadcasterId: string }) {
         </Show>
       }
     >
-      <For each={ACTIVITIES}>
+      <For each={kinds()}>
         {(kind) => (
           <MenuItem
             label={t(ACTIVITY_LABELS[kind])}

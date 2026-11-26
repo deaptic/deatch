@@ -63,6 +63,13 @@ type Props = {
 };
 
 const PLACEHOLDER_ROWS = 4;
+const RESERVED_ROWS = [
+  "rail-reserve-0",
+  "rail-reserve-1",
+  "rail-reserve-2",
+  "rail-reserve-3",
+  "rail-reserve-4",
+] as const;
 
 export default function Rail(props: Props) {
   const expanded = appearanceRailExpanded;
@@ -72,6 +79,11 @@ export default function Rail(props: Props) {
   const drag = createPinDrag();
 
   const linkedOthers = () => link.tabs().filter((c) => !isOwnChannel(c.id));
+  const listedRows = () =>
+    pinnedChannels().length +
+    (channels.loadingLive() ? PLACEHOLDER_ROWS : channels.onlineList().length);
+  const reserved = () =>
+    RESERVED_ROWS[Math.min(listedRows(), RESERVED_ROWS.length - 1)];
   const ownTab = () => link.tabs().find((c) => isOwnChannel(c.id));
 
   const nowViewing = createMemo(() => {
@@ -129,7 +141,7 @@ export default function Rail(props: Props) {
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
     >
-      <div class="relative flex-1 min-h-0">
+      <div class={`relative flex-1 ${reserved()}`}>
         <Show when={main.canUp()}>
           <ScrollChevron direction="up" onClick={() => main.scrollByOne(-1)} />
         </Show>
@@ -239,8 +251,8 @@ export default function Rail(props: Props) {
 
       <Show when={linkedOthers().length > 0}>
         <Divider class="mx-4" />
-        <div class="flex flex-col py-2 shrink-0">
-          <div class="relative">
+        <div class="flex flex-col py-2 min-h-0">
+          <div class="relative flex flex-col min-h-0">
             <Show when={linkScroll.canUp()}>
               <ScrollChevron
                 direction="up"
@@ -256,7 +268,7 @@ export default function Rail(props: Props) {
             <div
               ref={linkScroll.setRef}
               onScroll={linkScroll.update}
-              class={`flex max-h-44 flex-col overflow-y-auto scrollbar-none gap-row-gap`}
+              class={`flex min-h-0 flex-col overflow-y-auto scrollbar-none gap-row-gap`}
             >
               <For each={linkedOthers()}>
                 {(ch) => (
@@ -264,6 +276,7 @@ export default function Rail(props: Props) {
                     <ChannelRow
                       ch={ch}
                       muted={link.mutedByLogin()[ch.login] === true}
+                      earnedAt={link.earnedAt(ch.id)}
                       onToggleMute={
                         link.hasAudio()
                           ? () => link.toggleMuted(ch.login)

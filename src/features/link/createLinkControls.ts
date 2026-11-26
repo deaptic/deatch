@@ -8,13 +8,7 @@ import {
   setLinkSynced,
 } from "../navigation/index.ts";
 import { channelsInOrder } from "../channels/index.ts";
-import {
-  compressorSettings,
-  linkAudioLink,
-  linkChannelGains,
-  linkCompressor,
-  linkEnabled,
-} from "../preferences/index.ts";
+import { linkAudioLink } from "../preferences/index.ts";
 import * as link from "./store.ts";
 import { at } from "../../shared/at.ts";
 import { wrapIndex } from "../../shared/solid/createListNavigation.ts";
@@ -32,14 +26,6 @@ export function createLinkControls(nav: ChannelNavigation): LinkControls {
         if (linkSynced() && wc) nav.selectChannel(wc);
       },
       { defer: true },
-    ),
-  );
-
-  createEffect(() =>
-    link.sendAudio(
-      linkEnabled() && linkCompressor(),
-      compressorSettings(),
-      linkEnabled() ? linkChannelGains() : {},
     ),
   );
 

@@ -7,6 +7,8 @@
   "scripts": {
     "bindings": "cargo run --manifest-path src-tauri/Cargo.toml -- --export-bindings",
     "release": "node scripts/release.ts",
+    "build:extension": "node scripts/build-extension.ts",
+    "dev:extension": "node scripts/build-extension.ts --watch",
     "pack:extension": "node scripts/pack-extension.ts",
     "check:tauri": "node scripts/check-tauri.ts",
     "locale": "node scripts/locale.ts"
@@ -28,6 +30,7 @@
     "@solidjs/testing-library": "^0.8.10",
     "@tailwindcss/vite": "^4.3.5",
     "@tauri-apps/cli": "^2.12.6",
+    "@types/chrome": "^0.3.8",
     "@types/node": "^26.6.6",
     "happy-dom": "^21.0.4",
     "tailwindcss": "^4.3.5",

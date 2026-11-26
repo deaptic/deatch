@@ -2,6 +2,7 @@ import { children, type JSX, Show } from "solid-js";
 
 type Props = {
   selected?: boolean;
+  disabled?: boolean;
   actions?: JSX.Element;
   revealActions?: boolean;
   onClick?: (e: MouseEvent) => void;
@@ -16,9 +17,9 @@ export default function ListRow(props: Props) {
   const actions = children(() => props.actions);
   return (
     <div
-      class={`group flex items-center gap-1 pr-1 rounded-sm hover:bg-raised ${
-        props.selected ? "bg-raised" : ""
-      }`}
+      class={`group flex items-center gap-1 pr-1 rounded-sm ${
+        props.disabled ? "opacity-40" : "hover:bg-raised"
+      } ${props.selected ? "bg-raised" : ""}`}
     >
       <Show
         when={props.onClick}
@@ -28,7 +29,8 @@ export default function ListRow(props: Props) {
           <button
             type="button"
             aria-current={props.selected}
-            class={`${MAIN} text-left cursor-pointer`}
+            disabled={props.disabled}
+            class={`${MAIN} text-left cursor-pointer disabled:cursor-not-allowed`}
             onClick={(e) => onClick()(e)}
             onContextMenu={(e) => {
               if (!props.onContextMenu) return;

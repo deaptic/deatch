@@ -54,6 +54,13 @@
   --color-event-announce-purple: oklch(0.52 0.18 305);
 }
 
+@utility rail-reserve-* {
+  min-height: calc(
+    (var(--spacing-row) + var(--spacing-row-gap)) * --value(integer) +
+      var(--spacing) * 4
+  );
+}
+
 @utility grid-avatars {
   grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
 }

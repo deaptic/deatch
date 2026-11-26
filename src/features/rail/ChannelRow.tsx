@@ -19,6 +19,7 @@ type Props = {
   ch: User;
   dimmed?: boolean;
   muted?: boolean;
+  earnedAt?: string | null;
   ephemeral?: boolean;
   onToggleMute?: () => void;
   onSelect: (ch: User) => void;
@@ -58,7 +59,12 @@ export default function ChannelRow(props: Props) {
         </Show>
       }
       card={() => (
-        <StreamTooltip user={props.ch} stream={stream()} info={info()} />
+        <StreamTooltip
+          user={props.ch}
+          stream={stream()}
+          info={info()}
+          earning={!!props.earnedAt}
+        />
       )}
       selected={pendingChannel()?.id === props.ch.id}
       unread={hasUnread(props.ch.id)}
@@ -78,7 +84,10 @@ export default function ChannelRow(props: Props) {
         alt={props.ch.displayName}
         size="md"
         square
-        ring={props.ephemeral ? "dashed" : undefined}
+        ring={
+          props.earnedAt ? "accent" : props.ephemeral ? "dashed" : undefined
+        }
+        pulse={props.earnedAt ?? undefined}
         dimmed={!stream()}
       >
         <Show when={props.onToggleMute}>

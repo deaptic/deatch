@@ -83,12 +83,6 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
     set: prefs.setFeedShowEvents,
   },
   {
-    section: "link",
-    label: "SETTINGS_LINK_COMPRESSOR_LABEL",
-    get: prefs.linkCompressor,
-    set: prefs.setLinkCompressor,
-  },
-  {
     section: "moderation",
     label: "SETTINGS_MODERATION_SHOUTOUT_RAIDERS_LABEL",
     get: prefs.moderationAutoShoutoutOnRaid,

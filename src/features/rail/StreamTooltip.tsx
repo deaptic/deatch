@@ -1,4 +1,4 @@
-import { Clock, Gamepad2, Moon, Users } from "lucide-solid";
+import { Clock, Coins, Gamepad2, Moon, Users } from "lucide-solid";
 import { Show } from "solid-js";
 import {
   formatUptime,
@@ -16,6 +16,7 @@ export default function StreamTooltip(props: {
   user: User;
   stream?: Stream;
   info?: ChannelInfo;
+  earning?: boolean;
 }) {
   const title = () => streamTitle(props.stream, props.info);
   const game = () => streamGame(props.stream, props.info);
@@ -47,6 +48,13 @@ export default function StreamTooltip(props: {
         >
           <Stat icon={<Users />} value={viewers()} />
           <Stat icon={<Clock />} value={uptime()} />
+        </Show>
+        <Show when={props.earning}>
+          <Stat
+            icon={<Coins />}
+            value={t("RAIL_EARNING_POINTS_LABEL")}
+            tone="accent"
+          />
         </Show>
       </div>
     </div>

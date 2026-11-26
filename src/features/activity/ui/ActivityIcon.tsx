@@ -1,5 +1,6 @@
 import {
   ChartColumn,
+  Gift,
   HeartHandshake,
   Pin,
   Scale,
@@ -22,6 +23,7 @@ const ICONS = {
   hypeTrain: TrainFront,
   goals: Target,
   charity: HeartHandshake,
+  drops: Gift,
   poll: ChartColumn,
   prediction: Trophy,
   raid: Swords,

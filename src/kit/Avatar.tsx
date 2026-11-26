@@ -2,7 +2,7 @@ import { createEffect, createSignal, type JSX, on, Show } from "solid-js";
 import { createImageReveal } from "../shared/solid/createImageReveal.ts";
 
 export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "fill";
-type Ring = "dashed" | "negative";
+type Ring = "dashed" | "negative" | "accent";
 
 type Props = {
   src?: string;
@@ -10,6 +10,7 @@ type Props = {
   alt?: string;
   size: AvatarSize;
   ring?: Ring;
+  pulse?: string;
   dimmed?: boolean;
   square?: boolean;
   inherit?: boolean;
@@ -29,6 +30,7 @@ const SIZES: Record<AvatarSize, string> = {
 const RINGS: Record<Ring, string> = {
   dashed: "outline-2 outline-offset-2 outline-dashed outline-line",
   negative: "outline-2 outline-offset-2 outline-negative",
+  accent: "outline-2 outline-offset-2 outline-accent",
 };
 
 export default function Avatar(props: Props) {
@@ -65,6 +67,15 @@ export default function Avatar(props: Props) {
             onLoad={reveal.load}
             onError={() => setFailed(true)}
             class={`absolute inset-0 size-full object-cover ${shape()} ${reveal.fade()}`}
+          />
+        )}
+      </Show>
+      <Show when={props.ring ? props.pulse : undefined} keyed>
+        {(pulse) => (
+          <span
+            aria-hidden="true"
+            data-pulse={pulse}
+            class={`pointer-events-none absolute inset-0 animate-ripple ${shape()} ${props.ring ? RINGS[props.ring] : ""}`}
           />
         )}
       </Show>

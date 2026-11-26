@@ -2,7 +2,7 @@ import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
 import Slider from "../../kit/Slider.tsx";
 import { DEFAULT_CHANNEL_GAIN, MAX_CHANNEL_GAIN } from "../../shared/audio.ts";
-import { channelGain, setChannelGain } from "../preferences/index.ts";
+import { gains, setGain } from "./store.ts";
 
 type Props = {
   login: string;
@@ -11,7 +11,10 @@ type Props = {
 import { formatWholePercent } from "../../shared/format/units.ts";
 import Text from "../../kit/Text.tsx";
 export default function TabVolume(props: Props) {
-  const gain = () => channelGain(props.login);
+  const gain = () =>
+    Math.round((gains()?.[props.login] ?? 1) * DEFAULT_CHANNEL_GAIN);
+  const set = (percent: number) =>
+    setGain(props.login, percent / DEFAULT_CHANNEL_GAIN);
 
   return (
     <div class="px-2.5 pt-2 pb-1 flex flex-col gap-1">
@@ -24,7 +27,7 @@ export default function TabVolume(props: Props) {
         min={0}
         max={MAX_CHANNEL_GAIN}
         format={formatWholePercent}
-        onChange={(value) => setChannelGain(props.login, value)}
+        onChange={(value) => set(value)}
       />
       <div class="h-control-sm flex items-center justify-between">
         <Text size="sm" tabular tone="primary">
@@ -34,7 +37,7 @@ export default function TabVolume(props: Props) {
           variant="ghost"
           size="sm"
           disabled={gain() === DEFAULT_CHANNEL_GAIN}
-          onClick={() => setChannelGain(props.login, DEFAULT_CHANNEL_GAIN)}
+          onClick={() => set(DEFAULT_CHANNEL_GAIN)}
         >
           {t("MENU_RESET_VOLUME_LABEL")}
         </Button>

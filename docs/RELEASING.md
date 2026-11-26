@@ -53,7 +53,9 @@ vp run pack:extension minor   # patch | major | 1.2.3; omit to keep version
 ```
 
 This writes one zip per browser into `extension/dist/`, each with a manifest
-stripped to what that store accepts. Upload the Firefox one on the
+stripped to what that store accepts. It builds `extension/build/` first. The zips hold
+bundled (unminified) code, so AMO asks for the source on upload: give it a zip
+of the repository with the build steps `vp install` and `vp run build:extension`. Upload the Firefox one on the
 [AMO Developer Hub](https://addons.mozilla.org/developers/), distributed "On
 this site" (never add `update_url`; AMO rejects it). Upload the Chrome one on
 the [Web Store dashboard](https://chrome.google.com/webstore/devconsole); it
@@ -61,6 +63,6 @@ carries no `key`, the store keeps the id it assigned, and Edge installs from
 there too.
 
 If the Chrome item is ever recreated, copy its new public key into
-`manifest.json` `key` and its id into `src-tauri/src/link/bridge.rs`, then
+`extension/public/manifest.json` `key` and its id into `src-tauri/src/link/bridge.rs`, then
 release the app. Reviews take days and land separately, which is fine. Copies
 installed by hand never update.

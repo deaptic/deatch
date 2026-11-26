@@ -91,6 +91,8 @@
   --animate-breathe: breathe 2.4s var(--ease-out) infinite;
   --animate-bump: bump var(--duration-settle) var(--ease-out);
   --animate-rise: rise var(--duration-quick) var(--ease-out) backwards;
+  --animate-gain: gain 1200ms var(--ease-out) forwards;
+  --animate-ripple: ripple 900ms var(--ease-out) forwards;
   --stagger-step: 30ms;
 
   @keyframes bump {
@@ -103,6 +105,31 @@
     from {
       opacity: 0;
       translate: 0 calc(var(--spacing) * 1.5);
+    }
+  }
+
+  @keyframes ripple {
+    to {
+      scale: 1.35;
+      opacity: 0;
+    }
+  }
+
+  @keyframes gain {
+    from {
+      opacity: 0;
+      translate: 0 calc(var(--spacing) * 1);
+    }
+    15% {
+      opacity: 1;
+      translate: 0 0;
+    }
+    70% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      translate: 0 calc(var(--spacing) * -3);
     }
   }
 

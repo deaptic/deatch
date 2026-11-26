@@ -2,7 +2,12 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
-const ignored = ["extension/**", "src-tauri/**", "src/platform/bindings.ts"];
+const ignored = [
+  "extension/build/**",
+  "extension/dist/**",
+  "src-tauri/**",
+  "src/platform/bindings.ts",
+];
 
 export default defineConfig({
   plugins: lazyPlugins(() => [
@@ -48,6 +53,31 @@ export default defineConfig({
       ],
     },
     overrides: [
+      {
+        files: ["extension/src/**"],
+        excludeFiles: [
+          "extension/src/shared/life.ts",
+          "extension/src/popup/**",
+        ],
+        rules: {
+          "no-restricted-globals": [
+            "error",
+            {
+              name: "MutationObserver",
+              message:
+                "Use life.observe so an older copy stops after an extension reload.",
+            },
+          ],
+          "no-restricted-properties": [
+            "error",
+            {
+              property: "addEventListener",
+              message:
+                "Use life.listen so an older copy stops after an extension reload.",
+            },
+          ],
+        },
+      },
       {
         files: ["src/platform/**"],
         rules: { "no-restricted-imports": "off" },

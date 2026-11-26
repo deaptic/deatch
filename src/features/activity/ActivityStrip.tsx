@@ -2,6 +2,7 @@ import { createEffect, on } from "solid-js";
 import * as raid from "./raid.ts";
 import { isPinActive, secondsLeft } from "./model.ts";
 import { activityShown } from "../preferences/index.ts";
+import { activitiesFor, type ActivityKind } from "../../shared/activities.ts";
 import * as activity from "./store.ts";
 import * as clock from "../../shared/clock.ts";
 import Transition from "../../kit/Transition.tsx";
@@ -14,6 +15,8 @@ import { mapFragment } from "../feed/index.ts";
 import { MessageText } from "../message/index.ts";
 import AdsRow from "./ui/rows/AdsRow.tsx";
 import CharityRow from "./ui/rows/CharityRow.tsx";
+import DropsRow from "./ui/rows/DropsRow.tsx";
+import { claimDrops, dropOf } from "./drops.ts";
 import HypeTrainRow from "./ui/rows/HypeTrainRow.tsx";
 import GoalsRow from "./ui/rows/GoalsRow.tsx";
 import PinnedRow from "./ui/rows/PinnedRow.tsx";
@@ -26,45 +29,43 @@ import Surface from "../../kit/Surface.tsx";
 
 type Props = {
   broadcasterId: string;
+  moderating: boolean;
   onOpenChannel: (broadcasterId: string) => void;
   onJumpToMessage: (messageId: string) => void;
 };
 
 export default function ActivityStrip(props: Props) {
   const current = () => activity.forChannel(props.broadcasterId);
+  const shown = (kind: ActivityKind) =>
+    activityShown(kind) && activitiesFor(props.moderating).includes(kind);
   const pinned = () => {
     const pin = current().pinned;
-    return activityShown("pinned") && pin && isPinActive(pin, clock.now())
-      ? pin
-      : null;
+    return shown("pinned") && pin && isPinActive(pin, clock.now()) ? pin : null;
   };
-  const shield = () => activityShown("shield") && current().shield;
+  const shield = () => shown("shield") && current().shield;
   const hypeTrain = () => {
     const train = current().hypeTrain;
-    return activityShown("hypeTrain") &&
+    return shown("hypeTrain") &&
       train &&
       Date.parse(train.expiresAt) > clock.now()
       ? train
       : null;
   };
-  const goals = () => (activityShown("goals") ? current().goals : []);
-  const charity = () => (activityShown("charity") ? current().charity : null);
+  const goals = () => (shown("goals") ? current().goals : []);
+  const charity = () => (shown("charity") ? current().charity : null);
+  const drop = () => (shown("drops") ? dropOf(props.broadcasterId) : null);
   const raiding = () => {
     const r = raid.pending();
-    return activityShown("raid") && r?.fromId === props.broadcasterId
-      ? r
-      : null;
+    return shown("raid") && r?.fromId === props.broadcasterId ? r : null;
   };
-  const unbans = () =>
-    activityShown("unbans") ? current().unbanRequests.length : 0;
+  const unbans = () => (shown("unbans") ? current().unbanRequests.length : 0);
   const ads = () => {
     const schedule = current().ads;
     const next = schedule?.nextAdMs;
-    return activityShown("ads") && next && next > clock.now() ? schedule : null;
+    return shown("ads") && next && next > clock.now() ? schedule : null;
   };
-  const poll = () => (activityShown("poll") ? current().poll : null);
-  const prediction = () =>
-    activityShown("prediction") ? current().prediction : null;
+  const poll = () => (shown("poll") ? current().poll : null);
+  const prediction = () => (shown("prediction") ? current().prediction : null);
 
   createEffect(
     on(
@@ -80,6 +81,7 @@ export default function ActivityStrip(props: Props) {
         shield() ||
         goals().length ||
         charity() ||
+        drop() ||
         raiding() ||
         unbans() ||
         ads() ||
@@ -145,6 +147,14 @@ export default function ActivityStrip(props: Props) {
             </Transition>
             <Transition when={charity()}>
               {(c) => <CharityRow charity={c()} />}
+            </Transition>
+            <Transition when={drop()}>
+              {(d) => (
+                <DropsRow
+                  drop={d()}
+                  onClaim={() => claimDrops(props.broadcasterId)}
+                />
+              )}
             </Transition>
             <Transition when={poll()}>
               {(p) => (

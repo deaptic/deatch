@@ -40,6 +40,7 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             emotes::events::SevenTvReconnected,
             link::events::LinkState,
             link::events::LinkDisconnected,
+            link::events::LinkAnswer,
         ])
         .commands(tauri_specta::collect_commands![
             feedlog::commands::feedlog_append,
@@ -147,7 +148,11 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             link::commands::link_set_muted,
             link::commands::link_focus,
             link::commands::link_close,
-            link::commands::link_set_audio,
+            link::commands::link_set_gain,
+            link::commands::link_set_compressor,
+            link::commands::link_claim_bonus,
+            link::commands::link_redeem,
+            link::commands::link_claim_drops,
             link::commands::link_request_state,
             notifications::commands::set_taskbar_badge,
             notifications::commands::flash_taskbar,

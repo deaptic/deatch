@@ -14,12 +14,7 @@ import Menu from "../../kit/Menu.tsx";
 import MenuDivider from "../../kit/MenuDivider.tsx";
 import MenuItem from "../../kit/MenuItem.tsx";
 import { FIREFOX_ADDON_URL } from "./links.ts";
-import {
-  linkAudioLink,
-  linkCompressor,
-  setLinkAudioLink,
-  setLinkCompressor,
-} from "../preferences/index.ts";
+import { linkAudioLink, setLinkAudioLink } from "../preferences/index.ts";
 import * as link from "../link/index.ts";
 import * as shortcuts from "../../shared/keyboard/shortcuts.ts";
 import { t } from "../../shared/i18n/index.ts";
@@ -71,12 +66,12 @@ export default function LinkMenu(props: Props) {
           shortcut={shortcuts.keyFor("link::toggleAudioLink")}
           onClick={() => setLinkAudioLink(!linkAudioLink())}
         />
-        <Show when={link.hasAudio()}>
+        <Show when={link.compressor() !== null}>
           <MenuItem
             label={t("RAIL_LINK_COMPRESSOR_LABEL")}
             icon={<AudioWaveform />}
-            active={linkCompressor()}
-            onClick={() => setLinkCompressor(!linkCompressor())}
+            active={link.compressor() === true}
+            onClick={() => link.setCompressor(link.compressor() !== true)}
           />
         </Show>
         <MenuDivider />

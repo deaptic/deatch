@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <img src="/icons/icon-48.png" alt="" width="28" height="28" />
+      <strong>Deatch Link</strong>
+      <span id="status" class="status"><i></i><span></span></span>
+    </header>
+
+    <section class="card">
+      <h2>Audio</h2>
+      <label class="row">
+        <span class="text">
+          <span class="label">Gain control</span>
+          <span class="description"
+            >Turn a channel up or down from its player bar.</span
+          >
+        </span>
+        <input id="gain-control" type="checkbox" role="switch" />
+      </label>
+      <label class="row">
+        <span class="text">
+          <span class="label">Audio compressor</span>
+          <span class="description"
+            >Evens out loud and quiet moments. Switch it on from the player
+            bar.</span
+          >
+        </span>
+        <input id="compressor-control" type="checkbox" role="switch" />
+      </label>
+      <details>
+        <summary>
+          Advanced
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+        <div id="controls"></div>
+        <div class="actions">
+          <button id="reset" type="button">Reset to defaults</button>
+        </div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Stream</h2>
+      <label class="row">
+        <span class="text">
+          <span class="label">Stream stats</span>
+          <span class="description"
+            >Latency, buffer and video quality next to the uptime.</span
+          >
+        </span>
+        <input id="player-stats" type="checkbox" role="switch" />
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Rewards</h2>
+      <label class="row">
+        <span class="text">
+          <span class="label">Auto-claim bonus points</span>
+          <span class="description">
+            Claims the bonus chest in open Twitch tabs.
+          </span>
+        </span>
+        <input id="auto-claim" type="checkbox" role="switch" />
+      </label>
+      <label class="row">
+        <span class="text">
+          <span class="label">Auto-claim drops</span>
+          <span class="description">
+            Claims finished Twitch Drops while a Twitch tab is open.
+          </span>
+        </span>
+        <input id="auto-drops" type="checkbox" role="switch" />
+      </label>
+    </section>
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

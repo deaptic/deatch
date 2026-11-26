@@ -1,12 +1,23 @@
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  cp,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import {
+  bundleExtension,
+  EXTENSION_BUILD,
+  EXTENSION_MANIFEST,
+} from "./extension-bundle.ts";
 import { run } from "./run.ts";
 import { nextVersion } from "./version.ts";
 
-const SRC = "extension";
-const OUT = `${SRC}/dist`;
-const FILES = ["background.js", "compressor.js", "icons"];
+const OUT = "extension/dist";
 
 const CHROME_ONLY = ["minimum_chrome_version"];
 const FIREFOX_ONLY = ["browser_specific_settings"];
@@ -17,7 +28,8 @@ type Manifest = Record<string, unknown> & {
   background: Record<string, unknown>;
 };
 
-const MANIFEST = `${SRC}/manifest.json`;
+const MANIFEST = EXTENSION_MANIFEST;
+await bundleExtension();
 let text = await readFile(MANIFEST, "utf8");
 
 if (process.argv[2]) {
@@ -57,13 +69,12 @@ function windowsTar(): string {
 async function pack(browser: string, manifest: Manifest): Promise<string> {
   const stage = await mkdtemp(join(tmpdir(), "deatch-link-"));
   try {
+    await cp(EXTENSION_BUILD, stage, { recursive: true });
     await writeFile(
       `${stage}/manifest.json`,
       JSON.stringify(manifest, null, 2) + "\n",
     );
-    for (const file of FILES) {
-      await cp(`${SRC}/${file}`, `${stage}/${file}`, { recursive: true });
-    }
+    const files = await readdir(stage);
     const zip = `${OUT}/deatch-link-${browser}-${manifest.version}.zip`;
     await mkdir(OUT, { recursive: true });
     await run([
@@ -74,8 +85,7 @@ async function pack(browser: string, manifest: Manifest): Promise<string> {
       zip,
       "-C",
       stage,
-      "manifest.json",
-      ...FILES,
+      ...files,
     ]);
     return zip;
   } finally {

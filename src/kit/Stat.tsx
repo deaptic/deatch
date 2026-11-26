@@ -1,10 +1,11 @@
 import { type JSX, Show } from "solid-js";
 import { createCopyable } from "./copyable.ts";
 
-type Tone = "plain" | "media";
+type Tone = "plain" | "accent" | "media";
 
 const TONES: Record<Tone, { value: string; icon: string }> = {
   plain: { value: "text-ink-soft", icon: "text-ink-faint" },
+  accent: { value: "text-accent-ink", icon: "text-accent-ink" },
   media: {
     value: "h-6 px-2 rounded-sm bg-media-scrim text-on-accent font-semibold",
     icon: "text-on-accent",

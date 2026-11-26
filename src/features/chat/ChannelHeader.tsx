@@ -177,8 +177,11 @@ export default function ChannelHeader(props: Props) {
                     </IconButton>
                   )}
                 </Show>
+                <ActivityMenuButton
+                  broadcasterId={props.channel.id}
+                  moderating={showsControls(props.channel.id, "moderate")}
+                />
                 <Show when={showsControls(props.channel.id, "moderate")}>
-                  <ActivityMenuButton broadcasterId={props.channel.id} />
                   <IconButton
                     label={t("HEADER_CHATTERS_LABEL")}
                     size="sm"
@@ -196,15 +199,14 @@ export default function ChannelHeader(props: Props) {
       <Transition when={!chatConnected()}>
         {() => <ConnectionBanner />}
       </Transition>
-      <Show when={showsControls(props.channel.id, "moderate")}>
-        <Boundary silent>
-          <ActivityStrip
-            broadcasterId={props.channel.id}
-            onOpenChannel={props.onOpenChannel}
-            onJumpToMessage={props.onJumpToMessage}
-          />
-        </Boundary>
-      </Show>
+      <Boundary silent>
+        <ActivityStrip
+          broadcasterId={props.channel.id}
+          moderating={showsControls(props.channel.id, "moderate")}
+          onOpenChannel={props.onOpenChannel}
+          onJumpToMessage={props.onJumpToMessage}
+        />
+      </Boundary>
       {link.menu()}
       <Show when={channelForm()}>
         {(form) => (

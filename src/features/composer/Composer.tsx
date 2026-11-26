@@ -35,6 +35,7 @@ import ChatAutocomplete, {
 import { createInputHistory } from "./createInputHistory.ts";
 import { createUsernameTabComplete } from "./createUsernameTabComplete.ts";
 import Actions from "./Actions.tsx";
+import { ChannelPoints } from "../link/index.ts";
 import InputGroupSlot from "../../kit/InputGroupSlot.tsx";
 import Transition from "../../kit/Transition.tsx";
 import { MAX_MESSAGE_LENGTH } from "../../shared/twitch.ts";
@@ -334,6 +335,10 @@ export default function Composer(props: Props) {
             addons={
               <InputGroupSlot>
                 <CharCounter value={input} max={MAX_MESSAGE_LENGTH} />
+                <ChannelPoints
+                  broadcasterId={props.broadcasterId}
+                  anchorEl={() => textAreaApi?.anchorEl()}
+                />
                 <IconButton
                   label={t("COMPOSER_EMOTE_PICKER_LABEL")}
                   pressed={isOverlayOpen("emotePicker")}

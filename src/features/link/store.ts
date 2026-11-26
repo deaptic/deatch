@@ -3,21 +3,28 @@ import { selectedChannel } from "../navigation/index.ts";
 import { user } from "../users/index.ts";
 import { linkEnabled } from "../preferences/index.ts";
 import {
+  linkClaimBonus,
+  linkClaimDrops,
+  linkSetCompressor,
   linkClose,
+  linkRedeem,
   linkFocus,
-  linkSetAudio,
+  linkSetGain,
   linkSetMuted,
 } from "../../platform/link.ts";
 import { openUrl } from "../../platform/opener.ts";
 import { focusWindow, onWindowFocusChanged } from "../../platform/window.ts";
 import { channelUrl } from "../../shared/twitchUrl.ts";
-import type { CompressorSettings } from "../../shared/audio.ts";
 import { getStreamsFromIds } from "../../platform/twitch/streams.ts";
 import { addToast } from "../../kit/toasts.ts";
 import { users } from "../users/index.ts";
+import * as clock from "../../shared/clock.ts";
+import { isEarning } from "./earning.ts";
 import type {
+  LinkDrop,
+  LinkAnswer,
+  LinkReward,
   LinkState,
-  SetAudioParams,
   User,
 } from "../../shared/types/index.ts";
 import type { InvokeOptions } from "../../platform/invoke.ts";
@@ -27,17 +34,60 @@ import { planState } from "./model.ts";
 
 const [hostConnected, setConnected] = createSignal(false);
 const [hostHasAudio, setHasAudio] = createSignal(false);
+const [hostGains, setGains] = createSignal<Record<string, number> | null>(null);
+const [hostBalances, setBalances] = createSignal<Record<string, number> | null>(
+  null,
+);
+const [hostBonusReady, setBonusReady] = createSignal<string[]>([]);
+const [hostRewards, setRewards] = createSignal<Record<string, LinkReward[]>>(
+  {},
+);
+const [hostSubscribed, setSubscribed] = createSignal<Record<string, boolean>>(
+  {},
+);
+const [hostCompressor, setHostCompressor] = createSignal<boolean | null>(null);
+const [hostDrops, setDrops] = createSignal<Record<string, LinkDrop>>({});
+const [hostEarnedAt, setEarnedAt] = createSignal<Record<string, string>>({});
 const [hostActiveTab, setActiveTab] = createSignal<User | null>(null);
 const [hostTabs, setTabs] = createSignal<User[]>([]);
 
 const connected = () => linkEnabled() && hostConnected();
 const hasAudio = () => linkEnabled() && hostHasAudio();
+const gains = () => (linkEnabled() ? hostGains() : null);
+const balances = () => (linkEnabled() ? hostBalances() : null);
+const bonusReady = (): string[] => (linkEnabled() ? hostBonusReady() : []);
+const rewards = (login: string): LinkReward[] =>
+  linkEnabled() ? (hostRewards()[login] ?? []) : [];
+const subscribed = (login: string): boolean | null =>
+  linkEnabled() ? (hostSubscribed()[login] ?? null) : null;
+const compressor = (): boolean | null =>
+  linkEnabled() ? hostCompressor() : null;
+const drop = (login: string): LinkDrop | null =>
+  linkEnabled() ? (hostDrops()[login] ?? null) : null;
+const earnedAt = (channelId: string): string | null => {
+  const at = hostEarnedAt()[channelId];
+  return linkEnabled() && at && isEarning(at, clock.now()) ? at : null;
+};
 const activeTab = () => (linkEnabled() ? hostActiveTab() : null);
 const tabs = (): User[] => (linkEnabled() ? hostTabs() : []);
 const [mutedByLogin, setMutedByLogin] = createSignal<Record<string, boolean>>(
   {},
 );
-export { activeTab, connected, hasAudio, mutedByLogin, tabs };
+export {
+  compressor,
+  drop,
+  earnedAt,
+  subscribed,
+  activeTab,
+  bonusReady,
+  connected,
+  gains,
+  hasAudio,
+  mutedByLogin,
+  balances,
+  rewards,
+  tabs,
+};
 
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 15_000;
@@ -48,6 +98,56 @@ function tabAction(): InvokeOptions {
 
 export function focus(login: string) {
   linkFocus({ channel: login }, tabAction()).catch(() => {});
+}
+
+export function claimBonus(login: string) {
+  setBonusReady((logins) => logins.filter((l) => l !== login));
+  linkClaimBonus({ channel: login }, tabAction()).catch(() => {});
+}
+
+const ANSWER_TIMEOUT_MS = 15_000;
+const waiting = new Map<string, (error: string | null) => void>();
+
+function ask(send: (request: string) => Promise<void>): Promise<string | null> {
+  const request = crypto.randomUUID();
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => settle("TIMEOUT"), ANSWER_TIMEOUT_MS);
+    function settle(error: string | null) {
+      clearTimeout(timeout);
+      waiting.delete(request);
+      resolve(error);
+    }
+    waiting.set(request, settle);
+    send(request).catch(() => settle("TAB_UNREACHABLE"));
+  });
+}
+
+export function redeem(
+  login: string,
+  reward: LinkReward,
+  text: string | null,
+): Promise<string | null> {
+  return ask((request) =>
+    linkRedeem(
+      { channel: login, reward: reward.id, cost: reward.cost, text, request },
+      { silent: true },
+    ),
+  );
+}
+
+export function setCompressor(on: boolean) {
+  setHostCompressor(on);
+  linkSetCompressor({ on }).catch(() => {});
+}
+
+export function claimDrops(login: string): Promise<string | null> {
+  return ask((request) =>
+    linkClaimDrops({ channel: login, request }, { silent: true }),
+  );
+}
+
+export function applyAnswer(answer: LinkAnswer) {
+  waiting.get(answer.request)?.(answer.error);
 }
 
 export function close(login: string) {
@@ -127,25 +227,9 @@ export function closeTab(): boolean {
   return true;
 }
 
-const AUDIO_SEND_MS = 50;
-let audioTimer: ReturnType<typeof setTimeout> | undefined;
-let audioPending: SetAudioParams | null = null;
-
-export function sendAudio(
-  enabled: boolean,
-  compressor: CompressorSettings,
-  gains: Record<string, number>,
-) {
-  const factors = Object.fromEntries(
-    Object.entries(gains).map(([login, percent]) => [login, percent / 100]),
-  );
-  audioPending = { enabled, compressor: { ...compressor }, gains: factors };
-  audioTimer ??= setTimeout(() => {
-    audioTimer = undefined;
-    if (audioPending) {
-      linkSetAudio(audioPending, { silent: true }).catch(() => {});
-    }
-  }, AUDIO_SEND_MS);
+export function setGain(login: string, gain: number) {
+  setGains((current) => current && { ...current, [login]: gain });
+  linkSetGain({ channel: login, gain }, { silent: true }).catch(() => {});
 }
 
 export function anyUnmuted(): boolean {
@@ -243,9 +327,28 @@ async function drainCurrent(slug: string) {
   if (ch && hostActiveTab()?.id !== ch.id) setActiveTab(ch);
 }
 
+function numbersOf(
+  byLogin: Partial<Record<string, number | null>> | null | undefined,
+): Record<string, number> | null {
+  if (!byLogin) return null;
+  return Object.fromEntries(
+    Object.entries(byLogin).flatMap(([login, value]) =>
+      typeof value === "number" ? [[login, value]] : [],
+    ),
+  );
+}
+
 export async function applyState(state: LinkState) {
   setConnected(true);
   setHasAudio(state.audio === true);
+  setGains(numbersOf(state.gains));
+  setBalances(numbersOf(state.balances));
+  setBonusReady(state.bonusReady ?? []);
+  setRewards(state.rewards ?? {});
+  setSubscribed(state.subscribed ?? {});
+  setDrops(state.drops ?? {});
+  setHostCompressor(state.compressorOn ?? null);
+  setEarnedAt(state.earnedAt ?? {});
 
   const warmed = hostTabs();
   const plan = planState(state, warmed, hostActiveTab()?.login ?? null);
@@ -272,6 +375,14 @@ export function watchSignIn(): () => void {
 export function disconnect() {
   setConnected(false);
   setHasAudio(false);
+  setGains(null);
+  setBalances(null);
+  setBonusReady([]);
+  setRewards({});
+  setSubscribed({});
+  setDrops({});
+  setEarnedAt({});
+  setHostCompressor(null);
   setTabs([]);
   setActiveTab(null);
   setMutedByLogin({});
