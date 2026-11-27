@@ -14,7 +14,9 @@ export { default as EmoteCard } from "./EmoteCard.tsx";
 export { type EmoteMap } from "./emoteMap.ts";
 export { emoteSrcset, emoteZoom } from "./emoteZoom.ts";
 export { default as HoverZoom } from "./ui/HoverZoom.tsx";
+export { rankEmotes } from "./rankEmotes.ts";
 export {
+  emoteUses,
   thirdPartyEmoteMap,
   typeableEmotes,
   usableFavorites,

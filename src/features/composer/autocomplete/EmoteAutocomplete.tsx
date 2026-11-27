@@ -3,10 +3,11 @@ import Suggestions from "../../../kit/Suggestions.tsx";
 import { TRIGGERS } from "./detect.ts";
 import {
   type EmoteProvider,
+  emoteUses,
   emoteZoom,
+  rankEmotes,
   typeableEmotes,
 } from "../../emotes/index.ts";
-import { rankSuggestions } from "../../../shared/rankSuggestions.ts";
 import type { ChatAutocompleteController } from "./controller.ts";
 import Text from "../../../kit/Text.tsx";
 
@@ -25,11 +26,7 @@ export default function EmoteAutocomplete(props: Props) {
     const items: EmoteSuggestion[] = Object.entries(allEmotes()).map(
       ([name, entry]) => ({ name, url: entry.url, source: entry.source }),
     );
-    return rankSuggestions(items, q, {
-      keys: (s) => [s.name.toLowerCase()],
-      compare: (a, b) => a.name.localeCompare(b.name),
-      limit: 10,
-    });
+    return rankEmotes(items, q, emoteUses(), Date.now(), 10);
   };
 
   function select(s: EmoteSuggestion) {
