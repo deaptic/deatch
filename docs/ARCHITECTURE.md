@@ -67,7 +67,7 @@ Four tests guard the layout:
 ```
 src-tauri/src/
   main.rs lib.rs   wiring only
-  platform/        error, http, ws, db, keyring, clock, emit, lock, local dir
+  platform/        error, http, ws, db, keyring, clock, emit, lock, local dir, identity
   twitch/
     mod.rs         the Twitch client handle
     client/        Helix plumbing: transport, endpoints, pagination, params, ids
@@ -112,3 +112,8 @@ redirects to the Vite server.
 | Host logs                  | `%TEMP%\deatch-host.log`                           |
 | Host manifests             | `%LOCALAPPDATA%\Deatch\` and their `HKCU` keys     |
 | Widget server              | `http://127.0.0.1:47820`, `/w/<id>` and `/ws/<id>` |
+
+Dev builds (`tauri dev`) keep their own copy of everything above except the
+host manifests and the widget port: `deatch-dev` tokens, `%LOCALAPPDATA%\Deatch Dev`,
+`com.deaptic.deatch.dev` and their own WebView storage, so testing never
+touches the installed app. The names live in `src-tauri/src/platform/identity.rs`.

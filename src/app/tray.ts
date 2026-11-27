@@ -13,6 +13,7 @@ import { addToast } from "../kit/toasts.ts";
 import * as inbox from "../features/inbox/index.ts";
 import { appearance } from "../features/appearance/index.ts";
 import { trayIconPng } from "./trayIcon.ts";
+import { about } from "../features/about/index.ts";
 
 const STREAMER_MODE = "streamer-mode";
 
@@ -33,12 +34,12 @@ function openSettingsWindow() {
 const createMenu = () =>
   showTray(
     {
-      tooltip: t("WINDOW_DEFAULT_TITLE"),
+      tooltip: about.name(),
       onOpen: open,
       items: [
         {
           kind: "action",
-          label: t("WINDOW_DEFAULT_TITLE"),
+          label: about.name(),
           icon: true,
           onSelect: open,
         },
@@ -64,7 +65,7 @@ const createMenu = () =>
         { kind: "divider" },
         {
           kind: "action",
-          label: t("WINDOW_TRAY_QUIT_LABEL"),
+          label: t("WINDOW_TRAY_QUIT_LABEL", { app: about.name() }),
           onSelect: () => exit.quit().catch(() => {}),
         },
       ],
@@ -91,8 +92,8 @@ export function start(): () => void {
     await current.setIcon(png);
     await current.setTooltip(
       count > 0
-        ? t("WINDOW_TRAY_UNREAD_LABEL", { count })
-        : t("WINDOW_DEFAULT_TITLE"),
+        ? t("WINDOW_TRAY_UNREAD_LABEL", { app: about.name(), count })
+        : about.name(),
     );
   };
   const build = () => {
@@ -106,7 +107,11 @@ export function start(): () => void {
   };
 
   const dispose = createRoot((dispose) => {
-    createEffect(on(locale, build));
+    createEffect(
+      on([locale, about.name], ([, name]) => {
+        if (name) build();
+      }),
+    );
     createEffect(
       on(streamerMode, () => void syncStreamerMode(), { defer: true }),
     );

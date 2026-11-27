@@ -187,6 +187,8 @@ pub fn run() {
     export_to(&bindings, std::path::Path::new(BINDINGS_PATH));
     let invoke_handler = bindings.invoke_handler();
     graphics::apply_startup_flags();
+    let mut context = tauri::generate_context!();
+    platform::identity::apply(&mut context);
     let mut builder = tauri::Builder::default();
     if !cfg!(debug_assertions) {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, _, _| {
@@ -252,7 +254,7 @@ pub fn run() {
         .manage(diagnostics::Monitor::default())
         .on_window_event(graphics::on_window_event)
         .invoke_handler(invoke_handler)
-        .build(tauri::generate_context!())
+        .build(context)
         .expect("error while building tauri application")
         .run(|app, event| {
             if let tauri::RunEvent::Exit = event {

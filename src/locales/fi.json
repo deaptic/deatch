@@ -1316,11 +1316,10 @@
   "WHISPERS_RECEIVED_TOAST": "Kuiskaus käyttäjältä {name}",
   "WHISPERS_YOU_SAID_VALUE": "Sinä: {text}",
   "WINDOW_BADGE_OVERFLOW_VALUE": "9+",
-  "WINDOW_CHANNEL_TITLE": "{channel} - Deatch",
-  "WINDOW_DEFAULT_TITLE": "Deatch",
+  "WINDOW_CHANNEL_TITLE": "{channel} - {app}",
   "WINDOW_TRAY_CHECK_UPDATES_LABEL": "Tarkista päivitykset",
-  "WINDOW_TRAY_QUIT_LABEL": "Lopeta Deatch",
+  "WINDOW_TRAY_QUIT_LABEL": "Lopeta {app}",
   "WINDOW_TRAY_SETTINGS_LABEL": "Asetukset",
   "WINDOW_TRAY_STREAMER_MODE_LABEL": "Striimaajatila",
-  "WINDOW_TRAY_UNREAD_LABEL": "Deatch · {count} lukematta"
+  "WINDOW_TRAY_UNREAD_LABEL": "{app} · {count} lukematta"
 }

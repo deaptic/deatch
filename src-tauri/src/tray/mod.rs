@@ -5,11 +5,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager, WebviewWindow};
 
 pub const LOGIN_FLAG: &str = "--minimized";
-const MARKER: &str = if cfg!(debug_assertions) {
-    "in-tray-dev"
-} else {
-    "in-tray"
-};
+const MARKER: &str = "in-tray";
 
 fn marker(app: &AppHandle) -> Result<PathBuf> {
     Ok(app.path().app_data_dir()?.join(MARKER))

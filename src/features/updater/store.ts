@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { appVersion, relaunchApp } from "../../platform/app.ts";
+import { relaunchApp } from "../../platform/app.ts";
 import { checkForUpdate } from "../../platform/updater.ts";
 import { onWindowFocusChanged } from "../../platform/window.ts";
 import { exit } from "../exit/index.ts";
@@ -8,9 +8,6 @@ import { canCheck, shouldCheck, type UpdateState } from "./model.ts";
 
 const [state, setState] = createSignal<UpdateState>({ kind: "unchecked" });
 export { state };
-
-const [version, setVersion] = createSignal("");
-export { version };
 
 let running: Promise<void> | null = null;
 
@@ -33,9 +30,6 @@ function run(): Promise<void> {
 
 export function start(): () => void {
   let lastCheckedAt = 0;
-  appVersion({ silent: true })
-    .then(setVersion)
-    .catch(() => {});
 
   async function maybeCheck() {
     if (!shouldCheck(state(), lastCheckedAt, Date.now())) return;

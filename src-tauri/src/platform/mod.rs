@@ -4,6 +4,7 @@ pub mod db;
 pub mod emit;
 pub mod error;
 pub mod http;
+pub mod identity;
 pub mod keyring;
 pub mod local_dir;
 pub mod lock;

@@ -1,14 +1,19 @@
-import { getVersion } from "@tauri-apps/api/app";
+import { getName, getVersion } from "@tauri-apps/api/app";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { invokeCommand, type InvokeOptions } from "./invoke.ts";
 
+export type AppInfo = { name: string; version: string };
+
 const commands = {
-  appVersion: () => getVersion(),
+  appInfo: async (): Promise<AppInfo> => {
+    const [name, version] = await Promise.all([getName(), getVersion()]);
+    return { name, version };
+  },
   relaunchApp: () => relaunch(),
 };
 
-export function appVersion(options?: InvokeOptions): Promise<string> {
-  return invokeCommand(commands.appVersion, [], options);
+export function appInfo(options?: InvokeOptions): Promise<AppInfo> {
+  return invokeCommand(commands.appInfo, [], options);
 }
 
 export function relaunchApp(options?: InvokeOptions): Promise<void> {

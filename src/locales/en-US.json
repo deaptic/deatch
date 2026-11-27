@@ -1316,11 +1316,10 @@
   "WHISPERS_RECEIVED_TOAST": "Whisper from {name}",
   "WHISPERS_YOU_SAID_VALUE": "You: {text}",
   "WINDOW_BADGE_OVERFLOW_VALUE": "9+",
-  "WINDOW_CHANNEL_TITLE": "{channel} - Deatch",
-  "WINDOW_DEFAULT_TITLE": "Deatch",
+  "WINDOW_CHANNEL_TITLE": "{channel} - {app}",
   "WINDOW_TRAY_CHECK_UPDATES_LABEL": "Check for updates",
-  "WINDOW_TRAY_QUIT_LABEL": "Quit Deatch",
+  "WINDOW_TRAY_QUIT_LABEL": "Quit {app}",
   "WINDOW_TRAY_SETTINGS_LABEL": "Settings",
   "WINDOW_TRAY_STREAMER_MODE_LABEL": "Streamer mode",
-  "WINDOW_TRAY_UNREAD_LABEL": "Deatch · {count} unread"
+  "WINDOW_TRAY_UNREAD_LABEL": "{app} · {count} unread"
 }

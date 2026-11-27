@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { appVersion } from "../../platform/app.ts";
+import { about } from "../about/index.ts";
 import * as storage from "../../platform/storage.ts";
 import { STORAGE_KEYS } from "../../platform/storageKeys.ts";
 import type { Notes } from "../../shared/changelog.ts";
@@ -13,7 +13,7 @@ const [update, setUpdate] = createSignal<Update | null>(null);
 export { update };
 
 async function check(seen: string | null, usedBefore: boolean) {
-  const version = await appVersion({ silent: true });
+  const { version } = await about.load();
   storage.writeText(STORAGE_KEYS.seenVersion, version);
   if (!isNewToUser(seen, version, usedBefore)) return;
   const notes = highlights(await loadChangelog(), version);

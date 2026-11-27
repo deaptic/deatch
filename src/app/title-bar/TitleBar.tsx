@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from "lucide-solid";
 import { Show } from "solid-js";
-import { updates } from "../../features/updater/index.ts";
+import { about } from "../../features/about/index.ts";
 import {
   closeWindow,
   minimizeWindow,
@@ -49,7 +49,6 @@ function below(button: HTMLElement | undefined) {
 }
 
 export default function TitleBar() {
-  const version = updates.version;
   let appearanceBtn: HTMLButtonElement | undefined;
   let diagnosticsBtn: HTMLButtonElement | undefined;
 
@@ -80,11 +79,11 @@ export default function TitleBar() {
           class="flex items-center gap-2 pl-1 pointer-events-none"
         >
           <Text size="md" bold tone="primary">
-            Deatch
+            {about.name()}
           </Text>
-          <Show when={version()}>
+          <Show when={about.version()}>
             <Text size="xs" tone="faint" tabular>
-              {version()}
+              {about.version()}
             </Text>
           </Show>
         </div>

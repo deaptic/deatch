@@ -9,7 +9,10 @@ pub struct StoredCredentials {
 }
 
 fn entry() -> Result<keyring_core::Entry> {
-    Ok(keyring_core::Entry::new("deatch", "auth")?)
+    Ok(keyring_core::Entry::new(
+        crate::platform::identity::KEYRING_SERVICE,
+        "auth",
+    )?)
 }
 
 pub fn load() -> Result<Option<StoredCredentials>> {

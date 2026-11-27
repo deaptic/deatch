@@ -4,9 +4,10 @@ import CardLabel from "../../../kit/CardLabel.tsx";
 import FormRow from "../../../kit/FormRow.tsx";
 import Button from "../../../kit/Button.tsx";
 import { updates } from "../../updater/index.ts";
+import { about } from "../../about/index.ts";
 
 export default function AboutCard() {
-  const version = updates.version;
+  const version = about.version;
 
   const status = () => {
     const state = updates.state();
@@ -65,7 +66,7 @@ export default function AboutCard() {
     <Card>
       <CardLabel>{t("SETTINGS_SYSTEM_ABOUT_TITLE")}</CardLabel>
       <FormRow
-        label={t("WINDOW_DEFAULT_TITLE")}
+        label={about.name()}
         description={version() ? status() : undefined}
       >
         {action()}

@@ -30,11 +30,13 @@ import * as streamerMode from "../features/streamer-mode/index.ts";
 import * as timers from "../features/timers/index.ts";
 import * as widgets from "../features/widgets/index.ts";
 import * as changelog from "../features/changelog/index.ts";
+import { about } from "../features/about/index.ts";
 
 export function createServices(): void {
   onMount(() => {
     const stops = [
       log.start(),
+      about.start(),
       preferences.start(),
       view.start(),
       theme.start(),
