@@ -83,6 +83,7 @@ from_display!(Discord: discord_rich_presence::error::Error);
 from_display!(Io: std::io::Error, tauri::Error, rusqlite::Error);
 from_display!(
     Invalid: serde_json::Error,
+    twitch_api::types::TimestampParseError,
     url::ParseError,
     time::error::Parse,
     time::error::Format,

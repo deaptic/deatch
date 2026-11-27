@@ -4,6 +4,7 @@ type Props = {
   class?: string;
   hidden?: boolean;
   truncate?: boolean;
+  tight?: boolean;
   children: JSX.Element;
 };
 
@@ -13,7 +14,9 @@ export default function SectionLabel(props: Props) {
       aria-hidden={props.hidden}
       class={`block text-xs uppercase text-ink-faint ${
         props.truncate ? "truncate whitespace-nowrap" : ""
-      } ${props.hidden ? "opacity-0" : ""} ${props.class ?? ""}`}
+      } ${props.tight ? "leading-none translate-y-px" : ""} ${
+        props.hidden ? "opacity-0" : ""
+      } ${props.class ?? ""}`}
     >
       {props.children}
     </span>

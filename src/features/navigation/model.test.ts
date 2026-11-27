@@ -44,3 +44,7 @@ test("inbox is a page like Explore: leaving it returns to the last channel", () 
   expect(channelOf(nav.view)).toBeNull();
   expect(leavePage(nav)?.view).toBe(a);
 });
+
+test("the app starts on Home", () => {
+  expect(startNavigation().view).toBe("home");
+});

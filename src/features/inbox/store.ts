@@ -15,6 +15,15 @@ export const openWhisper = (peer: UserRef): void => whispers.open(peer);
 
 export const newMentions = () => mentions.shown().filter((m) => m.unread);
 export const earlierMentions = () => mentions.shown().filter((m) => !m.unread);
+export function mentionsSince(timestamp: number): Record<string, number> {
+  const byChannel: Record<string, number> = {};
+  for (const m of mentions.shown()) {
+    if (m.timestamp >= timestamp) {
+      byChannel[m.broadcasterId] = (byChannel[m.broadcasterId] ?? 0) + 1;
+    }
+  }
+  return byChannel;
+}
 
 export function start(): () => void {
   const stops = [mentions.start(), whisperEvents.start()];

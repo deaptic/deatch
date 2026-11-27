@@ -1,10 +1,12 @@
 import { type JSX, splitProps } from "solid-js";
 
-type Variant = "card" | "tile";
+type Variant = "card" | "tile" | "insetTile";
 
 const VARIANTS: Record<Variant, string> = {
   card: "flex flex-col text-left rounded-lg overflow-hidden bg-surface hover:bg-raised",
   tile: "flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center hover:bg-surface",
+  insetTile:
+    "flex flex-col items-center gap-2 min-w-0 rounded-md p-2 text-center hover:bg-raised",
 };
 
 type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {

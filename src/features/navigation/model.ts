@@ -1,4 +1,4 @@
-export type Page = "explore" | "inbox" | "changelog";
+export type Page = "home" | "explore" | "inbox" | "changelog";
 
 export type View<C extends object> = Page | "settings" | C;
 
@@ -9,7 +9,7 @@ export type Navigation<C extends object> = {
 };
 
 export function startNavigation<C extends object>(): Navigation<C> {
-  return { view: "explore", beforeSettings: "explore", last: null };
+  return { view: "home", beforeSettings: "home", last: null };
 }
 
 export function channelOf<C extends object>(view: View<C>): C | null {

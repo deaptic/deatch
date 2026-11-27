@@ -80,6 +80,7 @@ export function showPage(page: Page) {
   visits = visit(visits, visitOf(page));
 }
 
+export const showHome = () => showPage("home");
 export const showExplore = () => showPage("explore");
 export const showInbox = () => showPage("inbox");
 export const showChangelog = () => showPage("changelog");

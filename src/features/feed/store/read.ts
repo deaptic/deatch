@@ -25,12 +25,16 @@ export function hasUnread(broadcasterId: string): boolean {
   return getEntryId(last) !== marker;
 }
 
-export function unseenCount(broadcasterId: string): number {
+export function unseenEntries(broadcasterId: string): FeedEntry[] {
   const feed = feeds[broadcasterId];
   const seen = feed?.lastSeenEntryId;
-  if (!feed || !seen) return 0;
+  if (!feed || !seen) return [];
   const from = feed.messages.findLastIndex((e) => getEntryId(e) === seen);
-  return feed.messages.slice(from + 1).filter(countsAsNew).length;
+  return feed.messages.slice(from + 1).filter(countsAsNew);
+}
+
+export function unseenCount(broadcasterId: string): number {
+  return unseenEntries(broadcasterId).length;
 }
 
 export function markSeen(broadcasterId: string) {

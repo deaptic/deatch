@@ -30,6 +30,7 @@ export {
   toggleMuted,
 } from "./store.ts";
 export { start } from "./events.ts";
+export { earnedSince } from "./points.ts";
 export { createLinkControls, type LinkControls } from "./createLinkControls.ts";
 export { default as LinkCard } from "./LinkCard.tsx";
 export { default as TabVolume } from "./TabVolume.tsx";

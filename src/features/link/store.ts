@@ -31,6 +31,7 @@ import type { InvokeOptions } from "../../platform/invoke.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { createBackoff } from "../../shared/backoff.ts";
 import { planState } from "./model.ts";
+import * as points from "./points.ts";
 
 const [hostConnected, setConnected] = createSignal(false);
 const [hostHasAudio, setHasAudio] = createSignal(false);
@@ -342,7 +343,9 @@ export async function applyState(state: LinkState) {
   setConnected(true);
   setHasAudio(state.audio === true);
   setGains(numbersOf(state.gains));
-  setBalances(numbersOf(state.balances));
+  const nextBalances = numbersOf(state.balances);
+  points.record(hostBalances(), nextBalances);
+  setBalances(nextBalances);
   setBonusReady(state.bonusReady ?? []);
   setRewards(state.rewards ?? {});
   setSubscribed(state.subscribed ?? {});

@@ -1,5 +1,7 @@
 import { commands } from "./bindings.ts";
 import type {
+  ActivityParams,
+  ActivityReport,
   AppendParams,
   AroundParams,
   FeedlogHit,
@@ -20,6 +22,13 @@ export function feedlogPage(
   options?: InvokeOptions,
 ): Promise<string[]> {
   return invokeCommand(commands.feedlogPage, [params], options);
+}
+
+export function feedlogActivity(
+  params: ActivityParams,
+  options?: InvokeOptions,
+): Promise<ActivityReport> {
+  return invokeCommand(commands.feedlogActivity, [params], options);
 }
 
 export function feedlogSearch(

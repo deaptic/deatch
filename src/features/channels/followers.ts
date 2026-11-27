@@ -14,12 +14,13 @@ function set(broadcasterId: string, count: number): void {
   setCounts((prev) => ({ ...prev, [broadcasterId]: count }));
 }
 
-export function load(broadcasterId: string): void {
-  getFollowerCount({ broadcasterId }, { silent: true })
+export function load(broadcasterId: string): Promise<number | null> {
+  return getFollowerCount({ broadcasterId }, { silent: true })
     .then((count) => {
       if (count !== null) set(broadcasterId, count);
+      return count;
     })
-    .catch(() => {});
+    .catch(() => null);
 }
 
 function bump(broadcasterId: string): void {
@@ -33,7 +34,7 @@ export function start(): () => void {
       on(
         () => selectedChannel()?.id,
         (id) => {
-          if (id) load(id);
+          if (id) void load(id);
         },
       ),
     );

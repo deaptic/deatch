@@ -1,12 +1,13 @@
 import { type JSX, useContext } from "solid-js";
 import { FilterQuery } from "./filterQuery.ts";
 
-type Tone = "plain" | "tinted" | "edited";
+type Tone = "plain" | "tinted" | "edited" | "inset";
 
 const TONES: Record<Tone, string> = {
   plain: "bg-surface",
   tinted: "bg-accent-soft",
   edited: "bg-surface border border-accent-line",
+  inset: "bg-raised",
 };
 
 type Props = {

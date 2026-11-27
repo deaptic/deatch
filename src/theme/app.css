@@ -28,6 +28,10 @@
   --spacing-card-max-width: 40rem;
   --spacing-card-max-height: 50rem;
   --spacing-card-pad: 1.25rem;
+
+  --spacing-home-tile: 20rem;
+  --spacing-home-panel: 13rem;
+  --spacing-home-stream: 10rem;
   --spacing-card-gap: 0.75rem;
   --spacing-card-avatar-lift: 2.5rem;
   --spacing-card-avatar-clear: 6.75rem;
@@ -54,11 +58,46 @@
   --color-event-announce-purple: oklch(0.52 0.18 305);
 }
 
-@utility rail-reserve-* {
-  min-height: calc(
-    (var(--spacing-row) + var(--spacing-row-gap)) * --value(integer) +
-      var(--spacing) * 4
+@utility home-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-card-gap);
+}
+
+@utility home-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-card-gap);
+  flex: 1 1 calc(var(--spacing-home-tile) * 2 + var(--spacing-card-gap));
+  min-width: 0;
+}
+
+@utility home-tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1 1 var(--spacing-home-tile);
+  min-width: 0;
+}
+
+@utility home-streams {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, var(--spacing-home-stream)), 1fr)
   );
+}
+
+@utility rail-reserve-* {
+  flex: 1 1
+    calc(
+      (var(--spacing-row) + var(--spacing-row-gap)) * --value(integer) +
+        var(--spacing) * 4
+    );
+  min-height: 0;
+}
+
+@utility rail-tabs {
+  flex-shrink: 1000;
+  min-height: 0;
 }
 
 @utility grid-avatars {

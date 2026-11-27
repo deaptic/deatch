@@ -27,8 +27,14 @@ pub const SCHEMA: Schema = Schema {
         CREATE INDEX feed_entries_by_channel_time ON feed_entries (channel, timestamp);
         CREATE INDEX feed_entries_by_time ON feed_entries (timestamp);",
         DROP_CONNECTION_NOTICES,
+        INDEX_BY_AUTHOR,
     ],
 };
+
+const INDEX_BY_AUTHOR: &str = "CREATE INDEX feed_entries_by_author ON feed_entries (
+    (CASE WHEN json_valid(entry) THEN json_extract(entry, '$.chatter_user_id') END),
+    timestamp
+);";
 
 const DROP_CONNECTION_NOTICES: &str = "DELETE FROM feed_entries
     WHERE json_valid(entry)
@@ -150,6 +156,93 @@ pub fn search(db: &Connection, params: FeedlogSearchParams) -> Result<Vec<Feedlo
         )?
         .collect::<rusqlite::Result<Vec<_>>>()?;
     Ok(hits)
+}
+
+#[derive(Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ActivityParams {
+    pub today_start: u64,
+    pub week_start: u64,
+}
+
+#[derive(Debug, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ChannelActivity {
+    pub broadcaster_id: String,
+    pub today: u32,
+    pub week: u32,
+}
+
+#[derive(Debug, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ChannelCount {
+    pub broadcaster_id: String,
+    pub count: u32,
+}
+
+#[derive(Debug, PartialEq, Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ActivityReport {
+    pub mine: Vec<ChannelActivity>,
+    pub busiest_today: Vec<ChannelCount>,
+    pub busiest_week: Vec<ChannelCount>,
+}
+
+pub fn activity(
+    db: &Connection,
+    viewer: &UserId,
+    params: ActivityParams,
+) -> Result<ActivityReport> {
+    Ok(ActivityReport {
+        busiest_today: busiest(db, params.today_start)?,
+        busiest_week: busiest(db, params.week_start)?,
+        mine: mine(db, viewer, &params)?,
+    })
+}
+
+fn busiest(db: &Connection, since: u64) -> Result<Vec<ChannelCount>> {
+    let mut statement = db.prepare_cached(
+        "SELECT channel, COUNT(*) FROM feed_entries
+         WHERE timestamp >= ?1
+         GROUP BY channel
+         ORDER BY COUNT(*) DESC",
+    )?;
+    let rows = statement
+        .query_map(params![since], |row| {
+            Ok(ChannelCount {
+                broadcaster_id: row.get(0)?,
+                count: row.get(1)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    Ok(rows)
+}
+
+fn mine(db: &Connection, viewer: &UserId, params: &ActivityParams) -> Result<Vec<ChannelActivity>> {
+    let mut statement = db.prepare_cached(
+        "SELECT channel,
+                SUM(timestamp >= ?2),
+                COUNT(*)
+         FROM feed_entries
+         WHERE (CASE WHEN json_valid(entry) THEN json_extract(entry, '$.chatter_user_id') END) = ?1
+           AND timestamp >= ?3
+           AND json_extract(entry, '$.kind') = 'message'
+         GROUP BY channel
+         ORDER BY COUNT(*) DESC",
+    )?;
+    let rows = statement
+        .query_map(
+            params![viewer.as_str(), params.today_start, params.week_start],
+            |row| {
+                Ok(ChannelActivity {
+                    broadcaster_id: row.get(0)?,
+                    today: row.get(1)?,
+                    week: row.get(2)?,
+                })
+            },
+        )?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    Ok(rows)
 }
 
 pub fn append(db: &mut Connection, params: AppendParams) -> Result<()> {
@@ -330,6 +423,104 @@ mod tests {
         )
         .unwrap();
         db
+    }
+
+    #[test]
+    fn activity_counts_only_my_messages_per_channel_today_and_this_week() {
+        let mine = |id: &str, ts: u64| {
+            entry(
+                id,
+                ts,
+                r#"{"kind":"message","chatter_user_id":"me","fragments":[]}"#,
+            )
+        };
+        let db = log(vec![
+            mine("a", 50),
+            mine("b", 150),
+            mine("c", 160),
+            entry(
+                "d",
+                170,
+                r#"{"kind":"message","chatter_user_id":"other","fragments":[]}"#,
+            ),
+            entry("e", 180, r#"{"kind":"event","notice_type":"raid"}"#),
+            mine("f", 5),
+        ]);
+        let rows = activity(
+            &db,
+            &"me".into(),
+            ActivityParams {
+                today_start: 100,
+                week_start: 10,
+            },
+        )
+        .unwrap()
+        .mine;
+        assert_eq!(
+            rows,
+            vec![ChannelActivity {
+                broadcaster_id: "c".into(),
+                today: 2,
+                week: 3,
+            }]
+        );
+    }
+
+    #[test]
+    fn activity_reads_only_my_lines_through_the_author_index() {
+        let db = log(Vec::new());
+        let plan: String = db
+            .query_row(
+                "EXPLAIN QUERY PLAN SELECT channel FROM feed_entries
+                 WHERE (CASE WHEN json_valid(entry) THEN json_extract(entry, '$.chatter_user_id') END) = 'me'
+                   AND timestamp >= 0",
+                [],
+                |row| row.get(3),
+            )
+            .unwrap();
+        assert!(plan.contains("feed_entries_by_author"), "{plan}");
+    }
+
+    #[test]
+    fn a_damaged_line_does_not_break_the_author_index() {
+        let db = log(vec![entry("x", 1, "not json")]);
+        let rows = activity(
+            &db,
+            &"me".into(),
+            ActivityParams {
+                today_start: 0,
+                week_start: 0,
+            },
+        )
+        .unwrap()
+        .mine;
+        assert!(rows.is_empty());
+    }
+
+    #[test]
+    fn busiest_counts_every_line_per_channel_since_the_start_of_today() {
+        let mut db = log(vec![entry("a", 50, "{}"), entry("b", 150, "{}")]);
+        append(
+            &mut db,
+            AppendParams {
+                broadcaster_id: "d".into(),
+                entries: vec![entry("x", 120, "{}"), entry("y", 130, "{}")],
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            busiest(&db, 100).unwrap(),
+            vec![
+                ChannelCount {
+                    broadcaster_id: "d".into(),
+                    count: 2,
+                },
+                ChannelCount {
+                    broadcaster_id: "c".into(),
+                    count: 1,
+                },
+            ]
+        );
     }
 
     #[test]

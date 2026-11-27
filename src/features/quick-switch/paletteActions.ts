@@ -3,6 +3,7 @@ import {
   Bookmark,
   ChartColumn,
   Compass,
+  House,
   Eraser,
   Inbox,
   Pencil,
@@ -28,6 +29,7 @@ import {
   settingsSection,
   SETTINGS_SECTIONS,
   showExplore,
+  showHome,
   showInbox,
 } from "../navigation/index.ts";
 import { showsControls } from "../permissions/index.ts";
@@ -44,6 +46,12 @@ export type PaletteAction = {
 
 function appActions(): PaletteAction[] {
   return [
+    {
+      id: "home",
+      label: t("QUICK_SWITCH_OPEN_HOME_LABEL"),
+      icon: House,
+      run: showHome,
+    },
     {
       id: "explore",
       label: t("QUICK_SWITCH_OPEN_EXPLORE_LABEL"),

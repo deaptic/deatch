@@ -1,4 +1,7 @@
-use super::{AppendParams, AroundParams, FeedlogHit, FeedlogSearchParams, PageParams};
+use super::{
+    ActivityParams, ActivityReport, AppendParams, AroundParams, FeedlogHit, FeedlogSearchParams,
+    PageParams,
+};
 use crate::platform::db;
 use crate::platform::error::Result;
 use crate::twitch::Twitch;
@@ -42,6 +45,18 @@ pub async fn feedlog_search(
     params: FeedlogSearchParams,
 ) -> Result<Vec<FeedlogHit>> {
     db::run(app, twitch.viewer().await?, |db| super::search(db, params)).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn feedlog_activity(
+    app: tauri::AppHandle,
+    twitch: State<'_, Twitch>,
+    params: ActivityParams,
+) -> Result<ActivityReport> {
+    let viewer = twitch.viewer().await?;
+    let me = viewer.clone();
+    db::run(app, viewer, move |db| super::activity(db, &me, params)).await
 }
 
 #[tauri::command]

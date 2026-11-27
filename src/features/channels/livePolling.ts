@@ -79,7 +79,7 @@ function wantedIds(): (string | undefined)[] {
 
 async function poll(viewerId: string) {
   const selected = selectedChannel()?.id;
-  if (selected) followers.load(selected);
+  if (selected) void followers.load(selected);
   const data = await loadLive(viewerId);
   if (user()?.id !== viewerId) return;
   setFollowedLive((prev) => data ?? prev ?? []);

@@ -173,6 +173,11 @@
   --color-accent-hover: oklch(0.62 0.18 287.5);
   --color-accent-ink: oklch(0.68 0.18 287.5);
   --color-accent-soft: oklch(0.58 0.18 287.5 / 0.14);
+
+  --color-chart-1: oklch(0.622 0.161 255.1);
+  --color-chart-2: oklch(0.622 0.173 40.1);
+  --color-chart-3: oklch(0.621 0.128 163.1);
+  --color-chart-4: oklch(0.67 0.143 73.2);
   --color-on-accent: oklch(0.99 0 0);
   --color-accent-line: color-mix(
     in oklab,
@@ -234,6 +239,11 @@
   --color-accent-hover: oklch(0.48 0.18 287.5);
   --color-accent-ink: oklch(0.46 0.18 287.5);
   --color-accent-soft: oklch(0.54 0.18 287.5 / 0.12);
+
+  --color-chart-1: oklch(0.575 0.163 255.5);
+  --color-chart-2: oklch(0.671 0.175 40.6);
+  --color-chart-3: oklch(0.669 0.141 162.1);
+  --color-chart-4: oklch(0.764 0.161 75.1);
 
   --color-positive: oklch(0.47 0.13 152);
   --color-caution: oklch(0.5 0.12 70);

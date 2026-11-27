@@ -1,6 +1,7 @@
 import { createEffect, createMemo, For, on, Show } from "solid-js";
 import {
   EyeOff,
+  House,
   Inbox as InboxIcon,
   Plus,
   Radio,
@@ -25,6 +26,7 @@ import {
   isSettingsOpen,
   pendingChannel,
   showExplore,
+  showHome,
   showInbox,
   toggleSettings,
 } from "../navigation/index.ts";
@@ -141,7 +143,20 @@ export default function Rail(props: Props) {
         expanded() ? "w-rail-expanded" : "w-rail"
       }`}
     >
-      <div class={`relative flex-1 ${reserved()}`}>
+      <div class="flex flex-col py-2 shrink-0">
+        <RailRow
+          label={t("RAIL_HOME_LABEL")}
+          sub={t("RAIL_HOME_DESCRIPTION")}
+          selected={activeView() === "home"}
+          onClick={showHome}
+        >
+          <IconTile active={activeView() === "home" && "accent"}>
+            <House />
+          </IconTile>
+        </RailRow>
+      </div>
+      <Divider class="mx-4" />
+      <div class={`relative ${reserved()}`}>
         <Show when={main.canUp()}>
           <ScrollChevron direction="up" onClick={() => main.scrollByOne(-1)} />
         </Show>
@@ -251,7 +266,7 @@ export default function Rail(props: Props) {
 
       <Show when={linkedOthers().length > 0}>
         <Divider class="mx-4" />
-        <div class="flex flex-col py-2 min-h-0">
+        <div class="flex flex-col py-2 rail-tabs">
           <div class="relative flex flex-col min-h-0">
             <Show when={linkScroll.canUp()}>
               <ScrollChevron

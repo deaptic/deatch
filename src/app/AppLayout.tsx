@@ -10,6 +10,7 @@ import Loading from "../kit/Loading.tsx";
 import Boundary from "../kit/Boundary.tsx";
 import { Rail } from "../features/rail/index.ts";
 import { Explore } from "../features/explore/index.ts";
+import { Home } from "../features/home/index.ts";
 import ChatPanes from "./ChatPanes.tsx";
 import FlashHost from "../kit/FlashHost.tsx";
 import { LinkPrompt } from "../features/previews/index.ts";
@@ -82,6 +83,11 @@ export default function AppLayout(props: AppLayoutProps) {
                 <Rail onSelect={c.selectChannel} onToggleLink={c.toggleLink} />
               </Boundary>
               <main class="relative flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+                <Show when={activeView() === "home"}>
+                  <Boundary>
+                    <Home onSelectChannel={c.selectChannel} />
+                  </Boundary>
+                </Show>
                 <Show when={activeView() === "explore"}>
                   <Boundary>
                     <Explore onSelectChannel={c.selectChannel} />

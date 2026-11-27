@@ -28,7 +28,17 @@ export function dateFormat(
   return format;
 }
 
-export type TimeFormat = "t" | "T" | "d" | "D" | "f" | "F" | "r" | "R" | "c";
+export type TimeFormat =
+  | "t"
+  | "T"
+  | "d"
+  | "D"
+  | "n"
+  | "f"
+  | "F"
+  | "r"
+  | "R"
+  | "c";
 
 export class Time {
   private static readonly UNITS = [
@@ -78,6 +88,15 @@ export class Time {
       month: "short",
       year: "numeric",
     }).format(date);
+  }
+
+  private dayOrTime(date: Date): string {
+    const days = daysBetween(new Date(), date);
+    if (days === 0) return this.timeShort(date);
+    return new Intl.RelativeTimeFormat(this.locale, { numeric: "auto" }).format(
+      days,
+      "day",
+    );
   }
 
   private dateTimeShort(date: Date): string {
@@ -148,6 +167,7 @@ export class Time {
       T: (d) => this.timeLong(d),
       d: (d) => this.dateShort(d),
       D: (d) => this.dateLong(d),
+      n: (d) => this.dayOrTime(d),
       f: (d) => this.dateTimeShort(d),
       F: (d) => this.dateTimeLong(d),
       r: (d) => this.relativeShort(d),

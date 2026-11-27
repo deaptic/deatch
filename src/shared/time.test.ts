@@ -72,3 +72,10 @@ test("the chosen clock decides between 12 and 24 hour times", () => {
   expect(new Time(afternoon, "t").toString()).toMatch(/1.05\s?(pm|PM|p\.m\.)/);
   setClock("auto");
 });
+
+test("day format shows the time today and days otherwise", () => {
+  expect(new Time(at(0, 10, 49), "n").toString()).toBe("10:49");
+  expect(new Time(at(1, 10, 49), "n").toString()).toBe("yesterday");
+  expect(new Time(at(12, 10, 49), "n").toString()).toBe("12 days ago");
+  expect(new Time(at(-2, 10, 49), "n").toString()).toBe("in 2 days");
+});

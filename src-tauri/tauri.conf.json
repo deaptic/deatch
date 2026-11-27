@@ -14,9 +14,9 @@
       {
         "title": "Deatch",
         "width": 800,
-        "height": 600,
+        "height": 720,
         "minWidth": 600,
-        "minHeight": 500,
+        "minHeight": 660,
         "decorations": false,
         "visible": false
       }

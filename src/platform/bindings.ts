@@ -9,6 +9,7 @@ export const commands = {
 	feedlogPage: (params: PageParams) => __TAURI_INVOKE<string[]>("feedlog_page", { params }),
 	feedlogAround: (params: AroundParams) => __TAURI_INVOKE<string[] | null>("feedlog_around", { params }),
 	feedlogSearch: (params: FeedlogSearchParams) => __TAURI_INVOKE<FeedlogHit[]>("feedlog_search", { params }),
+	feedlogActivity: (params: ActivityParams) => __TAURI_INVOKE<ActivityReport>("feedlog_activity", { params }),
 	feedlogClear: () => __TAURI_INVOKE<null>("feedlog_clear"),
 	sendWhisper: (params: SendWhisperParams) => __TAURI_INVOKE<null>("send_whisper", { params }),
 	whispersSave: (params: SaveWhispersParams) => __TAURI_INVOKE<null>("whispers_save", { params }),
@@ -103,6 +104,12 @@ export const commands = {
 	getChannelModerators: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_moderators", { params }),
 	getChannelVips: (params: BroadcasterParams) => __TAURI_INVOKE<UserRef[]>("get_channel_vips", { params }),
 	getGoals: (params: BroadcasterParams) => __TAURI_INVOKE<Goal[]>("get_goals", { params }),
+	getSchedules: (params: GetSchedulesParams) => __TAURI_INVOKE<ScheduledStream[]>("get_schedules", { params }),
+	getLastStream: (params: BroadcasterParams) => __TAURI_INVOKE<{
+	startedAt: string,
+	seconds: number,
+	title: string,
+} | null>("get_last_stream", { params }),
 	getHypeTrain: (params: BroadcasterParams) => __TAURI_INVOKE<{
 	id: string,
 	level: number,
@@ -146,6 +153,7 @@ export const commands = {
 	startRaid: (params: BroadcasterPairParams) => __TAURI_INVOKE<null>("start_raid", { params }),
 	cancelRaid: (params: BroadcasterParams) => __TAURI_INVOKE<null>("cancel_raid", { params }),
 	createClip: (params: CreateClipParams) => __TAURI_INVOKE<CreatedClip>("create_clip", { params }),
+	getTopClips: (params: TopClipsParams) => __TAURI_INVOKE<Clip[]>("get_top_clips", { params }),
 	linkPreview: (params: LinkPreviewParams) => __TAURI_INVOKE<{ kind: "card"; site: string; title: string; description: string | null; thumbnail: string | null; video: boolean } | { kind: "image"; site: string; url: string } | null>("link_preview", { params }),
 	getChannelInformation: (params: GetChannelInformationParams) => __TAURI_INVOKE<ChannelInfo[]>("get_channel_information", { params }),
 	getFollowedAt: (params: BroadcasterUserParams) => __TAURI_INVOKE<string | null>("get_followed_at", { params }),
@@ -202,6 +210,17 @@ export const events = {
 export const EVENTSUB_EVENT_NAMES = {"automod.message.hold":"automod-message-hold","automod.message.update":"automod-message-update","channel.ad_break.begin":"channel-ad-break-begin","channel.bits.use":"channel-bits-use","channel.channel_points_automatic_reward_redemption.add":"channel-points-automatic-redemption-add","channel.channel_points_custom_reward_redemption.add":"channel-points-redemption-add","channel.charity_campaign.progress":"channel-charity-campaign-progress","channel.charity_campaign.start":"channel-charity-campaign-start","channel.charity_campaign.stop":"channel-charity-campaign-stop","channel.chat.clear":"channel-chat-clear","channel.chat.clear_user_messages":"channel-chat-clear-user-messages","channel.chat.message":"channel-chat-message","channel.chat.message_delete":"channel-chat-message-delete","channel.chat.notification":"channel-chat-notification","channel.chat.user_message_hold":"channel-chat-user-message-hold","channel.chat.user_message_update":"channel-chat-user-message-update","channel.chat_settings.update":"channel-chat-settings-update","channel.follow":"channel-follow","channel.goal.begin":"channel-goal-begin","channel.goal.end":"channel-goal-end","channel.goal.progress":"channel-goal-progress","channel.hype_train.begin":"channel-hype-train-begin","channel.hype_train.end":"channel-hype-train-end","channel.hype_train.progress":"channel-hype-train-progress","channel.moderate":"channel-moderate","channel.poll.begin":"channel-poll-begin","channel.poll.end":"channel-poll-end","channel.poll.progress":"channel-poll-progress","channel.prediction.begin":"channel-prediction-begin","channel.prediction.end":"channel-prediction-end","channel.prediction.lock":"channel-prediction-lock","channel.prediction.progress":"channel-prediction-progress","channel.shared_chat.begin":"channel-shared-chat-begin","channel.shared_chat.end":"channel-shared-chat-end","channel.shared_chat.update":"channel-shared-chat-update","channel.shield_mode.begin":"channel-shield-mode-begin","channel.shield_mode.end":"channel-shield-mode-end","channel.shoutout.create":"channel-shoutout-create","channel.shoutout.receive":"channel-shoutout-receive","channel.suspicious_user.message":"channel-suspicious-user-message","channel.suspicious_user.update":"channel-suspicious-user-update","channel.unban_request.create":"channel-unban-request-create","channel.unban_request.resolve":"channel-unban-request-resolve","channel.update":"channel-update","channel.warning.acknowledge":"channel-warning-acknowledge","stream.offline":"stream-offline","stream.online":"stream-online","user.whisper.message":"user-whisper-message"} as const;
 
 /* Types */
+export type ActivityParams = {
+	todayStart: number,
+	weekStart: number,
+};
+
+export type ActivityReport = {
+	mine: ChannelActivity[],
+	busiestToday: ChannelCount[],
+	busiestWeek: ChannelCount[],
+};
+
 export type AdSchedule = {
 	nextAdMs: number | null,
 	durationSeconds: number,
@@ -338,6 +357,17 @@ export type Category = {
 	boxArtUrl: string,
 };
 
+export type ChannelActivity = {
+	broadcasterId: string,
+	today: number,
+	week: number,
+};
+
+export type ChannelCount = {
+	broadcasterId: string,
+	count: number,
+};
+
 export type ChannelDetails = {
 	tags: string[],
 	contentLabels: string[],
@@ -426,6 +456,16 @@ export type CheermoteTier = {
 export type ClaimDropsParams = {
 	channel: string,
 	request: string,
+};
+
+export type Clip = {
+	id: string,
+	broadcasterId: string,
+	title: string,
+	url: string,
+	thumbnailUrl: string,
+	views: number,
+	createdAt: string,
 };
 
 export type CommunityGiftId = string;
@@ -636,6 +676,10 @@ export type GetRecentMessagesParams = {
 	after?: number | null,
 };
 
+export type GetSchedulesParams = {
+	broadcasterIds: UserId[],
+};
+
 export type GetStreamsFromIdsParams = {
 	userIds: UserId[],
 };
@@ -680,6 +724,12 @@ export type HypeTrain = {
 	progress: number,
 	goal: number,
 	expiresAt: string,
+};
+
+export type LastStream = {
+	startedAt: string,
+	seconds: number,
+	title: string,
 };
 
 export type LinkAnswer = {
@@ -989,6 +1039,13 @@ export type SaveWhispersParams = {
 	whispers: Whisper[],
 };
 
+export type ScheduledStream = {
+	broadcasterId: UserId,
+	title: string,
+	start: string,
+	category: string | null,
+};
+
 export type SearchChannel = {
 	user: UserRef,
 	gameName: string,
@@ -1123,6 +1180,11 @@ export type Subscription = {
 };
 
 export type SuspiciousStatus = "none" | "active_monitoring" | "restricted";
+
+export type TopClipsParams = {
+	broadcasterIds: UserId[],
+	startedAt: string,
+};
 
 export type Topic = "style" | "assets" | "entries";
 
