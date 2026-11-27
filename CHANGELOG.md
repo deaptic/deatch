@@ -2,6 +2,34 @@
 
 What's new in each version of Deatch, newest first.
 
+## v0.5.0 — 28 November 2026
+
+A new Home page to start your day, and Deatch can now live in the system tray.
+
+### New
+
+- Home is the new start page, with your chat activity, your stream, emotes, who went live, upcoming streams and top clips.
+- Closing the window keeps Deatch running in the system tray, with a dot on the icon when something is unread.
+- With Link, see your channel points, claim the bonus automatically and redeem rewards from Deatch.
+- Drops show their progress in the activity strip and can be claimed automatically.
+- Check for updates from the tray menu or Settings.
+
+### Improved
+
+- Emotes you use often come first in autocomplete.
+- Filter Inbox mentions to show Replies, Mentions or Keywords.
+- Deatch opens at sign-in the way you left it, and Settings pages are grouped more clearly.
+- Link can show stream stats next to the uptime on Twitch.
+- Tooltips wait a moment before showing and no longer appear on obvious buttons.
+
+### Fixed
+
+- Mention cards say whether it was a reply, a mention or a keyword match.
+
+### Removed
+
+- Clear all in the Inbox. Mentions leave when you mark them as read or after 7 days.
+
 ## v0.4.5 — 26 November 2026
 
 Mentions and whispers now share one Inbox, and Deatch is easier to use from the keyboard.

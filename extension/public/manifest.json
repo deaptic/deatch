@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Deatch Link",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Links your Twitch tabs to the Deatch desktop app, with a volume compressor, bonus channel points and drops claiming.",
   "homepage_url": "https://github.com/Deaptic/deatch",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4SqEbo415mbsDCmVlLg+L+51GyVjZGDZnZWd9cmYhoGRoE/nDWVCZv3mRKpiK5MU7pgi3S+ycqvmA36QJV7Xkddffr8cpPRdSjjjoFYdaKQdW8DFf8cCcj1394VtWfxdRVke89DMonq04ss2mhiooVZ3hsUx/xVuJoCVLG5FFj8M8qumJ+PnC/SOqyGTjiVme3cj564YhzDg4/VUlehVq8BjBC+3RUzd84NbUmM4S7MW45P935k81lDzKukr2ueAzxPao3UcdWNW3i493kz9yY2x+mRcqOkGNCN78BjOBOnFuGl2K9srcoVjEIupYe+JftBL5GqNmuHjEyHTZt3krQIDAQAB",
