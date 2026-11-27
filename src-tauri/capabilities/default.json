@@ -21,6 +21,7 @@
     "core:window:allow-internal-toggle-maximize",
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-focus",
+    "core:app:allow-default-window-icon",
     "core:window:allow-set-title",
     "core:webview:allow-set-webview-zoom"
   ]

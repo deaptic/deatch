@@ -20,6 +20,7 @@ import * as chat from "../features/chat/index.ts";
 import * as preferences from "../features/preferences/index.ts";
 import { exit } from "../features/exit/index.ts";
 import * as discord from "./discord.ts";
+import * as tray from "./tray.ts";
 import * as windowState from "./windowBounds.ts";
 import * as explore from "../features/explore/index.ts";
 import * as channels from "../features/channels/index.ts";
@@ -55,6 +56,7 @@ export function createServices(): void {
       composer.start(),
       exit.start(),
       discord.start(),
+      tray.start(),
       windowState.start(),
       explore.start(),
       channels.start(),

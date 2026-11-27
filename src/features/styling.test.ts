@@ -33,7 +33,7 @@ const ALLOWED: Record<string, number> = {
   "activity/ui/rows/PinnedRow.tsx": 3,
   "activity/ui/rows/RaidRow.tsx": 2,
   "channel-tools/UnbanRequestsForm.tsx": 2,
-  "channels/ui/LiveBadge.tsx": 13,
+  "channels/ui/LiveBadge.tsx": 9,
   "channels/ui/LivePill.tsx": 7,
   "chat/ChannelHeader.tsx": 10,
   "chat/ui/ConnectionBanner.tsx": 1,

@@ -1,6 +1,7 @@
 import { Radio } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../../shared/i18n/index.ts";
+import PulseIcon from "../../../kit/PulseIcon.tsx";
 
 type Size = "sm" | "md" | "lg";
 
@@ -32,17 +33,11 @@ export default function LiveBadge(props: Props) {
     >
       <span
         data-tip={label()}
-        class={`absolute -bottom-0.5 -right-0.5 size-5 rounded-full ring-2 ring-surface bg-surface grid place-items-center ${
-          props.live ? "text-negative" : "text-ink-faint"
-        }`}
+        class="absolute -bottom-0.5 -right-0.5 size-5 rounded-full ring-2 ring-surface bg-surface grid place-items-center"
       >
-        <Show when={props.live}>
-          <span
-            aria-hidden
-            class="absolute size-2 rounded-full bg-negative animate-breathe"
-          />
-        </Show>
-        <Radio class="relative size-3.5" />
+        <PulseIcon tone={props.live ? "negative" : "faint"} pulse={props.live}>
+          <Radio class="size-3.5" />
+        </PulseIcon>
       </span>
     </Show>
   );

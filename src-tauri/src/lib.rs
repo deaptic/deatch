@@ -8,6 +8,7 @@ mod link;
 mod notifications;
 mod platform;
 mod previews;
+mod tray;
 mod twitch;
 mod widgets;
 
@@ -157,6 +158,8 @@ fn bindings() -> tauri_specta::Builder<tauri::Wry> {
             notifications::commands::set_taskbar_badge,
             notifications::commands::flash_taskbar,
             graphics::commands::set_hardware_acceleration,
+            tray::commands::show_window,
+            tray::commands::hide_window,
             diagnostics::commands::get_app_stats,
             widgets::commands::widgets_publish,
             widgets::commands::widgets_retain,
@@ -176,15 +179,6 @@ fn export_to(bindings: &tauri_specta::Builder<tauri::Wry>, path: &std::path::Pat
         .expect("failed to export typescript bindings");
 }
 
-fn bring_to_front(app: &tauri::AppHandle) {
-    let Some(window) = app.get_webview_window("main") else {
-        return;
-    };
-    if let Err(e) = window.unminimize().and_then(|()| window.set_focus()) {
-        log::warn!("window not brought to front: {e}");
-    }
-}
-
 const SCHEMAS: &[platform::db::Schema] = &[feedlog::SCHEMA, twitch::whispers::SCHEMA];
 
 pub fn run() {
@@ -196,7 +190,7 @@ pub fn run() {
     let mut builder = tauri::Builder::default();
     if !cfg!(debug_assertions) {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, _, _| {
-            bring_to_front(app);
+            tray::bring_to_front(app);
         }));
     }
     builder
@@ -210,12 +204,17 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_autostart::Builder::new().build())
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .args([tray::LOGIN_FLAG])
+                .build(),
+        )
         .plugin(
             tauri_plugin_window_state::Builder::default()
                 .with_state_flags(
                     tauri_plugin_window_state::StateFlags::all()
-                        - tauri_plugin_window_state::StateFlags::DECORATIONS,
+                        - tauri_plugin_window_state::StateFlags::DECORATIONS
+                        - tauri_plugin_window_state::StateFlags::VISIBLE,
                 )
                 .build(),
         )
@@ -245,6 +244,7 @@ pub fn run() {
                 None
             };
             app.manage(widgets::start(app.asset_resolver(), page_origin));
+            tray::start(app.handle());
 
             Ok(())
         })

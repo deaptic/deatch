@@ -1,6 +1,7 @@
 import { prefs, setPrefs } from "./core.ts";
 
 export const systemAutostart = () => prefs.system.autostart;
+export const systemCloseToTray = () => prefs.system.closeToTray;
 export const systemAlwaysOnTop = () => prefs.system.alwaysOnTop;
 export const systemDiscordRichPresence = () => prefs.system.discordRichPresence;
 export const systemHardwareAcceleration = () =>
@@ -13,6 +14,10 @@ export function setSystemFollowedChannels(value: boolean) {
 
 export function setSystemAutostart(value: boolean) {
   setPrefs("system", "autostart", value);
+}
+
+export function setSystemCloseToTray(value: boolean) {
+  setPrefs("system", "closeToTray", value);
 }
 
 export function setSystemAlwaysOnTop(value: boolean) {

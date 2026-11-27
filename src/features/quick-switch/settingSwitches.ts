@@ -11,8 +11,8 @@ export type SettingSwitch = {
 
 export const SETTING_SWITCHES: SettingSwitch[] = [
   {
-    section: "system",
-    label: "SETTINGS_SYSTEM_FOLLOWED_CHANNELS_LABEL",
+    section: "account",
+    label: "SETTINGS_ACCOUNT_FOLLOWED_CHANNELS_LABEL",
     get: prefs.systemFollowedChannels,
     set: prefs.setSystemFollowedChannels,
   },
@@ -59,8 +59,8 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
     set: prefs.setFeedShowCopypasta,
   },
   {
-    section: "embeds",
-    label: "SETTINGS_EMBEDS_PREVIEWS_LABEL",
+    section: "messages",
+    label: "SETTINGS_MESSAGES_LINK_PREVIEWS_LABEL",
     get: prefs.feedLinkPreviews,
     set: prefs.setFeedLinkPreviews,
   },
@@ -108,7 +108,7 @@ export const SETTING_SWITCHES: SettingSwitch[] = [
   },
   {
     section: "system",
-    label: "SETTINGS_SYSTEM_DISCORD_PRESENCE_LABEL",
+    label: "SETTINGS_INTEGRATIONS_DISCORD_PRESENCE_LABEL",
     get: prefs.systemDiscordRichPresence,
     set: prefs.setSystemDiscordRichPresence,
   },

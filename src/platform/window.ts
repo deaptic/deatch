@@ -1,13 +1,20 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { commands as rust } from "./bindings.ts";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import type { ResizeDir } from "./windowResize.ts";
 import type { Unlisten } from "./unlisten.ts";
 import { invokeCommand, type InvokeOptions, wrapUnlisten } from "./invoke.ts";
 
+export type CloseAction = "close" | "hide";
+
 const commands = {
   minimizeWindow: () => getCurrentWindow().minimize(),
   toggleMaximizeWindow: () => getCurrentWindow().toggleMaximize(),
   closeWindow: () => getCurrentWindow().close(),
+  destroyWindow: () => getCurrentWindow().destroy(),
+  showWindow: async () => {
+    await rust.showWindow();
+  },
   isWindowMaximized: () => getCurrentWindow().isMaximized(),
   focusWindow: () => getCurrentWindow().setFocus(),
   setWindowTitle: (title: string) => getCurrentWindow().setTitle(title),
@@ -18,8 +25,14 @@ const commands = {
   setZoom: (factor: number) => getCurrentWebview().setZoom(factor),
   onWindowResized: async (handler: () => void) =>
     wrapUnlisten(await getCurrentWindow().onResized(() => handler())),
-  onWindowCloseRequested: async (handler: () => Promise<void>) =>
-    wrapUnlisten(await getCurrentWindow().onCloseRequested(() => handler())),
+  onWindowCloseRequested: async (handler: () => Promise<CloseAction>) =>
+    wrapUnlisten(
+      await getCurrentWindow().onCloseRequested(async (event) => {
+        if ((await handler()) === "close") return;
+        event.preventDefault();
+        await rust.hideWindow();
+      }),
+    ),
   onWindowFocusChanged: async (handler: (focused: boolean) => void) =>
     wrapUnlisten(
       await getCurrentWindow().onFocusChanged(({ payload }) =>
@@ -38,6 +51,14 @@ export function toggleMaximizeWindow(options?: InvokeOptions): Promise<void> {
 
 export function closeWindow(options?: InvokeOptions): Promise<void> {
   return invokeCommand(commands.closeWindow, [], options);
+}
+
+export function destroyWindow(options?: InvokeOptions): Promise<void> {
+  return invokeCommand(commands.destroyWindow, [], options);
+}
+
+export function showWindow(options?: InvokeOptions): Promise<void> {
+  return invokeCommand(commands.showWindow, [], options);
 }
 
 export function isWindowMaximized(options?: InvokeOptions): Promise<boolean> {
@@ -84,7 +105,7 @@ export function onWindowResized(
 }
 
 export function onWindowCloseRequested(
-  handler: () => Promise<void>,
+  handler: () => Promise<CloseAction>,
   options?: InvokeOptions,
 ): Promise<Unlisten> {
   return invokeCommand(commands.onWindowCloseRequested, [handler], options);

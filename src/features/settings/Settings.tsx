@@ -28,6 +28,7 @@ import {
 } from "../navigation/index.ts";
 import LanguageSettings from "./sections/LanguageSettings.tsx";
 import SystemSettings from "./sections/SystemSettings.tsx";
+import IntegrationsSettings from "./sections/IntegrationsSettings.tsx";
 import AccountSettings from "./sections/AccountSettings.tsx";
 import DeveloperSettings from "./sections/DeveloperSettings.tsx";
 import NotificationsSettings from "./sections/NotificationsSettings.tsx";
@@ -37,8 +38,6 @@ import KeyboardSettings from "./sections/KeyboardSettings.tsx";
 import { TriggerSettings } from "../triggers/index.ts";
 import { TimersSettings } from "../timers/index.ts";
 import { WidgetsSettings } from "../widgets/index.ts";
-import { LinkSettings } from "../link/index.ts";
-import { EmbedsSettings } from "../previews/index.ts";
 import SectionTitle from "../../kit/SectionTitle.tsx";
 import SectionLabel from "../../kit/SectionLabel.tsx";
 import Divider from "../../kit/Divider.tsx";
@@ -48,12 +47,11 @@ import Text from "../../kit/Text.tsx";
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
   language: LanguageSettings,
   system: SystemSettings,
+  integrations: IntegrationsSettings,
   account: AccountSettings,
   appearance: AppearanceSettings,
-  link: LinkSettings,
   keyboard: KeyboardSettings,
   messages: MessagesSettings,
-  embeds: EmbedsSettings,
   notifications: NotificationsSettings,
   moderation: ModerationSettings,
   triggers: TriggerSettings,

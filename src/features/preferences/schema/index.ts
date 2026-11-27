@@ -70,6 +70,7 @@ const SECTIONS = {
   }),
   system: object({
     autostart: bool(true),
+    closeToTray: bool(true),
     alwaysOnTop: bool(false),
     discordRichPresence: bool(false),
     hardwareAcceleration: bool(true),

@@ -8,6 +8,7 @@ import ReadabilityCard from "./ReadabilityCard.tsx";
 import MessagesCard from "./MessagesCard.tsx";
 import BadgesCard from "./BadgesCard.tsx";
 import ShownInChatCard from "./ShownInChatCard.tsx";
+import { LinksCard } from "../previews/index.ts";
 
 export default function MessagesSettings() {
   return (
@@ -21,6 +22,7 @@ export default function MessagesSettings() {
       <MessagesCard />
       <BadgesCard />
       <ShownInChatCard />
+      <LinksCard />
     </Page>
   );
 }

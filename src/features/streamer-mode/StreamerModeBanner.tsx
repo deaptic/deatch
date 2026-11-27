@@ -1,4 +1,4 @@
-import { X } from "lucide-solid";
+import { Radio, X } from "lucide-solid";
 import { Show } from "solid-js";
 import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
@@ -6,23 +6,19 @@ import IconButton from "../../kit/IconButton.tsx";
 import Banner from "../../kit/Banner.tsx";
 import { streamerMode } from "../preferences/index.ts";
 import * as streamer from "./store.ts";
-import Dot from "../../kit/Dot.tsx";
 import Surface from "../../kit/Surface.tsx";
-
-function OnAirDot() {
-  return (
-    <span class="size-4 grid place-items-center">
-      <Dot tone="negative" size="md" pulse />
-    </span>
-  );
-}
+import PulseIcon from "../../kit/PulseIcon.tsx";
 
 export default function StreamerModeBanner() {
   return (
     <Show when={streamerMode() && !streamer.dismissed()}>
       <Surface edge="bottom" class="shrink-0">
         <Banner
-          icon={<OnAirDot />}
+          icon={
+            <PulseIcon tone="negative" pulse>
+              <Radio class="size-4" />
+            </PulseIcon>
+          }
           title={t("STREAMER_MODE_ON_STATUS")}
           meta={t("STREAMER_MODE_SILENCED_STATUS")}
           actions={

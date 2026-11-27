@@ -44,13 +44,18 @@ export function createSystemIntegration(): void {
     }).catch(() => {});
   });
 
-  createEffect(() => {
-    const want = systemAutostart();
-    const options = { failureMessage: t("SETTINGS_SYSTEM_AUTOSTART_ERROR") };
-    isAutostartEnabled(options)
-      .then((have) => (have === want ? undefined : setAutostart(want, options)))
-      .catch(() => {});
-  });
+  if (import.meta.env.PROD) {
+    createEffect(() => {
+      const want = systemAutostart();
+      const options = { failureMessage: t("SETTINGS_SYSTEM_AUTOSTART_ERROR") };
+      const update = want
+        ? setAutostart(true, options)
+        : isAutostartEnabled(options).then((have) =>
+            have ? setAutostart(false, options) : undefined,
+          );
+      update.catch(() => {});
+    });
+  }
 
   createEffect(() => {
     const u = user();

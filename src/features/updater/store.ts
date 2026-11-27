@@ -1,28 +1,49 @@
 import { createSignal } from "solid-js";
-import { relaunchApp } from "../../platform/app.ts";
+import { appVersion, relaunchApp } from "../../platform/app.ts";
 import { checkForUpdate } from "../../platform/updater.ts";
 import { onWindowFocusChanged } from "../../platform/window.ts";
 import { exit } from "../exit/index.ts";
 import { errorMessage } from "../../shared/error.ts";
-import { shouldCheck, type UpdateState } from "./model.ts";
+import { canCheck, shouldCheck, type UpdateState } from "./model.ts";
 
-const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
-
-const [state, setState] = createSignal<UpdateState>({ kind: "none" });
+const [state, setState] = createSignal<UpdateState>({ kind: "unchecked" });
 export { state };
+
+const [version, setVersion] = createSignal("");
+export { version };
+
+let running: Promise<void> | null = null;
+
+async function checkOnce(): Promise<void> {
+  setState({ kind: "checking" });
+  try {
+    const update = await checkForUpdate({ silent: true });
+    setState(update ? { kind: "ready", update } : { kind: "current" });
+  } catch {
+    setState({ kind: "unreachable" });
+  }
+}
+
+function run(): Promise<void> {
+  running ??= checkOnce().finally(() => {
+    running = null;
+  });
+  return running;
+}
 
 export function start(): () => void {
   let lastCheckedAt = 0;
+  appVersion({ silent: true })
+    .then(setVersion)
+    .catch(() => {});
 
   async function maybeCheck() {
     if (!shouldCheck(state(), lastCheckedAt, Date.now())) return;
     lastCheckedAt = Date.now();
-    const update = await checkForUpdate({ silent: true }).catch(() => null);
-    if (update && state().kind === "none") setState({ kind: "ready", update });
+    await run();
   }
 
   void maybeCheck();
-  const interval = setInterval(maybeCheck, CHECK_INTERVAL_MS);
   const unlisten = onWindowFocusChanged(
     (focused) => {
       if (focused) void maybeCheck();
@@ -31,9 +52,14 @@ export function start(): () => void {
   );
 
   return () => {
-    clearInterval(interval);
     unlisten.then((u) => u()).catch(() => {});
   };
+}
+
+export async function check(): Promise<UpdateState> {
+  if (running) await running;
+  else if (canCheck(state())) await run();
+  return state();
 }
 
 export async function install(): Promise<void> {

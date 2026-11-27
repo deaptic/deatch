@@ -10,8 +10,8 @@ import {
   X,
   Sparkles,
 } from "lucide-solid";
-import { createSignal, onMount, Show } from "solid-js";
-import { appVersion } from "../../platform/app.ts";
+import { Show } from "solid-js";
+import { updates } from "../../features/updater/index.ts";
 import {
   closeWindow,
   minimizeWindow,
@@ -49,15 +49,9 @@ function below(button: HTMLElement | undefined) {
 }
 
 export default function TitleBar() {
-  const [version, setVersion] = createSignal("");
+  const version = updates.version;
   let appearanceBtn: HTMLButtonElement | undefined;
   let diagnosticsBtn: HTMLButtonElement | undefined;
-
-  onMount(() => {
-    appVersion({ silent: true })
-      .then(setVersion)
-      .catch(() => {});
-  });
 
   return (
     <>

@@ -37,12 +37,11 @@ export const isSettingsOpen = () => activeView() === "settings";
 export type SettingsSection =
   | "language"
   | "system"
+  | "integrations"
   | "account"
   | "appearance"
-  | "link"
   | "keyboard"
   | "messages"
-  | "embeds"
   | "notifications"
   | "moderation"
   | "triggers"

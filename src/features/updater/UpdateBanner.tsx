@@ -1,15 +1,13 @@
 import { Download } from "lucide-solid";
 import { Show } from "solid-js";
 import { install, state } from "./store.ts";
+import { pendingUpdate } from "./model.ts";
 import { t } from "../../shared/i18n/index.ts";
 import Button from "../../kit/Button.tsx";
 import Banner from "../../kit/Banner.tsx";
 
 export default function UpdateBanner() {
-  const update = () => {
-    const s = state();
-    return s.kind === "none" ? null : s.update;
-  };
+  const update = () => pendingUpdate(state());
   const installing = () => state().kind === "installing";
   const error = () => {
     const s = state();

@@ -3,11 +3,10 @@ import {
   Ban,
   Bell,
   Code,
-  Eye,
-  Link2,
   Keyboard,
   MessageSquare,
   Palette,
+  Plug,
   Languages,
   Monitor,
   MonitorPlay,
@@ -58,12 +57,6 @@ export const SETTINGS_SECTIONS: {
     icon: MessageSquare,
   },
   {
-    key: "embeds",
-    group: "experience",
-    label: "SETTINGS_EMBEDS_TITLE",
-    icon: Link2,
-  },
-  {
     key: "language",
     group: "experience",
     label: "SETTINGS_LANGUAGE_TITLE",
@@ -74,6 +67,12 @@ export const SETTINGS_SECTIONS: {
     group: "experience",
     label: "SETTINGS_SYSTEM_TITLE",
     icon: Monitor,
+  },
+  {
+    key: "integrations",
+    group: "experience",
+    label: "SETTINGS_INTEGRATIONS_TITLE",
+    icon: Plug,
   },
   {
     key: "keyboard",
@@ -105,7 +104,6 @@ export const SETTINGS_SECTIONS: {
     label: "SETTINGS_WIDGETS_TITLE",
     icon: MonitorPlay,
   },
-  { key: "link", group: "tools", label: "SETTINGS_LINK_TITLE", icon: Eye },
   {
     key: "developer",
     group: "end",
