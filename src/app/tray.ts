@@ -1,5 +1,5 @@
 import { createEffect, createRoot, on } from "solid-js";
-import { removeTray, showTray, type TrayMenu } from "../platform/tray.ts";
+import { removeTray, showTray, type TrayHandle } from "../platform/tray.ts";
 import { showWindow } from "../platform/window.ts";
 import { exit } from "../features/exit/index.ts";
 import { updates } from "../features/updater/index.ts";
@@ -10,6 +10,9 @@ import {
 } from "../features/preferences/index.ts";
 import { locale, t } from "../shared/i18n/index.ts";
 import { addToast } from "../kit/toasts.ts";
+import * as inbox from "../features/inbox/index.ts";
+import { appearance } from "../features/appearance/index.ts";
+import { trayIconPng } from "./trayIcon.ts";
 
 const STREAMER_MODE = "streamer-mode";
 
@@ -70,16 +73,34 @@ const createMenu = () =>
   );
 
 export function start(): () => void {
-  let menu: TrayMenu | null = null;
+  let tray: TrayHandle | null = null;
   let building: Promise<void> = Promise.resolve();
+  let shownUnread = "";
   const syncStreamerMode = () =>
-    menu?.setChecked(STREAMER_MODE, streamerMode()).catch(() => {});
+    tray?.setChecked(STREAMER_MODE, streamerMode()).catch(() => {});
+  const syncUnread = async () => {
+    const current = tray;
+    if (!current) return;
+    const count = inbox.unreadCount();
+    const fill = appearance.token("color-negative");
+    const key = `${count}/${fill}/${locale()}`;
+    shownUnread = key;
+    const png =
+      count > 0 && current.icon ? await trayIconPng(current.icon, fill) : null;
+    if (shownUnread !== key) return;
+    await current.setIcon(png);
+    await current.setTooltip(
+      count > 0
+        ? t("WINDOW_TRAY_UNREAD_LABEL", { count })
+        : t("WINDOW_DEFAULT_TITLE"),
+    );
+  };
   const build = () => {
     building = building
       .then(createMenu)
       .then((created) => {
-        menu = created;
-        return syncStreamerMode();
+        tray = created;
+        return Promise.all([syncStreamerMode(), syncUnread()]).then(() => {});
       })
       .catch(() => {});
   };
@@ -89,6 +110,11 @@ export function start(): () => void {
     createEffect(
       on(streamerMode, () => void syncStreamerMode(), { defer: true }),
     );
+    createEffect(() => {
+      inbox.unreadCount();
+      appearance.token("color-negative");
+      void syncUnread().catch(() => {});
+    });
     return dispose;
   });
 

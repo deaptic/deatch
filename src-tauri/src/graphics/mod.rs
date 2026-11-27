@@ -63,23 +63,28 @@ pub fn set_hardware_acceleration(
 }
 
 pub fn on_window_event(window: &tauri::Window, event: &tauri::WindowEvent) {
-    if !matches!(
+    if matches!(
         event,
         tauri::WindowEvent::Resized(_) | tauri::WindowEvent::Focused(_)
     ) {
-        return;
+        update_memory_target(window);
     }
-    let state = window
-        .is_minimized()
-        .and_then(|minimized| Ok((minimized, window.is_focused()?)));
-    let (minimized, focused) = match state {
-        Ok(state) => state,
+}
+
+pub fn update_memory_target(window: &tauri::Window) {
+    let in_use = (|| {
+        Ok::<_, tauri::Error>(
+            window.is_visible()? && !window.is_minimized()? && window.is_focused()?,
+        )
+    })();
+    let in_use = match in_use {
+        Ok(in_use) => in_use,
         Err(e) => {
             log::warn!("window state unreadable: {e}");
             return;
         }
     };
-    let level = memory_target(minimized, focused);
+    let level = memory_target(in_use);
     let Some(webview) = window.get_webview_window(window.label()) else {
         return;
     };
@@ -93,11 +98,11 @@ pub fn on_window_event(window: &tauri::Window, event: &tauri::WindowEvent) {
     }
 }
 
-fn memory_target(minimized: bool, focused: bool) -> COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL {
-    if minimized || !focused {
-        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
-    } else {
+fn memory_target(in_use: bool) -> COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL {
+    if in_use {
         COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
+    } else {
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
     }
 }
 
@@ -118,15 +123,11 @@ mod tests {
     #[test]
     fn saves_memory_unless_the_window_is_in_use() {
         assert_eq!(
-            memory_target(false, true),
+            memory_target(true),
             COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
         );
         assert_eq!(
-            memory_target(false, false),
-            COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
-        );
-        assert_eq!(
-            memory_target(true, false),
+            memory_target(false),
             COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
         );
     }

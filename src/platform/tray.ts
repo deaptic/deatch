@@ -23,8 +23,13 @@ export type Tray = {
   onOpen: () => void;
 };
 
-export type TrayMenu = {
+export type IconPixels = { rgba: Uint8Array; width: number; height: number };
+
+export type TrayHandle = {
+  icon: IconPixels | null;
   setChecked: (id: string, checked: boolean) => Promise<void>;
+  setIcon: (png: Uint8Array | null) => Promise<void>;
+  setTooltip: (text: string) => Promise<void>;
 };
 
 const removeExisting = async () => {
@@ -52,13 +57,13 @@ function menuItem(item: TrayItem, icon: Image | undefined) {
 }
 
 const commands = {
-  showTray: async (tray: Tray): Promise<TrayMenu> => {
+  showTray: async (tray: Tray): Promise<TrayHandle> => {
     await removeExisting();
     const icon = (await defaultWindowIcon()) ?? undefined;
     const menu = await Menu.new({
       items: tray.items.map((item) => menuItem(item, icon)),
     });
-    await TrayIcon.new({
+    const trayIcon = await TrayIcon.new({
       id: TRAY_ID,
       icon,
       tooltip: tray.tooltip,
@@ -71,6 +76,9 @@ const commands = {
       },
     });
     return {
+      icon: icon ? { rgba: await icon.rgba(), ...(await icon.size()) } : null,
+      setIcon: (png) => trayIcon.setIcon(png ?? icon ?? null),
+      setTooltip: (text) => trayIcon.setTooltip(text),
       setChecked: async (id, checked) => {
         const item = await menu.get(id);
         if (item instanceof CheckMenuItem) await item.setChecked(checked);
@@ -83,7 +91,7 @@ const commands = {
 export function showTray(
   tray: Tray,
   options?: InvokeOptions,
-): Promise<TrayMenu> {
+): Promise<TrayHandle> {
   return invokeCommand(commands.showTray, [tray], options);
 }
 

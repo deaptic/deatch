@@ -1321,5 +1321,6 @@
   "WINDOW_TRAY_CHECK_UPDATES_LABEL": "Check for updates",
   "WINDOW_TRAY_QUIT_LABEL": "Quit Deatch",
   "WINDOW_TRAY_SETTINGS_LABEL": "Settings",
-  "WINDOW_TRAY_STREAMER_MODE_LABEL": "Streamer mode"
+  "WINDOW_TRAY_STREAMER_MODE_LABEL": "Streamer mode",
+  "WINDOW_TRAY_UNREAD_LABEL": "Deatch · {count} unread"
 }

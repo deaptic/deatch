@@ -27,6 +27,7 @@ pub fn show(window: &WebviewWindow) -> Result<()> {
 
 pub fn hide(window: &WebviewWindow) -> Result<()> {
     window.hide()?;
+    crate::graphics::update_memory_target(&window.as_ref().window());
     let path = marker(window.app_handle())?;
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir)?;
@@ -48,5 +49,7 @@ pub fn start(app: &AppHandle) {
     let left_in_tray = marker(app).is_ok_and(|path| path.exists());
     if !(at_login && left_in_tray) {
         bring_to_front(app);
+    } else if let Some(window) = app.get_webview_window("main") {
+        crate::graphics::update_memory_target(&window.as_ref().window());
     }
 }

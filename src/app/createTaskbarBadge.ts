@@ -2,6 +2,7 @@ import { t } from "../shared/i18n/index.ts";
 import { createEffect } from "solid-js";
 import { setTaskbarBadge } from "../platform/notifications.ts";
 import { appearance } from "../features/appearance/index.ts";
+import { canvasPng } from "./canvasPng.ts";
 
 type BadgeLook = { fill: string; text: string; font: string };
 
@@ -33,11 +34,8 @@ async function renderBadgeBytes(
     16,
     17,
   );
-  const blob = await new Promise<Blob | null>((r) =>
-    canvas.toBlob((b) => r(b), "image/png"),
-  );
-  if (!blob) return null;
-  return Array.from(new Uint8Array(await blob.arrayBuffer()));
+  const png = await canvasPng(canvas);
+  return png && Array.from(png);
 }
 
 export function createTaskbarBadge(unreadCount: () => number): void {
