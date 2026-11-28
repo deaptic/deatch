@@ -14,6 +14,7 @@ import ConversationRow from "./ConversationRow.tsx";
 import NewWhisperPopover from "./NewWhisperPopover.tsx";
 import WhisperThread from "./WhisperThread.tsx";
 import * as whispers from "./store.ts";
+import { createSizeWatch } from "../../../shared/solid/createSizeWatch.ts";
 
 const LIST_PX = 280;
 const THREAD_MIN_PX = 420;
@@ -28,7 +29,7 @@ export default function Whispers() {
 
   onMount(() => {
     if (!root) return;
-    const observer = new ResizeObserver(([entry]) => {
+    const observer = createSizeWatch(([entry]) => {
       if (!entry) return;
       setExpanded(entry.contentRect.width >= COLLAPSE_BELOW_PX);
       if (!measured()) requestAnimationFrame(() => setMeasured(true));

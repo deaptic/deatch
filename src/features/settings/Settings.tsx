@@ -43,6 +43,7 @@ import SectionLabel from "../../kit/SectionLabel.tsx";
 import Divider from "../../kit/Divider.tsx";
 import Surface from "../../kit/Surface.tsx";
 import Text from "../../kit/Text.tsx";
+import { createSizeWatch } from "../../shared/solid/createSizeWatch.ts";
 
 const BODIES: Record<SettingsSection, () => JSX.Element> = {
   language: LanguageSettings,
@@ -125,7 +126,7 @@ export default function Settings() {
 
   onMount(() => {
     if (!root) return;
-    const observer = new ResizeObserver(([entry]) => {
+    const observer = createSizeWatch(([entry]) => {
       if (!entry) return;
       setCollapsed(entry.contentRect.width < COLLAPSE_BELOW_PX);
       if (!measured()) requestAnimationFrame(() => setMeasured(true));

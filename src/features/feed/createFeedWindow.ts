@@ -5,6 +5,7 @@ import {
   windowAt,
   windowFromEnd,
 } from "./window.ts";
+import { createSizeWatch } from "../../shared/solid/createSizeWatch.ts";
 
 const OVERSCAN_PX = 400;
 const FIRST_GUESS_PX = 32;
@@ -22,20 +23,16 @@ export function createFeedWindow(opts: Options) {
   const [top, setTop] = createSignal(0);
   const [viewport, setViewport] = createSignal(0);
 
-  let frame: number | null = null;
   let remeasured = false;
-  function later() {
-    frame ??= requestAnimationFrame(() => {
-      frame = null;
-      if (remeasured) {
-        remeasured = false;
-        setVersion((v) => v + 1);
-      }
-      sync();
-    });
+  function apply() {
+    if (remeasured) {
+      remeasured = false;
+      setVersion((v) => v + 1);
+    }
+    sync();
   }
 
-  const rows = new ResizeObserver((entries) => {
+  const rows = createSizeWatch((entries) => {
     for (const entry of entries) {
       const id = (entry.target as HTMLElement).dataset.rowId;
       const height = entry.borderBoxSize[0]?.blockSize;
@@ -44,11 +41,10 @@ export function createFeedWindow(opts: Options) {
       measured.set(id, height);
       remeasured = true;
     }
-    if (remeasured) later();
+    if (remeasured) apply();
   });
   onCleanup(() => {
     rows.disconnect();
-    if (frame !== null) cancelAnimationFrame(frame);
   });
 
   function estimate(): number {
@@ -98,7 +94,7 @@ export function createFeedWindow(opts: Options) {
   function watch(): () => void {
     const el = opts.scroller();
     if (!el) return () => {};
-    const observer = new ResizeObserver(later);
+    const observer = createSizeWatch(apply);
     observer.observe(el);
     sync();
     return () => observer.disconnect();

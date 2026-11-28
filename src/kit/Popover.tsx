@@ -5,6 +5,7 @@ import * as shortcuts from "../shared/keyboard/shortcuts.ts";
 import { captureFocusForRestore } from "../shared/solid/focus.ts";
 import { trapFocus } from "../shared/solid/trapFocus.ts";
 import { createExitTarget, ExitScope } from "./Transition.tsx";
+import { createSizeWatch } from "../shared/solid/createSizeWatch.ts";
 
 const MARGIN = 8;
 
@@ -66,7 +67,7 @@ export default function Popover(props: Props) {
     if (!el) return;
     const place = () => placeInsideWindow(el);
     place();
-    const observer = new ResizeObserver(place);
+    const observer = createSizeWatch(place);
     observer.observe(el);
     window.addEventListener("resize", place);
     onCleanup(() => {

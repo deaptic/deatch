@@ -1,4 +1,5 @@
 import { createSignal, onCleanup } from "solid-js";
+import { createSizeWatch } from "../../shared/solid/createSizeWatch.ts";
 
 export function createGridColumns(): {
   columns: () => number;
@@ -9,25 +10,20 @@ export function createGridColumns(): {
     columns,
     setRef: (el) => {
       let width = -1;
-      let frame = 0;
       const measure = () => {
         const tracks = getComputedStyle(el)
           .gridTemplateColumns.split(" ")
           .filter(Boolean).length;
         setColumns(Math.max(1, tracks));
       };
-      const observer = new ResizeObserver(([entry]) => {
-        const next = entry?.contentRect.width ?? 0;
+      const observer = createSizeWatch((entries) => {
+        const next = entries.at(-1)?.contentRect.width ?? 0;
         if (next === width) return;
         width = next;
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(measure);
+        measure();
       });
       observer.observe(el);
-      onCleanup(() => {
-        cancelAnimationFrame(frame);
-        observer.disconnect();
-      });
+      onCleanup(observer.disconnect);
     },
   };
 }

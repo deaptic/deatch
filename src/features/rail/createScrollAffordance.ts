@@ -1,5 +1,6 @@
 import { createSignal, onCleanup } from "solid-js";
 import { scrollBehavior } from "../../kit/scrollBehavior.ts";
+import { createSizeWatch } from "../../shared/solid/createSizeWatch.ts";
 
 type ScrollAffordance = {
   canUp: () => boolean;
@@ -36,7 +37,7 @@ export function createScrollAffordance(): ScrollAffordance {
     canDown,
     setRef: (e) => {
       el = e;
-      const observer = new ResizeObserver(update);
+      const observer = createSizeWatch(update);
       observer.observe(e);
       onCleanup(() => observer.disconnect());
     },

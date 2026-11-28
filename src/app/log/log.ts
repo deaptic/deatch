@@ -6,7 +6,6 @@ import { addToast } from "../../kit/toasts.ts";
 import { t } from "../../shared/i18n/index.ts";
 
 const SAME_ERROR_QUIET_MS = 60_000;
-const RESIZE_OBSERVER_NOTICE = "ResizeObserver loop";
 
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -29,7 +28,6 @@ export function start(): () => void {
   };
 
   const onError = (event: ErrorEvent) => {
-    if (event.message.startsWith(RESIZE_OBSERVER_NOTICE)) return;
     void forward("error", ["uncaught", event.error ?? event.message]);
     notify(event.error ?? event.message);
   };

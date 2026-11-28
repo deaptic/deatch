@@ -20,6 +20,7 @@ import { type UserAction } from "../message/index.ts";
 import { dismissOnOutside } from "../../shared/solid/dismissOnOutside.ts";
 import { t } from "../../shared/i18n/index.ts";
 import { playExit } from "../../kit/playExit.ts";
+import { createSizeWatch } from "../../shared/solid/createSizeWatch.ts";
 
 type Props = {
   x: number;
@@ -85,7 +86,7 @@ export default function UserCard(props: Props) {
     if (!cardRef) return;
     setPos(clamp(props.x, props.y));
 
-    const observer = new ResizeObserver(() => {
+    const observer = createSizeWatch(() => {
       setRoom(roomIn());
       setPos((p) => clamp(p.x, p.y));
     });

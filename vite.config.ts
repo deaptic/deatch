@@ -35,6 +35,14 @@ export default defineConfig({
         "warn",
         { considerDefaultExhaustiveForUnions: true },
       ],
+      "no-restricted-globals": [
+        "error",
+        {
+          name: "ResizeObserver",
+          message:
+            "Use createSizeWatch so resize handling waits a frame and cannot loop.",
+        },
+      ],
       "shadcn/no-raw-colors": "error",
       "shadcn/no-arbitrary-values": "error",
       "shadcn/no-restyle": ["error", { allow: ["layout"] }],
@@ -57,6 +65,13 @@ export default defineConfig({
       ],
     },
     overrides: [
+      {
+        files: [
+          "src/shared/solid/createSizeWatch.ts",
+          "src/features/feed/createFeedScroll.ts",
+        ],
+        rules: { "no-restricted-globals": "off" },
+      },
       {
         files: ["extension/src/**"],
         excludeFiles: [

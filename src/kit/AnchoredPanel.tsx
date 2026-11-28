@@ -2,6 +2,7 @@ import { createSignal, type JSX, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { dismissOnOutside } from "../shared/solid/dismissOnOutside.ts";
 import { captureFocusForRestore } from "../shared/solid/focus.ts";
+import { createSizeWatch } from "../shared/solid/createSizeWatch.ts";
 
 const GAP = 8;
 
@@ -46,7 +47,7 @@ export default function AnchoredPanel(props: Props) {
       setEdge(props.side === "start" ? r.left : window.innerWidth - r.right);
     };
     update();
-    const observer = new ResizeObserver(update);
+    const observer = createSizeWatch(update);
     observer.observe(anchor);
     window.addEventListener("resize", update);
     onCleanup(() => {
