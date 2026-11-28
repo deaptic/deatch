@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { matchesTerms, wordPattern } from "./wordMatch.ts";
+import { matchedWord, matchesTerms, wordPattern } from "./wordMatch.ts";
 
 const matchesAnyKeyword = (text: string, keywords: string[]) =>
   matchesTerms(text, keywords, "anywhere");
@@ -93,4 +93,10 @@ test("* stands for anything but whitespace", () => {
   expect(matchesAnyKeyword("dead!", ["dea*"])).toBe(true);
   expect(matchesAnyKeyword("de ad", ["de*"])).toBe(true);
   expect(matchesAnyKeyword("de ad", ["de*ad"])).toBe(false);
+});
+
+test("the matched word is the whole word the keyword hit", () => {
+  expect(matchedWord("mut joo ei tarvii", "*a*")).toBe("tarvii");
+  expect(matchedWord("hi Deatch!", "deatch")).toBeNull();
+  expect(matchedWord("hi Deatch", "deatch")).toBe("Deatch");
 });

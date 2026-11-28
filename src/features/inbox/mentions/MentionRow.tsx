@@ -7,6 +7,7 @@ import {
   DisplayName,
   MessageText,
 } from "../../message/index.ts";
+import { user as self } from "../../users/index.ts";
 import Text from "../../../kit/Text.tsx";
 import Timestamp from "../../../kit/Timestamp.tsx";
 import type { Mention } from "./types.ts";
@@ -71,7 +72,7 @@ export default function MentionRow(props: Props) {
               fragments={withoutReplyMention(msg())}
               emotes={props.emotes}
               cheermotes={cheermotes.forChannel(props.mention.broadcasterId)}
-              mentionsYou
+              you={self()?.login}
             />
           </Text>
         </span>

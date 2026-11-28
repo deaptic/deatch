@@ -10,7 +10,7 @@ import { type UserActions, userLink, userLinkHover } from "./userLink.ts";
 export type MessagePartContext = UserActions & {
   emotes: EmoteMap;
   cheermotes: CheermoteMap;
-  mentionsYou?: boolean;
+  you?: string;
 };
 
 export default function MessagePart(
@@ -45,7 +45,7 @@ export default function MessagePart(
       return (
         <span
           class={`${userLinkHover(props)} ${
-            props.mentionsYou
+            frag.user_login.toLowerCase() === props.you?.toLowerCase()
               ? "text-accent-ink font-semibold"
               : "text-ink font-medium"
           }`}

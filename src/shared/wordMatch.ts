@@ -25,19 +25,31 @@ export function wordPattern(terms: string[], anchor: Anchor): string {
   }
 }
 
+function firstMatch(
+  text: string,
+  terms: string[],
+  anchor: Anchor,
+  caseSensitive: boolean,
+): RegExpExecArray | null {
+  const usable = terms.map((t) => t.trim()).filter(hasLiteral);
+  if (usable.length === 0) return null;
+  return regExp(wordPattern(usable, anchor), caseSensitive ? "" : "i").exec(
+    text,
+  );
+}
+
 export function matchEnd(
   text: string,
   terms: string[],
   anchor: Anchor,
   caseSensitive = false,
 ): number | null {
-  const usable = terms.map((t) => t.trim()).filter(hasLiteral);
-  if (usable.length === 0) return null;
-  const match = regExp(
-    wordPattern(usable, anchor),
-    caseSensitive ? "" : "i",
-  ).exec(text);
+  const match = firstMatch(text, terms, anchor, caseSensitive);
   return match ? match.index + match[0].length : null;
+}
+
+export function matchedWord(text: string, keyword: string): string | null {
+  return firstMatch(text, [keyword], "anywhere", false)?.[0] ?? null;
 }
 
 export function matchesTerms(

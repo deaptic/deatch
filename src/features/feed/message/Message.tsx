@@ -118,7 +118,7 @@ export default function Message(props: Props) {
           fragments={withoutReplyMention(item)}
           emotes={props.emotes}
           cheermotes={props.cheermotes}
-          mentionsYou={mentioned()}
+          you={props.userLogin}
           onShowUserCard={props.onShowUserCard}
           onUserContextMenu={props.onUserContextMenu}
         />
