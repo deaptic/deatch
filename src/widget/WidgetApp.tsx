@@ -16,6 +16,7 @@ import {
   streamEntries,
   type WidgetRow,
 } from "../features/widgets/index.ts";
+import { DEFAULT_UI_DENSITY } from "../shared/accessibility.ts";
 import { ImageScale } from "../shared/solid/imageScale.ts";
 import { connect } from "./socket.ts";
 
@@ -86,7 +87,11 @@ export default function WidgetApp(props: {
 
   onMount(() => {
     setAppearanceTheme(THEME);
-    appearance.apply({ theme: THEME, accent: null, density: "spacious" });
+    appearance.apply({
+      theme: THEME,
+      accent: null,
+      density: DEFAULT_UI_DENSITY,
+    });
   });
 
   createEffect(() => {

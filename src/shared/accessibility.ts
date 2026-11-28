@@ -11,6 +11,7 @@ export const DEFAULT_ZOOM = 100;
 
 export const UI_DENSITIES = ["compact", "spacious"] as const;
 export type UiDensity = (typeof UI_DENSITIES)[number];
+export const DEFAULT_UI_DENSITY: UiDensity = "spacious";
 
 export function clampToStops(value: number, stops: Steps): number {
   return Math.min(Math.max(...stops), Math.max(Math.min(...stops), value));

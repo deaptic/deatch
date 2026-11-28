@@ -1,5 +1,9 @@
 import { THEMES } from "../../../shared/theme.ts";
-import { UI_DENSITIES, ZOOM_STEPS } from "../../../shared/accessibility.ts";
+import {
+  DEFAULT_UI_DENSITY,
+  UI_DENSITIES,
+  ZOOM_STEPS,
+} from "../../../shared/accessibility.ts";
 import { ACTIVITIES } from "../../../shared/activities.ts";
 import {
   bool,
@@ -17,7 +21,7 @@ export const APPEARANCE = object({
   railExpanded: bool(false),
   followedPrompt: bool(true),
   activities: flags(ACTIVITIES, () => true),
-  uiDensity: oneOf(UI_DENSITIES, "spacious"),
+  uiDensity: oneOf(UI_DENSITIES, DEFAULT_UI_DENSITY),
   zoom: steps(ZOOM_STEPS, 100),
 });
 

@@ -64,6 +64,8 @@ function applySharedChatAction(p: RawModerate) {
         p.shared_chat_timeout.user_id,
         source,
       );
+    default:
+      return;
   }
 }
 
