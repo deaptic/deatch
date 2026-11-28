@@ -47,7 +47,6 @@ pub async fn get_json<T: DeserializeOwned>(http: &reqwest::Client, url: impl Int
         result
             .as_ref()
             .map(|(status, body)| (*status, body.as_ref())),
-        log::Level::Warn,
     );
     let (status, body) = result?;
     check_status(status, target.path())?;
@@ -68,7 +67,6 @@ pub fn log_request<E: Display>(
     path: &str,
     started: Instant,
     outcome: std::result::Result<(StatusCode, &[u8]), &E>,
-    client_error: log::Level,
 ) {
     let ms = started.elapsed().as_millis();
     match outcome {
@@ -78,17 +76,12 @@ pub fn log_request<E: Display>(
         Ok((status, _)) if status.is_success() => {
             log::info!("{method} {host}{path} status={} ms={ms}", status.as_u16())
         }
-        Ok((status, body)) => log::log!(
-            if status.is_client_error() {
-                client_error
-            } else {
-                log::Level::Warn
-            },
+        Ok((status, body)) => log::debug!(
             "{method} {host}{path} status={} ms={ms} body={}",
             status.as_u16(),
             String::from_utf8_lossy(body)
         ),
-        Err(e) => log::warn!("{method} {host}{path} failed ms={ms}: {e}"),
+        Err(e) => log::debug!("{method} {host}{path} failed ms={ms}: {e}"),
     }
 }
 

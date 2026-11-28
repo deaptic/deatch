@@ -34,7 +34,7 @@ impl<E: BroadcasterEndpoint> RequestPost for BroadcasterRequest<'_, E> {
     type Body = EmptyBody;
 }
 
-fn request<E>(broadcaster_id: &str) -> BroadcasterRequest<'_, E> {
+pub fn request<E>(broadcaster_id: &str) -> BroadcasterRequest<'_, E> {
     BroadcasterRequest {
         broadcaster_id,
         endpoint: PhantomData,

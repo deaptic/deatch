@@ -11,8 +11,8 @@ use tauri::{AssetResolver, Wry};
 use tokio::sync::broadcast::error::RecvError;
 
 use super::{Frame, Subscription, Widgets};
+use crate::platform::identity::WIDGET_PORT;
 
-const PORT: u16 = 47820;
 const PAGE: &str = "widget.html";
 
 #[derive(Clone)]
@@ -27,11 +27,11 @@ pub fn start(assets: AssetResolver<Wry>, page_origin: Option<url::Url>) -> Widge
     let listener = match bind() {
         Ok(listener) => listener,
         Err(e) => {
-            log::error!("widget server could not listen on port {PORT}: {e}");
+            log::error!("widget server could not listen on port {WIDGET_PORT}: {e}");
             return Widgets::new(Err(e.to_string()));
         }
     };
-    let address = SocketAddr::from((Ipv4Addr::LOCALHOST, PORT));
+    let address = SocketAddr::from((Ipv4Addr::LOCALHOST, WIDGET_PORT));
     let widgets = Widgets::new(Ok(address));
     let server = Server {
         widgets: widgets.clone(),
@@ -46,7 +46,7 @@ pub fn start(assets: AssetResolver<Wry>, page_origin: Option<url::Url>) -> Widge
 }
 
 fn bind() -> std::io::Result<TcpListener> {
-    let listener = TcpListener::bind((Ipv4Addr::LOCALHOST, PORT))?;
+    let listener = TcpListener::bind((Ipv4Addr::LOCALHOST, WIDGET_PORT))?;
     listener.set_nonblocking(true)?;
     Ok(listener)
 }
@@ -152,18 +152,18 @@ mod tests {
 
     #[test]
     fn page_url_points_the_page_at_this_server() {
-        let address = SocketAddr::from((Ipv4Addr::LOCALHOST, PORT));
+        let address = SocketAddr::from((Ipv4Addr::LOCALHOST, WIDGET_PORT));
         assert_eq!(
             page_url("http://localhost:1420", "abc", address, None),
-            "http://localhost:1420/widget.html?id=abc&server=127.0.0.1:47820"
+            format!("http://localhost:1420/widget.html?id=abc&server=127.0.0.1:{WIDGET_PORT}")
         );
         assert_eq!(
             page_url("", "abc", address, None),
-            "/widget.html?id=abc&server=127.0.0.1:47820"
+            format!("/widget.html?id=abc&server=127.0.0.1:{WIDGET_PORT}")
         );
         assert_eq!(
             page_url("", "abc", address, Some("preview&lang=fi")),
-            "/widget.html?id=abc&server=127.0.0.1:47820&preview&lang=fi"
+            format!("/widget.html?id=abc&server=127.0.0.1:{WIDGET_PORT}&preview&lang=fi")
         );
     }
 }

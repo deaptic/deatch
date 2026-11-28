@@ -11,7 +11,6 @@ use twitch_api::client::{Bytes, Request, Response};
 use twitch_api::HttpClient;
 
 const HELIX_HOST: &str = "api.twitch.tv";
-const OAUTH_HOST: &str = "id.twitch.tv";
 
 #[derive(Clone)]
 pub struct HelixTransport {
@@ -63,7 +62,6 @@ impl HttpClient for HelixTransport {
                     parts.uri.path(),
                     started,
                     result.as_ref().map(|r| (r.status(), r.body().as_ref())),
-                    client_error_level(parts.uri.host()),
                 );
                 let response = result?;
                 this.rate_limit
@@ -90,14 +88,6 @@ impl HttpClient for HelixTransport {
     }
 }
 
-fn client_error_level(host: Option<&str>) -> log::Level {
-    if host == Some(OAUTH_HOST) {
-        log::Level::Debug
-    } else {
-        log::Level::Warn
-    }
-}
-
 fn rebuild(parts: &http::request::Parts, body: &Bytes) -> Request {
     let mut request = http::Request::new(body.clone());
     *request.method_mut() = parts.method.clone();
@@ -109,15 +99,8 @@ fn rebuild(parts: &http::request::Parts, body: &Bytes) -> Request {
 
 #[cfg(test)]
 mod tests {
-    use super::{client_error_level, HelixTransport, HELIX_HOST, OAUTH_HOST};
+    use super::HelixTransport;
     use twitch_api::HttpClient;
-
-    #[test]
-    fn oauth_rejections_stay_quiet_because_device_polls_expect_them() {
-        assert_eq!(client_error_level(Some(OAUTH_HOST)), log::Level::Debug);
-        assert_eq!(client_error_level(Some(HELIX_HOST)), log::Level::Warn);
-        assert_eq!(client_error_level(None), log::Level::Warn);
-    }
 
     #[test]
     fn failed_requests_never_expose_the_query() {

@@ -9,4 +9,5 @@ storage.prune();
 preferences.load();
 const root = document.getElementById("root");
 if (!root) throw new Error("index.html has no #root element");
-render(() => <App />, root);
+const dispose = render(() => <App />, root);
+window.addEventListener("pagehide", dispose, { once: true });

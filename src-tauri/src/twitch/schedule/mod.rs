@@ -3,14 +3,21 @@ pub mod dto;
 
 use super::Authed;
 use crate::platform::error::Result;
+use crate::twitch::client::broadcaster_endpoint::{self, BroadcasterEndpoint};
 use crate::twitch::client::ids::UserId;
-use dto::ScheduledStream;
+use dto::{HelixSchedule, ScheduledStream};
 use futures_util::future::join_all;
 use serde::Deserialize;
-use twitch_api::helix::schedule::GetChannelStreamScheduleRequest;
 use twitch_api::helix::{ClientRequestError, HelixRequestGetError};
+use twitch_api::twitch_oauth2::{validator, Validator};
 
-const SEGMENTS_PER_CHANNEL: usize = 10;
+struct ScheduleEndpoint;
+
+impl BroadcasterEndpoint for ScheduleEndpoint {
+    const PATH: &'static str = "schedule";
+    const SCOPE: Validator = validator![];
+    type Response = HelixSchedule;
+}
 
 #[derive(Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
@@ -19,20 +26,25 @@ pub struct GetSchedulesParams {
 }
 
 fn has_no_schedule(error: &ClientRequestError<reqwest::Error>) -> bool {
-    matches!(
-        error,
-        ClientRequestError::HelixRequestGetError(HelixRequestGetError::Error { status, .. })
-            if *status == http::StatusCode::NOT_FOUND
-    )
+    let ClientRequestError::HelixRequestGetError(error) = error else {
+        return false;
+    };
+    let status = match error {
+        HelixRequestGetError::Error { status, .. }
+        | HelixRequestGetError::DeserializeError(_, _, _, status)
+        | HelixRequestGetError::InvalidResponse { status, .. } => *status,
+        _ => return false,
+    };
+    status == http::StatusCode::NOT_FOUND
 }
 
 async fn upcoming(twitch: &Authed<'_>, broadcaster_id: &UserId) -> Result<Vec<ScheduledStream>> {
-    let request = GetChannelStreamScheduleRequest::broadcaster_id(broadcaster_id.as_str())
-        .first(SEGMENTS_PER_CHANNEL);
+    let request = broadcaster_endpoint::request::<ScheduleEndpoint>(broadcaster_id.as_str());
     match twitch.helix.req_get(request, &twitch.token).await {
         Ok(response) => Ok(response
             .data
             .segments
+            .unwrap_or_default()
             .into_iter()
             .filter_map(|segment| dto::scheduled(broadcaster_id, segment))
             .collect()),
@@ -75,5 +87,17 @@ mod tests {
         assert!(!has_no_schedule(&helix_error(
             http::StatusCode::INTERNAL_SERVER_ERROR
         )));
+    }
+
+    #[test]
+    fn a_not_found_body_twitch_api_cannot_read_still_means_no_schedule() {
+        let unreadable =
+            ClientRequestError::HelixRequestGetError(HelixRequestGetError::InvalidResponse {
+                reason: "unexpected body",
+                response: r#"{"message":"segments were not found"}"#.into(),
+                status: http::StatusCode::NOT_FOUND,
+                uri: http::Uri::from_static("https://api.twitch.tv/helix/schedule"),
+            });
+        assert!(has_no_schedule(&unreadable));
     }
 }
