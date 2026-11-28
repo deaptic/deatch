@@ -2,6 +2,11 @@ const DEV: bool = cfg!(debug_assertions);
 
 pub const PRODUCT_NAME: &str = if DEV { "Deatch Dev" } else { "Deatch" };
 pub const KEYRING_SERVICE: &str = if DEV { "deatch-dev" } else { "deatch" };
+pub const PIPE_PREFIX: &str = if DEV {
+    "deatch-dev-bridge"
+} else {
+    "deatch-bridge"
+};
 const IDENTIFIER_SUFFIX: &str = if DEV { ".dev" } else { "" };
 
 pub fn apply<R: tauri::Runtime>(context: &mut tauri::Context<R>) {

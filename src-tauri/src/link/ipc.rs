@@ -1,6 +1,7 @@
 use super::events::{LinkAnswer, LinkChannel, LinkDisconnected, LinkState};
 use super::MAX_MESSAGE_SIZE;
 use crate::platform::emit::emit;
+use crate::platform::identity::PIPE_PREFIX;
 use interprocess::os::windows::security_descriptor::SecurityDescriptor;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -8,7 +9,6 @@ use std::sync::Arc;
 use std::time::Duration;
 use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, Uid, UpdateKind};
 
-const PIPE_PREFIX: &str = "deatch-bridge";
 const ACCEPT_RETRY: Duration = Duration::from_secs(1);
 const LISTEN_RETRY: Duration = Duration::from_secs(5);
 const WRITE_TIMEOUT: Duration = Duration::from_secs(2);
@@ -415,7 +415,7 @@ async fn handle_connection(
 mod tests {
     use super::{
         current_user, merge, only_for, pipe_name, read_line, same_user, HostCommand, HostMessage,
-        Hosts, LinkAnswer, LinkChannel, LinkState, MAX_MESSAGE_SIZE,
+        Hosts, LinkAnswer, LinkChannel, LinkState, MAX_MESSAGE_SIZE, PIPE_PREFIX,
     };
     use serde_json::json;
     use sysinfo::Uid;
@@ -434,7 +434,7 @@ mod tests {
     fn each_user_gets_their_own_pipe() {
         let me: Uid = "S-1-5-21-1-2-3-1001".parse().unwrap();
         let other: Uid = "S-1-5-21-1-2-3-1002".parse().unwrap();
-        assert_eq!(pipe_name(&me), "deatch-bridge-S-1-5-21-1-2-3-1001");
+        assert_eq!(pipe_name(&me), format!("{PIPE_PREFIX}-S-1-5-21-1-2-3-1001"));
         assert_ne!(pipe_name(&me), pipe_name(&other));
     }
 
