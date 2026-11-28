@@ -86,7 +86,7 @@ export default function WidgetApp(props: {
 
   onMount(() => {
     setAppearanceTheme(THEME);
-    appearance.apply({ theme: THEME, accent: null, density: "default" });
+    appearance.apply({ theme: THEME, accent: null, density: "spacious" });
   });
 
   createEffect(() => {

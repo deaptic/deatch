@@ -17,7 +17,7 @@ export const APPEARANCE = object({
   railExpanded: bool(false),
   followedPrompt: bool(true),
   activities: flags(ACTIVITIES, () => true),
-  uiDensity: oneOf(UI_DENSITIES, "default"),
+  uiDensity: oneOf(UI_DENSITIES, "spacious"),
   zoom: steps(ZOOM_STEPS, 100),
 });
 

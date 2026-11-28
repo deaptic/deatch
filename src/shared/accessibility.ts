@@ -9,7 +9,7 @@ export const ZOOM_STEPS: Steps = [
 ];
 export const DEFAULT_ZOOM = 100;
 
-export const UI_DENSITIES = ["compact", "default", "spacious"] as const;
+export const UI_DENSITIES = ["compact", "spacious"] as const;
 export type UiDensity = (typeof UI_DENSITIES)[number];
 
 export function clampToStops(value: number, stops: Steps): number {

@@ -11,7 +11,6 @@ export const themeOptions = (): { value: Theme; label: string }[] => [
 
 export const uiDensityOptions = (): { value: UiDensity; label: string }[] => [
   { value: "compact", label: t("SETTINGS_APPEARANCE_COMPACT_LABEL") },
-  { value: "default", label: t("SETTINGS_APPEARANCE_DEFAULT_LABEL") },
   { value: "spacious", label: t("SETTINGS_APPEARANCE_SPACIOUS_LABEL") },
 ];
 
